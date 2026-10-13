@@ -16,6 +16,8 @@ export type ControlStatement =
 /** A parsed `.control` script (all blocks of the deck, in order). */
 export interface ControlScript {
   statements: ControlStatement[];
+  /** Deck `.csparam` values, installed before executing any control statement. */
+  constants?: Readonly<Record<string, number>>;
 }
 
 /** Analysis commands; each runs one analysis and creates one plot (noise: two). */

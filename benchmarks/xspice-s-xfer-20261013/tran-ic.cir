@@ -1,0 +1,8 @@
+s_xfer bounded contract
+v1 in 0 dc 1
+a1 in out f
+.model f s_xfer(num_coeff=[1] den_coeff=[1 1.414214 1] int_ic=[0.001 0.002] denormalized_freq=628)
+r1 out 0 1k
+
+.tran 10u 2m
+.end

@@ -3,19 +3,58 @@ import type { MNAAssembler } from '../mna/assembler.js';
 import type { DCConvergenceTelemetry, ResolvedOptions } from '../types.js';
 import { ConvergenceError } from '../errors.js';
 import { MOSFET } from '../devices/mosfet.js';
+import { BehavioralSource } from '../devices/behavioral-source.js';
 import { stampStaticDevices } from '../mna/linear-stamp.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 
+/**
+ * A device list's Newton step limiters: the plain MOS1 instances, whose limits
+ * {@link MOSFET.batchNewtonStepScale} evaluates from contiguous arrays, and
+ * every other device implementing `limitNewtonStep`.
+ */
+interface StepLimiters {
+  readonly length: number;
+  readonly mosfets: readonly MOSFET[];
+  readonly others: readonly DeviceModel[];
+}
+
+const stepLimiters = new WeakMap<readonly DeviceModel[], StepLimiters>();
+
+function stepLimitersFor(devices: readonly DeviceModel[]): StepLimiters {
+  const cached = stepLimiters.get(devices);
+  if (cached !== undefined && cached.length === devices.length) return cached;
+  const mosfets: MOSFET[] = [];
+  const others: DeviceModel[] = [];
+  for (const device of devices) {
+    if (!device.limitNewtonStep) continue;
+    if (
+      Object.getPrototypeOf(device) === MOSFET.prototype
+      && !Object.hasOwn(device, 'limitNewtonStep')
+    ) {
+      mosfets.push(device as MOSFET);
+    } else {
+      others.push(device);
+    }
+  }
+  const limiters = { length: devices.length, mosfets, others };
+  stepLimiters.set(devices, limiters);
+  return limiters;
+}
+
+/**
+ * Scale the Newton step by the smallest device step limit. The Math.min of
+ * the same per-device scales in any order, so grouping the MOS1 instances
+ * into one batch leaves the result bit-identical.
+ */
 function applyDeviceStepLimits(
   devices: readonly DeviceModel[],
   previous: Float64Array,
   candidate: Float64Array,
 ): void {
-  let scale = 1;
-  for (const device of devices) {
-    if (device.limitNewtonStep) {
-      scale = Math.min(scale, device.limitNewtonStep(previous, candidate));
-    }
+  const { mosfets, others } = stepLimitersFor(devices);
+  let scale = mosfets.length > 0 ? MOSFET.batchNewtonStepScale(mosfets, previous, candidate) : 1;
+  for (let i = 0; i < others.length; i++) {
+    scale = Math.min(scale, others[i].limitNewtonStep!(previous, candidate));
   }
   if (scale >= 1) return;
   for (let i = 0; i < candidate.length; i++) {
@@ -37,6 +76,14 @@ export function newtonRaphson(
   let otherDevices: DeviceModel[] | null = null;
   const selfLimiting = devices.filter(device => device.limitedLastStamp !== undefined);
   const convergenceTested = devices.filter(device => device.convergenceTest !== undefined);
+  const behavioral = devices.filter((device): device is BehavioralSource => device instanceof BehavioralSource);
+  let certifiedOverflow = false;
+  const acceptOverflow = behavioral.length > 0
+    ? (candidate: Float64Array) => {
+      certifiedOverflow = behavioral.some(device => device.hasInfiniteValueAtFiniteControls(candidate));
+      return certifiedOverflow;
+    }
+    : undefined;
   // The iterate two solves back, to recognise a rounding-floor two-cycle.
   const twoBack = convergenceTested.length > 0 ? new Float64Array(assembler.solution.length) : undefined;
 
@@ -86,7 +133,9 @@ export function newtonRaphson(
 
     const solver = assembler.getSparseSolver();
     solver.factorize(assembler.getCscMatrix());
-    const x = solver.solve(new Float64Array(assembler.b));
+    const previousOverflow = certifiedOverflow;
+    certifiedOverflow = false;
+    const x = solver.solve(new Float64Array(assembler.b), acceptOverflow);
     applyDeviceStepLimits(devices, assembler.prevSolution, x);
     assembler.solution.set(x);
 
@@ -100,6 +149,11 @@ export function newtonRaphson(
         || (iter >= 2 && isRoundingFloorCycle(assembler.solution, assembler.prevSolution, twoBack!, assembler.numNodes))
       )
     ) {
+      // A certified infinite expression yields inf - inf in the next affine
+      // stamp. ngspice reports CKTrhsOld (the linearisation point), not that
+      // NaN solve (#847). Keep that certified point only on this exceptional
+      // path; finite solves retain the project's converged-solve convention.
+      if (previousOverflow) assembler.solution.set(assembler.prevSolution);
       if (telemetry) {
         telemetry.newtonIterations += iter + 1;
         telemetry.acceptedSolves++;

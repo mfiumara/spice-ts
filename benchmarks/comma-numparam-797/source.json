@@ -1,0 +1,31 @@
+{
+  "repository": "https://github.com/imr/ngspice",
+  "tag": "ngspice-47",
+  "revision": "a80f6e3e95d51534905b1f23410a951802666656",
+  "files": [
+    {
+      "path": "COPYING",
+      "url": "https://raw.githubusercontent.com/imr/ngspice/a80f6e3e95d51534905b1f23410a951802666656/COPYING",
+      "sha256": "6d939001e899ede403277fb37124c2af6f1cf92926465cd8f4bf59859e06f579",
+      "licence": "CC-BY-SA-4.0"
+    },
+    {
+      "path": "src/frontend/inpcom.c",
+      "url": "https://raw.githubusercontent.com/imr/ngspice/a80f6e3e95d51534905b1f23410a951802666656/src/frontend/inpcom.c",
+      "sha256": "5ee51218fb36937ba55ee5e395ef837b34b65133914090db78d4930dae8f5e68",
+      "licence": "BSD-3-Clause"
+    },
+    {
+      "path": "src/frontend/numparam/xpressn.c",
+      "url": "https://raw.githubusercontent.com/imr/ngspice/a80f6e3e95d51534905b1f23410a951802666656/src/frontend/numparam/xpressn.c",
+      "sha256": "e0b079e8c8dc7697e34a49f9b9c10af18d42c6ecdb757c5300c024fcf89e7ef0",
+      "licence": "LGPL-2.0-or-later"
+    },
+    {
+      "path": "src/frontend/numparam/spicenum.c",
+      "url": "https://raw.githubusercontent.com/imr/ngspice/a80f6e3e95d51534905b1f23410a951802666656/src/frontend/numparam/spicenum.c",
+      "sha256": "1341278bb7c24690ba3c6be0356276f8fa6d16a51aec283b4ac1cbbd24d863a2",
+      "licence": "LGPL-2.0-or-later"
+    }
+  ]
+}

@@ -138,6 +138,31 @@ jobs:
       - name: Build @spice-ts/core
         run: pnpm build
 
+      # Explicit offline allowlist. Do not glob in live ngspice/corpus regeneration
+      # suites (comparison-harness, corpus-f/triage, differential-noise, buck-boost).
+      - name: Fast offline benchmark regressions
+        timeout-minutes: 2
+        run: |
+          pnpm exec tsx --test \
+            benchmarks/fine-reference.test.ts \
+            benchmarks/performance/scaling-m2.test.ts \
+            benchmarks/performance/results/issue-907/check.test.mjs \
+            benchmarks/corpus-e-audit/audit.test.mjs \
+            benchmarks/device-card-audit/audit.test.ts \
+            benchmarks/noacct-options/receipt.test.ts \
+            benchmarks/translate/ahkab-to-spice3.test.ts \
+            benchmarks/translate/gnucap-to-spice3.test.ts \
+            benchmarks/translate/xyce-to-spice3.test.ts \
+            benchmarks/corpus/classic/report.test.ts \
+            benchmarks/corpus/classic-b-audit/audit.test.ts \
+            benchmarks/corpus/corpus-d/validate.test.mjs \
+            benchmarks/corpus/corpus-g/corpus-g.test.ts \
+            benchmarks/corpus/corpus-h/corpus-h.test.ts \
+            benchmarks/corpus/corpus-i/corpus-i.test.ts \
+            benchmarks/corpus/ngspice-bugs/ngspice-bugs.test.ts \
+            benchmarks/results/issue-355/readme-losses.test.ts \
+            benchmarks/results/issue-362/readme-losses.test.ts
+
       - name: Run accuracy check
         run: npx tsx benchmarks/accuracy.ts --ci
 

@@ -31,11 +31,12 @@ import {
   VOLTAGE_PEAK_FLOOR,
   thirdPartyNotice,
 } from './lib.js';
-import { mergeReadme, outcomeDigest, packExecution, referenceSelection, renderMarkdown, runFixture, summarize, unpackExecution, type CorpusFReport } from './outcomes.js';
-import { controlPlotAnalyses, sensitivitySignalName } from './plot-adapter.js';
-import { parseRawLines } from './raw-stream.js';
+import { type FixtureOutcome, mergeReadme, outcomeDigest, packExecution, referenceSelection, renderMarkdown, runBoundedSimulate, runFixture, summarize, unpackExecution, type CorpusFReport } from './outcomes.js';
+import { controlPlotAnalyses, runCorpusFSpiceTs, sensitivitySignalName } from './plot-adapter.js';
+import { asPacked, compareInBatches, lazyExecution, PACKED_SAMPLES, packEncoded, samples } from './packed.js';
+import { PACKED_COLUMNS, parseRawLines, parseRawLinesInto } from './raw-stream.js';
 import { parseNgspiceRaw } from '../../comparison-harness.js';
-import { analysisType, type EngineExecution } from '../classic/report.js';
+import { analysisType, type ClassicCircuit, type EngineExecution } from '../classic/report.js';
 import { compareExecutions } from '../../aggregate-report.js';
 import { CONTROL_SECTION, controlWrapperDeck, hasControlBlock, noReferenceNote, runControlReference, trackingIssue } from './control-vectors.js';
 
@@ -498,6 +499,110 @@ describe('corpus-f sp/sens plots and streamed references (#694)', () => {
       assert.equal(fixture.outcome, 'matched', JSON.stringify(fixture));
       assert.ok(fixture.comparedSignals >= 12, `S/Y/Z vectors compared, got ${fixture.comparedSignals}`);
       assert.equal(sha256(await readFile(localPath)), sha256(bytes));
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
+  });
+});
+
+/**
+ * #839: a 50-section RC ladder, 1e5 transient points x 52 signals (5.2M samples per engine). One
+ * object per sample is about 300 MB of heap per engine, more than the 256 MB bound used below; the
+ * packed runner needs the simulator's own result plus one bounded comparison batch.
+ */
+const LADDER_SECTIONS = 50;
+const LADDER_DECK = [
+  '* corpus-f bounded-heap probe (#839)',
+  'V1 n0 0 SIN(0 1 50k)',
+  ...Array.from({ length: LADDER_SECTIONS }, (_, index) => `R${index + 1} n${index} n${index + 1} 1k\nC${index + 1} n${index + 1} 0 1n`),
+  '.tran 2n 200u 0 2n',
+  '.end',
+  '',
+].join('\n');
+const BOUNDED_HEAP_MB = 256;
+
+describe('corpus-f long transients in a bounded heap (#839)', () => {
+  // Deterministic waveforms with a few ngspice-only and spice-ts-only signals; ties in the worst
+  // error must resolve to the same signal as the unbatched metric.
+  const wave = (points: number, scale: number, phase: number) => Array.from({ length: points }, (_, index) => ({ re: scale * Math.sin(index / 7 + phase), im: 0 }));
+  const phasorWave = (points: number, scale: number) => Array.from({ length: points }, (_, index) => ({ re: scale * Math.cos(index), im: -scale * Math.sin(index / 3) }));
+  const engine = (shift: number, extra: string): EngineExecution => ({
+    status: 'success',
+    convergence: 'converged',
+    analyses: [
+      { type: 'tran', plotName: 'Transient Analysis', series: { grid: [0, 1e-9, 1e-9, 2e-9, 3.5e-9, 4e-9, 6e-9].map(t => t * (shift === 0 ? 1 : 1.0001)), signals: Object.fromEntries(['v(a)', 'v(b)', 'v(c)', 'i(v1)', 'v(tie1)', 'v(tie2)', extra].map((name, index) => [name, wave(7, index + 1 + shift * (name.startsWith('v(tie') ? 0.5 : 0.01), index)])) } },
+      { type: 'ac', plotName: 'AC Analysis', series: { grid: [1, 10, 100], signals: { 'v(a)': phasorWave(3, 1 + shift), 'v(b)': phasorWave(3, 2) } } },
+      { type: 'noise', plotName: 'Noise Spectral Density Curves', series: { grid: [1, 10], signals: { onoise_spectrum: wave(2, 1e-9 * (1 + shift), 0) } } },
+      { type: 'noise', plotName: 'Integrated Noise', series: { grid: [0], signals: { 'v(onoise_total)': wave(1, 2e-3 * (1 + shift), 1) } } },
+    ],
+  });
+  const spiceTs = engine(0.02, 'v(only-spice-ts)');
+  const ngspice = engine(0, 'v(only-ngspice)');
+
+  it('scores packed executions in any batch size exactly like one compareExecutions call', () => {
+    const expected = compareExecutions(spiceTs, ngspice);
+    const expectedErrors = normalizedSignalErrors(expected, pairedReferenceSeries(spiceTs, ngspice));
+    for (const budget of [1, 15, 40, 1e9]) {
+      const actual = compareInBatches(packExecution(spiceTs), packExecution(ngspice), budget);
+      assert.deepEqual(actual, expected, `budget ${budget}`);
+      assert.deepEqual(JSON.stringify(actual), JSON.stringify(expected), `key order, budget ${budget}`);
+      const lazy = normalizedSignalErrors(actual, pairedReferenceSeries(lazyExecution(packExecution(spiceTs)), lazyExecution(packExecution(ngspice))));
+      assert.deepEqual(lazy, expectedErrors);
+    }
+    assert.deepEqual(unpackExecution(asPacked(ngspice)), ngspice);
+    assert.equal(asPacked(packExecution(ngspice)).analyses[0].grid.length, 7);
+  });
+
+  it('reads an ngspice raw file into packed columns with the object reader\'s values', async () => {
+    const raw = ['Title: t', 'Plotname: Transient Analysis', 'Flags: real', 'No. Variables: 3', 'No. Points: 3', 'Variables:', '\t0\ttime\ttime', '\t1\tv(1)\tvoltage', '\t2\ti(v1)\tcurrent', 'Values:',
+      ' 0\t0', '\t-0', '\t1e-3', '', ' 1\t1e-9', '\t0.5', '\t-2.5e-300', ' 2\t2e-9', '\t1', ''];
+    const keep = (_plot: string, signal: string) => signal !== 'i(v1)';
+    for (const select of [undefined, keep]) {
+      const objects = await parseRawLines(raw, select);
+      const packed = await parseRawLinesInto(raw, PACKED_COLUMNS, select);
+      assert.deepEqual(packed.map(plot => ({ ...plot, signals: Object.fromEntries(Object.entries(plot.signals).map(([name, column]) => [name, samples(column)])) })), objects);
+    }
+  });
+
+  it('packs the spice-ts adapter result without changing a value', { skip: !HAS_CORE_DIST }, async () => {
+    const deck = Buffer.from('packed adapter\nV1 1 0 SIN(0 1 1k) AC 1\nR1 1 2 1k\nC1 2 0 1u\n.op\n.tran 10u 2m\n.ac dec 5 10 1e5\n.end\n');
+    const circuit: ClassicCircuit = { id: 'rc', category: 'corpus-f', analyses: ['op', 'tran', 'ac'], sourcePath: 'toy/rc.cir', sourceUrl: '', localPath: 'toy/rc.cir', sha256: '', ngspice: { expectedStatus: 'pass' }, spiceTs: { expectedStatus: 'pass' } };
+    const objects = await runCorpusFSpiceTs(deck, circuit);
+    assert.equal(objects.status, 'success', objects.error);
+    const packed = packEncoded(await runCorpusFSpiceTs(deck, circuit, PACKED_SAMPLES));
+    assert.deepEqual(unpackExecution(deserialize(serialize(packed)) as typeof packed), objects);
+    // Real waveforms travel without an imaginary column.
+    assert.equal(packed.analyses.find(analysis => analysis.type === 'tran')?.signals['v(2)'].im, undefined);
+  });
+
+  it('runs the spice-ts child without per-sample objects', { skip: !HAS_CORE_DIST }, async () => {
+    const previous = process.env.NODE_OPTIONS;
+    process.env.NODE_OPTIONS = `${previous ?? ''} --max-old-space-size=${BOUNDED_HEAP_MB}`.trim();
+    try {
+      const circuit: ClassicCircuit = { id: 'ladder', category: 'corpus-f', analyses: ['tran'], sourcePath: 'toy/ladder.cir', sourceUrl: '', localPath: 'toy/ladder.cir', sha256: '', ngspice: { expectedStatus: 'pass' }, spiceTs: { expectedStatus: 'pass' } };
+      const execution = await runBoundedSimulate(Buffer.from(LADDER_DECK), circuit);
+      assert.equal(execution.status, 'success', execution.error);
+      const [tran] = execution.analyses;
+      assert.ok(tran.series.grid.length >= 100_000, `points ${tran.series.grid.length}`);
+      assert.equal(Object.keys(tran.series.signals).length, LADDER_SECTIONS + 2);
+    } finally {
+      if (previous === undefined) delete process.env.NODE_OPTIONS;
+      else process.env.NODE_OPTIONS = previous;
+    }
+  });
+
+  it('compares both engines on every signal within the same bound', { skip: !HAS_NGSPICE || !HAS_CORE_DIST }, async () => {
+    const directory = await mkdtemp(resolve(tmpdir(), 'corpus-f-839-'));
+    try {
+      const localPath = resolve(directory, 'ladder.cir');
+      await writeFile(localPath, LADDER_DECK);
+      const run = spawnSync(process.execPath, [...process.execArgv, `--max-old-space-size=${BOUNDED_HEAP_MB}`, resolve(ROOT, 'run-deck.ts'), localPath, 'toy/ladder.cir'], { encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 });
+      assert.equal(run.status, 0, run.stderr.slice(-2000));
+      const fixture = JSON.parse(run.stdout.trim().split('\n').at(-1) ?? '') as FixtureOutcome;
+      assert.equal(fixture.ngspice.status, 'success', JSON.stringify(fixture));
+      assert.equal(fixture.spiceTs.status, 'success', JSON.stringify(fixture));
+      assert.equal(fixture.comparedSignals, LADDER_SECTIONS + 2, JSON.stringify(fixture));
+      assert.equal(fixture.outcome, 'matched', JSON.stringify(fixture));
     } finally {
       await rm(directory, { recursive: true, force: true });
     }

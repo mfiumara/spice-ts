@@ -1,0 +1,20 @@
+10000: base med 624 [612.7, 635.9, 627.3, 619.4, 624.4]; branch med 544 [533.8, 526.6, 543.9, 544.7, 558.4]; speedup med 1.148005148005148 pairs 1.15 1.21 1.15 1.14 1.12; ngspice med 1580 [1618.7, 1568.1, 1580.4, 1559.2, 2006.6]; distinct hashes 1
+  ngspice acct medians (s): {
+  total: 1.561,
+  analysis: 1.40341,
+  load: 0.876888,
+  reorder: 0.197392,
+  factor: 0.044626,
+  solve: 0.055044,
+  iters: 637
+} samples 5
+50000: base med 12880 [12783.7, 13387, 12596.4, 12880.4, 18305]; branch med 9078 [8671.3, 9683.8, 8454.2, 9077.8, 13236.5]; speedup med 1.418890039436868 pairs 1.47 1.38 1.49 1.42 1.38; ngspice med 50226 [50225.6, 48547.9, 48201.3, 53264.1, 53818.7]; distinct hashes 1
+  ngspice acct medians (s): {
+  total: 50.203,
+  analysis: 49.4062,
+  load: 34.3636,
+  reorder: 6.45246,
+  factor: 0.920484,
+  solve: 0.915871,
+  iters: 2360
+} samples 5

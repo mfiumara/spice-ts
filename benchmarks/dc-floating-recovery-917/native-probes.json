@@ -1,0 +1,78 @@
+[
+  {
+    "small": false,
+    "useInitialConditions": true,
+    "steps": 111,
+    "done": true,
+    "time": 0.00001,
+    "ms": 4.540416999999991,
+    "solution": [
+      0.9518289895125422,
+      0.024085505243731462,
+      1,
+      -0.004638717421350691
+    ],
+    "nodeNames": [
+      "a",
+      "b",
+      "in"
+    ]
+  },
+  {
+    "small": false,
+    "useInitialConditions": false,
+    "steps": 107,
+    "done": true,
+    "time": 0.00001,
+    "ms": 1.2484170000000177,
+    "solution": [
+      0.9518289887771557,
+      0.024085505611424966,
+      1,
+      -0.004638717415726745
+    ],
+    "nodeNames": [
+      "a",
+      "b",
+      "in"
+    ]
+  },
+  {
+    "small": true,
+    "useInitialConditions": true,
+    "steps": 111,
+    "done": true,
+    "time": 0.00001,
+    "ms": 1.9522910000000024,
+    "solution": [
+      0.3333333333333338,
+      0.33333333333333376,
+      1,
+      -2.2551405187698492e-17
+    ],
+    "nodeNames": [
+      "a",
+      "b",
+      "in"
+    ]
+  },
+  {
+    "small": true,
+    "useInitialConditions": false,
+    "steps": 107,
+    "done": true,
+    "time": 0.00001,
+    "ms": 0.9745000000000061,
+    "solution": [
+      0.33333333333333365,
+      0.3333333333333337,
+      1,
+      -1.1275702593849246e-16
+    ],
+    "nodeNames": [
+      "a",
+      "b",
+      "in"
+    ]
+  }
+]

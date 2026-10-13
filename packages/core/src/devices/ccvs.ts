@@ -7,11 +7,17 @@ export class CCVS implements DeviceModel {
   constructor(
     readonly name: string,
     readonly nodes: number[],
-    readonly controlBranchIndex: number,
+    /** Controlling source's branch; see {@link bindControlBranch}. */
+    public controlBranchIndex: number,
     readonly branchIndex: number,
     readonly gain: number,
   ) {
     this.branches = [branchIndex];
+  }
+
+  /** Bind the controlling source's MNA branch (ngspice CCVSsetup), which may follow this card. */
+  bindControlBranch(branch: number): void {
+    this.controlBranchIndex = branch;
   }
 
   stamp(ctx: StampContext): void {

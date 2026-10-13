@@ -1,0 +1,301 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_14be5ed0/packages/core
+
+ ❯ src/parser/temp-directive-871.test.ts (23 tests | 21 failed) 24ms
+     × .temp 77 sets circuit, numparam and behavioral temperatures to 77 C 9ms
+     × .TEMP -40 sets circuit, numparam and behavioral temperatures to -40 C 1ms
+     × .temp=77 sets circuit, numparam and behavioral temperatures to 77 C 1ms
+     × .temp = 77 sets circuit, numparam and behavioral temperatures to 77 C 1ms
+     × .temp 7.7e1 sets circuit, numparam and behavioral temperatures to 77 C 0ms
+     × .temp 77
+.options temp=127 sets circuit, numparam and behavioral temperatures to 77 C 1ms
+     × .options temp=127
+.temp 77 sets circuit, numparam and behavioral temperatures to 77 C 1ms
+     × .temp 77
+.temp 127 sets circuit, numparam and behavioral temperatures to 127 C 0ms
+     × .temp sets circuit, numparam and behavioral temperatures to 0 C 1ms
+     × .temp abc sets circuit, numparam and behavioral temperatures to 27 C 0ms
+     × .temp 77C sets circuit, numparam and behavioral temperatures to 27 C 0ms
+     × .temp 77k sets circuit, numparam and behavioral temperatures to 27 C 0ms
+     × .param t=77
+.temp {t} sets circuit, numparam and behavioral temperatures to 77 C 1ms
+     × .temp '77' sets circuit, numparam and behavioral temperatures to 77 C 0ms
+     × warns when a malformed numeric card falls back to 27 C like ngspice-47 0ms
+     × explicitly rejects unsupported multiple temperatures: .temp 27 77 3ms
+     × explicitly rejects unsupported multiple temperatures: .temp=27 77 1ms
+     × explicitly rejects unsupported multiple temperatures: .temp {27} {77} 0ms
+     ✓ rejects nonphysical/nonfinite circuit temperatures: .temp -273.15 0ms
+     ✓ rejects nonphysical/nonfinite circuit temperatures: .temp 1e999 0ms
+     × preserves options while .temp takes temperature precedence 0ms
+     × reuses existing instance temperature and resistor TC semantics 1ms
+     × uses identical temperature in batch and streaming transient APIs 0ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 21 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/parser/temp-directive-871.test.ts > .temp single circuit temperature (#871) > .temp 77 sets circuit, numparam and behavioral temperatures to 77 C
+ FAIL  src/parser/temp-directive-871.test.ts > .temp single circuit temperature (#871) > .temp 77
+.options temp=127 sets circuit, numparam and behavioral temperatures to 77 C
+ FAIL  src/parser/temp-directive-871.test.ts > .temp single circuit temperature (#871) > .temp 77
+.temp 127 sets circuit, numparam and behavioral temperatures to 127 C
+ FAIL  src/parser/temp-directive-871.test.ts > .temp single circuit temperature (#871) > .temp '77' sets circuit, numparam and behavioral temperatures to 77 C
+ParseError: Parse error at line 6: Unsupported dot command: '.temp'
+  .temp 77
+ ❯ parseDotCommand src/parser/index.ts:820:13
+    818|     }
+    819|     default:
+    820|       throw new ParseError(
+       |             ^
+    821|         `Unsupported dot command: '${tokens[0]}'`,
+    822|         lineNumber, tokens.join(' '),
+ ❯ parseNetlist src/parser/index.ts:244:9
+ ❯ parse src/parser/index.ts:86:10
+ ❯ src/parser/temp-directive-871.test.ts:32:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/21]⎯
+
+ FAIL  src/parser/temp-directive-871.test.ts > .temp single circuit temperature (#871) > .TEMP -40 sets circuit, numparam and behavioral temperatures to -40 C
+ParseError: Parse error at line 6: Unsupported dot command: '.TEMP'
+  .TEMP -40
+ ❯ parseDotCommand src/parser/index.ts:820:13
+    818|     }
+    819|     default:
+    820|       throw new ParseError(
+       |             ^
+    821|         `Unsupported dot command: '${tokens[0]}'`,
+    822|         lineNumber, tokens.join(' '),
+ ❯ parseNetlist src/parser/index.ts:244:9
+ ❯ parse src/parser/index.ts:86:10
+ ❯ src/parser/temp-directive-871.test.ts:32:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/21]⎯
+
+ FAIL  src/parser/temp-directive-871.test.ts > .temp single circuit temperature (#871) > .temp=77 sets circuit, numparam and behavioral temperatures to 77 C
+ FAIL  src/parser/temp-directive-871.test.ts > .temp single circuit temperature (#871) > .temp = 77 sets circuit, numparam and behavioral temperatures to 77 C
+ParseError: Parse error at line 6: Unsupported dot command: '.temp=77'
+  .temp=77
+ ❯ parseDotCommand src/parser/index.ts:820:13
+    818|     }
+    819|     default:
+    820|       throw new ParseError(
+       |             ^
+    821|         `Unsupported dot command: '${tokens[0]}'`,
+    822|         lineNumber, tokens.join(' '),
+ ❯ parseNetlist src/parser/index.ts:244:9
+ ❯ parse src/parser/index.ts:86:10
+ ❯ src/parser/temp-directive-871.test.ts:32:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/21]⎯
+
+ FAIL  src/parser/temp-directive-871.test.ts > .temp single circuit temperature (#871) > .temp 7.7e1 sets circuit, numparam and behavioral temperatures to 77 C
+ParseError: Parse error at line 6: Unsupported dot command: '.temp'
+  .temp 7.7e1
+ ❯ parseDotCommand src/parser/index.ts:820:13
+    818|     }
+    819|     default:
+    820|       throw new ParseError(
+       |             ^
+    821|         `Unsupported dot command: '${tokens[0]}'`,
+    822|         lineNumber, tokens.join(' '),
+ ❯ parseNetlist src/parser/index.ts:244:9
+ ❯ parse src/parser/index.ts:86:10
+ ❯ src/parser/temp-directive-871.test.ts:32:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/21]⎯
+
+ FAIL  src/parser/temp-directive-871.test.ts > .temp single circuit temperature (#871) > .options temp=127
+.temp 77 sets circuit, numparam and behavioral temperatures to 77 C
+ FAIL  src/parser/temp-directive-871.test.ts > .temp single circuit temperature (#871) > .param t=77
+.temp {t} sets circuit, numparam and behavioral temperatures to 77 C
+ParseError: Parse error at line 7: Unsupported dot command: '.temp'
+  .temp 77
+ ❯ parseDotCommand src/parser/index.ts:820:13
+    818|     }
+    819|     default:
+    820|       throw new ParseError(
+       |             ^
+    821|         `Unsupported dot command: '${tokens[0]}'`,
+    822|         lineNumber, tokens.join(' '),
+ ❯ parseNetlist src/parser/index.ts:244:9
+ ❯ parse src/parser/index.ts:86:10
+ ❯ src/parser/temp-directive-871.test.ts:32:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/21]⎯
+
+ FAIL  src/parser/temp-directive-871.test.ts > .temp single circuit temperature (#871) > .temp sets circuit, numparam and behavioral temperatures to 0 C
+ParseError: Parse error at line 6: Unsupported dot command: '.temp'
+  .temp
+ ❯ parseDotCommand src/parser/index.ts:820:13
+    818|     }
+    819|     default:
+    820|       throw new ParseError(
+       |             ^
+    821|         `Unsupported dot command: '${tokens[0]}'`,
+    822|         lineNumber, tokens.join(' '),
+ ❯ parseNetlist src/parser/index.ts:244:9
+ ❯ parse src/parser/index.ts:86:10
+ ❯ src/parser/temp-directive-871.test.ts:32:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/21]⎯
+
+ FAIL  src/parser/temp-directive-871.test.ts > .temp single circuit temperature (#871) > .temp abc sets circuit, numparam and behavioral temperatures to 27 C
+ParseError: Parse error at line 6: Unsupported dot command: '.temp'
+  .temp abc
+ ❯ parseDotCommand src/parser/index.ts:820:13
+    818|     }
+    819|     default:
+    820|       throw new ParseError(
+       |             ^
+    821|         `Unsupported dot command: '${tokens[0]}'`,
+    822|         lineNumber, tokens.join(' '),
+ ❯ parseNetlist src/parser/index.ts:244:9
+ ❯ parse src/parser/index.ts:86:10
+ ❯ src/parser/temp-directive-871.test.ts:32:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/21]⎯
+
+ FAIL  src/parser/temp-directive-871.test.ts > .temp single circuit temperature (#871) > .temp 77C sets circuit, numparam and behavioral temperatures to 27 C
+ParseError: Parse error at line 6: Unsupported dot command: '.temp'
+  .temp 77C
+ ❯ parseDotCommand src/parser/index.ts:820:13
+    818|     }
+    819|     default:
+    820|       throw new ParseError(
+       |             ^
+    821|         `Unsupported dot command: '${tokens[0]}'`,
+    822|         lineNumber, tokens.join(' '),
+ ❯ parseNetlist src/parser/index.ts:244:9
+ ❯ parse src/parser/index.ts:86:10
+ ❯ src/parser/temp-directive-871.test.ts:32:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/21]⎯
+
+ FAIL  src/parser/temp-directive-871.test.ts > .temp single circuit temperature (#871) > .temp 77k sets circuit, numparam and behavioral temperatures to 27 C
+ParseError: Parse error at line 6: Unsupported dot command: '.temp'
+  .temp 77k
+ ❯ parseDotCommand src/parser/index.ts:820:13
+    818|     }
+    819|     default:
+    820|       throw new ParseError(
+       |             ^
+    821|         `Unsupported dot command: '${tokens[0]}'`,
+    822|         lineNumber, tokens.join(' '),
+ ❯ parseNetlist src/parser/index.ts:244:9
+ ❯ parse src/parser/index.ts:86:10
+ ❯ src/parser/temp-directive-871.test.ts:32:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/21]⎯
+
+ FAIL  src/parser/temp-directive-871.test.ts > .temp single circuit temperature (#871) > warns when a malformed numeric card falls back to 27 C like ngspice-47
+ParseError: Parse error at line 6: Unsupported dot command: '.temp'
+  .temp abc
+ ❯ parseDotCommand src/parser/index.ts:820:13
+    818|     }
+    819|     default:
+    820|       throw new ParseError(
+       |             ^
+    821|         `Unsupported dot command: '${tokens[0]}'`,
+    822|         lineNumber, tokens.join(' '),
+ ❯ parseNetlist src/parser/index.ts:244:9
+ ❯ parse src/parser/index.ts:86:10
+ ❯ src/parser/temp-directive-871.test.ts:42:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/21]⎯
+
+ FAIL  src/parser/temp-directive-871.test.ts > .temp single circuit temperature (#871) > explicitly rejects unsupported multiple temperatures: .temp 27 77
+ FAIL  src/parser/temp-directive-871.test.ts > .temp single circuit temperature (#871) > explicitly rejects unsupported multiple temperatures: .temp {27} {77}
+AssertionError: expected [Function] to throw error matching /Unsupported multi-temperature \.temp/ but got 'Parse error at line 6: Unsupported do…'
+
+- Expected:
+/Unsupported multi-temperature \.temp/
+
++ Received:
+"Parse error at line 6: Unsupported dot command: '.temp'
+  .temp 27 77"
+
+ ❯ src/parser/temp-directive-871.test.ts:46:38
+     44|
+     45|   it.each(['.temp 27 77', '.temp=27 77', '.temp {27} {77}'])('explicit…
+     46|     expect(() => parse(deck(cards))).toThrow(/Unsupported multi-temper…
+       |                                      ^
+     47|     await expect(simulate(deck(cards))).rejects.toThrow(/Unsupported m…
+     48|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/21]⎯
+
+ FAIL  src/parser/temp-directive-871.test.ts > .temp single circuit temperature (#871) > explicitly rejects unsupported multiple temperatures: .temp=27 77
+AssertionError: expected [Function] to throw error matching /Unsupported multi-temperature \.temp/ but got 'Parse error at line 6: Unsupported do…'
+
+- Expected:
+/Unsupported multi-temperature \.temp/
+
++ Received:
+"Parse error at line 6: Unsupported dot command: '.temp=27'
+  .temp=27 77"
+
+ ❯ src/parser/temp-directive-871.test.ts:46:38
+     44|
+     45|   it.each(['.temp 27 77', '.temp=27 77', '.temp {27} {77}'])('explicit…
+     46|     expect(() => parse(deck(cards))).toThrow(/Unsupported multi-temper…
+       |                                      ^
+     47|     await expect(simulate(deck(cards))).rejects.toThrow(/Unsupported m…
+     48|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/21]⎯
+
+ FAIL  src/parser/temp-directive-871.test.ts > .temp single circuit temperature (#871) > preserves options while .temp takes temperature precedence
+ParseError: Parse error at line 6: Unsupported dot command: '.temp'
+  .temp 77
+ ❯ parseDotCommand src/parser/index.ts:820:13
+    818|     }
+    819|     default:
+    820|       throw new ParseError(
+       |             ^
+    821|         `Unsupported dot command: '${tokens[0]}'`,
+    822|         lineNumber, tokens.join(' '),
+ ❯ parseNetlist src/parser/index.ts:244:9
+ ❯ parse src/parser/index.ts:86:10
+ ❯ src/parser/temp-directive-871.test.ts:55:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/21]⎯
+
+ FAIL  src/parser/temp-directive-871.test.ts > .temp single circuit temperature (#871) > reuses existing instance temperature and resistor TC semantics
+ParseError: Parse error at line 6: Unsupported dot command: '.temp'
+  .temp 127
+ ❯ parseDotCommand src/parser/index.ts:820:13
+    818|     }
+    819|     default:
+    820|       throw new ParseError(
+       |             ^
+    821|         `Unsupported dot command: '${tokens[0]}'`,
+    822|         lineNumber, tokens.join(' '),
+ ❯ parseNetlist src/parser/index.ts:244:9
+ ❯ parseAsync src/parser/index.ts:382:10
+ ❯ simulate src/simulate.ts:124:15
+ ❯ src/parser/temp-directive-871.test.ts:61:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/21]⎯
+
+ FAIL  src/parser/temp-directive-871.test.ts > .temp single circuit temperature (#871) > uses identical temperature in batch and streaming transient APIs
+ParseError: Parse error at line 6: Unsupported dot command: '.temp'
+  .temp 77
+ ❯ parseDotCommand src/parser/index.ts:820:13
+    818|     }
+    819|     default:
+    820|       throw new ParseError(
+       |             ^
+    821|         `Unsupported dot command: '${tokens[0]}'`,
+    822|         lineNumber, tokens.join(' '),
+ ❯ parseNetlist src/parser/index.ts:244:9
+ ❯ parseAsync src/parser/index.ts:382:10
+ ❯ simulate src/simulate.ts:124:15
+ ❯ src/parser/temp-directive-871.test.ts:68:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/21]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  21 failed | 2 passed (23)
+   Start at  16:08:31
+   Duration  1.22s (transform 872ms, setup 0ms, import 1.04s, tests 24ms, environment 0ms)
+
+JUNIT report written to /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_14be5ed0/packages/core/test-results.xml

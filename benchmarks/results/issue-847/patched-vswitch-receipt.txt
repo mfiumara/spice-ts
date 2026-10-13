@@ -1,0 +1,45 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e0f86c95/packages/core
+
+ ❯ src/devices/pspice-vswitch-825.test.ts (7 tests | 2 failed) 274ms
+     × matches ngspice-47 over a DC sweep through off, log-cubic transition and on regions 16ms
+     ✓ turns a VT/VH model into the native SW switch and ignores TD on a pswitch model 5ms
+     ✓ translates VSWITCH models and S instances of an included PSpice library subcircuit in transient 238ms
+     ✓ linearises the switch resistance in AC (ngspice-47 loads a negative conductance there) 5ms
+     × runs the pswitch code model directly on A cards, including log=false 3ms
+     ✓ rejects a VSWITCH model with neither VON/VOFF nor VT/VH, like ngspice-47 2ms
+     ✓ keeps the VSWITCH card through toNetlist() and refuses it on an A instance 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/devices/pspice-vswitch-825.test.ts > PSpice VSWITCH switch model (#825) > matches ngspice-47 over a DC sweep through off, log-cubic transition and on regions
+AssertionError: expected 0.000545166524221006 to be less than 0.000001
+ ❯ src/devices/pspice-vswitch-825.test.ts:60:48
+     58|       expect(relativeError(out2[index], v2)).toBeLessThan(tolerance);
+     59|     });
+     60|     expect(relativeError(out[7], 9.914147e-1)).toBeLessThan(1e-6);
+       |                                                ^
+     61|     expect(relativeError(out2[7], 4.257032e-2)).toBeLessThan(1e-6);
+     62|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/devices/pspice-vswitch-825.test.ts > PSpice VSWITCH switch model (#825) > runs the pswitch code model directly on A cards, including log=false
+AssertionError: expected 0.00011393420088429874 to be less than 1e-9
+ ❯ src/devices/pspice-vswitch-825.test.ts:180:52
+    178|     });
+    179|     // The converged values there: r = 7502.5, r(0.75) = 87512.5 and r…
+    180|     expect(relativeError(out[5], 7502.5 / 8502.5)).toBeLessThan(1e-9);
+       |                                                    ^
+    181|     expect(relativeError(out2[9], 87512.5 / 88512.5)).toBeLessThan(1e-…
+    182|     expect(relativeError(out2[10], 1e5 / 101000)).toBeLessThan(1e-9);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 5 passed (7)
+   Start at  14:41:03
+   Duration  1.32s (transform 762ms, setup 0ms, import 917ms, tests 274ms, environment 0ms)
+
+JUNIT report written to /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e0f86c95/packages/core/test-results.xml

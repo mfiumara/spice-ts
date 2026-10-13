@@ -1,0 +1,59 @@
+examples-control-structs-foreach-bjt-ft-sp: parse=success, simulate=unsupported, BJT excess phase PTF
+examples-digital-auto-bridge-shared-line-cir: parse=unsupported, simulate=not-run, XSPICE code model: d_tristate
+examples-loops-instance-loop-cir: parse=success, simulate=unsupported, control/vector/function execution
+examples-loops-loop-instance-cir: parse=success, simulate=unsupported, control/vector/function execution
+examples-loops-loop-model-cir: parse=success, simulate=unsupported, control/vector/function execution
+examples-measure-mos-meas-dc-control-sp: parse=success, simulate=unsupported, model resolution/instance forms
+examples-measure-mos-meas-dc-sp: parse=success, simulate=unsupported, model resolution/instance forms
+examples-memristor-memristor-x-sp: parse=unsupported, simulate=not-run, XSPICE code model: memristor
+examples-mos-nmos-out-bsim330-plainwrite-sp: parse=success, simulate=unsupported, control/vector/function execution
+examples-numparam-strings-cir: parse=unsupported, simulate=not-run, string/vector numparam
+examples-numparam-vector-param-cir: parse=unsupported, simulate=not-run, string/vector numparam
+examples-osdi-hicuml0-dff-y-ecl-vbic-sp: parse=success, simulate=unsupported, VBIC model/instance form
+examples-osdi-hicuml0-vbic-out-sp: parse=success, simulate=unsupported, VBIC model/instance form
+examples-p-to-n-examples-switch-oscillators-cir: parse=unsupported, simulate=not-run, Gear integration order 3
+examples-probe-cntrl-sources-cir: parse=success, simulate=success, native success, parity not computed
+examples-soa-diode-soa-sh-cir: parse=unsupported, simulate=not-run, thermal/self-heating
+examples-various-bjt-ac-par-sp: parse=success, simulate=unsupported, BJT excess phase PTF
+examples-vbic-dff-y-ecl-sp: parse=success, simulate=unsupported, VBIC model/instance form
+examples-vdmos-self-heating-sp: parse=success, simulate=unsupported, model resolution/instance forms
+examples-xspice-delay-analog-delay1-cir: parse=unsupported, simulate=not-run, XSPICE code model: delay
+examples-xspice-ghdl-mc-cir: parse=unsupported, simulate=not-run, XSPICE code model: d_cosim
+examples-xspice-ghdl-pwm-cir: parse=unsupported, simulate=not-run, XSPICE code model: d_cosim
+examples-xspice-icarus-verilog-delay-cir: parse=unsupported, simulate=not-run, XSPICE code model: d_cosim
+examples-xspice-icarus-verilog-pwm-cir: parse=unsupported, simulate=not-run, XSPICE code model: d_cosim
+examples-xspice-noise-ota-noise-test1-cir: parse=unsupported, simulate=not-run, XSPICE code model: ota
+examples-xspice-original-examples-analog-models2-ac-deck: parse=unsupported, simulate=not-run, XSPICE code model: s_xfer
+examples-xspice-original-examples-analog-models2-dc-deck: parse=unsupported, simulate=not-run, XSPICE code model: s_xfer
+examples-xspice-original-examples-analog-models2-swept-dc-deck: parse=unsupported, simulate=not-run, XSPICE code model: s_xfer
+examples-xspice-original-examples-analog-models2-transient-deck: parse=unsupported, simulate=not-run, XSPICE code model: s_xfer
+examples-xspice-original-examples-analog-models4-ac-deck: parse=unsupported, simulate=not-run, XSPICE code model: triangle
+examples-xspice-original-examples-analog-models4-dc-deck: parse=unsupported, simulate=not-run, XSPICE code model: triangle
+examples-xspice-original-examples-analog-models4-swept-dc-deck: parse=unsupported, simulate=not-run, XSPICE code model: triangle
+examples-xspice-original-examples-analog-models4-transient-deck: parse=unsupported, simulate=not-run, XSPICE code model: triangle
+examples-xspice-original-examples-bad-io-type-deck: parse=success, simulate=unsupported, XSPICE invalid-input validation
+examples-xspice-original-examples-bad-param-type-deck: parse=unsupported, simulate=not-run, XSPICE invalid-input validation
+examples-xspice-original-examples-digital-models2-deck: parse=unsupported, simulate=not-run, XSPICE code model: d_dff
+examples-xspice-original-examples-digital-models3-deck: parse=unsupported, simulate=not-run, XSPICE code model: d_dlatch
+examples-xspice-original-examples-digital-models4-deck: parse=unsupported, simulate=not-run, XSPICE code model: d_ram
+examples-xspice-original-examples-io-types-deck: parse=unsupported, simulate=not-run, XSPICE code model: d_to_real
+examples-xspice-original-examples-mixed-mode-deck: parse=unsupported, simulate=not-run, XSPICE code model: d_dff
+examples-xspice-original-examples-supply-ramping-deck: parse=unsupported, simulate=not-run, XSPICE code model: capacitoric
+examples-xspice-original-examples-user-defined-nodes-deck: parse=unsupported, simulate=not-run, XSPICE code model: d_to_real
+examples-xspice-pwm-osc-pwm-sin-cir: parse=unsupported, simulate=not-run, XSPICE code model: d_pwm
+examples-xspice-see-repeat-loop-seegen-net: parse=unsupported, simulate=not-run, XSPICE code model: seegen
+examples-xspice-see-seegen-cm1-cir: parse=unsupported, simulate=not-run, XSPICE code model: seegen
+examples-xspice-transmission-lines-cpline-ac-cir: parse=unsupported, simulate=not-run, XSPICE code model: cpline
+examples-xspice-transmission-lines-cpline-tran-cir: parse=unsupported, simulate=not-run, XSPICE code model: cpline
+examples-xspice-transmission-lines-cpmline-ac-cir: parse=unsupported, simulate=not-run, XSPICE code model: cpmlin
+examples-xspice-transmission-lines-mlin-tran-cir: parse=unsupported, simulate=not-run, XSPICE code model: mlin
+examples-xspice-transmission-lines-mlin-cir: parse=unsupported, simulate=not-run, XSPICE code model: mlin
+examples-xspice-various-astate-pulse-cir: parse=unsupported, simulate=not-run, XSPICE code model: astate
+examples-xspice-various-astate-cir: parse=unsupported, simulate=not-run, XSPICE code model: astate
+examples-xspice-various-pwlts1-cir: parse=unsupported, simulate=not-run, XSPICE code model: pwlts
+examples-xspice-various-x-fer-cir: parse=unsupported, simulate=not-run, XSPICE code model: s_xfer
+examples-xspice-various-xspice-c3-cir: parse=unsupported, simulate=not-run, XSPICE code model: d_dff
+examples-xspice-verilator-delay-cir: parse=unsupported, simulate=not-run, XSPICE code model: d_cosim
+examples-xspice-verilator-pwm-cir: parse=unsupported, simulate=not-run, XSPICE code model: d_cosim
+tests-regression-func-func-1-cir: parse=unsupported, simulate=not-run, numparam function/node substitution
+tests-vbic-noise-scale-test-cir: parse=success, simulate=unsupported, VBIC model/instance form

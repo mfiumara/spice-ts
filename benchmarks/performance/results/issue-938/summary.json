@@ -1,0 +1,2215 @@
+{
+  "children": 72,
+  "statuses": {
+    "ok": 71,
+    "timeout": 1
+  },
+  "chargedMonotonicChildWallSeconds": 294.1393443360139,
+  "completedPhaseWallSeconds": 5758.755780915002,
+  "deadlineAndBudgetCertified": false,
+  "clockDisagreements": [
+    {
+      "key": [
+        "isolate",
+        "resistor-mesh-op",
+        50000,
+        1,
+        "baseline"
+      ],
+      "childWallMs": 1530.0515839990112,
+      "completedPhaseMs": 1068703.4559989998
+    },
+    {
+      "key": [
+        "simulate",
+        "cmos-inverter-chain-tran",
+        10000,
+        0,
+        "control"
+      ],
+      "childWallMs": 5285.788624998531,
+      "completedPhaseMs": 911894.7805
+    },
+    {
+      "key": [
+        "simulate",
+        "rc-ladder-tran",
+        50000,
+        0,
+        "baseline"
+      ],
+      "childWallMs": 3072.890916999313,
+      "completedPhaseMs": 904572.254376
+    },
+    {
+      "key": [
+        "simulate",
+        "resistor-mesh-op",
+        50000,
+        0,
+        "baseline"
+      ],
+      "childWallMs": 2267.5498749958933,
+      "completedPhaseMs": 904126.435167
+    },
+    {
+      "key": [
+        "simulate",
+        "cmos-inverter-chain-tran",
+        50000,
+        0,
+        "baseline"
+      ],
+      "childWallMs": 45156.591833001585,
+      "completedPhaseMs": 771143.950084
+    },
+    {
+      "key": [
+        "simulate",
+        "cmos-inverter-chain-tran",
+        50000,
+        0,
+        "control"
+      ],
+      "childWallMs": 33384.20924999809,
+      "completedPhaseMs": 507270.426625
+    },
+    {
+      "key": [
+        "simulate",
+        "cmos-inverter-chain-tran",
+        50000,
+        2,
+        "baseline"
+      ],
+      "childWallMs": 31893.099458000506,
+      "completedPhaseMs": 534322.17575
+    }
+  ],
+  "pairedIsolationPhases": 18,
+  "pairedSimulationPhases": 53,
+  "cells": [
+    {
+      "mode": "isolate",
+      "circuit": "resistor-mesh-op",
+      "size": 1000,
+      "variant": "baseline",
+      "phase": "cold",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 11.506999999999998,
+        "min": 10.464790999999998,
+        "max": 12.966082999999998
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 68.015625,
+        "min": 67.421875,
+        "max": 68.359375
+      },
+      "factorCpuMs": {
+        "n": 3,
+        "median": 28.383,
+        "min": 28.253,
+        "max": 30.086
+      }
+    },
+    {
+      "mode": "isolate",
+      "circuit": "resistor-mesh-op",
+      "size": 1000,
+      "variant": "baseline",
+      "phase": "warm",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 1.6777500000000032,
+        "min": 1.5752919999999975,
+        "max": 3.4047919999999934
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 69.09375,
+        "min": 68.234375,
+        "max": 69.546875
+      },
+      "factorCpuMs": {
+        "n": 3,
+        "median": 4.581,
+        "min": 3.799,
+        "max": 5.989
+      }
+    },
+    {
+      "mode": "isolate",
+      "circuit": "resistor-mesh-op",
+      "size": 1000,
+      "variant": "sampled",
+      "phase": "cold",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 13.210792000000005,
+        "min": 10.032583000000002,
+        "max": 21.048625
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 72.25,
+        "min": 70.296875,
+        "max": 73
+      },
+      "factorCpuMs": {
+        "n": 3,
+        "median": 23.849,
+        "min": 23.463,
+        "max": 25.92
+      },
+      "applySelfSamples": [
+        0,
+        0,
+        1
+      ],
+      "regionTicks": {
+        "triangular": 1
+      },
+      "positionTicks": [
+        [],
+        [],
+        [
+          {
+            "line": 35537,
+            "ticks": 1
+          }
+        ]
+      ]
+    },
+    {
+      "mode": "isolate",
+      "circuit": "resistor-mesh-op",
+      "size": 1000,
+      "variant": "sampled",
+      "phase": "warm",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 1.5820829999999972,
+        "min": 1.5304579999999959,
+        "max": 1.6514999999999986
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 73.125,
+        "min": 71.515625,
+        "max": 74.234375
+      },
+      "factorCpuMs": {
+        "n": 3,
+        "median": 1.815,
+        "min": 1.534,
+        "max": 1.902
+      },
+      "applySelfSamples": [
+        0,
+        0,
+        0
+      ],
+      "regionTicks": {},
+      "positionTicks": [
+        [],
+        [],
+        []
+      ]
+    },
+    {
+      "mode": "isolate",
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "variant": "baseline",
+      "phase": "cold",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 54.341,
+        "min": 53.55825,
+        "max": 91.22758299999998
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 80.625,
+        "min": 79.59375,
+        "max": 82.46875
+      },
+      "factorCpuMs": {
+        "n": 3,
+        "median": 96.815,
+        "min": 95.864,
+        "max": 108.016
+      }
+    },
+    {
+      "mode": "isolate",
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "variant": "baseline",
+      "phase": "warm",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 20.054584000000006,
+        "min": 19.779540999999995,
+        "max": 55.09929199999999
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 97.921875,
+        "min": 96.96875,
+        "max": 98.796875
+      },
+      "factorCpuMs": {
+        "n": 3,
+        "median": 21.048,
+        "min": 20.712,
+        "max": 28.676
+      }
+    },
+    {
+      "mode": "isolate",
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "variant": "sampled",
+      "phase": "cold",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 58.2495,
+        "min": 55.031375,
+        "max": 90.98945900000001
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 87.53125,
+        "min": 86.140625,
+        "max": 87.828125
+      },
+      "factorCpuMs": {
+        "n": 3,
+        "median": 102.421,
+        "min": 95.85,
+        "max": 128.725
+      },
+      "applySelfSamples": [
+        3,
+        4,
+        10
+      ],
+      "regionTicks": {
+        "dense": 9,
+        "groupSetup": 1,
+        "touches": 1,
+        "triangular": 3,
+        "rowSetup": 1,
+        "checked": 1
+      },
+      "positionTicks": [
+        [
+          {
+            "line": 35587,
+            "ticks": 2
+          },
+          {
+            "line": 35866,
+            "ticks": 1
+          }
+        ],
+        [
+          {
+            "line": 35587,
+            "ticks": 1
+          },
+          {
+            "line": 35588,
+            "ticks": 1
+          },
+          {
+            "line": 35585,
+            "ticks": 1
+          },
+          {
+            "line": 35555,
+            "ticks": 1
+          }
+        ],
+        [
+          {
+            "line": 35586,
+            "ticks": 1
+          },
+          {
+            "line": 35585,
+            "ticks": 1
+          },
+          {
+            "line": 35534,
+            "ticks": 2
+          },
+          {
+            "line": 35522,
+            "ticks": 1
+          },
+          {
+            "line": 35566,
+            "ticks": 1
+          },
+          {
+            "line": 35547,
+            "ticks": 1
+          },
+          {
+            "line": 35536,
+            "ticks": 1
+          },
+          {
+            "line": 35590,
+            "ticks": 2
+          }
+        ]
+      ]
+    },
+    {
+      "mode": "isolate",
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "variant": "sampled",
+      "phase": "warm",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 22.555083000000025,
+        "min": 21.625749999999982,
+        "max": 35.237041999999974
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 104.453125,
+        "min": 103.703125,
+        "max": 105.5625
+      },
+      "factorCpuMs": {
+        "n": 3,
+        "median": 22.36,
+        "min": 21.723,
+        "max": 30.837
+      },
+      "applySelfSamples": [
+        11,
+        3,
+        10
+      ],
+      "regionTicks": {
+        "triangular": 5,
+        "groupSetup": 1,
+        "checked": 1,
+        "dense": 8,
+        "touches": 3
+      },
+      "positionTicks": [
+        [
+          {
+            "line": 35565,
+            "ticks": 1
+          },
+          {
+            "line": 35587,
+            "ticks": 1
+          },
+          {
+            "line": 35539,
+            "ticks": 1
+          },
+          {
+            "line": 35534,
+            "ticks": 2
+          },
+          {
+            "line": 35536,
+            "ticks": 1
+          },
+          {
+            "line": 35866,
+            "ticks": 2
+          },
+          {
+            "line": 35863,
+            "ticks": 1
+          },
+          {
+            "line": 35588,
+            "ticks": 1
+          },
+          {
+            "line": 35563,
+            "ticks": 1
+          }
+        ],
+        [
+          {
+            "line": 35590,
+            "ticks": 1
+          },
+          {
+            "line": 35587,
+            "ticks": 2
+          }
+        ],
+        [
+          {
+            "line": 35866,
+            "ticks": 1
+          },
+          {
+            "line": 35534,
+            "ticks": 1
+          },
+          {
+            "line": 35507,
+            "ticks": 1
+          },
+          {
+            "line": 35586,
+            "ticks": 1
+          },
+          {
+            "line": 35520,
+            "ticks": 1
+          },
+          {
+            "line": 35587,
+            "ticks": 2
+          },
+          {
+            "line": 35862,
+            "ticks": 1
+          },
+          {
+            "line": 35521,
+            "ticks": 1
+          },
+          {
+            "line": 35524,
+            "ticks": 1
+          }
+        ]
+      ]
+    },
+    {
+      "mode": "isolate",
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "variant": "baseline",
+      "phase": "cold",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 297.636916,
+        "min": 267.13775,
+        "max": 961.3902500000002
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 201.578125,
+        "min": 200.375,
+        "max": 204.65625
+      },
+      "factorCpuMs": {
+        "n": 3,
+        "median": 343.149,
+        "min": 313.807,
+        "max": 439.35
+      }
+    },
+    {
+      "mode": "isolate",
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "variant": "baseline",
+      "phase": "warm",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 658.4611659999998,
+        "min": 211.98995899999994,
+        "max": 1068405.8190829998
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 241.796875,
+        "min": 240.796875,
+        "max": 243.953125
+      },
+      "factorCpuMs": {
+        "n": 3,
+        "median": 301.626,
+        "min": 225.885,
+        "max": 341.642
+      }
+    },
+    {
+      "mode": "isolate",
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "variant": "sampled",
+      "phase": "cold",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 252.63954200000003,
+        "min": 233.65479200000001,
+        "max": 930.0788749999999
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 204.0625,
+        "min": 202.8125,
+        "max": 208.875
+      },
+      "factorCpuMs": {
+        "n": 3,
+        "median": 291.049,
+        "min": 272.614,
+        "max": 554.484
+      },
+      "applySelfSamples": [
+        44,
+        31,
+        137
+      ],
+      "regionTicks": {
+        "touches": 18,
+        "triangular": 52,
+        "groupSetup": 10,
+        "checked": 18,
+        "dense": 96,
+        "rowWriteback": 5,
+        "tail": 5
+      },
+      "positionTicks": [
+        [
+          {
+            "line": 35554,
+            "ticks": 2
+          },
+          {
+            "line": 35590,
+            "ticks": 1
+          },
+          {
+            "line": 35522,
+            "ticks": 1
+          },
+          {
+            "line": 35537,
+            "ticks": 1
+          },
+          {
+            "line": 35602,
+            "ticks": 1
+          },
+          {
+            "line": 35604,
+            "ticks": 1
+          },
+          {
+            "line": 35585,
+            "ticks": 4
+          },
+          {
+            "line": 35863,
+            "ticks": 1
+          },
+          {
+            "line": 35587,
+            "ticks": 5
+          },
+          {
+            "line": 35603,
+            "ticks": 1
+          },
+          {
+            "line": 35534,
+            "ticks": 7
+          },
+          {
+            "line": 35570,
+            "ticks": 1
+          },
+          {
+            "line": 35524,
+            "ticks": 2
+          },
+          {
+            "line": 35589,
+            "ticks": 1
+          },
+          {
+            "line": 35520,
+            "ticks": 4
+          },
+          {
+            "line": 35553,
+            "ticks": 1
+          },
+          {
+            "line": 35586,
+            "ticks": 2
+          },
+          {
+            "line": 35565,
+            "ticks": 2
+          },
+          {
+            "line": 35588,
+            "ticks": 6
+          }
+        ],
+        [
+          {
+            "line": 35619,
+            "ticks": 1
+          },
+          {
+            "line": 35586,
+            "ticks": 1
+          },
+          {
+            "line": 35558,
+            "ticks": 1
+          },
+          {
+            "line": 35542,
+            "ticks": 1
+          },
+          {
+            "line": 35588,
+            "ticks": 3
+          },
+          {
+            "line": 35589,
+            "ticks": 2
+          },
+          {
+            "line": 35543,
+            "ticks": 3
+          },
+          {
+            "line": 35566,
+            "ticks": 2
+          },
+          {
+            "line": 35587,
+            "ticks": 5
+          },
+          {
+            "line": 35863,
+            "ticks": 1
+          },
+          {
+            "line": 35590,
+            "ticks": 1
+          },
+          {
+            "line": 35521,
+            "ticks": 1
+          },
+          {
+            "line": 35537,
+            "ticks": 2
+          },
+          {
+            "line": 35539,
+            "ticks": 1
+          },
+          {
+            "line": 35585,
+            "ticks": 3
+          },
+          {
+            "line": 35534,
+            "ticks": 3
+          }
+        ],
+        [
+          {
+            "line": 35860,
+            "ticks": 1
+          },
+          {
+            "line": 35531,
+            "ticks": 1
+          },
+          {
+            "line": 35575,
+            "ticks": 2
+          },
+          {
+            "line": 35560,
+            "ticks": 2
+          },
+          {
+            "line": 35605,
+            "ticks": 1
+          },
+          {
+            "line": 35585,
+            "ticks": 10
+          },
+          {
+            "line": 35569,
+            "ticks": 1
+          },
+          {
+            "line": 35522,
+            "ticks": 2
+          },
+          {
+            "line": 35534,
+            "ticks": 24
+          },
+          {
+            "line": 35863,
+            "ticks": 2
+          },
+          {
+            "line": 35587,
+            "ticks": 17
+          },
+          {
+            "line": 35619,
+            "ticks": 3
+          },
+          {
+            "line": 35563,
+            "ticks": 1
+          },
+          {
+            "line": 35586,
+            "ticks": 7
+          },
+          {
+            "line": 35866,
+            "ticks": 3
+          },
+          {
+            "line": 35543,
+            "ticks": 6
+          },
+          {
+            "line": 35590,
+            "ticks": 8
+          },
+          {
+            "line": 35524,
+            "ticks": 4
+          },
+          {
+            "line": 35554,
+            "ticks": 3
+          },
+          {
+            "line": 35588,
+            "ticks": 13
+          },
+          {
+            "line": 35565,
+            "ticks": 4
+          },
+          {
+            "line": 35530,
+            "ticks": 3
+          },
+          {
+            "line": 35603,
+            "ticks": 1
+          },
+          {
+            "line": 35614,
+            "ticks": 1
+          },
+          {
+            "line": 35520,
+            "ticks": 4
+          },
+          {
+            "line": 35589,
+            "ticks": 7
+          },
+          {
+            "line": 35566,
+            "ticks": 6
+          }
+        ]
+      ]
+    },
+    {
+      "mode": "isolate",
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "variant": "sampled",
+      "phase": "warm",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 273.83908299999996,
+        "min": 240.04983300000004,
+        "max": 5803.870457999999
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 241.3125,
+        "min": 234.453125,
+        "max": 249.578125
+      },
+      "factorCpuMs": {
+        "n": 3,
+        "median": 269.473,
+        "min": 250.738,
+        "max": 1026.622
+      },
+      "applySelfSamples": [
+        44,
+        49,
+        451
+      ],
+      "regionTicks": {
+        "touches": 49,
+        "triangular": 148,
+        "groupSetup": 33,
+        "checked": 46,
+        "dense": 233,
+        "tail": 9,
+        "finish": 1,
+        "rowWriteback": 5
+      },
+      "positionTicks": [
+        [
+          {
+            "line": 35552,
+            "ticks": 1
+          },
+          {
+            "line": 35585,
+            "ticks": 2
+          },
+          {
+            "line": 35565,
+            "ticks": 3
+          },
+          {
+            "line": 35588,
+            "ticks": 2
+          },
+          {
+            "line": 35568,
+            "ticks": 1
+          },
+          {
+            "line": 35586,
+            "ticks": 2
+          },
+          {
+            "line": 35622,
+            "ticks": 1
+          },
+          {
+            "line": 35530,
+            "ticks": 1
+          },
+          {
+            "line": 35566,
+            "ticks": 1
+          },
+          {
+            "line": 35589,
+            "ticks": 5
+          },
+          {
+            "line": 35543,
+            "ticks": 2
+          },
+          {
+            "line": 35520,
+            "ticks": 2
+          },
+          {
+            "line": 35590,
+            "ticks": 2
+          },
+          {
+            "line": 35521,
+            "ticks": 1
+          },
+          {
+            "line": 35554,
+            "ticks": 3
+          },
+          {
+            "line": 35587,
+            "ticks": 6
+          },
+          {
+            "line": 35534,
+            "ticks": 4
+          },
+          {
+            "line": 35523,
+            "ticks": 1
+          },
+          {
+            "line": 35546,
+            "ticks": 1
+          },
+          {
+            "line": 35524,
+            "ticks": 2
+          },
+          {
+            "line": 35616,
+            "ticks": 1
+          }
+        ],
+        [
+          {
+            "line": 35532,
+            "ticks": 1
+          },
+          {
+            "line": 35574,
+            "ticks": 1
+          },
+          {
+            "line": 35863,
+            "ticks": 1
+          },
+          {
+            "line": 35534,
+            "ticks": 6
+          },
+          {
+            "line": 35569,
+            "ticks": 1
+          },
+          {
+            "line": 35541,
+            "ticks": 1
+          },
+          {
+            "line": 35588,
+            "ticks": 5
+          },
+          {
+            "line": 35585,
+            "ticks": 1
+          },
+          {
+            "line": 35562,
+            "ticks": 1
+          },
+          {
+            "line": 35551,
+            "ticks": 1
+          },
+          {
+            "line": 35589,
+            "ticks": 1
+          },
+          {
+            "line": 35566,
+            "ticks": 1
+          },
+          {
+            "line": 35590,
+            "ticks": 5
+          },
+          {
+            "line": 35543,
+            "ticks": 2
+          },
+          {
+            "line": 35520,
+            "ticks": 2
+          },
+          {
+            "line": 35570,
+            "ticks": 1
+          },
+          {
+            "line": 35524,
+            "ticks": 1
+          },
+          {
+            "line": 35536,
+            "ticks": 1
+          },
+          {
+            "line": 35862,
+            "ticks": 1
+          },
+          {
+            "line": 35533,
+            "ticks": 2
+          },
+          {
+            "line": 35555,
+            "ticks": 1
+          },
+          {
+            "line": 35602,
+            "ticks": 1
+          },
+          {
+            "line": 35521,
+            "ticks": 2
+          },
+          {
+            "line": 35587,
+            "ticks": 7
+          },
+          {
+            "line": 35554,
+            "ticks": 2
+          }
+        ],
+        [
+          {
+            "line": 35542,
+            "ticks": 2
+          },
+          {
+            "line": 35538,
+            "ticks": 3
+          },
+          {
+            "line": 35533,
+            "ticks": 1
+          },
+          {
+            "line": 35603,
+            "ticks": 1
+          },
+          {
+            "line": 35605,
+            "ticks": 1
+          },
+          {
+            "line": 35602,
+            "ticks": 2
+          },
+          {
+            "line": 35537,
+            "ticks": 4
+          },
+          {
+            "line": 35866,
+            "ticks": 4
+          },
+          {
+            "line": 35619,
+            "ticks": 3
+          },
+          {
+            "line": 35522,
+            "ticks": 3
+          },
+          {
+            "line": 35860,
+            "ticks": 2
+          },
+          {
+            "line": 35569,
+            "ticks": 2
+          },
+          {
+            "line": 35561,
+            "ticks": 1
+          },
+          {
+            "line": 35557,
+            "ticks": 1
+          },
+          {
+            "line": 35553,
+            "ticks": 1
+          },
+          {
+            "line": 35585,
+            "ticks": 25
+          },
+          {
+            "line": 35861,
+            "ticks": 3
+          },
+          {
+            "line": 35552,
+            "ticks": 3
+          },
+          {
+            "line": 35499,
+            "ticks": 1
+          },
+          {
+            "line": 35498,
+            "ticks": 1
+          },
+          {
+            "line": 35536,
+            "ticks": 3
+          },
+          {
+            "line": 35586,
+            "ticks": 28
+          },
+          {
+            "line": 35539,
+            "ticks": 7
+          },
+          {
+            "line": 35556,
+            "ticks": 2
+          },
+          {
+            "line": 35524,
+            "ticks": 9
+          },
+          {
+            "line": 35862,
+            "ticks": 2
+          },
+          {
+            "line": 35571,
+            "ticks": 1
+          },
+          {
+            "line": 35572,
+            "ticks": 4
+          },
+          {
+            "line": 35863,
+            "ticks": 2
+          },
+          {
+            "line": 35534,
+            "ticks": 77
+          },
+          {
+            "line": 35520,
+            "ticks": 21
+          },
+          {
+            "line": 35614,
+            "ticks": 3
+          },
+          {
+            "line": 35521,
+            "ticks": 4
+          },
+          {
+            "line": 35859,
+            "ticks": 3
+          },
+          {
+            "line": 35568,
+            "ticks": 3
+          },
+          {
+            "line": 35554,
+            "ticks": 9
+          },
+          {
+            "line": 35565,
+            "ticks": 14
+          },
+          {
+            "line": 35612,
+            "ticks": 1
+          },
+          {
+            "line": 35589,
+            "ticks": 34
+          },
+          {
+            "line": 35566,
+            "ticks": 11
+          },
+          {
+            "line": 35560,
+            "ticks": 1
+          },
+          {
+            "line": 35588,
+            "ticks": 29
+          },
+          {
+            "line": 35541,
+            "ticks": 5
+          },
+          {
+            "line": 35540,
+            "ticks": 1
+          },
+          {
+            "line": 35587,
+            "ticks": 41
+          },
+          {
+            "line": 35551,
+            "ticks": 6
+          },
+          {
+            "line": 35523,
+            "ticks": 1
+          },
+          {
+            "line": 35620,
+            "ticks": 1
+          },
+          {
+            "line": 35531,
+            "ticks": 1
+          },
+          {
+            "line": 35577,
+            "ticks": 2
+          },
+          {
+            "line": 35530,
+            "ticks": 3
+          },
+          {
+            "line": 35543,
+            "ticks": 20
+          },
+          {
+            "line": 35590,
+            "ticks": 38
+          }
+        ]
+      ]
+    },
+    {
+      "mode": "simulate",
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 1000,
+      "variant": "baseline",
+      "phase": "cold",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 224.50829099999999,
+        "min": 220.40395800000002,
+        "max": 2369.6502499999997
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 123.734375,
+        "min": 123.0625,
+        "max": 125.609375
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 1000,
+      "variant": "baseline",
+      "phase": "warm",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 155.759792,
+        "min": 153.27033300000002,
+        "max": 997.9724999999999
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 145.25,
+        "min": 144.421875,
+        "max": 148.125
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 1000,
+      "variant": "control",
+      "phase": "cold",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 222.796458,
+        "min": 222.097667,
+        "max": 1334.719125
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 125.046875,
+        "min": 124.03125,
+        "max": 126.5625
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 1000,
+      "variant": "control",
+      "phase": "warm",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 154.572209,
+        "min": 153.79250000000002,
+        "max": 942.2297920000001
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 145.265625,
+        "min": 144.40625,
+        "max": 146.484375
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 10000,
+      "variant": "baseline",
+      "phase": "cold",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 1844.240708,
+        "min": 1823.705,
+        "max": 2034.0068339999998
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 358.53125,
+        "min": 357.203125,
+        "max": 360
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 10000,
+      "variant": "baseline",
+      "phase": "warm",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 1626.5452920000002,
+        "min": 1593.115833,
+        "max": 1753.5634579999996
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 496.09375,
+        "min": 495.015625,
+        "max": 496.375
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 10000,
+      "variant": "control",
+      "phase": "cold",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 1832.5932500000001,
+        "min": 1828.3327080000001,
+        "max": 909425.085125
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 358.21875,
+        "min": 357.453125,
+        "max": 364.265625
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 10000,
+      "variant": "control",
+      "phase": "warm",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 1629.729708,
+        "min": 1612.8910829999998,
+        "max": 2469.6953750000102
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 494.90625,
+        "min": 494.3125,
+        "max": 502.75
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 50000,
+      "variant": "baseline",
+      "phase": "cold",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 15559.557,
+        "min": 15017.217208,
+        "max": 771143.950084
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 1085.84375,
+        "min": 1073.703125,
+        "max": 1095.703125
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 50000,
+      "variant": "baseline",
+      "phase": "warm",
+      "missingPhases": 1,
+      "wallMs": {
+        "n": 2,
+        "median": 266775.15700000006,
+        "min": 14787.695249999999,
+        "max": 518762.6187500001
+      },
+      "peakRssMiB": {
+        "n": 2,
+        "median": 1734.8046875,
+        "min": 1726.484375,
+        "max": 1743.125
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 50000,
+      "variant": "control",
+      "phase": "cold",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 15389.043625,
+        "min": 14972.4655,
+        "max": 492487.2805
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 1095.5,
+        "min": 1082.71875,
+        "max": 1118.421875
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 50000,
+      "variant": "control",
+      "phase": "warm",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 14783.146125000028,
+        "min": 14682.801209000001,
+        "max": 14965.473082999999
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 1745.625,
+        "min": 1217.375,
+        "max": 1750.265625
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "rc-ladder-tran",
+      "size": 1000,
+      "variant": "baseline",
+      "phase": "cold",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 58.371,
+        "min": 57.70100000000001,
+        "max": 1548.3755420000002
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 88.640625,
+        "min": 88.4375,
+        "max": 88.828125
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "rc-ladder-tran",
+      "size": 1000,
+      "variant": "baseline",
+      "phase": "warm",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 40.312791000000004,
+        "min": 39.534625000000005,
+        "max": 1056.5269999999996
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 104.59375,
+        "min": 101.84375,
+        "max": 107.578125
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "rc-ladder-tran",
+      "size": 1000,
+      "variant": "control",
+      "phase": "cold",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 59.32287500000001,
+        "min": 58.510334,
+        "max": 1384.906958
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 88.328125,
+        "min": 88.234375,
+        "max": 88.453125
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "rc-ladder-tran",
+      "size": 1000,
+      "variant": "control",
+      "phase": "warm",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 39.743708,
+        "min": 39.72441699999999,
+        "max": 837.922959
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 102.0625,
+        "min": 101.875,
+        "max": 109.09375
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "rc-ladder-tran",
+      "size": 10000,
+      "variant": "baseline",
+      "phase": "cold",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 275.244959,
+        "min": 274.628708,
+        "max": 1464.1435000000001
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 187.34375,
+        "min": 186.296875,
+        "max": 188.921875
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "rc-ladder-tran",
+      "size": 10000,
+      "variant": "baseline",
+      "phase": "warm",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 214.16404200000005,
+        "min": 207.019875,
+        "max": 323.30162500000006
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 266.4375,
+        "min": 265.59375,
+        "max": 284.421875
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "rc-ladder-tran",
+      "size": 10000,
+      "variant": "control",
+      "phase": "cold",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 274.40999999999997,
+        "min": 268.486917,
+        "max": 284.082833
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 187.796875,
+        "min": 185.828125,
+        "max": 189.21875
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "rc-ladder-tran",
+      "size": 10000,
+      "variant": "control",
+      "phase": "warm",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 206.91579099999996,
+        "min": 205.16262499999993,
+        "max": 211.638167
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 260.234375,
+        "min": 257.828125,
+        "max": 267.71875
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "rc-ladder-tran",
+      "size": 50000,
+      "variant": "baseline",
+      "phase": "cold",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 1028.8790000000001,
+        "min": 1024.632041,
+        "max": 903490.276917
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 447.3125,
+        "min": 441.03125,
+        "max": 466.3125
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "rc-ladder-tran",
+      "size": 50000,
+      "variant": "baseline",
+      "phase": "warm",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 961.8407500000001,
+        "min": 888.5547919999999,
+        "max": 1081.9774590000743
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 647.53125,
+        "min": 641.921875,
+        "max": 664.171875
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "rc-ladder-tran",
+      "size": 50000,
+      "variant": "control",
+      "phase": "cold",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 1152.6404160000002,
+        "min": 1028.2643340000002,
+        "max": 1169.2037090000001
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 443.3125,
+        "min": 430.140625,
+        "max": 447.953125
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "rc-ladder-tran",
+      "size": 50000,
+      "variant": "control",
+      "phase": "warm",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 1038.427417,
+        "min": 934.6340420000001,
+        "max": 1177.409833
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 646.09375,
+        "min": 643.90625,
+        "max": 717.6875
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "resistor-mesh-op",
+      "size": 1000,
+      "variant": "baseline",
+      "phase": "cold",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 37.846333,
+        "min": 36.886207999999996,
+        "max": 873.3652079999999
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 82.84375,
+        "min": 75.890625,
+        "max": 83.6875
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "resistor-mesh-op",
+      "size": 1000,
+      "variant": "baseline",
+      "phase": "warm",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 18.60391700000001,
+        "min": 18.073707999999996,
+        "max": 328.349375
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 87.296875,
+        "min": 85.84375,
+        "max": 88.296875
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "resistor-mesh-op",
+      "size": 1000,
+      "variant": "control",
+      "phase": "cold",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 36.750708,
+        "min": 36.569832999999996,
+        "max": 857.4777919999999
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 82.796875,
+        "min": 78.46875,
+        "max": 83.09375
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "resistor-mesh-op",
+      "size": 1000,
+      "variant": "control",
+      "phase": "warm",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 17.954666000000003,
+        "min": 17.947541,
+        "max": 533.581459
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 87.453125,
+        "min": 85,
+        "max": 87.546875
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "variant": "baseline",
+      "phase": "cold",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 180.687458,
+        "min": 179.457125,
+        "max": 185.842042
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 145.375,
+        "min": 145.21875,
+        "max": 145.484375
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "variant": "baseline",
+      "phase": "warm",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 137.40458299999997,
+        "min": 133.88525,
+        "max": 139.377667
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 169.84375,
+        "min": 165.28125,
+        "max": 170.21875
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "variant": "control",
+      "phase": "cold",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 181.652625,
+        "min": 180.256208,
+        "max": 194.55545800000002
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 145.75,
+        "min": 145.453125,
+        "max": 148.625
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "variant": "control",
+      "phase": "warm",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 135.546792,
+        "min": 135.508333,
+        "max": 142.327709
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 168.71875,
+        "min": 166.59375,
+        "max": 168.921875
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "variant": "baseline",
+      "phase": "cold",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 747.6674169999999,
+        "min": 699.2315410000001,
+        "max": 903218.297292
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 368.109375,
+        "min": 366.96875,
+        "max": 372.1875
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "variant": "baseline",
+      "phase": "warm",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 715.8290000000001,
+        "min": 673.6995000000001,
+        "max": 908.1378750000149
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 568.546875,
+        "min": 566.5,
+        "max": 570.8125
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "variant": "control",
+      "phase": "cold",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 712.1446659999999,
+        "min": 702.346459,
+        "max": 759.902208
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 367.3125,
+        "min": 363.40625,
+        "max": 368.609375
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "variant": "control",
+      "phase": "warm",
+      "missingPhases": 0,
+      "wallMs": {
+        "n": 3,
+        "median": 694.557125,
+        "min": 673.757834,
+        "max": 721.915541
+      },
+      "peakRssMiB": {
+        "n": 3,
+        "median": 566.046875,
+        "min": 564.59375,
+        "max": 568.265625
+      }
+    }
+  ],
+  "comparisons": [
+    {
+      "mode": "isolate",
+      "circuit": "resistor-mesh-op",
+      "size": 1000,
+      "phase": "cold",
+      "medianRatio": 1.1480656991396547,
+      "percentDifference": 14.806569913965472
+    },
+    {
+      "mode": "isolate",
+      "circuit": "resistor-mesh-op",
+      "size": 1000,
+      "phase": "warm",
+      "medianRatio": 0.9429789897183694,
+      "percentDifference": -5.702101028163065
+    },
+    {
+      "mode": "isolate",
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "phase": "cold",
+      "medianRatio": 1.0719254338344895,
+      "percentDifference": 7.192543383448946
+    },
+    {
+      "mode": "isolate",
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "phase": "warm",
+      "medianRatio": 1.1246846606242253,
+      "percentDifference": 12.468466062422534
+    },
+    {
+      "mode": "isolate",
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "phase": "cold",
+      "medianRatio": 0.8488178999946365,
+      "percentDifference": -15.118210000536347
+    },
+    {
+      "mode": "isolate",
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "phase": "warm",
+      "medianRatio": 0.4158773472754808,
+      "percentDifference": -58.41226527245191
+    },
+    {
+      "mode": "simulate",
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 1000,
+      "phase": "cold",
+      "medianRatio": 0.9923751902774941,
+      "percentDifference": -0.7624809722505899
+    },
+    {
+      "mode": "simulate",
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 1000,
+      "phase": "warm",
+      "medianRatio": 0.9923755483700183,
+      "percentDifference": -0.762445162998171
+    },
+    {
+      "mode": "simulate",
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 10000,
+      "phase": "cold",
+      "medianRatio": 0.9936844155161118,
+      "percentDifference": -0.6315584483888248
+    },
+    {
+      "mode": "simulate",
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 10000,
+      "phase": "warm",
+      "medianRatio": 1.0019577788676786,
+      "percentDifference": 0.19577788676785612
+    },
+    {
+      "mode": "simulate",
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 50000,
+      "phase": "cold",
+      "medianRatio": 0.9890412448760592,
+      "percentDifference": -1.0958755123940844
+    },
+    {
+      "mode": "simulate",
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 50000,
+      "phase": "warm",
+      "medianRatio": 0.055414253303204035,
+      "percentDifference": -94.45857466967959
+    },
+    {
+      "mode": "simulate",
+      "circuit": "rc-ladder-tran",
+      "size": 1000,
+      "phase": "cold",
+      "medianRatio": 1.016307327268678,
+      "percentDifference": 1.6307327268678007
+    },
+    {
+      "mode": "simulate",
+      "circuit": "rc-ladder-tran",
+      "size": 1000,
+      "phase": "warm",
+      "medianRatio": 0.9858833143058736,
+      "percentDifference": -1.4116685694126385
+    },
+    {
+      "mode": "simulate",
+      "circuit": "rc-ladder-tran",
+      "size": 10000,
+      "phase": "cold",
+      "medianRatio": 0.9969664875860632,
+      "percentDifference": -0.30335124139367897
+    },
+    {
+      "mode": "simulate",
+      "circuit": "rc-ladder-tran",
+      "size": 10000,
+      "phase": "warm",
+      "medianRatio": 0.9661556116876049,
+      "percentDifference": -3.3844388312395113
+    },
+    {
+      "mode": "simulate",
+      "circuit": "rc-ladder-tran",
+      "size": 50000,
+      "phase": "cold",
+      "medianRatio": 1.1202876295463315,
+      "percentDifference": 12.028762954633155
+    },
+    {
+      "mode": "simulate",
+      "circuit": "rc-ladder-tran",
+      "size": 50000,
+      "phase": "warm",
+      "medianRatio": 1.0796251011407034,
+      "percentDifference": 7.9625101140703425
+    },
+    {
+      "mode": "simulate",
+      "circuit": "resistor-mesh-op",
+      "size": 1000,
+      "phase": "cold",
+      "medianRatio": 0.9710506959815631,
+      "percentDifference": -2.894930401843687
+    },
+    {
+      "mode": "simulate",
+      "circuit": "resistor-mesh-op",
+      "size": 1000,
+      "phase": "warm",
+      "medianRatio": 0.9651013816068946,
+      "percentDifference": -3.4898618393105374
+    },
+    {
+      "mode": "simulate",
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "phase": "cold",
+      "medianRatio": 1.005341638045514,
+      "percentDifference": 0.5341638045514019
+    },
+    {
+      "mode": "simulate",
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "phase": "warm",
+      "medianRatio": 0.9864794102246214,
+      "percentDifference": -1.3520589775378622
+    },
+    {
+      "mode": "simulate",
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "phase": "cold",
+      "medianRatio": 0.9524885661828968,
+      "percentDifference": -4.751143381710321
+    },
+    {
+      "mode": "simulate",
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "phase": "warm",
+      "medianRatio": 0.9702835802964116,
+      "percentDifference": -2.9716419703588404
+    }
+  ],
+  "verifiedRawProfiles": 18
+}

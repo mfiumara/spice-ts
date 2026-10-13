@@ -1,0 +1,17 @@
+{
+  "node": "v22.23.1",
+  "pnpm": "10.28.1",
+  "os": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+  "cpu": "Apple M5 Pro",
+  "ramBytes": "51539607552",
+  "loadStart": "20:39  up 1 day,  1:41, 2 users, load averages: 65.29 28.10 18.08",
+  "baselineRevision": "a58cfe6c2edb7ac5a408a07f77575b0c181b226f",
+  "deadlineSeconds": 45.0,
+  "childWallBudgetSeconds": 900.0,
+  "priorRecovery": "No prior issue-938 receipts or WIP found. Previous reclaimed runs have no available measured child wall; not asserted as zero.",
+  "captureHashes": {
+    "capture-resistor-mesh-op-1000.matrix.gz": "bd8a91422c30c7065d3786b78f27956d62477fd9a2afeb40eb610a885a6386c7",
+    "capture-resistor-mesh-op-10000.matrix.gz": "0453a66e7839b1dd28c848b432750276f7f4e19783d5229d001c96a7218ac77e",
+    "capture-resistor-mesh-op-50000.matrix.gz": "a07b4f4a12eb30464837af217edfba843336de0750584038764971ca9a23385b"
+  }
+}

@@ -3,7 +3,6 @@ import { parseNumber } from './tokenizer.js';
 import {
   NGSPICE_XSPICE_CODE_MODELS,
   XSPICE_CODE_MODEL_SPECS,
-  type XspiceCodeModelSpec,
   type XspiceParamSpec,
   type XspiceParamValue,
 } from '../devices/xspice/spec.js';
@@ -38,6 +37,12 @@ export interface XspiceModelCard {
   /** ngspice-47 MIF warnings: unrecognized parameters (ignored) and clamped limits. */
   readonly warnings: readonly string[];
   readonly raw: string;
+  /**
+   * Translated from a PSpice `VSWITCH` (`'S'`, a pswitch) or `ISWITCH` (`'W'`,
+   * an aswitch) model by ngspice-47 inpcompat.c: only instances of that switch
+   * letter use it, each compiled to the code-model device.
+   */
+  readonly pspiceSwitch?: 'S' | 'W';
 }
 
 /**
@@ -265,9 +270,4 @@ function clampToLimits(
     }
     return v;
   });
-}
-
-/** Implemented code model spec for a parsed card. */
-export function xspiceSpecFor(model: XspiceModelCard): XspiceCodeModelSpec {
-  return XSPICE_CODE_MODEL_SPECS.get(model.codeModel)!;
 }

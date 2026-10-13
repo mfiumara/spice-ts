@@ -1,4 +1,5 @@
 import { ParseError } from '../errors.js';
+import { translatePolySource } from './controlled-source.js';
 
 // Ngspice scale factors are case-insensitive. In particular, both M and m
 // mean milli; mega must be written as MEG. Values are decimal exponents.
@@ -44,7 +45,7 @@ const EXACT_ACCUMULATION_LIMIT = 2 ** 49;
  * matters for mantissas of 16 or more significant digits;
  * below that every step is exact on any build.
  */
-function accumulateDigits(mantissa: number, digits: string): number {
+export function accumulateDigits(mantissa: number, digits: string): number {
   let m = mantissa;
   for (let i = 0; i < digits.length; i++) {
     const code = digits.charCodeAt(i);
@@ -163,17 +164,25 @@ export function tokenizeNetlist(
       continue;
     }
 
-    if (pendingText !== undefined) {
-      result.push({ raw: pendingText, lineNumber: pendingLineNumber, tokens: tokenizeLine(pendingText) });
-    }
+    if (pendingText !== undefined) pushCard(result, pendingText, pendingLineNumber);
     pendingText = trimmed;
     pendingLineNumber = lineIndex + 1;
   }
 
-  if (pendingText !== undefined) {
-    result.push({ raw: pendingText, lineNumber: pendingLineNumber, tokens: tokenizeLine(pendingText) });
-  }
+  if (pendingText !== undefined) pushCard(result, pendingText, pendingLineNumber);
   return result;
+}
+
+/**
+ * Append one logical card. A SPICE2 `POLY(n)` E/F/G/H card becomes the
+ * B-source of its polynomial (see translatePolySource); like ngspice-47
+ * ENHtranslate_poly this works on whole cards, after continuation lines are
+ * joined.
+ */
+function pushCard(result: ParsedLine[], text: string, lineNumber: number): void {
+  const tokens = tokenizeLine(text);
+  const poly = translatePolySource(tokens, lineNumber, text);
+  result.push(poly === undefined ? { raw: text, lineNumber, tokens } : { raw: poly, lineNumber, tokens: tokenizeLine(poly) });
 }
 
 /**

@@ -5,6 +5,7 @@ import {
 } from './device.js';
 import { chargeTruncationTimestep } from './charge-state.js';
 import { assertNoUnsupportedTemperatureParameters, temperatureJunction } from './junction-temperature.js';
+import { pnjlim } from './devsup.js';
 
 export interface DiodeParams {
   IS: number;
@@ -27,7 +28,14 @@ export interface DiodeParams {
   /** Diode model level; only LEVEL=2 changes the breakdown law here. */
   LEVEL?: number;
   TNOM: number;
+  /** Series resistance (per AREA*M) at the device temperature. */
   RS: number;
+  /**
+   * ngspice-47 diotemp.c RS temperature coefficients (TRS is an alias of TRS1):
+   * RS(T) = RS * (1 + TRS1*dT + TRS2*dT^2), dT = T - TNOM.
+   */
+  TRS1?: number;
+  TRS2?: number;
   JSW?: number;
   /**
    * Sidewall emission coefficient. When supplied (with JSW) and different from
@@ -79,6 +87,8 @@ interface DiodeNominalParams {
   CJSW: number;
   VJ: number;
   VJSW: number;
+  /** Series resistance RS/(AREA*M) before the TRS1/TRS2 law. */
+  RS: number;
 }
 
 /**
@@ -135,7 +145,7 @@ const UNSUPPORTED_MODEL_PARAMETERS: ReadonlyMap<string, string> = new Map([
 /** ngspice dioload.c applies the knee only above this junction current. */
 const KNEE_CURRENT_THRESHOLD = 1e-18;
 const UNSUPPORTED_BREAKDOWN_TEMPERATURE_PARAMETERS = new Set([
-  'IBVL', 'NBVL', 'TLEV', 'TRS1', 'TRS2',
+  'IBVL', 'NBVL', 'TLEV',
 ]);
 /**
  * Fields the LEVEL=2 PSpice breakdown law cannot honour: it keeps NBV = 1 and
@@ -345,6 +355,8 @@ export class Diode implements DeviceModel {
       LEVEL: params.LEVEL,
       TNOM: params.TNOM ?? 27,
       RS: (params.RS ?? 0) / effectiveArea,
+      TRS1: params.TRS1 ?? 0,
+      TRS2: params.TRS2 ?? 0,
       JSW: params.JSW ?? 0,
       NS: params.NS ?? 1,
       CJ0: (params.CJO ?? 0) * effectiveArea,
@@ -374,6 +386,7 @@ export class Diode implements DeviceModel {
       CJSW: this.params.CJSW!,
       VJ: this.params.VJ!,
       VJSW: this.params.VJSW!,
+      RS: this.params.RS,
     };
     this.separateSidewall = params.NS !== undefined && params.JSW !== undefined;
     this.applyTemperature();
@@ -470,8 +483,8 @@ export class Diode implements DeviceModel {
    * saturation currents follow exp((T/TNOM - 1)*EG/(N*vt) + XTI/N*ln(T/TNOM))
    * (the sidewall current with its emission coefficient NS, default 1), and the
    * junction potentials and zero-bias capacitances follow the REFTEMP-mapped
-   * band-gap law. BV is mapped in {@link breakdownParams}; RS has no law
-   * without TRS. At T = TNOM every factor is exactly 1.
+   * band-gap law. BV is mapped in {@link breakdownParams}; RS follows the
+   * TRS1/TRS2 polynomial. At T = TNOM every factor is exactly 1.
    */
   private applyTemperature(): void {
     assertNoUnsupportedTemperatureParameters(
@@ -482,6 +495,10 @@ export class Diode implements DeviceModel {
     const params = this.params;
     const kelvin = this.temperature + KELVIN_OFFSET;
     const nominalKelvin = params.TNOM + KELVIN_OFFSET;
+    // ngspice-47 diotemp.c:253-258 (DIOresistGiven && RS != 0): conductance
+    // AREA*M/RS divided by 1 + TRS1*dT + TRS2*dT^2, so RS(T) scales by it.
+    const dt = kelvin - nominalKelvin;
+    params.RS = nominal.RS * (1 + params.TRS1! * dt + params.TRS2! * dt * dt);
     if (kelvin === nominalKelvin) {
       this.bottomSaturationCurrent = nominal.areaSaturationCurrent;
       this.sidewallSaturationCurrent = nominal.sidewallSaturationCurrent;
@@ -1244,30 +1261,6 @@ function limitJunctionStep(
     }
   }
   return pnjlim(voltage, previousVoltage, thermalVoltage, criticalVoltage);
-}
-
-/** ngspice-47 devsup.c DEVpnjlim: limit a junction step relative to the last iterate. */
-function pnjlim(
-  voltage: number,
-  previousVoltage: number,
-  thermalVoltage: number,
-  criticalVoltage: number,
-): number {
-  if (voltage > criticalVoltage
-    && Math.abs(voltage - previousVoltage) > 2 * thermalVoltage) {
-    if (previousVoltage > 0) {
-      const ratio = (voltage - previousVoltage) / thermalVoltage;
-      return ratio > 0
-        ? previousVoltage + thermalVoltage * (2 + Math.log(ratio - 2))
-        : previousVoltage - thermalVoltage * (2 + Math.log(2 - ratio));
-    }
-    return thermalVoltage * Math.log(voltage / thermalVoltage);
-  }
-  if (voltage < 0) {
-    const minimum = previousVoltage > 0 ? -previousVoltage - 1 : 2 * previousVoltage - 1;
-    return Math.max(voltage, minimum);
-  }
-  return voltage;
 }
 
 function safeExponential(exponent: number): number {

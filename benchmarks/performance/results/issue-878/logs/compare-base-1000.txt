@@ -1,0 +1,5 @@
+spice-ts  points 213 iterations 599 histogram 1:17 2:6 3:190
+ngspice-47 points 213 iterations 483 histogram 2:156 3:57
+same time grid: true
+points spice-ts > ngspice: 133, equal: 63, spice-ts < ngspice: 17
+spice-ts/ngspice iteration pairs: 1/2 x17, 2/2 x6, 3/2 x133, 3/3 x57

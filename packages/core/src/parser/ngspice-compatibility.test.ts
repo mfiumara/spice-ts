@@ -50,7 +50,7 @@ const supportedFixtures: Fixture[] = [
 
 const unsupportedFixtures: Fixture[] = [
   { feature: 'external source waveform', netlist: 'V1 in 0 EXTERNAL\n.tran 1n 10n' },
-  { feature: 'circuit temperature', netlist: '.temp 27\n.op' },
+  { feature: 'multiple circuit temperatures', netlist: '.temp 27 77\n.op' },
   { feature: 'PSPICE logic behavioral source', netlist: 'B1 out 0 V=~V(in)\n.op' },
 ];
 
@@ -95,7 +95,7 @@ describe('ngspice parser compatibility fixtures', () => {
   });
 
   it('rejects unsupported resistor parameters continued onto the card', () => {
-    expect(() => parse('R1 in out 1k\n+ DTEMP=5')).toThrow('Unsupported resistor parameters');
+    expect(() => parse('R1 in out 1k\n+ TC3=5')).toThrow('Unsupported resistor parameters');
   });
 
   it('accepts .include, .lib, and top-level .param through parseAsync', async () => {

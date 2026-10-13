@@ -1,0 +1,11 @@
+model param from subckt-local .param
+.subckt femt 1 2
+.model dvnf d (kf={pwr(flw,0.5)/1e11} is=1e-16)
+i1 0 1 10e-3
+d1 1 2 dvnf
+.param flw=1e-3
+.ends
+x1 a 0 femt
+r1 a 0 1k
+.op
+.end

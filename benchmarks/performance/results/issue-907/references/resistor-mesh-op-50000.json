@@ -1,0 +1,31 @@
+{
+  "engine": "ngspice",
+  "circuit": "resistor-mesh-op",
+  "size": 50000,
+  "actualNodes": 50176,
+  "probe": "n223_223",
+  "argv": [
+    "ngspice",
+    "-b",
+    "-r",
+    "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_78a2411f/benchmarks/performance/results/issue-907/decks/resistor-mesh-op-50000.raw",
+    "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_78a2411f/benchmarks/performance/results/issue-907/decks/resistor-mesh-op-50000.cir"
+  ],
+  "netlistSha256": "f81ed198f7ba67068138846b12fe93b9ec957e6bb3a89300d2c7c50e30d47329",
+  "wallMs": 840.6007500000001,
+  "exit": 0,
+  "signal": null,
+  "status": "ok",
+  "grid": [
+    0
+  ],
+  "values": [
+    0.12550758480737906
+  ],
+  "variables": 50177,
+  "points": 1,
+  "rawSha256": "0a8b837cc623f6ccb01e8c9cf3ed4de9d53bda23a97919363864b46641764754",
+  "rawBytes": 1696037,
+  "ms": 527.8230000000001,
+  "peakRssMiB": 208.9375
+}

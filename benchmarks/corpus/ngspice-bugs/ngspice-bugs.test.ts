@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
+import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -126,4 +127,58 @@ describe('ngspice-bugs spice-ts verdicts', () => {
       await assert.rejects(simulate(await deck(path)), /[Ss]ingular/);
     });
   }
+
+  // Fetch-only decks (vendor libraries are not committed): run `fetch.ts 685 740 763` first
+  // (#685: unzip TestVT.zip in fetched/685).
+  // The manifest's edit is applied in memory: absolute .include paths become the attachment basename.
+  for (const [ticket, libraries, tolerance, decks] of [
+    [685, 'TestVT/Model', 1e-5, [['TestVT/TestDI_DMG6968UDM.cir', 1e-7, -1.35033248753e-8]]],
+    [740, '.', 1e-6, [['circuit.cir', 1e-8, -1.959222e-8], ['split.cir', 1e-7, -1.973652e-8]]],
+    [763, '.', 1e-6, [['netlistwithR5.cir', 1e-7, -5.649621e-7], ['ResistorSplitR5.cir', 1e-7, -5.649621e-7]]],
+  ] as const) {
+    const dir = resolve(HERE, 'fetched', String(ticket));
+    it(`#${ticket}: the DC-source decks complete and hold ngspice-47's operating point`, {
+      skip: existsSync(resolve(dir, decks[0][0])) ? false : `run fetch.ts ${ticket} (and extract its archive) first`,
+    }, async () => {
+      const manifest = await loadManifest();
+      assert.equal(outcome(entry(manifest, ticket)), 'spice-ts-correct');
+      const { simulate } = await core();
+      for (const [name, stop, operatingPoint] of decks) {
+        const text = (await readFile(resolve(dir, name), 'utf8'))
+          .replace(/\r\n/g, '\n')
+          .replace(/(\.include\s+)"[^"]*\/([^"/]+)"/gi, '$1$2');
+        const result = await (simulate as (netlist: string, options: object) => Promise<any>)(text, {
+          resolveInclude: (include: string) => readFile(resolve(dir, libraries, include), 'utf8'),
+        });
+        const time = result.transient.time as number[];
+        const current = result.transient.current('V1') as number[];
+        assert.ok(Math.abs(time[time.length - 1] - stop) <= 1e-9 * stop, `${name} stops at ${time[time.length - 1]}`);
+        assert.ok(Math.abs(current[0] - operatingPoint) <= tolerance * Math.abs(operatingPoint), `${name} i(V1)(0) = ${current[0]}`);
+        // DC source: after 1 ns the current holds the operating point (round-off only).
+        for (let i = 0; i < time.length; i++) {
+          if (time[i] < 1e-9) continue;
+          assert.ok(Math.abs(current[i] - operatingPoint) <= 1e-3 * Math.abs(operatingPoint), `${name} i(V1)(${time[i]}) = ${current[i]}`);
+        }
+      }
+    });
+  }
+
+  // Fetch-only: run `fetch.ts 505` first. dot.cir is Vsetpoint.cir without its `.control version .endc` block.
+  const potentiometer = resolve(HERE, 'fetched', '505');
+  it('#505: three-argument limit() clamps the wiper and the transient completes deterministically', {
+    skip: existsSync(potentiometer) ? false : 'run fetch.ts 505 first',
+  }, async () => {
+    const manifest = await loadManifest();
+    assert.equal(outcome(entry(manifest, 505)), 'spice-ts-correct');
+    const { simulate } = await core();
+    const text = (await readFile(resolve(potentiometer, 'Vsetpoint.cir'), 'utf8')).replace('.control\nversion\n.endc\n', '');
+    const result = await (simulate as (netlist: string, options: object) => Promise<any>)(text, {
+      resolveInclude: (include: string) => readFile(resolve(potentiometer, include), 'utf8'),
+    });
+    const time = result.transient.time as number[];
+    assert.ok(Math.abs(time[time.length - 1] - 0.3) <= 1e-12, `stops at ${time[time.length - 1]}`);
+    // ngspice-47 with `set ngbehavior=ps` (compatibility clamp limit): V(vset)(0.3 s) = 4.807534111921781e-3.
+    const vset = result.transient.voltage('vset') as number[];
+    assert.ok(Math.abs(vset[vset.length - 1] - 4.807534111921781e-3) <= 1e-9, `V(vset) = ${vset[vset.length - 1]}`);
+  });
 });

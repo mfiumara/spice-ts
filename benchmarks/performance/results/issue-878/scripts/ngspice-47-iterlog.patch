@@ -1,0 +1,19 @@
+diff --git a/src/spicelib/analysis/dctran.c b/src/spicelib/analysis/dctran.c
+index cc6e933..42a5aad 100644
+--- a/src/spicelib/analysis/dctran.c
++++ b/src/spicelib/analysis/dctran.c
+@@ -706,7 +706,13 @@ resume:
+         }
+ #endif
+         /* Central solver step */
+-        converged = NIiter(ckt,ckt->CKTtranMaxIter);
++        {
++            int iterlog_before = ckt->CKTstat->STATnumIter;
++            converged = NIiter(ckt,ckt->CKTtranMaxIter);
++            if (getenv("NGSPICE_ITERLOG"))
++                fprintf(stderr, "ITERLOG %.17g %.17g %d %d %d\n", ckt->CKTtime, ckt->CKTdelta,
++                        ckt->CKTstat->STATnumIter - iterlog_before, converged, ckt->CKTorder);
++        }
+ 
+         ckt->CKTstat->STATtimePts ++;
+         ckt->CKTmode = (ckt->CKTmode&MODEUIC)|MODETRAN | MODEINITPRED;

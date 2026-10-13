@@ -4,6 +4,276 @@ spice-ts is pursuing correctness parity with ngspice before performance, AI-nati
 models. [CHARTER.md](CHARTER.md) is the source of truth for priorities and program rules; this document is the
 public issue map and measurable delivery sequence.
 
+## Frozen snapshot, 2026-10-13
+
+Repository evidence is frozen at main [`283e0c7ecfac8ce0f51b73b8f8f42d3aee9f1de5`](https://github.com/mfiumara/spice-ts/commit/283e0c7ecfac8ce0f51b73b8f8f42d3aee9f1de5).
+GitHub issues, open PRs and milestones were captured from **2026-10-13T12:35:49Z to
+2026-10-13T12:35:52Z** with `gh issue list --state open --limit 1000 --json
+number,title,labels,milestone,url,body`, `gh pr list --state open --limit 100 --json
+number,title,headRefOid,url` and `gh api repos/mfiumara/spice-ts/milestones`, all for
+`mfiumara/spice-ts`. This is an immutable reconciliation, not a live dashboard. Later merges and new
+issues do not retroactively change this snapshot. Batch the next update rather than opening another
+standalone roadmap PR within six hours.
+
+The capture contains **33 open issues**, four canonical trackers and **29 non-tracker issues**.
+The issue tables below are the single active inventory: **19 M1, 1 M2, 0 M3, 9 M4**, each mapped once.
+References elsewhere explain priorities or evidence, not additional inventory entries. Tracker
+checkboxes can lag GitHub issue state; the captured issue inventory takes precedence over their
+older checklist counts. The [spice-ts roadmap Project](https://github.com/users/mfiumara/projects/2)
+is live but private, so viewing it requires repository-owner access.
+
+| Charter milestone | Canonical tracker | Exit criteria |
+|---|---|---|
+| [M1 Correctness parity](https://github.com/mfiumara/spice-ts/milestone/1) | [#634](https://github.com/mfiumara/spice-ts/issues/634) | All open simulator bugs fixed; ≥100 public benchmark circuits run against ngspice in CI-able harness; published parity report; agreed error thresholds met or gaps filed |
+| [M2 Performance](https://github.com/mfiumara/spice-ts/milestone/2) | [#635](https://github.com/mfiumara/spice-ts/issues/635) | Sparse/reuse solver path; scaling benchmark to ≥10k nodes; published runtime comparison vs ngspice |
+| [M3 AI-native API](https://github.com/mfiumara/spice-ts/milestone/3) | [#636](https://github.com/mfiumara/spice-ts/issues/636) | MCP server package, JSON netlist schema, structured errors, docs + examples for agent use |
+| [M4 Device models](https://github.com/mfiumara/spice-ts/milestone/4) | [#637](https://github.com/mfiumara/spice-ts/issues/637) | Gummel-Poon, BSIM4 (or documented subset), EKV, T-line, driven by benchmark gaps |
+
+### Benchmark evidence boundary
+
+**The aggregate is stale until the nightly refresh in [#855](https://github.com/mfiumara/spice-ts/issues/855).**
+The committed [aggregate JSON](benchmarks/aggregate-report.json) and
+[parity report](benchmarks/AGGREGATE_PARITY.md) cover only A–E, not all 641 collected fixtures.
+Their provenance pins predate the current source/fixture tree and the #592 fine-reference work.
+This roadmap neither regenerates them nor describes their values as newly measured main parity.
+The nightly must re-pin provenance and publish the status/metric transition ledger after intervening
+merged changes, including losses and the HFET upstream-bug explanation. No daytime refresh here.
+
+For reference, that **historical aggregate artifact**, not this snapshot's simulator execution,
+records 100 fixtures, ngspice 52 success / 9 failed / 39 unsupported, spice-ts 61 success / 1 failed /
+38 unsupported, and 48 compared fixtures / 67 analyses / 879 signals. Its maximum absolute and
+absolute RMS errors are both 7853.15771484375; maximum relative error is 975815.5539797375 and
+relative RMS 203361.3440880642. Runtime totals are 6554.499 ms ngspice and 27822.473 ms spice-ts.
+These heterogeneous totals are not a speed ranking or a parity claim.
+
+The F–I outcome files below are also **committed receipts**, not fresh runs of the frozen main.
+Later fixes can make their first-error buckets obsolete. In particular I still records digital AC
+as a failure even though PR #865 is in main. Execution success is not a numerical match;
+`not-compared` is not a win. The uniform 1% peak-normalised metric and per-quantity floors must not
+be loosened per circuit. #592's fine-step ngspice reference is a grid-sensitivity diagnostic,
+not an engine accuracy ranking or a convergence proof.
+
+### Collected corpus A–I and provenance
+
+Counts come from `circuits.length` in each linked manifest at the frozen SHA. These are collected
+public fixtures, not 641 passing circuits. Licences apply to benchmark data separately from the
+MIT simulator packages. [SOURCES.md](benchmarks/SOURCES.md), each manifest and retained licence
+texts record redistribution decisions, source URLs, full revisions and adaptations.
+
+| Corpus | Collected | Source, pinned revision prefix | Licence and adaptation |
+|---|---:|---|---|
+| [A, ngspice](benchmarks/corpus/ngspice/manifest.json) | 20 | ngspice examples/tests, `3ef069fb1f04` | BSD-3-Clause; terminal newline omitted during ingestion, circuit content unchanged |
+| [B, classic](benchmarks/corpus/classic/manifest.json) | 20 | Berkeley SPICE3f5, mirror `3d9360bef370` | LicenseRef-Berkeley-SPICE with required Regents notice; separate mirror BSD notice retained; verbatim |
+| [C, Xyce](benchmarks/corpus/xyce/manifest.json) | 20 | Xyce Regression, `7bb7e98f0ed3` | GPL-3.0-or-later; verbatim dialect, including ngspice rejections |
+| [D, ahkab](benchmarks/corpus/corpus-d/manifest.json) | 20 | ahkab tests, `1e8939194b68` | GPL-2.0-only; verbatim dialect, including ngspice rejections |
+| [E, Gnucap](benchmarks/corpus/corpus-e/manifest.json) | 20 | Gnucap tests, `5acb027125d6` | GPL-3.0-or-later; verbatim dialect, including ngspice rejections |
+| [F, ngspice expansion](benchmarks/corpus/corpus-f/manifest.json) | 336 | ngspice examples/tests, `3ef069fb1f04` | BSD-3-Clause; byte-identical, third-party notices excluded |
+| [G, Xyce expansion](benchmarks/corpus/corpus-g/manifest.json) | 128 | Xyce Regression, `7bb7e98f0ed3` | GPL-3.0-or-later; byte-identical, selected by ngspice reference probe, not spice-ts outcomes |
+| [H, multi-source](benchmarks/corpus/corpus-h/manifest.json) | 52 | KiCad `240efadec4b4` (5), PySpice `fe08718d5a1a` (8), spicelib `d8f8ecceeb36` (2), SpiceSharpParser `8fc01560fe30` (24), xictools `c1244c23a991` (13) | GPL-3.0-or-later (13), GPL-3.0-only (2), MIT (24), Apache-2.0 (13); byte-identical |
+| [I, eSim/VACASK](benchmarks/corpus/corpus-i/manifest.json) | 25 | eSim `1a25a46ce15e` (13), VACASK `fb8cc2055a4f` (12) | GPL-3.0-only (13), AGPL-3.0-only (12); byte-identical |
+| **Total collected** | **641** | **The ≥500 collection target is exceeded** | **This does not complete M1's correctness exit** |
+
+Licence totals across selected A–I fixtures are BSD-3-Clause 356, LicenseRef-Berkeley-SPICE 20,
+GPL-2.0-only 20, GPL-3.0-or-later 181, GPL-3.0-only 15, MIT 24, Apache-2.0 13 and AGPL-3.0-only 12.
+H's ahkab/xschem and I's KiCad/ngspice-cmos/rioslinares candidate sources selected zero fixtures;
+their licence files do not add to the collected totals. In particular I's KiCad CC-BY-SA-4.0
+candidates contribute **zero**, distinct from H's GPL KiCad QA decks. SPICE3 translations of C/D/E
+and the separate known-ngspice-bugs ticket inventory are not counted again toward 641.
+
+| Committed receipt | Fixtures | ngspice success / failed / unsupported | spice-ts success / failed / unsupported | Matched / mismatch / not-compared / spice-ts-loss / both-failed |
+|---|---:|---|---|---|
+| [F](benchmarks/corpus/corpus-f/outcomes.json) | 336 | 306 / 18 / 12 | 138 / 14 / 184 | 60 / 16 / 62 / 168 / 30 |
+| [G](benchmarks/corpus/corpus-g/outcomes.json) | 128 | 128 / 0 / 0 | 109 / 6 / 13 | 97 / 12 / 0 / 19 / 0 |
+| [H](benchmarks/corpus/corpus-h/outcomes.json) | 52 | 52 / 0 / 0 | 51 / 0 / 1 | 40 / 11 / 0 / 1 / 0 |
+| [I](benchmarks/corpus/corpus-i/outcomes.json) | 25 | 25 / 0 / 0 | 20 / 1 / 4 | 19 / 1 / 0 / 5 / 0 |
+
+### Delivery order by benchmark gap
+
+1. **Correctness and honest measurement first.** F's largest first-error buckets in the committed
+   receipt are other syntax 59 (54 ngspice-success), CIDER 37 (37), control scripting 25 (23),
+   other execution 12 (9), a legacy VDMOS-labelled bucket 12 (6), and temperature directives 9 (8).
+   These are first failures, not additive estimates of the work remaining on main. The VDMOS
+   label even contains XSPICE decks; do not infer twelve missing VDMOS models from it. G has nine
+   other-syntax failures; H has one VDMOS-labelled failure; I has four missing-code-model failures
+   and one now-implemented digital-AC failure. Reconcile stale classifications in scheduled
+   receipts before promising fixture gains. The existing #526/#812 umbrellas and scoped parser,
+   temperature and solver issues below keep known simulator bugs ahead of model breadth.
+2. **Resolve the largest numerical losses without hiding them.** F still publishes `ddt-test1`
+   at 20000 normalised error and `ddt-test3` at 3.21, while #597's earlier receipt recorded 2e12
+   for the former. Closed implementation children are not proof that the parent triage is done.
+   H's largest recorded mismatch is legacy-sources 3.54; example04/05 rows reach 2.0. I's VACASK
+   BJT ring remains 2.19. G's unstable oscillator is 2.47 in its receipt (2.45 in #734's triage).
+   Random-source and unstable-equilibrium trajectories need an explicit metric decision, not
+   tolerance tuning. #549's TXL+CPL default-step loss remains 27.63%, with ngspice's own
+   default-to-fine spread 26.89%, 12748 vs 285 points and roughly 65–125x runtime loss.
+3. **Speed next, ranked by measured gaps rather than headline wins.** The published KLU baseline
+   loses on RC transient by 3.80x / 6.29x / 8.17x at 1k / 10k / 50k. #890 owns its next hot path.
+   CMOS device load and Newton control have merged improvements, but noisy Sparse 1.3
+   comparisons cannot establish superiority over KLU. Keep mesh OP/AC, memory and small-deck
+   CPU regressions visible in the M2 evidence below.
+4. **AI-native API, then benchmark-driven device models.** M3 has no open non-tracker issues in
+   this capture; that is issue state, not an independent blanket capability certification.
+   For M4 the CIDER 37-deck receipt is the largest explicit model bucket, followed by the
+   remaining XSPICE groups. BSIM4 has three F rows plus one G row, BSIM3 NQS has two F rows,
+   and the G B3SOI bucket has one row. The older #747 four-deck description and model trackers
+   are not current bucket counts. Split bounded model slices only after correctness work,
+   with ngspice evidence and typed unsupported boundaries.
+
+## M1 Correctness parity
+
+Open work is ordered by affected fixture groups, then concrete correctness blockers and
+measurement decisions. Counts in issue titles are historical triage scope, not fresh main results.
+
+| Issue | Scope and next verifiable delivery |
+|---|---|
+| [#526](https://github.com/mfiumara/spice-ts/issues/526) | Q/D follow-through umbrella (22 original fixtures); CIDER, diode/VBIC thermal, noise/PNP residuals. Share CIDER scope with M4, do not count it twice. |
+| [#812](https://github.com/mfiumara/spice-ts/issues/812) | Known-ngspice-bug feature umbrella (25 originally blocked tickets). RES, rshunt and several expression slices are merged; audit the next blockers, not the old count as a current loss total. |
+| [#871](https://github.com/mfiumara/spice-ts/issues/871) | `.temp` semantics, TEMPER and device temperature; F temperature bucket and upstream temper deck. |
+| [#597](https://github.com/mfiumara/spice-ts/issues/597) | Seven newly runnable F mismatch rows, including ddt, XSPICE, resistor-array and TXL/CPL. Root-cause remaining losses after merged child fixes. |
+| [#791](https://github.com/mfiumara/spice-ts/issues/791) | H astable/relay/T-line triage. Pending PR #892 is not frozen-main delivery. |
+| [#882](https://github.com/mfiumara/spice-ts/issues/882) | Scoped brace expressions on subcircuit model cards; at least three vendor decks in upstream tickets 784/738. Pending PR #900. |
+| [#888](https://github.com/mfiumara/spice-ts/issues/888) | Dynamic caller-instance numparam scope and shadowing, distinct from merged lexical/model-scope fixes. |
+| [#797](https://github.com/mfiumara/spice-ts/issues/797) | Comma-separated instance parameter semantics; example01 V(N1) -7.232 vs 1.097. Decide source-pinned compatibility, not per-deck rewriting. |
+| [#899](https://github.com/mfiumara/spice-ts/issues/899) | Finite Jacobian solve overflow rejects ngspice-valid infinite B-source OP. Solver lane; preserve genuine singularity protections. |
+| [#549](https://github.com/mfiumara/spice-ts/issues/549) | TXL+CPL default-step accuracy and 65–125x runtime loss; compare general step/load fixes, retain fine-reference uncertainty. |
+| [#768](https://github.com/mfiumara/spice-ts/issues/768) | PSP103-named MOS1 transient 1.02% mismatch in earlier receipt; establish current cause without loosening 1%. |
+| [#782](https://github.com/mfiumara/spice-ts/issues/782) | Numparam brace numeric reading/formatting parity, distinct from merged toNetlist literal round trips. |
+| [#655](https://github.com/mfiumara/spice-ts/issues/655) | TRNOISE/TRRANDOM independent random realisations need honest comparison semantics. |
+| [#734](https://github.com/mfiumara/spice-ts/issues/734) | Unstable-equilibrium blocking oscillator; phase/round-off sensitivity, no deterministic first-pulse parity claim. |
+| [#867](https://github.com/mfiumara/spice-ts/issues/867) | VSWITCH missing VON/VOFF defaults versus ngspice-47 double-free failure. Document or diagnose deliberate difference; no valid reference win. |
+| [#847](https://github.com/mfiumara/spice-ts/issues/847) | CKTrhsOld output convention versus converged solve; measured documentation PR #896 pending. |
+| [#855](https://github.com/mfiumara/spice-ts/issues/855) | Nightly-only aggregate provenance/transition/fine-reference refresh. Blocks current aggregate parity claims. |
+| [#761](https://github.com/mfiumara/spice-ts/issues/761) | HFET upstream bug 877 explanation, batched with nightly aggregate; retain row status. |
+| [#901](https://github.com/mfiumara/spice-ts/issues/901) | This bounded roadmap reconciliation and exact-head review; ROADMAP.md only. |
+
+Recent **merged** evidence in the frozen history includes [#841](https://github.com/mfiumara/spice-ts/pull/841)
+(I ingestion), [#851](https://github.com/mfiumara/spice-ts/pull/851) (fine reference),
+[#865](https://github.com/mfiumara/spice-ts/pull/865) (digital AC),
+[#866](https://github.com/mfiumara/spice-ts/pull/866) (model scope),
+[#880](https://github.com/mfiumara/spice-ts/pull/880) (PSpice model temperature),
+[#881](https://github.com/mfiumara/spice-ts/pull/881) (POLY trtol),
+[#883](https://github.com/mfiumara/spice-ts/pull/883) (B-source PSpice functions),
+[#884](https://github.com/mfiumara/spice-ts/pull/884) (subcircuit parameter dependency order),
+[#885](https://github.com/mfiumara/spice-ts/pull/885) (literal round trips),
+[#889](https://github.com/mfiumara/spice-ts/pull/889) and
+[#897](https://github.com/mfiumara/spice-ts/pull/897) (B-source zero-base/initial-iterate power),
+[#894](https://github.com/mfiumara/spice-ts/pull/894) (bounded test timeout), and
+[#895](https://github.com/mfiumara/spice-ts/pull/895) (fourbitadder bisect receipt).
+Merged fixes do not refresh the aggregate or close unrelated parent gaps.
+
+## M2 Performance
+
+| Issue | Scope and next verifiable delivery |
+|---|---|
+| [#890](https://github.com/mfiumara/spice-ts/issues/890) | Profile RC transient after merged #887; cache/stamp hot-path PR #898 remains pending at capture. Require identical-deck before/after receipts and controls. |
+
+The [published M2 baseline](benchmarks/PERFORMANCE_BASELINE.md) and
+[raw matrix](benchmarks/performance/results/scaling-m2.json) run RC ladders, resistor mesh and
+CMOS chains at 1k / 10k / 50k. Mesh actually has 1024 / 10000 / 50176 nodes. The October 11
+baseline used main `3490527`, Apple M5 Pro, Node v22.23.1 and ngspice-47, two warmups and ten
+samples per cell on byte-identical decks. KLU selection is outside the shared deck; its banner
+is checked. spice-ts times the in-process API, ngspice wall includes cold CLI startup; internal
+analysis is separate. The shared host ranged from load 4.6 to 22.1, so retain raw samples/p95.
+
+| Historical baseline workload | Nodes | spice-ts median | ngspice KLU wall median | Published wall result |
+|---|---:|---:|---:|---|
+| RC transient | 1000 | 90.9 ms | 23.9 ms | 3.80x slower |
+| RC transient | 10000 | 1.12 s | 179 ms | 6.29x slower |
+| RC transient | 50000 | 8.92 s | 1.09 s | 8.17x slower |
+| Mesh OP | 1024 | 5.82 ms | 18.2 ms | 3.13x faster wall, but 2.19x slower analysis |
+| Mesh OP | 10000 | 146 ms | 100 ms | 1.46x slower |
+| Mesh OP | 50176 | 2.71 s | 906 ms | 3.00x slower |
+| CMOS transient | 1000 | 3.15 s (load-affected) | 408 ms | 7.73x slower; retained original row |
+| CMOS transient | 10000 | 18.35 s | 4.60 s | 3.99x slower |
+| CMOS transient | 50000 | FAILED, singular s135 after 28.6 s | 68.39 s | ngspice succeeds; historical failure retained |
+
+The separate 1k CMOS rerun was 1.08 s vs 151 ms KLU, **7.15x slower**. Historical accuracy
+sanity was RC 1.08e-4 relative, mesh ≤1.9e-7 relative, CMOS v(s20) 0.6456 vs 0.3501 V on a steep
+edge and about 1% stage-delay difference. Memory losses include RC 50k 933 vs 131 MiB, mesh
+50k 445 vs 219 MiB, CMOS 10k 662 vs 102 MiB. The 50k failure is not a current-main failure
+claim: later committed receipts complete it, but the original failure is never erased.
+
+Later **merged** receipts qualify what has improved and what still loses:
+
+- [#769 receipt](benchmarks/performance/results/issue-769/README.md) publishes AC mesh at
+  2.3x / 2.2x / 2.4x slower than KLU wall at 1k / 10k / 50k after pivot reuse, plus fresh-process
+  1k CPU losses of 0.81x mesh and 0.87x ladder before/after speedup. Its M2 control ratios are
+  RC 1.57x / 1.31x / 1.00x, mesh 2.88x / 2.44x / 2.02x, CMOS 1.41x / 0.62x / 0.81x analysis
+  versus KLU. Unpaired faster readings are not wins.
+- [#830 receipt](benchmarks/performance/results/issue-830/README.md), merged PR
+  [#835](https://github.com/mfiumara/spice-ts/pull/835), removes allocating MOS1 step limits.
+  CMOS OP 10k 624→544 ms, 50k 12.88→9.08 s, paired 1.15x / 1.42x. Different Newton schedules
+  and shared load prevent an engine-level win claim.
+- [#842 receipt](benchmarks/performance/results/issue-842/README.md), merged PR
+  [#859](https://github.com/mfiumara/spice-ts/pull/859), caches bit-identical MOS1 loads.
+  Post-review A/B medians are CMOS 1k 162→144 ms, 10k 2382→2272 ms, 50k 22498→18397 ms;
+  pair speedups 1.188x / 1.077x / 1.147x. RC 1k control reads **0.951x**, a published loss.
+  The earlier 10k CMOS-OP pair median 0.923x and 50k 0.881x are unsettled losses, not hidden.
+  Its native comparison used **Sparse 1.3**, not a new KLU matrix (the 50k mesh native reorder
+  alone was 74.5 s). CMOS/mesh faster readings cannot replace the KLU comparison above.
+- [#878 receipt](benchmarks/performance/results/issue-878/README.md), merged PR
+  [#887](https://github.com/mfiumara/spice-ts/pull/887), closes the CMOS transient iteration
+  gap from 599 to 466 versus ngspice's 483 on the same 214 points. The 1k/10k waveform gap
+  remains about 0.628 mV. Fresh-process CMOS medians are 194→181 ms / 2130→2082 ms /
+  23541→20632 ms; paired gains only 1.043x / 1.030x / 1.028x with load-sensitive ranges.
+  RC controls read **0.968x / 0.945x / 0.975x**; mesh 10k/50k **0.973x / 0.984x**.
+  A rejected predictor implementation lost at 0.952x / 0.880x. All remain published.
+
+These tables come from their cited artifacts, not a new measurement of the frozen head. Do not
+multiply isolated speedups or call #890's older 8.2x headline a newly reproduced main result.
+The next performance slice must profile its actual base and publish both KLU and control losses.
+
+## M3 AI-native API
+
+There are **zero open non-tracker M3 issues** in the captured inventory. The tracker still lists
+the old MCP parent, but [#61](https://github.com/mfiumara/spice-ts/issues/61) closed at
+2026-10-13T08:32:27Z. The old #60–#63 residual table in the archive is not today's backlog.
+Continue to document supported protocol/MCP/JSON/WASM boundaries and measured costs; absence
+of open issues does not make every SPICE device or analysis available through WASM.
+
+## M4 Device models
+
+| Issue | Scope and next verifiable delivery |
+|---|---|
+| [#497](https://github.com/mfiumara/spice-ts/issues/497) | CIDER NUMD/NUMOS/NBJT. Largest explicit model bucket, 37 F rows in the committed receipt; original issue title's ten is not the current receipt count. |
+| [#553](https://github.com/mfiumara/spice-ts/issues/553) | Remaining XSPICE models, including I's four d_jkff/lcouple/zener losses. Earlier adc_bridge/digital counts predate merged slices; audit before choosing the next group. |
+| [#3](https://github.com/mfiumara/spice-ts/issues/3) | BSIM4 or documented subset, three F plus one G unsupported rows in receipts. |
+| [#692](https://github.com/mfiumara/spice-ts/issues/692) | BSIM3 NQSMOD/ACNQSMOD; two F decks, explicit rejection rather than silent quasi-static simulation. |
+| [#559](https://github.com/mfiumara/spice-ts/issues/559) | VDMOS thermal Tj/Tc and VP/TT soft recovery. Two original F examples, with control-language blockers distinguished. |
+| [#747](https://github.com/mfiumara/spice-ts/issues/747) | B3SOI/PSP/EKV compact-model umbrella; G receipt has one B3SOI unsupported row, not the issue's original four as a fresh count. |
+| [#4](https://github.com/mfiumara/spice-ts/issues/4) | EKV parent; inversion-region reference evidence and bounded supported parameters. |
+| [#5](https://github.com/mfiumara/spice-ts/issues/5) | Gummel-Poon parent. Many later BJT slices merged; preserve unsupported boundaries rather than reusing the archive's old forward-active-only claim. |
+| [#7](https://github.com/mfiumara/spice-ts/issues/7) | Lossless T-line parent, including NL/F form and pending #892 step-control evidence; no blanket transmission-line parity claim. |
+
+### Pending heads and independent lanes at capture
+
+| Open PR | Captured full head | Status boundary |
+|---|---|---|
+| [#900](https://github.com/mfiumara/spice-ts/pull/900) | `1c55afdcb81ce64edb3a9e1280c9496c0b3ec106` | #882 parser/model writer, not merged evidence |
+| [#898](https://github.com/mfiumara/spice-ts/pull/898) | `afe318110f085d505c288334ec99b40e78ead88c` | #890 performance slice awaiting independent exact-head review |
+| [#896](https://github.com/mfiumara/spice-ts/pull/896) | `6370e1806f29150bd3f3e9f340f4b3c7b49d963d` | #847 measured convention documentation, not main |
+| [#892](https://github.com/mfiumara/spice-ts/pull/892) | `8585e399d9457d2d95557ff0300e3586b8d55ecc` | #791/#7 T-line triage, not main |
+| [#679](https://github.com/mfiumara/spice-ts/pull/679) | `4cc1d895ebba53dabcaf1bacb4db72c05ce6d58d` | Changesets release PR. Owner-only publication boundary, leave untouched |
+
+This docs-only lane owns ROADMAP.md, independent of the #882 parser writer, #899 solver writer,
+and immutable #892/#896/#898 reviews. This reconciliation uses a six-lane ceiling. Pending
+heads are not accepted or merged by this document. The supervisor must create an independent
+exact-head review before merge; required CI `test (20)`, `test (22)`, `build`, and `accuracy`
+must pass on that same SHA. Heavy local suites/corpus commands use `spice-heavy`; a host-load
+timeout is not a simulator result and CI is the authoritative full gate. No npm publication,
+release/version bumps, deployment or changes to the separate web repository are authorised.
+
+## Archived evidence through the October 10 reconciliation
+
+The following record is retained verbatim from the previous roadmap, including rejected heads,
+unsupported forms, waveform errors, runtime and artifact-size losses. **All dates, open/closed
+claims, checklists and PR states inside this archive are historical, not the active inventory.**
+In particular its PR #290-open claim, 17-issue total and early model/API boundaries must not be
+read as current. Use the frozen snapshot above and the linked later receipts for current planning.
+
+<details>
+<summary>Historical roadmap and benchmark receipts (not current state)</summary>
+
 Issue state below was verified against live GitHub state on 2026-10-10. The repository had 17 open issues: seven in
 M1, none in M2, four in M3, and six in M4. Every open issue is represented below exactly once. Closed duplicate
 [#278](https://github.com/mfiumara/spice-ts/issues/278) is not part of the active inventory.
@@ -546,3 +816,5 @@ The program may create and update GitHub issues, labels, milestones, Projects, b
 Without Mattia's approval, the program must not publish npm packages, create tags or releases, publish changeset
 versions, change Vercel production deployment, force-push `main`, delete branches or issues not created by the
 program, spend money, touch secrets, edit `~/repos/spicets/web`, or post on social media.
+
+</details>

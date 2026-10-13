@@ -1,0 +1,835 @@
+{
+  "processReceipts": 39,
+  "statuses": {
+    "ok": 38,
+    "timeout": 1
+  },
+  "controls": [
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 1000,
+      "phase": "cold",
+      "completed": 3,
+      "timedOutChildren": 0,
+      "simulateMs": {
+        "count": 3,
+        "median": 81.35825,
+        "min": 78.49425,
+        "max": 93.659209
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 87.296875,
+        "min": 86.703125,
+        "max": 87.359375
+      },
+      "probeSha256": "d7d165fbfea26ffde224afda244e8e938280f53b4b3c08c04ac7d0df80f404dd",
+      "parity": {
+        "points": 120,
+        "maxAbs": 7.771561172376096e-16,
+        "rmsAbs": 3.6795602554110414e-16,
+        "maxPeakRelative": 2.2566854215014007e-15,
+        "rmsPeakRelative": 1.068460995383673e-15,
+        "maxGridAbs": 6.617444900424222e-24
+      }
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 1000,
+      "phase": "warm",
+      "completed": 3,
+      "timedOutChildren": 0,
+      "simulateMs": {
+        "count": 3,
+        "median": 57.78937500000001,
+        "min": 54.58620900000001,
+        "max": 62.854457999999994
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 105.328125,
+        "min": 100.71875,
+        "max": 108.765625
+      },
+      "probeSha256": "d7d165fbfea26ffde224afda244e8e938280f53b4b3c08c04ac7d0df80f404dd",
+      "parity": {
+        "points": 120,
+        "maxAbs": 7.771561172376096e-16,
+        "rmsAbs": 3.6795602554110414e-16,
+        "maxPeakRelative": 2.2566854215014007e-15,
+        "rmsPeakRelative": 1.068460995383673e-15,
+        "maxGridAbs": 6.617444900424222e-24
+      }
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 10000,
+      "phase": "cold",
+      "completed": 3,
+      "timedOutChildren": 0,
+      "simulateMs": {
+        "count": 3,
+        "median": 400.849375,
+        "min": 391.513167,
+        "max": 403.925125
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 176.09375,
+        "min": 175.953125,
+        "max": 176.609375
+      },
+      "probeSha256": "d7d165fbfea26ffde224afda244e8e938280f53b4b3c08c04ac7d0df80f404dd",
+      "parity": {
+        "points": 120,
+        "maxAbs": 7.771561172376096e-16,
+        "rmsAbs": 3.6795602554110414e-16,
+        "maxPeakRelative": 2.2566854215014007e-15,
+        "rmsPeakRelative": 1.068460995383673e-15,
+        "maxGridAbs": 6.617444900424222e-24
+      }
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 10000,
+      "phase": "warm",
+      "completed": 3,
+      "timedOutChildren": 0,
+      "simulateMs": {
+        "count": 3,
+        "median": 305.422208,
+        "min": 282.306625,
+        "max": 318.290541
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 251.0625,
+        "min": 246.609375,
+        "max": 251.171875
+      },
+      "probeSha256": "d7d165fbfea26ffde224afda244e8e938280f53b4b3c08c04ac7d0df80f404dd",
+      "parity": {
+        "points": 120,
+        "maxAbs": 7.771561172376096e-16,
+        "rmsAbs": 3.6795602554110414e-16,
+        "maxPeakRelative": 2.2566854215014007e-15,
+        "rmsPeakRelative": 1.068460995383673e-15,
+        "maxGridAbs": 6.617444900424222e-24
+      }
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 50000,
+      "phase": "cold",
+      "completed": 3,
+      "timedOutChildren": 0,
+      "simulateMs": {
+        "count": 3,
+        "median": 1458.358833,
+        "min": 1349.342666,
+        "max": 1572.1495
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 410.078125,
+        "min": 406.03125,
+        "max": 411.359375
+      },
+      "probeSha256": "d7d165fbfea26ffde224afda244e8e938280f53b4b3c08c04ac7d0df80f404dd",
+      "parity": {
+        "points": 120,
+        "maxAbs": 7.771561172376096e-16,
+        "rmsAbs": 3.6795602554110414e-16,
+        "maxPeakRelative": 2.2566854215014007e-15,
+        "rmsPeakRelative": 1.068460995383673e-15,
+        "maxGridAbs": 6.617444900424222e-24
+      }
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 50000,
+      "phase": "warm",
+      "completed": 3,
+      "timedOutChildren": 0,
+      "simulateMs": {
+        "count": 3,
+        "median": 1380.6791670000002,
+        "min": 1240.7591250000003,
+        "max": 1431.6507080000001
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 613.890625,
+        "min": 612.140625,
+        "max": 669.65625
+      },
+      "probeSha256": "d7d165fbfea26ffde224afda244e8e938280f53b4b3c08c04ac7d0df80f404dd",
+      "parity": {
+        "points": 120,
+        "maxAbs": 7.771561172376096e-16,
+        "rmsAbs": 3.6795602554110414e-16,
+        "maxPeakRelative": 2.2566854215014007e-15,
+        "rmsPeakRelative": 1.068460995383673e-15,
+        "maxGridAbs": 6.617444900424222e-24
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 1000,
+      "phase": "cold",
+      "completed": 3,
+      "timedOutChildren": 0,
+      "simulateMs": {
+        "count": 3,
+        "median": 56.639084,
+        "min": 50.301916999999996,
+        "max": 57.23287500000001
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 84.15625,
+        "min": 83.984375,
+        "max": 84.953125
+      },
+      "probeSha256": "3e841c976c07f1fa0fcb6bb42ccbaea92da4cc6eea768c201bd72cde1ddf860b",
+      "parity": {
+        "points": 1,
+        "maxAbs": 5.964673199798654e-14,
+        "rmsAbs": 5.964673199798654e-14,
+        "maxPeakRelative": 3.274778694868735e-13,
+        "rmsPeakRelative": 3.274778694868735e-13,
+        "maxGridAbs": 0
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 1000,
+      "phase": "warm",
+      "completed": 3,
+      "timedOutChildren": 0,
+      "simulateMs": {
+        "count": 3,
+        "median": 25.936209000000005,
+        "min": 24.013000000000005,
+        "max": 26.367125
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 87.125,
+        "min": 86.953125,
+        "max": 87.5625
+      },
+      "probeSha256": "3e841c976c07f1fa0fcb6bb42ccbaea92da4cc6eea768c201bd72cde1ddf860b",
+      "parity": {
+        "points": 1,
+        "maxAbs": 5.964673199798654e-14,
+        "rmsAbs": 5.964673199798654e-14,
+        "maxPeakRelative": 3.274778694868735e-13,
+        "rmsPeakRelative": 3.274778694868735e-13,
+        "maxGridAbs": 0
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "phase": "cold",
+      "completed": 3,
+      "timedOutChildren": 0,
+      "simulateMs": {
+        "count": 3,
+        "median": 275.70691700000003,
+        "min": 260.58612500000004,
+        "max": 279.648209
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 146.578125,
+        "min": 146.5625,
+        "max": 147.484375
+      },
+      "probeSha256": "719f05ee5b5c01e7d23789c1bdcd1ddf7f57946d71c85534611aa32cda790417",
+      "parity": {
+        "points": 1,
+        "maxAbs": 4.687361609967411e-13,
+        "rmsAbs": 4.687361609967411e-13,
+        "maxPeakRelative": 3.253418142687601e-12,
+        "rmsPeakRelative": 3.253418142687601e-12,
+        "maxGridAbs": 0
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "phase": "warm",
+      "completed": 3,
+      "timedOutChildren": 0,
+      "simulateMs": {
+        "count": 3,
+        "median": 179.472375,
+        "min": 178.06537499999996,
+        "max": 181.56991699999998
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 194.8125,
+        "min": 194.4375,
+        "max": 197.15625
+      },
+      "probeSha256": "719f05ee5b5c01e7d23789c1bdcd1ddf7f57946d71c85534611aa32cda790417",
+      "parity": {
+        "points": 1,
+        "maxAbs": 4.687361609967411e-13,
+        "rmsAbs": 4.687361609967411e-13,
+        "maxPeakRelative": 3.253418142687601e-12,
+        "rmsPeakRelative": 3.253418142687601e-12,
+        "maxGridAbs": 0
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "phase": "cold",
+      "completed": 3,
+      "timedOutChildren": 0,
+      "simulateMs": {
+        "count": 3,
+        "median": 1004.773042,
+        "min": 989.845417,
+        "max": 1166.665125
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 360.078125,
+        "min": 357.734375,
+        "max": 362.1875
+      },
+      "probeSha256": "ae696e91cb0a0ec4ecebd8b5714f7dfb56dcb001038e8474ac9373147b038689",
+      "parity": {
+        "points": 1,
+        "maxAbs": 1.883937450486428e-12,
+        "rmsAbs": 1.883937450486428e-12,
+        "maxPeakRelative": 1.5010546600651854e-11,
+        "rmsPeakRelative": 1.5010546600651854e-11,
+        "maxGridAbs": 0
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "phase": "warm",
+      "completed": 3,
+      "timedOutChildren": 0,
+      "simulateMs": {
+        "count": 3,
+        "median": 924.484667,
+        "min": 907.8032500000002,
+        "max": 1068.072916
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 568.5,
+        "min": 560.203125,
+        "max": 570.5625
+      },
+      "probeSha256": "ae696e91cb0a0ec4ecebd8b5714f7dfb56dcb001038e8474ac9373147b038689",
+      "parity": {
+        "points": 1,
+        "maxAbs": 1.883937450486428e-12,
+        "rmsAbs": 1.883937450486428e-12,
+        "maxPeakRelative": 1.5010546600651854e-11,
+        "rmsPeakRelative": 1.5010546600651854e-11,
+        "maxGridAbs": 0
+      }
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 1000,
+      "phase": "cold",
+      "completed": 3,
+      "timedOutChildren": 0,
+      "simulateMs": {
+        "count": 3,
+        "median": 311.0635,
+        "min": 296.04108299999996,
+        "max": 378.339125
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 122.234375,
+        "min": 122.0625,
+        "max": 123.546875
+      },
+      "probeSha256": "19b5994b3e3f9c7b0028a6940c2e7cab6dac54a9cd297bcb7211eef28a3cf68a",
+      "parity": {
+        "points": 214,
+        "maxAbs": 0.00039369360861024605,
+        "rmsAbs": 0.00004218086115977272,
+        "maxPeakRelative": 0.001124668309854744,
+        "rmsPeakRelative": 0.0001204984708698788,
+        "maxGridAbs": 0
+      }
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 1000,
+      "phase": "warm",
+      "completed": 3,
+      "timedOutChildren": 0,
+      "simulateMs": {
+        "count": 3,
+        "median": 228.89112499999993,
+        "min": 203.89420900000005,
+        "max": 253.29954199999997
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 143.484375,
+        "min": 143.09375,
+        "max": 145.59375
+      },
+      "probeSha256": "19b5994b3e3f9c7b0028a6940c2e7cab6dac54a9cd297bcb7211eef28a3cf68a",
+      "parity": {
+        "points": 214,
+        "maxAbs": 0.00039369360861024605,
+        "rmsAbs": 0.00004218086115977272,
+        "maxPeakRelative": 0.001124668309854744,
+        "rmsPeakRelative": 0.0001204984708698788,
+        "maxGridAbs": 0
+      }
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 10000,
+      "phase": "cold",
+      "completed": 3,
+      "timedOutChildren": 0,
+      "simulateMs": {
+        "count": 3,
+        "median": 2728.0805,
+        "min": 2233.1221250000003,
+        "max": 2761.088541
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 340.578125,
+        "min": 339.53125,
+        "max": 341.578125
+      },
+      "probeSha256": "19b5994b3e3f9c7b0028a6940c2e7cab6dac54a9cd297bcb7211eef28a3cf68a",
+      "parity": {
+        "points": 214,
+        "maxAbs": 0.00039369360861024605,
+        "rmsAbs": 0.00004218086115978648,
+        "maxPeakRelative": 0.001124668309854744,
+        "rmsPeakRelative": 0.0001204984708699181,
+        "maxGridAbs": 0
+      }
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 10000,
+      "phase": "warm",
+      "completed": 3,
+      "timedOutChildren": 0,
+      "simulateMs": {
+        "count": 3,
+        "median": 2208.1775000000002,
+        "min": 1900.1321249999996,
+        "max": 2467.235541
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 449.15625,
+        "min": 448.140625,
+        "max": 455.40625
+      },
+      "probeSha256": "19b5994b3e3f9c7b0028a6940c2e7cab6dac54a9cd297bcb7211eef28a3cf68a",
+      "parity": {
+        "points": 214,
+        "maxAbs": 0.00039369360861024605,
+        "rmsAbs": 0.00004218086115978648,
+        "maxPeakRelative": 0.001124668309854744,
+        "rmsPeakRelative": 0.0001204984708699181,
+        "maxGridAbs": 0
+      }
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 50000,
+      "phase": "cold",
+      "completed": 3,
+      "timedOutChildren": 1,
+      "simulateMs": {
+        "count": 3,
+        "median": 24491.785875,
+        "min": 22139.415334,
+        "max": 34274.025292
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 1078.0625,
+        "min": 1062.15625,
+        "max": 1104.546875
+      },
+      "probeSha256": "20834a6e72295631a3ec4d23c6dc7f637db69a111116ffe90b090fe22fcd6e00",
+      "parity": {
+        "status": "unavailable",
+        "reason": "Inherited #906 3/3 ngspice CMOS50k timeouts at 45s; no new reference run"
+      }
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 50000,
+      "phase": "warm",
+      "completed": 2,
+      "timedOutChildren": 1,
+      "simulateMs": {
+        "count": 2,
+        "median": 20761.5928335,
+        "min": 19911.071084,
+        "max": 21612.114583000002
+      },
+      "processPeakRssMiB": {
+        "count": 2,
+        "median": 1732.625,
+        "min": 1716.15625,
+        "max": 1749.09375
+      },
+      "probeSha256": "20834a6e72295631a3ec4d23c6dc7f637db69a111116ffe90b090fe22fcd6e00",
+      "parity": {
+        "status": "unavailable",
+        "reason": "Inherited #906 3/3 ngspice CMOS50k timeouts at 45s; no new reference run"
+      }
+    }
+  ],
+  "isolation": [
+    {
+      "size": 1000,
+      "phase": "cold",
+      "factorMs": {
+        "count": 3,
+        "median": 12.925333000000009,
+        "min": 11.946875000000006,
+        "max": 14.718250000000012
+      },
+      "solveMs": {
+        "count": 3,
+        "median": 1.1442499999999995,
+        "min": 0.957540999999992,
+        "max": 1.1667079999999999
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 77.25,
+        "min": 77.015625,
+        "max": 77.609375
+      },
+      "supernodalUpdates": 1231,
+      "factorNonzeros": 23088,
+      "growth": {
+        "phase": "growth-diagnostic",
+        "initialCapacity": 3010,
+        "finalCapacity": 24080,
+        "used": 12057,
+        "growth": [
+          {
+            "required": 3011,
+            "before": 3010,
+            "after": 6020
+          },
+          {
+            "required": 6021,
+            "before": 6020,
+            "after": 12040
+          },
+          {
+            "required": 12041,
+            "before": 12040,
+            "after": 24080
+          }
+        ]
+      },
+      "supernodeSelfMs": {
+        "count": 3,
+        "median": 6.792,
+        "min": 1.041,
+        "max": 7.75
+      }
+    },
+    {
+      "size": 1000,
+      "phase": "warm",
+      "factorMs": {
+        "count": 3,
+        "median": 2.3595420000000047,
+        "min": 2.3163749999999936,
+        "max": 2.652165999999994
+      },
+      "solveMs": {
+        "count": 3,
+        "median": 0.8898329999999959,
+        "min": 0.8590420000000023,
+        "max": 1.1025419999999997
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 77.8125,
+        "min": 77.65625,
+        "max": 78.4375
+      },
+      "supernodalUpdates": 1231,
+      "factorNonzeros": 23088,
+      "growth": {
+        "phase": "growth-diagnostic",
+        "initialCapacity": 3010,
+        "finalCapacity": 24080,
+        "used": 12057,
+        "growth": [
+          {
+            "required": 3011,
+            "before": 3010,
+            "after": 6020
+          },
+          {
+            "required": 6021,
+            "before": 6020,
+            "after": 12040
+          },
+          {
+            "required": 12041,
+            "before": 12040,
+            "after": 24080
+          }
+        ]
+      },
+      "supernodeSelfMs": {
+        "count": 3,
+        "median": 0,
+        "min": 0,
+        "max": 2
+      }
+    },
+    {
+      "size": 10000,
+      "phase": "cold",
+      "factorMs": {
+        "count": 3,
+        "median": 73.62308399999999,
+        "min": 70.21199999999999,
+        "max": 79.34970799999999
+      },
+      "solveMs": {
+        "count": 3,
+        "median": 4.439249999999987,
+        "min": 4.315708000000001,
+        "max": 4.4952089999999885
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 101.453125,
+        "min": 101.40625,
+        "max": 101.890625
+      },
+      "supernodalUpdates": 16101,
+      "factorNonzeros": 396986,
+      "growth": {
+        "phase": "growth-diagnostic",
+        "initialCapacity": 29802,
+        "finalCapacity": 238416,
+        "used": 203494,
+        "growth": [
+          {
+            "required": 29803,
+            "before": 29802,
+            "after": 59604
+          },
+          {
+            "required": 59605,
+            "before": 59604,
+            "after": 119208
+          },
+          {
+            "required": 119209,
+            "before": 119208,
+            "after": 238416
+          }
+        ]
+      },
+      "supernodeSelfMs": {
+        "count": 3,
+        "median": 16.542,
+        "min": 16.124000000000002,
+        "max": 20.250999999999998
+      }
+    },
+    {
+      "size": 10000,
+      "phase": "warm",
+      "factorMs": {
+        "count": 3,
+        "median": 29.778209000000032,
+        "min": 29.750291999999945,
+        "max": 29.9255
+      },
+      "solveMs": {
+        "count": 3,
+        "median": 0.9435000000000286,
+        "min": 0.8871249999999691,
+        "max": 1.1695829999999887
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 117.390625,
+        "min": 117.21875,
+        "max": 117.765625
+      },
+      "supernodalUpdates": 16101,
+      "factorNonzeros": 396986,
+      "growth": {
+        "phase": "growth-diagnostic",
+        "initialCapacity": 29802,
+        "finalCapacity": 238416,
+        "used": 203494,
+        "growth": [
+          {
+            "required": 29803,
+            "before": 29802,
+            "after": 59604
+          },
+          {
+            "required": 59605,
+            "before": 59604,
+            "after": 119208
+          },
+          {
+            "required": 119209,
+            "before": 119208,
+            "after": 238416
+          }
+        ]
+      },
+      "supernodeSelfMs": {
+        "count": 3,
+        "median": 16.792,
+        "min": 15.249,
+        "max": 17.125
+      }
+    },
+    {
+      "size": 50000,
+      "phase": "cold",
+      "factorMs": {
+        "count": 3,
+        "median": 338.40645900000004,
+        "min": 336.01416699999993,
+        "max": 350.18070900000004
+      },
+      "solveMs": {
+        "count": 3,
+        "median": 8.53879100000006,
+        "min": 8.325541999999928,
+        "max": 8.786624999999958
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 243.34375,
+        "min": 242.84375,
+        "max": 244.5
+      },
+      "supernodalUpdates": 89122,
+      "factorNonzeros": 2988840,
+      "growth": {
+        "phase": "growth-diagnostic",
+        "initialCapacity": 150082,
+        "finalCapacity": 2401312,
+        "used": 1519509,
+        "growth": [
+          {
+            "required": 150083,
+            "before": 150082,
+            "after": 300164
+          },
+          {
+            "required": 300165,
+            "before": 300164,
+            "after": 600328
+          },
+          {
+            "required": 600329,
+            "before": 600328,
+            "after": 1200656
+          },
+          {
+            "required": 1200657,
+            "before": 1200656,
+            "after": 2401312
+          }
+        ]
+      },
+      "supernodeSelfMs": {
+        "count": 3,
+        "median": 201.03900000000002,
+        "min": 158.291,
+        "max": 201.125
+      }
+    },
+    {
+      "size": 50000,
+      "phase": "warm",
+      "factorMs": {
+        "count": 3,
+        "median": 288.123791,
+        "min": 281.44779199999994,
+        "max": 312.56075
+      },
+      "solveMs": {
+        "count": 3,
+        "median": 7.610374999999976,
+        "min": 7.459874999999897,
+        "max": 10.307874999999967
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 265.015625,
+        "min": 264.84375,
+        "max": 265.5625
+      },
+      "supernodalUpdates": 89122,
+      "factorNonzeros": 2988840,
+      "growth": {
+        "phase": "growth-diagnostic",
+        "initialCapacity": 150082,
+        "finalCapacity": 2401312,
+        "used": 1519509,
+        "growth": [
+          {
+            "required": 150083,
+            "before": 150082,
+            "after": 300164
+          },
+          {
+            "required": 300165,
+            "before": 300164,
+            "after": 600328
+          },
+          {
+            "required": 600329,
+            "before": 600328,
+            "after": 1200656
+          },
+          {
+            "required": 1200657,
+            "before": 1200656,
+            "after": 2401312
+          }
+        ]
+      },
+      "supernodeSelfMs": {
+        "count": 3,
+        "median": 156.5,
+        "min": 150.749,
+        "max": 186.708
+      }
+    }
+  ]
+}

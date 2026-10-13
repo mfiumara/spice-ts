@@ -1,0 +1,58 @@
+TAP version 13
+# Subtest: selection is exactly the complete original 22-ID bucket in deterministic order
+ok 1 - selection is exactly the complete original 22-ID bucket in deterministic order
+  ---
+  duration_ms: 56.318709
+  type: 'test'
+  ...
+# Subtest: all exported deck bytes and pinned SHA256s equal the original receipt
+ok 2 - all exported deck bytes and pinned SHA256s equal the original receipt
+  ---
+  duration_ms: 595.2175
+  type: 'test'
+  ...
+# Subtest: licence provenance and exact notice are retained
+ok 3 - licence provenance and exact notice are retained
+  ---
+  duration_ms: 20.59075
+  type: 'test'
+  ...
+# Subtest: self-contained inputs have no include/library/source dependencies
+ok 4 - self-contained inputs have no include/library/source dependencies
+  ---
+  duration_ms: 2.659
+  type: 'test'
+  ...
+# Subtest: every fixture has both independently executed current diagnostics
+ok 5 - every fixture has both independently executed current diagnostics
+  ---
+  duration_ms: 0.840458
+  type: 'test'
+  ...
+# Subtest: historical reference never becomes an unmeasured fresh match
+ok 6 - historical reference never becomes an unmeasured fresh match
+  ---
+  duration_ms: 0.438
+  type: 'test'
+  ...
+# Subtest: current status totals are independently derived from every row
+ok 7 - current status totals are independently derived from every row
+  ---
+  duration_ms: 0.221125
+  type: 'test'
+  ...
+# Subtest: fixed base and bounded execution policy are explicit
+ok 8 - fixed base and bounded execution policy are explicit
+  ---
+  duration_ms: 0.088458
+  type: 'test'
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 770.554167

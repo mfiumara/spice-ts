@@ -1,0 +1,9 @@
+# Sources for #797 diagnosis only
+
+This directory does not modify the central source registry: the three original decks are already registered in benchmarks/SOURCES.md and corpus-h/manifest.json. They remain in their original location, unchanged and not duplicated here.
+
+- Self-authored 17 minimal decks, scripts, and analysis: MIT, same licence as this repository. `generate.py` records all seven issue-listed lists verbatim and ten boundary controls; `matrix.json` includes three original decks (20 total).
+- Original example01.cir, example01_stringwriter.cir, example01_without_params.cir: SpiceSharp/SpiceSharpParser, revision `8fc01560fe303eeebaeb5cbf5edfe77bf635e1c7`, https://github.com/SpiceSharp/SpiceSharpParser/tree/8fc01560fe303eeebaeb5cbf5edfe77bf635e1c7/src/SpiceSharpParser.IntegrationTests/Examples/Circuits . MIT; Copyright (c) 2018-2026 SpiceSharp. Licence retained byte-identically in `benchmarks/corpus/corpus-h/licenses/spicesharpparser/LICENSE` (SHA-256 `36101d87e6558d862cfba70474a744978b49b792309b094a74ad229037695ada`). Deck hashes are checked against the existing manifest by `verify.py`.
+- ngspice source: https://github.com/imr/ngspice/tree/a80f6e3e95d51534905b1f23410a951802666656 , ngspice-47 revision. `source.json` pins URLs, SHA-256 and licences for inpcom.c (BSD-3-Clause), numparam/xpressn.c and spicenum.c (LGPL-2.0-or-later), and COPYING (the licensing document itself is CC-BY-SA-4.0). `fetch.py` downloads to ignored `.run/upstream/` for inspection. No upstream C code or COPYING is redistributed in this PR. Analysis below is original prose, not a copied implementation.
+
+Native/ref engine logs and numeric observations are generated benchmark evidence in receipt.json. No source redistribution restrictions apply beyond the notices already retained with the fixtures.

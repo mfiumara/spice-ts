@@ -343,3 +343,32 @@ export class UnsupportedTemperatureError extends InvalidCircuitError {
     this.name = 'UnsupportedTemperatureError';
   }
 }
+
+/**
+ * Thrown when a subcircuit instance with multiplicity `m` (the X-line `m=`,
+ * including one inherited from an enclosing instance) contains a card that
+ * ngspice-47 scales by `m` but spice-ts cannot (e.g. a G, F, current B or
+ * JFET card). Simulating it with m = 1 would silently model a different
+ * circuit.
+ */
+export class UnsupportedMultiplicityError extends InvalidCircuitError {
+  /** Stable machine-readable error code. */
+  readonly code = 'UNSUPPORTED_MULTIPLICITY';
+
+  constructor(
+    /** Flattened device name, e.g. `x1.g1` */
+    public readonly deviceName: string,
+    /** SPICE instance letter, e.g. `G` */
+    public readonly deviceKind: string,
+    /** Subcircuit instance path whose multiplicity reaches the device, e.g. `x1` */
+    public readonly instanceName: string,
+    /** Effective multiplicity of that instance */
+    public readonly multiplicity: number,
+  ) {
+    super(
+      `${deviceKind} device '${deviceName}' cannot be scaled by the multiplicity m=${multiplicity}`
+        + ` of subcircuit instance '${instanceName}': spice-ts does not implement m for ${deviceKind} cards`,
+    );
+    this.name = 'UnsupportedMultiplicityError';
+  }
+}

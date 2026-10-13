@@ -1,0 +1,11 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e10428ab/packages/core
+
+ ✓ src/solver/gilbert-peierls.test.ts (31 tests) 105ms
+
+ Test Files  1 passed (1)
+      Tests  31 passed (31)
+   Start at  16:10:08
+   Duration  275ms (transform 67ms, setup 0ms, import 82ms, tests 105ms, environment 0ms)
+
+JUNIT report written to /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e10428ab/packages/core/test-results.xml

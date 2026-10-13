@@ -18,11 +18,8 @@ describe('NOACCT option receipt', () => {
     assert.equal(receipt.totals.fixtures, receipt.fixtures.length);
   });
 
-  it('pins source provenance and every byte-identical fixture', () => {
-    assert.equal(
-      sha256(readFileSync(resolve(repoRoot, 'benchmarks/SOURCES.md'))),
-      receipt.provenance.sourcesSha256,
-    );
+  it('pins the source manifest and every byte-identical fixture, not the global source index', () => {
+    // SOURCES.md records unrelated additions. The manifest pins this receipt's source.
     assert.equal(
       sha256(readFileSync(resolve(repoRoot, 'benchmarks/corpus/ngspice/manifest.json'))),
       receipt.provenance.manifestSha256,

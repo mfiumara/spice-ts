@@ -1,0 +1,11 @@
+Total elapsed time (seconds) = 1.599 
+Total iterations = 637
+Transient iterations = 0
+Total analysis time (seconds) = 1.44318
+Matrix load time = 0.921852
+Matrix reorder time = 0.199485
+Matrix factor time = 0.043847
+Matrix solve time = 0.055044
+Transient analysis time = 0
+Transient iterations for the last time point = 637
+AC analysis time = 0

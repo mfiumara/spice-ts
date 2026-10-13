@@ -1,0 +1,23 @@
+
+  ../../benchmarks/performance/results/issue-932/baseline.mjs  1.5mb ⚠️
+
+⚡ Done in 77ms
+
+  ../../benchmarks/performance/results/issue-932/diagnostic.mjs  1.5mb ⚠️
+
+⚡ Done in 35ms
+
+  ../../benchmarks/performance/results/issue-932/control.mjs  1.5mb ⚠️
+
+⚡ Done in 46ms
+Traceback (most recent call last):
+  File "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_47d21d17/benchmarks/performance/results/issue-932/prepare.py", line 47, in <module>
+    local_hash = hashlib.sha256(local.read_bytes()).hexdigest()
+                                ~~~~~~~~~~~~~~~~^^
+  File "/nix/store/kmq6qdcg0yq6r4awf02dgq003n42r6zk-python3-3.14.7/lib/python3.14/pathlib/__init__.py", line 777, in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nix/store/kmq6qdcg0yq6r4awf02dgq003n42r6zk-python3-3.14.7/lib/python3.14/pathlib/__init__.py", line 771, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_47d21d17/packages/core/src/parser/temp-directive-871.test.ts'

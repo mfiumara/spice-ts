@@ -12,12 +12,14 @@ import {
   XSPICE_BEHAVIORS, type BehaviorFactory, type CodeModelBehavior, type XspiceNetlistProbe,
 } from './models.js';
 import { OSCILLATOR_BEHAVIORS } from './oscillator-models.js';
+import { SWITCH_BEHAVIORS } from './switch-models.js';
+import { resolveSTransfer, STransferDevice } from './s-xfer.js';
 import { XSPICE_CODE_MODEL_SPECS, type XspiceParamValue } from './spec.js';
 import { XspiceDevice, type XspiceInputPort, type XspiceOutputPort } from './xspice-device.js';
 
 /** Every implemented code model behavior keyed by lower-case ngspice Spice_Model_Name. */
 const BEHAVIORS: ReadonlyMap<string, BehaviorFactory> = new Map<string, BehaviorFactory>([
-  ...XSPICE_BEHAVIORS, ...LIMITER_BEHAVIORS, ...OSCILLATOR_BEHAVIORS,
+  ...XSPICE_BEHAVIORS, ...LIMITER_BEHAVIORS, ...OSCILLATOR_BEHAVIORS, ...SWITCH_BEHAVIORS,
 ]);
 
 /** An A instance whose connections and parameters were resolved against its code model. */
@@ -51,6 +53,7 @@ export function prepareXspiceInstance(
   const spec = XSPICE_CODE_MODEL_SPECS.get(model.codeModel)!;
   const connections = resolveXspiceConnections(card, spec, ground);
   const params = resolveXspiceParams(card.name, model, spec, connections);
+  if (model.codeModel === 's_xfer') resolveSTransfer(params);
   const nodes: string[] = [];
   const digitalNodes: string[] = [];
   for (const connection of connections) {
@@ -143,6 +146,11 @@ export function createXspiceDevice(
       }
     });
   });
+  if (model.codeModel === 's_xfer') {
+    const transfer = resolveSTransfer(params);
+    const states = transfer.initial.map((_, i) => allocateBranch(`${card.name}#s_xfer_state_${i}`));
+    return new STransferDevice(card.name, inputs[0], outputs[0], transfer, states, model.warnings);
+  }
   const firstPort = connections[0]?.ports[0];
   const metered = firstPort?.positive === undefined || firstPort.type === 'd' ? -1 : resolveNode(firstPort.positive);
   const netlist = new NetlistProbe(metered);
@@ -215,7 +223,8 @@ export function bindXspiceSources(devices: readonly DeviceModel[], deviceMap: Re
     if (probe) probe.devices = devices;
     for (const { port, source } of device.unresolvedSources) {
       const controlling = [...deviceMap.entries()].find(([name]) => name.toUpperCase() === source.toUpperCase())?.[1];
-      if (!controlling || controlling.branches.length === 0 || !/^v/i.test(source)) {
+      // A subcircuit source is named `<instance path>.<name>`: test its own name.
+      if (!controlling || controlling.branches.length === 0 || !/(^|\.)v[^.]*$/i.test(source)) {
         throw new InvalidCircuitError(`${device.name}: unknown controlling source ${source}`);
       }
       device.bindSourceBranch(port, controlling.branches[0]);
@@ -236,14 +245,20 @@ export function assertXspiceAnalyses(
     throw new InvalidCircuitError('XSPICE A devices do not support .disto (no distortion terms)');
   }
   const digital = instances.find(instance => DIGITAL_MODELS.has(instance.model.codeModel));
-  const unsupportedEvent = digital && analyses.find(analysis => analysis !== 'op' && analysis !== 'tran');
+  // .ac follows ngspice-47 acan.c: EVTop sets the digital state, the sweep
+  // loads only analog instances (the analog halves of the bridges).
+  const unsupportedEvent = digital && analyses.find(analysis => analysis !== 'op' && analysis !== 'tran' && analysis !== 'ac');
   if (digital && unsupportedEvent) {
     throw new InvalidCircuitError(
-      `XSPICE event-driven instance '${digital.card.name}' (${digital.model.codeModel}) is supported in .op and .tran only, not .${unsupportedEvent}`,
+      `XSPICE event-driven instance '${digital.card.name}' (${digital.model.codeModel}) is supported in .op, .tran and .ac only, not .${unsupportedEvent}`,
     );
   }
   for (const instance of instances) {
     const { codeModel } = instance.model;
+    if (codeModel === 's_xfer') {
+      const unsupported = analyses.find(analysis => !['op', 'dc', 'ac', 'tran'].includes(analysis));
+      if (unsupported) throw new InvalidCircuitError(`XSPICE s_xfer instance '${instance.card.name}' does not support .${unsupported}`);
+    }
     if (codeModel === 'int') {
       const unsupported = analyses.find(analysis => analysis === 'tf' || analysis === 'pz' || analysis === 'sens');
       if (unsupported) {

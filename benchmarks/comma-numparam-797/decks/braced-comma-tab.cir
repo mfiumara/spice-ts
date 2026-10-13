@@ -1,0 +1,9 @@
+comma numparam control
+* SPDX-License-Identifier: MIT
+.subckt s o params: p1=1 p2=1 p3=1
+I1 0 o {p1*100+p2*10+p3}
+R0 o 0 1
+.ends
+X1 o s params: p1={2},	p2={3},	p3={4}
+.op
+.end

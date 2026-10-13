@@ -1,0 +1,137 @@
+{
+  "baseline": "d4b1ce04b70f98986d825d1daee64fabcfc7ae61",
+  "runtimeCaveat": "Single shared-host runs, not a speed claim. Native timings include parse/compile/analysis; reference includes startup/raw I/O.",
+  "receipts": [
+    {
+      "name": "reduction",
+      "sha256": "23c05174610397c199ae3ad79444f830645ad1f04c29064d2a8442978edd5486",
+      "identicalInput": true,
+      "before": "failure",
+      "after": "success",
+      "nativeBeforeMs": 10.775041999999985,
+      "nativeAfterMs": 20.767124999999965,
+      "referenceExit": 0,
+      "referenceAcRows": 31,
+      "referenceMs": 22.094749999999976,
+      "maxError": 6.05355206622835e-14,
+      "rmsError": 1.023545913178503e-14,
+      "comparedValues": 93
+    },
+    {
+      "name": "base",
+      "sha256": "22cb849113e37af11faa951ce72e9d67f2ae38219918af7bf377f479afed8e5c",
+      "identicalInput": true,
+      "before": "failure",
+      "after": "failure",
+      "nativeBeforeMs": 63.13074999999998,
+      "nativeAfterMs": 55.910709,
+      "referenceExit": 0,
+      "referenceAcRows": 141,
+      "referenceMs": 60.24137499999961,
+      "maxError": null,
+      "rmsError": null,
+      "comparedValues": 0
+    },
+    {
+      "name": "variant",
+      "sha256": "a5cc7a2cb92e1bac21fc554f882a74b72bf112b6d74cc615d98546c59697c21f",
+      "identicalInput": true,
+      "before": "failure",
+      "after": "failure",
+      "nativeBeforeMs": 65.419959,
+      "nativeAfterMs": 61.484541000000036,
+      "referenceExit": 0,
+      "referenceAcRows": 141,
+      "referenceMs": 69.86845799999992,
+      "maxError": null,
+      "rmsError": null,
+      "comparedValues": 0
+    },
+    {
+      "name": "divider",
+      "sha256": "c92df81ccbe5e6acc476870cfcb90197e93849929e299242470c471b2e04ac88",
+      "identicalInput": true,
+      "before": "success",
+      "after": "success",
+      "nativeBeforeMs": 10.968624999999975,
+      "nativeAfterMs": 12.509416999999985,
+      "referenceExit": 0,
+      "referenceAcRows": null,
+      "referenceMs": 48.79441599999973,
+      "maxError": null,
+      "rmsError": null,
+      "comparedValues": 0
+    },
+    {
+      "name": "inconsistent",
+      "sha256": "bab88385f3c9ac84381223e4c7ae9e6004d773c85776fcb63ee5b0b8340af2c6",
+      "identicalInput": true,
+      "before": "failure",
+      "after": "failure",
+      "nativeBeforeMs": 12.15424999999999,
+      "nativeAfterMs": 14.26524999999998,
+      "referenceExit": 0,
+      "referenceAcRows": 31,
+      "referenceMs": 19.861375000000407,
+      "maxError": null,
+      "rmsError": null,
+      "comparedValues": 0
+    }
+  ],
+  "probeDeltas": [
+    {
+      "name": "1u/2u reduction",
+      "steps": 107,
+      "time": 0.00001,
+      "deltas": [
+        {
+          "name": "a",
+          "native": 0.9518289887771557,
+          "reference": 0.9518289887645057,
+          "absoluteError": 1.2649992164881496e-11
+        },
+        {
+          "name": "b",
+          "native": 0.024085505611424966,
+          "reference": 0.02408550561231978,
+          "absoluteError": 8.948120022722605e-13
+        },
+        {
+          "name": "in",
+          "native": 1,
+          "reference": 0.9999999999989999,
+          "absoluteError": 1.000088900582341e-12
+        }
+      ],
+      "maxAbsoluteError": 1.2649992164881496e-11,
+      "rmsAbsoluteError": 7.344457504359817e-12
+    },
+    {
+      "name": "1n/2n control",
+      "steps": 107,
+      "time": 0.00001,
+      "deltas": [
+        {
+          "name": "a",
+          "native": 0.33333333333333365,
+          "reference": 0.3333333310811537,
+          "absoluteError": 2.2521799425412325e-9
+        },
+        {
+          "name": "b",
+          "native": 0.3333333333333337,
+          "reference": 0.3333333311033759,
+          "absoluteError": 2.229957829502638e-9
+        },
+        {
+          "name": "in",
+          "native": 1,
+          "reference": 0.9999999999989999,
+          "absoluteError": 1.000088900582341e-12
+        }
+      ],
+      "maxAbsoluteError": 2.2521799425412325e-9,
+      "rmsAbsoluteError": 1.8298476635249317e-9
+    }
+  ]
+}

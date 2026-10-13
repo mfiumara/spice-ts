@@ -1,0 +1,40 @@
+TAP version 13
+# Subtest: identical relocated originals/includes; 141 reference rows and native losses are preserved
+ok 1 - identical relocated originals/includes; 141 reference rows and native losses are preserved
+  ---
+  duration_ms: 0.470334
+  type: 'test'
+  ...
+# Subtest: later dynamic-node-gmin failures are distinct from initial passive pivot2
+ok 2 - later dynamic-node-gmin failures are distinct from initial passive pivot2
+  ---
+  duration_ms: 0.412416
+  type: 'test'
+  ...
+# Subtest: MIT reduction specifically contains the later TABLE semantic gap; not just a passive island
+ok 3 - MIT reduction specifically contains the later TABLE semantic gap; not just a passive island
+  ---
+  duration_ms: 7.059792
+  type: 'test'
+  ...
+# Subtest: vendor receipts export only redacted topology/hash metadata, not expressions/names/full matrices
+ok 4 - vendor receipts export only redacted topology/hash metadata, not expressions/names/full matrices
+  ---
+  duration_ms: 1.18325
+  type: 'test'
+  ...
+# Subtest: source pin, actual child-wall budget and process exits are explicit
+ok 5 - source pin, actual child-wall budget and process exits are explicit
+  ---
+  duration_ms: 0.134833
+  type: 'test'
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 210.653334

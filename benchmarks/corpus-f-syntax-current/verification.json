@@ -1,0 +1,32 @@
+{
+  "scope": "benchmarks/corpus-f-syntax-current/ only",
+  "simulatorSha": "f0446a68f317b9fd558d1a14b540a0e4f1063e18",
+  "commands": [
+    { "command": "pnpm install --frozen-lockfile", "exit": 0, "note": "Pre-build missing MCP dist bin warning only; build subsequently succeeded." },
+    { "command": "node --test benchmarks/corpus-f-syntax-current/reconcile.test.mjs", "phase": "RED", "exit": 1, "log": "red.log", "note": "Required runner module did not yet exist." },
+    { "command": "spice-heavy node benchmarks/corpus-f-syntax-current/reconcile.mjs", "exit": 0, "log": "run.log", "fixtures": 59, "elapsedMs": 25045.125 },
+    { "command": "node benchmarks/corpus-f-syntax-current/summarize.mjs", "exit": 0 },
+    { "command": "node --test benchmarks/corpus-f-syntax-current/reconcile.test.mjs", "phase": "GREEN", "exit": 0, "tests": 10, "passed": 10, "log": "green.log" },
+    { "command": "node benchmarks/corpus-f-syntax-current/reconcile.mjs --check", "exit": 0, "fixtures": 59 },
+    { "command": "pnpm build", "exit": 0, "log": "build.log.gz" },
+    { "command": "pnpm lint", "exit": 0, "log": "lint.log" },
+    { "command": "spice-heavy pnpm test", "exit": 0, "log": "full-test.log", "tests": 4036, "skipped": 6, "failed": 0, "note": "Counts parsed from all package Vitest totals and node:test totals; targeted directory tests run separately." },
+    { "command": "spice-heavy pnpm bench:accuracy", "exit": 0, "log": "accuracy.log", "note": "Independent existing analytic accuracy control, NOT a fresh corpus-f ngspice comparison. Generated shared accuracy-results.json copied to accuracy-control.json then restored to frozen checkout bytes." }
+  ],
+  "beforeAfter": {
+    "historicalUnsupported": 59,
+    "currentParseSuccess": 15,
+    "currentParseUnsupported": 44,
+    "currentSimulationSuccess": 1,
+    "currentSimulationUnsupported": 14,
+    "currentSimulationNotRun": 44,
+    "currentNativeLoss": 58,
+    "currentNotCompared": 1,
+    "timeouts": 0,
+    "incompleteBudgetRows": 0,
+    "freshReferenceRuns": 0,
+    "freshMatched": 0,
+    "freshMismatch": 0,
+    "comparisonMetrics": null
+  }
+}

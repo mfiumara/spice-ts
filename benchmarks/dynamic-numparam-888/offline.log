@@ -1,0 +1,10 @@
+test_child_budget_accounting (__main__.Evidence) ... ok
+test_complete_same_byte_matrix (__main__.Evidence) ... ok
+test_native_failures_and_recomputed_metrics (__main__.Evidence) ... ok
+test_pinned_sources_and_versions (__main__.Evidence) ... ok
+test_reference_contract_from_raw (__main__.Evidence) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.009s
+
+OK

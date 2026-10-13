@@ -1,0 +1,77 @@
+{
+  "phases": [
+    {
+      "phase": "worker-entry",
+      "ms": 27.038834,
+      "memory": {
+        "rss": 44253184,
+        "heapTotal": 5652480,
+        "heapUsed": 4611552,
+        "external": 1816664,
+        "arrayBuffers": 10515
+      }
+    },
+    {
+      "phase": "core-imported",
+      "ms": 52.798125,
+      "memory": {
+        "rss": 55869440,
+        "heapTotal": 11255808,
+        "heapUsed": 9377536,
+        "external": 1817784,
+        "arrayBuffers": 11595
+      }
+    },
+    {
+      "phase": "simulate-start",
+      "ms": 64.312375,
+      "memory": {
+        "rss": 60604416,
+        "heapTotal": 11517952,
+        "heapUsed": 9918072,
+        "external": 1817784,
+        "arrayBuffers": 11595
+      }
+    },
+    {
+      "phase": "simulate-end",
+      "ms": 137.694125,
+      "memory": {
+        "rss": 92766208,
+        "heapTotal": 31178752,
+        "heapUsed": 14235752,
+        "external": 3612304,
+        "arrayBuffers": 1661635
+      }
+    }
+  ],
+  "ms": 73.38175000000001,
+  "peakRssMiB": 88.96875,
+  "grid": [
+    0
+  ],
+  "values": [
+    0.18213973387412954
+  ],
+  "convergence": {
+    "dc": {
+      "newtonIterations": 2,
+      "acceptedSolves": 1,
+      "rejectedSolves": 0,
+      "sourceStepAttempts": 0,
+      "sourceStepFailures": 0,
+      "gminStepAttempts": 0,
+      "gminStepFailures": 0,
+      "failure": null
+    },
+    "transient": {
+      "acceptedSteps": 0,
+      "rejectedSteps": 0,
+      "newtonIterations": 0,
+      "nrRetries": 0,
+      "lteRetries": 0,
+      "minimumAcceptedTimestep": null,
+      "failure": null
+    }
+  }
+}

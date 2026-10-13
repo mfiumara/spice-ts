@@ -18,16 +18,16 @@
       "matchedPointCount": 414,
       "waveformErrors": {
         "input": {
-          "maximumAbsoluteError": 1.0547118733938987e-15,
-          "rmsAbsoluteError": 7.122854341573825e-17,
+          "maximumAbsoluteError": 9.992007221626409e-16,
+          "rmsAbsoluteError": 6.896211624037347e-17,
           "maximumRelativeError": 2.42861286636753e-14,
-          "rmsRelativeError": 1.3020304467819397e-15
+          "rmsRelativeError": 1.2981931821145783e-15
         },
         "output": {
-          "maximumAbsoluteError": 1.887379141862766e-15,
-          "rmsAbsoluteError": 9.284985247008207e-17,
-          "maximumRelativeError": 5.0330110449673766e-15,
-          "rmsRelativeError": 2.4951612321419553e-16
+          "maximumAbsoluteError": 4.107825191113079e-14,
+          "rmsAbsoluteError": 2.724595438849497e-15,
+          "maximumRelativeError": 0.00003722312756486315,
+          "rmsRelativeError": 0.000001829416914122232
         }
       },
       "propagation": {
@@ -48,16 +48,16 @@
       "matchedPointCount": 414,
       "waveformErrors": {
         "input": {
-          "maximumAbsoluteError": 0.004550045527923263,
-          "rmsAbsoluteError": 0.0002236225377437703,
-          "maximumRelativeError": 0.005850058534229893,
-          "rmsRelativeError": 0.00028751469130276725
+          "maximumAbsoluteError": 3.333345821587841e-10,
+          "rmsAbsoluteError": 2.6339138487413596e-10,
+          "maximumRelativeError": 1.4285709540504396e-9,
+          "rmsRelativeError": 3.8946115964528227e-10
         },
         "output": {
-          "maximumAbsoluteError": 0.003349544520010017,
-          "rmsAbsoluteError": 0.00022901276302476206,
-          "maximumRelativeError": 0.004110804637259839,
-          "rmsRelativeError": 0.00027191598737132095
+          "maximumAbsoluteError": 3.334065246107798e-10,
+          "rmsAbsoluteError": 1.217575799993334e-10,
+          "maximumRelativeError": 0.00006617444900420116,
+          "rmsRelativeError": 0.0000032522967399285826
         }
       },
       "propagation": {

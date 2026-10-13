@@ -12,6 +12,7 @@ import { MOSFET } from '../devices/mosfet.js';
 import { MOS2 } from '../devices/mos2.js';
 import { MOS3 } from '../devices/mos3.js';
 import { MOS6 } from '../devices/mos6.js';
+import { NodeShunt } from '../devices/node-shunt.js';
 import { VCCS } from '../devices/vccs.js';
 import { VCVS } from '../devices/vcvs.js';
 import { VoltageSource } from '../devices/voltage-source.js';
@@ -61,8 +62,11 @@ export function preflightTopology(
 ): void {
   const allNodes = [GROUND_INDEX, ...compiled.nodeNames.map((_, index) => index)];
   const physical = graph(allNodes);
+  // `.options rshunt` ties every node to ground through a resistor.
+  const shunted = compiled.devices.some(device => device instanceof NodeShunt);
 
   for (const device of compiled.devices) connectAll(physical, device.nodes);
+  if (shunted) connectAll(physical, allNodes);
 
   const physicallyGrounded = reachable(physical, GROUND_INDEX);
   const floating = compiled.nodeNames
@@ -77,6 +81,7 @@ export function preflightTopology(
   );
   if (needsDcOperatingPoint) {
     const dc = graph(allNodes);
+    if (shunted) connectAll(dc, allNodes);
     for (const device of compiled.devices) {
       for (const group of dcConnectionGroups(device)) connectAll(dc, group);
     }

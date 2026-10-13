@@ -1,0 +1,53 @@
+[
+  {
+    "name": "offline",
+    "argv": [
+      "pnpm",
+      "exec",
+      "tsx",
+      "--test",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/evidence.test.mts"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 29,
+    "wallSeconds": 0.41608637500030454
+  },
+  {
+    "name": "build",
+    "argv": [
+      "pnpm",
+      "build"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 29,
+    "wallSeconds": 10.804900750001252
+  },
+  {
+    "name": "lint",
+    "argv": [
+      "pnpm",
+      "lint"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 29,
+    "wallSeconds": 1.9414966249969439
+  },
+  {
+    "name": "full-tests",
+    "argv": [
+      "pnpm",
+      "test"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": -9,
+    "timedOut": true,
+    "limitSeconds": 29,
+    "wallSeconds": 29.01496283299639
+  }
+]

@@ -188,8 +188,8 @@ describe('ngspice-47 resistor card forms (#498)', () => {
   });
 
   it.each([
-    ['instance TEMP', 'R1 1 0 1k temp=50', 'TEMP'],
-    ['instance DTEMP', 'R1 1 0 1k dtemp=5', 'DTEMP'],
+    // Instance TEMP/DTEMP are simulated since #846 (pspice-model-temperature-846.test.ts).
+    ['PSpice T_REL_LOCAL model parameter', 'R1 1 0 rx\n.model rx RES(R=1k T_REL_LOCAL=5)', 'T_REL_LOCAL'],
     ['unknown instance keyword', 'R1 1 0 1k foo=1', 'FOO'],
     ['unknown model parameter', 'R1 1 0 rx\n.model rx r r=1k xyz=2', 'XYZ'],
   ])('rejects %s with a typed error', (_label, card, parameter) => {

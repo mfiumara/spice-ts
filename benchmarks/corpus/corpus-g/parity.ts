@@ -8,6 +8,7 @@
  *   spice-heavy pnpm exec tsx benchmarks/corpus/corpus-g/parity.ts            # regenerate outcomes.json + README.md
  *   spice-heavy pnpm exec tsx benchmarks/corpus/corpus-g/parity.ts --check    # rerun and compare, write nothing
  *   pnpm exec tsx benchmarks/corpus/corpus-g/parity.ts --relabel              # recompute buckets/issue links only
+ *   spice-heavy pnpm exec tsx benchmarks/corpus/corpus-g/parity.ts --fine-reference [--accept-drift]  # add the #592 column to committed transient rows
  *
  * The file is not named outcomes.ts or report.ts on purpose: corpus-f/outcomes.ts and classic/report.ts
  * start their own main() when the entry script has that base name, and this script imports both.
@@ -19,9 +20,10 @@ import { arch, cpus, platform, release, tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SPICE_TS_TIMEOUT_MS } from '../../aggregate-report.js';
+import { FINE_REFERENCE_RULE, fineReferenceSection } from '../../fine-reference.js';
 import type { CorpusFCircuit } from '../corpus-f/ingest.js';
 import { type EngineStatus, MATCH_THRESHOLD, type Outcome, scrub } from '../corpus-f/lib.js';
-import { CONTROL_ONLY_NOTE, MATCH_RULE as CORPUS_F_MATCH_RULE, type FixtureOutcome, outcomeDigest, runFixture, stableReport } from '../corpus-f/outcomes.js';
+import { CONTROL_ONLY_NOTE, MATCH_RULE as CORPUS_F_MATCH_RULE, type FixtureOutcome, FIXTURE_CHILD_TIMEOUT_MS, outcomeDigest, runFixture, stableReport, withFineReference } from '../corpus-f/outcomes.js';
 import type { CorpusGManifest } from './ingest.js';
 import { CORPUS_ROOT, gapBucket } from './lib.js';
 
@@ -32,8 +34,8 @@ export const REPORT_SCHEMA = 'spice-ts-corpus-g-outcomes/v1' as const;
 const MANIFEST_PATH = resolve(CORPUS_ROOT, 'manifest.json');
 const JSON_PATH = resolve(CORPUS_ROOT, 'outcomes.json');
 const MARKDOWN_PATH = resolve(CORPUS_ROOT, 'README.md');
-/** corpus-f's runNgspice bound (600 s) plus the spice-ts bound plus slack, per fixture child. */
-const CHILD_TIMEOUT_MS = 600_000 + SPICE_TS_TIMEOUT_MS + 60_000;
+/** corpus-f's per-fixture child bound: both default runs, the fine-reference run (#592) and slack. */
+const CHILD_TIMEOUT_MS = FIXTURE_CHILD_TIMEOUT_MS;
 const CHILD_FLAG = '--corpus-g-fixture-child';
 
 export interface CorpusGReport {
@@ -49,6 +51,8 @@ export interface CorpusGReport {
     perCircuitToleranceTuning: false;
     matchThreshold: number;
     matchRule: string;
+    /** Absent before #592. */
+    fineReference?: string;
     deterministicHashExcludes: ['environment', 'tools.node', 'ngspice.analyses', 'spiceTs.analyses'];
   };
   totals: {
@@ -188,6 +192,7 @@ export async function buildReport(manifest: CorpusGManifest, manifestSha256: str
       perCircuitToleranceTuning: false,
       matchThreshold: MATCH_THRESHOLD,
       matchRule: MATCH_RULE,
+      fineReference: FINE_REFERENCE_RULE,
       deterministicHashExcludes: ['environment', 'tools.node', 'ngspice.analyses', 'spiceTs.analyses'],
     },
     ...summarize(results),
@@ -268,6 +273,10 @@ export function renderMarkdown(report: CorpusGReport): string {
     ...header,
     ...matched.map(row),
     '',
+    ...fineReferenceSection(report.fixtures.map(fixture => {
+      const local = fixture.sourcePath.replace(/^Netlists\//, '');
+      return { label: `[${local}](fixtures/${local})`, status: fixture.outcome, fineReference: fixture.fineReference };
+    })),
   ];
   return lines.join('\n');
 }
@@ -296,6 +305,17 @@ async function main(): Promise<void> {
   const check = argv.includes('--check');
   const jobsIndex = argv.indexOf('--jobs');
   const jobs = jobsIndex >= 0 ? Number(argv[jobsIndex + 1]) : 4;
+  if (argv.includes('--fine-reference')) {
+    const committed = JSON.parse(await readFile(JSON_PATH, 'utf8')) as CorpusGReport;
+    const { fixtures } = await withFineReference(committed.fixtures, runChild, jobs, 'corpus-g', argv.includes('--accept-drift'));
+    const { outcomeSha256: _previous, ...rest } = committed;
+    const base = { ...rest, policy: { ...rest.policy, fineReference: FINE_REFERENCE_RULE }, ...summarize(fixtures), fixtures };
+    const report: CorpusGReport = { ...base, outcomeSha256: outcomeDigest(base as never) };
+    await writeFile(JSON_PATH, stableReport(report as never));
+    await writeFile(MARKDOWN_PATH, renderMarkdown(report));
+    process.stderr.write(`corpus-g --fine-reference: outcome ${report.outcomeSha256}\n`);
+    return;
+  }
   process.stderr.write(`corpus-g report${check ? ' --check' : ''}: pid ${process.pid}; stop with: kill ${process.pid}\n`);
   const manifestBytes = await readFile(MANIFEST_PATH);
   const manifest = JSON.parse(manifestBytes.toString('utf8')) as CorpusGManifest;

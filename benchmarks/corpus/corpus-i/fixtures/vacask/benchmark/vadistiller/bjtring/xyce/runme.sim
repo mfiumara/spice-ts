@@ -1,0 +1,32 @@
+9 stage ring oscillator
+
+.model t2n2222 npn subs=1 
++ is=19f bf=150 vaf=100 ikf=0.18 ise=50p 
++ ne=2.5 br=7.5 var=6.4 ikr=12m isc=8.7p
++ nc=1.2 rb=50 re=0.4 rc=0.3 cje=26p tf=0.5n 
++ cjc=11p tr=7n xtb=1.5 kf=0.032f af=1
+  
+.subckt invcell (in out vcc vee) params: r=0.5k c=0.5n
+q1 out b vee t2n2222
+rb in b {r}
+cb b 0 {c}
+rc vcc out 1k
+.ends
+
+x1 9 1 vcc 0 invcell
+x2 1 2 vcc 0 invcell
+x3 2 3 vcc 0 invcell
+x4 3 4 vcc 0 invcell
+x5 4 5 vcc 0 invcell
+x6 5 6 vcc 0 invcell
+x7 6 7 vcc 0 invcell
+x8 7 8 vcc 0 invcell
+x9 8 9 vcc 0 invcell
+
+vcc vcc 0 dc 5
+i0 0 1 dc 0 pulse 0 10u 1n 1n 1n 1n
+
+.options timeint method=trap 
+.tran 1n 1000u 0 1n uic
+
+.end

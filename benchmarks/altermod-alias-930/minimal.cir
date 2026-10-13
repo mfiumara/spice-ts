@@ -1,0 +1,14 @@
+altermod shared model alias
+V1 supply 0 1
+R1 supply a shared
+R2 supply b shared
+RA a 0 1k
+RB b 0 1k
+.model shared R (r=1k)
+.csparam resistance = 2k
+.control
+altermod r1 r = $&resistance
+op
+print v(a) v(b)
+.endc
+.end

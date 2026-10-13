@@ -3,6 +3,7 @@ import type { DeviceModel, StampContext } from './device.js';
 import {
   resolveVBICTemperature, type VBICTemperatureState,
 } from './vbic-temperature.js';
+import { pnjlim } from './devsup.js';
 
 /** ngspice default circuit temperature and VBIC TNOM in degrees Celsius. */
 const NOMINAL_TEMPERATURE_C = 27;
@@ -255,24 +256,6 @@ const BRANCHES: readonly (readonly [positive: number, negative: number])[] = [
 const JUNCTION_COUNT = 6;
 const NO_NODE = -1;
 const EXCESS_PHASE_BRANCHES: readonly (readonly [number, number])[] = [[XF1, NO_NODE], [XF2, NO_NODE]];
-
-/** ngspice-47 devsup.c DEVpnjlim; `vt` is kT/q at the device temperature. */
-function pnjlim(voltage: number, previous: number, vt: number, criticalVoltage: number): number {
-  if (voltage > criticalVoltage && Math.abs(voltage - previous) > 2 * vt) {
-    if (previous > 0) {
-      const ratio = (voltage - previous) / vt;
-      return ratio > 0
-        ? previous + vt * (2 + Math.log(ratio - 2))
-        : previous - vt * (2 + Math.log(2 - ratio));
-    }
-    return vt * Math.log(voltage / vt);
-  }
-  if (voltage < 0) {
-    const minimum = previous > 0 ? -previous - 1 : 2 * previous - 1;
-    return Math.max(voltage, minimum);
-  }
-  return voltage;
-}
 
 /**
  * Evaluate the isothermal VBIC 1.2 currents and charges. `thermal` carries the

@@ -22,7 +22,8 @@ import type { NoiseAnalysis, ResolvedOptions } from '../types.js';
 
 const BOLTZMANN_CONSTANT = 1.380649e-23;
 const ELEMENTARY_CHARGE = 1.602176634e-19;
-const DEFAULT_TEMPERATURE_KELVIN = 273.15 + 27;
+const CELSIUS_TO_KELVIN = 273.15;
+const DEFAULT_TEMPERATURE_KELVIN = CELSIUS_TO_KELVIN + 27;
 /** ngspice-47 noisedef.h: the smallest |gain|^2 input-referred noise divides by (#767). */
 const N_MINGAIN = 1e-20;
 /**
@@ -70,6 +71,14 @@ export function assertNoiseDevicesSupported(compiled: CompiledCircuit): void {
             `.noise does not support BJT model parameter '${parameter}' for '${device.name}'`,
           );
         }
+      }
+      // A BJT that stamps its own base resistance (RBM != RB, or XCJC < 1
+      // with RB > 0, #861) has no expanded RB resistor to carry the
+      // bjtnoise.c RB thermal noise; reject rather than drop that source.
+      if (device.nodes[4] !== undefined) {
+        throw new InvalidCircuitError(
+          `.noise does not support BJT base resistance with XCJC < 1 for '${device.name}'`,
+        );
       }
     } else if (device instanceof BSIM3v3) kind = 'MOSFET';
     // b1noi.c / b2noi.c are not ported; reject rather than treat the channel as noiseless.
@@ -204,12 +213,14 @@ export function solveNoise(
           `.noise does not support resistor flicker noise (model KF) for '${resistor.name}'`,
         );
       }
-      // ngspice resnoise.c: thermal noise uses the DC conductance RESconduct even with ac=.
+      // ngspice resnoise.c: thermal noise uses the DC conductance RESconduct even with ac=,
+      // at the instance temperature REStemp + RESdtemp (model TEMP/DTEMP, #846).
+      const kelvin = resistor.getTemperature() + CELSIUS_TO_KELVIN;
       return {
         positive: resistor.nodes[0],
         negative: resistor.nodes[1],
         currentPowerDensity: (_frequency: number) =>
-          4 * BOLTZMANN_CONSTANT * DEFAULT_TEMPERATURE_KELVIN * resistor.conductance,
+          4 * BOLTZMANN_CONSTANT * kelvin * resistor.conductance,
       };
     });
   const mosfetSources = devices
@@ -326,12 +337,15 @@ export function solveNoise(
     let outputPowerDensity = 0;
     for (let index = 0; index < noiseSources.length; index++) {
       const { positive, negative, currentPowerDensity } = noiseSources[index];
-      const currentDensity = Math.sqrt(currentPowerDensity(frequency));
+      // ngspice sums noise powers, so a source below 0 K (T_ABS=-273.15 parsed one ulp
+      // under absolute zero, #846) adds its tiny negative power instead of a NaN amplitude.
+      const powerDensity = currentPowerDensity(frequency);
+      const currentDensity = Math.sqrt(Math.abs(powerDensity));
       const rhs = new Float64Array(systemSize);
       if (positive >= 0) rhs[positive] -= currentDensity;
       if (negative >= 0) rhs[negative] += currentDensity;
       const [real, imaginary] = solver.solve(rhs, zeroImaginary);
-      const contribution = differentialMagnitudeSquared(
+      const contribution = Math.sign(powerDensity) * differentialMagnitudeSquared(
         real, imaginary, outputIndex, outputReferenceIndex,
       );
       sourceOutputPowerDensity[index].push(contribution);

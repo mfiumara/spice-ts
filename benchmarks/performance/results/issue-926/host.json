@@ -1,0 +1,26 @@
+{
+  "baselineRevision": "d4b1ce04b70f98986d825d1daee64fabcfc7ae61",
+  "node": "v22.23.1",
+  "os": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+  "cpu": "Apple M5 Pro",
+  "ramBytes": "51539607552",
+  "loadStart": "16:58  up 22 hrs, 2 users, load averages: 10.20 10.90 9.66",
+  "deadlineSeconds": 45.0,
+  "totalChildWallBudgetSeconds": 900.0,
+  "bundles": {
+    "baseline": {
+      "chunk-LSAJ3NAM.js": "fed4b0d2dd3ff0579de06cfa770ba9a58a816c47581a0a2772a3e3aa91fec0db",
+      "chunk-Q3QMXV32.js": "6a75a21d89022c9b5af6a99e0f664e311097a9d8b8877a9e40f86ac76490d4f2",
+      "index.js": "0d63770eeec576a497b35ad7d9479b535ee50b8d2cbc6062d2bf87e47ff748fe",
+      "step-worker-browser.js": "d37fca798096fa855934f04032d256cfb1e96e187f2e0eb339f4473dd6f4356f",
+      "step-worker.js": "64e4bbbf526803bb258f5d83945977afd16b7f7db78a3d272c49dbaa91ce6fc6"
+    },
+    "candidate": {
+      "chunk-LRWLRX34.js": "384d355c12a9a0b236e4c48b97bf79c0622eeb2ee266401df605d947d65677a5",
+      "chunk-M53U7X6V.js": "e4d8bbb48b48e1ba8c7bfab196aa4fc64e78d7075589067006d0289b698df7d7",
+      "index.js": "17c455bb1e214ee65740be2ed9dc8f44e3911423494d785d6e4ddbef8ae8ebf1",
+      "step-worker-browser.js": "d55e09fd6e6b2e940e1f66438bcf6056d61517da3096fced2c1c2fc664ec0220",
+      "step-worker.js": "e0227c5d632d2b8616eb0591a78c25331272fc96d0d194ff46c87790ce4cc424"
+    }
+  }
+}

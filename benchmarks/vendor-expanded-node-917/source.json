@@ -1,0 +1,24 @@
+{
+  "origin": "https://git.code.sf.net/p/ngspice/ngspice",
+  "tag": "ngspice-47",
+  "revision": "a80f6e3e95d51534905b1f23410a951802666656",
+  "licence": "modified BSD, referenced not copied",
+  "files": {
+    "src/frontend/inpcom.c": "5ee51218fb36937ba55ee5e395ef837b34b65133914090db78d4930dae8f5e68",
+    "src/frontend/init.c": "bd52e96db74324e031400ccbbdbbd4fcbec9e2bd3477ae0d3c3a8020194b35bc",
+    "src/spicelib/analysis/cktop.c": "9f06d3ac7b6a8aa28bdb46f1af3157362c6ca4a2ecc701a388c990ac3a07eb5e",
+    "src/spicelib/analysis/optran.c": "293bd182839ac8f53e5b47186abfcdf9128ed17bd8cb33ba4083e10f71b00742",
+    "src/xspice/icm/analog/pwl/cfunc.mod": "3bae0f87c1a26386a997c7211fdff1f7625d7ff68d012d0ad040b52015e696ec"
+  },
+  "versions": {
+    "ngspice": "******\n** ngspice-47 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2026, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n******",
+    "node": "v22.23.1",
+    "pnpm": "10.28.1",
+    "cpu": "Apple M5 Pro"
+  },
+  "host": {
+    "system": "Darwin",
+    "release": "27.0.0",
+    "machine": "arm64"
+  }
+}

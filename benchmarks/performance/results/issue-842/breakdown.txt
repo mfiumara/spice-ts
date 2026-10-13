@@ -1,0 +1,102 @@
+cmos-inverter-chain-tran-10000-base.cpuprofile: 4740.4 ms sampled
+  transient: 3057.0 ms 64.5%
+       1766.3 ms  37.3%  device load
+        393.2 ms   8.3%  sparse LU
+        388.7 ms   8.2%  Newton control + convergence tests
+        374.1 ms   7.9%  history + LTE/timestep control
+         74.0 ms   1.6%  result recording
+         60.7 ms   1.3%  other
+  DC operating point: 930.7 ms 19.6%
+        435.8 ms   9.2%  device load
+        291.9 ms   6.2%  sparse LU
+        140.0 ms   3.0%  Newton control + convergence tests
+         63.0 ms   1.3%  other
+  GC: 524.0 ms 11.1%
+        524.0 ms  11.1%  garbage collector
+  parse + compile: 172.3 ms 3.6%
+        172.3 ms   3.6%  other
+  other: 56.5 ms 1.2%
+         46.7 ms   1.0%  other
+          9.9 ms   0.2%  result recording
+cmos-inverter-chain-tran-50000-base.cpuprofile: 48914.7 ms sampled
+  DC operating point: 20473.1 ms 41.9%
+      12175.8 ms  24.9%  device load
+       4445.4 ms   9.1%  sparse LU
+       3398.9 ms   6.9%  Newton control + convergence tests
+        453.0 ms   0.9%  other
+  transient: 19931.6 ms 40.7%
+      11823.5 ms  24.2%  device load
+       2761.0 ms   5.6%  Newton control + convergence tests
+       2514.6 ms   5.1%  history + LTE/timestep control
+       2223.8 ms   4.5%  sparse LU
+        328.1 ms   0.7%  result recording
+        280.6 ms   0.6%  other
+  GC: 7414.4 ms 15.2%
+       7414.4 ms  15.2%  garbage collector
+  parse + compile: 902.1 ms 1.8%
+        902.1 ms   1.8%  other
+  other: 193.5 ms 0.4%
+        146.9 ms   0.3%  other
+         46.6 ms   0.1%  result recording
+rc-ladder-tran-10000-base.cpuprofile: 488.0 ms sampled
+  transient: 270.5 ms 55.4%
+         86.7 ms  17.8%  device load
+         55.4 ms  11.3%  result recording
+         50.7 ms  10.4%  sparse LU
+         32.7 ms   6.7%  Newton control + convergence tests
+         31.9 ms   6.5%  history + LTE/timestep control
+         13.1 ms   2.7%  other
+  parse + compile: 75.3 ms 15.4%
+         75.3 ms  15.4%  other
+  DC operating point: 62.5 ms 12.8%
+         35.1 ms   7.2%  sparse LU
+         16.5 ms   3.4%  other
+         10.9 ms   2.2%  Newton control + convergence tests
+  GC: 50.8 ms 10.4%
+         50.8 ms  10.4%  garbage collector
+  other: 29.0 ms 5.9%
+         29.0 ms   5.9%  other
+rc-ladder-tran-50000-base.cpuprofile: 3457.3 ms sampled
+  transient: 2072.5 ms 59.9%
+        875.0 ms  25.3%  device load
+        556.9 ms  16.1%  history + LTE/timestep control
+        306.4 ms   8.9%  sparse LU
+        147.0 ms   4.3%  other
+        114.9 ms   3.3%  result recording
+         72.3 ms   2.1%  Newton control + convergence tests
+  parse + compile: 566.3 ms 16.4%
+        566.3 ms  16.4%  other
+  GC: 405.8 ms 11.7%
+        405.8 ms  11.7%  garbage collector
+  DC operating point: 247.1 ms 7.1%
+        175.9 ms   5.1%  sparse LU
+         31.9 ms   0.9%  Newton control + convergence tests
+         30.2 ms   0.9%  other
+          9.2 ms   0.3%  device load
+  other: 165.5 ms 4.8%
+        110.5 ms   3.2%  other
+         55.0 ms   1.6%  result recording
+resistor-mesh-op-10000-base.cpuprofile: 484.4 ms sampled
+  DC operating point: 235.2 ms 48.5%
+        172.1 ms  35.5%  sparse LU
+         27.0 ms   5.6%  Newton control + convergence tests
+         26.8 ms   5.5%  other
+          9.3 ms   1.9%  device load
+  parse + compile: 129.7 ms 26.8%
+        129.7 ms  26.8%  other
+  other: 64.1 ms 13.2%
+         64.1 ms  13.2%  other
+  GC: 55.5 ms 11.4%
+         55.5 ms  11.4%  garbage collector
+resistor-mesh-op-50000-base.cpuprofile: 2229.4 ms sampled
+  DC operating point: 1217.6 ms 54.6%
+        969.6 ms  43.5%  sparse LU
+        123.4 ms   5.5%  other
+         80.7 ms   3.6%  Newton control + convergence tests
+         43.9 ms   2.0%  device load
+  parse + compile: 660.9 ms 29.6%
+        660.9 ms  29.6%  other
+  GC: 283.3 ms 12.7%
+        283.3 ms  12.7%  garbage collector
+  other: 67.7 ms 3.0%
+         67.7 ms   3.0%  other

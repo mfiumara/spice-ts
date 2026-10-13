@@ -1,0 +1,10 @@
+spice-heavy: all 2 heavy slots busy, waiting...
+spice-heavy: got slot 0
+op-ic success failed success {'matchedPoints': 1, 'referencePoints': 1, 'maxAbsolute': 0.0, 'rmsAbsolute': 0.0, 'maxRelative': 0.0, 'rmsRelative': 0.0, 'alignment': 'AC/DC exact coordinates; transient linear interpolation at reference times; relative floor 1e-12'}
+dc-zero success failed success {'matchedPoints': 5, 'referencePoints': 5, 'maxAbsolute': 0.0, 'rmsAbsolute': 0.0, 'maxRelative': 0.0, 'rmsRelative': 0.0, 'alignment': 'AC/DC exact coordinates; transient linear interpolation at reference times; relative floor 1e-12'}
+Traceback (most recent call last):
+  File "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_451061b9/benchmarks/xspice-s-xfer-20261013/compare.py", line 126, in <module>
+    receipt['errors'] = errors(receipt.get('native', {}), reference_samples)
+  File "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_451061b9/benchmarks/xspice-s-xfer-20261013/compare.py", line 99, in errors
+    assert math.isclose(x[i], t, rel_tol=1e-10)
+AssertionError

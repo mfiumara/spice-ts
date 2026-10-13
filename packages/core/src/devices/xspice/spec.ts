@@ -12,11 +12,6 @@ export type XspiceAnalogPortType = 'v' | 'vd' | 'i' | 'id' | 'vnam' | 'g' | 'gd'
 /** Port types spice-ts resolves: the analog ones plus the event-driven digital `%d`. */
 export type XspicePortType = XspiceAnalogPortType | 'd';
 
-/** Every port type the XSPICE grammar accepts after a `%`. */
-export const XSPICE_PORT_TYPES: ReadonlySet<string> = new Set([
-  'v', 'vd', 'i', 'id', 'vnam', 'g', 'gd', 'h', 'hd', 'd',
-]);
-
 export interface XspiceConnectionSpec {
   readonly name: string;
   readonly direction: 'in' | 'out' | 'inout';
@@ -178,6 +173,19 @@ const D_DT: XspiceCodeModelSpec = {
   ],
 };
 
+/** s_xfer/ifspec.ifs; omitted ICs are expanded to zero at the model boundary. */
+const S_XFER: XspiceCodeModelSpec = {
+  name: 's_xfer',
+  connections: [{ ...input('in'), allowedTypes: ['v', 'vd', 'i', 'id'] }, output('out')],
+  params: [
+    real('in_offset', 0), real('gain', 1),
+    real('num_coeff', undefined, { vector: true, vectorBounds: [1, undefined] }),
+    real('den_coeff', undefined, { vector: true, vectorBounds: [1, undefined] }),
+    { name: 'int_ic', type: 'real', defaultValue: [], vector: true, nullAllowed: true },
+    real('denormalized_freq', 1),
+  ],
+};
+
 /** climit/ifspec.ifs */
 const CLIMIT: XspiceCodeModelSpec = {
   name: 'climit',
@@ -219,6 +227,34 @@ const ILIMIT: XspiceCodeModelSpec = {
     real('i_source_range', 1e-9, { limits: [1e-15, undefined] }),
     real('i_sink_range', 1e-9, { limits: [1e-15, undefined] }),
     real('r_out_domain', 1e-9, { limits: [1e-15, undefined] }),
+  ],
+};
+
+/** xtradev/pswitch/ifspec.ifs */
+const PSWITCH: XspiceCodeModelSpec = {
+  name: 'pswitch',
+  connections: [
+    { name: 'cntl_in', direction: 'inout', defaultType: 'gd', allowedTypes: ['g', 'gd'], vector: false, nullAllowed: false },
+    { name: 'out', direction: 'inout', defaultType: 'gd', allowedTypes: ['gd'], vector: false, nullAllowed: false },
+  ],
+  params: [
+    real('cntl_off', 0.0), real('cntl_on', 1.0),
+    boolean('log', true), real('r_off', 1.0e12),
+    real('r_on', 1.0), real('r_cntl_in', 1.0e12),
+  ],
+};
+
+/** xtradev/aswitch/ifspec.ifs */
+const ASWITCH: XspiceCodeModelSpec = {
+  name: 'aswitch',
+  connections: [
+    input('cntl_in'),
+    { name: 'out', direction: 'inout', defaultType: 'gd', allowedTypes: ['gd'], vector: false, nullAllowed: false },
+  ],
+  params: [
+    real('cntl_off', 0.0), real('cntl_on', 1.0),
+    boolean('log', true), real('r_off', 1.0e12),
+    real('r_on', 1.0), boolean('limit', false),
   ],
 };
 
@@ -318,16 +354,11 @@ const DAC_BRIDGE: XspiceCodeModelSpec = {
   ],
 };
 
-/** Implemented event-driven (digital) code models and node bridges. */
-export const XSPICE_DIGITAL_CODE_MODELS: ReadonlySet<string> = new Set([
-  'adc_bridge', 'dac_bridge', 'd_buffer', 'd_inverter', 'd_and', 'd_nand', 'd_or', 'd_nor', 'd_xor', 'd_xnor',
-]);
-
 /** Implemented code models keyed by lower-case ngspice Spice_Model_Name. */
 export const XSPICE_CODE_MODEL_SPECS: ReadonlyMap<string, XspiceCodeModelSpec> = new Map(
   [
-    GAIN, SUMMER, MULT, DIVIDE, PWL, LIMIT, INT, D_DT,
-    CLIMIT, HYST, ILIMIT, SLEW, SINE, CMETER, LMETER,
+    GAIN, SUMMER, MULT, DIVIDE, PWL, LIMIT, INT, D_DT, S_XFER,
+    CLIMIT, HYST, ILIMIT, SLEW, SINE, CMETER, LMETER, PSWITCH, ASWITCH,
     ADC_BRIDGE, DAC_BRIDGE,
     unaryGate('d_buffer'), unaryGate('d_inverter'),
     naryGate('d_and'), naryGate('d_nand'), naryGate('d_or'), naryGate('d_nor'), naryGate('d_xor'), naryGate('d_xnor'),

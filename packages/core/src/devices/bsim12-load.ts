@@ -4,6 +4,7 @@ import type {
 import { DEVICE_GMIN } from './device.js';
 import { stampChargeCurrent, TransientChargeState } from './charge-state.js';
 import { InvalidCircuitError, UnsupportedModelParameterError } from '../errors.js';
+import { fetlim, limvds, stepScale } from './devsup.js';
 
 /**
  * Shared load of the classic Berkeley short-channel IGFET models BSIM1
@@ -139,37 +140,6 @@ export function classicBsimSeriesResistances(
   };
 }
 
-/** devsup.c DEVfetlim. */
-function fetlim(vnew: number, vold: number, vto: number): number {
-  const vtsthi = Math.abs(2 * (vold - vto)) + 2;
-  const vtstlo = Math.abs(vold - vto) + 1;
-  const vtox = vto + 3.5;
-  const delv = vnew - vold;
-  if (vold >= vto) {
-    if (vold >= vtox) {
-      if (delv <= 0) {
-        if (vnew >= vtox) return -delv > vtstlo ? vold - vtstlo : vnew;
-        return Math.max(vnew, vto + 2);
-      }
-      return delv >= vtsthi ? vold + vtsthi : vnew;
-    }
-    return delv <= 0 ? Math.max(vnew, vto - 0.5) : Math.min(vnew, vto + 4);
-  }
-  if (delv <= 0) return -delv > vtsthi ? vold - vtsthi : vnew;
-  const vtemp = vto + 0.5;
-  if (vnew <= vtemp) return delv > vtstlo ? vold + vtstlo : vnew;
-  return vtemp;
-}
-
-/** devsup.c DEVlimvds. */
-function limvds(vnew: number, vold: number): number {
-  if (vold >= 3.5) {
-    if (vnew > vold) return Math.min(vnew, 3 * vold + 2);
-    return vnew < 3.5 ? Math.max(vnew, 2) : vnew;
-  }
-  return vnew > vold ? Math.min(vnew, 4) : Math.max(vnew, -0.5);
-}
-
 /** devsup.c DEVpnjlim; returns the limited voltage and whether it limited. */
 function pnjlim(vnew: number, vold: number, vt: number, vcrit: number): [number, boolean] {
   if (vnew > vcrit && Math.abs(vnew - vold) > vt + vt) {
@@ -184,12 +154,6 @@ function pnjlim(vnew: number, vold: number, vt: number, vcrit: number): [number,
     if (vnew < arg) return [arg, true];
   }
   return [vnew, false];
-}
-
-function stepScale(previous: number, proposed: number, limited: number): number {
-  const delta = proposed - previous;
-  if (delta === 0) return 1;
-  return Math.min(1, Math.max(0, (limited - previous) / delta));
 }
 
 /** b1ld.c bulk junction depletion charge and capacitance. */

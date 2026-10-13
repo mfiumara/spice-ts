@@ -1,0 +1,3642 @@
+{
+  "baseline": "f807cd8a3368d344a3a21a9ee17ea52a84bfa748",
+  "configuration": "set ngbehavior=ltps\nset filetype=ascii\n",
+  "receipts": [
+    {
+      "name": "base_159.cir",
+      "inputHashBefore": "68e69ba93d0936696975e9d7062a63a03f9aff7e26c483daded4a4579c5f6705",
+      "inputHashAfter": "68e69ba93d0936696975e9d7062a63a03f9aff7e26c483daded4a4579c5f6705",
+      "includes": {
+        "AD620.mod": "99c3a83c8e4a44fc1c2e5b878a061e03f959e223fa646bb849589e68f603f395",
+        "lmx58_lm2904.lib": "467a3e573420d1f5a21fab57b76be0e13073e854f609a73459a191958e314726",
+        "UA555.mod": "e4b70989b2ca1cd9e3177bc4d35224098360461a2b6901a688542e2d1af6d7bf"
+      },
+      "native": {
+        "process": {
+          "argv": [
+            "node",
+            "--import",
+            "tsx",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/base_159.cir"
+          ],
+          "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+          "exit": 0,
+          "timedOut": false,
+          "limitSeconds": 29,
+          "wallSeconds": 0.4924981250005658
+        },
+        "status": "failure",
+        "terminalPivot": 2,
+        "milliseconds": 78.13408400000003,
+        "nodeCount": 254,
+        "branchCount": 57,
+        "factors": [
+          {
+            "attempt": 0,
+            "phase": "plain-newton",
+            "sourceScale": 1,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "f3551a0e22b2419de950c0494634af8056cef97bc28f4e7baf17528e5b328f20",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "0bedf751808691d315d31a57d55318a3d9f7a09b0e7f2437e88a3cfe03497ba0",
+            "patternHash": "7537a2dd2562c10dc75d0160833246f718bee00046e060a2653ad897b3316d82:18e2ed3ddafe12807e15fb222196229efd7c7440c797f8057cf16c8940b03761",
+            "size": 311,
+            "nnz": 1160,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 35,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "9b8a996a4034981f0e400aacfba257b962f4a77a83c421a9c8b9755f5212b43d",
+              "completedRowPermutationHash": "22eaf0b77e23c6ab1472d1936f6b7cfaf4f3d9fdbf51a95b7e6666c8f748284e"
+            },
+            "witnessId": "64d940765178cd0608a8ab0c4c18b67a9675c798084b0486c34d91cd273ff4b6",
+            "commonModePairsId": "010e00bbfc52c66930d4edeb02c84784629538f2a8a5628fd0aa570b0d5cb6dc",
+            "incidentTopologyId": "9b49099785bde14a099f07b635f21cd8086b65201f4531c36e90be5273bc1803",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "33ba8c4e6bc74a4568a19062c12c572fc951ebcdd42dec970ee2799c56d41739"
+          },
+          {
+            "attempt": 1,
+            "phase": "dynamic-node-gmin",
+            "sourceScale": 1,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "f3551a0e22b2419de950c0494634af8056cef97bc28f4e7baf17528e5b328f20",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "c3144899d07a2dec7fc6852afdf00b9283125c545209e78fe692d8958f49cc44",
+            "patternHash": "7537a2dd2562c10dc75d0160833246f718bee00046e060a2653ad897b3316d82:18e2ed3ddafe12807e15fb222196229efd7c7440c797f8057cf16c8940b03761",
+            "size": 311,
+            "nnz": 1160,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 229,
+              "eliminationStep": 129,
+              "preferredOriginalRow": 229,
+              "remainingRows": 182,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "db9a731d9d8151bfc5cfdccd0c2013e093b2cc9da224b44e17b673f9d0c0302b",
+              "permutationHash": "9b8a996a4034981f0e400aacfba257b962f4a77a83c421a9c8b9755f5212b43d",
+              "completedRowPermutationHash": "64ba5c17e7be2ebcc15605ba60ce6cbea39ec6153d2cf4e2a98cc5f212bbadc8"
+            },
+            "witnessId": "5e38903d9953e73fafb1dca1494c375f6a802478c904453a7762f2148d24067a",
+            "commonModePairsId": "010e00bbfc52c66930d4edeb02c84784629538f2a8a5628fd0aa570b0d5cb6dc",
+            "incidentTopologyId": "3b710fcbd64ddd55d52ad7e34ac47e17d527564b07cceff37307fff459cdf198",
+            "diagonalSlotsId": "8f6df87ee93f4d5b87b65069bf9f1db5bbed439ff228404ca8c594e276f5c6a6",
+            "missingNodeDiagonalsId": "33ba8c4e6bc74a4568a19062c12c572fc951ebcdd42dec970ee2799c56d41739"
+          },
+          {
+            "attempt": 2,
+            "phase": "dynamic-node-gmin",
+            "sourceScale": 1,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "f3551a0e22b2419de950c0494634af8056cef97bc28f4e7baf17528e5b328f20",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "15dadb127bd9a2eb6bc72634320e0d603f0d9b191e1feb486725164a70664b5c",
+            "patternHash": "7537a2dd2562c10dc75d0160833246f718bee00046e060a2653ad897b3316d82:18e2ed3ddafe12807e15fb222196229efd7c7440c797f8057cf16c8940b03761",
+            "size": 311,
+            "nnz": 1160,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 229,
+              "eliminationStep": 129,
+              "preferredOriginalRow": 229,
+              "remainingRows": 182,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "db9a731d9d8151bfc5cfdccd0c2013e093b2cc9da224b44e17b673f9d0c0302b",
+              "permutationHash": "9b8a996a4034981f0e400aacfba257b962f4a77a83c421a9c8b9755f5212b43d",
+              "completedRowPermutationHash": "64ba5c17e7be2ebcc15605ba60ce6cbea39ec6153d2cf4e2a98cc5f212bbadc8"
+            },
+            "witnessId": "5e38903d9953e73fafb1dca1494c375f6a802478c904453a7762f2148d24067a",
+            "commonModePairsId": "010e00bbfc52c66930d4edeb02c84784629538f2a8a5628fd0aa570b0d5cb6dc",
+            "incidentTopologyId": "3b710fcbd64ddd55d52ad7e34ac47e17d527564b07cceff37307fff459cdf198",
+            "diagonalSlotsId": "8f6df87ee93f4d5b87b65069bf9f1db5bbed439ff228404ca8c594e276f5c6a6",
+            "missingNodeDiagonalsId": "33ba8c4e6bc74a4568a19062c12c572fc951ebcdd42dec970ee2799c56d41739"
+          },
+          {
+            "attempt": 3,
+            "phase": "dynamic-node-gmin",
+            "sourceScale": 1,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "f3551a0e22b2419de950c0494634af8056cef97bc28f4e7baf17528e5b328f20",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "dbe97959e25e4cd978be483c0f9dd9bf2a6b65e7c8ca603a501f3d519a156ce3",
+            "patternHash": "7537a2dd2562c10dc75d0160833246f718bee00046e060a2653ad897b3316d82:18e2ed3ddafe12807e15fb222196229efd7c7440c797f8057cf16c8940b03761",
+            "size": 311,
+            "nnz": 1160,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 229,
+              "eliminationStep": 129,
+              "preferredOriginalRow": 229,
+              "remainingRows": 182,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "db9a731d9d8151bfc5cfdccd0c2013e093b2cc9da224b44e17b673f9d0c0302b",
+              "permutationHash": "9b8a996a4034981f0e400aacfba257b962f4a77a83c421a9c8b9755f5212b43d",
+              "completedRowPermutationHash": "b273637f3b33f506a08bfc5652db5d99bc49741f2e355b1d0e9daf1fc133a2df"
+            },
+            "witnessId": "5e38903d9953e73fafb1dca1494c375f6a802478c904453a7762f2148d24067a",
+            "commonModePairsId": "010e00bbfc52c66930d4edeb02c84784629538f2a8a5628fd0aa570b0d5cb6dc",
+            "incidentTopologyId": "3b710fcbd64ddd55d52ad7e34ac47e17d527564b07cceff37307fff459cdf198",
+            "diagonalSlotsId": "8f6df87ee93f4d5b87b65069bf9f1db5bbed439ff228404ca8c594e276f5c6a6",
+            "missingNodeDiagonalsId": "33ba8c4e6bc74a4568a19062c12c572fc951ebcdd42dec970ee2799c56d41739"
+          },
+          {
+            "attempt": 4,
+            "phase": "dynamic-node-gmin",
+            "sourceScale": 1,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "f3551a0e22b2419de950c0494634af8056cef97bc28f4e7baf17528e5b328f20",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "8fbbef28e5264ea1aba159582184b87d8ba8260146ec8a4c291761702f3a9437",
+            "patternHash": "7537a2dd2562c10dc75d0160833246f718bee00046e060a2653ad897b3316d82:18e2ed3ddafe12807e15fb222196229efd7c7440c797f8057cf16c8940b03761",
+            "size": 311,
+            "nnz": 1160,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 229,
+              "eliminationStep": 129,
+              "preferredOriginalRow": 229,
+              "remainingRows": 182,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "db9a731d9d8151bfc5cfdccd0c2013e093b2cc9da224b44e17b673f9d0c0302b",
+              "permutationHash": "9b8a996a4034981f0e400aacfba257b962f4a77a83c421a9c8b9755f5212b43d",
+              "completedRowPermutationHash": "b273637f3b33f506a08bfc5652db5d99bc49741f2e355b1d0e9daf1fc133a2df"
+            },
+            "witnessId": "5e38903d9953e73fafb1dca1494c375f6a802478c904453a7762f2148d24067a",
+            "commonModePairsId": "010e00bbfc52c66930d4edeb02c84784629538f2a8a5628fd0aa570b0d5cb6dc",
+            "incidentTopologyId": "3b710fcbd64ddd55d52ad7e34ac47e17d527564b07cceff37307fff459cdf198",
+            "diagonalSlotsId": "8f6df87ee93f4d5b87b65069bf9f1db5bbed439ff228404ca8c594e276f5c6a6",
+            "missingNodeDiagonalsId": "33ba8c4e6bc74a4568a19062c12c572fc951ebcdd42dec970ee2799c56d41739"
+          },
+          {
+            "attempt": 5,
+            "phase": "dynamic-node-gmin",
+            "sourceScale": 1,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "f3551a0e22b2419de950c0494634af8056cef97bc28f4e7baf17528e5b328f20",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "a15ce9767b5781fc0eab57ab2d845a87e7bc63a0ac24741baabd9fcf78845a67",
+            "patternHash": "7537a2dd2562c10dc75d0160833246f718bee00046e060a2653ad897b3316d82:18e2ed3ddafe12807e15fb222196229efd7c7440c797f8057cf16c8940b03761",
+            "size": 311,
+            "nnz": 1160,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 229,
+              "eliminationStep": 129,
+              "preferredOriginalRow": 229,
+              "remainingRows": 182,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "db9a731d9d8151bfc5cfdccd0c2013e093b2cc9da224b44e17b673f9d0c0302b",
+              "permutationHash": "9b8a996a4034981f0e400aacfba257b962f4a77a83c421a9c8b9755f5212b43d",
+              "completedRowPermutationHash": "b273637f3b33f506a08bfc5652db5d99bc49741f2e355b1d0e9daf1fc133a2df"
+            },
+            "witnessId": "5e38903d9953e73fafb1dca1494c375f6a802478c904453a7762f2148d24067a",
+            "commonModePairsId": "010e00bbfc52c66930d4edeb02c84784629538f2a8a5628fd0aa570b0d5cb6dc",
+            "incidentTopologyId": "3b710fcbd64ddd55d52ad7e34ac47e17d527564b07cceff37307fff459cdf198",
+            "diagonalSlotsId": "8f6df87ee93f4d5b87b65069bf9f1db5bbed439ff228404ca8c594e276f5c6a6",
+            "missingNodeDiagonalsId": "33ba8c4e6bc74a4568a19062c12c572fc951ebcdd42dec970ee2799c56d41739"
+          },
+          {
+            "attempt": 6,
+            "phase": "dynamic-node-gmin",
+            "sourceScale": 1,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "f3551a0e22b2419de950c0494634af8056cef97bc28f4e7baf17528e5b328f20",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "e922cb3e8e4eb34ef200fbfbf54558767717869916da48bfebb5ddbb64c20d8d",
+            "patternHash": "7537a2dd2562c10dc75d0160833246f718bee00046e060a2653ad897b3316d82:18e2ed3ddafe12807e15fb222196229efd7c7440c797f8057cf16c8940b03761",
+            "size": 311,
+            "nnz": 1160,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 229,
+              "eliminationStep": 129,
+              "preferredOriginalRow": 229,
+              "remainingRows": 182,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "db9a731d9d8151bfc5cfdccd0c2013e093b2cc9da224b44e17b673f9d0c0302b",
+              "permutationHash": "9b8a996a4034981f0e400aacfba257b962f4a77a83c421a9c8b9755f5212b43d",
+              "completedRowPermutationHash": "b273637f3b33f506a08bfc5652db5d99bc49741f2e355b1d0e9daf1fc133a2df"
+            },
+            "witnessId": "5e38903d9953e73fafb1dca1494c375f6a802478c904453a7762f2148d24067a",
+            "commonModePairsId": "010e00bbfc52c66930d4edeb02c84784629538f2a8a5628fd0aa570b0d5cb6dc",
+            "incidentTopologyId": "3b710fcbd64ddd55d52ad7e34ac47e17d527564b07cceff37307fff459cdf198",
+            "diagonalSlotsId": "8f6df87ee93f4d5b87b65069bf9f1db5bbed439ff228404ca8c594e276f5c6a6",
+            "missingNodeDiagonalsId": "33ba8c4e6bc74a4568a19062c12c572fc951ebcdd42dec970ee2799c56d41739"
+          },
+          {
+            "attempt": 7,
+            "phase": "dynamic-node-gmin",
+            "sourceScale": 1,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "f3551a0e22b2419de950c0494634af8056cef97bc28f4e7baf17528e5b328f20",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "b4ccb1ab8cc7a7a9e8987615693e79269142a86ae718bd79efbf64e1ddbb9bb0",
+            "patternHash": "7537a2dd2562c10dc75d0160833246f718bee00046e060a2653ad897b3316d82:18e2ed3ddafe12807e15fb222196229efd7c7440c797f8057cf16c8940b03761",
+            "size": 311,
+            "nnz": 1160,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 229,
+              "eliminationStep": 129,
+              "preferredOriginalRow": 229,
+              "remainingRows": 182,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "db9a731d9d8151bfc5cfdccd0c2013e093b2cc9da224b44e17b673f9d0c0302b",
+              "permutationHash": "9b8a996a4034981f0e400aacfba257b962f4a77a83c421a9c8b9755f5212b43d",
+              "completedRowPermutationHash": "b273637f3b33f506a08bfc5652db5d99bc49741f2e355b1d0e9daf1fc133a2df"
+            },
+            "witnessId": "5e38903d9953e73fafb1dca1494c375f6a802478c904453a7762f2148d24067a",
+            "commonModePairsId": "010e00bbfc52c66930d4edeb02c84784629538f2a8a5628fd0aa570b0d5cb6dc",
+            "incidentTopologyId": "3b710fcbd64ddd55d52ad7e34ac47e17d527564b07cceff37307fff459cdf198",
+            "diagonalSlotsId": "8f6df87ee93f4d5b87b65069bf9f1db5bbed439ff228404ca8c594e276f5c6a6",
+            "missingNodeDiagonalsId": "33ba8c4e6bc74a4568a19062c12c572fc951ebcdd42dec970ee2799c56d41739"
+          },
+          {
+            "attempt": 8,
+            "phase": "dynamic-node-gmin",
+            "sourceScale": 1,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "f3551a0e22b2419de950c0494634af8056cef97bc28f4e7baf17528e5b328f20",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "89e43c4b8c108c424471a8543bf3a850a104a999d82bb171cf33db99d64e6f73",
+            "patternHash": "7537a2dd2562c10dc75d0160833246f718bee00046e060a2653ad897b3316d82:18e2ed3ddafe12807e15fb222196229efd7c7440c797f8057cf16c8940b03761",
+            "size": 311,
+            "nnz": 1160,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 229,
+              "eliminationStep": 129,
+              "preferredOriginalRow": 229,
+              "remainingRows": 182,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "db9a731d9d8151bfc5cfdccd0c2013e093b2cc9da224b44e17b673f9d0c0302b",
+              "permutationHash": "9b8a996a4034981f0e400aacfba257b962f4a77a83c421a9c8b9755f5212b43d",
+              "completedRowPermutationHash": "b273637f3b33f506a08bfc5652db5d99bc49741f2e355b1d0e9daf1fc133a2df"
+            },
+            "witnessId": "5e38903d9953e73fafb1dca1494c375f6a802478c904453a7762f2148d24067a",
+            "commonModePairsId": "010e00bbfc52c66930d4edeb02c84784629538f2a8a5628fd0aa570b0d5cb6dc",
+            "incidentTopologyId": "3b710fcbd64ddd55d52ad7e34ac47e17d527564b07cceff37307fff459cdf198",
+            "diagonalSlotsId": "8f6df87ee93f4d5b87b65069bf9f1db5bbed439ff228404ca8c594e276f5c6a6",
+            "missingNodeDiagonalsId": "33ba8c4e6bc74a4568a19062c12c572fc951ebcdd42dec970ee2799c56d41739"
+          },
+          {
+            "attempt": 9,
+            "phase": "dynamic-node-gmin",
+            "sourceScale": 1,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "f3551a0e22b2419de950c0494634af8056cef97bc28f4e7baf17528e5b328f20",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "8f97a1ec8d6d9886e33d729d0d724ab0787d8b1a8b9f233ce5a9ae5bd0d08b8d",
+            "patternHash": "7537a2dd2562c10dc75d0160833246f718bee00046e060a2653ad897b3316d82:18e2ed3ddafe12807e15fb222196229efd7c7440c797f8057cf16c8940b03761",
+            "size": 311,
+            "nnz": 1160,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 229,
+              "eliminationStep": 129,
+              "preferredOriginalRow": 229,
+              "remainingRows": 182,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "db9a731d9d8151bfc5cfdccd0c2013e093b2cc9da224b44e17b673f9d0c0302b",
+              "permutationHash": "9b8a996a4034981f0e400aacfba257b962f4a77a83c421a9c8b9755f5212b43d",
+              "completedRowPermutationHash": "b273637f3b33f506a08bfc5652db5d99bc49741f2e355b1d0e9daf1fc133a2df"
+            },
+            "witnessId": "5e38903d9953e73fafb1dca1494c375f6a802478c904453a7762f2148d24067a",
+            "commonModePairsId": "010e00bbfc52c66930d4edeb02c84784629538f2a8a5628fd0aa570b0d5cb6dc",
+            "incidentTopologyId": "3b710fcbd64ddd55d52ad7e34ac47e17d527564b07cceff37307fff459cdf198",
+            "diagonalSlotsId": "8f6df87ee93f4d5b87b65069bf9f1db5bbed439ff228404ca8c594e276f5c6a6",
+            "missingNodeDiagonalsId": "33ba8c4e6bc74a4568a19062c12c572fc951ebcdd42dec970ee2799c56d41739"
+          },
+          {
+            "attempt": 10,
+            "phase": "true-device-gmin",
+            "sourceScale": 1,
+            "deviceGmin": 0.001,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "f3551a0e22b2419de950c0494634af8056cef97bc28f4e7baf17528e5b328f20",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "8fe72109ba5404ffaa4adf73635f9d9fbc7a345109b7a5846df0ccc623bcea5f",
+            "patternHash": "7537a2dd2562c10dc75d0160833246f718bee00046e060a2653ad897b3316d82:18e2ed3ddafe12807e15fb222196229efd7c7440c797f8057cf16c8940b03761",
+            "size": 311,
+            "nnz": 1160,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 35,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "9b8a996a4034981f0e400aacfba257b962f4a77a83c421a9c8b9755f5212b43d",
+              "completedRowPermutationHash": "22eaf0b77e23c6ab1472d1936f6b7cfaf4f3d9fdbf51a95b7e6666c8f748284e"
+            },
+            "witnessId": "64d940765178cd0608a8ab0c4c18b67a9675c798084b0486c34d91cd273ff4b6",
+            "commonModePairsId": "010e00bbfc52c66930d4edeb02c84784629538f2a8a5628fd0aa570b0d5cb6dc",
+            "incidentTopologyId": "9b49099785bde14a099f07b635f21cd8086b65201f4531c36e90be5273bc1803",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "33ba8c4e6bc74a4568a19062c12c572fc951ebcdd42dec970ee2799c56d41739"
+          },
+          {
+            "attempt": 11,
+            "phase": "true-device-gmin",
+            "sourceScale": 1,
+            "deviceGmin": 0.005623413251903491,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "f3551a0e22b2419de950c0494634af8056cef97bc28f4e7baf17528e5b328f20",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "29615394e6a4c846f289b5701d02e3c5e96198eb99c52c695a9b7576e363b315",
+            "patternHash": "7537a2dd2562c10dc75d0160833246f718bee00046e060a2653ad897b3316d82:18e2ed3ddafe12807e15fb222196229efd7c7440c797f8057cf16c8940b03761",
+            "size": 311,
+            "nnz": 1160,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 35,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "9b8a996a4034981f0e400aacfba257b962f4a77a83c421a9c8b9755f5212b43d",
+              "completedRowPermutationHash": "22eaf0b77e23c6ab1472d1936f6b7cfaf4f3d9fdbf51a95b7e6666c8f748284e"
+            },
+            "witnessId": "64d940765178cd0608a8ab0c4c18b67a9675c798084b0486c34d91cd273ff4b6",
+            "commonModePairsId": "010e00bbfc52c66930d4edeb02c84784629538f2a8a5628fd0aa570b0d5cb6dc",
+            "incidentTopologyId": "9b49099785bde14a099f07b635f21cd8086b65201f4531c36e90be5273bc1803",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "33ba8c4e6bc74a4568a19062c12c572fc951ebcdd42dec970ee2799c56d41739"
+          },
+          {
+            "attempt": 12,
+            "phase": "true-device-gmin",
+            "sourceScale": 1,
+            "deviceGmin": 0.008659643233600653,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "f3551a0e22b2419de950c0494634af8056cef97bc28f4e7baf17528e5b328f20",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "6089d97e9e18c586511580105c8105e6ea503f01e102502518452a6d58b00b70",
+            "patternHash": "7537a2dd2562c10dc75d0160833246f718bee00046e060a2653ad897b3316d82:18e2ed3ddafe12807e15fb222196229efd7c7440c797f8057cf16c8940b03761",
+            "size": 311,
+            "nnz": 1160,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 35,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "9b8a996a4034981f0e400aacfba257b962f4a77a83c421a9c8b9755f5212b43d",
+              "completedRowPermutationHash": "22eaf0b77e23c6ab1472d1936f6b7cfaf4f3d9fdbf51a95b7e6666c8f748284e"
+            },
+            "witnessId": "64d940765178cd0608a8ab0c4c18b67a9675c798084b0486c34d91cd273ff4b6",
+            "commonModePairsId": "010e00bbfc52c66930d4edeb02c84784629538f2a8a5628fd0aa570b0d5cb6dc",
+            "incidentTopologyId": "9b49099785bde14a099f07b635f21cd8086b65201f4531c36e90be5273bc1803",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "33ba8c4e6bc74a4568a19062c12c572fc951ebcdd42dec970ee2799c56d41739"
+          },
+          {
+            "attempt": 13,
+            "phase": "true-device-gmin",
+            "sourceScale": 1,
+            "deviceGmin": 0.009646616199111991,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "f3551a0e22b2419de950c0494634af8056cef97bc28f4e7baf17528e5b328f20",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "d6f2a8d5d1a986edd17b3a9f0de6bc03094b7bf4611da5fc13df3c6d81b88569",
+            "patternHash": "7537a2dd2562c10dc75d0160833246f718bee00046e060a2653ad897b3316d82:18e2ed3ddafe12807e15fb222196229efd7c7440c797f8057cf16c8940b03761",
+            "size": 311,
+            "nnz": 1160,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 35,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "9b8a996a4034981f0e400aacfba257b962f4a77a83c421a9c8b9755f5212b43d",
+              "completedRowPermutationHash": "22eaf0b77e23c6ab1472d1936f6b7cfaf4f3d9fdbf51a95b7e6666c8f748284e"
+            },
+            "witnessId": "64d940765178cd0608a8ab0c4c18b67a9675c798084b0486c34d91cd273ff4b6",
+            "commonModePairsId": "010e00bbfc52c66930d4edeb02c84784629538f2a8a5628fd0aa570b0d5cb6dc",
+            "incidentTopologyId": "9b49099785bde14a099f07b635f21cd8086b65201f4531c36e90be5273bc1803",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "33ba8c4e6bc74a4568a19062c12c572fc951ebcdd42dec970ee2799c56d41739"
+          },
+          {
+            "attempt": 14,
+            "phase": "true-device-gmin",
+            "sourceScale": 1,
+            "deviceGmin": 0.009910458562488608,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "f3551a0e22b2419de950c0494634af8056cef97bc28f4e7baf17528e5b328f20",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "9dbbfac670ae7df30e173aa44550132edbde9556eb979ebc56b4800b3e50706a",
+            "patternHash": "7537a2dd2562c10dc75d0160833246f718bee00046e060a2653ad897b3316d82:18e2ed3ddafe12807e15fb222196229efd7c7440c797f8057cf16c8940b03761",
+            "size": 311,
+            "nnz": 1160,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 35,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "9b8a996a4034981f0e400aacfba257b962f4a77a83c421a9c8b9755f5212b43d",
+              "completedRowPermutationHash": "22eaf0b77e23c6ab1472d1936f6b7cfaf4f3d9fdbf51a95b7e6666c8f748284e"
+            },
+            "witnessId": "64d940765178cd0608a8ab0c4c18b67a9675c798084b0486c34d91cd273ff4b6",
+            "commonModePairsId": "010e00bbfc52c66930d4edeb02c84784629538f2a8a5628fd0aa570b0d5cb6dc",
+            "incidentTopologyId": "9b49099785bde14a099f07b635f21cd8086b65201f4531c36e90be5273bc1803",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "33ba8c4e6bc74a4568a19062c12c572fc951ebcdd42dec970ee2799c56d41739"
+          },
+          {
+            "attempt": 15,
+            "phase": "true-device-gmin",
+            "sourceScale": 1,
+            "deviceGmin": 0.009977539079932736,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "f3551a0e22b2419de950c0494634af8056cef97bc28f4e7baf17528e5b328f20",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "7dc2ac498abfd725f98387ef47bf803b575563ce500988f90beb268581cef63e",
+            "patternHash": "7537a2dd2562c10dc75d0160833246f718bee00046e060a2653ad897b3316d82:18e2ed3ddafe12807e15fb222196229efd7c7440c797f8057cf16c8940b03761",
+            "size": 311,
+            "nnz": 1160,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 35,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "9b8a996a4034981f0e400aacfba257b962f4a77a83c421a9c8b9755f5212b43d",
+              "completedRowPermutationHash": "22eaf0b77e23c6ab1472d1936f6b7cfaf4f3d9fdbf51a95b7e6666c8f748284e"
+            },
+            "witnessId": "64d940765178cd0608a8ab0c4c18b67a9675c798084b0486c34d91cd273ff4b6",
+            "commonModePairsId": "010e00bbfc52c66930d4edeb02c84784629538f2a8a5628fd0aa570b0d5cb6dc",
+            "incidentTopologyId": "9b49099785bde14a099f07b635f21cd8086b65201f4531c36e90be5273bc1803",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "33ba8c4e6bc74a4568a19062c12c572fc951ebcdd42dec970ee2799c56d41739"
+          },
+          {
+            "attempt": 16,
+            "phase": "true-device-gmin",
+            "sourceScale": 1,
+            "deviceGmin": 0.009994380034155531,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "f3551a0e22b2419de950c0494634af8056cef97bc28f4e7baf17528e5b328f20",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "0afed844e8043581ffdbad29335b831c83c6ffc281fc401793a11d82c5515678",
+            "patternHash": "7537a2dd2562c10dc75d0160833246f718bee00046e060a2653ad897b3316d82:18e2ed3ddafe12807e15fb222196229efd7c7440c797f8057cf16c8940b03761",
+            "size": 311,
+            "nnz": 1160,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 35,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "9b8a996a4034981f0e400aacfba257b962f4a77a83c421a9c8b9755f5212b43d",
+              "completedRowPermutationHash": "22eaf0b77e23c6ab1472d1936f6b7cfaf4f3d9fdbf51a95b7e6666c8f748284e"
+            },
+            "witnessId": "64d940765178cd0608a8ab0c4c18b67a9675c798084b0486c34d91cd273ff4b6",
+            "commonModePairsId": "010e00bbfc52c66930d4edeb02c84784629538f2a8a5628fd0aa570b0d5cb6dc",
+            "incidentTopologyId": "9b49099785bde14a099f07b635f21cd8086b65201f4531c36e90be5273bc1803",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "33ba8c4e6bc74a4568a19062c12c572fc951ebcdd42dec970ee2799c56d41739"
+          },
+          {
+            "attempt": 17,
+            "phase": "true-device-gmin",
+            "sourceScale": 1,
+            "deviceGmin": 0.009998594712341624,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "f3551a0e22b2419de950c0494634af8056cef97bc28f4e7baf17528e5b328f20",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "2f7ede5f15a6cf2885047cfc947cd963a9d4965dce4f593102da7704e451df69",
+            "patternHash": "7537a2dd2562c10dc75d0160833246f718bee00046e060a2653ad897b3316d82:18e2ed3ddafe12807e15fb222196229efd7c7440c797f8057cf16c8940b03761",
+            "size": 311,
+            "nnz": 1160,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 35,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "9b8a996a4034981f0e400aacfba257b962f4a77a83c421a9c8b9755f5212b43d",
+              "completedRowPermutationHash": "22eaf0b77e23c6ab1472d1936f6b7cfaf4f3d9fdbf51a95b7e6666c8f748284e"
+            },
+            "witnessId": "64d940765178cd0608a8ab0c4c18b67a9675c798084b0486c34d91cd273ff4b6",
+            "commonModePairsId": "010e00bbfc52c66930d4edeb02c84784629538f2a8a5628fd0aa570b0d5cb6dc",
+            "incidentTopologyId": "9b49099785bde14a099f07b635f21cd8086b65201f4531c36e90be5273bc1803",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "33ba8c4e6bc74a4568a19062c12c572fc951ebcdd42dec970ee2799c56d41739"
+          },
+          {
+            "attempt": 18,
+            "phase": "true-device-gmin",
+            "sourceScale": 1,
+            "deviceGmin": 0.009999648659569824,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "f3551a0e22b2419de950c0494634af8056cef97bc28f4e7baf17528e5b328f20",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "3c2867376c1ade51f9d723e4b1e58a2359904296c07d463fc0c808b4d4428558",
+            "patternHash": "7537a2dd2562c10dc75d0160833246f718bee00046e060a2653ad897b3316d82:18e2ed3ddafe12807e15fb222196229efd7c7440c797f8057cf16c8940b03761",
+            "size": 311,
+            "nnz": 1160,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 35,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "9b8a996a4034981f0e400aacfba257b962f4a77a83c421a9c8b9755f5212b43d",
+              "completedRowPermutationHash": "22eaf0b77e23c6ab1472d1936f6b7cfaf4f3d9fdbf51a95b7e6666c8f748284e"
+            },
+            "witnessId": "64d940765178cd0608a8ab0c4c18b67a9675c798084b0486c34d91cd273ff4b6",
+            "commonModePairsId": "010e00bbfc52c66930d4edeb02c84784629538f2a8a5628fd0aa570b0d5cb6dc",
+            "incidentTopologyId": "9b49099785bde14a099f07b635f21cd8086b65201f4531c36e90be5273bc1803",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "33ba8c4e6bc74a4568a19062c12c572fc951ebcdd42dec970ee2799c56d41739"
+          },
+          {
+            "attempt": 19,
+            "phase": "source-stepping",
+            "sourceScale": 0.01,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "f3551a0e22b2419de950c0494634af8056cef97bc28f4e7baf17528e5b328f20",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "0bedf751808691d315d31a57d55318a3d9f7a09b0e7f2437e88a3cfe03497ba0",
+            "patternHash": "7537a2dd2562c10dc75d0160833246f718bee00046e060a2653ad897b3316d82:18e2ed3ddafe12807e15fb222196229efd7c7440c797f8057cf16c8940b03761",
+            "size": 311,
+            "nnz": 1160,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 35,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "9b8a996a4034981f0e400aacfba257b962f4a77a83c421a9c8b9755f5212b43d",
+              "completedRowPermutationHash": "22eaf0b77e23c6ab1472d1936f6b7cfaf4f3d9fdbf51a95b7e6666c8f748284e"
+            },
+            "witnessId": "64d940765178cd0608a8ab0c4c18b67a9675c798084b0486c34d91cd273ff4b6",
+            "commonModePairsId": "010e00bbfc52c66930d4edeb02c84784629538f2a8a5628fd0aa570b0d5cb6dc",
+            "incidentTopologyId": "9b49099785bde14a099f07b635f21cd8086b65201f4531c36e90be5273bc1803",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "33ba8c4e6bc74a4568a19062c12c572fc951ebcdd42dec970ee2799c56d41739"
+          },
+          {
+            "attempt": 20,
+            "phase": "source-stepping",
+            "sourceScale": 0.02,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "f3551a0e22b2419de950c0494634af8056cef97bc28f4e7baf17528e5b328f20",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "0bedf751808691d315d31a57d55318a3d9f7a09b0e7f2437e88a3cfe03497ba0",
+            "patternHash": "7537a2dd2562c10dc75d0160833246f718bee00046e060a2653ad897b3316d82:18e2ed3ddafe12807e15fb222196229efd7c7440c797f8057cf16c8940b03761",
+            "size": 311,
+            "nnz": 1160,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 35,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "9b8a996a4034981f0e400aacfba257b962f4a77a83c421a9c8b9755f5212b43d",
+              "completedRowPermutationHash": "22eaf0b77e23c6ab1472d1936f6b7cfaf4f3d9fdbf51a95b7e6666c8f748284e"
+            },
+            "witnessId": "64d940765178cd0608a8ab0c4c18b67a9675c798084b0486c34d91cd273ff4b6",
+            "commonModePairsId": "010e00bbfc52c66930d4edeb02c84784629538f2a8a5628fd0aa570b0d5cb6dc",
+            "incidentTopologyId": "9b49099785bde14a099f07b635f21cd8086b65201f4531c36e90be5273bc1803",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "33ba8c4e6bc74a4568a19062c12c572fc951ebcdd42dec970ee2799c56d41739"
+          },
+          {
+            "attempt": 21,
+            "phase": "source-stepping",
+            "sourceScale": 0.05,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "f3551a0e22b2419de950c0494634af8056cef97bc28f4e7baf17528e5b328f20",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "0bedf751808691d315d31a57d55318a3d9f7a09b0e7f2437e88a3cfe03497ba0",
+            "patternHash": "7537a2dd2562c10dc75d0160833246f718bee00046e060a2653ad897b3316d82:18e2ed3ddafe12807e15fb222196229efd7c7440c797f8057cf16c8940b03761",
+            "size": 311,
+            "nnz": 1160,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 35,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "9b8a996a4034981f0e400aacfba257b962f4a77a83c421a9c8b9755f5212b43d",
+              "completedRowPermutationHash": "22eaf0b77e23c6ab1472d1936f6b7cfaf4f3d9fdbf51a95b7e6666c8f748284e"
+            },
+            "witnessId": "64d940765178cd0608a8ab0c4c18b67a9675c798084b0486c34d91cd273ff4b6",
+            "commonModePairsId": "010e00bbfc52c66930d4edeb02c84784629538f2a8a5628fd0aa570b0d5cb6dc",
+            "incidentTopologyId": "9b49099785bde14a099f07b635f21cd8086b65201f4531c36e90be5273bc1803",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "33ba8c4e6bc74a4568a19062c12c572fc951ebcdd42dec970ee2799c56d41739"
+          },
+          {
+            "attempt": 22,
+            "phase": "source-stepping",
+            "sourceScale": 0.1,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "f3551a0e22b2419de950c0494634af8056cef97bc28f4e7baf17528e5b328f20",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "0bedf751808691d315d31a57d55318a3d9f7a09b0e7f2437e88a3cfe03497ba0",
+            "patternHash": "7537a2dd2562c10dc75d0160833246f718bee00046e060a2653ad897b3316d82:18e2ed3ddafe12807e15fb222196229efd7c7440c797f8057cf16c8940b03761",
+            "size": 311,
+            "nnz": 1160,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 35,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "9b8a996a4034981f0e400aacfba257b962f4a77a83c421a9c8b9755f5212b43d",
+              "completedRowPermutationHash": "22eaf0b77e23c6ab1472d1936f6b7cfaf4f3d9fdbf51a95b7e6666c8f748284e"
+            },
+            "witnessId": "64d940765178cd0608a8ab0c4c18b67a9675c798084b0486c34d91cd273ff4b6",
+            "commonModePairsId": "010e00bbfc52c66930d4edeb02c84784629538f2a8a5628fd0aa570b0d5cb6dc",
+            "incidentTopologyId": "9b49099785bde14a099f07b635f21cd8086b65201f4531c36e90be5273bc1803",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "33ba8c4e6bc74a4568a19062c12c572fc951ebcdd42dec970ee2799c56d41739"
+          },
+          {
+            "attempt": 23,
+            "phase": "source-stepping",
+            "sourceScale": 0.2,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "f3551a0e22b2419de950c0494634af8056cef97bc28f4e7baf17528e5b328f20",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "0bedf751808691d315d31a57d55318a3d9f7a09b0e7f2437e88a3cfe03497ba0",
+            "patternHash": "7537a2dd2562c10dc75d0160833246f718bee00046e060a2653ad897b3316d82:18e2ed3ddafe12807e15fb222196229efd7c7440c797f8057cf16c8940b03761",
+            "size": 311,
+            "nnz": 1160,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 35,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "9b8a996a4034981f0e400aacfba257b962f4a77a83c421a9c8b9755f5212b43d",
+              "completedRowPermutationHash": "22eaf0b77e23c6ab1472d1936f6b7cfaf4f3d9fdbf51a95b7e6666c8f748284e"
+            },
+            "witnessId": "64d940765178cd0608a8ab0c4c18b67a9675c798084b0486c34d91cd273ff4b6",
+            "commonModePairsId": "010e00bbfc52c66930d4edeb02c84784629538f2a8a5628fd0aa570b0d5cb6dc",
+            "incidentTopologyId": "9b49099785bde14a099f07b635f21cd8086b65201f4531c36e90be5273bc1803",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "33ba8c4e6bc74a4568a19062c12c572fc951ebcdd42dec970ee2799c56d41739"
+          },
+          {
+            "attempt": 24,
+            "phase": "source-stepping",
+            "sourceScale": 0.3,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "f3551a0e22b2419de950c0494634af8056cef97bc28f4e7baf17528e5b328f20",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "0bedf751808691d315d31a57d55318a3d9f7a09b0e7f2437e88a3cfe03497ba0",
+            "patternHash": "7537a2dd2562c10dc75d0160833246f718bee00046e060a2653ad897b3316d82:18e2ed3ddafe12807e15fb222196229efd7c7440c797f8057cf16c8940b03761",
+            "size": 311,
+            "nnz": 1160,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 35,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "9b8a996a4034981f0e400aacfba257b962f4a77a83c421a9c8b9755f5212b43d",
+              "completedRowPermutationHash": "22eaf0b77e23c6ab1472d1936f6b7cfaf4f3d9fdbf51a95b7e6666c8f748284e"
+            },
+            "witnessId": "64d940765178cd0608a8ab0c4c18b67a9675c798084b0486c34d91cd273ff4b6",
+            "commonModePairsId": "010e00bbfc52c66930d4edeb02c84784629538f2a8a5628fd0aa570b0d5cb6dc",
+            "incidentTopologyId": "9b49099785bde14a099f07b635f21cd8086b65201f4531c36e90be5273bc1803",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "33ba8c4e6bc74a4568a19062c12c572fc951ebcdd42dec970ee2799c56d41739"
+          },
+          {
+            "attempt": 25,
+            "phase": "source-stepping",
+            "sourceScale": 0.4,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "f3551a0e22b2419de950c0494634af8056cef97bc28f4e7baf17528e5b328f20",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "0bedf751808691d315d31a57d55318a3d9f7a09b0e7f2437e88a3cfe03497ba0",
+            "patternHash": "7537a2dd2562c10dc75d0160833246f718bee00046e060a2653ad897b3316d82:18e2ed3ddafe12807e15fb222196229efd7c7440c797f8057cf16c8940b03761",
+            "size": 311,
+            "nnz": 1160,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 35,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "9b8a996a4034981f0e400aacfba257b962f4a77a83c421a9c8b9755f5212b43d",
+              "completedRowPermutationHash": "22eaf0b77e23c6ab1472d1936f6b7cfaf4f3d9fdbf51a95b7e6666c8f748284e"
+            },
+            "witnessId": "64d940765178cd0608a8ab0c4c18b67a9675c798084b0486c34d91cd273ff4b6",
+            "commonModePairsId": "010e00bbfc52c66930d4edeb02c84784629538f2a8a5628fd0aa570b0d5cb6dc",
+            "incidentTopologyId": "9b49099785bde14a099f07b635f21cd8086b65201f4531c36e90be5273bc1803",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "33ba8c4e6bc74a4568a19062c12c572fc951ebcdd42dec970ee2799c56d41739"
+          },
+          {
+            "attempt": 26,
+            "phase": "source-stepping",
+            "sourceScale": 0.5,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "f3551a0e22b2419de950c0494634af8056cef97bc28f4e7baf17528e5b328f20",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "0bedf751808691d315d31a57d55318a3d9f7a09b0e7f2437e88a3cfe03497ba0",
+            "patternHash": "7537a2dd2562c10dc75d0160833246f718bee00046e060a2653ad897b3316d82:18e2ed3ddafe12807e15fb222196229efd7c7440c797f8057cf16c8940b03761",
+            "size": 311,
+            "nnz": 1160,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 35,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "9b8a996a4034981f0e400aacfba257b962f4a77a83c421a9c8b9755f5212b43d",
+              "completedRowPermutationHash": "22eaf0b77e23c6ab1472d1936f6b7cfaf4f3d9fdbf51a95b7e6666c8f748284e"
+            },
+            "witnessId": "64d940765178cd0608a8ab0c4c18b67a9675c798084b0486c34d91cd273ff4b6",
+            "commonModePairsId": "010e00bbfc52c66930d4edeb02c84784629538f2a8a5628fd0aa570b0d5cb6dc",
+            "incidentTopologyId": "9b49099785bde14a099f07b635f21cd8086b65201f4531c36e90be5273bc1803",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "33ba8c4e6bc74a4568a19062c12c572fc951ebcdd42dec970ee2799c56d41739"
+          },
+          {
+            "attempt": 27,
+            "phase": "source-stepping",
+            "sourceScale": 0.6,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "f3551a0e22b2419de950c0494634af8056cef97bc28f4e7baf17528e5b328f20",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "0bedf751808691d315d31a57d55318a3d9f7a09b0e7f2437e88a3cfe03497ba0",
+            "patternHash": "7537a2dd2562c10dc75d0160833246f718bee00046e060a2653ad897b3316d82:18e2ed3ddafe12807e15fb222196229efd7c7440c797f8057cf16c8940b03761",
+            "size": 311,
+            "nnz": 1160,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 35,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "9b8a996a4034981f0e400aacfba257b962f4a77a83c421a9c8b9755f5212b43d",
+              "completedRowPermutationHash": "22eaf0b77e23c6ab1472d1936f6b7cfaf4f3d9fdbf51a95b7e6666c8f748284e"
+            },
+            "witnessId": "64d940765178cd0608a8ab0c4c18b67a9675c798084b0486c34d91cd273ff4b6",
+            "commonModePairsId": "010e00bbfc52c66930d4edeb02c84784629538f2a8a5628fd0aa570b0d5cb6dc",
+            "incidentTopologyId": "9b49099785bde14a099f07b635f21cd8086b65201f4531c36e90be5273bc1803",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "33ba8c4e6bc74a4568a19062c12c572fc951ebcdd42dec970ee2799c56d41739"
+          },
+          {
+            "attempt": 28,
+            "phase": "source-stepping",
+            "sourceScale": 0.7,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "f3551a0e22b2419de950c0494634af8056cef97bc28f4e7baf17528e5b328f20",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "0bedf751808691d315d31a57d55318a3d9f7a09b0e7f2437e88a3cfe03497ba0",
+            "patternHash": "7537a2dd2562c10dc75d0160833246f718bee00046e060a2653ad897b3316d82:18e2ed3ddafe12807e15fb222196229efd7c7440c797f8057cf16c8940b03761",
+            "size": 311,
+            "nnz": 1160,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 35,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "9b8a996a4034981f0e400aacfba257b962f4a77a83c421a9c8b9755f5212b43d",
+              "completedRowPermutationHash": "22eaf0b77e23c6ab1472d1936f6b7cfaf4f3d9fdbf51a95b7e6666c8f748284e"
+            },
+            "witnessId": "64d940765178cd0608a8ab0c4c18b67a9675c798084b0486c34d91cd273ff4b6",
+            "commonModePairsId": "010e00bbfc52c66930d4edeb02c84784629538f2a8a5628fd0aa570b0d5cb6dc",
+            "incidentTopologyId": "9b49099785bde14a099f07b635f21cd8086b65201f4531c36e90be5273bc1803",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "33ba8c4e6bc74a4568a19062c12c572fc951ebcdd42dec970ee2799c56d41739"
+          },
+          {
+            "attempt": 29,
+            "phase": "source-stepping",
+            "sourceScale": 0.8,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "f3551a0e22b2419de950c0494634af8056cef97bc28f4e7baf17528e5b328f20",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "0bedf751808691d315d31a57d55318a3d9f7a09b0e7f2437e88a3cfe03497ba0",
+            "patternHash": "7537a2dd2562c10dc75d0160833246f718bee00046e060a2653ad897b3316d82:18e2ed3ddafe12807e15fb222196229efd7c7440c797f8057cf16c8940b03761",
+            "size": 311,
+            "nnz": 1160,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 35,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "9b8a996a4034981f0e400aacfba257b962f4a77a83c421a9c8b9755f5212b43d",
+              "completedRowPermutationHash": "22eaf0b77e23c6ab1472d1936f6b7cfaf4f3d9fdbf51a95b7e6666c8f748284e"
+            },
+            "witnessId": "64d940765178cd0608a8ab0c4c18b67a9675c798084b0486c34d91cd273ff4b6",
+            "commonModePairsId": "010e00bbfc52c66930d4edeb02c84784629538f2a8a5628fd0aa570b0d5cb6dc",
+            "incidentTopologyId": "9b49099785bde14a099f07b635f21cd8086b65201f4531c36e90be5273bc1803",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "33ba8c4e6bc74a4568a19062c12c572fc951ebcdd42dec970ee2799c56d41739"
+          },
+          {
+            "attempt": 30,
+            "phase": "source-stepping",
+            "sourceScale": 0.9,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "f3551a0e22b2419de950c0494634af8056cef97bc28f4e7baf17528e5b328f20",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "0bedf751808691d315d31a57d55318a3d9f7a09b0e7f2437e88a3cfe03497ba0",
+            "patternHash": "7537a2dd2562c10dc75d0160833246f718bee00046e060a2653ad897b3316d82:18e2ed3ddafe12807e15fb222196229efd7c7440c797f8057cf16c8940b03761",
+            "size": 311,
+            "nnz": 1160,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 35,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "9b8a996a4034981f0e400aacfba257b962f4a77a83c421a9c8b9755f5212b43d",
+              "completedRowPermutationHash": "22eaf0b77e23c6ab1472d1936f6b7cfaf4f3d9fdbf51a95b7e6666c8f748284e"
+            },
+            "witnessId": "64d940765178cd0608a8ab0c4c18b67a9675c798084b0486c34d91cd273ff4b6",
+            "commonModePairsId": "010e00bbfc52c66930d4edeb02c84784629538f2a8a5628fd0aa570b0d5cb6dc",
+            "incidentTopologyId": "9b49099785bde14a099f07b635f21cd8086b65201f4531c36e90be5273bc1803",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "33ba8c4e6bc74a4568a19062c12c572fc951ebcdd42dec970ee2799c56d41739"
+          },
+          {
+            "attempt": 31,
+            "phase": "source-stepping",
+            "sourceScale": 1,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "f3551a0e22b2419de950c0494634af8056cef97bc28f4e7baf17528e5b328f20",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "0bedf751808691d315d31a57d55318a3d9f7a09b0e7f2437e88a3cfe03497ba0",
+            "patternHash": "7537a2dd2562c10dc75d0160833246f718bee00046e060a2653ad897b3316d82:18e2ed3ddafe12807e15fb222196229efd7c7440c797f8057cf16c8940b03761",
+            "size": 311,
+            "nnz": 1160,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 35,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "9b8a996a4034981f0e400aacfba257b962f4a77a83c421a9c8b9755f5212b43d",
+              "completedRowPermutationHash": "22eaf0b77e23c6ab1472d1936f6b7cfaf4f3d9fdbf51a95b7e6666c8f748284e"
+            },
+            "witnessId": "64d940765178cd0608a8ab0c4c18b67a9675c798084b0486c34d91cd273ff4b6",
+            "commonModePairsId": "010e00bbfc52c66930d4edeb02c84784629538f2a8a5628fd0aa570b0d5cb6dc",
+            "incidentTopologyId": "9b49099785bde14a099f07b635f21cd8086b65201f4531c36e90be5273bc1803",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "33ba8c4e6bc74a4568a19062c12c572fc951ebcdd42dec970ee2799c56d41739"
+          },
+          {
+            "attempt": 32,
+            "phase": "source-stepping",
+            "sourceScale": 1,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "f3551a0e22b2419de950c0494634af8056cef97bc28f4e7baf17528e5b328f20",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "0bedf751808691d315d31a57d55318a3d9f7a09b0e7f2437e88a3cfe03497ba0",
+            "patternHash": "7537a2dd2562c10dc75d0160833246f718bee00046e060a2653ad897b3316d82:18e2ed3ddafe12807e15fb222196229efd7c7440c797f8057cf16c8940b03761",
+            "size": 311,
+            "nnz": 1160,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 35,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "9b8a996a4034981f0e400aacfba257b962f4a77a83c421a9c8b9755f5212b43d",
+              "completedRowPermutationHash": "22eaf0b77e23c6ab1472d1936f6b7cfaf4f3d9fdbf51a95b7e6666c8f748284e"
+            },
+            "witnessId": "64d940765178cd0608a8ab0c4c18b67a9675c798084b0486c34d91cd273ff4b6",
+            "commonModePairsId": "010e00bbfc52c66930d4edeb02c84784629538f2a8a5628fd0aa570b0d5cb6dc",
+            "incidentTopologyId": "9b49099785bde14a099f07b635f21cd8086b65201f4531c36e90be5273bc1803",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "33ba8c4e6bc74a4568a19062c12c572fc951ebcdd42dec970ee2799c56d41739"
+          }
+        ],
+        "authoredControl": null,
+        "details": {
+          "64d940765178cd0608a8ab0c4c18b67a9675c798084b0486c34d91cd273ff4b6": {
+            "firstRejectedStep": 35,
+            "originalColumn": 2,
+            "candidateMax": 0,
+            "maxResidual": 0,
+            "verified": true,
+            "support": [
+              {
+                "index": 1,
+                "value": 1,
+                "kind": "node",
+                "identityHash": "743521693f3fb1bd32cea7915f3596b3976046715efe89dc6ec2f4e1bfcdd10d"
+              },
+              {
+                "index": 2,
+                "value": 1,
+                "kind": "node",
+                "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2"
+              }
+            ]
+          },
+          "010e00bbfc52c66930d4edeb02c84784629538f2a8a5628fd0aa570b0d5cb6dc": [
+            {
+              "supports": [
+                {
+                  "index": 228,
+                  "identityHash": "9a1a14f6062d1cb55bd0e8bb409bfad8f643149420be8a96edb332bdb4fbfb5d",
+                  "keywordAsNode": "table",
+                  "expressionAsNode": false,
+                  "diagonalSlot": -1
+                },
+                {
+                  "index": 229,
+                  "identityHash": "db9a731d9d8151bfc5cfdccd0c2013e093b2cc9da224b44e17b673f9d0c0302b",
+                  "keywordAsNode": null,
+                  "expressionAsNode": true,
+                  "diagonalSlot": -1
+                }
+              ],
+              "incident": [
+                {
+                  "deviceIndex": 341,
+                  "type": "VCCS",
+                  "terminalNodes": [
+                    223,
+                    192
+                  ],
+                  "controlNodes": [
+                    228,
+                    229
+                  ],
+                  "identityHash": "a0263a7d60bb2bcd043ebb30a14a32429cdcf9a1028024b3d4e2d7df02a6fed0"
+                }
+              ],
+              "maxResidual": 0,
+              "verified": true
+            }
+          ],
+          "9b49099785bde14a099f07b635f21cd8086b65201f4531c36e90be5273bc1803": [
+            {
+              "deviceIndex": 4,
+              "type": "Capacitor",
+              "terminalNodes": [
+                2,
+                3
+              ],
+              "controlNodes": [],
+              "branchColumns": [],
+              "identityHash": "7ce2e5e04ac0a8e608b82ba3d785a8dc9407adc9eb0f6f1e6dd3f4d1ba22dc24"
+            },
+            {
+              "deviceIndex": 429,
+              "type": "Resistor",
+              "terminalNodes": [
+                1,
+                2
+              ],
+              "controlNodes": [],
+              "branchColumns": [],
+              "identityHash": "d1cdf708a12b7d7259ca11e0bdefd02b0cb7795ce2a8270a7bd0b2eee27b04f3"
+            },
+            {
+              "deviceIndex": 430,
+              "type": "Capacitor",
+              "terminalNodes": [
+                0,
+                1
+              ],
+              "controlNodes": [],
+              "branchColumns": [],
+              "identityHash": "a1abe957de3d924c095c7bd91a72b27e3a1293b38bc76396dbc4ba0f85148ed2"
+            }
+          ],
+          "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6": [
+            {
+              "index": 1,
+              "slot": 2,
+              "nameContainsBrace": false,
+              "nameContainsParenthesis": false,
+              "keywordAsNode": null
+            },
+            {
+              "index": 2,
+              "slot": 5,
+              "nameContainsBrace": false,
+              "nameContainsParenthesis": false,
+              "keywordAsNode": null
+            }
+          ],
+          "33ba8c4e6bc74a4568a19062c12c572fc951ebcdd42dec970ee2799c56d41739": [
+            3,
+            4,
+            6,
+            7,
+            151,
+            152,
+            162,
+            168,
+            170,
+            228,
+            229,
+            230,
+            231,
+            232,
+            233
+          ],
+          "5e38903d9953e73fafb1dca1494c375f6a802478c904453a7762f2148d24067a": {
+            "firstRejectedStep": 129,
+            "originalColumn": 229,
+            "candidateMax": 0,
+            "maxResidual": 0,
+            "verified": true,
+            "support": [
+              {
+                "index": 228,
+                "value": 1,
+                "kind": "node",
+                "identityHash": "9a1a14f6062d1cb55bd0e8bb409bfad8f643149420be8a96edb332bdb4fbfb5d"
+              },
+              {
+                "index": 229,
+                "value": 1,
+                "kind": "node",
+                "identityHash": "db9a731d9d8151bfc5cfdccd0c2013e093b2cc9da224b44e17b673f9d0c0302b"
+              }
+            ]
+          },
+          "3b710fcbd64ddd55d52ad7e34ac47e17d527564b07cceff37307fff459cdf198": [
+            {
+              "deviceIndex": 341,
+              "type": "VCCS",
+              "terminalNodes": [
+                223,
+                192
+              ],
+              "controlNodes": [
+                228,
+                229
+              ],
+              "branchColumns": [],
+              "identityHash": "a0263a7d60bb2bcd043ebb30a14a32429cdcf9a1028024b3d4e2d7df02a6fed0",
+              "gainFinite": true,
+              "gainZero": false
+            }
+          ],
+          "8f6df87ee93f4d5b87b65069bf9f1db5bbed439ff228404ca8c594e276f5c6a6": [
+            {
+              "index": 228,
+              "slot": -1,
+              "nameContainsBrace": false,
+              "nameContainsParenthesis": false,
+              "keywordAsNode": "table"
+            },
+            {
+              "index": 229,
+              "slot": -1,
+              "nameContainsBrace": true,
+              "nameContainsParenthesis": true,
+              "keywordAsNode": null
+            }
+          ]
+        }
+      },
+      "reference": {
+        "process": {
+          "argv": [
+            "ngspice",
+            "-b",
+            "-r",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/base_159.cir.raw",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/base_159.cir"
+          ],
+          "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run",
+          "exit": 0,
+          "timedOut": false,
+          "limitSeconds": 29,
+          "wallSeconds": 0.07719891600572737
+        },
+        "acRows": 141,
+        "solver": "SPARSE 1.3",
+        "ltpsConfirmed": true,
+        "xspicePresent": true,
+        "warnings": {
+          "singular": false,
+          "dynamicGminCompleted": true,
+          "dynamicGminFailed": false,
+          "trueGminFailed": false,
+          "sourceSteppingFailed": false,
+          "transientRecovery": false
+        }
+      },
+      "maxError": null,
+      "rmsError": null
+    },
+    {
+      "name": "variant_159.cir",
+      "inputHashBefore": "55bf6ddd37880015dbff5dd836c404054a98acc75e283c43e6501de6f6477467",
+      "inputHashAfter": "55bf6ddd37880015dbff5dd836c404054a98acc75e283c43e6501de6f6477467",
+      "includes": {
+        "AD620.mod": "99c3a83c8e4a44fc1c2e5b878a061e03f959e223fa646bb849589e68f603f395",
+        "lmx58_lm2904.lib": "467a3e573420d1f5a21fab57b76be0e13073e854f609a73459a191958e314726",
+        "UA555.mod": "e4b70989b2ca1cd9e3177bc4d35224098360461a2b6901a688542e2d1af6d7bf"
+      },
+      "native": {
+        "process": {
+          "argv": [
+            "node",
+            "--import",
+            "tsx",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/variant_159.cir"
+          ],
+          "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+          "exit": 0,
+          "timedOut": false,
+          "limitSeconds": 29,
+          "wallSeconds": 0.5771043749991804
+        },
+        "status": "failure",
+        "terminalPivot": 2,
+        "milliseconds": 94.88737500000002,
+        "nodeCount": 257,
+        "branchCount": 60,
+        "factors": [
+          {
+            "attempt": 0,
+            "phase": "plain-newton",
+            "sourceScale": 1,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "960e6bedd75db13bb12cca7232a5253754a7fc0009103bd80d81bf9726aeeef4",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "604158b268a47b8ae09ba73acaf0f32218c7832d684473f128b59b0801918560",
+            "patternHash": "92e58a765f199b7a3da0fd0093eb876f60911b3d41fa993e44a53c397ae620de:d29475748eafe9d90bf716086b78ccf83fab4500492f0d4307729cf87af8279a",
+            "size": 317,
+            "nnz": 1166,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 41,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "6bfb27710121e4ab419c8009359a1d72f78674fc53704e05cd762d96ecc7fdae",
+              "completedRowPermutationHash": "c161663fe08dd7c98e6b584983f923c7eb7704b7dc6898da8a32b4404e8ea66f"
+            },
+            "witnessId": "913a5cb041664b09967c7fcdf92c4e0a63b83a6d5108414ef877e4bd1e7db043",
+            "commonModePairsId": "1d5f158883dbf0ce445f9946d1674af088e8591755688931c8772a4236735606",
+            "incidentTopologyId": "918aec6999450fb7b975c1bdfb636088a70af9192211fd88658448ee24436e8b",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "98b534f03573635308eb663f65509fbe5e8bfac94900b4692f0ffaa88da9652a"
+          },
+          {
+            "attempt": 1,
+            "phase": "dynamic-node-gmin",
+            "sourceScale": 1,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "960e6bedd75db13bb12cca7232a5253754a7fc0009103bd80d81bf9726aeeef4",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "7b9da197b18b31a008e2ac85631e692cf5e28a23c37c053b2be860540268b790",
+            "patternHash": "92e58a765f199b7a3da0fd0093eb876f60911b3d41fa993e44a53c397ae620de:d29475748eafe9d90bf716086b78ccf83fab4500492f0d4307729cf87af8279a",
+            "size": 317,
+            "nnz": 1166,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 232,
+              "eliminationStep": 135,
+              "preferredOriginalRow": 232,
+              "remainingRows": 182,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "db9a731d9d8151bfc5cfdccd0c2013e093b2cc9da224b44e17b673f9d0c0302b",
+              "permutationHash": "6bfb27710121e4ab419c8009359a1d72f78674fc53704e05cd762d96ecc7fdae",
+              "completedRowPermutationHash": "047fed1fdb3e7839b76ea8bfa06f9b6f87a1213c7665b6ee8e57cea1e5495220"
+            },
+            "witnessId": "d2ca2cdf2cc273b5180b846cb97f78d5479b1a7e1e89e20e626736301daaa209",
+            "commonModePairsId": "1d5f158883dbf0ce445f9946d1674af088e8591755688931c8772a4236735606",
+            "incidentTopologyId": "c78eaf4c884c5b4f342b9db1ed451ff4326b474eba3f0879d5332575052a1e33",
+            "diagonalSlotsId": "c3179b04329a0606da24daa4e38365fc503a3bf56863954b33af250dfbe56e8c",
+            "missingNodeDiagonalsId": "98b534f03573635308eb663f65509fbe5e8bfac94900b4692f0ffaa88da9652a"
+          },
+          {
+            "attempt": 2,
+            "phase": "dynamic-node-gmin",
+            "sourceScale": 1,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "960e6bedd75db13bb12cca7232a5253754a7fc0009103bd80d81bf9726aeeef4",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "73a454e9db6a4d17d0d014295d0a4cdc7536eb4a61675b30f3d8d3214e8f610c",
+            "patternHash": "92e58a765f199b7a3da0fd0093eb876f60911b3d41fa993e44a53c397ae620de:d29475748eafe9d90bf716086b78ccf83fab4500492f0d4307729cf87af8279a",
+            "size": 317,
+            "nnz": 1166,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 232,
+              "eliminationStep": 135,
+              "preferredOriginalRow": 232,
+              "remainingRows": 182,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "db9a731d9d8151bfc5cfdccd0c2013e093b2cc9da224b44e17b673f9d0c0302b",
+              "permutationHash": "6bfb27710121e4ab419c8009359a1d72f78674fc53704e05cd762d96ecc7fdae",
+              "completedRowPermutationHash": "047fed1fdb3e7839b76ea8bfa06f9b6f87a1213c7665b6ee8e57cea1e5495220"
+            },
+            "witnessId": "d2ca2cdf2cc273b5180b846cb97f78d5479b1a7e1e89e20e626736301daaa209",
+            "commonModePairsId": "1d5f158883dbf0ce445f9946d1674af088e8591755688931c8772a4236735606",
+            "incidentTopologyId": "c78eaf4c884c5b4f342b9db1ed451ff4326b474eba3f0879d5332575052a1e33",
+            "diagonalSlotsId": "c3179b04329a0606da24daa4e38365fc503a3bf56863954b33af250dfbe56e8c",
+            "missingNodeDiagonalsId": "98b534f03573635308eb663f65509fbe5e8bfac94900b4692f0ffaa88da9652a"
+          },
+          {
+            "attempt": 3,
+            "phase": "dynamic-node-gmin",
+            "sourceScale": 1,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "960e6bedd75db13bb12cca7232a5253754a7fc0009103bd80d81bf9726aeeef4",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "1475faedeb82b82238b1d23213f28913e9cb4000947bfc83d242fff20ca0824d",
+            "patternHash": "92e58a765f199b7a3da0fd0093eb876f60911b3d41fa993e44a53c397ae620de:d29475748eafe9d90bf716086b78ccf83fab4500492f0d4307729cf87af8279a",
+            "size": 317,
+            "nnz": 1166,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 232,
+              "eliminationStep": 135,
+              "preferredOriginalRow": 232,
+              "remainingRows": 182,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "db9a731d9d8151bfc5cfdccd0c2013e093b2cc9da224b44e17b673f9d0c0302b",
+              "permutationHash": "6bfb27710121e4ab419c8009359a1d72f78674fc53704e05cd762d96ecc7fdae",
+              "completedRowPermutationHash": "344467f6026db1ccebe0944059d11744953d794465282d450a4dfd3180b702ac"
+            },
+            "witnessId": "d2ca2cdf2cc273b5180b846cb97f78d5479b1a7e1e89e20e626736301daaa209",
+            "commonModePairsId": "1d5f158883dbf0ce445f9946d1674af088e8591755688931c8772a4236735606",
+            "incidentTopologyId": "c78eaf4c884c5b4f342b9db1ed451ff4326b474eba3f0879d5332575052a1e33",
+            "diagonalSlotsId": "c3179b04329a0606da24daa4e38365fc503a3bf56863954b33af250dfbe56e8c",
+            "missingNodeDiagonalsId": "98b534f03573635308eb663f65509fbe5e8bfac94900b4692f0ffaa88da9652a"
+          },
+          {
+            "attempt": 4,
+            "phase": "dynamic-node-gmin",
+            "sourceScale": 1,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "960e6bedd75db13bb12cca7232a5253754a7fc0009103bd80d81bf9726aeeef4",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "dcf16140b524a1f32a4572ac22c2e84dfa9adc1cb4899eaa5e5f78fca7bc9e29",
+            "patternHash": "92e58a765f199b7a3da0fd0093eb876f60911b3d41fa993e44a53c397ae620de:d29475748eafe9d90bf716086b78ccf83fab4500492f0d4307729cf87af8279a",
+            "size": 317,
+            "nnz": 1166,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 232,
+              "eliminationStep": 135,
+              "preferredOriginalRow": 232,
+              "remainingRows": 182,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "db9a731d9d8151bfc5cfdccd0c2013e093b2cc9da224b44e17b673f9d0c0302b",
+              "permutationHash": "6bfb27710121e4ab419c8009359a1d72f78674fc53704e05cd762d96ecc7fdae",
+              "completedRowPermutationHash": "344467f6026db1ccebe0944059d11744953d794465282d450a4dfd3180b702ac"
+            },
+            "witnessId": "d2ca2cdf2cc273b5180b846cb97f78d5479b1a7e1e89e20e626736301daaa209",
+            "commonModePairsId": "1d5f158883dbf0ce445f9946d1674af088e8591755688931c8772a4236735606",
+            "incidentTopologyId": "c78eaf4c884c5b4f342b9db1ed451ff4326b474eba3f0879d5332575052a1e33",
+            "diagonalSlotsId": "c3179b04329a0606da24daa4e38365fc503a3bf56863954b33af250dfbe56e8c",
+            "missingNodeDiagonalsId": "98b534f03573635308eb663f65509fbe5e8bfac94900b4692f0ffaa88da9652a"
+          },
+          {
+            "attempt": 5,
+            "phase": "dynamic-node-gmin",
+            "sourceScale": 1,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "960e6bedd75db13bb12cca7232a5253754a7fc0009103bd80d81bf9726aeeef4",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "33cc4e015659cf3d4abb5212d608fbc888eda8be892325ea2f92096aee8f723e",
+            "patternHash": "92e58a765f199b7a3da0fd0093eb876f60911b3d41fa993e44a53c397ae620de:d29475748eafe9d90bf716086b78ccf83fab4500492f0d4307729cf87af8279a",
+            "size": 317,
+            "nnz": 1166,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 232,
+              "eliminationStep": 135,
+              "preferredOriginalRow": 232,
+              "remainingRows": 182,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "db9a731d9d8151bfc5cfdccd0c2013e093b2cc9da224b44e17b673f9d0c0302b",
+              "permutationHash": "6bfb27710121e4ab419c8009359a1d72f78674fc53704e05cd762d96ecc7fdae",
+              "completedRowPermutationHash": "344467f6026db1ccebe0944059d11744953d794465282d450a4dfd3180b702ac"
+            },
+            "witnessId": "d2ca2cdf2cc273b5180b846cb97f78d5479b1a7e1e89e20e626736301daaa209",
+            "commonModePairsId": "1d5f158883dbf0ce445f9946d1674af088e8591755688931c8772a4236735606",
+            "incidentTopologyId": "c78eaf4c884c5b4f342b9db1ed451ff4326b474eba3f0879d5332575052a1e33",
+            "diagonalSlotsId": "c3179b04329a0606da24daa4e38365fc503a3bf56863954b33af250dfbe56e8c",
+            "missingNodeDiagonalsId": "98b534f03573635308eb663f65509fbe5e8bfac94900b4692f0ffaa88da9652a"
+          },
+          {
+            "attempt": 6,
+            "phase": "dynamic-node-gmin",
+            "sourceScale": 1,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "960e6bedd75db13bb12cca7232a5253754a7fc0009103bd80d81bf9726aeeef4",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "7355537d8969a8dd782ab6bacfff226f8859b1f924d50d45eab48ca7f5f2f949",
+            "patternHash": "92e58a765f199b7a3da0fd0093eb876f60911b3d41fa993e44a53c397ae620de:d29475748eafe9d90bf716086b78ccf83fab4500492f0d4307729cf87af8279a",
+            "size": 317,
+            "nnz": 1166,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 232,
+              "eliminationStep": 135,
+              "preferredOriginalRow": 232,
+              "remainingRows": 182,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "db9a731d9d8151bfc5cfdccd0c2013e093b2cc9da224b44e17b673f9d0c0302b",
+              "permutationHash": "6bfb27710121e4ab419c8009359a1d72f78674fc53704e05cd762d96ecc7fdae",
+              "completedRowPermutationHash": "344467f6026db1ccebe0944059d11744953d794465282d450a4dfd3180b702ac"
+            },
+            "witnessId": "d2ca2cdf2cc273b5180b846cb97f78d5479b1a7e1e89e20e626736301daaa209",
+            "commonModePairsId": "1d5f158883dbf0ce445f9946d1674af088e8591755688931c8772a4236735606",
+            "incidentTopologyId": "c78eaf4c884c5b4f342b9db1ed451ff4326b474eba3f0879d5332575052a1e33",
+            "diagonalSlotsId": "c3179b04329a0606da24daa4e38365fc503a3bf56863954b33af250dfbe56e8c",
+            "missingNodeDiagonalsId": "98b534f03573635308eb663f65509fbe5e8bfac94900b4692f0ffaa88da9652a"
+          },
+          {
+            "attempt": 7,
+            "phase": "dynamic-node-gmin",
+            "sourceScale": 1,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "960e6bedd75db13bb12cca7232a5253754a7fc0009103bd80d81bf9726aeeef4",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "d2a4b2993181478b90844a535ac12f1c67a0cb36b3c4f694ea15be79e6678ae4",
+            "patternHash": "92e58a765f199b7a3da0fd0093eb876f60911b3d41fa993e44a53c397ae620de:d29475748eafe9d90bf716086b78ccf83fab4500492f0d4307729cf87af8279a",
+            "size": 317,
+            "nnz": 1166,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 232,
+              "eliminationStep": 135,
+              "preferredOriginalRow": 232,
+              "remainingRows": 182,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "db9a731d9d8151bfc5cfdccd0c2013e093b2cc9da224b44e17b673f9d0c0302b",
+              "permutationHash": "6bfb27710121e4ab419c8009359a1d72f78674fc53704e05cd762d96ecc7fdae",
+              "completedRowPermutationHash": "344467f6026db1ccebe0944059d11744953d794465282d450a4dfd3180b702ac"
+            },
+            "witnessId": "d2ca2cdf2cc273b5180b846cb97f78d5479b1a7e1e89e20e626736301daaa209",
+            "commonModePairsId": "1d5f158883dbf0ce445f9946d1674af088e8591755688931c8772a4236735606",
+            "incidentTopologyId": "c78eaf4c884c5b4f342b9db1ed451ff4326b474eba3f0879d5332575052a1e33",
+            "diagonalSlotsId": "c3179b04329a0606da24daa4e38365fc503a3bf56863954b33af250dfbe56e8c",
+            "missingNodeDiagonalsId": "98b534f03573635308eb663f65509fbe5e8bfac94900b4692f0ffaa88da9652a"
+          },
+          {
+            "attempt": 8,
+            "phase": "dynamic-node-gmin",
+            "sourceScale": 1,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "960e6bedd75db13bb12cca7232a5253754a7fc0009103bd80d81bf9726aeeef4",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "74d6e9301f7a1f9a8a089fea91dfafedfcb20692aabfa16a229ab41e26146473",
+            "patternHash": "92e58a765f199b7a3da0fd0093eb876f60911b3d41fa993e44a53c397ae620de:d29475748eafe9d90bf716086b78ccf83fab4500492f0d4307729cf87af8279a",
+            "size": 317,
+            "nnz": 1166,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 232,
+              "eliminationStep": 135,
+              "preferredOriginalRow": 232,
+              "remainingRows": 182,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "db9a731d9d8151bfc5cfdccd0c2013e093b2cc9da224b44e17b673f9d0c0302b",
+              "permutationHash": "6bfb27710121e4ab419c8009359a1d72f78674fc53704e05cd762d96ecc7fdae",
+              "completedRowPermutationHash": "344467f6026db1ccebe0944059d11744953d794465282d450a4dfd3180b702ac"
+            },
+            "witnessId": "d2ca2cdf2cc273b5180b846cb97f78d5479b1a7e1e89e20e626736301daaa209",
+            "commonModePairsId": "1d5f158883dbf0ce445f9946d1674af088e8591755688931c8772a4236735606",
+            "incidentTopologyId": "c78eaf4c884c5b4f342b9db1ed451ff4326b474eba3f0879d5332575052a1e33",
+            "diagonalSlotsId": "c3179b04329a0606da24daa4e38365fc503a3bf56863954b33af250dfbe56e8c",
+            "missingNodeDiagonalsId": "98b534f03573635308eb663f65509fbe5e8bfac94900b4692f0ffaa88da9652a"
+          },
+          {
+            "attempt": 9,
+            "phase": "dynamic-node-gmin",
+            "sourceScale": 1,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "960e6bedd75db13bb12cca7232a5253754a7fc0009103bd80d81bf9726aeeef4",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "cd85150f0c485eb151cdcfec61606d2dc8147dea940dbdaed9a5d1ef62b77c57",
+            "patternHash": "92e58a765f199b7a3da0fd0093eb876f60911b3d41fa993e44a53c397ae620de:d29475748eafe9d90bf716086b78ccf83fab4500492f0d4307729cf87af8279a",
+            "size": 317,
+            "nnz": 1166,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 232,
+              "eliminationStep": 135,
+              "preferredOriginalRow": 232,
+              "remainingRows": 182,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "db9a731d9d8151bfc5cfdccd0c2013e093b2cc9da224b44e17b673f9d0c0302b",
+              "permutationHash": "6bfb27710121e4ab419c8009359a1d72f78674fc53704e05cd762d96ecc7fdae",
+              "completedRowPermutationHash": "344467f6026db1ccebe0944059d11744953d794465282d450a4dfd3180b702ac"
+            },
+            "witnessId": "d2ca2cdf2cc273b5180b846cb97f78d5479b1a7e1e89e20e626736301daaa209",
+            "commonModePairsId": "1d5f158883dbf0ce445f9946d1674af088e8591755688931c8772a4236735606",
+            "incidentTopologyId": "c78eaf4c884c5b4f342b9db1ed451ff4326b474eba3f0879d5332575052a1e33",
+            "diagonalSlotsId": "c3179b04329a0606da24daa4e38365fc503a3bf56863954b33af250dfbe56e8c",
+            "missingNodeDiagonalsId": "98b534f03573635308eb663f65509fbe5e8bfac94900b4692f0ffaa88da9652a"
+          },
+          {
+            "attempt": 10,
+            "phase": "true-device-gmin",
+            "sourceScale": 1,
+            "deviceGmin": 0.001,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "960e6bedd75db13bb12cca7232a5253754a7fc0009103bd80d81bf9726aeeef4",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "27684ebbd2443e5c93361c20c2585a8bddab2487b7b4a154b7c40a4ec48674c8",
+            "patternHash": "92e58a765f199b7a3da0fd0093eb876f60911b3d41fa993e44a53c397ae620de:d29475748eafe9d90bf716086b78ccf83fab4500492f0d4307729cf87af8279a",
+            "size": 317,
+            "nnz": 1166,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 41,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "6bfb27710121e4ab419c8009359a1d72f78674fc53704e05cd762d96ecc7fdae",
+              "completedRowPermutationHash": "c161663fe08dd7c98e6b584983f923c7eb7704b7dc6898da8a32b4404e8ea66f"
+            },
+            "witnessId": "913a5cb041664b09967c7fcdf92c4e0a63b83a6d5108414ef877e4bd1e7db043",
+            "commonModePairsId": "1d5f158883dbf0ce445f9946d1674af088e8591755688931c8772a4236735606",
+            "incidentTopologyId": "918aec6999450fb7b975c1bdfb636088a70af9192211fd88658448ee24436e8b",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "98b534f03573635308eb663f65509fbe5e8bfac94900b4692f0ffaa88da9652a"
+          },
+          {
+            "attempt": 11,
+            "phase": "true-device-gmin",
+            "sourceScale": 1,
+            "deviceGmin": 0.005623413251903491,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "960e6bedd75db13bb12cca7232a5253754a7fc0009103bd80d81bf9726aeeef4",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "1aac0bc26660a178ddfd02f94e16787e4fea76b2cbbed8eefe9d4b8528864738",
+            "patternHash": "92e58a765f199b7a3da0fd0093eb876f60911b3d41fa993e44a53c397ae620de:d29475748eafe9d90bf716086b78ccf83fab4500492f0d4307729cf87af8279a",
+            "size": 317,
+            "nnz": 1166,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 41,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "6bfb27710121e4ab419c8009359a1d72f78674fc53704e05cd762d96ecc7fdae",
+              "completedRowPermutationHash": "c161663fe08dd7c98e6b584983f923c7eb7704b7dc6898da8a32b4404e8ea66f"
+            },
+            "witnessId": "913a5cb041664b09967c7fcdf92c4e0a63b83a6d5108414ef877e4bd1e7db043",
+            "commonModePairsId": "1d5f158883dbf0ce445f9946d1674af088e8591755688931c8772a4236735606",
+            "incidentTopologyId": "918aec6999450fb7b975c1bdfb636088a70af9192211fd88658448ee24436e8b",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "98b534f03573635308eb663f65509fbe5e8bfac94900b4692f0ffaa88da9652a"
+          },
+          {
+            "attempt": 12,
+            "phase": "true-device-gmin",
+            "sourceScale": 1,
+            "deviceGmin": 0.008659643233600653,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "960e6bedd75db13bb12cca7232a5253754a7fc0009103bd80d81bf9726aeeef4",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "c027e57e3674a80ba018a82ee4e03ee3c8d0c5d013d84bf64ab4b0629e47a244",
+            "patternHash": "92e58a765f199b7a3da0fd0093eb876f60911b3d41fa993e44a53c397ae620de:d29475748eafe9d90bf716086b78ccf83fab4500492f0d4307729cf87af8279a",
+            "size": 317,
+            "nnz": 1166,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 41,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "6bfb27710121e4ab419c8009359a1d72f78674fc53704e05cd762d96ecc7fdae",
+              "completedRowPermutationHash": "c161663fe08dd7c98e6b584983f923c7eb7704b7dc6898da8a32b4404e8ea66f"
+            },
+            "witnessId": "913a5cb041664b09967c7fcdf92c4e0a63b83a6d5108414ef877e4bd1e7db043",
+            "commonModePairsId": "1d5f158883dbf0ce445f9946d1674af088e8591755688931c8772a4236735606",
+            "incidentTopologyId": "918aec6999450fb7b975c1bdfb636088a70af9192211fd88658448ee24436e8b",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "98b534f03573635308eb663f65509fbe5e8bfac94900b4692f0ffaa88da9652a"
+          },
+          {
+            "attempt": 13,
+            "phase": "true-device-gmin",
+            "sourceScale": 1,
+            "deviceGmin": 0.009646616199111991,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "960e6bedd75db13bb12cca7232a5253754a7fc0009103bd80d81bf9726aeeef4",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "8b6996dff164f3475bc608d2beed360bf5ec56b82f997fe04820e02471a94702",
+            "patternHash": "92e58a765f199b7a3da0fd0093eb876f60911b3d41fa993e44a53c397ae620de:d29475748eafe9d90bf716086b78ccf83fab4500492f0d4307729cf87af8279a",
+            "size": 317,
+            "nnz": 1166,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 41,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "6bfb27710121e4ab419c8009359a1d72f78674fc53704e05cd762d96ecc7fdae",
+              "completedRowPermutationHash": "c161663fe08dd7c98e6b584983f923c7eb7704b7dc6898da8a32b4404e8ea66f"
+            },
+            "witnessId": "913a5cb041664b09967c7fcdf92c4e0a63b83a6d5108414ef877e4bd1e7db043",
+            "commonModePairsId": "1d5f158883dbf0ce445f9946d1674af088e8591755688931c8772a4236735606",
+            "incidentTopologyId": "918aec6999450fb7b975c1bdfb636088a70af9192211fd88658448ee24436e8b",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "98b534f03573635308eb663f65509fbe5e8bfac94900b4692f0ffaa88da9652a"
+          },
+          {
+            "attempt": 14,
+            "phase": "true-device-gmin",
+            "sourceScale": 1,
+            "deviceGmin": 0.009910458562488608,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "960e6bedd75db13bb12cca7232a5253754a7fc0009103bd80d81bf9726aeeef4",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "942b8b6a2eeb0a4b13330c6a348a621174851cfdf73de9981015358c70ac7855",
+            "patternHash": "92e58a765f199b7a3da0fd0093eb876f60911b3d41fa993e44a53c397ae620de:d29475748eafe9d90bf716086b78ccf83fab4500492f0d4307729cf87af8279a",
+            "size": 317,
+            "nnz": 1166,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 41,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "6bfb27710121e4ab419c8009359a1d72f78674fc53704e05cd762d96ecc7fdae",
+              "completedRowPermutationHash": "c161663fe08dd7c98e6b584983f923c7eb7704b7dc6898da8a32b4404e8ea66f"
+            },
+            "witnessId": "913a5cb041664b09967c7fcdf92c4e0a63b83a6d5108414ef877e4bd1e7db043",
+            "commonModePairsId": "1d5f158883dbf0ce445f9946d1674af088e8591755688931c8772a4236735606",
+            "incidentTopologyId": "918aec6999450fb7b975c1bdfb636088a70af9192211fd88658448ee24436e8b",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "98b534f03573635308eb663f65509fbe5e8bfac94900b4692f0ffaa88da9652a"
+          },
+          {
+            "attempt": 15,
+            "phase": "true-device-gmin",
+            "sourceScale": 1,
+            "deviceGmin": 0.009977539079932736,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "960e6bedd75db13bb12cca7232a5253754a7fc0009103bd80d81bf9726aeeef4",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "e09da95364258e325e2de6598d7f37b9fb214a8d49b169253cb2a1566f155d12",
+            "patternHash": "92e58a765f199b7a3da0fd0093eb876f60911b3d41fa993e44a53c397ae620de:d29475748eafe9d90bf716086b78ccf83fab4500492f0d4307729cf87af8279a",
+            "size": 317,
+            "nnz": 1166,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 41,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "6bfb27710121e4ab419c8009359a1d72f78674fc53704e05cd762d96ecc7fdae",
+              "completedRowPermutationHash": "c161663fe08dd7c98e6b584983f923c7eb7704b7dc6898da8a32b4404e8ea66f"
+            },
+            "witnessId": "913a5cb041664b09967c7fcdf92c4e0a63b83a6d5108414ef877e4bd1e7db043",
+            "commonModePairsId": "1d5f158883dbf0ce445f9946d1674af088e8591755688931c8772a4236735606",
+            "incidentTopologyId": "918aec6999450fb7b975c1bdfb636088a70af9192211fd88658448ee24436e8b",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "98b534f03573635308eb663f65509fbe5e8bfac94900b4692f0ffaa88da9652a"
+          },
+          {
+            "attempt": 16,
+            "phase": "true-device-gmin",
+            "sourceScale": 1,
+            "deviceGmin": 0.009994380034155531,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "960e6bedd75db13bb12cca7232a5253754a7fc0009103bd80d81bf9726aeeef4",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "dc75a631aec1f3c550058d97d240b03104041c461b0b228d8ab1f20db7bd5c02",
+            "patternHash": "92e58a765f199b7a3da0fd0093eb876f60911b3d41fa993e44a53c397ae620de:d29475748eafe9d90bf716086b78ccf83fab4500492f0d4307729cf87af8279a",
+            "size": 317,
+            "nnz": 1166,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 41,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "6bfb27710121e4ab419c8009359a1d72f78674fc53704e05cd762d96ecc7fdae",
+              "completedRowPermutationHash": "c161663fe08dd7c98e6b584983f923c7eb7704b7dc6898da8a32b4404e8ea66f"
+            },
+            "witnessId": "913a5cb041664b09967c7fcdf92c4e0a63b83a6d5108414ef877e4bd1e7db043",
+            "commonModePairsId": "1d5f158883dbf0ce445f9946d1674af088e8591755688931c8772a4236735606",
+            "incidentTopologyId": "918aec6999450fb7b975c1bdfb636088a70af9192211fd88658448ee24436e8b",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "98b534f03573635308eb663f65509fbe5e8bfac94900b4692f0ffaa88da9652a"
+          },
+          {
+            "attempt": 17,
+            "phase": "true-device-gmin",
+            "sourceScale": 1,
+            "deviceGmin": 0.009998594712341624,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "960e6bedd75db13bb12cca7232a5253754a7fc0009103bd80d81bf9726aeeef4",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "ae11bafbcca41f971900385350765c91ba213bcfc23feb056c8410bc896a9ae2",
+            "patternHash": "92e58a765f199b7a3da0fd0093eb876f60911b3d41fa993e44a53c397ae620de:d29475748eafe9d90bf716086b78ccf83fab4500492f0d4307729cf87af8279a",
+            "size": 317,
+            "nnz": 1166,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 41,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "6bfb27710121e4ab419c8009359a1d72f78674fc53704e05cd762d96ecc7fdae",
+              "completedRowPermutationHash": "c161663fe08dd7c98e6b584983f923c7eb7704b7dc6898da8a32b4404e8ea66f"
+            },
+            "witnessId": "913a5cb041664b09967c7fcdf92c4e0a63b83a6d5108414ef877e4bd1e7db043",
+            "commonModePairsId": "1d5f158883dbf0ce445f9946d1674af088e8591755688931c8772a4236735606",
+            "incidentTopologyId": "918aec6999450fb7b975c1bdfb636088a70af9192211fd88658448ee24436e8b",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "98b534f03573635308eb663f65509fbe5e8bfac94900b4692f0ffaa88da9652a"
+          },
+          {
+            "attempt": 18,
+            "phase": "true-device-gmin",
+            "sourceScale": 1,
+            "deviceGmin": 0.009999648659569824,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "960e6bedd75db13bb12cca7232a5253754a7fc0009103bd80d81bf9726aeeef4",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "db560507fc124ff8db572f12af329207b6d36b155b304e5cacf12eec1715db60",
+            "patternHash": "92e58a765f199b7a3da0fd0093eb876f60911b3d41fa993e44a53c397ae620de:d29475748eafe9d90bf716086b78ccf83fab4500492f0d4307729cf87af8279a",
+            "size": 317,
+            "nnz": 1166,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 41,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "6bfb27710121e4ab419c8009359a1d72f78674fc53704e05cd762d96ecc7fdae",
+              "completedRowPermutationHash": "c161663fe08dd7c98e6b584983f923c7eb7704b7dc6898da8a32b4404e8ea66f"
+            },
+            "witnessId": "913a5cb041664b09967c7fcdf92c4e0a63b83a6d5108414ef877e4bd1e7db043",
+            "commonModePairsId": "1d5f158883dbf0ce445f9946d1674af088e8591755688931c8772a4236735606",
+            "incidentTopologyId": "918aec6999450fb7b975c1bdfb636088a70af9192211fd88658448ee24436e8b",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "98b534f03573635308eb663f65509fbe5e8bfac94900b4692f0ffaa88da9652a"
+          },
+          {
+            "attempt": 19,
+            "phase": "source-stepping",
+            "sourceScale": 0.01,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "960e6bedd75db13bb12cca7232a5253754a7fc0009103bd80d81bf9726aeeef4",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "604158b268a47b8ae09ba73acaf0f32218c7832d684473f128b59b0801918560",
+            "patternHash": "92e58a765f199b7a3da0fd0093eb876f60911b3d41fa993e44a53c397ae620de:d29475748eafe9d90bf716086b78ccf83fab4500492f0d4307729cf87af8279a",
+            "size": 317,
+            "nnz": 1166,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 41,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "6bfb27710121e4ab419c8009359a1d72f78674fc53704e05cd762d96ecc7fdae",
+              "completedRowPermutationHash": "c161663fe08dd7c98e6b584983f923c7eb7704b7dc6898da8a32b4404e8ea66f"
+            },
+            "witnessId": "913a5cb041664b09967c7fcdf92c4e0a63b83a6d5108414ef877e4bd1e7db043",
+            "commonModePairsId": "1d5f158883dbf0ce445f9946d1674af088e8591755688931c8772a4236735606",
+            "incidentTopologyId": "918aec6999450fb7b975c1bdfb636088a70af9192211fd88658448ee24436e8b",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "98b534f03573635308eb663f65509fbe5e8bfac94900b4692f0ffaa88da9652a"
+          },
+          {
+            "attempt": 20,
+            "phase": "source-stepping",
+            "sourceScale": 0.02,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "960e6bedd75db13bb12cca7232a5253754a7fc0009103bd80d81bf9726aeeef4",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "604158b268a47b8ae09ba73acaf0f32218c7832d684473f128b59b0801918560",
+            "patternHash": "92e58a765f199b7a3da0fd0093eb876f60911b3d41fa993e44a53c397ae620de:d29475748eafe9d90bf716086b78ccf83fab4500492f0d4307729cf87af8279a",
+            "size": 317,
+            "nnz": 1166,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 41,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "6bfb27710121e4ab419c8009359a1d72f78674fc53704e05cd762d96ecc7fdae",
+              "completedRowPermutationHash": "c161663fe08dd7c98e6b584983f923c7eb7704b7dc6898da8a32b4404e8ea66f"
+            },
+            "witnessId": "913a5cb041664b09967c7fcdf92c4e0a63b83a6d5108414ef877e4bd1e7db043",
+            "commonModePairsId": "1d5f158883dbf0ce445f9946d1674af088e8591755688931c8772a4236735606",
+            "incidentTopologyId": "918aec6999450fb7b975c1bdfb636088a70af9192211fd88658448ee24436e8b",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "98b534f03573635308eb663f65509fbe5e8bfac94900b4692f0ffaa88da9652a"
+          },
+          {
+            "attempt": 21,
+            "phase": "source-stepping",
+            "sourceScale": 0.05,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "960e6bedd75db13bb12cca7232a5253754a7fc0009103bd80d81bf9726aeeef4",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "604158b268a47b8ae09ba73acaf0f32218c7832d684473f128b59b0801918560",
+            "patternHash": "92e58a765f199b7a3da0fd0093eb876f60911b3d41fa993e44a53c397ae620de:d29475748eafe9d90bf716086b78ccf83fab4500492f0d4307729cf87af8279a",
+            "size": 317,
+            "nnz": 1166,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 41,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "6bfb27710121e4ab419c8009359a1d72f78674fc53704e05cd762d96ecc7fdae",
+              "completedRowPermutationHash": "c161663fe08dd7c98e6b584983f923c7eb7704b7dc6898da8a32b4404e8ea66f"
+            },
+            "witnessId": "913a5cb041664b09967c7fcdf92c4e0a63b83a6d5108414ef877e4bd1e7db043",
+            "commonModePairsId": "1d5f158883dbf0ce445f9946d1674af088e8591755688931c8772a4236735606",
+            "incidentTopologyId": "918aec6999450fb7b975c1bdfb636088a70af9192211fd88658448ee24436e8b",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "98b534f03573635308eb663f65509fbe5e8bfac94900b4692f0ffaa88da9652a"
+          },
+          {
+            "attempt": 22,
+            "phase": "source-stepping",
+            "sourceScale": 0.1,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "960e6bedd75db13bb12cca7232a5253754a7fc0009103bd80d81bf9726aeeef4",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "604158b268a47b8ae09ba73acaf0f32218c7832d684473f128b59b0801918560",
+            "patternHash": "92e58a765f199b7a3da0fd0093eb876f60911b3d41fa993e44a53c397ae620de:d29475748eafe9d90bf716086b78ccf83fab4500492f0d4307729cf87af8279a",
+            "size": 317,
+            "nnz": 1166,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 41,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "6bfb27710121e4ab419c8009359a1d72f78674fc53704e05cd762d96ecc7fdae",
+              "completedRowPermutationHash": "c161663fe08dd7c98e6b584983f923c7eb7704b7dc6898da8a32b4404e8ea66f"
+            },
+            "witnessId": "913a5cb041664b09967c7fcdf92c4e0a63b83a6d5108414ef877e4bd1e7db043",
+            "commonModePairsId": "1d5f158883dbf0ce445f9946d1674af088e8591755688931c8772a4236735606",
+            "incidentTopologyId": "918aec6999450fb7b975c1bdfb636088a70af9192211fd88658448ee24436e8b",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "98b534f03573635308eb663f65509fbe5e8bfac94900b4692f0ffaa88da9652a"
+          },
+          {
+            "attempt": 23,
+            "phase": "source-stepping",
+            "sourceScale": 0.2,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "960e6bedd75db13bb12cca7232a5253754a7fc0009103bd80d81bf9726aeeef4",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "604158b268a47b8ae09ba73acaf0f32218c7832d684473f128b59b0801918560",
+            "patternHash": "92e58a765f199b7a3da0fd0093eb876f60911b3d41fa993e44a53c397ae620de:d29475748eafe9d90bf716086b78ccf83fab4500492f0d4307729cf87af8279a",
+            "size": 317,
+            "nnz": 1166,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 41,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "6bfb27710121e4ab419c8009359a1d72f78674fc53704e05cd762d96ecc7fdae",
+              "completedRowPermutationHash": "c161663fe08dd7c98e6b584983f923c7eb7704b7dc6898da8a32b4404e8ea66f"
+            },
+            "witnessId": "913a5cb041664b09967c7fcdf92c4e0a63b83a6d5108414ef877e4bd1e7db043",
+            "commonModePairsId": "1d5f158883dbf0ce445f9946d1674af088e8591755688931c8772a4236735606",
+            "incidentTopologyId": "918aec6999450fb7b975c1bdfb636088a70af9192211fd88658448ee24436e8b",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "98b534f03573635308eb663f65509fbe5e8bfac94900b4692f0ffaa88da9652a"
+          },
+          {
+            "attempt": 24,
+            "phase": "source-stepping",
+            "sourceScale": 0.3,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "960e6bedd75db13bb12cca7232a5253754a7fc0009103bd80d81bf9726aeeef4",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "604158b268a47b8ae09ba73acaf0f32218c7832d684473f128b59b0801918560",
+            "patternHash": "92e58a765f199b7a3da0fd0093eb876f60911b3d41fa993e44a53c397ae620de:d29475748eafe9d90bf716086b78ccf83fab4500492f0d4307729cf87af8279a",
+            "size": 317,
+            "nnz": 1166,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 41,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "6bfb27710121e4ab419c8009359a1d72f78674fc53704e05cd762d96ecc7fdae",
+              "completedRowPermutationHash": "c161663fe08dd7c98e6b584983f923c7eb7704b7dc6898da8a32b4404e8ea66f"
+            },
+            "witnessId": "913a5cb041664b09967c7fcdf92c4e0a63b83a6d5108414ef877e4bd1e7db043",
+            "commonModePairsId": "1d5f158883dbf0ce445f9946d1674af088e8591755688931c8772a4236735606",
+            "incidentTopologyId": "918aec6999450fb7b975c1bdfb636088a70af9192211fd88658448ee24436e8b",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "98b534f03573635308eb663f65509fbe5e8bfac94900b4692f0ffaa88da9652a"
+          },
+          {
+            "attempt": 25,
+            "phase": "source-stepping",
+            "sourceScale": 0.4,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "960e6bedd75db13bb12cca7232a5253754a7fc0009103bd80d81bf9726aeeef4",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "604158b268a47b8ae09ba73acaf0f32218c7832d684473f128b59b0801918560",
+            "patternHash": "92e58a765f199b7a3da0fd0093eb876f60911b3d41fa993e44a53c397ae620de:d29475748eafe9d90bf716086b78ccf83fab4500492f0d4307729cf87af8279a",
+            "size": 317,
+            "nnz": 1166,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 41,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "6bfb27710121e4ab419c8009359a1d72f78674fc53704e05cd762d96ecc7fdae",
+              "completedRowPermutationHash": "c161663fe08dd7c98e6b584983f923c7eb7704b7dc6898da8a32b4404e8ea66f"
+            },
+            "witnessId": "913a5cb041664b09967c7fcdf92c4e0a63b83a6d5108414ef877e4bd1e7db043",
+            "commonModePairsId": "1d5f158883dbf0ce445f9946d1674af088e8591755688931c8772a4236735606",
+            "incidentTopologyId": "918aec6999450fb7b975c1bdfb636088a70af9192211fd88658448ee24436e8b",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "98b534f03573635308eb663f65509fbe5e8bfac94900b4692f0ffaa88da9652a"
+          },
+          {
+            "attempt": 26,
+            "phase": "source-stepping",
+            "sourceScale": 0.5,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "960e6bedd75db13bb12cca7232a5253754a7fc0009103bd80d81bf9726aeeef4",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "604158b268a47b8ae09ba73acaf0f32218c7832d684473f128b59b0801918560",
+            "patternHash": "92e58a765f199b7a3da0fd0093eb876f60911b3d41fa993e44a53c397ae620de:d29475748eafe9d90bf716086b78ccf83fab4500492f0d4307729cf87af8279a",
+            "size": 317,
+            "nnz": 1166,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 41,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "6bfb27710121e4ab419c8009359a1d72f78674fc53704e05cd762d96ecc7fdae",
+              "completedRowPermutationHash": "c161663fe08dd7c98e6b584983f923c7eb7704b7dc6898da8a32b4404e8ea66f"
+            },
+            "witnessId": "913a5cb041664b09967c7fcdf92c4e0a63b83a6d5108414ef877e4bd1e7db043",
+            "commonModePairsId": "1d5f158883dbf0ce445f9946d1674af088e8591755688931c8772a4236735606",
+            "incidentTopologyId": "918aec6999450fb7b975c1bdfb636088a70af9192211fd88658448ee24436e8b",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "98b534f03573635308eb663f65509fbe5e8bfac94900b4692f0ffaa88da9652a"
+          },
+          {
+            "attempt": 27,
+            "phase": "source-stepping",
+            "sourceScale": 0.6,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "960e6bedd75db13bb12cca7232a5253754a7fc0009103bd80d81bf9726aeeef4",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "604158b268a47b8ae09ba73acaf0f32218c7832d684473f128b59b0801918560",
+            "patternHash": "92e58a765f199b7a3da0fd0093eb876f60911b3d41fa993e44a53c397ae620de:d29475748eafe9d90bf716086b78ccf83fab4500492f0d4307729cf87af8279a",
+            "size": 317,
+            "nnz": 1166,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 41,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "6bfb27710121e4ab419c8009359a1d72f78674fc53704e05cd762d96ecc7fdae",
+              "completedRowPermutationHash": "c161663fe08dd7c98e6b584983f923c7eb7704b7dc6898da8a32b4404e8ea66f"
+            },
+            "witnessId": "913a5cb041664b09967c7fcdf92c4e0a63b83a6d5108414ef877e4bd1e7db043",
+            "commonModePairsId": "1d5f158883dbf0ce445f9946d1674af088e8591755688931c8772a4236735606",
+            "incidentTopologyId": "918aec6999450fb7b975c1bdfb636088a70af9192211fd88658448ee24436e8b",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "98b534f03573635308eb663f65509fbe5e8bfac94900b4692f0ffaa88da9652a"
+          },
+          {
+            "attempt": 28,
+            "phase": "source-stepping",
+            "sourceScale": 0.7,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "960e6bedd75db13bb12cca7232a5253754a7fc0009103bd80d81bf9726aeeef4",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "604158b268a47b8ae09ba73acaf0f32218c7832d684473f128b59b0801918560",
+            "patternHash": "92e58a765f199b7a3da0fd0093eb876f60911b3d41fa993e44a53c397ae620de:d29475748eafe9d90bf716086b78ccf83fab4500492f0d4307729cf87af8279a",
+            "size": 317,
+            "nnz": 1166,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 41,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "6bfb27710121e4ab419c8009359a1d72f78674fc53704e05cd762d96ecc7fdae",
+              "completedRowPermutationHash": "c161663fe08dd7c98e6b584983f923c7eb7704b7dc6898da8a32b4404e8ea66f"
+            },
+            "witnessId": "913a5cb041664b09967c7fcdf92c4e0a63b83a6d5108414ef877e4bd1e7db043",
+            "commonModePairsId": "1d5f158883dbf0ce445f9946d1674af088e8591755688931c8772a4236735606",
+            "incidentTopologyId": "918aec6999450fb7b975c1bdfb636088a70af9192211fd88658448ee24436e8b",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "98b534f03573635308eb663f65509fbe5e8bfac94900b4692f0ffaa88da9652a"
+          },
+          {
+            "attempt": 29,
+            "phase": "source-stepping",
+            "sourceScale": 0.8,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "960e6bedd75db13bb12cca7232a5253754a7fc0009103bd80d81bf9726aeeef4",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "604158b268a47b8ae09ba73acaf0f32218c7832d684473f128b59b0801918560",
+            "patternHash": "92e58a765f199b7a3da0fd0093eb876f60911b3d41fa993e44a53c397ae620de:d29475748eafe9d90bf716086b78ccf83fab4500492f0d4307729cf87af8279a",
+            "size": 317,
+            "nnz": 1166,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 41,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "6bfb27710121e4ab419c8009359a1d72f78674fc53704e05cd762d96ecc7fdae",
+              "completedRowPermutationHash": "c161663fe08dd7c98e6b584983f923c7eb7704b7dc6898da8a32b4404e8ea66f"
+            },
+            "witnessId": "913a5cb041664b09967c7fcdf92c4e0a63b83a6d5108414ef877e4bd1e7db043",
+            "commonModePairsId": "1d5f158883dbf0ce445f9946d1674af088e8591755688931c8772a4236735606",
+            "incidentTopologyId": "918aec6999450fb7b975c1bdfb636088a70af9192211fd88658448ee24436e8b",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "98b534f03573635308eb663f65509fbe5e8bfac94900b4692f0ffaa88da9652a"
+          },
+          {
+            "attempt": 30,
+            "phase": "source-stepping",
+            "sourceScale": 0.9,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "960e6bedd75db13bb12cca7232a5253754a7fc0009103bd80d81bf9726aeeef4",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "604158b268a47b8ae09ba73acaf0f32218c7832d684473f128b59b0801918560",
+            "patternHash": "92e58a765f199b7a3da0fd0093eb876f60911b3d41fa993e44a53c397ae620de:d29475748eafe9d90bf716086b78ccf83fab4500492f0d4307729cf87af8279a",
+            "size": 317,
+            "nnz": 1166,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 41,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "6bfb27710121e4ab419c8009359a1d72f78674fc53704e05cd762d96ecc7fdae",
+              "completedRowPermutationHash": "c161663fe08dd7c98e6b584983f923c7eb7704b7dc6898da8a32b4404e8ea66f"
+            },
+            "witnessId": "913a5cb041664b09967c7fcdf92c4e0a63b83a6d5108414ef877e4bd1e7db043",
+            "commonModePairsId": "1d5f158883dbf0ce445f9946d1674af088e8591755688931c8772a4236735606",
+            "incidentTopologyId": "918aec6999450fb7b975c1bdfb636088a70af9192211fd88658448ee24436e8b",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "98b534f03573635308eb663f65509fbe5e8bfac94900b4692f0ffaa88da9652a"
+          },
+          {
+            "attempt": 31,
+            "phase": "source-stepping",
+            "sourceScale": 1,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "960e6bedd75db13bb12cca7232a5253754a7fc0009103bd80d81bf9726aeeef4",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "604158b268a47b8ae09ba73acaf0f32218c7832d684473f128b59b0801918560",
+            "patternHash": "92e58a765f199b7a3da0fd0093eb876f60911b3d41fa993e44a53c397ae620de:d29475748eafe9d90bf716086b78ccf83fab4500492f0d4307729cf87af8279a",
+            "size": 317,
+            "nnz": 1166,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 41,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "6bfb27710121e4ab419c8009359a1d72f78674fc53704e05cd762d96ecc7fdae",
+              "completedRowPermutationHash": "c161663fe08dd7c98e6b584983f923c7eb7704b7dc6898da8a32b4404e8ea66f"
+            },
+            "witnessId": "913a5cb041664b09967c7fcdf92c4e0a63b83a6d5108414ef877e4bd1e7db043",
+            "commonModePairsId": "1d5f158883dbf0ce445f9946d1674af088e8591755688931c8772a4236735606",
+            "incidentTopologyId": "918aec6999450fb7b975c1bdfb636088a70af9192211fd88658448ee24436e8b",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "98b534f03573635308eb663f65509fbe5e8bfac94900b4692f0ffaa88da9652a"
+          },
+          {
+            "attempt": 32,
+            "phase": "source-stepping",
+            "sourceScale": 1,
+            "deviceGmin": 1e-12,
+            "time": 0,
+            "dt": 0,
+            "state": {
+              "hash": "960e6bedd75db13bb12cca7232a5253754a7fc0009103bd80d81bf9726aeeef4",
+              "nodesZero": true,
+              "branchesZero": true,
+              "nonfinite": 0
+            },
+            "matrixHash": "604158b268a47b8ae09ba73acaf0f32218c7832d684473f128b59b0801918560",
+            "patternHash": "92e58a765f199b7a3da0fd0093eb876f60911b3d41fa993e44a53c397ae620de:d29475748eafe9d90bf716086b78ccf83fab4500492f0d4307729cf87af8279a",
+            "size": 317,
+            "nnz": 1166,
+            "nonfinite": 0,
+            "rhsNonfinite": 0,
+            "pivot": {
+              "originalColumn": 2,
+              "eliminationStep": 41,
+              "preferredOriginalRow": 2,
+              "remainingRows": 276,
+              "unpivotedWorkspaceMax": 0,
+              "kind": "node",
+              "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2",
+              "permutationHash": "6bfb27710121e4ab419c8009359a1d72f78674fc53704e05cd762d96ecc7fdae",
+              "completedRowPermutationHash": "c161663fe08dd7c98e6b584983f923c7eb7704b7dc6898da8a32b4404e8ea66f"
+            },
+            "witnessId": "913a5cb041664b09967c7fcdf92c4e0a63b83a6d5108414ef877e4bd1e7db043",
+            "commonModePairsId": "1d5f158883dbf0ce445f9946d1674af088e8591755688931c8772a4236735606",
+            "incidentTopologyId": "918aec6999450fb7b975c1bdfb636088a70af9192211fd88658448ee24436e8b",
+            "diagonalSlotsId": "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6",
+            "missingNodeDiagonalsId": "98b534f03573635308eb663f65509fbe5e8bfac94900b4692f0ffaa88da9652a"
+          }
+        ],
+        "authoredControl": null,
+        "details": {
+          "913a5cb041664b09967c7fcdf92c4e0a63b83a6d5108414ef877e4bd1e7db043": {
+            "firstRejectedStep": 41,
+            "originalColumn": 2,
+            "candidateMax": 0,
+            "maxResidual": 0,
+            "verified": true,
+            "support": [
+              {
+                "index": 1,
+                "value": 1,
+                "kind": "node",
+                "identityHash": "743521693f3fb1bd32cea7915f3596b3976046715efe89dc6ec2f4e1bfcdd10d"
+              },
+              {
+                "index": 2,
+                "value": 1,
+                "kind": "node",
+                "identityHash": "cafed79b622a26917bbb7afe722cf6c9229a2266032fb74853fedff2496641b2"
+              }
+            ]
+          },
+          "1d5f158883dbf0ce445f9946d1674af088e8591755688931c8772a4236735606": [
+            {
+              "supports": [
+                {
+                  "index": 231,
+                  "identityHash": "9a1a14f6062d1cb55bd0e8bb409bfad8f643149420be8a96edb332bdb4fbfb5d",
+                  "keywordAsNode": "table",
+                  "expressionAsNode": false,
+                  "diagonalSlot": -1
+                },
+                {
+                  "index": 232,
+                  "identityHash": "db9a731d9d8151bfc5cfdccd0c2013e093b2cc9da224b44e17b673f9d0c0302b",
+                  "keywordAsNode": null,
+                  "expressionAsNode": true,
+                  "diagonalSlot": -1
+                }
+              ],
+              "incident": [
+                {
+                  "deviceIndex": 357,
+                  "type": "VCCS",
+                  "terminalNodes": [
+                    226,
+                    195
+                  ],
+                  "controlNodes": [
+                    231,
+                    232
+                  ],
+                  "identityHash": "a0263a7d60bb2bcd043ebb30a14a32429cdcf9a1028024b3d4e2d7df02a6fed0"
+                }
+              ],
+              "maxResidual": 0,
+              "verified": true
+            }
+          ],
+          "918aec6999450fb7b975c1bdfb636088a70af9192211fd88658448ee24436e8b": [
+            {
+              "deviceIndex": 87,
+              "type": "Resistor",
+              "terminalNodes": [
+                1,
+                2
+              ],
+              "controlNodes": [],
+              "branchColumns": [],
+              "identityHash": "d1cdf708a12b7d7259ca11e0bdefd02b0cb7795ce2a8270a7bd0b2eee27b04f3"
+            },
+            {
+              "deviceIndex": 96,
+              "type": "Capacitor",
+              "terminalNodes": [
+                2,
+                3
+              ],
+              "controlNodes": [],
+              "branchColumns": [],
+              "identityHash": "7ce2e5e04ac0a8e608b82ba3d785a8dc9407adc9eb0f6f1e6dd3f4d1ba22dc24"
+            },
+            {
+              "deviceIndex": 99,
+              "type": "Capacitor",
+              "terminalNodes": [
+                0,
+                1
+              ],
+              "controlNodes": [],
+              "branchColumns": [],
+              "identityHash": "a1abe957de3d924c095c7bd91a72b27e3a1293b38bc76396dbc4ba0f85148ed2"
+            }
+          ],
+          "61dd2033aae0aac1751c03ae6f1938d4fe1c4c96df9c44a9c8c73b9dfb0693a6": [
+            {
+              "index": 1,
+              "slot": 2,
+              "nameContainsBrace": false,
+              "nameContainsParenthesis": false,
+              "keywordAsNode": null
+            },
+            {
+              "index": 2,
+              "slot": 5,
+              "nameContainsBrace": false,
+              "nameContainsParenthesis": false,
+              "keywordAsNode": null
+            }
+          ],
+          "98b534f03573635308eb663f65509fbe5e8bfac94900b4692f0ffaa88da9652a": [
+            3,
+            4,
+            6,
+            7,
+            28,
+            29,
+            30,
+            154,
+            155,
+            165,
+            171,
+            173,
+            231,
+            232,
+            233,
+            234,
+            235,
+            236
+          ],
+          "d2ca2cdf2cc273b5180b846cb97f78d5479b1a7e1e89e20e626736301daaa209": {
+            "firstRejectedStep": 135,
+            "originalColumn": 232,
+            "candidateMax": 0,
+            "maxResidual": 0,
+            "verified": true,
+            "support": [
+              {
+                "index": 231,
+                "value": 1,
+                "kind": "node",
+                "identityHash": "9a1a14f6062d1cb55bd0e8bb409bfad8f643149420be8a96edb332bdb4fbfb5d"
+              },
+              {
+                "index": 232,
+                "value": 1,
+                "kind": "node",
+                "identityHash": "db9a731d9d8151bfc5cfdccd0c2013e093b2cc9da224b44e17b673f9d0c0302b"
+              }
+            ]
+          },
+          "c78eaf4c884c5b4f342b9db1ed451ff4326b474eba3f0879d5332575052a1e33": [
+            {
+              "deviceIndex": 357,
+              "type": "VCCS",
+              "terminalNodes": [
+                226,
+                195
+              ],
+              "controlNodes": [
+                231,
+                232
+              ],
+              "branchColumns": [],
+              "identityHash": "a0263a7d60bb2bcd043ebb30a14a32429cdcf9a1028024b3d4e2d7df02a6fed0",
+              "gainFinite": true,
+              "gainZero": false
+            }
+          ],
+          "c3179b04329a0606da24daa4e38365fc503a3bf56863954b33af250dfbe56e8c": [
+            {
+              "index": 231,
+              "slot": -1,
+              "nameContainsBrace": false,
+              "nameContainsParenthesis": false,
+              "keywordAsNode": "table"
+            },
+            {
+              "index": 232,
+              "slot": -1,
+              "nameContainsBrace": true,
+              "nameContainsParenthesis": true,
+              "keywordAsNode": null
+            }
+          ]
+        }
+      },
+      "reference": {
+        "process": {
+          "argv": [
+            "ngspice",
+            "-b",
+            "-r",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/variant_159.cir.raw",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/variant_159.cir"
+          ],
+          "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run",
+          "exit": 0,
+          "timedOut": false,
+          "limitSeconds": 29,
+          "wallSeconds": 0.09464966599625768
+        },
+        "acRows": 141,
+        "solver": "SPARSE 1.3",
+        "ltpsConfirmed": true,
+        "xspicePresent": true,
+        "warnings": {
+          "singular": false,
+          "dynamicGminCompleted": true,
+          "dynamicGminFailed": false,
+          "trueGminFailed": false,
+          "sourceSteppingFailed": false,
+          "transientRecovery": false
+        }
+      },
+      "maxError": null,
+      "rmsError": null
+    }
+  ],
+  "childBudget": [
+    {
+      "argv": [
+        "/usr/bin/tar",
+        "-xf",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/question.7z",
+        "-C",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/extracted"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 0.008197499999999969
+    },
+    {
+      "argv": [
+        "node",
+        "--import",
+        "tsx",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/base_159.cir"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 0.5330745
+    },
+    {
+      "argv": [
+        "ngspice",
+        "-b",
+        "-r",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/base_159.cir.raw",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/base_159.cir"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 0.046599292000000014
+    },
+    {
+      "argv": [
+        "node",
+        "--import",
+        "tsx",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/variant_159.cir"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 0.3094663329999999
+    },
+    {
+      "argv": [
+        "ngspice",
+        "-b",
+        "-r",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/variant_159.cir.raw",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/variant_159.cir"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 0.049758458000000005
+    },
+    {
+      "argv": [
+        "node",
+        "--import",
+        "tsx",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/base_159.cir"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 0.608704083
+    },
+    {
+      "argv": [
+        "node",
+        "--import",
+        "tsx",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/base_159.cir"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 0.5236617090000001
+    },
+    {
+      "argv": [
+        "node",
+        "--import",
+        "tsx",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table.cir"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+      "exit": 1,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 0.798875166,
+      "provenance": "First TABLE trial overlapped briefly with source clone before child.lock was added; no engine/reference overlap"
+    },
+    {
+      "argv": [
+        "git",
+        "clone",
+        "--depth",
+        "1",
+        "--branch",
+        "ngspice-47",
+        "https://git.code.sf.net/p/ngspice/ngspice",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/ngspice-source"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 6.829598416
+    },
+    {
+      "argv": [
+        "node",
+        "--import",
+        "tsx",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table.cir"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 0.5161287920000001
+    },
+    {
+      "argv": [
+        "node",
+        "--import",
+        "tsx",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table.cir"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 1.0175265420000001
+    },
+    {
+      "argv": [
+        "node",
+        "--import",
+        "tsx",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/base_159.cir"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 0.591718708
+    },
+    {
+      "argv": [
+        "ngspice",
+        "-b",
+        "-r",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/base_159.cir.raw",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/base_159.cir"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 0.07986420799999994
+    },
+    {
+      "argv": [
+        "node",
+        "--import",
+        "tsx",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/variant_159.cir"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 0.501869833
+    },
+    {
+      "argv": [
+        "ngspice",
+        "-b",
+        "-r",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/variant_159.cir.raw",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/variant_159.cir"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 0.07826437499999983
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/ngspice-source",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 0.014955042000000002
+    },
+    {
+      "argv": [
+        "ngspice",
+        "--version"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 0.012786875000000003
+    },
+    {
+      "argv": [
+        "node",
+        "--version"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 0.016674667000000004
+    },
+    {
+      "argv": [
+        "pnpm",
+        "--version"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 0.16006083299999996
+    },
+    {
+      "argv": [
+        "sysctl",
+        "-n",
+        "machdep.cpu.brand_string"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 0.0047827910000000085
+    },
+    {
+      "argv": [
+        "node",
+        "--import",
+        "tsx",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table.cir"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 0.409134625
+    },
+    {
+      "argv": [
+        "ngspice",
+        "-b",
+        "-r",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/table.cir.raw",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table.cir"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 0.018428208999999973
+    },
+    {
+      "argv": [
+        "node",
+        "--import",
+        "tsx",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table-isolated.cir"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 0.332389166
+    },
+    {
+      "argv": [
+        "ngspice",
+        "-b",
+        "-r",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/table-isolated.cir.raw",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table-isolated.cir"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 0.017611500000000002
+    },
+    {
+      "argv": [
+        "node",
+        "--import",
+        "tsx",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table-lowered.cir"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+      "exit": 1,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 0.31768720799999994
+    },
+    {
+      "argv": [
+        "node",
+        "--import",
+        "tsx",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table.cir"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 0.5701337080000001
+    },
+    {
+      "argv": [
+        "ngspice",
+        "-b",
+        "-r",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/table.cir.raw",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table.cir"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 0.04429054100000007
+    },
+    {
+      "argv": [
+        "node",
+        "--import",
+        "tsx",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table-isolated.cir"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 1.0324129590000002
+    },
+    {
+      "argv": [
+        "ngspice",
+        "-b",
+        "-r",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/table-isolated.cir.raw",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table-isolated.cir"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 0.03850037499999992
+    },
+    {
+      "argv": [
+        "node",
+        "--import",
+        "tsx",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table-lowered.cir"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+      "exit": 1,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 1.0057107500000002
+    },
+    {
+      "argv": [
+        "node",
+        "--import",
+        "tsx",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table.cir"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 0.418852
+    },
+    {
+      "argv": [
+        "ngspice",
+        "-b",
+        "-r",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/table.cir.raw",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table.cir"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 0.022027708000000035
+    },
+    {
+      "argv": [
+        "node",
+        "--import",
+        "tsx",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table-isolated.cir"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 0.4280868749999999
+    },
+    {
+      "argv": [
+        "ngspice",
+        "-b",
+        "-r",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/table-isolated.cir.raw",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table-isolated.cir"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 0.02134295899999994
+    },
+    {
+      "argv": [
+        "node",
+        "--import",
+        "tsx",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table-lowered.cir"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 0.37445054200000005
+    },
+    {
+      "argv": [
+        "ngspice",
+        "-b",
+        "-r",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/table-lowered.cir.raw",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table-lowered.cir"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 0.01899033299999986
+    },
+    {
+      "argv": [
+        "node",
+        "--import",
+        "tsx",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/parity-red.mts"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+      "exit": 1,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 0.32157304200000003
+    },
+    {
+      "argv": [
+        "node",
+        "--import",
+        "tsx",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/base_159.cir"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 0.48337112500000007
+    },
+    {
+      "argv": [
+        "ngspice",
+        "-b",
+        "-r",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/base_159.cir.raw",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/base_159.cir"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 0.07083925000000002
+    },
+    {
+      "argv": [
+        "node",
+        "--import",
+        "tsx",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/variant_159.cir"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 0.48801487500000007
+    },
+    {
+      "argv": [
+        "ngspice",
+        "-b",
+        "-r",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/variant_159.cir.raw",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/variant_159.cir"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 0.07121354199999996
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 30,
+      "wallSeconds": 0.01382833299999997
+    },
+    {
+      "argv": [
+        "pnpm",
+        "exec",
+        "tsx",
+        "--test",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/evidence.test.mts"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 29,
+      "wallSeconds": 0.759310292
+    },
+    {
+      "argv": [
+        "pnpm",
+        "build"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 29,
+      "wallSeconds": 13.472747666
+    },
+    {
+      "argv": [
+        "pnpm",
+        "lint"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 29,
+      "wallSeconds": 7.210651666999999
+    },
+    {
+      "argv": [
+        "pnpm",
+        "test"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+      "exit": -9,
+      "timedOut": true,
+      "limitSeconds": 29,
+      "wallSeconds": 29.019113792
+    },
+    {
+      "argv": [
+        "pnpm",
+        "-C",
+        "packages/core",
+        "exec",
+        "tsc",
+        "--noEmit",
+        "--strict",
+        "--skipLibCheck",
+        "--module",
+        "NodeNext",
+        "--target",
+        "ES2022",
+        "--moduleResolution",
+        "NodeNext",
+        "--types",
+        "node",
+        "../../benchmarks/vendor-expanded-node-917/trace.mts",
+        "../../benchmarks/vendor-expanded-node-917/evidence.test.mts",
+        "../../benchmarks/vendor-expanded-node-917/parity-red.mts"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 29,
+      "wallSeconds": 3.6260823749999997
+    },
+    {
+      "argv": [
+        "pnpm",
+        "exec",
+        "tsx",
+        "--test",
+        "benchmarks/vendor-expanded-node-917/evidence.test.mts"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 29,
+      "wallSeconds": 3.3610255409948877
+    },
+    {
+      "argv": [
+        "pnpm",
+        "-C",
+        "packages/core",
+        "exec",
+        "tsc",
+        "--noEmit",
+        "--strict",
+        "--skipLibCheck",
+        "--module",
+        "NodeNext",
+        "--target",
+        "ES2022",
+        "--moduleResolution",
+        "NodeNext",
+        "--types",
+        "node",
+        "../../benchmarks/vendor-expanded-node-917/trace.mts",
+        "../../benchmarks/vendor-expanded-node-917/evidence.test.mts",
+        "../../benchmarks/vendor-expanded-node-917/parity-red.mts"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 29,
+      "wallSeconds": 4.389698708000651
+    },
+    {
+      "argv": [
+        "node",
+        "--import",
+        "tsx",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/base_159.cir"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 29,
+      "wallSeconds": 0.4924981250005658
+    },
+    {
+      "argv": [
+        "ngspice",
+        "-b",
+        "-r",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/base_159.cir.raw",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/base_159.cir"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 29,
+      "wallSeconds": 0.07719891600572737
+    },
+    {
+      "argv": [
+        "node",
+        "--import",
+        "tsx",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/variant_159.cir"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 29,
+      "wallSeconds": 0.5771043749991804
+    },
+    {
+      "argv": [
+        "ngspice",
+        "-b",
+        "-r",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/variant_159.cir.raw",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/variant_159.cir"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 29,
+      "wallSeconds": 0.09464966599625768
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+      "exit": 0,
+      "timedOut": false,
+      "limitSeconds": 29,
+      "wallSeconds": 0.02199349999864353
+    }
+  ]
+}

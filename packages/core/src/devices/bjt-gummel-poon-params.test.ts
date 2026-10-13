@@ -191,7 +191,7 @@ describe('BJT Gummel-Poon parameters past the forward set match ngspice-47 (#633
       .toThrow(`Unsupported bounded BJT model parameter: '${parameter}'`);
   });
 
-  it.each(['VAR=-1', 'IKR=0', 'NC=0', 'ISC=-1e-15', 'RBM=-1 RB=10', 'IRB=-1m'])(
+  it.each(['VAR=-1', 'IKR=-1m', 'NC=0', 'ISC=-1e-15', 'RBM=-1 RB=10', 'IRB=-1m'])(
     'rejects the invalid value %s explicitly',
     (model) => {
       expect(() => parse(issueDeck(model)).compile()).toThrow(/Invalid bounded BJT/);

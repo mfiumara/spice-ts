@@ -1,8 +1,13 @@
 import { evaluateExpression } from './expression.js';
-import { conditionExpression, expandUserFunctions, parseFuncCard, type FunctionScope, type UserFunction } from './numparam.js';
+import {
+  braceBareParameters, conditionExpression, expandUserFunctions, paramCardAsFunc, parseFuncCard, type FunctionScope,
+  type UserFunction,
+} from './numparam.js';
 import { NODE_DEPENDENT_EXPRESSION, substituteBehavioralParameters } from './behavioral-expression.js';
 import { parseNumber } from './tokenizer.js';
+import { tempDirective } from './temp-directive.js';
 import { translateMicroSign } from './micro-sign.js';
+import { bracedSubcircuitCallValues } from './subcircuit-syntax.js';
 import { CycleError, ParseError } from '../errors.js';
 import type { IncludeResolver } from '../types.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
@@ -56,6 +61,10 @@ export interface PreprocessedDeck {
    * referencing one from a subcircuit reports it as undefined.
    */
   parameters: Record<string, number>;
+  /** Evaluated `.csparam` scalars (lower-case names) for the control const plot. */
+  controlConstants: Record<string, number>;
+  /** Non-fatal preprocessing diagnostics, surfaced as circuit parse warnings. */
+  warnings: { message: string; line: number }[];
 }
 
 export async function preprocessDeck(
@@ -111,17 +120,23 @@ function* preprocessSteps(
     statement.control = false;
   }
   expandFunctionCalls(state);
+  // inpcom.c inp_quote_params: brace bare parameter names on R/C/L cards (#837).
+  const numericParams = new Set([...definitions].filter(([, definition]) => !definition.stringValue).map(([name]) => name));
+  braceBareParameters(statements, numericParams).forEach((text, index) => { statements[index].text = text; });
   // ngspice collects every top-level `.param` before substituting, so a
   // parameter may be used before its definition and the last definition wins.
   const temperatureSweep = statements.find(isTemperatureSweep);
   const scopes = createParamScopes(
-    definitions, temperatureSweep, circuitTemperature(statements), state.functionScopes[0].functions,
+    definitions, temperatureSweep,
+    circuitTemperature(statements, definitions, state.functionScopes[0].functions, state.warnings),
+    state.functionScopes[0].functions,
   );
-  // `.csparam` only feeds ngspice's control language; evaluate it so a bad
-  // expression is still reported at its card.
-  for (const { definition, guard } of state.csparams) {
+  // Keep the numparam evaluation, including its source diagnostics, for the
+  // control const plot. Circuit parameters remain a separate namespace.
+  const controlConstants: Record<string, number> = Object.create(null);
+  for (const { name, definition, guard } of state.csparams) {
     if (guardSelected(guard, selected)) {
-      evaluateParamExpression(definition, scopes.numparam, state.functionScopes[0].functions);
+      controlConstants[name] = evaluateParamExpression(definition, scopes.numparam, state.functionScopes[0].functions);
     }
   }
   const measureNames = new Set(statements.flatMap(statement => measureName(statement.text)));
@@ -136,7 +151,7 @@ function* preprocessSteps(
       // Unused by the top level, or reported there; see PreprocessedDeck.
     }
   }
-  return { text, parameters };
+  return { text, parameters, controlConstants, warnings: state.warnings };
 }
 
 /** One `.if`/`.elseif`/`.else` branch; `condition` is absent for `.else`. */
@@ -170,13 +185,16 @@ interface FunctionScopeFrame {
 interface CollectState {
   definitions: Map<string, ParamDefinition>;
   statements: PendingStatement[];
-  csparams: { definition: ParamDefinition; guard?: BranchGuard[] }[];
+  csparams: { name: string; definition: ParamDefinition; guard?: BranchGuard[] }[];
   blocks: ConditionalBlock[];
   /** Indices into `blocks` of the open `.if` blocks, outermost first. */
   openBlocks: number[];
   /** Index 0 is the top level; each `.subckt` opens a nested scope. */
   functionScopes: FunctionScopeFrame[];
   scopeStack: number[];
+  warnings: { message: string; line: number }[];
+  /** ngspice-47 reports unusual leading characters once per deck (#843). */
+  warnedUnusualLeadingCharacter: boolean;
 }
 
 function newCollectState(): CollectState {
@@ -188,6 +206,8 @@ function newCollectState(): CollectState {
     openBlocks: [],
     functionScopes: [{ parent: -1, functions: new Map() }],
     scopeStack: [0],
+    warnings: [],
+    warnedUnusualLeadingCharacter: false,
   };
 }
 
@@ -196,6 +216,25 @@ const FUNC_DIRECTIVE = /^\.func(?![\w])/i;
 const CSPARAM_DIRECTIVE = /^\.csparam(?![\w])/i;
 /** Output cards whose text ngspice-47 numparam never substitutes (#714). */
 const OUTPUT_CARD = /^\.(?:print|plot)(?![\w])/i;
+/**
+ * ngspice-47 inpcom.c inp_check_syntax: a card whose first non-blank character
+ * is one of these is turned into a `*` comment, with a warning (#843).
+ */
+const UNUSUAL_LEADING_CHARACTERS = new Set(['=', '[', ']', '?', '(', ')', '&', '%', '$', '"', '!', ':', ',', '\f']);
+const UNUSUAL_LEADING_WARNING = (character: string) =>
+  `Unusual leading characters like '${character}' or others out of '= [] ? () & % $"!:,\\f' `
+  + "in netlist or included files, will be replaced with '*'";
+
+/**
+ * The card after ngspice's leading space/tab skip when ngspice-47 comments it
+ * out: an unusual leading character (warned) or `#` (silent); else undefined.
+ */
+function commentedOutCard(line: string): { card: string; warn: boolean } | undefined {
+  const card = line.replace(/^[ \t]+/, '');
+  if (card.startsWith('#')) return { card, warn: false };
+  return UNUSUAL_LEADING_CHARACTERS.has(card[0]) ? { card, warn: true } : undefined;
+}
+
 const PARAM_ASSIGNMENT = /([A-Za-z_]\w*)\s*=\s*(\{[^}]+\}|'[^']*'|"[^"]*"|\S+)/g;
 
 /**
@@ -271,9 +310,9 @@ function recordConditional(state: CollectState, keyword: string, trimmed: string
 function selectBranches(state: CollectState): number[] {
   if (state.blocks.length === 0) return [];
   const functions = state.functionScopes[0].functions;
-  // TEMPER in a condition reads the `.options TEMP` cards outside any `.if`.
+  // TEMPER in a condition reads temperature cards outside any `.if`.
   const unconditional = state.statements.filter(statement => statement.guard === undefined);
-  const scopes = createParamScopes(state.definitions, undefined, circuitTemperature(unconditional), functions);
+  const scopes = createParamScopes(state.definitions, undefined, circuitTemperature(unconditional, state.definitions, functions), functions);
   return state.blocks.map(block => {
     let selected = -1;
     for (const [index, branch] of block.branches.entries()) {
@@ -357,12 +396,16 @@ const OPTIONS_CARD = /^\s*\.opt(?:ion|ions)?(?:\s|$)/i;
 const OPTIONS_TEMP_FIELD = /(?:^|\s)temp\s*=\s*([^\s=]+)/gi;
 
 /**
- * Circuit temperature that TEMPER reads: the last `TEMP=` field of the
- * top-level `.options` cards (as the parser applies them), else 27 C. `.temp`
- * cards are rejected by the parser. An unparsable value is left to the
- * `.options` parser to report.
+ * ngspice-47 inp.c applies the last .temp after all .options TEMP fields.
+ * Resolve its independent numparam expressions before TEMPER substitution;
+ * normalize selected cards so the parser sees the same value and warnings.
  */
-function circuitTemperature(statements: PendingStatement[]): number {
+function circuitTemperature(
+  statements: PendingStatement[],
+  definitions: Map<string, ParamDefinition>,
+  functions: FunctionScope,
+  warnings?: { message: string; line: number }[],
+): number {
   let temperature = DEFAULT_CIRCUIT_TEMPERATURE_CELSIUS;
   for (const statement of statements) {
     if (statement.control || !OPTIONS_CARD.test(statement.text)) continue;
@@ -373,6 +416,34 @@ function circuitTemperature(statements: PendingStatement[]): number {
       } catch {
         // reported by the .options parser
       }
+    }
+  }
+  // ngspice selects the last card before interpreting its value. Earlier
+  // cards must not produce errors/warnings or reach the downstream parser.
+  let effective: PendingStatement | undefined;
+  for (const statement of statements) {
+    if (statement.control || !/^\s*\.temp(?=\s|=|$)/i.test(statement.text)) continue;
+    if (warnings !== undefined && effective !== undefined) {
+      effective.text = '';
+      effective.substitute = false;
+    }
+    effective = statement;
+  }
+  if (effective !== undefined) {
+    const statement = effective;
+    try {
+      const scopes = createParamScopes(definitions, undefined, temperature, functions, false);
+      const text = statement.text.slice(0, commentStart(statement.text));
+      const expanded = substituteExpressions(quotedExpressionsAsBraces(expandUserFunctions(text, functions)), scopes.params);
+      const card = tempDirective(expanded, statement.line)!;
+      temperature = card.value;
+      if (warnings !== undefined) {
+        statement.text = `.temp ${card.value}`;
+        if (card.warning) warnings.push({ message: card.warning, line: statement.line });
+      }
+    } catch (error) {
+      if (error instanceof ParseError) throw error;
+      throw toParseError(error, statement.line, statement.text);
     }
   }
   return temperature;
@@ -395,6 +466,7 @@ function createParamScopes(
   temperatureSweep: PendingStatement | undefined,
   temperature: number,
   functions: FunctionScope = new Map(),
+  allowTemper = true,
 ): ParamScopes {
   const values = new Map<string, number>();
   const resolving: string[] = [];
@@ -413,6 +485,7 @@ function createParamScopes(
   });
 
   function temper(): number {
+    if (!allowTemper) throw new Error('.temp expressions depending on TEMPER are not supported');
     if (temperatureSweep !== undefined) {
       throw new Error(
         'TEMPER-dependent expressions are not supported with a temperature sweep '
@@ -612,6 +685,7 @@ function compactSubcircuitExpressions(line: string): string {
   const trimmed = line.trim();
   if (trimmed === '' || trimmed.startsWith('*') || /^b/i.test(trimmed)) return line;
   if (trimmed.startsWith('.') && !/^\.(?:param|model)\b/i.test(trimmed)) return line;
+  line = bracedSingleParamValue(line);
   if (!line.includes("'") && !line.includes('{')) return line;
   const end = commentStart(line);
   const compact = (expression: string) => `{${expression.replace(/\s+/g, '')}}`;
@@ -619,6 +693,25 @@ function compactSubcircuitExpressions(line: string): string {
     .replace(/'([^']*)'/g, (_match, expression: string) => compact(expression))
     .replace(/\{([^{}]*)\}/g, (_match, expression: string) => compact(expression))
     + line.slice(end);
+}
+
+/**
+ * A subcircuit `.param` card with one assignment whose value is an undelimited
+ * expression (`.param w=limit(wiper, 0, 1)`, ngspice-bugs #505) gets that
+ * value braced: ngspice-47 reads the whole rest of the card as the
+ * expression, as at the top level (`singleParamValue`), while the subcircuit
+ * tokenizer would split it at whitespace and commas (#870).
+ */
+function bracedSingleParamValue(line: string): string {
+  const head = /^(\s*\.param\s+)/i.exec(line);
+  if (!head) return line;
+  const end = commentStart(line);
+  const body = line.slice(head[0].length, end).trim();
+  const assignments = [...body.matchAll(PARAM_ASSIGNMENT)];
+  if (assignments.length !== 1) return line;
+  const value = singleParamValue(`.param ${body}`, assignments[0]);
+  if (/^[{'"]/.test(value) || !/[\s,()]/.test(value)) return line;
+  return `${head[0]}${assignments[0][1]}={${value}}${line.slice(end)}`;
 }
 
 const BEHAVIORAL_RESISTOR = /^\s*(r\S*)\s+(\S+)\s+(\S+)\s+(?:r\s*=\s*)?(?:\{([^{}]*)\}|'([^']*)')\s*(.*)$/i;
@@ -672,7 +765,8 @@ function behavioralCardAsBSource(line: string): string | undefined {
   return behavioralResistorAsBSource(line) ?? behavioralControlledSourceAsBSource(line);
 }
 
-function toParseError(error: unknown, line: number, context: string): ParseError {
+/** @internal An expression evaluation error as a ParseError at a card, naming undefined parameters. */
+export function toParseError(error: unknown, line: number, context: string): ParseError {
   const message = (error as Error).message
     .replace(/^Undefined variable '([^']*)'$/, "Undefined parameter '$1'");
   return new ParseError(message, line, context);
@@ -699,6 +793,9 @@ function* collectStatements(
   let inSubckt = 0;
   let inControl = false;
   let inOutputCard = false;
+  let inSubcircuitCall = false;
+  // A card ngspice-47 comments out takes its `+` continuations with it (#843).
+  let inCommentedOutCard = false;
 
   for (const [index, line] of lines.entries()) {
     guard?.checkpoint('parse:line');
@@ -715,8 +812,35 @@ function* collectStatements(
       passThrough();
       continue;
     }
+    const commentedOut = inControl ? undefined : commentedOutCard(line);
+    if (commentedOut) {
+      if (commentedOut.warn && !state.warnedUnusualLeadingCharacter) {
+        state.warnedUnusualLeadingCharacter = true;
+        const file = chain[chain.length - 1];
+        const where = file === undefined ? `line ${lineNumber}` : `line ${lineNumber} of ${file}`;
+        state.warnings.push({
+          message: `${UNUSUAL_LEADING_WARNING(commentedOut.card[0])}: check line '${commentedOut.card.trimEnd()}' (${where})`,
+          line: lineNumber,
+        });
+      }
+      inCommentedOutCard = true;
+      statements.push({ text: `*${commentedOut.card.slice(1)}`, substitute: false, line: lineNumber, scope });
+      continue;
+    }
+    if (trimmed !== '') {
+      if (inCommentedOutCard && trimmed.startsWith('+')) {
+        blank();
+        continue;
+      }
+      inCommentedOutCard = false;
+    }
     // A `+` continuation (blank and comment lines may sit in between) belongs to the preceding card.
-    if (trimmed !== '' && !trimmed.startsWith('+')) inOutputCard = OUTPUT_CARD.test(trimmed);
+    if (trimmed !== '' && !trimmed.startsWith('+')) {
+      inOutputCard = OUTPUT_CARD.test(trimmed);
+      inSubcircuitCall = /^x/i.test(trimmed);
+    }
+    // An X card and its `+` continuations, with bare `name=value` values braced (#788).
+    const card = inSubcircuitCall ? bracedSubcircuitCallValues(line, commentStart(line)) : line;
 
     const conditional = inControl ? null : CONDITIONAL_CARD.exec(trimmed);
     if (conditional) {
@@ -751,9 +875,11 @@ function* collectStatements(
       continue;
     }
 
-    if (!inControl && FUNC_DIRECTIVE.test(trimmed)) {
+    // `.func`, and a `.param` card defining a function (`.param f(x) = ...`, #870).
+    const funcCard = inControl ? undefined : FUNC_DIRECTIVE.test(trimmed) ? trimmed : paramCardAsFunc(trimmed);
+    if (funcCard !== undefined) {
       try {
-        const fn = parseFuncCard(trimmed.slice(0, commentStart(trimmed)));
+        const fn = parseFuncCard(funcCard.slice(0, commentStart(funcCard)));
         state.functionScopes[scope].functions.set(fn.name.toLowerCase(), fn);
       } catch (error) {
         throw toParseError(error, lineNumber, trimmed);
@@ -767,7 +893,7 @@ function* collectStatements(
     if (inSubckt > 0) {
       let text: string;
       try {
-        text = behavioralCardAsBSource(line) ?? compactSubcircuitExpressions(line);
+        text = behavioralCardAsBSource(card) ?? compactSubcircuitExpressions(card);
       } catch (error) {
         throw toParseError(error, lineNumber, trimmed);
       }
@@ -809,7 +935,7 @@ function* collectStatements(
       }
       for (const assignment of assignments) {
         const definition = paramDefinition(assignment[2], lineNumber, trimmed);
-        if (!definition.stringValue) state.csparams.push({ definition, ...guarded });
+        if (!definition.stringValue) state.csparams.push({ name: assignment[1].toLowerCase(), definition, ...guarded });
       }
       blank();
       continue;
@@ -885,13 +1011,13 @@ function* collectStatements(
       continue;
     }
 
-    statements.push({ text: line, substitute: true, line: lineNumber, ...guarded });
+    statements.push({ text: card, substitute: true, line: lineNumber, ...guarded });
   }
 }
 
 // `keepNodeDependent` leaves B-card `{...}` that read v()/i() to the B-card
 // front end, which keeps them as ASRC sub-expressions.
-function substituteExpressions(
+export function substituteExpressions(
   line: string,
   params: Record<string, number>,
   keepNodeDependent = false,

@@ -1,0 +1,10 @@
+Self-authored explicit PWL lowering control, MIT, Refs #917
+Vdrive IN 0 DC 0.25 AC 1
+Rout OUT 0 1k
+Gtable OUT 0 transferred 0 1
+Binput control 0 V={V(IN)}
+Atransfer %v(control) %v(transferred) transfer
+Bnonlinear HELPER 0 V={V(IN)*V(IN)}
+.model transfer pwl(x_array=[-1 0 1] y_array=[-0.001 0 0.001] input_domain=0.1 fraction=TRUE limit=TRUE)
+.ac dec 10 1 100
+.end

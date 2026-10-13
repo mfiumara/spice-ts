@@ -10,6 +10,10 @@ export interface ResistorParameters {
   tce?: number;
   /** Nominal temperature in °C (default 27). */
   tnom?: number;
+  /** Instance temperature `TEMP` in °C; replaces the circuit temperature and ignores `DTEMP`. */
+  temperature?: number;
+  /** Instance `DTEMP` in °C, added to the circuit temperature when no `TEMP` is given. */
+  deltaTemperature?: number;
   /** Parallel multiplier `M` (default 1). */
   multiplier?: number;
   /** Instance `SCALE` factor (default 1). */
@@ -24,13 +28,24 @@ export interface ResistorParameters {
   warnings?: readonly string[];
 }
 
+/**
+ * Bumped on every write of any {@link Resistor.conductance} (issue #890).
+ * Stamp programs cache conductances in typed arrays and refill them only when
+ * this changes, so the per-iteration kernel never chases device objects.
+ */
+let conductanceRevision = 0;
+
+/** Current {@link conductanceRevision}: unchanged means no resistor conductance was written. */
+export function resistorConductanceRevision(): number {
+  return conductanceRevision;
+}
+
 export class Resistor implements DeviceModel {
   readonly branches: number[];
   readonly isNonlinear = false;
   /** Effective DC resistance after temperature, `SCALE` and `M`. */
   resistance = 0;
-  /** Effective DC conductance, ngspice RESconduct = M / (R * factor * SCALE). */
-  conductance = 0;
+  private conductanceValue = 0;
   /** Effective AC conductance (ngspice RESacConduct) when `ac=` is given. */
   acConductance: number | undefined;
   private nominalResistance: number;
@@ -52,6 +67,16 @@ export class Resistor implements DeviceModel {
     this.nominalResistance = resistance;
     if (parameters.warnings?.length) this.modelWarnings = parameters.warnings;
     this.applyTemperature();
+  }
+
+  /** Effective DC conductance, ngspice RESconduct = M / (R * factor * SCALE). */
+  get conductance(): number {
+    return this.conductanceValue;
+  }
+
+  set conductance(value: number) {
+    this.conductanceValue = value;
+    conductanceRevision++;
   }
 
   /** False when the instance sets `noisy=0`. */
@@ -96,19 +121,31 @@ export class Resistor implements DeviceModel {
     this.applyTemperature();
   }
 
+  /** Set the circuit temperature (°C); an instance `TEMP` still overrides it. */
   setTemperature(value: number): void {
     this.temperature = value;
     this.applyTemperature();
   }
 
-  getTemperature(): number {
+  /** The circuit temperature (ngspice CKTtemp) in °C, ignoring instance `TEMP`/`DTEMP`. */
+  getCircuitTemperature(): number {
     return this.temperature;
+  }
+
+  /**
+   * Instance temperature in °C (ngspice REStemp + RESdtemp, restemp.c): the
+   * instance `TEMP` if given, else the circuit temperature plus `DTEMP`. It
+   * sets both the TC1/TC2/TCE resistance and the thermal noise (resnoise.c).
+   */
+  getTemperature(): number {
+    const { temperature, deltaTemperature = 0 } = this.parameters;
+    return temperature ?? this.temperature + deltaTemperature;
   }
 
   // ngspice-47 restemp.c RESupdate_conduct.
   private applyTemperature(): void {
     const { tc1 = 0, tc2 = 0, tce, tnom = 27, multiplier = 1, scale = 1, acResistance } = this.parameters;
-    const delta = this.temperature - tnom;
+    const delta = this.getTemperature() - tnom;
     const factor = tce !== undefined
       ? Math.pow(1.01, tce * delta)
       : ((tc2 * delta) + tc1) * delta + 1;

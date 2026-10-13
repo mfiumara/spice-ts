@@ -204,9 +204,11 @@ export interface DeviceModel {
   /**
    * Start a transient Newton solve at a new or retried timepoint: limit the
    * first iterate against the last accepted junction state (ngspice
-   * MODEINITPRED), not against an iterate of a rejected attempt.
+   * MODEINITPRED), not against an iterate of a rejected attempt. `dt` is the
+   * step of the attempt (ngspice CKTdelta) and `accepted` the solution at the
+   * last accepted point it starts from.
    */
-  beginTransientNewton?(): void;
+  beginTransientNewton?(dt: number, accepted: Float64Array): void;
   /**
    * Receive the undamped transient Newton solution. A self-limiting device
    * limits its next junction voltage from this solve, not from the damped

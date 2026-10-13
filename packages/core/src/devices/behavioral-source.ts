@@ -128,7 +128,21 @@ export abstract class BehavioralSource implements DeviceModel {
     const value = this.evaluateExpression();
     const previous = this.previousValue;
     const floor = this.branches.length > 0 ? tolerances.vntol : tolerances.abstol;
-    return Math.abs(previous - value) <= tolerances.reltol * Math.max(Math.abs(value), Math.abs(previous)) + floor;
+    // asrcconv.c flags non-convergence only when diff > tol, so a NaN
+    // difference (inf - inf at a +inf expression value) passes.
+    return !(Math.abs(previous - value) > tolerances.reltol * Math.max(Math.abs(value), Math.abs(previous)) + floor);
+  }
+
+  /** A genuine expression overflow, not a runaway finite Jacobian solve. */
+  hasInfiniteValueAtFiniteControls(solution: Float64Array): boolean {
+    for (let i = 0; i < this.voltages.length; i++) {
+      const column = this.controlColumn(i);
+      const value = column >= 0 ? solution[column] : 0;
+      if (!Number.isFinite(value)) return false;
+      this.voltages[i] = value;
+    }
+    const value = this.evaluateExpression() * this.factor;
+    return value === Infinity || value === -Infinity;
   }
 
   private evaluateExpression(): number {

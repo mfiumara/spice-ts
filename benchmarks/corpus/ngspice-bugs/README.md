@@ -16,7 +16,8 @@ cannot run the deck yet. The summary table is [`../../NGSPICE_BUGS.md`](../../NG
 - `fetch.ts`: downloads the ticket attachments that are not committed (vendor libraries, archives) into the
   git-ignored `fetched/` directory and checks their SHA-256 against the manifest.
 - `ngspice-bugs.test.ts`: manifest consistency, deck hashes, generated files up to date, and pins of the spice-ts
-  verdicts reported as "ngspice defective, spice-ts correct" against the expected answers.
+  verdicts reported as "ngspice defective, spice-ts correct" against the expected answers. Pins on fetch-only decks
+  (#505, #740, #763) skip until `fetch.ts <N>` has downloaded the ticket attachments.
 
 ## Method
 

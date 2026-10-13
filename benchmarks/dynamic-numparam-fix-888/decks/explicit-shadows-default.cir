@@ -1,0 +1,13 @@
+explicit-shadows-default
+.subckt leaf a b params: pp=4k
+R1 a b {pp}
+.ends leaf
+.subckt rc in out gnd
+.param pp=3k
+X1 in out leaf pp=2k
+R2 out gnd 1k
+.ends rc
+V1 in 0 1
+X1 in o 0 rc
+.op
+.end

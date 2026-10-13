@@ -1,0 +1,12 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_fc2832df/packages/core
+
+ ✓ src/solver/gilbert-peierls-u-alias-926.test.ts (5 tests) 12ms
+ ✓ src/solver/gilbert-peierls.test.ts (31 tests) 120ms
+
+ Test Files  2 passed (2)
+      Tests  36 passed (36)
+   Start at  16:59:56
+   Duration  329ms (transform 151ms, setup 0ms, import 187ms, tests 131ms, environment 0ms)
+
+JUNIT report written to /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_fc2832df/packages/core/test-results.xml

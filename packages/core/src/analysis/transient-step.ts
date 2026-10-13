@@ -10,6 +10,7 @@ import { Resistor } from '../devices/resistor.js';
 import { Capacitor } from '../devices/capacitor.js';
 import { VoltageSource } from '../devices/voltage-source.js';
 import { CurrentSource } from '../devices/current-source.js';
+import { MOSFET } from '../devices/mosfet.js';
 
 /**
  * When sign-flip oscillation is detected on any node, the per-iteration
@@ -100,7 +101,10 @@ export function attemptStep(ctx: StepContext, attempt: StepAttempt): StepResult 
   const selfLimiting = selfLimitingDevices(compiled);
 
   assembler.setTime(time, dt);
-  for (const device of selfLimiting) device.beginTransientNewton?.();
+  // ngspice dctran.c starts every timepoint, retries included, in MODEINITPRED.
+  const predicting = predictingDevices(compiled);
+  MOSFET.batchBeginTransientNewton(predicting.mosfets, dt, prevSolution);
+  for (const device of predicting.others) device.beginTransientNewton!(dt, prevSolution);
 
   let prevIterSolution = new Float64Array(assembler.solution);
   let prevDelta: Float64Array | undefined;
@@ -261,6 +265,37 @@ function selfLimitingDevices(compiled: CompiledCircuit): readonly DeviceModel[] 
   return devices;
 }
 
+/**
+ * Devices with a first-iterate (MODEINITPRED) hook, self-limiting or not:
+ * plain level-1 MOSFETs, started together by
+ * {@link MOSFET.batchBeginTransientNewton}, and every other one.
+ */
+interface PredictingDevices {
+  readonly mosfets: readonly MOSFET[];
+  readonly others: readonly DeviceModel[];
+}
+
+const predictingCache = new WeakMap<CompiledCircuit, PredictingDevices>();
+
+function predictingDevices(compiled: CompiledCircuit): PredictingDevices {
+  let devices = predictingCache.get(compiled);
+  if (devices === undefined) {
+    const mosfets: MOSFET[] = [];
+    const others: DeviceModel[] = [];
+    for (const device of compiled.devices) {
+      if (device.beginTransientNewton === undefined) continue;
+      if (Object.getPrototypeOf(device) === MOSFET.prototype && !Object.hasOwn(device, 'beginTransientNewton')) {
+        mosfets.push(device as MOSFET);
+      } else {
+        others.push(device);
+      }
+    }
+    devices = { mosfets, others };
+    predictingCache.set(compiled, devices);
+  }
+  return devices;
+}
+
 const convergenceTestedCache = new WeakMap<CompiledCircuit, readonly DeviceModel[]>();
 const iterationInvariantCache = new WeakMap<CompiledCircuit, boolean>();
 
@@ -357,13 +392,16 @@ function isConvergedTransient(
   numNodes: number,
   options: ResolvedOptions,
 ): boolean {
-  // Auxiliary branch-current unknowns are outputs of the linear MNA solve and
-  // do not feed any nonlinear device stamp. At stiff C/dt ratios their last
-  // few bits can jitter above abstol after the nonlinear node state has
-  // converged, so only node voltages gate transient Newton convergence.
-  for (let i = 0; i < numNodes; i++) {
+  // ngspice-47 NIconvTest: every unknown, node voltages against RELTOL*max +
+  // VNTOL and branch currents against RELTOL*max + ABSTOL, with max the
+  // larger magnitude of the two iterates. Skipping the branch currents
+  // accepted iterates ngspice still refines (#818): the extra iteration moves
+  // the accepted point by microvolts, which a regenerative circuit amplifies
+  // into a different Newton outcome on its switching step.
+  for (let i = 0; i < current.length; i++) {
     const diff = Math.abs(current[i] - previous[i]);
-    const tol = options.vntol + options.reltol * Math.abs(current[i]);
+    const scale = Math.max(Math.abs(current[i]), Math.abs(previous[i]));
+    const tol = options.reltol * scale + (i < numNodes ? options.vntol : options.abstol);
     if (diff > tol) return false;
   }
   return true;

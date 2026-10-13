@@ -4,7 +4,7 @@ Generated from `../../manifest.json` by `render.ts`; do not edit by hand.
 
 - Ticket: https://sourceforge.net/p/ngspice/bugs/763/ (status `open`, opened 2025-03-21)
 - Category: simulator-numerics
-- Outcome: ngspice defective, spice-ts cannot run the deck (feature unsupported)
+- Outcome: ngspice defective, spice-ts correct
 
 ## Decks
 
@@ -38,7 +38,7 @@ The two netlists are electrically equivalent (series split of an element / extra
 |---|---|---|
 | ngspice-47 | error | netlistwithR5: completes, 108 rows; ResistorSplitR5 (R5 split in two): "Timestep too small; time = 2.00081e-11 ... trouble with node net-_d2-k_", aborted. Same in LTPS mode. |
 | ngspice master | error | Now both fail: ResistorSplitR5 "Timestep too small; time = 2.00049e-11 ... xq1:mfin-instance m.xq1.m1"; netlistwithR5 "Timestep too small; time = 9.03394e-11 ... node net-_d2-k_" (it completed on 47). Same in LTPS. [ngspice pre-master-48 HEAD 3ef069fb, same command as 47, default and LTPS] |
-| spice-ts | unsupported | ParseError: Unsupported .options field: 'rshunt' |
+| spice-ts | right | Both decks complete to 100 ns (105 and 104 rows) and agree: interpolated onto each other's timepoints, i(V1) differs by a median 9.7e-13 A (2e-6 relative) and at most 1.12e-9 A (0.2%, the netlistwithR5 point at 10.02 ps) (t=0: -5.649621e-7 A on both, equal to ngspice-47's operating point). Against ngspice-47's complete netlistwithR5 run (108 rows) the spice-ts netlistwithR5 i(V1) differs by a median 4.3e-13 A and at most 1.06e-9 A (0.19% of \|i(V1)\|, one step after the 10 ps first step). [spice-ts with .options rshunt (#824), simulate() on the same *.local.cir bytes with a filesystem include resolver] |
 
 Reproduces on ngspice-47: yes. Check: ResistorSplitR5 aborts at t=2e-11 s while netlistwithR5 completes.
 

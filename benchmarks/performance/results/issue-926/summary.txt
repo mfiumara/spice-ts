@@ -1,0 +1,69 @@
+{
+  "cells": 108,
+  "statuses": {
+    "ok": 106,
+    "timeout": 2
+  },
+  "completedPairs": 52,
+  "budget": {
+    "planned": 108,
+    "totalChildWallSeconds": 573.8708480490022,
+    "limitSeconds": 900.0,
+    "loadEnd": "17:08  up 22:10, 2 users, load averages: 7.93 8.72 9.17",
+    "allStartedProcessGroupsGone": true
+  }
+}
+rc-ladder-tran 1000 cold
+  B 81.91 [80.55,89.84]ms; wall 158.58ms; RSS 90.2 [90.0,90.4]MiB {'ok': 3}
+  C 80.62 [79.96,87.79]ms; wall 154.91ms; RSS 90.0 [89.5,90.3]MiB {'ok': 3}
+rc-ladder-tran 1000 warm
+  B 58.81 [54.43,58.94]ms; wall 215.03ms; RSS 112.3 [99.9,113.1]MiB {'ok': 3}
+  C 63.86 [56.05,66.20]ms; wall 229.23ms; RSS 111.6 [111.4,112.5]MiB {'ok': 3}
+rc-ladder-tran 10000 cold
+  B 410.99 [408.79,422.06]ms; wall 502.60ms; RSS 186.0 [184.3,191.6]MiB {'ok': 3}
+  C 411.14 [405.98,415.33]ms; wall 504.70ms; RSS 184.6 [184.5,186.9]MiB {'ok': 3}
+rc-ladder-tran 10000 warm
+  B 315.36 [312.42,368.52]ms; wall 829.30ms; RSS 263.2 [258.5,264.8]MiB {'ok': 3}
+  C 326.96 [311.24,342.89]ms; wall 865.21ms; RSS 258.4 [257.6,260.5]MiB {'ok': 3}
+rc-ladder-tran 50000 cold
+  B 1717.88 [1284.50,1909.97]ms; wall 1869.77ms; RSS 471.8 [433.0,476.4]MiB {'ok': 3}
+  C 1641.95 [1295.48,1697.85]ms; wall 1800.28ms; RSS 472.0 [470.8,475.0]MiB {'ok': 3}
+rc-ladder-tran 50000 warm
+  B 1470.84 [1367.48,3854.45]ms; wall 3313.18ms; RSS 597.3 [577.5,700.7]MiB {'ok': 3}
+  C 5875.56 [1459.47,6838.14]ms; wall 9537.30ms; RSS 573.9 [531.8,695.5]MiB {'ok': 3}
+resistor-mesh-op 1000 cold
+  B 56.26 [53.98,59.33]ms; wall 136.60ms; RSS 87.1 [86.7,87.1]MiB {'ok': 3}
+  C 55.55 [53.50,55.63]ms; wall 132.62ms; RSS 87.1 [87.0,87.2]MiB {'ok': 3}
+resistor-mesh-op 1000 warm
+  B 25.39 [24.97,27.01]ms; wall 159.10ms; RSS 89.8 [88.9,90.0]MiB {'ok': 3}
+  C 26.33 [26.08,27.55]ms; wall 156.22ms; RSS 90.1 [90.0,90.2]MiB {'ok': 3}
+resistor-mesh-op 10000 cold
+  B 272.81 [268.84,295.52]ms; wall 362.70ms; RSS 150.3 [149.9,150.5]MiB {'ok': 3}
+  C 301.17 [267.60,313.64]ms; wall 388.99ms; RSS 150.7 [149.1,151.2]MiB {'ok': 3}
+resistor-mesh-op 10000 warm
+  B 223.00 [195.42,245.69]ms; wall 592.09ms; RSS 185.7 [181.4,187.0]MiB {'ok': 3}
+  C 225.20 [200.51,347.42]ms; wall 609.75ms; RSS 187.5 [183.5,189.1]MiB {'ok': 3}
+resistor-mesh-op 50000 cold
+  B 1410.45 [1088.74,5068.80]ms; wall 1562.37ms; RSS 350.4 [348.9,352.7]MiB {'ok': 3}
+  C 1683.88 [974.29,3182.02]ms; wall 1866.80ms; RSS 356.5 [350.3,358.2]MiB {'ok': 3}
+resistor-mesh-op 50000 warm
+  B 1008.84 [945.35,1952.22]ms; wall 2388.29ms; RSS 443.0 [441.4,454.5]MiB {'ok': 3}
+  C 1094.81 [1037.75,1189.68]ms; wall 2354.22ms; RSS 469.3 [462.0,555.1]MiB {'ok': 3}
+cmos-inverter-chain-tran 1000 cold
+  B 335.12 [329.26,337.85]ms; wall 412.29ms; RSS 124.0 [123.2,125.2]MiB {'ok': 3}
+  C 339.49 [333.96,348.96]ms; wall 420.76ms; RSS 122.8 [122.7,124.9]MiB {'ok': 3}
+cmos-inverter-chain-tran 1000 warm
+  B 230.94 [228.87,240.73]ms; wall 649.58ms; RSS 144.9 [144.2,145.8]MiB {'ok': 3}
+  C 241.95 [230.76,246.84]ms; wall 668.06ms; RSS 145.5 [145.3,145.9]MiB {'ok': 3}
+cmos-inverter-chain-tran 10000 cold
+  B 3009.25 [2921.94,3601.43]ms; wall 3108.40ms; RSS 362.2 [359.5,363.2]MiB {'ok': 3}
+  C 2842.38 [2753.68,4532.74]ms; wall 2940.15ms; RSS 360.3 [358.6,362.1]MiB {'ok': 3}
+cmos-inverter-chain-tran 10000 warm
+  B 2293.79 [2150.26,3205.07]ms; wall 5041.94ms; RSS 490.0 [486.3,496.5]MiB {'ok': 3}
+  C 2431.42 [2281.43,2482.98]ms; wall 5258.65ms; RSS 488.9 [486.1,497.5]MiB {'ok': 3}
+cmos-inverter-chain-tran 50000 cold
+  B 22620.22 [21753.80,23156.43]ms; wall 22824.57ms; RSS 1081.9 [1079.6,1091.7]MiB {'ok': 3}
+  C 26140.10 [21309.20,36539.71]ms; wall 26358.80ms; RSS 1080.2 [1064.8,1092.8]MiB {'ok': 3}
+cmos-inverter-chain-tran 50000 warm
+  B 20738.59 [20607.67,20869.52]ms; wall 42168.13ms; RSS 1696.2 [1693.9,1698.5]MiB {'timeout': 1, 'ok': 2}
+  C 21150.65 [19656.82,22644.48]ms; wall 41854.36ms; RSS 1719.4 [1702.8,1736.0]MiB {'ok': 2, 'timeout': 1}

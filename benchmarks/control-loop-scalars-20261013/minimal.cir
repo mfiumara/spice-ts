@@ -1,0 +1,17 @@
+* .csparam must populate the const plot before control execution (MIT)
+R1 n1 0 1k
+V1 n1 0 1
+.csparam start = 1k
+.csparam end = 0.1k
+.csparam delta = 0.05k
+.control
+set curplot = new
+if (end < start)
+  let delta = -abs(delta)
+else
+  let delta = abs(delta)
+end
+echo bounds $&start $&end $&delta
+op
+.endc
+.end

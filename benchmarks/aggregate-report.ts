@@ -5,6 +5,7 @@
  * Usage:
  *   pnpm exec tsx benchmarks/aggregate-report.ts
  *   pnpm exec tsx benchmarks/aggregate-report.ts --check
+ *   pnpm exec tsx benchmarks/aggregate-report.ts --fine-reference   # add the #592 column to committed transient rows
  *
  * Both modes validate fixture hashes and pinned provenance before running any engine, so a stale
  * benchmarks/SOURCES.md or fixture tree fails in seconds. Runs are concurrency-safe: --check never
@@ -34,6 +35,7 @@ import {
   type ClassicCircuit,
   type EngineExecution,
 } from './corpus/classic/report.js';
+import { type FineReference, FINE_REFERENCE_RULE, fineReferenceColumn, fineReferenceSection } from './fine-reference.js';
 
 const SCHEMA = 'spice-ts-aggregate-parity/v1' as const;
 const CORPORA = ['ngspice', 'classic', 'xyce', 'corpus-d', 'corpus-e'] as const;
@@ -87,6 +89,12 @@ interface FixtureReceipt {
   /** Reports generated before #445 carry no `linearMetrics`. */
   comparisons: Array<Omit<ComparisonReceipt, 'linearMetrics'> & { linearMetrics?: ComparisonMetrics }>;
   gapIssues: string[];
+  /**
+   * Diagnostic fine-step reference column (#592), present when a transient was compared. Its
+   * ngspice input is the fixture with only the `.tran` TMAX rewritten, so it is not the
+   * byte-identical input the headline comparisons use; it changes no status or envelope.
+   */
+  fineReference?: FineReference;
 }
 
 export interface ComparisonReceipt {
@@ -139,6 +147,8 @@ export interface AggregateReport {
     interpolation: 'linear';
     /** Absent before #445. See `AlignmentOptions.breakpoints` in comparison-harness.ts. */
     breakpointAlignment?: 'one-sided at time points shared by both transient grids; linear metric retained';
+    /** Absent before #592. */
+    fineReference?: string;
     timing: 'single wall-clock execution per engine and fixture; descriptive, not a speed claim';
     deterministicHashExcludes: ['environment', 'runtimeMs', 'error'];
   };
@@ -747,6 +757,72 @@ export function validateAggregateAccounting(report: AggregateReport): void {
   }
 }
 
+/** The #592 column for a fixture whose headline compared a transient; nothing otherwise. */
+async function fineReferenceFor(
+  input: Buffer,
+  localPath: string,
+  spiceTs: EngineExecution,
+  ngspice: EngineExecution,
+  comparisons: ComparisonReceipt[],
+): Promise<{ fineReference?: FineReference }> {
+  if (!comparisons.some(comparison => comparison.analysis === 'tran')) return {};
+  return {
+    fineReference: await fineReferenceColumn({
+      deck: input.toString('utf8'),
+      fileName: basename(localPath),
+      spiceTs,
+      ngspice,
+      headline: comparisons,
+    }),
+  };
+}
+
+/**
+ * Adds the fine-reference column (#592) to the committed report without regenerating it: each
+ * fixture with a compared transient is rerun through both default runs, its headline comparisons
+ * must equal the committed ones through the deterministic projection, and only `fineReference` is
+ * copied in. Headline drift aborts, so no unrelated outcome change is folded in; refresh first.
+ */
+export async function addFineReference(committed: AggregateReport): Promise<AggregateReport> {
+  await preflightAggregateInputs();
+  const manifests = new Map(await Promise.all(CORPORA.map(async corpus => [corpus, await readManifest(resolve('.'), corpus)] as const)));
+  const drift: string[] = [];
+  const fixtures: FixtureReceipt[] = [];
+  for (const fixture of committed.fixtures) {
+    const { fineReference: _previous, ...rest } = fixture;
+    if (!fixture.comparisons.some(comparison => comparison.analysis === 'tran')) {
+      fixtures.push(rest);
+      continue;
+    }
+    const circuit = manifests.get(fixture.corpus)!.circuits.find(candidate => candidate.id === fixture.id)!;
+    const input = await readFile(resolve(circuit.localPath));
+    const ngspice = await runNativeNgspice(input, circuit as ClassicCircuit);
+    const spiceTs = await runBoundedSpiceTs(input, circuit as ClassicCircuit, SPICE_TS_TIMEOUT_MS);
+    const comparisons = compareExecutions(spiceTs.execution, ngspice);
+    const projection = (value: unknown) => JSON.stringify(deterministicView({ comparisons: value } as never));
+    if (projection(comparisons) !== projection(fixture.comparisons)) {
+      drift.push(fixture.key);
+      fixtures.push(rest);
+      continue;
+    }
+    const column = await fineReferenceFor(input, circuit.localPath, spiceTs.execution, ngspice, comparisons);
+    fixtures.push({ ...rest, ...column });
+    process.stderr.write(`aggregate --fine-reference: ${fixture.key} ${column.fineReference?.status ?? 'no column'}\n`);
+  }
+  if (drift.length > 0) {
+    throw new Error(`aggregate: headline drift against the committed report; refresh it before adding the #592 column: ${drift.join(', ')}`);
+  }
+  const { outcomeSha256: _outcome, ...base } = committed;
+  const updated: Omit<AggregateReport, 'outcomeSha256'> = {
+    ...base,
+    policy: { ...base.policy, fineReference: FINE_REFERENCE_RULE },
+    fixtures,
+  };
+  const report = { ...updated, outcomeSha256: deterministicDigest(updated) };
+  validateAggregateAccounting(report);
+  return report;
+}
+
 export async function buildAggregateReport(): Promise<AggregateReport> {
   const inputProvenance = await preflightAggregateInputs();
   const fixtures: FixtureReceipt[] = [];
@@ -766,6 +842,7 @@ export async function buildAggregateReport(): Promise<AggregateReport> {
       const compatible = circuit as ClassicCircuit;
       const ngspice = await timed(() => runNativeNgspice(input, compatible));
       const spiceTs = await runBoundedSpiceTs(input, compatible, SPICE_TS_TIMEOUT_MS);
+      const comparisons = compareExecutions(spiceTs.execution, ngspice.execution);
       fixtures.push({
         key: `${corpus}/${circuit.id}`,
         corpus,
@@ -776,8 +853,9 @@ export async function buildAggregateReport(): Promise<AggregateReport> {
         input: { bytes: input.byteLength, sha256: digest, identicalForBothEngines: true },
         ngspice: receipt(ngspice.execution, circuit.ngspice, ngspice.runtimeMs, ['ngspice', '-b', '-r', '<raw>', '<identical-fixture>'], digest),
         spiceTs: receipt(spiceTs.execution, circuit.spiceTs, spiceTs.runtimeMs, ['@spice-ts/core', 'simulate', '<identical-fixture>'], digest),
-        comparisons: compareExecutions(spiceTs.execution, ngspice.execution),
+        comparisons,
         gapIssues: gapIssues(circuit),
+        ...(await fineReferenceFor(input, circuit.localPath, spiceTs.execution, ngspice.execution, comparisons)),
       });
     }
   }
@@ -806,6 +884,7 @@ export async function buildAggregateReport(): Promise<AggregateReport> {
       comparisonGrid: 'spice-ts',
       interpolation: 'linear',
       breakpointAlignment: 'one-sided at time points shared by both transient grids; linear metric retained',
+      fineReference: FINE_REFERENCE_RULE,
       timing: 'single wall-clock execution per engine and fixture; descriptive, not a speed claim',
       deterministicHashExcludes: ['environment', 'runtimeMs', 'error'],
     },
@@ -911,6 +990,15 @@ function markdown(report: AggregateReport): string {
     '',
     'Every unsupported or failed spice-ts row is a published loss. Engine error strings, input hashes, commands, signal lists, point counts, and matched-point metrics are retained in the JSON report.',
     '',
+    ...(report.policy.fineReference === undefined ? [] : [
+      ...fineReferenceSection(report.fixtures.map(fixture => ({
+        label: fixture.key,
+        status: `${fixture.ngspice.status}/${fixture.spiceTs.status}`,
+        fineReference: fixture.fineReference,
+      }))),
+      'Status in this table is the engine status pair (ngspice/spice-ts); the aggregate report has no matched/mismatch status. The columns use the corpus-f normalised metric (worst |error| / reference peak with the per-quantity floors), not the absolute and relative metrics above.',
+      '',
+    ]),
   ];
   return lines.join('\n');
 }
@@ -956,6 +1044,13 @@ export function verifyCommittedArtifacts(
 }
 
 async function main(): Promise<void> {
+  if (process.argv.includes('--fine-reference')) {
+    process.stderr.write(`aggregate --fine-reference: pid ${process.pid}; to stop only this run: kill ${process.pid}\n`);
+    const report = await addFineReference(JSON.parse(await readFile(JSON_PATH, 'utf8')) as AggregateReport);
+    await writeAggregateArtifacts({ jsonPath: JSON_PATH, markdownPath: MARKDOWN_PATH }, stableReport(report), markdown(report));
+    process.stderr.write(`aggregate --fine-reference: outcome ${report.outcomeSha256}\n`);
+    return;
+  }
   const check = process.argv.includes('--check');
   // Each run is isolated (read-only inputs, per-engine temporary directories, atomic writes),
   // so concurrent runs are safe. Stop a run by its own PID, never by a global pattern match.

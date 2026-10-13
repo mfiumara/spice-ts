@@ -24,6 +24,7 @@ import {
   parseTxlLine,
 } from './transmission-line-parser.js';
 import { preprocessDeck, preprocessDeckSync } from './preprocessor.js';
+import { tempDirective } from './temp-directive.js';
 import { translateMicroSign } from './micro-sign.js';
 import { lowerControlScript } from './control-block.js';
 import {
@@ -38,6 +39,7 @@ import { parseZInstance } from './z-device-parser.js';
 import { locateSubcircuitCall, parseSubcircuitHeader, type SubcircuitHeader } from './subcircuit-syntax.js';
 import { parseSwitchInstance } from './switch-parser.js';
 import { parseXspiceInstance, parseXspiceModelCard, xspiceModelType } from './xspice-parser.js';
+import { isPspiceSwitchModel, translatePspiceSwitchModel } from './pspice-switch.js';
 import { isNgspiceOptionField, splitXyceOptionPackage } from './xyce-option-packages.js';
 import type { AnalysisDirective, IncludeResolver, IntegrationMethod, SimulationOptions } from '../types.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
@@ -83,7 +85,8 @@ export function parse(netlist: string): Circuit {
   const { title, control } = splitTitledDeck(netlist);
   const preprocessed = preprocessDeckSync(control.netlist, undefined, 1);
   return parseNetlist(
-    `${title}\n${preprocessed.text}`, true, undefined, control.blocks, preprocessed.parameters, control.warnings,
+    `${title}\n${preprocessed.text}`, true, undefined, control.blocks, preprocessed.parameters,
+    [...control.warnings, ...preprocessed.warnings], preprocessed.controlConstants,
   );
 }
 
@@ -97,7 +100,8 @@ export function parse(netlist: string): Circuit {
 export function parseTitleless(netlist: string): Circuit {
   const control = extractControlBlocks(translateMicroSign(netlist), false);
   const preprocessed = preprocessDeckSync(control.netlist, undefined, 0);
-  return parseNetlist(preprocessed.text, false, undefined, control.blocks, preprocessed.parameters, control.warnings);
+  return parseNetlist(preprocessed.text, false, undefined, control.blocks, preprocessed.parameters,
+    [...control.warnings, ...preprocessed.warnings], preprocessed.controlConstants);
 }
 
 /**
@@ -119,6 +123,7 @@ function parseNetlist(
   extractedBlocks: ControlSourceBlock[] = [],
   parameters: Record<string, number> = {},
   controlWarnings: ControlSourceWarning[] = [],
+  controlConstants: Record<string, number> = {},
 ): Circuit {
   // ngspice control-language lines are not netlist cards; read them from the raw text.
   const extracted = extractControlBlocks(translateMicroSign(netlist, firstLineIsTitle), firstLineIsTitle);
@@ -132,12 +137,13 @@ function parseNetlist(
   if (lines.some(line => hasGndToken(line.tokens))) circuit.addGlobalNodes(['gnd']);
   for (const warning of [...controlWarnings, ...extracted.warnings]) circuit.addParseWarning(warning.message);
 
-  let subcktCollector: (SubcircuitHeader & { body: string[]; depth: number }) | null = null;
+  let subcktCollector: (SubcircuitHeader & { body: string[]; bodyLines: number[]; depth: number }) | null = null;
   let hasNoiseAnalysis = false;
   let hasPoleZeroAnalysis = false;
   let hasSensitivityAnalysis = false;
   let hasDistortionAnalysis = false;
   let hasStepAnalysis = false;
+  let directiveTemperature: number | undefined;
   // Index in circuit.analyses where the control block sits among the dot cards.
   let controlAnalysisIndex: number | undefined;
 
@@ -155,16 +161,19 @@ function parseNetlist(
         if (first === '.SUBCKT') {
           subcktCollector.depth++;
           subcktCollector.body.push(raw);
+          subcktCollector.bodyLines.push(lineNumber);
         } else if (first === '.ENDS') {
           if (subcktCollector.depth > 0) {
             subcktCollector.depth--;
             subcktCollector.body.push(raw);
+            subcktCollector.bodyLines.push(lineNumber);
           } else {
             circuit.addSubcircuit({
               name: subcktCollector.name,
               ports: subcktCollector.ports,
               params: subcktCollector.params,
               body: subcktCollector.body,
+              bodyLines: subcktCollector.bodyLines,
             });
             subcktCollector = null;
           }
@@ -172,20 +181,32 @@ function parseNetlist(
           // Subcircuit bodies are compiled later; reject unsupported model types now,
           // while the source line is still known.
           if (first === '.MODEL') {
-            assertSupportedModelType(tokens, lineNumber, raw);
-            assertSupportedResistorModel(tokens, lineNumber, raw);
+            if (isPspiceSwitchModel(tokens)) {
+              // Values in body model expressions require the instance scope.
+              if (!raw.includes('{')) translatePspiceSwitchModel(raw, lineNumber);
+            } else {
+              assertSupportedModelType(tokens, lineNumber, raw);
+              if (!raw.includes('{')) assertSupportedResistorModel(tokens, lineNumber, raw);
+            }
           }
           subcktCollector.body.push(raw);
+          subcktCollector.bodyLines.push(lineNumber);
         }
         continue;
       }
 
       if (first === '.SUBCKT') {
-        subcktCollector = { ...parseSubcircuitHeader(raw), body: [], depth: 0 };
+        subcktCollector = { ...parseSubcircuitHeader(raw), body: [], bodyLines: [], depth: 0 };
         continue;
       }
 
       if (first.startsWith('.')) {
+        const temperatureCard = tempDirective(raw, lineNumber);
+        if (temperatureCard !== undefined) {
+          directiveTemperature = temperatureCard.value;
+          if (temperatureCard.warning) circuit.addParseWarning(temperatureCard.warning);
+          continue;
+        }
         if ((first === '.NOISE' && hasStepAnalysis) || (first === '.STEP' && hasNoiseAnalysis)) {
           throw new ParseError(
             '.step cannot be combined with .noise',
@@ -239,8 +260,12 @@ function parseNetlist(
     }
   }
 
+  // inp.c inp_spsource sets .temp only after inp_dodeck has applied .options.
+  if (directiveTemperature !== undefined) circuit.setTemperature(directiveTemperature);
   if (controlBlocks.length > 0) {
-    attachControlScript(circuit, parseControlScript(controlBlocks), controlAnalysisIndex, hasStepAnalysis);
+    const script = parseControlScript(controlBlocks);
+    script.constants = controlConstants;
+    attachControlScript(circuit, script, controlAnalysisIndex, hasStepAnalysis);
   }
   assertMaxOrderIsNoOp(circuit);
 
@@ -368,7 +393,8 @@ export async function parseAsync(
   const { title, control } = splitTitledDeck(netlist);
   const preprocessed = await preprocessDeck(control.netlist, resolver, undefined, 1);
   return parseNetlist(
-    `${title}\n${preprocessed.text}`, true, undefined, control.blocks, preprocessed.parameters, control.warnings,
+    `${title}\n${preprocessed.text}`, true, undefined, control.blocks, preprocessed.parameters,
+    [...control.warnings, ...preprocessed.warnings], preprocessed.controlConstants,
   );
 }
 
@@ -380,7 +406,8 @@ export async function parseTitlelessAsync(
 ): Promise<Circuit> {
   const control = extractControlBlocks(translateMicroSign(netlist), false);
   const preprocessed = await preprocessDeck(control.netlist, resolver, guard, 0);
-  return parseNetlist(preprocessed.text, false, guard, control.blocks, preprocessed.parameters, control.warnings);
+  return parseNetlist(preprocessed.text, false, guard, control.blocks, preprocessed.parameters,
+    [...control.warnings, ...preprocessed.warnings], preprocessed.controlConstants);
 }
 
 const OUTPUT_ONLY_OPTION_FLAGS = new Set([
@@ -639,14 +666,23 @@ function parseDotCommand(
       break;
     }
     case '.MODEL': {
-      if (xspiceModelType(tokens) !== undefined) {
+      let modelTokens = tokens;
+      if (isPspiceSwitchModel(tokens)) {
+        const translated = translatePspiceSwitchModel(context, lineNumber);
+        if (translated.kind === 'xspice') {
+          circuit.addXspiceModel(translated.card);
+          break;
+        }
+        modelTokens = tokenizeLine(translated.raw);
+      }
+      if (xspiceModelType(modelTokens) !== undefined) {
         circuit.addXspiceModel(parseXspiceModelCard(context, lineNumber));
         break;
       }
-      assertSupportedModelType(tokens, lineNumber, context);
-      assertSupportedResistorModel(tokens, lineNumber, context);
-      const model = parseTransmissionLineModelCard(tokens, lineNumber)
-        ?? parseModelCard(tokens, lineNumber, message => circuit.addParseWarning(message));
+      assertSupportedModelType(modelTokens, lineNumber, context);
+      assertSupportedResistorModel(modelTokens, lineNumber, context);
+      const model = parseTransmissionLineModelCard(modelTokens, lineNumber)
+        ?? parseModelCard(modelTokens, lineNumber, message => circuit.addParseWarning(message));
       circuit.addModel(model);
       break;
     }
@@ -1040,6 +1076,16 @@ function parseSimulationOptions(
       options.integrationMethod = method;
       continue;
     }
+    if (name === 'rshunt') {
+      // ngspice-47 cktsopt.c OPT_ENH_RSHUNT: a value above 1e-30 enables the
+      // node-to-ground shunts; anything else is ignored with a warning and
+      // leaves an earlier RSHUNT in place.
+      const value = parseNumber(rawValue);
+      if (!Number.isFinite(value)) throw new Error(`Invalid .options rshunt value: '${rawValue}'`);
+      if (value > 1e-30) options.rshunt = value;
+      else hooks.warn?.(`Ignored .options rshunt=${rawValue}: ngspice-47 ignores an RSHUNT of at most 1e-30 ("Rshunt option too small")`);
+      continue;
+    }
     if (name === 'maxord') {
       const value = parseNumber(rawValue);
       if (!Number.isFinite(value)) throw new Error(`Invalid .options maxord value: '${rawValue}'`);
@@ -1261,7 +1307,7 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number, raw
       // X<name> <port1> <port2> ... <subcktName> [params:] [param=val ...]
       const call = locateSubcircuitCall(tokens);
       const subcktName = tokens[call.nameIndex];
-      const ports = tokens.slice(1, call.nameIndex);
+      const ports = call.ports;
       const xParams = parseInstanceParams(tokens, call.paramStart);
       circuit.addSubcircuitInstance(name, ports, subcktName, xParams);
       break;

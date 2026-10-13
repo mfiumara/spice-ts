@@ -1,0 +1,118 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5043e322/packages/core
+
+ ✓ src/subcircuit-model-scope-854.test.ts (5 tests) 35ms
+ ✓ src/parser/subckt-param-order-857.test.ts (12 tests) 41ms
+ ❯ src/subcircuit-dynamic-params-888.test.ts (16 tests | 8 failed) 61ms
+     × 'issue-888' matches the fresh same-byte OP reference 14ms
+     × 'caller-shadows-global' matches the fresh same-byte OP reference 11ms
+     ✓ 'global-fallback' matches the fresh same-byte OP reference 5ms
+     ✓ 'callee-default-shadows-caller' matches the fresh same-byte OP reference 4ms
+     ✓ 'callee-local-shadows-caller' matches the fresh same-byte OP reference 2ms
+     ✓ 'explicit-shadows-default' matches the fresh same-byte OP reference 2ms
+     × 'default-reads-caller' matches the fresh same-byte OP reference 7ms
+     ✓ 'override-reads-caller' matches the fresh same-byte OP reference 2ms
+     × 'local-reads-caller' matches the fresh same-byte OP reference 4ms
+     × 'three-level-nearest' matches the fresh same-byte OP reference 1ms
+     × 'three-level-fallback' matches the fresh same-byte OP reference 1ms
+     × 'repeated-siblings' matches the fresh same-byte OP reference 1ms
+     ✓ 'lexical-param-857' matches the fresh same-byte OP reference 1ms
+     ✓ 'lexical-model-854' matches the fresh same-byte OP reference 3ms
+     ✓ 'lexical-model-not-dynamic' matches the fresh same-byte OP reference 2ms
+     × 'lexical-definition-dynamic-param' matches the fresh same-byte OP reference 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/subcircuit-dynamic-params-888.test.ts > dynamic caller parameters with lexical definitions/models (#888, ngspice-47) > 'issue-888' matches the fresh same-byte OP reference
+ FAIL  src/subcircuit-dynamic-params-888.test.ts > dynamic caller parameters with lexical definitions/models (#888, ngspice-47) > 'three-level-nearest' matches the fresh same-byte OP reference
+ FAIL  src/subcircuit-dynamic-params-888.test.ts > dynamic caller parameters with lexical definitions/models (#888, ngspice-47) > 'three-level-fallback' matches the fresh same-byte OP reference
+ FAIL  src/subcircuit-dynamic-params-888.test.ts > dynamic caller parameters with lexical definitions/models (#888, ngspice-47) > 'repeated-siblings' matches the fresh same-byte OP reference
+Error: Undefined variable 'pp'
+ ❯ ExprParser.parsePrimary src/parser/expression.ts:313:13
+    311|       if (upper in this.vars) return this.vars[upper];
+    312|       if (name in this.vars) return this.vars[name];
+    313|       throw new Error(`Undefined variable '${name}'`);
+       |             ^
+    314|     }
+    315|
+ ❯ ExprParser.parseCall src/parser/expression.ts:282:17
+ ❯ ExprParser.parseUnary src/parser/expression.ts:253:17
+ ❯ ExprParser.parseExp src/parser/expression.ts:221:21
+ ❯ ExprParser.parseTerm src/parser/expression.ts:205:21
+ ❯ ExprParser.parseExpr src/parser/expression.ts:193:79
+ ❯ ExprParser.parseRelation src/parser/expression.ts:177:21
+ ❯ ExprParser.parseEquality src/parser/expression.ts:168:21
+ ❯ ExprParser.parseAnd src/parser/expression.ts:159:21
+ ❯ ExprParser.parseOr src/parser/expression.ts:150:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  src/subcircuit-dynamic-params-888.test.ts > dynamic caller parameters with lexical definitions/models (#888, ngspice-47) > 'caller-shadows-global' matches the fresh same-byte OP reference
+AssertionError: expected 0.15 to be less than or equal to 2.5e-7
+ ❯ src/subcircuit-dynamic-params-888.test.ts:22:44
+     20|       const actual = match[1] === 'v' ? result.dc!.voltage(match[2]) :…
+     21|       // One shared tolerance, unchanged from provisional diagnosis. N…
+     22|       expect(Math.abs(actual - reference)).toBeLessThanOrEqual(Math.ma…
+       |                                            ^
+     23|     }
+     24|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  src/subcircuit-dynamic-params-888.test.ts > dynamic caller parameters with lexical definitions/models (#888, ngspice-47) > 'default-reads-caller' matches the fresh same-byte OP reference
+Error: Subcircuit 'leaf' (instance 'X1.X1') parameter 'RR=pp': Undefined variable 'pp'
+ ❯ Circuit.expandSubcircuit src/circuit.ts:3362:17
+    3360|           localParams[name] = evaluateExpression(value, localParams);
+    3361|         } catch (error) {
+    3362|           throw new Error(
+       |                 ^
+    3363|             `Subcircuit '${subcktName}' (instance '${instanceName}') p…
+    3364|           );
+ ❯ Circuit.expandSubcircuit src/circuit.ts:3741:31
+ ❯ Circuit.expandAllSubcircuits src/circuit.ts:2706:31
+ ❯ Circuit.compile src/circuit.ts:2011:34
+ ❯ simulate src/simulate.ts:132:28
+ ❯ src/subcircuit-dynamic-params-888.test.ts:16:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  src/subcircuit-dynamic-params-888.test.ts > dynamic caller parameters with lexical definitions/models (#888, ngspice-47) > 'local-reads-caller' matches the fresh same-byte OP reference
+ParseError: Parse error at line 4: Undefined parameter 'pp'
+  .param rr={pp*2}
+ ❯ toParseError src/parser/preprocessor.ts:769:10
+    767|   const message = (error as Error).message
+    768|     .replace(/^Undefined variable '([^']*)'$/, "Undefined parameter '$…
+    769|   return new ParseError(message, line, context);
+       |          ^
+    770| }
+    771|
+ ❯ evaluateParam src/subcircuit-params.ts:52:13
+ ❯ resolve src/subcircuit-params.ts:97:25
+ ❯ evaluateSubcircuitParams src/subcircuit-params.ts:100:34
+ ❯ Circuit.expandSubcircuit src/circuit.ts:3424:5
+ ❯ Circuit.expandSubcircuit src/circuit.ts:3741:31
+ ❯ Circuit.expandAllSubcircuits src/circuit.ts:2706:31
+ ❯ Circuit.compile src/circuit.ts:2011:34
+ ❯ simulate src/simulate.ts:132:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  src/subcircuit-dynamic-params-888.test.ts > dynamic caller parameters with lexical definitions/models (#888, ngspice-47) > 'lexical-definition-dynamic-param' matches the fresh same-byte OP reference
+AssertionError: expected 0.04999999999999999 to be less than or equal to 2e-7
+ ❯ src/subcircuit-dynamic-params-888.test.ts:22:44
+     20|       const actual = match[1] === 'v' ? result.dc!.voltage(match[2]) :…
+     21|       // One shared tolerance, unchanged from provisional diagnosis. N…
+     22|       expect(Math.abs(actual - reference)).toBeLessThanOrEqual(Math.ma…
+       |                                            ^
+     23|     }
+     24|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  8 failed | 25 passed (33)
+   Start at  18:14:02
+   Duration  1.37s (transform 2.82s, setup 0ms, import 3.47s, tests 138ms, environment 0ms)
+
+JUNIT report written to /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5043e322/packages/core/test-results.xml

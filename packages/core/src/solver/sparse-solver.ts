@@ -9,8 +9,12 @@ export interface SparseSolver {
   /** Numeric factorization — call each Newton step (same pattern, new values) */
   factorize(A: CscMatrix): void;
 
-  /** Solve Ax = b in place, returning the caller-owned b vector as the solution. */
-  solve(b: Float64Array): Float64Array;
+  /**
+   * Solve Ax = b in place, returning the caller-owned b vector as the solution.
+   * An optional Newton-only validator may certify finite-RHS overflow as a
+   * genuine infinite device expression. Absent/rejected certification throws.
+   */
+  solve(b: Float64Array, acceptOverflow?: (candidate: Float64Array) => boolean): Float64Array;
 
   /** Returns true if {@link analyzePattern} has been called. */
   isPatternAnalyzed(): boolean;

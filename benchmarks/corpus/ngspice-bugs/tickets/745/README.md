@@ -4,7 +4,8 @@ Generated from `../../manifest.json` by `render.ts`; do not edit by hand.
 
 - Ticket: https://sourceforge.net/p/ngspice/bugs/745/ (status `open`, opened 2025-02-24)
 - Category: simulator-numerics
-- Outcome: ngspice defective, spice-ts cannot run the deck (feature unsupported)
+- Outcome: ngspice defective, spice-ts correct
+- spice-ts issue: https://github.com/mfiumara/spice-ts/issues/854
 
 ## Decks
 
@@ -37,7 +38,7 @@ The two netlists are electrically equivalent (series split of an element / extra
 |---|---|---|
 | ngspice-47 | error | mycircuit: "Timestep too small; time = 1.1957e-10 ... trouble with node net-_q2-e_", aborted after 114 rows; mycircuitSplit (R2 split in two): completes, 1008 rows. Same in LTPS mode. |
 | ngspice master | error | mycircuit: "Timestep too small; time = 3.58009e-11 ... node net-_c1-pad2_", aborted after 51 rows; mycircuitSplit completes (1008 rows). Same in LTPS. [ngspice pre-master-48 HEAD 3ef069fb, same command as 47, default and LTPS] |
-| spice-ts | unsupported | UnsupportedModelTypeError: .model 'Rmod11' has unsupported type 'RES' (vendor PSpice library) |
+| spice-ts | right | Both decks complete to 100 ns (1008 points each), unlike ngspice-47's mycircuit abort, and since https://github.com/mfiumara/spice-ts/issues/854 (a .model inside a .subckt is scoped to the subcircuit instance, like ngspice-47 subckt.c modtranslate) spice-ts uses the subcircuit-local DSUB, DCGD, SW and PMOS models that IGBT.LIB (APT100G2) and DiodesInc_FET.lib (DMG4435SSS) both define. Against ngspice-47's complete mycircuitSplit run (1008 rows) the spice-ts i(V1) differs by a median 3.22e-12 A and at most 1.83e-10 A (0.18% of max \|i(V1)\| = 1.04e-7 A); t=0 i(V1): mycircuitSplit -1.039088e-7 A vs ngspice-47 -1.039089e-7 A, mycircuit -8.354497e-8 A vs ngspice-47's -8.354474e-8 A before its abort. The two variants are not identical with .options rshunt=1G: the extra node NewPin79 (-26 V) gets its own 1 GOhm shunt, so i(V1) differs by about 20.4 nA between them in both simulators. [spice-ts #854 branch on main 03a9e4eb, simulate() on the same *.local.cir bytes with a filesystem include resolver, i(V1) interpolated onto ngspice-47's time points] Before #854 (global last-wins .model): median 1.75e-9 A, max 2.16e-9 A (2.1%), t=0 mycircuitSplit -1.056456e-7 A, mycircuit -8.456459e-8 A. Before #829: both decks stopped at Error: Unsupported bounded diode breakdown-temperature model parameter: 'TRS1' (SnapLED150.mod). Before #825: UnsupportedModelTypeError .model 'SMOD1' has unsupported type 'VSWITCH' (https://github.com/mfiumara/spice-ts/issues/825). Before #823: UnsupportedModelTypeError: .model 'Rmod11' has unsupported type 'RES' (vendor PSpice library) |
 
 Reproduces on ngspice-47: yes. Check: mycircuit aborts (Timestep too small) while the equivalent mycircuitSplit completes.
 

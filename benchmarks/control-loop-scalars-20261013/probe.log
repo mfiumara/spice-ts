@@ -1,0 +1,138 @@
+{
+  "baseSha": "541cb5f34dd1dd89074df9f9f737e4eb6aff110c",
+  "ngspiceVersion": "******\n** ngspice-47 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2026, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n******\n",
+  "host": "macOS-27.0.1-arm64-arm-64bit",
+  "childCapSeconds": 12,
+  "totalChildCapSeconds": 600,
+  "fixtures": [
+    {
+      "path": "benchmarks/control-loop-scalars-20261013/minimal.cir",
+      "sha256": "a4b9ff73e1ec2fc2ed68d81017b2c3f9adfda3560ed12662fcce5379ed390b47",
+      "maxRelativeError": null,
+      "rmsRelativeError": null,
+      "matchedPoints": 0,
+      "ngspice": {
+        "status": "completed",
+        "exitCode": 0,
+        "wallSeconds": 0.024880583999999983,
+        "command": [
+          "ngspice",
+          "-b",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e7a61100/benchmarks/control-loop-scalars-20261013/minimal.cir"
+        ],
+        "plotBatchWarning": false
+      },
+      "spiceTs": {
+        "status": "failed",
+        "exitCode": 1,
+        "wallSeconds": 0.4692610420000001,
+        "command": [
+          "node",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e7a61100/benchmarks/control-loop-scalars-20261013/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e7a61100/benchmarks/control-loop-scalars-20261013/minimal.cir"
+        ],
+        "plotBatchWarning": false
+      },
+      "outcome": "spice-ts-loss"
+    },
+    {
+      "path": "benchmarks/corpus/corpus-f/fixtures/examples/loops/instance-loop.cir",
+      "sha256": "6b38f6f9fe6cd67bd513da66606060507c629dd1a4516ddea0b772e09c2a113d",
+      "maxRelativeError": null,
+      "rmsRelativeError": null,
+      "matchedPoints": 0,
+      "ngspice": {
+        "status": "completed",
+        "exitCode": 0,
+        "wallSeconds": 0.048654333999999966,
+        "command": [
+          "ngspice",
+          "-b",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e7a61100/benchmarks/corpus/corpus-f/fixtures/examples/loops/instance-loop.cir"
+        ],
+        "plotBatchWarning": true
+      },
+      "spiceTs": {
+        "status": "failed",
+        "exitCode": 1,
+        "wallSeconds": 0.457365958,
+        "command": [
+          "node",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e7a61100/benchmarks/control-loop-scalars-20261013/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e7a61100/benchmarks/corpus/corpus-f/fixtures/examples/loops/instance-loop.cir"
+        ],
+        "plotBatchWarning": false
+      },
+      "outcome": "spice-ts-loss"
+    },
+    {
+      "path": "benchmarks/corpus/corpus-f/fixtures/examples/loops/loop-instance.cir",
+      "sha256": "7dbec4d0a85fc3ae517b3250a0521264c3700afcf46468c1118fd66eb90eda6d",
+      "maxRelativeError": null,
+      "rmsRelativeError": null,
+      "matchedPoints": 0,
+      "ngspice": {
+        "status": "completed",
+        "exitCode": 0,
+        "wallSeconds": 0.0267292910000001,
+        "command": [
+          "ngspice",
+          "-b",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e7a61100/benchmarks/corpus/corpus-f/fixtures/examples/loops/loop-instance.cir"
+        ],
+        "plotBatchWarning": true
+      },
+      "spiceTs": {
+        "status": "failed",
+        "exitCode": 1,
+        "wallSeconds": 0.5064282499999999,
+        "command": [
+          "node",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e7a61100/benchmarks/control-loop-scalars-20261013/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e7a61100/benchmarks/corpus/corpus-f/fixtures/examples/loops/loop-instance.cir"
+        ],
+        "plotBatchWarning": false
+      },
+      "outcome": "spice-ts-loss"
+    },
+    {
+      "path": "benchmarks/corpus/corpus-f/fixtures/examples/loops/loop-model.cir",
+      "sha256": "af16eb24765e9593c4f9e87033cbea2811b8de385f324d80d56c5ce0d7e39b6b",
+      "maxRelativeError": null,
+      "rmsRelativeError": null,
+      "matchedPoints": 0,
+      "ngspice": {
+        "status": "completed",
+        "exitCode": 0,
+        "wallSeconds": 0.02574625000000008,
+        "command": [
+          "ngspice",
+          "-b",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e7a61100/benchmarks/corpus/corpus-f/fixtures/examples/loops/loop-model.cir"
+        ],
+        "plotBatchWarning": true
+      },
+      "spiceTs": {
+        "status": "failed",
+        "exitCode": 1,
+        "wallSeconds": 0.620749708,
+        "command": [
+          "node",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e7a61100/benchmarks/control-loop-scalars-20261013/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e7a61100/benchmarks/corpus/corpus-f/fixtures/examples/loops/loop-model.cir"
+        ],
+        "plotBatchWarning": false
+      },
+      "outcome": "spice-ts-loss"
+    }
+  ],
+  "totalActualChildWallSeconds": 2.1798154170000004
+}

@@ -1,0 +1,1 @@
+Note: Starting dynamic gmin stepping

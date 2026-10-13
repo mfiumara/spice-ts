@@ -10,12 +10,14 @@ import { parseNumber } from './tokenizer.js';
  * Supported: numbers with SPICE scale factors, the constants `pi` and `e`,
  * `time`, `temper`, `v(node)`, `v(node1,node2)`, the branch current
  * `i(vsource)` of a branch-carrying source, unary `+ - !`, binary
- * `+ - * / ^ **`, comparisons `== != <> < <= > >=`, `&&`, `||`, the ternary
- * `c ? a : b` / `ternary_fcn(c, a, b)`, and every function listed in
- * {@link BEHAVIORAL_FUNCTIONS}. `.param` names, `{expr}` and `'expr'` are
+ * `+ - * / ^ **`, comparisons `== != <> < <= > >=`, `&&`, `||` (also `|`), the ternary
+ * `c ? a : b` / `ternary_fcn(c, a, b)`, every function listed in
+ * {@link BEHAVIORAL_FUNCTIONS}, and the PSpice `if`, `limit`, `pwrs`, `stp`
+ * and `int` (see {@link PSPICE_FUNCTIONS}). `.param` names, `{expr}` and `'expr'` are
  * substituted before parsing, as ngspice's numparam front end does (see
  * {@link substituteBehavioralParameters}). `hertz`, `pwl(...)` and the PSPICE
- * logic operators `~ & |` are rejected explicitly.
+ * logic operators `~ &` are rejected explicitly. Single `|` is the boolean
+ * OR alias ngspice translates in included PSpice libraries (#903).
  */
 export type BehavioralFunction =
   | 'abs' | 'acos' | 'acosh' | 'asin' | 'asinh' | 'atan' | 'atanh'
@@ -66,6 +68,12 @@ export interface BehavioralInstanceParams {
   dtemp?: number;
   /** ngspice `reciproctc=1`: divide by the temperature factor instead. */
   reciproctc?: boolean;
+  /**
+   * spice-ts `spice2poly=1`: the source is a SPICE2 POLY(n) card, which
+   * ngspice-47 runs as an XSPICE 'A' device (enhtrans.c), so the circuit takes
+   * the XSPICE trtol of cktdojob.c (#862). The POLY translation sets it.
+   */
+  spice2poly?: boolean;
 }
 
 export type BehavioralSourceKind = 'current' | 'voltage';
@@ -87,9 +95,67 @@ const B_CARD = /^(\S+)\s+([^\s(),=]+)\s+([^\s(),=]+)\s*(.*)$/;
 const B_CARD_HEAD = /^(\s*[bB]\S*\s+[^\s(),=]+\s+[^\s(),=]+\s*)([iIvV]\s*=)([\s\S]*)$/;
 const ASSIGNMENT = /^([iv])\s*=\s*([\s\S]+)$/i;
 const INSTANCE_PARAMETER = /^([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(\S+)\s*/;
-const INSTANCE_PARAMETERS = new Set(['tc1', 'tc2', 'temp', 'dtemp', 'reciproctc']);
+const INSTANCE_PARAMETERS = new Set(['tc1', 'tc2', 'temp', 'dtemp', 'reciproctc', 'spice2poly']);
 
 class ExpressionError extends Error {}
+
+const call = (name: BehavioralFunction, ...args: BehavioralExpression[]): BehavioralExpression => ({
+  kind: 'call',
+  name,
+  args,
+});
+
+const ARITY_WORDS: Record<number, string> = { 1: 'one argument', 2: 'two arguments', 3: 'three arguments' };
+
+/**
+ * PSpice functions ngspice-47 defines in compatibility mode
+ * (frontend/inpcompat.c pspice_compat prepends these `.func` cards, which
+ * numparam expands textually into every B-source expression):
+ *
+ *   .func limit(x, a, b) { ternary_fcn(a > b, max(min(x, a), b), max(min(x, b), a)) }
+ *   .func pwrs(x, a) { sgn(x) * pow(x, a) }
+ *   .func stp(x) { u(x) }
+ *   .func if(a, b, c) {ternary_fcn( a , b , c )}
+ *   .func int(x) { sgn(x)*floor(abs(x)) }
+ *
+ * Each call expands into the same parse tree, so values and the
+ * PTdifferentiate derivatives (Newton Jacobian) follow ngspice's tree.
+ * A repeated argument compiles once per occurrence, as in the textual
+ * expansion (a `ddt()` argument keeps one history per occurrence). Default-mode ngspice
+ * rejects these names ("no such function"), so accepting them always only
+ * widens the accepted decks. The sixth inpcompat.c function,
+ * `.func pwr(x, a) { pow(x, a) }`, is not applied: `pwr` is a native
+ * default-mode ngspice function (sign-preserving PTpwr) that spice-ts keeps.
+ */
+interface PspiceFunction {
+  arity: number;
+  expand(args: BehavioralExpression[]): BehavioralExpression;
+}
+
+const PSPICE_FUNCTIONS = new Map<string, PspiceFunction>(Object.entries({
+  limit: {
+    arity: 3,
+    expand: ([x, a, b]) => ({
+      kind: 'ternary',
+      condition: { kind: 'compare', op: '>', left: a, right: b },
+      whenTrue: call('max', call('min', x, a), b),
+      whenFalse: call('max', call('min', x, b), a),
+    }),
+  },
+  pwrs: {
+    arity: 2,
+    expand: ([x, a]) => ({ kind: 'binary', op: '*', left: call('sgn', x), right: call('pow', x, a) }),
+  },
+  stp: { arity: 1, expand: ([x]) => call('u', x) },
+  if: {
+    arity: 3,
+    expand: ([condition, whenTrue, whenFalse]) => ({ kind: 'ternary', condition, whenTrue, whenFalse }),
+  },
+  int: {
+    arity: 1,
+    expand: ([x]) => ({ kind: 'binary', op: '*', left: call('sgn', x), right: call('floor', call('abs', x)) }),
+  },
+} satisfies Record<string, PspiceFunction>));
 
 export function parseBehavioralSourceCard(raw: string, lineNumber: number): BehavioralSourceCard {
   const card = B_CARD.exec(raw.trim());
@@ -120,7 +186,10 @@ export function parseBehavioralSourceCard(raw: string, lineNumber: number): Beha
   }
 }
 
-/** ngspice's lexer stops at `tc1=`, `tc2=`, `temp=`, `dtemp=` and `reciproctc=`. */
+/**
+ * ngspice's lexer stops at `tc1=`, `tc2=`, `temp=`, `dtemp=` and `reciproctc=`;
+ * spice-ts adds `spice2poly=` for translated POLY cards.
+ */
 function parseInstanceParameters(text: string): BehavioralInstanceParams {
   const params: BehavioralInstanceParams = {};
   let rest = text;
@@ -138,6 +207,7 @@ function parseInstanceParameters(text: string): BehavioralInstanceParams {
       throw new ExpressionError(`Behavioral source parameter '${match[1]}' needs a number, got '${match[2]}'`);
     }
     if (name === 'reciproctc') params.reciproctc = value === 1;
+    else if (name === 'spice2poly') params.spice2poly = value === 1;
     else params[name as 'tc1' | 'tc2' | 'temp' | 'dtemp'] = value;
     rest = rest.slice(match[0].length);
   }
@@ -161,7 +231,7 @@ export function parseBehavioralExpression(text: string): BehavioralExpression {
 
 /**
  * Recursive-descent form of the ngspice bison grammar. Precedence, lowest
- * first: `?:` (right), `||`, `&&`, `== !=`, `< <= > >=`, `+ -`, `* /`, unary
+ * first: `?:` (right), `||` / `|`, `&&`, `== !=`, `< <= > >=`, `+ -`, `* /`, unary
  * `- + !`, `^` (left). Unary minus binds looser than `^`: `-a^2` is `-(a^2)`.
  */
 class Parser {
@@ -185,7 +255,10 @@ class Parser {
 
   private parseOr(): BehavioralExpression {
     let left = this.parseAnd();
-    while (this.accept('||')) left = { kind: 'logical', op: '||', left, right: this.parseAnd() };
+    // Consume || first; both spellings use the same tree, truthiness and slopes.
+    while (this.accept('||') || this.accept('|')) {
+      left = { kind: 'logical', op: '||', left, right: this.parseAnd() };
+    }
     return left;
   }
 
@@ -311,6 +384,13 @@ class Parser {
     if (name === 'ternary_fcn') {
       if (args.length !== 3) throw new ExpressionError('ternary_fcn() takes three arguments');
       return { kind: 'ternary', condition: args[0], whenTrue: args[1], whenFalse: args[2] };
+    }
+    const pspice = PSPICE_FUNCTIONS.get(name);
+    if (pspice) {
+      if (args.length !== pspice.arity) {
+        throw new ExpressionError(`${name}() takes ${ARITY_WORDS[pspice.arity]}`);
+      }
+      return pspice.expand(args);
     }
     if (!(BEHAVIORAL_FUNCTIONS as readonly string[]).includes(name)) {
       throw new ExpressionError(`Unsupported behavioral expression function '${original}'`);
@@ -526,11 +606,6 @@ export function behavioralControlNodes(expression: BehavioralExpression): string
   return behavioralControls(expression).nodes;
 }
 
-/** Distinct `i()` sources of an expression, in first-reference order. */
-export function behavioralControlSources(expression: BehavioralExpression): string[] {
-  return behavioralControls(expression).sources;
-}
-
 function behavioralControls(expression: BehavioralExpression): { nodes: string[]; sources: string[] } {
   const nodes: string[] = [];
   const sources: string[] = [];
@@ -614,9 +689,17 @@ function modulus(value: number, limit: number): number {
   return value - Math.trunc(value / limit) * limit;
 }
 
-/** ngspice PTeval reports E_PARMVAL when a node evaluates to HUGE (HUGE_VAL, +inf). */
+/**
+ * ngspice's HUGE: ngspice.h only defines it as HUGE_VAL when <math.h> lacks
+ * it (CYGWIN); glibc and macOS define HUGE as FLT_MAX. ptfuncs.c returns it
+ * as its range-error sentinel, so an IEEE +Infinity (pow(0, -0.5), an
+ * overflowing product) is an ordinary value, not an error (#891).
+ */
+const HUGE = 3.4028234663852886e38;
+
+/** ngspice PTeval reports E_PARMVAL when a node evaluates to exactly HUGE. */
 function checked(value: number, what: string, ...args: number[]): number {
-  if (value === Infinity) {
+  if (value === HUGE) {
     throw new BehavioralRangeError(`Behavioral expression: ${args.join(', ')} out of range for ${what}`);
   }
   return value;
@@ -625,7 +708,7 @@ function checked(value: number, what: string, ...args: number[]): number {
 /** ngspice PTdivide. */
 function ptDivide(a: number, b: number): number {
   const d = b >= 0 ? b + DIVIDE_FUDGE : b - DIVIDE_FUDGE;
-  return d === 0 ? Infinity : a / d;
+  return d === 0 ? HUGE : a / d;
 }
 
 const ulpView = new DataView(new ArrayBuffer(16));
@@ -666,16 +749,31 @@ function ptPwr(a: number, b: number): number {
   return a < 0 ? -Math.pow(-a, b) : Math.pow(a, b);
 }
 
+/**
+ * PTpwr inside the `pow()`/`^` derivative tree. ngspice-47 PTpwr moves a zero
+ * base off the pole when the exponent is negative (`arg1 += PTfudge_factor`,
+ * gmin*1e-20) so the Jacobian stays finite; it applies that guard in PSpice
+ * compatibility mode, the mode whose `pwrs()` spice-ts always expands. In
+ * default mode ngspice-47 evaluates the slope as +Infinity, so `pow(V, 0.5)`
+ * starting from V = 0 relies on its sparse solver's Inf/NaN handling
+ * (converges when V moves off 0, aborts the .op when V stays at 0; #886).
+ * spice-ts applies the guard everywhere: only the Jacobian at a = 0 exactly
+ * changes, never a value or a slope ngspice computes finitely.
+ */
+function ptPwrSlope(a: number, b: number): number {
+  return ptPwr(a === 0 && b < 0 ? DIVIDE_FUDGE : a, b);
+}
+
 /** ngspice PTlog / PTlog10: -1e99 at 0, HUGE below. */
 function ptLog(x: number, log: (x: number) => number): number {
-  if (x < 0) return Infinity;
+  if (x < 0) return HUGE;
   if (x === 0) return -1e99;
   return log(x);
 }
 
 /** ngspice PTsqrt: HUGE below 0. */
 function ptSqrt(x: number): number {
-  return x < 0 ? Infinity : Math.sqrt(x);
+  return x < 0 ? HUGE : Math.sqrt(x);
 }
 
 function ptExp(value: number): number {
@@ -744,6 +842,21 @@ function unaryFunction(name: BehavioralFunction, x: number): [value: number, slo
   }
 }
 
+/**
+ * Whether ngspice's parse tree holds `node` as a PT_CONSTANT, the test of
+ * PTdifferentiate's literal-exponent and literal-base power rules. Only a
+ * plain number is: the bison actions PT_mkfnode/PT_mkbnode never fold, so
+ * `-0.5` stays PTF_UMINUS(0.5) and `(0-0.5)` a PT_MINUS node (inpptree.c
+ * notes "we can meet a PTF_UMINUS->PTF_CONSTANT instead of a plain
+ * PTF_CONSTANT"; only the derivative builders mkf/mkb fold constants).
+ * Instrumented ngspice-47 confirms it: d/dV of `V^-0.5`, `V^(-0.5)` and
+ * `V^(0-0.5)` at V = 0 is -0, the general rule pow(a,b)*(b*da/a + ...), not
+ * the literal rule's -0.5*pwr(0, -1.5) = -inf (#891).
+ */
+function isConstantTree(node: BehavioralExpression): boolean {
+  return node.kind === 'number';
+}
+
 /** ngspice rewrites `a OP b` as OP0(a - b) (eq0, ne0, gt0, lt0, ge0, le0). */
 function compare(op: BehavioralComparison, difference: number): number {
   switch (op) {
@@ -771,6 +884,11 @@ export function compileBehavioralExpression(expression: BehavioralExpression): C
    * exponent c gives c*pwr(a, c-1)*da (ngspice-47 keeps the sign of a here),
    * a literal base gives pow(a,b)*db*log|a|, otherwise
    * pow(a,b)*(b*da/a + db*log|a|).
+   *
+   * At a = 0 with c < 1, pwr(0, c-1) is +Infinity: Newton's very first
+   * iterate (all node voltages 0) would put an infinite entry in the
+   * Jacobian. The derivative uses {@link ptPwrSlope}, ngspice's own guard
+   * for this pole (PTpwr's PSpice-mode PTfudge_factor base, #886).
    */
   const powerGradient = (
     gradient: Float64Array,
@@ -781,7 +899,7 @@ export function compileBehavioralExpression(expression: BehavioralExpression): C
     literalBase: boolean,
   ): void => {
     if (literalExponent) {
-      const slope = b * ptPwr(a, b - 1);
+      const slope = b * ptPwrSlope(a, b - 1);
       for (let i = 0; i < size; i++) gradient[i] = slope * baseGradient[i];
       return;
     }
@@ -961,8 +1079,8 @@ export function compileBehavioralExpression(expression: BehavioralExpression): C
     const left = build(leftNode);
     const right = build(rightNode);
     const leftGradient = new Float64Array(size);
-    const literalExponent = rightNode.kind === 'number';
-    const literalBase = leftNode.kind === 'number';
+    const literalExponent = isConstantTree(rightNode);
+    const literalBase = isConstantTree(leftNode);
     return (voltages, gradient, environment) => {
       const a = left(voltages, leftGradient, environment);
       const b = right(voltages, gradient, environment);
@@ -1007,8 +1125,8 @@ export function compileBehavioralExpression(expression: BehavioralExpression): C
     const left = build(leftNode);
     const right = build(rightNode);
     const leftGradient = new Float64Array(size);
-    const literalExponent = rightNode.kind === 'number';
-    const literalBase = leftNode.kind === 'number';
+    const literalExponent = isConstantTree(rightNode);
+    const literalBase = isConstantTree(leftNode);
     return (voltages, gradient, environment) => {
       const a = left(voltages, leftGradient, environment);
       const b = right(voltages, gradient, environment);
