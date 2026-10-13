@@ -137,7 +137,7 @@ M1 d g 0 0 NX W=10u L=2u
       deviceName: 'M1',
       modelName: 'NX',
       level,
-      supportedLevels: [1, 2, 3, 4, 5, 6, 8, 9, 49],
+      supportedLevels: [1, 2, 3, 4, 5, 6, 8, 9, 49, 260],
     });
   });
 

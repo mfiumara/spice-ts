@@ -3,6 +3,34 @@
 This file records the provenance and redistribution decision for benchmark fixtures.
 The machine-readable catalogue is `benchmarks/corpus/ngspice/manifest.json`.
 
+## EKV 2.6 static DC implementation evidence (#4)
+
+- Equation reference: EPFL, *The EPFL-EKV MOSFET Model Equations for Simulation*,
+  model version 2.6, revisions I/II and March 1999 corrections:
+  https://ngspice.sourceforge.io/external-documents/models/ekv_v262.pdf.
+  The report is cited, not redistributed. The MIT TypeScript implementation is
+  independently written from equations; no GPL device source is copied into it.
+- Behavioral reference: Xyce 7.10.0 at
+  `a592a42ae7472151d1c8e3bca0ca62d27476f2f3`. The generated C++ device/registration
+  `src/DeviceModelPKG/ADMS/N_DEV_ADMSekv_va.C` has GPL-3.0-or-later headers.
+  Its original `utils/ADMS/examples/EKV/ekv-2.6/ekv26_SDext_Verilog-A.va`
+  carries ECL-2.0 and a legacy restrictive notice; no redistribution of that
+  source is attempted. These are behavioral references, not copied code:
+  https://github.com/Xyce/Xyce/tree/a592a42ae7472151d1c8e3bca0ca62d27476f2f3/utils/ADMS/examples/EKV/ekv-2.6.
+  Used to check defaults, revision-III smoothing and LEVEL=260 (no aliases).
+  Source is not redistributed in this change.
+- Fixtures reuse the three existing GPL-3.0-or-later hash-pinned upstream decks
+  recorded below plus the corpus-g EKV inverter (same source bytes, explicitly
+  a repeated fixture rather than a fourth novel circuit). No new third-party
+  deck or licence claim. Both spice-ts and Xyce receive identical output-adapted
+  deck bytes in `benchmarks/reference/ekv-static/compare.ts`; original source
+  hashes and all output adaptations are retained. ngspice uses the terminated
+  source deck and is labelled `ngspice-lacks-model (MOS1 fallback)`.
+- `before-identical.json.gz` and `after-identical.json.gz` retain waveforms,
+  native tool output, warnings, hashes and all outcomes. `metrics.md` includes
+  all signals, six ascending/descending DC sweeps each and transient residuals.
+  No per-circuit tuning, no full EKV/AC/transient parity or speed claim.
+
 ## Xyce second-reference bootstrap (#948)
 
 - `benchmarks/reference/ekv/fixtures/*.cir` are byte-identical copies of the three

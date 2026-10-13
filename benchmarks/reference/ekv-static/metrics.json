@@ -1,0 +1,1784 @@
+[
+  {
+    "fixture": "test_ekv26_nmos",
+    "sweep": "all",
+    "signal": "v(d1)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 1806,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 1800,
+        "excludedZeroReferences": 6
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 1806,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 1800,
+        "excludedZeroReferences": 6
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_nmos",
+    "sweep": "all",
+    "signal": "v(g)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 1806,
+      "absoluteError": {
+        "max": 4.440892098500626e-16,
+        "rms": 3.268408087260198e-16
+      },
+      "relativeError": {
+        "max": 2.0185873175002846e-16,
+        "rms": 1.3357321637940857e-16,
+        "sampleCount": 1806,
+        "excludedZeroReferences": 0
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 1806,
+      "absoluteError": {
+        "max": 4.440892098500626e-16,
+        "rms": 3.268408087260198e-16
+      },
+      "relativeError": {
+        "max": 2.0185873175002846e-16,
+        "rms": 1.3357321637940857e-16,
+        "sampleCount": 1806,
+        "excludedZeroReferences": 0
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_nmos",
+    "sweep": "all",
+    "signal": "i(vdmon)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 1806,
+      "absoluteError": {
+        "max": 0.002294543022962918,
+        "rms": 0.0008047403605617073
+      },
+      "relativeError": {
+        "max": 6.684928184363671,
+        "rms": 2.599668268133273,
+        "sampleCount": 1805,
+        "excludedZeroReferences": 1
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 1806,
+      "absoluteError": {
+        "max": 3.414558942126285e-10,
+        "rms": 2.9287695703657043e-10
+      },
+      "relativeError": {
+        "max": 1,
+        "rms": 0.052631578963282785,
+        "sampleCount": 1805,
+        "excludedZeroReferences": 1
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_nmos",
+    "sweep": "0",
+    "signal": "v(d1)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 300,
+        "excludedZeroReferences": 1
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 300,
+        "excludedZeroReferences": 1
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_nmos",
+    "sweep": "0",
+    "signal": "v(g)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 301,
+        "excludedZeroReferences": 0
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 301,
+        "excludedZeroReferences": 0
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_nmos",
+    "sweep": "0",
+    "signal": "i(vdmon)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0.00012713152090272699,
+        "rms": 0.00011240172482624877
+      },
+      "relativeError": {
+        "max": 0.6749156123502733,
+        "rms": 0.6269753160552076,
+        "sampleCount": 300,
+        "excludedZeroReferences": 1
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 3.1177228184656354e-10,
+        "rms": 2.8360245677247627e-10
+      },
+      "relativeError": {
+        "max": 1.649338080498038e-06,
+        "rms": 1.6056453285227265e-06,
+        "sampleCount": 300,
+        "excludedZeroReferences": 1
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_nmos",
+    "sweep": "1",
+    "signal": "v(d1)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 300,
+        "excludedZeroReferences": 1
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 300,
+        "excludedZeroReferences": 1
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_nmos",
+    "sweep": "1",
+    "signal": "v(g)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 301,
+        "excludedZeroReferences": 0
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 301,
+        "excludedZeroReferences": 0
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_nmos",
+    "sweep": "1",
+    "signal": "i(vdmon)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 7.878181654059866e-05,
+        "rms": 3.822765989413662e-05
+      },
+      "relativeError": {
+        "max": 1,
+        "rms": 0.18215830353033116,
+        "sampleCount": 301,
+        "excludedZeroReferences": 0
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 3.2746182526102903e-10,
+        "rms": 2.9376216433445514e-10
+      },
+      "relativeError": {
+        "max": 1,
+        "rms": 0.05763904178855402,
+        "sampleCount": 301,
+        "excludedZeroReferences": 0
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_nmos",
+    "sweep": "2",
+    "signal": "v(d1)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 300,
+        "excludedZeroReferences": 1
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 300,
+        "excludedZeroReferences": 1
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_nmos",
+    "sweep": "2",
+    "signal": "v(g)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 2.220446049250313e-16,
+        "rms": 2.220446049250313e-16
+      },
+      "relativeError": {
+        "max": 1.2335811384723962e-16,
+        "rms": 1.233581138472397e-16,
+        "sampleCount": 301,
+        "excludedZeroReferences": 0
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 2.220446049250313e-16,
+        "rms": 2.220446049250313e-16
+      },
+      "relativeError": {
+        "max": 1.2335811384723962e-16,
+        "rms": 1.233581138472397e-16,
+        "sampleCount": 301,
+        "excludedZeroReferences": 0
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_nmos",
+    "sweep": "2",
+    "signal": "i(vdmon)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0.00041611605824407727,
+        "rms": 0.0002838975120024373
+      },
+      "relativeError": {
+        "max": 1.6042255996488262,
+        "rms": 1.1418149137489346,
+        "sampleCount": 301,
+        "excludedZeroReferences": 0
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 3.364088428940877e-10,
+        "rms": 2.9787387656307726e-10
+      },
+      "relativeError": {
+        "max": 1,
+        "rms": 0.057639041785335146,
+        "sampleCount": 301,
+        "excludedZeroReferences": 0
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_nmos",
+    "sweep": "3",
+    "signal": "v(d1)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 300,
+        "excludedZeroReferences": 1
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 300,
+        "excludedZeroReferences": 1
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_nmos",
+    "sweep": "3",
+    "signal": "v(g)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 4.440892098500626e-16,
+        "rms": 4.440892098500626e-16
+      },
+      "relativeError": {
+        "max": 2.0185873175002846e-16,
+        "rms": 2.0185873175002892e-16,
+        "sampleCount": 301,
+        "excludedZeroReferences": 0
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 4.440892098500626e-16,
+        "rms": 4.440892098500626e-16
+      },
+      "relativeError": {
+        "max": 2.0185873175002846e-16,
+        "rms": 2.0185873175002892e-16,
+        "sampleCount": 301,
+        "excludedZeroReferences": 0
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_nmos",
+    "sweep": "3",
+    "signal": "i(vdmon)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0.0008978464385844396,
+        "rms": 0.0006235891887716249
+      },
+      "relativeError": {
+        "max": 3.109613142168606,
+        "rms": 2.2596080371044804,
+        "sampleCount": 301,
+        "excludedZeroReferences": 0
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 3.4037289864874073e-10,
+        "rms": 2.977322630644844e-10
+      },
+      "relativeError": {
+        "max": 1,
+        "rms": 0.05763904178283981,
+        "sampleCount": 301,
+        "excludedZeroReferences": 0
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_nmos",
+    "sweep": "4",
+    "signal": "v(d1)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 300,
+        "excludedZeroReferences": 1
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 300,
+        "excludedZeroReferences": 1
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_nmos",
+    "sweep": "4",
+    "signal": "v(g)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 4.440892098500626e-16,
+        "rms": 4.440892098500626e-16
+      },
+      "relativeError": {
+        "max": 1.7080354225002407e-16,
+        "rms": 1.7080354225002372e-16,
+        "sampleCount": 301,
+        "excludedZeroReferences": 0
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 4.440892098500626e-16,
+        "rms": 4.440892098500626e-16
+      },
+      "relativeError": {
+        "max": 1.7080354225002407e-16,
+        "rms": 1.7080354225002372e-16,
+        "sampleCount": 301,
+        "excludedZeroReferences": 0
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_nmos",
+    "sweep": "4",
+    "signal": "i(vdmon)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0.0015239543405228169,
+        "rms": 0.0010417813150012008
+      },
+      "relativeError": {
+        "max": 4.811704540989109,
+        "rms": 3.450592657847642,
+        "sampleCount": 301,
+        "excludedZeroReferences": 0
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 3.414558942126285e-10,
+        "rms": 2.9462779387696893e-10
+      },
+      "relativeError": {
+        "max": 1,
+        "rms": 0.057639041780890785,
+        "sampleCount": 301,
+        "excludedZeroReferences": 0
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_nmos",
+    "sweep": "5",
+    "signal": "v(d1)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 300,
+        "excludedZeroReferences": 1
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 300,
+        "excludedZeroReferences": 1
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_nmos",
+    "sweep": "5",
+    "signal": "v(g)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 4.440892098500626e-16,
+        "rms": 4.440892098500626e-16
+      },
+      "relativeError": {
+        "max": 1.4802973661668753e-16,
+        "rms": 1.480297366166874e-16,
+        "sampleCount": 301,
+        "excludedZeroReferences": 0
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 4.440892098500626e-16,
+        "rms": 4.440892098500626e-16
+      },
+      "relativeError": {
+        "max": 1.4802973661668753e-16,
+        "rms": 1.480297366166874e-16,
+        "sampleCount": 301,
+        "excludedZeroReferences": 0
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_nmos",
+    "sweep": "5",
+    "signal": "i(vdmon)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0.002294543022962918,
+        "rms": 0.0015220963188370725
+      },
+      "relativeError": {
+        "max": 6.684928184363671,
+        "rms": 4.66755446619699,
+        "sampleCount": 301,
+        "excludedZeroReferences": 0
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 3.401263659282873e-10,
+        "rms": 2.894063326244512e-10
+      },
+      "relativeError": {
+        "max": 1,
+        "rms": 0.05763904177935005,
+        "sampleCount": 301,
+        "excludedZeroReferences": 0
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_pmos",
+    "sweep": "all",
+    "signal": "v(d1)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 1806,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 1800,
+        "excludedZeroReferences": 6
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 1806,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 1800,
+        "excludedZeroReferences": 6
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_pmos",
+    "sweep": "all",
+    "signal": "v(g)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 1806,
+      "absoluteError": {
+        "max": 8.881784197001252e-16,
+        "rms": 5.127900497022837e-16
+      },
+      "relativeError": {
+        "max": 1.9308226515220116e-16,
+        "rms": 1.0710991031423793e-16,
+        "sampleCount": 1806,
+        "excludedZeroReferences": 0
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 1806,
+      "absoluteError": {
+        "max": 8.881784197001252e-16,
+        "rms": 5.127900497022837e-16
+      },
+      "relativeError": {
+        "max": 1.9308226515220116e-16,
+        "rms": 1.0710991031423793e-16,
+        "sampleCount": 1806,
+        "excludedZeroReferences": 0
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_pmos",
+    "sweep": "all",
+    "signal": "i(vdmon)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 1806,
+      "absoluteError": {
+        "max": 0.005968122711882118,
+        "rms": 0.0025143253210924417
+      },
+      "relativeError": {
+        "max": 638.594898108031,
+        "rms": 190.9015738797555,
+        "sampleCount": 1800,
+        "excludedZeroReferences": 6
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 1806,
+      "absoluteError": {
+        "max": 2.590715369825674e-10,
+        "rms": 1.4262171007283158e-10
+      },
+      "relativeError": {
+        "max": 1.5324687964248487e-05,
+        "rms": 6.086363932280423e-06,
+        "sampleCount": 1800,
+        "excludedZeroReferences": 6
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_pmos",
+    "sweep": "0",
+    "signal": "v(d1)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 300,
+        "excludedZeroReferences": 1
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 300,
+        "excludedZeroReferences": 1
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_pmos",
+    "sweep": "0",
+    "signal": "v(g)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 301,
+        "excludedZeroReferences": 0
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 301,
+        "excludedZeroReferences": 0
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_pmos",
+    "sweep": "0",
+    "signal": "i(vdmon)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0.0020484023101108224,
+        "rms": 0.0014013079806433541
+      },
+      "relativeError": {
+        "max": 638.594898108031,
+        "rms": 451.62172779023405,
+        "sampleCount": 300,
+        "excludedZeroReferences": 1
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 4.502616164275139e-11,
+        "rms": 4.338006627301404e-11
+      },
+      "relativeError": {
+        "max": 1.5324687964248487e-05,
+        "rms": 1.4380673089004859e-05,
+        "sampleCount": 300,
+        "excludedZeroReferences": 1
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_pmos",
+    "sweep": "1",
+    "signal": "v(d1)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 300,
+        "excludedZeroReferences": 1
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 300,
+        "excludedZeroReferences": 1
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_pmos",
+    "sweep": "1",
+    "signal": "v(g)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 301,
+        "excludedZeroReferences": 0
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 301,
+        "excludedZeroReferences": 0
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_pmos",
+    "sweep": "1",
+    "signal": "i(vdmon)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0.0027638674723540345,
+        "rms": 0.0018055505562414728
+      },
+      "relativeError": {
+        "max": 145.81474668309713,
+        "rms": 96.9932821163181,
+        "sampleCount": 300,
+        "excludedZeroReferences": 1
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 2.463038480006311e-11,
+        "rms": 7.433418322369419e-12
+      },
+      "relativeError": {
+        "max": 2.3086185026231607e-06,
+        "rms": 6.136568773717447e-07,
+        "sampleCount": 300,
+        "excludedZeroReferences": 1
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_pmos",
+    "sweep": "2",
+    "signal": "v(d1)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 300,
+        "excludedZeroReferences": 1
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 300,
+        "excludedZeroReferences": 1
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_pmos",
+    "sweep": "2",
+    "signal": "v(g)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 301,
+        "excludedZeroReferences": 0
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 301,
+        "excludedZeroReferences": 0
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_pmos",
+    "sweep": "2",
+    "signal": "i(vdmon)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0.003562933571439791,
+        "rms": 0.0022143720054773196
+      },
+      "relativeError": {
+        "max": 80.89468743488506,
+        "rms": 50.99183085563111,
+        "sampleCount": 300,
+        "excludedZeroReferences": 1
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 9.242594481374735e-11,
+        "rms": 7.376852781058131e-11
+      },
+      "relativeError": {
+        "max": 2.4927605901298388e-06,
+        "rms": 1.8482318926316524e-06,
+        "sampleCount": 300,
+        "excludedZeroReferences": 1
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_pmos",
+    "sweep": "3",
+    "signal": "v(d1)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 300,
+        "excludedZeroReferences": 1
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 300,
+        "excludedZeroReferences": 1
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_pmos",
+    "sweep": "3",
+    "signal": "v(g)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 301,
+        "excludedZeroReferences": 0
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 301,
+        "excludedZeroReferences": 0
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_pmos",
+    "sweep": "3",
+    "signal": "i(vdmon)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0.004366858613476572,
+        "rms": 0.002620854229048228
+      },
+      "relativeError": {
+        "max": 58.700904545558416,
+        "rms": 35.68642006548109,
+        "sampleCount": 300,
+        "excludedZeroReferences": 1
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 1.608292145158707e-10,
+        "rms": 1.4246899872552e-10
+      },
+      "relativeError": {
+        "max": 2.3680000107376372e-06,
+        "rms": 2.084154311560561e-06,
+        "sampleCount": 300,
+        "excludedZeroReferences": 1
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_pmos",
+    "sweep": "4",
+    "signal": "v(d1)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 300,
+        "excludedZeroReferences": 1
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 300,
+        "excludedZeroReferences": 1
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_pmos",
+    "sweep": "4",
+    "signal": "v(g)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 8.881784197001252e-16,
+        "rms": 8.881784197001252e-16
+      },
+      "relativeError": {
+        "max": 1.9308226515220116e-16,
+        "rms": 1.9308226515220076e-16,
+        "sampleCount": 301,
+        "excludedZeroReferences": 0
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 8.881784197001252e-16,
+        "rms": 8.881784197001252e-16
+      },
+      "relativeError": {
+        "max": 1.9308226515220116e-16,
+        "rms": 1.9308226515220076e-16,
+        "sampleCount": 301,
+        "excludedZeroReferences": 0
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_pmos",
+    "sweep": "4",
+    "signal": "i(vdmon)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0.005168082934911703,
+        "rms": 0.0030263006152242604
+      },
+      "relativeError": {
+        "max": 48.10205017099765,
+        "rms": 28.53059422353875,
+        "sampleCount": 300,
+        "excludedZeroReferences": 1
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 2.1657875938897817e-10,
+        "rms": 1.9633961801171336e-10
+      },
+      "relativeError": {
+        "max": 2.1564274107303723e-06,
+        "rms": 1.99280292700928e-06,
+        "sampleCount": 300,
+        "excludedZeroReferences": 1
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_pmos",
+    "sweep": "5",
+    "signal": "v(d1)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 300,
+        "excludedZeroReferences": 1
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0,
+        "rms": 0
+      },
+      "relativeError": {
+        "max": 0,
+        "rms": 0,
+        "sampleCount": 300,
+        "excludedZeroReferences": 1
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_pmos",
+    "sweep": "5",
+    "signal": "v(g)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 8.881784197001252e-16,
+        "rms": 8.881784197001252e-16
+      },
+      "relativeError": {
+        "max": 1.7763568394002506e-16,
+        "rms": 1.7763568394002444e-16,
+        "sampleCount": 301,
+        "excludedZeroReferences": 0
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 8.881784197001252e-16,
+        "rms": 8.881784197001252e-16
+      },
+      "relativeError": {
+        "max": 1.7763568394002506e-16,
+        "rms": 1.7763568394002444e-16,
+        "sampleCount": 301,
+        "excludedZeroReferences": 0
+      }
+    }
+  },
+  {
+    "fixture": "test_ekv26_pmos",
+    "sweep": "5",
+    "signal": "i(vdmon)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 0.005968122711882118,
+        "rms": 0.0034316903082435386
+      },
+      "relativeError": {
+        "max": 42.12609706966736,
+        "rms": 24.554052065327202,
+        "sampleCount": 300,
+        "excludedZeroReferences": 1
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 301,
+      "absoluteError": {
+        "max": 2.590715369825674e-10,
+        "rms": 2.3626292631855766e-10
+      },
+      "relativeError": {
+        "max": 1.9355503665599577e-06,
+        "rms": 1.830764433720476e-06,
+        "sampleCount": 300,
+        "excludedZeroReferences": 1
+      }
+    }
+  },
+  {
+    "fixture": "inverter_transient_ekv26",
+    "sweep": "all",
+    "signal": "v(vi)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 508,
+      "absoluteError": {
+        "max": 0.005450347785460163,
+        "rms": 0.0020083274736949447
+      },
+      "relativeError": {
+        "max": 2.9010188300742694,
+        "rms": 0.1288558298754833,
+        "sampleCount": 507,
+        "excludedZeroReferences": 1
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 508,
+      "absoluteError": {
+        "max": 0.005450347785460163,
+        "rms": 0.0020083274736949447
+      },
+      "relativeError": {
+        "max": 2.9010188300742694,
+        "rms": 0.1288558298754833,
+        "sampleCount": 507,
+        "excludedZeroReferences": 1
+      }
+    }
+  },
+  {
+    "fixture": "inverter_transient_ekv26",
+    "sweep": "all",
+    "signal": "v(1)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 508,
+      "absoluteError": {
+        "max": 2.1018845084899613,
+        "rms": 0.6315765637533083
+      },
+      "relativeError": {
+        "max": 0.8526873274803073,
+        "rms": 0.4040473124864039,
+        "sampleCount": 508,
+        "excludedZeroReferences": 0
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 508,
+      "absoluteError": {
+        "max": 0.009439292643472541,
+        "rms": 0.0013536954953065968
+      },
+      "relativeError": {
+        "max": 0.014711505094909429,
+        "rms": 0.0017708559411914854,
+        "sampleCount": 508,
+        "excludedZeroReferences": 0
+      }
+    }
+  },
+  {
+    "fixture": "inverter_transient_ekv26",
+    "sweep": "all",
+    "signal": "i(vdd)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 508,
+      "absoluteError": {
+        "max": 5.391988726337399e-05,
+        "rms": 2.163308144439275e-05
+      },
+      "relativeError": {
+        "max": 0.9257236365800372,
+        "rms": 0.4849136535981116,
+        "sampleCount": 508,
+        "excludedZeroReferences": 0
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 508,
+      "absoluteError": {
+        "max": 1.357203722603362e-06,
+        "rms": 1.2180616427720954e-07
+      },
+      "relativeError": {
+        "max": 0.3064559439027097,
+        "rms": 0.02433993927557496,
+        "sampleCount": 508,
+        "excludedZeroReferences": 0
+      }
+    }
+  },
+  {
+    "fixture": "inverter_transient_ekv26",
+    "sweep": "0",
+    "signal": "v(vi)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 508,
+      "absoluteError": {
+        "max": 0.005450347785460163,
+        "rms": 0.0020083274736949447
+      },
+      "relativeError": {
+        "max": 2.9010188300742694,
+        "rms": 0.1288558298754833,
+        "sampleCount": 507,
+        "excludedZeroReferences": 1
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 508,
+      "absoluteError": {
+        "max": 0.005450347785460163,
+        "rms": 0.0020083274736949447
+      },
+      "relativeError": {
+        "max": 2.9010188300742694,
+        "rms": 0.1288558298754833,
+        "sampleCount": 507,
+        "excludedZeroReferences": 1
+      }
+    }
+  },
+  {
+    "fixture": "inverter_transient_ekv26",
+    "sweep": "0",
+    "signal": "v(1)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 508,
+      "absoluteError": {
+        "max": 2.1018845084899613,
+        "rms": 0.6315765637533083
+      },
+      "relativeError": {
+        "max": 0.8526873274803073,
+        "rms": 0.4040473124864039,
+        "sampleCount": 508,
+        "excludedZeroReferences": 0
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 508,
+      "absoluteError": {
+        "max": 0.009439292643472541,
+        "rms": 0.0013536954953065968
+      },
+      "relativeError": {
+        "max": 0.014711505094909429,
+        "rms": 0.0017708559411914854,
+        "sampleCount": 508,
+        "excludedZeroReferences": 0
+      }
+    }
+  },
+  {
+    "fixture": "inverter_transient_ekv26",
+    "sweep": "0",
+    "signal": "i(vdd)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 508,
+      "absoluteError": {
+        "max": 5.391988726337399e-05,
+        "rms": 2.163308144439275e-05
+      },
+      "relativeError": {
+        "max": 0.9257236365800372,
+        "rms": 0.4849136535981116,
+        "sampleCount": 508,
+        "excludedZeroReferences": 0
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 508,
+      "absoluteError": {
+        "max": 1.357203722603362e-06,
+        "rms": 1.2180616427720954e-07
+      },
+      "relativeError": {
+        "max": 0.3064559439027097,
+        "rms": 0.02433993927557496,
+        "sampleCount": 508,
+        "excludedZeroReferences": 0
+      }
+    }
+  },
+  {
+    "fixture": "corpus-g/ekv26-inverter-transient-ekv26-cir",
+    "sweep": "all",
+    "signal": "v(vi)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 508,
+      "absoluteError": {
+        "max": 0.005450347785460163,
+        "rms": 0.0020083274736949447
+      },
+      "relativeError": {
+        "max": 2.9010188300742694,
+        "rms": 0.1288558298754833,
+        "sampleCount": 507,
+        "excludedZeroReferences": 1
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 508,
+      "absoluteError": {
+        "max": 0.005450347785460163,
+        "rms": 0.0020083274736949447
+      },
+      "relativeError": {
+        "max": 2.9010188300742694,
+        "rms": 0.1288558298754833,
+        "sampleCount": 507,
+        "excludedZeroReferences": 1
+      }
+    }
+  },
+  {
+    "fixture": "corpus-g/ekv26-inverter-transient-ekv26-cir",
+    "sweep": "all",
+    "signal": "v(1)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 508,
+      "absoluteError": {
+        "max": 2.1018845084899613,
+        "rms": 0.6315765637533083
+      },
+      "relativeError": {
+        "max": 0.8526873274803073,
+        "rms": 0.4040473124864039,
+        "sampleCount": 508,
+        "excludedZeroReferences": 0
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 508,
+      "absoluteError": {
+        "max": 0.009439292643472541,
+        "rms": 0.0013536954953065968
+      },
+      "relativeError": {
+        "max": 0.014711505094909429,
+        "rms": 0.0017708559411914854,
+        "sampleCount": 508,
+        "excludedZeroReferences": 0
+      }
+    }
+  },
+  {
+    "fixture": "corpus-g/ekv26-inverter-transient-ekv26-cir",
+    "sweep": "all",
+    "signal": "i(vdd)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 508,
+      "absoluteError": {
+        "max": 5.391988726337399e-05,
+        "rms": 2.163308144439275e-05
+      },
+      "relativeError": {
+        "max": 0.9257236365800372,
+        "rms": 0.4849136535981116,
+        "sampleCount": 508,
+        "excludedZeroReferences": 0
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 508,
+      "absoluteError": {
+        "max": 1.357203722603362e-06,
+        "rms": 1.2180616427720954e-07
+      },
+      "relativeError": {
+        "max": 0.3064559439027097,
+        "rms": 0.02433993927557496,
+        "sampleCount": 508,
+        "excludedZeroReferences": 0
+      }
+    }
+  },
+  {
+    "fixture": "corpus-g/ekv26-inverter-transient-ekv26-cir",
+    "sweep": "0",
+    "signal": "v(vi)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 508,
+      "absoluteError": {
+        "max": 0.005450347785460163,
+        "rms": 0.0020083274736949447
+      },
+      "relativeError": {
+        "max": 2.9010188300742694,
+        "rms": 0.1288558298754833,
+        "sampleCount": 507,
+        "excludedZeroReferences": 1
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 508,
+      "absoluteError": {
+        "max": 0.005450347785460163,
+        "rms": 0.0020083274736949447
+      },
+      "relativeError": {
+        "max": 2.9010188300742694,
+        "rms": 0.1288558298754833,
+        "sampleCount": 507,
+        "excludedZeroReferences": 1
+      }
+    }
+  },
+  {
+    "fixture": "corpus-g/ekv26-inverter-transient-ekv26-cir",
+    "sweep": "0",
+    "signal": "v(1)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 508,
+      "absoluteError": {
+        "max": 2.1018845084899613,
+        "rms": 0.6315765637533083
+      },
+      "relativeError": {
+        "max": 0.8526873274803073,
+        "rms": 0.4040473124864039,
+        "sampleCount": 508,
+        "excludedZeroReferences": 0
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 508,
+      "absoluteError": {
+        "max": 0.009439292643472541,
+        "rms": 0.0013536954953065968
+      },
+      "relativeError": {
+        "max": 0.014711505094909429,
+        "rms": 0.0017708559411914854,
+        "sampleCount": 508,
+        "excludedZeroReferences": 0
+      }
+    }
+  },
+  {
+    "fixture": "corpus-g/ekv26-inverter-transient-ekv26-cir",
+    "sweep": "0",
+    "signal": "i(vdd)",
+    "before": {
+      "status": "compared",
+      "sampleCount": 508,
+      "absoluteError": {
+        "max": 5.391988726337399e-05,
+        "rms": 2.163308144439275e-05
+      },
+      "relativeError": {
+        "max": 0.9257236365800372,
+        "rms": 0.4849136535981116,
+        "sampleCount": 508,
+        "excludedZeroReferences": 0
+      }
+    },
+    "after": {
+      "status": "compared",
+      "sampleCount": 508,
+      "absoluteError": {
+        "max": 1.357203722603362e-06,
+        "rms": 1.2180616427720954e-07
+      },
+      "relativeError": {
+        "max": 0.3064559439027097,
+        "rms": 0.02433993927557496,
+        "sampleCount": 508,
+        "excludedZeroReferences": 0
+      }
+    }
+  }
+]
