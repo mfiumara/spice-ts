@@ -3,6 +3,8 @@ import { parseNumber } from './tokenizer.js';
 import { parseVdmosModelCard, VDMOS_MODEL_TYPES } from '../devices/vdmos-model.js';
 import { isNgspiceBjtName, selectsNgspiceBjt } from '../devices/bjt-ngspice-parameters.js';
 import { classifyModelFlag, modelFlagParameters, UnsupportedModelFlagError } from './model-flags.js';
+import { ignoredPspiceTemperatureWarning, translatePspiceModelTemperatures } from './pspice-model-temperature.js';
+import { UnsupportedModelParameterError } from '../errors.js';
 
 function tryNumber(token: string): number | undefined {
   try {
@@ -57,14 +59,30 @@ function ngspiceModelLevel(level: number): { level: number; outOfRange: boolean 
  * - stray numbers, which it ignores.
  * Any other bare token raises {@link UnsupportedModelFlagError} instead of
  * being dropped.
+ *
+ * PSpice `T_ABS`/`T_REL_GLOBAL`/`T_MEASURED` are first renamed to
+ * `TEMP`/`DTEMP`/`TNOM` as ngspice-47 inpcompat.c does (see
+ * {@link translatePspiceModelTemperatures}); a resulting TEMP/DTEMP on a
+ * non-resistor model throws {@link UnsupportedModelParameterError}.
  */
 export function parseModelCard(
-  tokens: string[],
+  rawTokens: string[],
   lineNumber: number,
   warn?: (message: string) => void,
 ): ModelParams {
-  const name = tokens[1];
-  const type = tokens[2].toUpperCase();
+  const name = rawTokens[1];
+  const type = rawTokens[2].toUpperCase();
+  const temperatures = translatePspiceModelTemperatures(rawTokens.slice(3));
+  const tokens = [...rawTokens.slice(0, 3), ...temperatures.body];
+  if (temperatures.ignored.length > 0) warn?.(ignoredPspiceTemperatureWarning(name, type, temperatures.ignored));
+  const { translated } = temperatures;
+  if (translated !== undefined && translated.to !== 'TNOM' && type !== 'R' && type !== 'RES') {
+    // A model TEMP/DTEMP is an instance default (inpgmod.c) that spice-ts
+    // applies to resistors only; reject it rather than run at the circuit temperature.
+    throw new UnsupportedModelParameterError('', translated.from, `ngspice-47 inpcompat.c renames it to `
+      + `'${translated.to.toLowerCase()}', a default instance temperature, which spice-ts applies to `
+      + 'resistor (R/RES) models only', { modelName: name, model: type });
+  }
   if (VDMOS_MODEL_TYPES.has(type)) return parseVdmosModelCard(tokens);
   const params: Record<string, number> = {};
   let version: string | undefined;

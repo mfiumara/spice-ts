@@ -10,6 +10,10 @@ export interface ResistorParameters {
   tce?: number;
   /** Nominal temperature in °C (default 27). */
   tnom?: number;
+  /** Instance temperature `TEMP` in °C; replaces the circuit temperature and ignores `DTEMP`. */
+  temperature?: number;
+  /** Instance `DTEMP` in °C, added to the circuit temperature when no `TEMP` is given. */
+  deltaTemperature?: number;
   /** Parallel multiplier `M` (default 1). */
   multiplier?: number;
   /** Instance `SCALE` factor (default 1). */
@@ -96,19 +100,26 @@ export class Resistor implements DeviceModel {
     this.applyTemperature();
   }
 
+  /** Set the circuit temperature (°C); an instance `TEMP` still overrides it. */
   setTemperature(value: number): void {
     this.temperature = value;
     this.applyTemperature();
   }
 
+  /**
+   * Instance temperature in °C (ngspice REStemp + RESdtemp, restemp.c): the
+   * instance `TEMP` if given, else the circuit temperature plus `DTEMP`. It
+   * sets both the TC1/TC2/TCE resistance and the thermal noise (resnoise.c).
+   */
   getTemperature(): number {
-    return this.temperature;
+    const { temperature, deltaTemperature = 0 } = this.parameters;
+    return temperature ?? this.temperature + deltaTemperature;
   }
 
   // ngspice-47 restemp.c RESupdate_conduct.
   private applyTemperature(): void {
     const { tc1 = 0, tc2 = 0, tce, tnom = 27, multiplier = 1, scale = 1, acResistance } = this.parameters;
-    const delta = this.temperature - tnom;
+    const delta = this.getTemperature() - tnom;
     const factor = tce !== undefined
       ? Math.pow(1.01, tce * delta)
       : ((tc2 * delta) + tc1) * delta + 1;

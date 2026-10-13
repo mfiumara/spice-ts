@@ -18,9 +18,14 @@ wins, then `RSH*(L-2*SHORT)/(W-2*NARROW)` when `L*W*RSH > 0`, then the model
 `G = M / (R * factor * SCALE)`; any `TCE` (instance or model) selects
 `factor = 1.01^(TCE*dT)`, otherwise `1 + TC1*dT + TC2*dT^2`. Thermal noise
 uses the DC conductance even when `ac=` is given (as ngspice does).
+Instance `temp=`/`dtemp=` (or their `.model` defaults, including PSpice
+`T_ABS`/`T_REL_GLOBAL` as ngspice-47 inpcompat.c translates them, #846) set the
+instance temperature used by both the factor and the thermal noise; a given
+`temp` ignores `dtemp` (restemp.c). An instance-line `temp=`/`dtemp=` combined
+with a non-nominal `.options TEMP` is still rejected.
 
 Still rejected with a typed `UnsupportedResistorParameterError`
-(`code: 'UNSUPPORTED_RESISTOR_PARAMETER'`): instance `temp=`/`dtemp=`, unknown
+(`code: 'UNSUPPORTED_RESISTOR_PARAMETER'`): unknown
 keywords, unknown `.model R` parameters, and quoted/brace expression values
 such as the behavioral `R = 'res + 0.033*res*V(r2)'`. `.noise` with a resistor
 model `kf != 0` (1/f noise), `.disto` with an `ac=` resistor and AC `.sens`

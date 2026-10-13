@@ -213,9 +213,9 @@ function resistorNoiseSources(devices: DeviceModel[]): Array<{ positive: number;
 
 /**
  * The circuit temperature (CKTtemp) in kelvin. Resistors are the only `.sp`
- * noise sources and always run at it (instance TEMP/DTEMP is rejected at
- * compile; `.options temp` sets every resistor), so their
- * temperature is the one ngspice span.c normalizes Cy with.
+ * noise sources and `.options temp` sets every resistor, so their common
+ * temperature is the one ngspice span.c normalizes Cy with. A resistor at its
+ * own TEMP/DTEMP (instance or `.model` default, #846) breaks that and is rejected.
  */
 function circuitKelvin(devices: DeviceModel[]): number {
   const temperatures = new Set(devices
