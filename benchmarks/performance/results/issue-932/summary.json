@@ -1,0 +1,1477 @@
+{
+  "statusCounts": {
+    "ok": 66,
+    "timeout": 6,
+    "failed": 0,
+    "budget-skipped": 0
+  },
+  "actualChildWallSeconds": 427.8722589179961,
+  "isolatedBitIdenticalPairs": 18,
+  "controlBitIdenticalPairs": 51,
+  "groups": [
+    {
+      "mode": "isolate",
+      "circuit": "resistor-mesh-op",
+      "size": 1000,
+      "variant": "baseline",
+      "phase": "cold",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "factorMs": {
+          "count": 3,
+          "median": 10.600999999999999,
+          "min": 9.772084000000007,
+          "max": 11.321333000000003
+        },
+        "solveMs": {
+          "count": 3,
+          "median": 0.8489580000000032,
+          "min": 0.7277910000000034,
+          "max": 1.3303750000000036
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 66.765625,
+          "min": 66.546875,
+          "max": 66.84375
+        },
+        "factorCpuMs": {
+          "count": 3,
+          "median": 29.696,
+          "min": 26.759,
+          "max": 30.854
+        }
+      }
+    },
+    {
+      "mode": "isolate",
+      "circuit": "resistor-mesh-op",
+      "size": 1000,
+      "variant": "baseline",
+      "phase": "warm",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "factorMs": {
+          "count": 3,
+          "median": 1.5338330000000013,
+          "min": 1.3734579999999994,
+          "max": 1.6370409999999964
+        },
+        "solveMs": {
+          "count": 3,
+          "median": 0.6947910000000022,
+          "min": 0.6652920000000009,
+          "max": 0.6987909999999999
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 67.390625,
+          "min": 67.171875,
+          "max": 67.78125
+        },
+        "factorCpuMs": {
+          "count": 3,
+          "median": 3.269,
+          "min": 1.639,
+          "max": 3.678
+        }
+      }
+    },
+    {
+      "mode": "isolate",
+      "circuit": "resistor-mesh-op",
+      "size": 1000,
+      "variant": "diagnostic",
+      "phase": "cold",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "factorMs": {
+          "count": 3,
+          "median": 14.375250000000001,
+          "min": 12.647416,
+          "max": 14.479500000000002
+        },
+        "solveMs": {
+          "count": 3,
+          "median": 1.1185410000000005,
+          "min": 0.7488329999999976,
+          "max": 1.2452910000000017
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 66.484375,
+          "min": 66.3125,
+          "max": 66.6875
+        },
+        "factorCpuMs": {
+          "count": 3,
+          "median": 38.575,
+          "min": 35.703,
+          "max": 39.538
+        },
+        "touchesMs": {
+          "count": 3,
+          "median": 1.37566199999997,
+          "min": 1.233198999999928,
+          "max": 1.4536619999999871
+        },
+        "touchesCpuMs": {
+          "count": 3,
+          "median": 2.935,
+          "min": 2.275,
+          "max": 3.277
+        },
+        "triangularMs": {
+          "count": 3,
+          "median": 2.0972440000001527,
+          "min": 1.8754730000000492,
+          "max": 2.098072000000016
+        },
+        "triangularCpuMs": {
+          "count": 3,
+          "median": 5.722,
+          "min": 5.457,
+          "max": 7.979
+        },
+        "rowsMs": {
+          "count": 3,
+          "median": 4.799142000000032,
+          "min": 4.394410000000079,
+          "max": 4.865573999999846
+        },
+        "rowsCpuMs": {
+          "count": 3,
+          "median": 11.705,
+          "min": 10.036,
+          "max": 14.867
+        }
+      }
+    },
+    {
+      "mode": "isolate",
+      "circuit": "resistor-mesh-op",
+      "size": 1000,
+      "variant": "diagnostic",
+      "phase": "warm",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "factorMs": {
+          "count": 3,
+          "median": 9.058250000000001,
+          "min": 7.892040999999999,
+          "max": 9.62666699999999
+        },
+        "solveMs": {
+          "count": 3,
+          "median": 0.6836250000000064,
+          "min": 0.5655830000000037,
+          "max": 0.6971249999999998
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 67.359375,
+          "min": 67.25,
+          "max": 67.59375
+        },
+        "factorCpuMs": {
+          "count": 3,
+          "median": 24.066,
+          "min": 20.456,
+          "max": 24.255
+        },
+        "touchesMs": {
+          "count": 3,
+          "median": 1.2661479999999798,
+          "min": 1.108529000000047,
+          "max": 1.4073360000000577
+        },
+        "touchesCpuMs": {
+          "count": 3,
+          "median": 3.54,
+          "min": 1.227,
+          "max": 3.728
+        },
+        "triangularMs": {
+          "count": 3,
+          "median": 2.026378000000122,
+          "min": 1.8003619999999643,
+          "max": 2.029459000000031
+        },
+        "triangularCpuMs": {
+          "count": 3,
+          "median": 4.804,
+          "min": 3.186,
+          "max": 5.244
+        },
+        "rowsMs": {
+          "count": 3,
+          "median": 4.370873999999915,
+          "min": 3.713428999999934,
+          "max": 4.5976229999999205
+        },
+        "rowsCpuMs": {
+          "count": 3,
+          "median": 12.387,
+          "min": 9.544,
+          "max": 12.55
+        }
+      }
+    },
+    {
+      "mode": "isolate",
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "variant": "baseline",
+      "phase": "cold",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "factorMs": {
+          "count": 3,
+          "median": 61.57925,
+          "min": 51.866958000000004,
+          "max": 62.211332999999996
+        },
+        "solveMs": {
+          "count": 3,
+          "median": 2.777249999999981,
+          "min": 2.683499999999995,
+          "max": 2.942292000000009
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 83.234375,
+          "min": 83.03125,
+          "max": 83.265625
+        },
+        "factorCpuMs": {
+          "count": 3,
+          "median": 109.521,
+          "min": 90.267,
+          "max": 112.034
+        }
+      }
+    },
+    {
+      "mode": "isolate",
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "variant": "baseline",
+      "phase": "warm",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "factorMs": {
+          "count": 3,
+          "median": 22.12579199999999,
+          "min": 20.055207999999993,
+          "max": 22.129917000000006
+        },
+        "solveMs": {
+          "count": 3,
+          "median": 0.6370000000000005,
+          "min": 0.5620000000000118,
+          "max": 0.7686250000000143
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 97.34375,
+          "min": 97.078125,
+          "max": 100.640625
+        },
+        "factorCpuMs": {
+          "count": 3,
+          "median": 23.645,
+          "min": 21.271,
+          "max": 23.674
+        }
+      }
+    },
+    {
+      "mode": "isolate",
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "variant": "diagnostic",
+      "phase": "cold",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "factorMs": {
+          "count": 3,
+          "median": 91.56370799999999,
+          "min": 87.336625,
+          "max": 92.46945899999999
+        },
+        "solveMs": {
+          "count": 3,
+          "median": 2.859000000000009,
+          "min": 2.4350000000000023,
+          "max": 3.0374169999999765
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 83.40625,
+          "min": 83.296875,
+          "max": 83.75
+        },
+        "factorCpuMs": {
+          "count": 3,
+          "median": 144.649,
+          "min": 134.137,
+          "max": 145.165
+        },
+        "touchesMs": {
+          "count": 3,
+          "median": 10.856142999998752,
+          "min": 10.580941000000948,
+          "max": 10.905577999999167
+        },
+        "touchesCpuMs": {
+          "count": 3,
+          "median": 16.529,
+          "min": 11.849,
+          "max": 18.164
+        },
+        "triangularMs": {
+          "count": 3,
+          "median": 12.543049000000153,
+          "min": 12.476945999999643,
+          "max": 12.96448800000097
+        },
+        "triangularCpuMs": {
+          "count": 3,
+          "median": 18.663,
+          "min": 18.302,
+          "max": 22.621
+        },
+        "rowsMs": {
+          "count": 3,
+          "median": 33.7516740000012,
+          "min": 33.00048499999943,
+          "max": 33.83129499999775
+        },
+        "rowsCpuMs": {
+          "count": 3,
+          "median": 37.582,
+          "min": 36.033,
+          "max": 43.209
+        }
+      }
+    },
+    {
+      "mode": "isolate",
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "variant": "diagnostic",
+      "phase": "warm",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "factorMs": {
+          "count": 3,
+          "median": 58.482958999999994,
+          "min": 58.45912500000003,
+          "max": 59.853375
+        },
+        "solveMs": {
+          "count": 3,
+          "median": 0.7083329999999819,
+          "min": 0.5827909999999861,
+          "max": 0.7219580000000292
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 98.265625,
+          "min": 97.734375,
+          "max": 98.921875
+        },
+        "factorCpuMs": {
+          "count": 3,
+          "median": 69.161,
+          "min": 67.65,
+          "max": 70.754
+        },
+        "touchesMs": {
+          "count": 3,
+          "median": 10.058800000001469,
+          "min": 9.835392999998191,
+          "max": 10.188053999999426
+        },
+        "touchesCpuMs": {
+          "count": 3,
+          "median": 10.628,
+          "min": 10.474,
+          "max": 14.6
+        },
+        "triangularMs": {
+          "count": 3,
+          "median": 11.404244000001,
+          "min": 11.113683000000151,
+          "max": 11.568793000000625
+        },
+        "triangularCpuMs": {
+          "count": 3,
+          "median": 14.36,
+          "min": 12.365,
+          "max": 18.808
+        },
+        "rowsMs": {
+          "count": 3,
+          "median": 25.664773999998403,
+          "min": 25.266770000002566,
+          "max": 26.23110000000142
+        },
+        "rowsCpuMs": {
+          "count": 3,
+          "median": 19.471,
+          "min": 19.253,
+          "max": 21.125
+        }
+      }
+    },
+    {
+      "mode": "isolate",
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "variant": "baseline",
+      "phase": "cold",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "factorMs": {
+          "count": 3,
+          "median": 281.09225000000004,
+          "min": 265.70054100000004,
+          "max": 283.89725
+        },
+        "solveMs": {
+          "count": 3,
+          "median": 6.9306250000000205,
+          "min": 6.481459000000029,
+          "max": 7.247292000000016
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 201.265625,
+          "min": 201.234375,
+          "max": 203.078125
+        },
+        "factorCpuMs": {
+          "count": 3,
+          "median": 333.431,
+          "min": 319.163,
+          "max": 336.405
+        }
+      }
+    },
+    {
+      "mode": "isolate",
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "variant": "baseline",
+      "phase": "warm",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "factorMs": {
+          "count": 3,
+          "median": 240.14366699999994,
+          "min": 233.38075000000003,
+          "max": 242.87491699999998
+        },
+        "solveMs": {
+          "count": 3,
+          "median": 7.519957999999974,
+          "min": 7.485584000000017,
+          "max": 7.5524580000000014
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 228.265625,
+          "min": 219.953125,
+          "max": 228.4375
+        },
+        "factorCpuMs": {
+          "count": 3,
+          "median": 249.768,
+          "min": 243.736,
+          "max": 260.399
+        }
+      }
+    },
+    {
+      "mode": "isolate",
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "variant": "diagnostic",
+      "phase": "cold",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "factorMs": {
+          "count": 3,
+          "median": 525.9755,
+          "min": 487.190167,
+          "max": 559.391709
+        },
+        "solveMs": {
+          "count": 3,
+          "median": 7.457084000000009,
+          "min": 7.28654199999994,
+          "max": 7.50262500000008
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 202.328125,
+          "min": 202.203125,
+          "max": 203.09375
+        },
+        "factorCpuMs": {
+          "count": 3,
+          "median": 591.025,
+          "min": 545.991,
+          "max": 627.877
+        },
+        "touchesMs": {
+          "count": 3,
+          "median": 69.26955899999265,
+          "min": 61.35748400000719,
+          "max": 72.0519910000028
+        },
+        "touchesCpuMs": {
+          "count": 3,
+          "median": 79.753,
+          "min": 68.573,
+          "max": 80.308
+        },
+        "triangularMs": {
+          "count": 3,
+          "median": 101.2150690000069,
+          "min": 91.66574099999787,
+          "max": 109.65658700000617
+        },
+        "triangularCpuMs": {
+          "count": 3,
+          "median": 107.384,
+          "min": 94.603,
+          "max": 116.101
+        },
+        "rowsMs": {
+          "count": 3,
+          "median": 231.95585600000442,
+          "min": 214.45177600000343,
+          "max": 246.66015700000628
+        },
+        "rowsCpuMs": {
+          "count": 3,
+          "median": 190.351,
+          "min": 176.657,
+          "max": 204.962
+        }
+      }
+    },
+    {
+      "mode": "isolate",
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "variant": "diagnostic",
+      "phase": "warm",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "factorMs": {
+          "count": 3,
+          "median": 472.08233299999995,
+          "min": 428.6701670000001,
+          "max": 606.8877090000001
+        },
+        "solveMs": {
+          "count": 3,
+          "median": 7.079750000000104,
+          "min": 6.218583000000081,
+          "max": 9.173291999999947
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 230.3125,
+          "min": 228.328125,
+          "max": 240.65625
+        },
+        "factorCpuMs": {
+          "count": 3,
+          "median": 487.631,
+          "min": 444.123,
+          "max": 641.592
+        },
+        "touchesMs": {
+          "count": 3,
+          "median": 67.5731150000106,
+          "min": 58.61374900000442,
+          "max": 83.0202059999591
+        },
+        "touchesCpuMs": {
+          "count": 3,
+          "median": 70.639,
+          "min": 59.457,
+          "max": 85.961
+        },
+        "triangularMs": {
+          "count": 3,
+          "median": 95.11793899999395,
+          "min": 86.62774600000898,
+          "max": 122.60813000001986
+        },
+        "triangularCpuMs": {
+          "count": 3,
+          "median": 97.453,
+          "min": 89.079,
+          "max": 130.551
+        },
+        "rowsMs": {
+          "count": 3,
+          "median": 217.22917999999345,
+          "min": 197.78055999997082,
+          "max": 273.6755350000125
+        },
+        "rowsCpuMs": {
+          "count": 3,
+          "median": 167.013,
+          "min": 155.969,
+          "max": 212.841
+        }
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "rc-ladder-tran",
+      "size": 1000,
+      "variant": "baseline",
+      "phase": "cold",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "simulateMs": {
+          "count": 3,
+          "median": 114.48162500000001,
+          "min": 94.86154200000001,
+          "max": 123.31366700000001
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 87.6875,
+          "min": 87,
+          "max": 87.921875
+        }
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "rc-ladder-tran",
+      "size": 1000,
+      "variant": "baseline",
+      "phase": "warm",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "simulateMs": {
+          "count": 3,
+          "median": 76.319083,
+          "min": 65.328375,
+          "max": 79.939584
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 105.90625,
+          "min": 105.671875,
+          "max": 113.390625
+        }
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "rc-ladder-tran",
+      "size": 1000,
+      "variant": "control",
+      "phase": "cold",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "simulateMs": {
+          "count": 3,
+          "median": 113.721375,
+          "min": 98.952625,
+          "max": 124.029791
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 87.5,
+          "min": 87.484375,
+          "max": 88.109375
+        }
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "rc-ladder-tran",
+      "size": 1000,
+      "variant": "control",
+      "phase": "warm",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "simulateMs": {
+          "count": 3,
+          "median": 77.642875,
+          "min": 66.105042,
+          "max": 92.66337499999997
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 109.390625,
+          "min": 107.140625,
+          "max": 114.78125
+        }
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "resistor-mesh-op",
+      "size": 1000,
+      "variant": "baseline",
+      "phase": "cold",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "simulateMs": {
+          "count": 3,
+          "median": 72.672167,
+          "min": 64.77683300000001,
+          "max": 78.362875
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 83.828125,
+          "min": 82.84375,
+          "max": 84.015625
+        }
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "resistor-mesh-op",
+      "size": 1000,
+      "variant": "baseline",
+      "phase": "warm",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "simulateMs": {
+          "count": 3,
+          "median": 34.92425,
+          "min": 29.238332999999997,
+          "max": 37.44033299999998
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 86.84375,
+          "min": 85.796875,
+          "max": 87.578125
+        }
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "resistor-mesh-op",
+      "size": 1000,
+      "variant": "control",
+      "phase": "cold",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "simulateMs": {
+          "count": 3,
+          "median": 70.35125000000001,
+          "min": 63.372625,
+          "max": 81.34016600000001
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 83.828125,
+          "min": 83.203125,
+          "max": 84.578125
+        }
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "resistor-mesh-op",
+      "size": 1000,
+      "variant": "control",
+      "phase": "warm",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "simulateMs": {
+          "count": 3,
+          "median": 33.83679199999999,
+          "min": 29.040042,
+          "max": 36.977000000000004
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 86.578125,
+          "min": 86.171875,
+          "max": 87.21875
+        }
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 1000,
+      "variant": "baseline",
+      "phase": "cold",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "simulateMs": {
+          "count": 3,
+          "median": 431.207916,
+          "min": 380.37291600000003,
+          "max": 584.6630829999999
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 125.484375,
+          "min": 124.546875,
+          "max": 127.28125
+        }
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 1000,
+      "variant": "baseline",
+      "phase": "warm",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "simulateMs": {
+          "count": 3,
+          "median": 289.58625,
+          "min": 267.12262499999997,
+          "max": 366.69612499999994
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 146.75,
+          "min": 145.890625,
+          "max": 147.515625
+        }
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 1000,
+      "variant": "control",
+      "phase": "cold",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "simulateMs": {
+          "count": 3,
+          "median": 418.301917,
+          "min": 397.3725,
+          "max": 489.8135419999999
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 125.5,
+          "min": 125.375,
+          "max": 125.546875
+        }
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 1000,
+      "variant": "control",
+      "phase": "warm",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "simulateMs": {
+          "count": 3,
+          "median": 289.68904100000003,
+          "min": 286.79325,
+          "max": 406.86145799999997
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 146.75,
+          "min": 146.5625,
+          "max": 146.78125
+        }
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "rc-ladder-tran",
+      "size": 10000,
+      "variant": "baseline",
+      "phase": "cold",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "simulateMs": {
+          "count": 3,
+          "median": 486.127084,
+          "min": 458.343542,
+          "max": 573.9295830000001
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 197.53125,
+          "min": 190.546875,
+          "max": 198.234375
+        }
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "rc-ladder-tran",
+      "size": 10000,
+      "variant": "baseline",
+      "phase": "warm",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "simulateMs": {
+          "count": 3,
+          "median": 380.83329100000003,
+          "min": 352.24074999999993,
+          "max": 433.985458
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 229.46875,
+          "min": 225.59375,
+          "max": 265.015625
+        }
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "rc-ladder-tran",
+      "size": 10000,
+      "variant": "control",
+      "phase": "cold",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "simulateMs": {
+          "count": 3,
+          "median": 494.03229200000004,
+          "min": 489.90554199999997,
+          "max": 589.822958
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 194.859375,
+          "min": 187.984375,
+          "max": 196.953125
+        }
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "rc-ladder-tran",
+      "size": 10000,
+      "variant": "control",
+      "phase": "warm",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "simulateMs": {
+          "count": 3,
+          "median": 449.92891700000007,
+          "min": 344.8126249999999,
+          "max": 524.799875
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 256.75,
+          "min": 240.046875,
+          "max": 274.90625
+        }
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "variant": "baseline",
+      "phase": "cold",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "simulateMs": {
+          "count": 3,
+          "median": 522.086,
+          "min": 303.208375,
+          "max": 612.767583
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 150.3125,
+          "min": 147.234375,
+          "max": 151.53125
+        }
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "variant": "baseline",
+      "phase": "warm",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "simulateMs": {
+          "count": 3,
+          "median": 303.9013339999999,
+          "min": 235.12279200000006,
+          "max": 448.53537500000004
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 188.984375,
+          "min": 186.8125,
+          "max": 197.046875
+        }
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "variant": "control",
+      "phase": "cold",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "simulateMs": {
+          "count": 3,
+          "median": 366.010125,
+          "min": 308.409083,
+          "max": 525.7258750000001
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 150.359375,
+          "min": 149.640625,
+          "max": 152.125
+        }
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "variant": "control",
+      "phase": "warm",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "simulateMs": {
+          "count": 3,
+          "median": 299.195875,
+          "min": 228.26170799999994,
+          "max": 413.78108299999997
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 189.796875,
+          "min": 188.8125,
+          "max": 192.71875
+        }
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 10000,
+      "variant": "baseline",
+      "phase": "cold",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "simulateMs": {
+          "count": 3,
+          "median": 3284.9938340000003,
+          "min": 2879.23375,
+          "max": 4058.5523339999995
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 361.28125,
+          "min": 359.25,
+          "max": 364.390625
+        }
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 10000,
+      "variant": "baseline",
+      "phase": "warm",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "simulateMs": {
+          "count": 3,
+          "median": 3431.1487499999994,
+          "min": 2612.739458,
+          "max": 4237.110334
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 502.640625,
+          "min": 499.765625,
+          "max": 502.953125
+        }
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 10000,
+      "variant": "control",
+      "phase": "cold",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "simulateMs": {
+          "count": 3,
+          "median": 3916.5877499999997,
+          "min": 3200.8585,
+          "max": 5473.802124999999
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 361.484375,
+          "min": 360.9375,
+          "max": 364.28125
+        }
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 10000,
+      "variant": "control",
+      "phase": "warm",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "simulateMs": {
+          "count": 3,
+          "median": 3117.2475830000003,
+          "min": 2634.488458,
+          "max": 3261.621792
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 500.09375,
+          "min": 498.828125,
+          "max": 501.28125
+        }
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "rc-ladder-tran",
+      "size": 50000,
+      "variant": "baseline",
+      "phase": "cold",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "simulateMs": {
+          "count": 3,
+          "median": 2631.200042,
+          "min": 1597.0838749999998,
+          "max": 2674.852583
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 449.296875,
+          "min": 431.6875,
+          "max": 487.203125
+        }
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "rc-ladder-tran",
+      "size": 50000,
+      "variant": "baseline",
+      "phase": "warm",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "simulateMs": {
+          "count": 3,
+          "median": 2669.478792,
+          "min": 1471.895042,
+          "max": 3139.6314999999995
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 741.234375,
+          "min": 610.796875,
+          "max": 766.0625
+        }
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "rc-ladder-tran",
+      "size": 50000,
+      "variant": "control",
+      "phase": "cold",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "simulateMs": {
+          "count": 3,
+          "median": 2444.9345,
+          "min": 1599.681458,
+          "max": 2861.489833
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 486.421875,
+          "min": 453.5625,
+          "max": 498.625
+        }
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "rc-ladder-tran",
+      "size": 50000,
+      "variant": "control",
+      "phase": "warm",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "simulateMs": {
+          "count": 3,
+          "median": 2481.7891250000002,
+          "min": 1484.131166,
+          "max": 2770.4005
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 633.3125,
+          "min": 554.6875,
+          "max": 743.125
+        }
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "variant": "baseline",
+      "phase": "cold",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "simulateMs": {
+          "count": 3,
+          "median": 5758.513542000001,
+          "min": 1096.615917,
+          "max": 6084.388166
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 366.265625,
+          "min": 363.953125,
+          "max": 371.265625
+        }
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "variant": "baseline",
+      "phase": "warm",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "simulateMs": {
+          "count": 3,
+          "median": 3143.325333999999,
+          "min": 1047.118833,
+          "max": 5867.835125
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 565.1875,
+          "min": 558.671875,
+          "max": 566.75
+        }
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "variant": "control",
+      "phase": "cold",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "simulateMs": {
+          "count": 3,
+          "median": 6360.6143329999995,
+          "min": 1136.472958,
+          "max": 7368.405958
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 358.546875,
+          "min": 356.046875,
+          "max": 367.546875
+        }
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "variant": "control",
+      "phase": "warm",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "simulateMs": {
+          "count": 3,
+          "median": 6049.297417,
+          "min": 1123.5999169999998,
+          "max": 8606.657917
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 561.609375,
+          "min": 448.21875,
+          "max": 568.53125
+        }
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 50000,
+      "variant": "baseline",
+      "phase": "cold",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "simulateMs": {
+          "count": 3,
+          "median": 27196.965416,
+          "min": 24409.429541999998,
+          "max": 34675.2015
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 1122.53125,
+          "min": 1110.4375,
+          "max": 1144.5
+        }
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 50000,
+      "variant": "baseline",
+      "phase": "warm",
+      "scheduled": 3,
+      "completed": 0,
+      "metrics": {
+        "simulateMs": {
+          "count": 0,
+          "median": null,
+          "min": null,
+          "max": null
+        },
+        "peakRssMiB": {
+          "count": 0,
+          "median": null,
+          "min": null,
+          "max": null
+        }
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 50000,
+      "variant": "control",
+      "phase": "cold",
+      "scheduled": 3,
+      "completed": 3,
+      "metrics": {
+        "simulateMs": {
+          "count": 3,
+          "median": 33633.474959,
+          "min": 28508.731792,
+          "max": 37693.789917
+        },
+        "peakRssMiB": {
+          "count": 3,
+          "median": 1132.5,
+          "min": 1092.09375,
+          "max": 1132.640625
+        }
+      }
+    },
+    {
+      "mode": "simulate",
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 50000,
+      "variant": "control",
+      "phase": "warm",
+      "scheduled": 3,
+      "completed": 0,
+      "metrics": {
+        "simulateMs": {
+          "count": 0,
+          "median": null,
+          "min": null,
+          "max": null
+        },
+        "peakRssMiB": {
+          "count": 0,
+          "median": null,
+          "min": null,
+          "max": null
+        }
+      }
+    }
+  ]
+}

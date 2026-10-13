@@ -1,0 +1,32 @@
+{
+  "baselineRevision": "e1597e192c26a231dd576c668524d887b6e63844",
+  "localRevision": "f807cd8a3368d344a3a21a9ee17ea52a84bfa748",
+  "solverSha256": "7dcbee98ae9a88a98548bba6af24ac31a3bd3b87531f81f30b0206f5669f728d",
+  "bundles": {
+    "baseline.mjs": "2d3cf5c72e209651fbbe1abdb2d1b5cc79fedf2a4075c4446c5a52555b5c044c",
+    "control.mjs": "34336791ec3c49d96498173fbdb8b7899298a353e7356882b57da8b3955f2d2b",
+    "diagnostic.mjs": "606187bb3819d2e59a1e4277c46d9637960bea175afb103690a477110e5f90e6"
+  },
+  "instrumentation": [
+    [
+      "  private readonly pivotThreshold = 0.1;",
+      "  phase932 = { touchesMs: 0, triangularMs: 0, rowsMs: 0, touchesCpuUs: 0, triangularCpuUs: 0, rowsCpuUs: 0, calls: 0 };\n  private readonly pivotThreshold = 0.1;"
+    ],
+    [
+      "    // First touches, in the order applying column `first` alone would make them.",
+      "    const phaseStart932 = performance.now(), cpuStart932 = process.cpuUsage();\n    // First touches, in the order applying column `first` alone would make them."
+    ],
+    [
+      "    // Triangular part: U entries of the members and their mutual updates.",
+      "    const triangularStart932 = performance.now(), cpuTri932 = process.cpuUsage();\n    this.phase932.touchesMs += triangularStart932 - phaseStart932;\n    this.phase932.touchesCpuUs += cpuTri932.user + cpuTri932.system - cpuStart932.user - cpuStart932.system;\n    // Triangular part: U entries of the members and their mutual updates."
+    ],
+    [
+      "    // Rows below the supernode. Each row is one dependent chain of",
+      "    const rowsStart932 = performance.now(), cpuRows932 = process.cpuUsage();\n    this.phase932.triangularMs += rowsStart932 - triangularStart932;\n    this.phase932.triangularCpuUs += cpuRows932.user + cpuRows932.system - cpuTri932.user - cpuTri932.system;\n    // Rows below the supernode. Each row is one dependent chain of"
+    ],
+    [
+      "    state[2] = activeCount;\n  }",
+      "    state[2] = activeCount;\n    const cpuEnd932 = process.cpuUsage();\n    this.phase932.rowsMs += performance.now() - rowsStart932;\n    this.phase932.rowsCpuUs += cpuEnd932.user + cpuEnd932.system - cpuRows932.user - cpuRows932.system;\n    this.phase932.calls++;\n  }"
+    ]
+  ]
+}
