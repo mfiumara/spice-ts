@@ -1,0 +1,28 @@
+{
+  "argv": [
+    "pnpm",
+    "-C",
+    "packages/core",
+    "exec",
+    "tsc",
+    "--noEmit",
+    "--strict",
+    "--skipLibCheck",
+    "--module",
+    "NodeNext",
+    "--target",
+    "ES2022",
+    "--moduleResolution",
+    "NodeNext",
+    "--types",
+    "node",
+    "../../benchmarks/vendor-expanded-node-917/trace.mts",
+    "../../benchmarks/vendor-expanded-node-917/evidence.test.mts",
+    "../../benchmarks/vendor-expanded-node-917/parity-red.mts"
+  ],
+  "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+  "exit": 0,
+  "timedOut": false,
+  "limitSeconds": 29,
+  "wallSeconds": 3.6260823749999997
+}
