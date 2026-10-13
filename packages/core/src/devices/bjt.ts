@@ -8,6 +8,7 @@ import {
   assertNoUnsupportedTemperatureParameters, CONSTCTOK, CONSTKOVERQ, NOMINAL_TEMPERATURE_C,
   temperatureJunction,
 } from './junction-temperature.js';
+import { pnjlim } from './devsup.js';
 
 export interface BJTParams {
   LEVEL: number;
@@ -293,24 +294,6 @@ function limitJunctionStep(
     return Math.max(proposedVoltage, minimum);
   }
   return proposedVoltage;
-}
-
-/** ngspice-47 devsup.c DEVpnjlim. */
-function pnjlim(proposed: number, previous: number, thermalVoltage: number, criticalVoltage: number): number {
-  if (proposed > criticalVoltage && Math.abs(proposed - previous) > 2 * thermalVoltage) {
-    if (previous > 0) {
-      const ratio = (proposed - previous) / thermalVoltage;
-      return ratio > 0
-        ? previous + thermalVoltage * (2 + Math.log(ratio - 2))
-        : previous - thermalVoltage * (2 + Math.log(2 - ratio));
-    }
-    return thermalVoltage * Math.log(proposed / thermalVoltage);
-  }
-  if (proposed < 0) {
-    const minimum = previous > 0 ? -previous - 1 : 2 * previous - 1;
-    return Math.max(proposed, minimum);
-  }
-  return proposed;
 }
 
 function junctionStepScale(

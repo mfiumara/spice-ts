@@ -10,6 +10,7 @@ import {
   siliconBandGap, temperatureJunction,
 } from './junction-temperature.js';
 import { InvalidCircuitError, UnsupportedModelLevelError } from '../errors.js';
+import { fetlim, pnjlim } from './devsup.js';
 
 export interface MOSFETParams {
   LEVEL: number;
@@ -107,24 +108,6 @@ function bulkJunction(
   const expTerm = Math.exp(Math.min(MAX_EXP_ARG, voltage / vt));
   out[offset] = saturationCurrent * expTerm / vt + gmin;
   out[offset + 1] = saturationCurrent * (expTerm - 1) + gmin * voltage;
-}
-
-/** ngspice devsup.c DEVpnjlim: limit a junction voltage step from `previous`. */
-function pnjlim(proposed: number, previous: number, vt: number, criticalVoltage: number): number {
-  if (proposed > criticalVoltage && Math.abs(proposed - previous) > 2 * vt) {
-    if (previous > 0) {
-      const argument = (proposed - previous) / vt;
-      return argument > 0
-        ? previous + vt * (2 + Math.log(argument - 2))
-        : previous - vt * (2 + Math.log(2 - argument));
-    }
-    return vt * Math.log(proposed / vt);
-  }
-  if (proposed < 0) {
-    const floor = previous > 0 ? -previous - 1 : 2 * previous - 1;
-    return Math.max(proposed, floor);
-  }
-  return proposed;
 }
 
 function criticalVoltage(saturationCurrent: number, vt: number): number {
@@ -510,32 +493,6 @@ const LOAD_CD = 15;
 const LOAD_CBS = 16;
 const LOAD_CBD = 17;
 const LOAD_STRIDE = 18;
-
-/** ngspice devsup.c DEVfetlim: limit a gate voltage step around threshold `vto`. */
-function fetlim(vnew: number, vold: number, vto: number): number {
-  const vtsthi = Math.abs(2 * (vold - vto)) + 2;
-  const vtstlo = Math.abs(vold - vto) + 1;
-  const vtox = vto + 3.5;
-  const delv = vnew - vold;
-  if (vold >= vto) {
-    if (vold >= vtox) {
-      if (delv <= 0) {
-        // going off
-        if (vnew >= vtox) return -delv > vtstlo ? vold - vtstlo : vnew;
-        return Math.max(vnew, vto + 2);
-      }
-      // staying on
-      return delv >= vtsthi ? vold + vtsthi : vnew;
-    }
-    // middle region
-    return delv <= 0 ? Math.max(vnew, vto - 0.5) : Math.min(vnew, vto + 4);
-  }
-  // off
-  if (delv <= 0) return -delv > vtsthi ? vold - vtsthi : vnew;
-  const vtemp = vto + 0.5;
-  if (vnew <= vtemp) return delv > vtstlo ? vold + vtstlo : vnew;
-  return vtemp;
-}
 
 /**
  * Scale on a whole Newton step proposed for one MOS1 instance (D, G, S nodes,
