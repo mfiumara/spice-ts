@@ -88,10 +88,10 @@ function interpolate(time: number[], values: number[], at: number): number {
 
 describe('subcircuit call syntax', () => {
   it('finds the subcircuit name before the params: keyword', () => {
-    expect(locateSubcircuitCall(['X1', 'o', 'div', 'params:', 'k=1'])).toEqual({ nameIndex: 2, paramStart: 4 });
-    expect(locateSubcircuitCall(['X1', 'o', 'div', 'PARAMS:'])).toEqual({ nameIndex: 2, paramStart: 4 });
-    expect(locateSubcircuitCall(['X1', 'o', 'div', 'k=1'])).toEqual({ nameIndex: 2, paramStart: 3 });
-    expect(locateSubcircuitCall(['X1', 'a', 'b', 'div'])).toEqual({ nameIndex: 3, paramStart: 4 });
+    expect(locateSubcircuitCall(['X1', 'o', 'div', 'params:', 'k=1'])).toEqual({ nameIndex: 2, paramStart: 4, ports: ['o'] });
+    expect(locateSubcircuitCall(['X1', 'o', 'div', 'PARAMS:'])).toEqual({ nameIndex: 2, paramStart: 4, ports: ['o'] });
+    expect(locateSubcircuitCall(['X1', 'o', 'div', 'k=1'])).toEqual({ nameIndex: 2, paramStart: 3, ports: ['o'] });
+    expect(locateSubcircuitCall(['X1', 'a', 'b', 'div'])).toEqual({ nameIndex: 3, paramStart: 4, ports: ['a', 'b'] });
   });
 
   it('parses .subckt PARAMS: with numeric and expression defaults in order', () => {

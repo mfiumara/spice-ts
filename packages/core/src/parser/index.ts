@@ -1285,7 +1285,7 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number, raw
       // X<name> <port1> <port2> ... <subcktName> [params:] [param=val ...]
       const call = locateSubcircuitCall(tokens);
       const subcktName = tokens[call.nameIndex];
-      const ports = tokens.slice(1, call.nameIndex);
+      const ports = call.ports;
       const xParams = parseInstanceParams(tokens, call.paramStart);
       circuit.addSubcircuitInstance(name, ports, subcktName, xParams);
       break;
