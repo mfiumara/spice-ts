@@ -33,6 +33,27 @@ const NGSPICE_MISMATCHED: ReadonlyArray<{ time: number; node: string; value: num
 ];
 
 describe('bounded lossless transmission line transient execution', () => {
+  it('retains delayed history when distinct accepted steps are only 5 fs apart', async () => {
+    const result = await simulate(parse(`Short-step matched lossless line
+V1 source 0 PULSE(0 1 100f 10f 10f 10p 20p)
+RS source input 50
+T1 input 0 output 0 Z0=50 TD=500f
+RL output 0 50
+.tran 5f 2p 0 5f
+.end
+`));
+    const transient = result.transient!;
+    const output = transient.voltage('output');
+    // Stay clear of the quadratic interpolation stencil at the arrival edge.
+    const beforeArrival = output.filter((_value, index) => transient.time[index] < 580e-15);
+    expect(beforeArrival.length).toBeGreaterThan(0);
+    expect(Math.max(...beforeArrival.map(Math.abs))).toBe(0);
+    const settled = output.filter((_value, index) => transient.time[index] >= 700e-15);
+    expect(settled.length).toBeGreaterThan(0);
+    for (const value of settled) expect(value).toBeCloseTo(0.5, 9);
+    expect(output[output.length - 1]).toBeCloseTo(0.5, 9);
+  });
+
   it('commits only accepted history and stays zero before source edge plus TD', async () => {
     // The input capacitor's charge truncation rejects a trial step on the
     // source edge; a rejected trial must not enter the line's history.
