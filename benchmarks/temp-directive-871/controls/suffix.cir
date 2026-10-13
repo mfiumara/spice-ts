@@ -1,0 +1,8 @@
+temp directive suffix
+V1 a 0 1
+R1 a 0 {1000+temper}
+B1 b 0 V=temper
+R2 b 0 1k
+.temp 77C
+.op
+.end

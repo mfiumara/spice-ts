@@ -1,0 +1,220 @@
+
+> spice-ts@ build /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_14be5ed0
+> pnpm -r build
+
+Scope: 9 of 10 workspace projects
+packages/core build$ tsup
+packages/protocol build$ tsup
+packages/core build: CLI Building entry: {"index":"src/index.ts","step-worker":"src/analysis/step-worker.ts","step-worker-browser":"src/analysis/step-worker-browser.ts"}
+packages/core build: CLI Using tsconfig: tsconfig.json
+packages/core build: CLI tsup v8.5.1
+packages/core build: CLI Using tsup config: /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_14be5ed0/packages/core/tsup.config.ts
+packages/core build: CLI Target: es2022
+packages/protocol build: CLI Building entry: src/index.ts
+packages/protocol build: CLI Using tsconfig: tsconfig.json
+packages/protocol build: CLI tsup v8.5.1
+packages/protocol build: CLI Using tsup config: /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_14be5ed0/packages/protocol/tsup.config.ts
+packages/protocol build: CLI Target: es2022
+packages/protocol build: CLI Cleaning output folder
+packages/core build: CLI Cleaning output folder
+packages/core build: ESM Build start
+packages/core build: CJS Build start
+packages/protocol build: ESM Build start
+packages/protocol build: CJS Build start
+packages/protocol build: CJS dist/index.cjs     29.60 KB
+packages/protocol build: CJS dist/index.cjs.map 51.42 KB
+packages/protocol build: CJS ⚡️ Build success in 11ms
+packages/protocol build: ESM dist/index.js     28.21 KB
+packages/protocol build: ESM dist/index.js.map 51.14 KB
+packages/protocol build: ESM ⚡️ Build success in 11ms
+packages/core build: ESM dist/index.js                   46.88 KB
+packages/core build: ESM dist/step-worker-browser.js     455.00 B
+packages/core build: ESM dist/chunk-WJ2GPCFW.js          557.00 B
+packages/core build: ESM dist/step-worker.js             546.00 B
+packages/core build: ESM dist/index.js.map               87.07 KB
+packages/core build: ESM dist/step-worker-browser.js.map 875.00 B
+packages/core build: ESM dist/step-worker.js.map         872.00 B
+packages/core build: ESM dist/chunk-WJ2GPCFW.js.map      1.15 KB
+packages/core build: ESM dist/chunk-BL2WAK4L.js          1.49 MB
+packages/core build: ESM dist/chunk-BL2WAK4L.js.map      3.21 MB
+packages/core build: ESM ⚡️ Build success in 112ms
+packages/core build:  WARN  [33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1m"import.meta" is not available with the "cjs" output format and will be empty[0m [empty-import-meta]
+packages/core build:     src/analysis/step-parallel.ts:114:27:
+packages/core build: [37m      114 │   return new URL(filename, [32mimport.meta[37m.url);
+packages/core build:           ╵                            [32m~~~~~~~~~~~[0m
+packages/core build:   You need to set the output format to "esm" for "import.meta" to work correctly.
+packages/core build: CJS dist/step-worker-browser.cjs     1.48 MB
+packages/core build: CJS dist/index.cjs                   1.54 MB
+packages/core build: CJS dist/step-worker.cjs             1.48 MB
+packages/core build: CJS dist/step-worker.cjs.map         3.21 MB
+packages/core build: CJS dist/step-worker-browser.cjs.map 3.21 MB
+packages/core build: CJS dist/index.cjs.map               3.30 MB
+packages/core build: CJS ⚡️ Build success in 191ms
+packages/protocol build: DTS Build start
+packages/core build: DTS Build start
+packages/protocol build: DTS ⚡️ Build success in 600ms
+packages/protocol build: DTS dist/index.d.ts  15.17 KB
+packages/protocol build: DTS dist/index.d.cts 15.17 KB
+packages/protocol build: Done
+packages/core build: DTS ⚡️ Build success in 3634ms
+packages/core build: DTS dist/step-worker.d.ts          13.00 B
+packages/core build: DTS dist/index.d.ts                138.72 KB
+packages/core build: DTS dist/step-worker-browser.d.ts  13.00 B
+packages/core build: DTS dist/step-worker.d.cts         13.00 B
+packages/core build: DTS dist/index.d.cts               138.72 KB
+packages/core build: DTS dist/step-worker-browser.d.cts 13.00 B
+packages/core build: Done
+packages/mcp build$ tsup
+packages/ui build$ tsup
+packages/circuit-json build$ tsup
+packages/wasm build$ tsx scripts/build.ts
+packages/ui build: CLI Building entry: {"index":"src/index.ts","react":"src/react/index.ts"}
+packages/ui build: CLI Using tsconfig: tsconfig.json
+packages/ui build: CLI tsup v8.5.1
+packages/ui build: CLI Using tsup config: /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_14be5ed0/packages/ui/tsup.config.ts
+packages/ui build: CLI Target: es2022
+packages/circuit-json build: CLI Building entry: src/index.ts
+packages/circuit-json build: CLI Using tsconfig: tsconfig.json
+packages/circuit-json build: CLI tsup v8.5.1
+packages/circuit-json build: CLI Using tsup config: /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_14be5ed0/packages/circuit-json/tsup.config.ts
+packages/mcp build: CLI Building entry: src/index.ts, src/stdio.ts
+packages/mcp build: CLI Using tsconfig: tsconfig.json
+packages/mcp build: CLI tsup v8.5.1
+packages/mcp build: CLI Using tsup config: /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_14be5ed0/packages/mcp/tsup.config.ts
+packages/circuit-json build: CLI Target: es2022
+packages/mcp build: CLI Target: es2022
+packages/ui build: CLI Cleaning output folder
+packages/ui build: ESM Build start
+packages/circuit-json build: CLI Cleaning output folder
+packages/ui build: CJS Build start
+packages/mcp build: CLI Cleaning output folder
+packages/circuit-json build: ESM Build start
+packages/circuit-json build: CJS Build start
+packages/mcp build: ESM Build start
+packages/mcp build: CJS Build start
+packages/circuit-json build: ESM dist/index.js     18.88 KB
+packages/circuit-json build: ESM dist/index.js.map 33.61 KB
+packages/circuit-json build: ESM ⚡️ Build success in 12ms
+packages/circuit-json build: CJS dist/index.cjs     19.91 KB
+packages/circuit-json build: CJS dist/index.cjs.map 33.66 KB
+packages/circuit-json build: CJS ⚡️ Build success in 13ms
+packages/mcp build:  WARN  [33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1m"import.meta" is not available with the "cjs" output format and will be empty[0m [empty-import-meta]
+packages/mcp build:     src/server.ts:1103:83:
+packages/mcp build: [37m      1103 │ ...(typeof __filename === 'string' ? __filename : [32mimport.meta[37m.url);
+packages/mcp build:            ╵                                                   [32m~~~~~~~~~~~[0m
+packages/mcp build:   You need to set the output format to "esm" for "import.meta" to work correctly.
+packages/mcp build: ESM dist/chunk-D7EDI3ZK.js     41.72 KB
+packages/mcp build: ESM dist/index.js              514.00 B
+packages/mcp build: ESM dist/stdio.js              336.00 B
+packages/mcp build: ESM dist/stdio.js.map          493.00 B
+packages/mcp build: ESM dist/chunk-D7EDI3ZK.js.map 77.13 KB
+packages/mcp build: ESM dist/index.js.map          71.00 B
+packages/mcp build: ESM ⚡️ Build success in 23ms
+packages/mcp build: CJS dist/index.cjs     43.33 KB
+packages/mcp build: CJS dist/stdio.cjs     41.85 KB
+packages/mcp build: CJS dist/index.cjs.map 77.17 KB
+packages/mcp build: CJS dist/stdio.cjs.map 77.42 KB
+packages/mcp build: CJS ⚡️ Build success in 23ms
+packages/ui build: ESM dist/react.js              35.21 KB
+packages/ui build: ESM dist/chunk-7WPA47FS.js     89.34 KB
+packages/ui build: ESM dist/index.js              50.79 KB
+packages/ui build: ESM dist/react.js.map          67.42 KB
+packages/ui build: ESM dist/chunk-7WPA47FS.js.map 201.85 KB
+packages/ui build: ESM dist/index.js.map          66.57 KB
+packages/ui build: ESM ⚡️ Build success in 31ms
+packages/ui build: CJS dist/react.cjs     125.02 KB
+packages/ui build: CJS dist/index.cjs     140.85 KB
+packages/ui build: CJS dist/index.cjs.map 268.09 KB
+packages/ui build: CJS dist/react.cjs.map 267.61 KB
+packages/ui build: CJS ⚡️ Build success in 31ms
+packages/mcp build: DTS Build start
+packages/ui build: DTS Build start
+packages/circuit-json build: DTS Build start
+packages/wasm build: CLI Building entry: {"worker":"src/worker.ts"}
+packages/wasm build: CLI Using tsconfig: tsconfig.json
+packages/wasm build: CLI tsup v8.5.1
+packages/wasm build: CLI Target: es2022
+packages/wasm build: ESM Build start
+packages/wasm build: ESM dist/worker.js     1.54 MB
+packages/wasm build: ESM dist/worker.js.map 3.27 MB
+packages/wasm build: ESM ⚡️ Build success in 222ms
+packages/wasm build: CLI Building entry: {"index":"src/index.ts"}
+packages/wasm build: CLI Using tsconfig: tsconfig.json
+packages/wasm build: CLI tsup v8.5.1
+packages/wasm build: CLI Target: es2022
+packages/wasm build: ESM Build start
+packages/wasm build: ESM dist/index.js     42.34 KB
+packages/wasm build: ESM dist/index.js.map 90.10 KB
+packages/wasm build: ESM ⚡️ Build success in 10ms
+packages/wasm build: DTS Build start
+packages/circuit-json build: DTS ⚡️ Build success in 960ms
+packages/circuit-json build: DTS dist/index.d.ts  968.00 B
+packages/circuit-json build: DTS dist/index.d.cts 968.00 B
+packages/circuit-json build: Done
+packages/wasm build: DTS ⚡️ Build success in 875ms
+packages/wasm build: DTS dist/index.d.ts 3.57 KB
+packages/mcp build: DTS ⚡️ Build success in 1815ms
+packages/mcp build: DTS dist/stdio.d.ts  13.00 B
+packages/mcp build: DTS dist/index.d.ts  3.06 KB
+packages/mcp build: DTS dist/stdio.d.cts 13.00 B
+packages/mcp build: DTS dist/index.d.cts 3.06 KB
+packages/mcp build: Done
+packages/wasm build: Done
+packages/ui build: DTS ⚡️ Build success in 2010ms
+packages/ui build: DTS dist/index.d.ts          15.35 KB
+packages/ui build: DTS dist/react.d.ts          7.67 KB
+packages/ui build: DTS dist/data-B7D7sotG.d.ts  3.03 KB
+packages/ui build: DTS dist/index.d.cts         15.35 KB
+packages/ui build: DTS dist/react.d.cts         7.68 KB
+packages/ui build: DTS dist/data-B7D7sotG.d.cts 3.03 KB
+packages/ui build: Done
+examples build$ tsc --noEmit
+examples/showcase build$ tsc --noEmit && vite build
+examples/editor build$ tsc --noEmit && vite build
+examples build: Done
+examples/editor build: vite v8.0.8 building client environment for production...
+examples/editor build: [2K
+examples/editor build: [plugin rolldown:vite-resolve] Module "node:worker_threads" has been externalized for browser compatibility, imported by "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_14be5ed0/packages/core/src/analysis/step-parallel.ts". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+examples/editor build: [plugin rolldown:vite-resolve] Module "node:url" has been externalized for browser compatibility, imported by "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_14be5ed0/packages/core/src/analysis/step-parallel.ts". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+examples/showcase build: vite v8.0.8 building client environment for production...
+examples/showcase build: [2K
+examples/showcase build: [plugin rolldown:vite-resolve] Module "node:worker_threads" has been externalized for browser compatibility, imported by "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_14be5ed0/packages/core/src/analysis/step-parallel.ts". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+examples/showcase build: [plugin rolldown:vite-resolve] Module "node:url" has been externalized for browser compatibility, imported by "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_14be5ed0/packages/core/src/analysis/step-parallel.ts". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+examples/editor build: [plugin rolldown:vite-resolve] Module "node:worker_threads" has been externalized for browser compatibility, imported by "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_14be5ed0/packages/core/src/analysis/step-parallel.ts". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+examples/editor build: [plugin rolldown:vite-resolve] Module "node:url" has been externalized for browser compatibility, imported by "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_14be5ed0/packages/core/src/analysis/step-parallel.ts". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+examples/editor build: transforming...✓ 359 modules transformed.
+examples/editor build: rendering chunks...
+examples/showcase build: [plugin rolldown:vite-resolve] Module "node:worker_threads" has been externalized for browser compatibility, imported by "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_14be5ed0/packages/core/src/analysis/step-parallel.ts". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+examples/showcase build: [plugin rolldown:vite-resolve] Module "node:url" has been externalized for browser compatibility, imported by "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_14be5ed0/packages/core/src/analysis/step-parallel.ts". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+examples/showcase build: transforming...✓ 359 modules transformed.
+examples/editor build: computing gzip size...
+examples/showcase build: rendering chunks...
+examples/showcase build: computing gzip size...
+examples/editor build: dist/index.html                                       0.59 kB │ gzip:     0.34 kB
+examples/editor build: dist/assets/step-worker-browser-DO5oImI2.js      20,942.68 kB
+examples/editor build: dist/assets/index-DQxVwsTD.css                        4.62 kB │ gzip:     1.42 kB
+examples/editor build: dist/assets/__vite-browser-external-CmG9GjjO.js       0.09 kB │ gzip:     0.10 kB
+examples/editor build: dist/assets/chunk-B3K2TuZy.js                         0.55 kB │ gzip:     0.35 kB
+examples/editor build: dist/assets/index-D4H_UYqU.js                       911.70 kB │ gzip:   299.09 kB
+examples/editor build: dist/assets/eecircuit-engine-CAaQWCsJ.js         20,262.84 kB │ gzip: 5,825.73 kB
+examples/editor build: ✓ built in 1.17s
+examples/editor build: [plugin builtin:vite-reporter] 
+examples/editor build: (!) Some chunks are larger than 500 kB after minification. Consider:
+examples/editor build: - Using dynamic import() to code-split the application
+examples/editor build: - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+examples/editor build: - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+examples/editor build: Done
+examples/showcase build: dist/index.html                                       0.62 kB │ gzip:     0.34 kB
+examples/showcase build: dist/assets/step-worker-browser-DO5oImI2.js      20,942.68 kB
+examples/showcase build: dist/assets/index-79VY-caR.css                       13.61 kB │ gzip:     3.18 kB
+examples/showcase build: dist/assets/__vite-browser-external-CmG9GjjO.js       0.09 kB │ gzip:     0.10 kB
+examples/showcase build: dist/assets/chunk-B3K2TuZy.js                         0.55 kB │ gzip:     0.35 kB
+examples/showcase build: dist/assets/index-CzbCkY6m.js                       928.90 kB │ gzip:   303.91 kB
+examples/showcase build: dist/assets/eecircuit-engine-CAaQWCsJ.js         20,262.84 kB │ gzip: 5,825.73 kB
+examples/showcase build: ✓ built in 1.15s
+examples/showcase build: [plugin builtin:vite-reporter] 
+examples/showcase build: (!) Some chunks are larger than 500 kB after minification. Consider:
+examples/showcase build: - Using dynamic import() to code-split the application
+examples/showcase build: - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+examples/showcase build: - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+examples/showcase build: Done

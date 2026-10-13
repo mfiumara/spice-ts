@@ -50,7 +50,7 @@ const supportedFixtures: Fixture[] = [
 
 const unsupportedFixtures: Fixture[] = [
   { feature: 'external source waveform', netlist: 'V1 in 0 EXTERNAL\n.tran 1n 10n' },
-  { feature: 'circuit temperature', netlist: '.temp 27\n.op' },
+  { feature: 'multiple circuit temperatures', netlist: '.temp 27 77\n.op' },
   { feature: 'PSPICE logic behavioral source', netlist: 'B1 out 0 V=~V(in)\n.op' },
 ];
 

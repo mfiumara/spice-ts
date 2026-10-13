@@ -1,0 +1,10 @@
+device temperature #871 (project-authored MIT)
+V1 a 0 1
+R1 a 0 1k tc1=0.001
+B1 b 0 V=temper
+R2 b 0 1k
+B2 c 0 V=1 temp=27 tc1=0.01
+R3 c 0 1k
+.temp 127
+.op
+.end

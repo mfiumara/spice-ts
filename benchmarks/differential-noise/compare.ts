@@ -121,7 +121,7 @@ async function verifyUnsupportedForms(): Promise<Array<{ form: string; status: s
     {
       form: 'temperature card',
       deck: 'V1 in 0 AC 1\nR1 in 0 1k\n.noise v(in) V1 dec 3 100 10k\n.temp 50',
-      expected: /Unsupported dot command: '\.temp'/,
+      expected: /\.options TEMP=50 is unsupported for '\.noise'/,
     },
     ...[
       {

@@ -1,0 +1,17 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_14be5ed0/packages/core
+
+ ✓ src/parser/preprocessor.test.ts (48 tests) 15ms
+ ✓ src/parser/ngspice-compatibility.test.ts (49 tests) 23ms
+ ✓ src/parser/param-functions-870.test.ts (6 tests) 21ms
+ ✓ src/parser/temp-directive-871.test.ts (25 tests) 40ms
+ ✓ src/parser/options-directives.test.ts (115 tests) 48ms
+ ✓ src/analysis/noise.test.ts (51 tests) 61ms
+ ✓ src/options-temp.test.ts (15 tests) 238ms
+
+ Test Files  7 passed (7)
+      Tests  309 passed (309)
+   Start at  16:31:56
+   Duration  1.09s (transform 3.69s, setup 0ms, import 4.58s, tests 447ms, environment 0ms)
+
+JUNIT report written to /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_14be5ed0/packages/core/test-results.xml

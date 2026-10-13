@@ -1,0 +1,349 @@
+{
+  "baseline": "c03dae530f9428f025d03e1a7f5a0f132a995da6",
+  "environment": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "release": "27.0.0",
+    "node": "v22.23.1"
+  },
+  "ngspiceVersion": "******\n** ngspice-47 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2026, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n******\n",
+  "timingPolicy": "Single-run wall times; ngspice includes process startup, spice-ts in-process. Not a speed claim.",
+  "rows": [
+    {
+      "name": "single",
+      "path": "benchmarks/temp-directive-871/controls/single.cir",
+      "sha256": "e49e173763485f750cfa5c19a572da587651e0af94bbbc34dbded698cb7e0f96",
+      "ngspice": {
+        "exit": 0,
+        "current": -0.0009285051067780873,
+        "temperature": 77,
+        "instanceVoltage": null,
+        "ms": 19.77199999999999
+      },
+      "spiceTs": {
+        "values": null,
+        "error": "ParseError: Parse error at line 6: Unsupported dot command: '.temp'\n  .temp 77",
+        "ms": 4.284333000000004
+      },
+      "comparedSignals": 0,
+      "maxRelativeError": null,
+      "rmsRelativeError": null,
+      "note": "OP scalar metric; full-precision ASCII raw reference."
+    },
+    {
+      "name": "before-options",
+      "path": "benchmarks/temp-directive-871/controls/before-options.cir",
+      "sha256": "41f6967d76188baf6427821fc9192024e13851d86f12f0e06481bfb05c8ff151",
+      "ngspice": {
+        "exit": 0,
+        "current": -0.0009285051067780873,
+        "temperature": 77,
+        "instanceVoltage": null,
+        "ms": 14.565792000000044
+      },
+      "spiceTs": {
+        "values": null,
+        "error": "ParseError: Parse error at line 6: Unsupported dot command: '.temp'\n  .temp 77",
+        "ms": 0.7374580000000037
+      },
+      "comparedSignals": 0,
+      "maxRelativeError": null,
+      "rmsRelativeError": null,
+      "note": "OP scalar metric; full-precision ASCII raw reference."
+    },
+    {
+      "name": "after-options",
+      "path": "benchmarks/temp-directive-871/controls/after-options.cir",
+      "sha256": "0e913eb271c8dd9ad8db22c9ee87baff0b907b6c6d07381cf4eadc265c4d13a7",
+      "ngspice": {
+        "exit": 0,
+        "current": -0.0009285051067780873,
+        "temperature": 77,
+        "instanceVoltage": null,
+        "ms": 13.963667000000044
+      },
+      "spiceTs": {
+        "values": null,
+        "error": "ParseError: Parse error at line 7: Unsupported dot command: '.temp'\n  .temp 77",
+        "ms": 0.7716660000000388
+      },
+      "comparedSignals": 0,
+      "maxRelativeError": null,
+      "rmsRelativeError": null,
+      "note": "OP scalar metric; full-precision ASCII raw reference."
+    },
+    {
+      "name": "repeated",
+      "path": "benchmarks/temp-directive-871/controls/repeated.cir",
+      "sha256": "1100d1a3df08e9ebbfe9490d044516f58e1ca05885757eb31cb5481e8a7992d1",
+      "ngspice": {
+        "exit": 0,
+        "current": -0.0008873114463176575,
+        "temperature": 127,
+        "instanceVoltage": null,
+        "ms": 13.761833000000024
+      },
+      "spiceTs": {
+        "values": null,
+        "error": "ParseError: Parse error at line 6: Unsupported dot command: '.temp'\n  .temp 77",
+        "ms": 0.3952499999999759
+      },
+      "comparedSignals": 0,
+      "maxRelativeError": null,
+      "rmsRelativeError": null,
+      "note": "OP scalar metric; full-precision ASCII raw reference."
+    },
+    {
+      "name": "multiple",
+      "path": "benchmarks/temp-directive-871/controls/multiple.cir",
+      "sha256": "8f4b837cdad08ef4984f33910adb4bb514e16e7c31418c0c3bbae8fe0e282bc5",
+      "ngspice": {
+        "exit": 0,
+        "current": -0.0009737098344693282,
+        "temperature": 27,
+        "instanceVoltage": null,
+        "ms": 14.18549999999999
+      },
+      "spiceTs": {
+        "values": null,
+        "error": "ParseError: Parse error at line 6: Unsupported dot command: '.temp'\n  .temp 77 127",
+        "ms": 0.49883299999999053
+      },
+      "comparedSignals": 0,
+      "maxRelativeError": null,
+      "rmsRelativeError": null,
+      "note": "Native ngspice warns/falls back27; spice-ts explicitly rejects unsupported multi-temperature cards."
+    },
+    {
+      "name": "empty",
+      "path": "benchmarks/temp-directive-871/controls/empty.cir",
+      "sha256": "9d2a886175ddf798df340f9d5d2a5a27dad05bc528306f7f1e6db450bf726bf8",
+      "ngspice": {
+        "exit": 0,
+        "current": -0.001,
+        "temperature": 0,
+        "instanceVoltage": null,
+        "ms": 13.845624999999984
+      },
+      "spiceTs": {
+        "values": null,
+        "error": "ParseError: Parse error at line 6: Unsupported dot command: '.temp'\n  .temp",
+        "ms": 0.38979100000000244
+      },
+      "comparedSignals": 0,
+      "maxRelativeError": null,
+      "rmsRelativeError": null,
+      "note": "OP scalar metric; full-precision ASCII raw reference."
+    },
+    {
+      "name": "invalid",
+      "path": "benchmarks/temp-directive-871/controls/invalid.cir",
+      "sha256": "9622c36e4814083487706f2cd5135413aa3e5ce1578a93e512a5ab94c71217ec",
+      "ngspice": {
+        "exit": 0,
+        "current": -0.0009737098344693282,
+        "temperature": 27,
+        "instanceVoltage": null,
+        "ms": 13.713041999999973
+      },
+      "spiceTs": {
+        "values": null,
+        "error": "ParseError: Parse error at line 6: Unsupported dot command: '.temp'\n  .temp abc",
+        "ms": 0.23624999999998408
+      },
+      "comparedSignals": 0,
+      "maxRelativeError": null,
+      "rmsRelativeError": null,
+      "note": "OP scalar metric; full-precision ASCII raw reference."
+    },
+    {
+      "name": "suffix",
+      "path": "benchmarks/temp-directive-871/controls/suffix.cir",
+      "sha256": "dbc1f43b971a06259ecf94b18c89ea8dfabc520fc178c87fe53a1e355a7fbd1e",
+      "ngspice": {
+        "exit": 0,
+        "current": -0.0009737098344693282,
+        "temperature": 27,
+        "instanceVoltage": null,
+        "ms": 14.302499999999952
+      },
+      "spiceTs": {
+        "values": null,
+        "error": "ParseError: Parse error at line 6: Unsupported dot command: '.temp'\n  .temp 77C",
+        "ms": 0.30279200000001083
+      },
+      "comparedSignals": 0,
+      "maxRelativeError": null,
+      "rmsRelativeError": null,
+      "note": "OP scalar metric; full-precision ASCII raw reference."
+    },
+    {
+      "name": "equals",
+      "path": "benchmarks/temp-directive-871/controls/equals.cir",
+      "sha256": "b4066c3f31a99f7c9778e0a96b27a2846516a3809d8a81f7b3ddfbaef57d3b43",
+      "ngspice": {
+        "exit": 0,
+        "current": -0.0009285051067780873,
+        "temperature": 77,
+        "instanceVoltage": null,
+        "ms": 14.257917000000077
+      },
+      "spiceTs": {
+        "values": null,
+        "error": "ParseError: Parse error at line 6: Unsupported dot command: '.temp=77'\n  .temp=77",
+        "ms": 0.72462500000006
+      },
+      "comparedSignals": 0,
+      "maxRelativeError": null,
+      "rmsRelativeError": null,
+      "note": "OP scalar metric; full-precision ASCII raw reference."
+    },
+    {
+      "name": "spaced-equals",
+      "path": "benchmarks/temp-directive-871/controls/spaced-equals.cir",
+      "sha256": "aeb7ab374cfa5adc89377d24f39b9c2f4a7d9cd822f75f7ff7009ddd9328b2e2",
+      "ngspice": {
+        "exit": 0,
+        "current": -0.0009285051067780873,
+        "temperature": 77,
+        "instanceVoltage": null,
+        "ms": 13.959125000000085
+      },
+      "spiceTs": {
+        "values": null,
+        "error": "ParseError: Parse error at line 6: Unsupported dot command: '.temp=77'\n  .temp=77",
+        "ms": 0.3616670000000113
+      },
+      "comparedSignals": 0,
+      "maxRelativeError": null,
+      "rmsRelativeError": null,
+      "note": "OP scalar metric; full-precision ASCII raw reference."
+    },
+    {
+      "name": "expression",
+      "path": "benchmarks/temp-directive-871/controls/expression.cir",
+      "sha256": "c5e6375b9ad0b4a720c554411fe8c46e18cd99a685a4f14fc4282ef6fdee809a",
+      "ngspice": {
+        "exit": 0,
+        "current": -0.0009285051067780873,
+        "temperature": 77,
+        "instanceVoltage": null,
+        "ms": 13.853250000000003
+      },
+      "spiceTs": {
+        "values": null,
+        "error": "ParseError: Parse error at line 7: Unsupported dot command: '.temp'\n  .temp 77",
+        "ms": 0.6661659999999756
+      },
+      "comparedSignals": 0,
+      "maxRelativeError": null,
+      "rmsRelativeError": null,
+      "note": "OP scalar metric; full-precision ASCII raw reference."
+    },
+    {
+      "name": "quote",
+      "path": "benchmarks/temp-directive-871/controls/quote.cir",
+      "sha256": "ecd450876b73e1dce06b9666bc69b8663bf4647aea92a5a4cdb1b8e5606b0d05",
+      "ngspice": {
+        "exit": 0,
+        "current": -0.0009285051067780873,
+        "temperature": 77,
+        "instanceVoltage": null,
+        "ms": 13.740332999999964
+      },
+      "spiceTs": {
+        "values": null,
+        "error": "ParseError: Parse error at line 6: Unsupported dot command: '.temp'\n  .temp 77",
+        "ms": 0.2804159999999456
+      },
+      "comparedSignals": 0,
+      "maxRelativeError": null,
+      "rmsRelativeError": null,
+      "note": "OP scalar metric; full-precision ASCII raw reference."
+    },
+    {
+      "name": "device",
+      "path": "benchmarks/temp-directive-871/controls/device.cir",
+      "sha256": "422b59fd2bc29ef24a9d20efbfcb1e53351cedd2f7b5e4ae99e8000710e30b9f",
+      "ngspice": {
+        "exit": 0,
+        "current": -0.0009090909090909091,
+        "temperature": 127,
+        "instanceVoltage": 1,
+        "ms": 13.825500000000034
+      },
+      "spiceTs": {
+        "values": null,
+        "error": "ParseError: Parse error at line 8: Unsupported dot command: '.temp'\n  .temp 127",
+        "ms": 0.35304099999996197
+      },
+      "comparedSignals": 0,
+      "maxRelativeError": null,
+      "rmsRelativeError": null,
+      "note": "OP scalar metric; full-precision ASCII raw reference."
+    },
+    {
+      "name": "temper_capture_cards",
+      "path": "benchmarks/corpus/ngspice-bugs/tickets/871/temper_capture_cards.cir",
+      "sha256": "3854db1e2370c499745ac56e1ee1971b4ca2b98f85cd9c0c28506969f1b438f4",
+      "ngspice": {
+        "exit": 0,
+        "current": -0.01785714285714286,
+        "temperature": null,
+        "instanceVoltage": null,
+        "ms": 13.88412500000004
+      },
+      "spiceTs": {
+        "values": null,
+        "error": "ParseError: Parse error at line 3: Unsupported dot command: '.temp'\n  .temp 27",
+        "ms": 0.8240829999999733
+      },
+      "comparedSignals": 0,
+      "maxRelativeError": null,
+      "rmsRelativeError": null,
+      "note": "Formal-k shadowing differs deliberately: spice-ts 1/6 A vs ngspice47 1/56 A; not fixed by .temp."
+    },
+    {
+      "name": "temper_capture_original",
+      "path": "benchmarks/corpus/ngspice-bugs/fetched/871/temper_capture.cir",
+      "sha256": "adc2a088a75c677e2d932b28a3b5c6252dc0fa883d757ed75ce37637a565c7f9",
+      "ngspice": {
+        "exit": 0,
+        "current": -0.01785714,
+        "temperature": null,
+        "instanceVoltage": null,
+        "ms": 13.767416000000026
+      },
+      "spiceTs": {
+        "values": null,
+        "error": "ParseError: Parse error at line 3: Unsupported dot command: '.temp'\n  .temp 27",
+        "ms": 0.5753330000000005
+      },
+      "comparedSignals": 0,
+      "maxRelativeError": null,
+      "rmsRelativeError": null,
+      "note": "Formal-k shadowing differs deliberately: spice-ts 1/6 A vs ngspice47 1/56 A; not fixed by .temp."
+    },
+    {
+      "name": "vbic99_dc",
+      "path": "benchmarks/corpus/corpus-f/fixtures/examples/vbic/vbic99_dc.sp",
+      "sha256": "8ba2c99e6946ac9033a8e5b8abf41812291839efa2c9536026a22ba546ca7018",
+      "ngspice": {
+        "exit": 0,
+        "current": null,
+        "temperature": null,
+        "instanceVoltage": null,
+        "ms": 15.257375000000025
+      },
+      "spiceTs": {
+        "values": null,
+        "error": "ParseError: Parse error at line 40: Unsupported dot command: '.temp'\n  .temp 27",
+        "ms": 1.1810829999999441
+      },
+      "comparedSignals": 0,
+      "maxRelativeError": null,
+      "rmsRelativeError": null,
+      "note": "Unchanged control-block deck: ngspice exports no aligned vectors; plot errors retained in log, metrics null."
+    }
+  ]
+}

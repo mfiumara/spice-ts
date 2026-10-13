@@ -24,6 +24,7 @@ import {
   parseTxlLine,
 } from './transmission-line-parser.js';
 import { preprocessDeck, preprocessDeckSync } from './preprocessor.js';
+import { tempDirective } from './temp-directive.js';
 import { translateMicroSign } from './micro-sign.js';
 import { lowerControlScript } from './control-block.js';
 import {
@@ -141,6 +142,7 @@ function parseNetlist(
   let hasSensitivityAnalysis = false;
   let hasDistortionAnalysis = false;
   let hasStepAnalysis = false;
+  let directiveTemperature: number | undefined;
   // Index in circuit.analyses where the control block sits among the dot cards.
   let controlAnalysisIndex: number | undefined;
 
@@ -198,6 +200,12 @@ function parseNetlist(
       }
 
       if (first.startsWith('.')) {
+        const temperatureCard = tempDirective(raw, lineNumber);
+        if (temperatureCard !== undefined) {
+          directiveTemperature = temperatureCard.value;
+          if (temperatureCard.warning) circuit.addParseWarning(temperatureCard.warning);
+          continue;
+        }
         if ((first === '.NOISE' && hasStepAnalysis) || (first === '.STEP' && hasNoiseAnalysis)) {
           throw new ParseError(
             '.step cannot be combined with .noise',
@@ -251,6 +259,8 @@ function parseNetlist(
     }
   }
 
+  // inp.c inp_spsource sets .temp only after inp_dodeck has applied .options.
+  if (directiveTemperature !== undefined) circuit.setTemperature(directiveTemperature);
   if (controlBlocks.length > 0) {
     attachControlScript(circuit, parseControlScript(controlBlocks), controlAnalysisIndex, hasStepAnalysis);
   }
