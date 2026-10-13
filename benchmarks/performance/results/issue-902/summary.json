@@ -1,0 +1,1002 @@
+{
+  "processReceipts": 63,
+  "summaries": [
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 1000,
+      "actualNodes": 1000,
+      "sha256": "0944ed6b76f64f56c8e04b48919f1e12b9de19df4e5a08708c4be314fa7a91b7",
+      "engines": {
+        "spice-ts": {
+          "statuses": [
+            "ok",
+            "ok",
+            "ok"
+          ],
+          "internalMs": {
+            "min": 307.990875,
+            "median": 311.31762499999996,
+            "max": 332.749792
+          },
+          "wallMs": {
+            "min": 408.2058750000001,
+            "median": 420.95504200000005,
+            "max": 432.366209
+          },
+          "peakRssMiB": {
+            "min": 84.734375,
+            "median": 86.234375,
+            "max": 88.953125
+          },
+          "points": [
+            120,
+            120,
+            120
+          ]
+        },
+        "ngspice": {
+          "statuses": [
+            "ok",
+            "ok",
+            "ok"
+          ],
+          "internalMs": {
+            "min": 20.378,
+            "median": 23.876,
+            "max": 24.980999999999998
+          },
+          "wallMs": {
+            "min": 61.92658299999994,
+            "median": 72.14470800000004,
+            "max": 79.36458300000004
+          },
+          "peakRssMiB": {
+            "min": 12.75,
+            "median": 12.765625,
+            "max": 12.890625
+          },
+          "points": [
+            120,
+            120,
+            120
+          ]
+        }
+      },
+      "parity": {
+        "probe": "n10",
+        "points": 120,
+        "maxTimeDelta": 4.9177637201058065e-15,
+        "maxAbs": 4.774124715001271e-8,
+        "rmsAbs": 2.2664075147464437e-8,
+        "maxPeakRelative": 1.386297591755976e-7,
+        "rmsPeakRelative": 6.581133646882128e-8,
+        "precision": "ngspice unmodified .print / OP listing, about 6 significant digits; not full-precision or all-node parity"
+      }
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 10000,
+      "actualNodes": 10000,
+      "sha256": "eb21933fd99fcbc32276816a4f389ba216dcdddc29683551a67f606f352dfca7",
+      "engines": {
+        "spice-ts": {
+          "statuses": [
+            "ok",
+            "ok",
+            "ok"
+          ],
+          "internalMs": {
+            "min": 799.606625,
+            "median": 1261.197792,
+            "max": 1636.6924999999999
+          },
+          "wallMs": {
+            "min": 906.7537089999996,
+            "median": 1366.619541,
+            "max": 1760.7970419999997
+          },
+          "peakRssMiB": {
+            "min": 178.125,
+            "median": 178.59375,
+            "max": 179.265625
+          },
+          "points": [
+            120,
+            120,
+            120
+          ]
+        },
+        "ngspice": {
+          "statuses": [
+            "ok",
+            "ok",
+            "ok"
+          ],
+          "internalMs": {
+            "min": 275.05400000000003,
+            "median": 786.4,
+            "max": 815.517
+          },
+          "wallMs": {
+            "min": 394.66549999999916,
+            "median": 886.754958,
+            "max": 927.7514999999994
+          },
+          "peakRssMiB": {
+            "min": 34.109375,
+            "median": 34.484375,
+            "max": 34.546875
+          },
+          "points": [
+            120,
+            120,
+            120
+          ]
+        }
+      },
+      "parity": {
+        "probe": "n10",
+        "points": 120,
+        "maxTimeDelta": 4.9177637201058065e-15,
+        "maxAbs": 4.774124715001271e-8,
+        "rmsAbs": 2.2664075147464437e-8,
+        "maxPeakRelative": 1.386297591755976e-7,
+        "rmsPeakRelative": 6.581133646882128e-8,
+        "precision": "ngspice unmodified .print / OP listing, about 6 significant digits; not full-precision or all-node parity"
+      }
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 50000,
+      "actualNodes": 50000,
+      "sha256": "2fd0c2090d17dddf80980eb3391440a3e4f99e1a77d1158360ffedc4246a7ada",
+      "engines": {
+        "spice-ts": {
+          "statuses": [
+            "ok",
+            "ok",
+            "ok"
+          ],
+          "internalMs": {
+            "min": 1477.607917,
+            "median": 1500.6375,
+            "max": 2650.7061249999997
+          },
+          "wallMs": {
+            "min": 1557.437582999999,
+            "median": 1575.779208,
+            "max": 2776.4157079999986
+          },
+          "peakRssMiB": {
+            "min": 405.953125,
+            "median": 410.78125,
+            "max": 418.203125
+          },
+          "points": [
+            120,
+            120,
+            120
+          ]
+        },
+        "ngspice": {
+          "statuses": [
+            "ok",
+            "ok",
+            "ok"
+          ],
+          "internalMs": {
+            "min": 1079.45,
+            "median": 1266.1599999999999,
+            "max": 1549.78
+          },
+          "wallMs": {
+            "min": 1321.8227499999994,
+            "median": 1601.3675000000003,
+            "max": 1953.5590840000004
+          },
+          "peakRssMiB": {
+            "min": 127.078125,
+            "median": 127.84375,
+            "max": 130.4375
+          },
+          "points": [
+            120,
+            120,
+            120
+          ]
+        }
+      },
+      "parity": {
+        "probe": "n10",
+        "points": 120,
+        "maxTimeDelta": 4.9177637201058065e-15,
+        "maxAbs": 4.774124715001271e-8,
+        "rmsAbs": 2.2664075147464437e-8,
+        "maxPeakRelative": 1.386297591755976e-7,
+        "rmsPeakRelative": 6.581133646882128e-8,
+        "precision": "ngspice unmodified .print / OP listing, about 6 significant digits; not full-precision or all-node parity"
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 1000,
+      "actualNodes": 1024,
+      "sha256": "6c6d5adb109cdde9ac844c3346135f4e7ffc352626b2f3c430598c0ebd9d8d40",
+      "engines": {
+        "spice-ts": {
+          "statuses": [
+            "ok",
+            "ok",
+            "ok"
+          ],
+          "internalMs": {
+            "min": 51.038833000000004,
+            "median": 51.631875,
+            "max": 53.185875
+          },
+          "wallMs": {
+            "min": 107.55500000000029,
+            "median": 109.03541699999914,
+            "max": 111.38866599999892
+          },
+          "peakRssMiB": {
+            "min": 82.59375,
+            "median": 82.640625,
+            "max": 83.484375
+          },
+          "points": [
+            1,
+            1,
+            1
+          ]
+        },
+        "ngspice": {
+          "statuses": [
+            "ok",
+            "ok",
+            "ok"
+          ],
+          "internalMs": {
+            "min": 3.2279999999999998,
+            "median": 3.231,
+            "max": 3.336
+          },
+          "wallMs": {
+            "min": 26.808250000001863,
+            "median": 27.362708000000566,
+            "max": 31.294958999998926
+          },
+          "peakRssMiB": {
+            "min": 13.671875,
+            "median": 13.78125,
+            "max": 13.953125
+          },
+          "points": [
+            1,
+            1,
+            1
+          ]
+        }
+      },
+      "parity": {
+        "probe": "n31_31",
+        "points": 1,
+        "maxTimeDelta": 0,
+        "maxAbs": 3.387412955691005e-8,
+        "rmsAbs": 3.387412955691005e-8,
+        "maxPeakRelative": 1.8597883688679653e-7,
+        "rmsPeakRelative": 1.8597883688679653e-7,
+        "precision": "ngspice unmodified .print / OP listing, about 6 significant digits; not full-precision or all-node parity"
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "actualNodes": 10000,
+      "sha256": "c88e6076daf2523437e3da014d7a3c329f679a7405f789530c5c805f447ed0dc",
+      "engines": {
+        "spice-ts": {
+          "statuses": [
+            "ok",
+            "ok",
+            "ok"
+          ],
+          "internalMs": {
+            "min": 275.093042,
+            "median": 277.302792,
+            "max": 277.694292
+          },
+          "wallMs": {
+            "min": 340.51208399999814,
+            "median": 341.41333400000076,
+            "max": 344.01095799999894
+          },
+          "peakRssMiB": {
+            "min": 147.09375,
+            "median": 147.09375,
+            "max": 147.96875
+          },
+          "points": [
+            1,
+            1,
+            1
+          ]
+        },
+        "ngspice": {
+          "statuses": [
+            "ok",
+            "ok",
+            "ok"
+          ],
+          "internalMs": {
+            "min": 49.154999999999994,
+            "median": 50.816,
+            "max": 50.853
+          },
+          "wallMs": {
+            "min": 143.5193330000002,
+            "median": 146.48308299999917,
+            "max": 148.0257500000007
+          },
+          "peakRssMiB": {
+            "min": 47.03125,
+            "median": 47.03125,
+            "max": 47.5
+          },
+          "points": [
+            1,
+            1,
+            1
+          ]
+        }
+      },
+      "parity": {
+        "probe": "n99_99",
+        "points": 1,
+        "maxTimeDelta": 0,
+        "maxAbs": 1.7799571871979225e-8,
+        "rmsAbs": 1.7799571871979225e-8,
+        "maxPeakRelative": 1.2354379227471263e-7,
+        "rmsPeakRelative": 1.2354379227471263e-7,
+        "precision": "ngspice unmodified .print / OP listing, about 6 significant digits; not full-precision or all-node parity"
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "actualNodes": 50176,
+      "sha256": "f81ed198f7ba67068138846b12fe93b9ec957e6bb3a89300d2c7c50e30d47329",
+      "engines": {
+        "spice-ts": {
+          "statuses": [
+            "ok",
+            "ok",
+            "ok"
+          ],
+          "internalMs": {
+            "min": 1230.8702500000002,
+            "median": 1237.8565,
+            "max": 1284.5646669999999
+          },
+          "wallMs": {
+            "min": 1333.1923750000005,
+            "median": 1334.447208,
+            "max": 1405.3700419999996
+          },
+          "peakRssMiB": {
+            "min": 361.46875,
+            "median": 361.625,
+            "max": 363.421875
+          },
+          "points": [
+            1,
+            1,
+            1
+          ]
+        },
+        "ngspice": {
+          "statuses": [
+            "ok",
+            "ok",
+            "ok"
+          ],
+          "internalMs": {
+            "min": 520.261,
+            "median": 523.846,
+            "max": 565.061
+          },
+          "wallMs": {
+            "min": 988.7390420000002,
+            "median": 1009.804292,
+            "max": 1042.609125
+          },
+          "peakRssMiB": {
+            "min": 216.3125,
+            "median": 218.6875,
+            "max": 218.703125
+          },
+          "points": [
+            1,
+            1,
+            1
+          ]
+        }
+      },
+      "parity": {
+        "probe": "n223_223",
+        "points": 1,
+        "maxTimeDelta": 0,
+        "maxAbs": 1.5190737001624655e-8,
+        "rmsAbs": 1.5190737001624655e-8,
+        "maxPeakRelative": 1.2103439952341256e-7,
+        "rmsPeakRelative": 1.2103439952341256e-7,
+        "precision": "ngspice unmodified .print / OP listing, about 6 significant digits; not full-precision or all-node parity"
+      }
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 1000,
+      "actualNodes": 1000,
+      "sha256": "1a9866593c778a9fa26e23c1916c7b00b1bdb1adc2e7a246d9e3f4aa4f1ca1e1",
+      "engines": {
+        "spice-ts": {
+          "statuses": [
+            "ok",
+            "ok",
+            "ok"
+          ],
+          "internalMs": {
+            "min": 259.37683300000003,
+            "median": 376.395291,
+            "max": 423.911292
+          },
+          "wallMs": {
+            "min": 316.9739580000023,
+            "median": 448.3754160000026,
+            "max": 482.2256660000021
+          },
+          "peakRssMiB": {
+            "min": 121.25,
+            "median": 121.828125,
+            "max": 122.734375
+          },
+          "points": [
+            214,
+            214,
+            214
+          ]
+        },
+        "ngspice": {
+          "statuses": [
+            "ok",
+            "ok",
+            "ok"
+          ],
+          "internalMs": {
+            "min": 170.804,
+            "median": 176.886,
+            "max": 201.893
+          },
+          "wallMs": {
+            "min": 199.02458399999887,
+            "median": 206.4604999999974,
+            "max": 237.50620799999888
+          },
+          "peakRssMiB": {
+            "min": 18.921875,
+            "median": 18.9375,
+            "max": 19.109375
+          },
+          "points": [
+            214,
+            214,
+            214
+          ]
+        }
+      },
+      "parity": {
+        "probe": "s20",
+        "points": 214,
+        "maxTimeDelta": 4.1359030627651384e-24,
+        "maxAbs": 0.0003937111481527311,
+        "rmsAbs": 0.000042183413259948186,
+        "maxPeakRelative": 0.0011247183588796417,
+        "rmsPeakRelative": 0.00012050575544095506,
+        "precision": "ngspice unmodified .print / OP listing, about 6 significant digits; not full-precision or all-node parity"
+      }
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 10000,
+      "actualNodes": 10000,
+      "sha256": "2ce663326238609299d8628016b1211632f1474e9d40b6c39747fff964999a18",
+      "engines": {
+        "spice-ts": {
+          "statuses": [
+            "ok",
+            "ok",
+            "ok"
+          ],
+          "internalMs": {
+            "min": 2761.99725,
+            "median": 4225.927708,
+            "max": 4849.856834
+          },
+          "wallMs": {
+            "min": 2833.442541999997,
+            "median": 4311.479500000001,
+            "max": 4997.3477920000005
+          },
+          "peakRssMiB": {
+            "min": 340.359375,
+            "median": 341.640625,
+            "max": 350.375
+          },
+          "points": [
+            214,
+            214,
+            214
+          ]
+        },
+        "ngspice": {
+          "statuses": [
+            "ok",
+            "ok",
+            "ok"
+          ],
+          "internalMs": {
+            "min": 4470.71,
+            "median": 5284.43,
+            "max": 7600.82
+          },
+          "wallMs": {
+            "min": 4639.784874999998,
+            "median": 5461.380749999997,
+            "max": 7941.303874999998
+          },
+          "peakRssMiB": {
+            "min": 101.734375,
+            "median": 103.0625,
+            "max": 104.375
+          },
+          "points": [
+            214,
+            214,
+            214
+          ]
+        }
+      },
+      "parity": {
+        "probe": "s20",
+        "points": 214,
+        "maxTimeDelta": 4.1359030627651384e-24,
+        "maxAbs": 0.0003937111481527311,
+        "rmsAbs": 0.000042183413259948186,
+        "maxPeakRelative": 0.0011247183588796417,
+        "rmsPeakRelative": 0.00012050575544095506,
+        "precision": "ngspice unmodified .print / OP listing, about 6 significant digits; not full-precision or all-node parity"
+      }
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 50000,
+      "actualNodes": 50000,
+      "sha256": "d680f1054eb14002980a7a65eb68a5dddae8063a871050fde025e8f5080bc543",
+      "engines": {
+        "spice-ts": {
+          "statuses": [
+            "ok",
+            "ok",
+            "ok"
+          ],
+          "internalMs": {
+            "min": 22130.809374999997,
+            "median": 22431.093542,
+            "max": 22653.272459
+          },
+          "wallMs": {
+            "min": 22242.63950000002,
+            "median": 22579.384708000005,
+            "max": 22785.31825000001
+          },
+          "peakRssMiB": {
+            "min": 1041.109375,
+            "median": 1045.4375,
+            "max": 1047.671875
+          },
+          "points": [
+            214,
+            214,
+            214
+          ]
+        },
+        "ngspice": {
+          "statuses": [
+            "timeout",
+            "timeout",
+            "timeout"
+          ]
+        }
+      },
+      "parity": {
+        "unavailable": "no completed ngspice reference within 45 s budget"
+      }
+    }
+  ],
+  "profiles": [
+    {
+      "circuit": "rc-ladder-tran",
+      "file": "profiles/rc-ladder-tran-50000.cpuprofile",
+      "sampledMs": 1955.625,
+      "topSelf": [
+        {
+          "frame": "(garbage collector) :0",
+          "ms": 302.377,
+          "percent": 15.461911153723234
+        },
+        {
+          "frame": "attemptStep file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:35407",
+          "ms": 151.627,
+          "percent": 7.753378076062639
+        },
+        {
+          "frame": "evaluate file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:35880",
+          "ms": 122.288,
+          "percent": 6.253141578779163
+        },
+        {
+          "frame": "buildCompanionSystem file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:35210",
+          "ms": 117.499,
+          "percent": 6.008258229466283
+        },
+        {
+          "frame": "stampStaticDevices file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:34650",
+          "ms": 84.332,
+          "percent": 4.3122786832853945
+        },
+        {
+          "frame": "lockTopology file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:34159",
+          "ms": 53.208,
+          "percent": 2.7207670182166828
+        },
+        {
+          "frame": "flush file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:36863",
+          "ms": 52.833,
+          "percent": 2.7015915627996163
+        },
+        {
+          "frame": "amdOrdering file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:32850",
+          "ms": 48.584,
+          "percent": 2.484320869287312
+        },
+        {
+          "frame": "set file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:26472",
+          "ms": 47.957,
+          "percent": 2.452259507829978
+        },
+        {
+          "frame": "compile file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:27970",
+          "ms": 45.583,
+          "percent": 2.330866091403004
+        },
+        {
+          "frame": "acceptAll file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:6286",
+          "ms": 41.668,
+          "percent": 2.1306743368488337
+        },
+        {
+          "frame": "stampDynamicDevices file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:34692",
+          "ms": 37.167,
+          "percent": 1.9005177372962607
+        },
+        {
+          "frame": "stampPrevB file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:36395",
+          "ms": 35.458,
+          "percent": 1.813128795142218
+        },
+        {
+          "frame": "matchesFactoredInput file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:33229",
+          "ms": 34.375,
+          "percent": 1.7577500798977308
+        },
+        {
+          "frame": "analyzePattern file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:33151",
+          "ms": 28.708,
+          "percent": 1.4679705976350272
+        }
+      ]
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "file": "profiles/resistor-mesh-op-50000.cpuprofile",
+      "sampledMs": 1180.375,
+      "topSelf": [
+        {
+          "frame": "applySupernode file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:33635",
+          "ms": 205.127,
+          "percent": 17.37812135973737
+        },
+        {
+          "frame": "(garbage collector) :0",
+          "ms": 204.96,
+          "percent": 17.363973313565605
+        },
+        {
+          "frame": "factorize file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:33273",
+          "ms": 103.124,
+          "percent": 8.736545589325425
+        },
+        {
+          "frame": "amdOrdering file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:32850",
+          "ms": 101.75,
+          "percent": 8.620141904055915
+        },
+        {
+          "frame": "lockTopology file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:34159",
+          "ms": 47.457,
+          "percent": 4.02050195912316
+        },
+        {
+          "frame": "set file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:26472",
+          "ms": 31.333,
+          "percent": 2.6544953934131104
+        },
+        {
+          "frame": "compile file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:27970",
+          "ms": 31.292,
+          "percent": 2.6510219209996824
+        },
+        {
+          "frame": "post node:inspector:118",
+          "ms": 27.042,
+          "percent": 2.2909668537541035
+        },
+        {
+          "frame": "extractControlBlocks file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:29736",
+          "ms": 25.166,
+          "percent": 2.1320343111299374
+        },
+        {
+          "frame": "newtonRaphson file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:34754",
+          "ms": 22.999,
+          "percent": 1.9484485862543683
+        },
+        {
+          "frame": "addCanonical file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:26436",
+          "ms": 20.125,
+          "percent": 1.704966641957005
+        },
+        {
+          "frame": "braceTokens file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:841",
+          "ms": 19.417,
+          "percent": 1.6449857036958593
+        },
+        {
+          "frame": "add file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:32789",
+          "ms": 17.084,
+          "percent": 1.4473366514878747
+        },
+        {
+          "frame": "preprocessSteps file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:2130",
+          "ms": 16.625,
+          "percent": 1.408450704225352
+        },
+        {
+          "frame": "analyzePattern file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:33151",
+          "ms": 15.875,
+          "percent": 1.3449115747114264
+        }
+      ]
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "file": "profiles/cmos-inverter-chain-tran-50000.cpuprofile",
+      "sampledMs": 23539.292,
+      "topSelf": [
+        {
+          "frame": "batchStamp file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:11007",
+          "ms": 9224.4,
+          "percent": 39.18724488400076
+        },
+        {
+          "frame": "(garbage collector) :0",
+          "ms": 2216.497,
+          "percent": 9.416158310963644
+        },
+        {
+          "frame": "refactorWithPivots file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:33782",
+          "ms": 1429.209,
+          "percent": 6.071588729176732
+        },
+        {
+          "frame": "mos1BulkJunctions file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:9960",
+          "ms": 1227.832,
+          "percent": 5.2160957092507285
+        },
+        {
+          "frame": "factorize file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:33273",
+          "ms": 1192.76,
+          "percent": 5.067102273084509
+        },
+        {
+          "frame": "convergenceTest file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:10764",
+          "ms": 1113.213,
+          "percent": 4.729169424466972
+        },
+        {
+          "frame": "batchNewtonStepScale file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:10573",
+          "ms": 888.074,
+          "percent": 3.772730292822741
+        },
+        {
+          "frame": "chargeTruncationTimestep file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:36516",
+          "ms": 854.831,
+          "percent": 3.6315068439611524
+        },
+        {
+          "frame": "solve file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:33877",
+          "ms": 796.301,
+          "percent": 3.3828587537807
+        },
+        {
+          "frame": "newtonRaphson file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:34754",
+          "ms": 653.252,
+          "percent": 2.7751556843765735
+        },
+        {
+          "frame": "buildCompanionSystem file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:35210",
+          "ms": 443.917,
+          "percent": 1.8858553604755828
+        },
+        {
+          "frame": "attemptStep file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:35407",
+          "ms": 328.663,
+          "percent": 1.396231458448283
+        },
+        {
+          "frame": "evaluate file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:35880",
+          "ms": 304.586,
+          "percent": 1.2939471586486118
+        },
+        {
+          "frame": "sortInt32Prefix file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:34031",
+          "ms": 169.083,
+          "percent": 0.7183011281732687
+        },
+        {
+          "frame": "stamp file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/packages/core/dist/chunk-MUF6DOQJ.js:10629",
+          "ms": 153.671,
+          "percent": 0.6528276211536014
+        }
+      ]
+    }
+  ],
+  "failures": [
+    {
+      "engine": "ngspice",
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "actualNodes": 50176,
+      "repeat": 0,
+      "profile": false,
+      "argv": [
+        "ngspice",
+        "-b",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/benchmarks/performance/results/issue-902/decks/resistor-mesh-op-50000.cir"
+      ],
+      "cwd": "decks",
+      "netlistSha256": "f81ed198f7ba67068138846b12fe93b9ec957e6bb3a89300d2c7c50e30d47329",
+      "wallMs": 760.5666670000028,
+      "exit": null,
+      "signal": "SIGTERM",
+      "status": "failed",
+      "error": "spawnSync /usr/bin/time ENOBUFS",
+      "peakRssMiB": null
+    },
+    {
+      "engine": "ngspice",
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "actualNodes": 50176,
+      "repeat": 1,
+      "profile": false,
+      "argv": [
+        "ngspice",
+        "-b",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/benchmarks/performance/results/issue-902/decks/resistor-mesh-op-50000.cir"
+      ],
+      "cwd": "decks",
+      "netlistSha256": "f81ed198f7ba67068138846b12fe93b9ec957e6bb3a89300d2c7c50e30d47329",
+      "wallMs": 761.2493329999998,
+      "exit": null,
+      "signal": "SIGTERM",
+      "status": "failed",
+      "error": "spawnSync /usr/bin/time ENOBUFS",
+      "peakRssMiB": null
+    },
+    {
+      "engine": "ngspice",
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "actualNodes": 50176,
+      "repeat": 2,
+      "profile": false,
+      "argv": [
+        "ngspice",
+        "-b",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/benchmarks/performance/results/issue-902/decks/resistor-mesh-op-50000.cir"
+      ],
+      "cwd": "decks",
+      "netlistSha256": "f81ed198f7ba67068138846b12fe93b9ec957e6bb3a89300d2c7c50e30d47329",
+      "wallMs": 764.1035000000011,
+      "exit": null,
+      "signal": "SIGTERM",
+      "status": "failed",
+      "error": "spawnSync /usr/bin/time ENOBUFS",
+      "peakRssMiB": null
+    },
+    {
+      "engine": "ngspice",
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 50000,
+      "actualNodes": 50000,
+      "repeat": 0,
+      "profile": false,
+      "argv": [
+        "ngspice",
+        "-b",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/benchmarks/performance/results/issue-902/decks/cmos-inverter-chain-tran-50000.cir"
+      ],
+      "cwd": "decks",
+      "netlistSha256": "d680f1054eb14002980a7a65eb68a5dddae8063a871050fde025e8f5080bc543",
+      "wallMs": 45001.33508399999,
+      "exit": null,
+      "signal": "SIGTERM",
+      "status": "timeout",
+      "error": "spawnSync /usr/bin/time ETIMEDOUT",
+      "peakRssMiB": null
+    },
+    {
+      "engine": "ngspice",
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 50000,
+      "actualNodes": 50000,
+      "repeat": 1,
+      "profile": false,
+      "argv": [
+        "ngspice",
+        "-b",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/benchmarks/performance/results/issue-902/decks/cmos-inverter-chain-tran-50000.cir"
+      ],
+      "cwd": "decks",
+      "netlistSha256": "d680f1054eb14002980a7a65eb68a5dddae8063a871050fde025e8f5080bc543",
+      "wallMs": 45002.558416000014,
+      "exit": null,
+      "signal": "SIGTERM",
+      "status": "timeout",
+      "error": "spawnSync /usr/bin/time ETIMEDOUT",
+      "peakRssMiB": null
+    },
+    {
+      "engine": "ngspice",
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 50000,
+      "actualNodes": 50000,
+      "repeat": 2,
+      "profile": false,
+      "argv": [
+        "ngspice",
+        "-b",
+        "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b8ce65b3/benchmarks/performance/results/issue-902/decks/cmos-inverter-chain-tran-50000.cir"
+      ],
+      "cwd": "decks",
+      "netlistSha256": "d680f1054eb14002980a7a65eb68a5dddae8063a871050fde025e8f5080bc543",
+      "wallMs": 45001.33624999999,
+      "exit": null,
+      "signal": "SIGTERM",
+      "status": "timeout",
+      "error": "spawnSync /usr/bin/time ETIMEDOUT",
+      "peakRssMiB": null
+    }
+  ]
+}

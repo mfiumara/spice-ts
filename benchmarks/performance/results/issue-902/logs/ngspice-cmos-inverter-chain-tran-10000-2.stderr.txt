@@ -1,0 +1,20 @@
+Note: Starting dynamic gmin stepping
+Note: Dynamic gmin stepping completed
+        7.93 real         6.47 user         0.06 sys
+           109445120  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+                7137  page reclaims
+                  24  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                  28  messages sent
+                   0  messages received
+                   0  signals received
+                   0  voluntary context switches
+                7751  involuntary context switches
+         30937226127  instructions retired
+         17375582670  cycles elapsed
+           102253072  peak memory footprint
