@@ -1,6 +1,10 @@
 # Sources and licences
 
-This registration is scoped to this diagnosis. No shared benchmark manifest or SOURCES file is modified.
+This registration is scoped to this fix. No shared benchmark manifest or SOURCES file is modified.
+The 16 decks and provenance were copied from immutable diagnostic PR #934 at
+`bc2e42d0b56e1c624ca5590e6f09d274a4c1068c` and independently measured before/after.
+provisional-receipt.json preserves its original receipt; before.json and after.json
+carry fresh measurements and the same deck/source SHA-256 values, checked by verify.py.
 
 | Material | Source | Licence / treatment |
 | --- | --- | --- |
@@ -8,9 +12,9 @@ This registration is scoped to this diagnosis. No shared benchmark manifest or S
 | Other 15 circuit reductions and harness | Authored for spice-ts, https://github.com/mfiumara/spice-ts | MIT, under repository LICENSE; not copied from upstream example files. |
 | Model/parameter control problem statements | https://github.com/mfiumara/spice-ts/issues/854 and https://github.com/mfiumara/spice-ts/issues/857 | Project-authored reductions. |
 | ngspice reference implementation | https://git.code.sf.net/p/ngspice/ngspice | Tag ngspice-47, full revision `a80f6e3e95d51534905b1f23410a951802666656`. Fetch only into ignored `.run/upstream`; no upstream source redistributed. |
-| ngspice licence receipt | `COPYING` at that revision | Document CC-BY-SA-4.0; numparam directory LGPL-2.0-or-later; frontend subckt.c/inpcom.c Modified BSD. See source hashes in receipt.json. Only hashes and source-location references committed. |
+| ngspice licence receipt | `COPYING` at that revision | Document CC-BY-SA-4.0; numparam directory LGPL-2.0-or-later; frontend subckt.c/inpcom.c Modified BSD. See source hashes in before.json/after.json. Only hashes and source-location references committed. |
 
-Pinned source SHA-256 values, also machine-readable in receipt.json:
+Pinned source SHA-256 values, also machine-readable in before.json/after.json:
 
 ```
 COPYING                                  6d939001e899ede403277fb37124c2af6f1cf92926465cd8f4bf59859e06f579

@@ -1,9 +1,39 @@
 # Dynamic numparam caller scope, Refs #888
 
-Diagnosis and RED preparation only. No simulator, shared corpus, CI, changeset, or release changes.
-Issue #888 stays open. There is no production before/after speed or correctness claim.
+Implementation and preserved RED/GREEN evidence for #888. Only circuit.ts changes production code.
+No shared corpus, CI, changeset, or release changes. No speed superiority claim.
 
-## Fresh evidence
+## Before/after result
+
+Fresh baseline `e1597e192c26a231dd576c668524d887b6e63844` is preserved in before.json.
+The fixed circuit.ts working tree on test commit `fc531d5d6cfb0a442ca778d8463def5dd74e99f9`
+is measured in after.json. Its metadata records HEAD, not a claim that the fix was committed
+at that SHA. The final PR SHA is supplied in the PR/card handoff.
+All 16 fresh ngspice-47 references and all 16 fixed native runs complete.
+Six native failures and two precedence losses become GREEN; the other eight controls
+have exactly unchanged native values and max/RMS errors. Deck hashes, observations,
+reference values and the shared tolerance are unchanged from diagnostic PR #934,
+`bc2e42d0b56e1c624ca5590e6f09d274a4c1068c`, merged as
+`6d46a713c0bd77b4e2f43cd554893ea629a8d1b1`. provisional-receipt.json retains that evidence.
+
+issue-888 and caller-shadows-global now give v(o)=0.25 with zero max/RMS error.
+lexical-definition-dynamic-param now gives v(o)=0.2 with zero max/RMS error.
+All repaired voltage cases are exact except local-reads-caller, whose max/RMS absolute
+error is 5.551115123125783e-17 V and max/RMS relative error is 3.88578058618805e-16.
+The unchanged lexical-model-854 current residual is max absolute 4.294823637354672e-9 A,
+RMS absolute 3.0368989179737622e-9 A, max relative 3.6078183149255644e-7 and
+RMS relative 2.5511127957728895e-7. lexical-model-not-dynamic keeps max/RMS absolute
+2.574980159653073e-19 A and relative 2.1689590586026365e-15. These are not zero-error claims.
+The diode controls keep the same lexical model selection; full currents are in after.json.
+
+Fresh before/after direct-child wall totals are 7.422279413 s / 7.982766916 s,
+15.405046329 s cumulative across both batches, below the original 300 s experiment budget.
+These are startup-inclusive process timings, not a performance benchmark. No batches were
+rerun after worker recovery. Build/lint/targeted tests were rerun and exited 0.
+RED recorded 8 failed / 25 passed (33), exit 1. GREEN and recovery GREEN record
+62 passed (six files), exit 0. No parser, evaluator or model-lookup code changes.
+
+## Preserved diagnostic evidence
 
 Baseline `f807cd8a3368d344a3a21a9ee17ea52a84bfa748`, main after #929.
 ngspice-47/KLU, Node v22.23.1, pnpm 10.28.1, Darwin arm64.
@@ -70,28 +100,27 @@ At pinned upstream revision `a80f6e3e95d51534905b1f23410a951802666656`:
 See SOURCES.md for licences and SHA-256 receipts. The evidence is measured first;
 source inspection corroborates, rather than substitutes for, those observations.
 
-## Smallest next fix and file ownership proposal
+## Implemented seam and file ownership
 
-Measured root cause is in `packages/core/src/circuit.ts:3324-3347`.
-`definitionScopes` is empty for a top-level leaf. `parentParams` therefore falls back to
+The pre-fix root cause was in `packages/core/src/circuit.ts:3324-3347`.
+`definitionScopes` is empty for a top-level leaf. `parentParams` therefore fell back to
 `parameterScope()` instead of the caller, even when the caller has pp. For a lexically
-nested leaf it uses the lexical enclosing scope, incorrectly discarding a closer dynamic
-middle. Recursive expansion at `circuit.ts:3741-3751` carries definition/model scopes but
-has no independent dynamic caller-parameter argument.
+nested leaf it used the lexical enclosing scope, incorrectly discarding a closer dynamic
+middle. Recursive expansion at `circuit.ts:3741-3751` carried definition/model scopes but
+had no independent dynamic caller-parameter argument.
 
-Reserve the next coherent implementation slice to `circuit.ts` plus a new focused test
-file, e.g. `packages/core/src/subcircuit-dynamic-params-888.test.ts`. Thread a separate
-caller parameter scope through `expandSubcircuit`; use it as the prototype of the fresh
-local parameter object; pass the current local object to recursive X calls. Leave
-`definitionScopes`, `bodyScopes`, model mapping and definition lookup unchanged.
-Top-level expansions start from the global parameter scope. Reuse
-`evaluateSubcircuitParams` rather than implementing another parameter evaluator.
+The implementation threads a separate `Record<string, number>` caller parameter scope
+through `expandSubcircuit`, uses it as the prototype of the fresh local parameter object,
+and passes the current local object to recursive X calls. `definitionScopes`, `bodyScopes`,
+model mapping and definition lookup remain unchanged. Top-level expansions start from
+the global parameter scope. The existing `evaluateSubcircuitParams` handles dependency
+ordering; no duplicate evaluator was introduced. The 16-case test file is
+`packages/core/src/subcircuit-dynamic-params-888.test.ts`.
 
-This is a proposal, not an implemented or verified fix. The next writer must first run
-these identical decks as live failing tests, then prove GREEN for all 16, and preserve
-existing #854/#857 tests. No parser/index or preprocessor change is justified by this
-matrix. Those files remain reserved to the lane named by the supervisor/card; this PR
-does not compete with that writer, solver #932, floating recovery #917, or XSPICE #553.
+The live RED preceded the circuit.ts edit; the fresh matrix and targeted GREEN verify
+the fix. Existing #854/#857 tests are green. No parser/index or preprocessor change
+is needed for this matrix. Those files remain reserved to the lane named by the card;
+this PR does not compete with that writer, solver #932, floating recovery #917 or XSPICE #553.
 
 ## Reproduction and offline verification
 
@@ -99,11 +128,10 @@ From repository root:
 
 ```
 pnpm install --frozen-lockfile
-python3 benchmarks/dynamic-numparam-888/generate.py
-git clone --depth 1 --branch ngspice-47 https://git.code.sf.net/p/ngspice/ngspice benchmarks/dynamic-numparam-888/.run/upstream
-spice-heavy python3 benchmarks/dynamic-numparam-888/compare.py
-python3 benchmarks/dynamic-numparam-888/test_receipt.py
-python3 benchmarks/dynamic-numparam-888/test_receipt.py --parity
+python3 benchmarks/dynamic-numparam-fix-888/verify.py
+pnpm -C packages/core exec vitest run src/subcircuit-dynamic-params-888.test.ts src/subcircuit-model-scope-854.test.ts src/parser/subckt-param-order-857.test.ts
+git clone --depth 1 --branch ngspice-47 https://git.code.sf.net/p/ngspice/ngspice benchmarks/dynamic-numparam-fix-888/.run/upstream
+spice-heavy python3 benchmarks/dynamic-numparam-fix-888/compare.py
 ```
 
 If `.run/upstream` already exists, use its pinned checkout instead of cloning again.
@@ -111,17 +139,15 @@ The runner refuses any source revision other than the full pin. Reference batche
 use spice-heavy. A rerun overwrites receipt.json, so preserve the baseline if comparing
 against a later implementation.
 
-The ordinary offline test has five checks and requires neither ngspice, Node, dependencies,
-network nor a source checkout. It verifies complete counts, deck hashes, same-byte command
-paths (relocatable), decoded raw values, native output, null failure metrics, recomputed
-max/RMS metrics, versions and cumulative child budget. If upstream exists it also verifies
-all six source hashes. It verifies the published baseline's known losses; it is not a
-claim of simulator parity.
+verify.py requires only Python. It verifies complete counts, deck hashes, same-byte
+command paths (relocatable), decoded raw values, native output, null failure metrics,
+recomputed max/RMS metrics, versions, matching source hashes, cumulative child budget,
+six baseline failures, two baseline losses, fixed parity and unchanged eight controls.
 
-`--parity` checks the future GREEN contract against the recorded native results and currently
-exits 1 with eight failing subcases. Rerun compare.py after a fix before using it as a
-GREEN gate. It does not silently execute or trust an unmeasured native implementation.
-RED is intentionally opt-in and not injected into unrelated root tests or CI.
+compare.py writes receipt.json, leaving before.json and after.json unchanged. Compare
+new receipt.json with preserved after.json for independent review. Do not rewrite
+historical evidence. The Vitest test executes the current implementation using the
+fresh baseline references, and is part of the ordinary suite.
 
 Build, lint and lexical test receipts are scoped alongside this file. The full-suite
 command writes ignored full-tests.log; its result and exact-head CI belong in the PR/card handoff.

@@ -1,0 +1,16 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5043e322/packages/core
+
+ ✓ src/subcircuit-nested-definition-826.test.ts (5 tests) 33ms
+ ✓ src/subcircuit-model-scope-854.test.ts (5 tests) 44ms
+ ✓ src/parser/subckt-model-expressions-882.test.ts (10 tests) 52ms
+ ✓ src/parser/subckt-param-order-857.test.ts (12 tests) 57ms
+ ✓ src/subcircuit-dynamic-params-888.test.ts (16 tests) 59ms
+ ✓ src/subcircuit-multiplicity-810.test.ts (14 tests) 79ms
+
+ Test Files  6 passed (6)
+      Tests  62 passed (62)
+   Start at  18:14:36
+   Duration  1.36s (transform 5.69s, setup 0ms, import 6.96s, tests 324ms, environment 0ms)
+
+JUNIT report written to /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5043e322/packages/core/test-results.xml

@@ -3310,6 +3310,7 @@ export class Circuit {
     depth = 1,
     scopes: readonly SubcircuitScope[] = [],
     inheritedMultiplicity = 1,
+    callerParams: Record<string, number> = this.parameterScope(),
   ): DeviceDescriptor[] {
     guard?.maximum('maxSubcircuitDepth', depth, 'compile');
     const key = subcktName.toUpperCase();
@@ -3340,11 +3341,10 @@ export class Circuit {
       portMap.set(def.ports[i].toUpperCase(), connectedPorts[i]);
     }
 
-    // ngspice numparam scope: top-level .params, shadowed by the parameters of
-    // the enclosing instance a nested definition lives in (#857), then by the
-    // subcircuit's parameters and the .params of its body.
-    const parentParams = definitionScopes[0]?.params ?? this.parameterScope();
-    const localParams: Record<string, number> = Object.create(parentParams) as Record<string, number>;
+    // ngspice-47 numparam searches the instance stack, not definition ancestry
+    // (#888). Each call gets fresh bindings over its caller, then ancestors and
+    // globals. Definition/model lookup remains lexical via definitionScopes.
+    const localParams: Record<string, number> = Object.create(callerParams) as Record<string, number>;
     const overrides = new Map(Object.entries(instanceParams).map(([k, v]) => [k.toUpperCase(), v]));
     // Defaults are evaluated in declaration order after the instance
     // overrides, so `p2={p1*2}` follows an overridden p1 (ngspice-47).
@@ -3749,6 +3749,7 @@ export class Circuit {
             depth + 1,
             bodyScopes,
             multiplicity,
+            localParams,
           );
           result.push(...nested);
           break;
