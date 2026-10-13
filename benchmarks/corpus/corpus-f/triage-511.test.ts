@@ -3,9 +3,10 @@ import { spawnSync } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
 import { describe, it } from 'node:test';
 import { resolve } from 'node:path';
-import { runFixture, type CorpusFReport } from './outcomes.js';
+import { compareExecutions } from '../../aggregate-report.js';
+import { runBoundedSimulate, runFixture, runNgspice, type CorpusFReport } from './outcomes.js';
 import type { CorpusFManifest } from './ingest.js';
-import { MATCH_THRESHOLD } from './lib.js';
+import { MATCH_THRESHOLD, NGSPICE_VNTOL, normalizedSignalErrors, pairedReferenceSeries } from './lib.js';
 import { withTmax } from './triage-detail.js';
 
 const ROOT = 'benchmarks/corpus/corpus-f';
@@ -105,7 +106,7 @@ describe('triage-detail --tmax rewrite', () => {
 // guard. The ltra2_2_line i(vs) residual (grid discretisation, #627 -> #592) matches on main 3b9c836f
 // (after #689 ngspice CKTtrunc step control; not bisected) and is now a regression guard too.
 const ngspiceVersion = spawnSync('ngspice', ['--version'], { encoding: 'utf8' });
-describe('unchanged-deck MOS1 triage rows (#590 fixed, ltra2 matches since 3b9c836f)', { skip: !/ngspice-47\b/.test(ngspiceVersion.stdout ?? '') }, () => {
+describe('unchanged-deck live triage rows (#590 fixed, ltra2 matches since 3b9c836f, fourbitadder #698)', { skip: !/ngspice-47\b/.test(ngspiceVersion.stdout ?? '') }, () => {
   async function run(id: string) {
     const manifest = JSON.parse(await readFile(resolve(ROOT, 'manifest.json'), 'utf8')) as CorpusFManifest;
     const fixture = manifest.circuits.find(candidate => candidate.id === id);
@@ -128,5 +129,48 @@ describe('unchanged-deck MOS1 triage rows (#590 fixed, ltra2 matches since 3b9c8
     const { result, worst } = await run('tests-transmission-ltra2-2-line-cir');
     assert.equal(result.outcome, 'matched');
     assert.ok(worst <= MATCH_THRESHOLD, `${worst} > ${MATCH_THRESHOLD}`);
+  });
+
+  // #698: the TTL NAND internal nodes x*.8 (75-125 uV peaks) carried 1-7 uV residuals above VNTOL
+  // on b1a1ff58. Bisected to transient step control: #689 (CKTtrunc) cut the default-step worst on
+  // those nodes to 0.33 uV and #758 (dctran first step and order) to 0.15 uV. With both engines at
+  // TMAX 10 ps the worst over all signals went 11.7 uV -> 4.14 uV (#689) -> 50 nV (#758). Pin both.
+  async function absoluteErrors(id: string, tmax?: string) {
+    const manifest = JSON.parse(await readFile(resolve(ROOT, 'manifest.json'), 'utf8')) as CorpusFManifest;
+    const circuit = manifest.circuits.find(candidate => candidate.id === id);
+    if (!circuit) throw new Error(`${id} is not a corpus-f fixture`);
+    const original = await readFile(resolve(circuit.localPath));
+    const input = tmax === undefined ? original : Buffer.from(withTmax(original.toString('utf8'), tmax));
+    const ngspice = await runNgspice(input, circuit);
+    const spiceTs = await runBoundedSimulate(input, {
+      id: circuit.id,
+      category: 'corpus-f',
+      analyses: circuit.analyses as never,
+      sourcePath: circuit.sourcePath,
+      sourceUrl: circuit.sourceUrl,
+      localPath: circuit.localPath,
+      sha256: circuit.sha256,
+      ngspice: { expectedStatus: 'pass' },
+      spiceTs: { expectedStatus: 'pass' },
+    });
+    assert.equal(ngspice.status, 'success');
+    assert.equal(spiceTs.status, 'success');
+    const { errors } = normalizedSignalErrors(compareExecutions(spiceTs, ngspice.execution), pairedReferenceSeries(spiceTs, ngspice.execution));
+    assert.equal(errors.length, 270);
+    return errors.sort((a, b) => b.absoluteMax - a.absoluteMax);
+  }
+
+  it('tests-general-fourbitadder-cir: uV-level NAND nodes within VNTOL of ngspice-47 at default steps (#698)', async () => {
+    // The 8 signals with ngspice peaks under 1 mV are the x6/x7 NAND Q3-emitter nodes x*.8 of #698
+    // (75-125 uV peaks; the next-smallest peak is 2 mV). Large-swing nodes keep ordinary sub-0.1%
+    // default-grid interpolation error and are scored by the published normalised metric instead.
+    const small = (await absoluteErrors('tests-general-fourbitadder-cir')).filter(error => error.ngspicePeak < 1e-3);
+    assert.equal(small.length, 8);
+    assert.ok(small[0].absoluteMax <= NGSPICE_VNTOL, `${small[0].signal}: ${small[0].absoluteMax} V > VNTOL`);
+  });
+
+  it('tests-general-fourbitadder-cir: every signal within VNTOL with both engines at TMAX 10 ps (#698)', async () => {
+    const [worst] = await absoluteErrors('tests-general-fourbitadder-cir', '1e-11');
+    assert.ok(worst.absoluteMax <= NGSPICE_VNTOL, `${worst.signal}: ${worst.absoluteMax} V > VNTOL`);
   });
 });
