@@ -16,7 +16,6 @@ import type { CorpusHManifest } from './ingest.js';
 const ROOT = 'benchmarks/corpus/corpus-h';
 const TLINES = 'kicad-qa-data-eeschema-spice-netlists-tlines-tlines-spice';
 const LEGACY = 'kicad-qa-data-eeschema-spice-netlists-legacy-sources-legacy-sources-spice';
-const MATCH_THRESHOLD = 0.01;
 
 interface Transient { time: number[]; voltage(node: string): number[] }
 
@@ -60,12 +59,18 @@ function lerp(x: number, [x0, y0]: [number, number], [x1, y1]: [number, number])
 }
 
 describe('#809 tlines.spice: matched 50 ohm lines are a 25 us delay of the PULSE source', () => {
-  it('spice-ts lossless T and lossless LTRA match the analytic delayed pulse at their own points', async () => {
+  it('spice-ts lossless T and lossless LTRA take ngspice-47\'s grid and its error at its own points (#791)', async () => {
     const tran = await transient(await fixture(TLINES));
-    // Lossless T: exact to rounding.
-    assert.ok(maxError(tran.time, tran.voltage('/z0_out'), t => pulse(t - 25e-6)) < 1e-9);
-    // LTRA (r=0, g=0) uses its own interpolated history; measured 2.9e-3 of the 1 V peak on 18419173.
-    assert.ok(maxError(tran.time, tran.voltage('/rlgc_out'), t => pulse(t - 25e-6)) < MATCH_THRESHOLD);
+    // Since #791 the lossless T steps like ngspice-47 TRA (no TD breakpoint, no node-voltage
+    // truncation), so spice-ts writes ngspice's 1126 points, including the 76.05 us point.
+    assert.equal(tran.time.length, 1126);
+    const index = tran.time.findIndex(t => Math.abs(t - 7.604999999999992e-5) < 1e-18);
+    assert.ok(index > 0, 'spice-ts has ngspice-47\'s 76.05 us point');
+    for (const node of ['/z0_out', '/rlgc_out']) {
+      assert.ok(Math.abs(tran.voltage(node)[index] - 0.9540322580645827) < 1e-9, node);
+      // ngspice-47's own error against the analytic delayed pulse is 0.00403 at its points.
+      assert.ok(maxError(tran.time, tran.voltage(node), t => pulse(t - 25e-6)) < 0.0041, node);
+    }
   });
 
   it('the published 0.045 is ngspice-47 interpolated across the 77 us corner it steps over', () => {

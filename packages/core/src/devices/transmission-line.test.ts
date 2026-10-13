@@ -17,17 +17,46 @@ RL output 0 ${loadResistance}
 .end
 `;
 
+/**
+ * ngspice-47 `ngspice -b -r` points of the mismatched (25 ohm source, 100 ohm
+ * load) fixture, which ngspice writes at 414 timepoints: the first load step,
+ * the source return and the second load step (#791).
+ */
+const NGSPICE_MISMATCHED_POINTS = 414;
+const NGSPICE_MISMATCHED: ReadonlyArray<{ time: number; node: string; value: number }> = [
+  { time: 6.024999999999984e-9, node: 'output', value: 0.2222222222220827 },
+  { time: 6.074999999999984e-9, node: 'output', value: 0.6666666666665237 },
+  { time: 1.102500000000001e-8, node: 'input', value: 0.7037037037037044 },
+  { time: 1.107500000000001e-8, node: 'input', value: 0.7777777777777789 },
+  { time: 1.602500000000005e-8, node: 'output', value: 0.8641975308641655 },
+  { time: 1.607500000000005e-8, node: 'output', value: 0.8148148148147826 },
+];
+
 describe('bounded lossless transmission line transient execution', () => {
   it('commits only accepted history and stays zero before source edge plus TD', async () => {
-    const result = await simulate(parse(fixture(50, 50)));
+    // The input capacitor's charge truncation rejects a trial step on the
+    // source edge; a rejected trial must not enter the line's history.
+    const result = await simulate(parse(fixture(50, 50).replace('.tran', 'CI input 0 10p\n.tran')));
     const transient = result.transient!;
     const output = transient.voltage('output');
     const beforeArrival = output.filter((_value, index) => transient.time[index] < 6e-9);
 
-    expect(result.convergence!.transient.lteRetries).toBeGreaterThan(0);
     expect(result.convergence!.transient.rejectedSteps).toBeGreaterThan(0);
-    expect(transient.time.some(time => time > 5.9e-9 && time < 6e-9)).toBe(true);
     expect(Math.max(...beforeArrival.map(Math.abs))).toBe(0);
+    expect(valueAtOrAfter(transient.time, output, 10e-9)).toBeCloseTo(0.5, 3);
+  });
+
+  it('steps and interpolates like ngspice-47 TRA: no TD breakpoint, no node-voltage truncation (#791)', async () => {
+    const result = await simulate(parse(fixture(25, 100)));
+    const transient = result.transient!;
+
+    expect(transient.time.length).toBe(NGSPICE_MISMATCHED_POINTS);
+    expect(transient.time.some(time => Math.abs(time - 5e-9) < 1e-15)).toBe(false);
+    for (const point of NGSPICE_MISMATCHED) {
+      const index = transient.time.findIndex(time => Math.abs(time - point.time) < 1e-18);
+      expect(index, `spice-ts has ngspice-47's point ${point.time}`).toBeGreaterThan(0);
+      expect(Math.abs(transient.voltage(point.node)[index] - point.value)).toBeLessThan(1e-9);
+    }
   });
 
   it('propagates a matched step by TD without a reflection', async () => {
