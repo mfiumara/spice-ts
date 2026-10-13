@@ -1,0 +1,38 @@
+{
+  "pid": 36637,
+  "code": 0,
+  "startNs": "109766109330666",
+  "closeNs": "109766145288916",
+  "wallMs": 35.95825,
+  "before": {
+    "loadavg": [
+      5.46923828125,
+      6.72509765625,
+      7.88232421875
+    ],
+    "processCount": 1233
+  },
+  "after": {
+    "loadavg": [
+      5.46923828125,
+      6.72509765625,
+      7.88232421875
+    ],
+    "processCount": 1233
+  },
+  "transientIterations": 238,
+  "id": "11-ngspice-native",
+  "continuousCertificationEnvelope": {
+    "start": {
+      "continuous": 109766.05222995832,
+      "monotonic": 6.477939208,
+      "realtime": 1791934051.128476
+    },
+    "end": {
+      "continuous": 109766.18286908332,
+      "monotonic": 6.608576291,
+      "realtime": 1791934051.259114
+    },
+    "error": null
+  }
+}

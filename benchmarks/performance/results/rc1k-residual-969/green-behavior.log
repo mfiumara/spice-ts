@@ -1,0 +1,22 @@
+failed to load config from /Users/mattiafiumara/repos/spicets/spice-ts/benchmarks/performance/rc1k-attribution.vitest.mjs
+
+⎯⎯⎯⎯⎯⎯⎯ Startup Error ⎯⎯⎯⎯⎯⎯⎯⎯
+Error: Build failed with 1 error:
+
+[31m[UNRESOLVED_ENTRY] Error:[0m Cannot resolve entry module ../../../../benchmarks/performance/rc1k-attribution.vitest.mjs.
+
+    at aggregateBindingErrorsIntoJsError (file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_d2157b6a/node_modules/.pnpm/rolldown@1.0.0-rc.15/node_modules/rolldown/dist/shared/error-w0u7biK-.mjs:48:18)
+    at unwrapBindingResult (file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_d2157b6a/node_modules/.pnpm/rolldown@1.0.0-rc.15/node_modules/rolldown/dist/shared/error-w0u7biK-.mjs:18:128)
+    at #build (file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_d2157b6a/node_modules/.pnpm/rolldown@1.0.0-rc.15/node_modules/rolldown/dist/shared/rolldown-build-DtGk-m96.mjs:3313:34)
+    at async bundleConfigFile (file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_d2157b6a/node_modules/.pnpm/vite@8.0.8_@types+node@25.5.2_esbuild@0.27.7_tsx@4.21.0/node_modules/vite/dist/node/chunks/node.js:34633:17)
+    at async bundleAndLoadConfigFile (file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_d2157b6a/node_modules/.pnpm/vite@8.0.8_@types+node@25.5.2_esbuild@0.27.7_tsx@4.21.0/node_modules/vite/dist/node/chunks/node.js:34541:18)
+    at async loadConfigFromFile (file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_d2157b6a/node_modules/.pnpm/vite@8.0.8_@types+node@25.5.2_esbuild@0.27.7_tsx@4.21.0/node_modules/vite/dist/node/chunks/node.js:34510:42)
+    at async resolveConfig (file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_d2157b6a/node_modules/.pnpm/vite@8.0.8_@types+node@25.5.2_esbuild@0.27.7_tsx@4.21.0/node_modules/vite/dist/node/chunks/node.js:34134:22)
+    at async _createServer (file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_d2157b6a/node_modules/.pnpm/vite@8.0.8_@types+node@25.5.2_esbuild@0.27.7_tsx@4.21.0/node_modules/vite/dist/node/chunks/node.js:26002:65)
+    at async createViteServer (file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_d2157b6a/node_modules/.pnpm/vitest@4.1.4_@types+node@25.5.2_@vitest+coverage-v8@4.1.4_jsdom@25.0.1_vite@8.0.8_@type_81e9f948ee64f9068caa359b469e36f8/node_modules/vitest/dist/chunks/cli-api.lDy4N9kC.js:8818:17)
+    at async createVitest (file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_d2157b6a/node_modules/.pnpm/vitest@4.1.4_@types+node@25.5.2_@vitest+coverage-v8@4.1.4_jsdom@25.0.1_vite@8.0.8_@type_81e9f948ee64f9068caa359b469e36f8/node_modules/vitest/dist/chunks/cli-api.lDy4N9kC.js:14188:18) {
+  errors: [Getter/Setter]
+}
+
+
+
