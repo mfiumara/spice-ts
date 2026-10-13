@@ -1,0 +1,27 @@
+BJT XCJC < 1 with RB > 0: B-C capacitance split across the base resistance (issue 861)
+vcc vcc 0 5
+vin in 0 dc 0 ac 1 pulse(0 0.2 10n 2n 2n 40n 100n)
+rs in x 50
+cin x b1 100n
+rb1 vcc b1 43k
+rb2 b1 0 10k
+rc1 vcc c1 3k
+re1 e1 0 200
+q1 c1 b1 e1 qn
+re2 vcc e2 1.5k
+q2 0 c1 e2 qp
+cl e2 0 2p
+.model qn npn (is=2e-16 bf=120 br=2 vaf=60 rb=300 rc=20 re=2 cje=1.5p cjc=3p
++ vjc=0.7 mjc=0.4 xcjc=0.35 tf=80p tr=5n cjs=1p fc=0.5)
+.model qp pnp (is=1e-16 bf=60 rb=150 rc=30 cje=1p cjc=2p xcjc=0.2 tf=200p)
+.control
+set numdgt=12
+op
+print v(c1) v(e1) v(e2) i(vcc)
+ac dec 2 1e5 1e9
+print vm(c1) vp(c1) vm(e2) vp(e2)
+tran 0.2n 120n
+linearize v(c1) v(e2)
+print v(c1) v(e2)
+.endc
+.end
