@@ -17,6 +17,7 @@ const validAnalyses = new Set(['op', 'dc', 'ac', 'tran', 'pz', 'pss']);
 const validFailureKinds = new Set(['parse', 'unsupported', 'convergence', 'execution']);
 const ids = new Set();
 const paths = new Set();
+const hashes = new Set();
 
 function sha256(bytes) {
   return createHash('sha256').update(bytes).digest('hex');
@@ -55,6 +56,12 @@ function classifyNgspice(output) {
     return 'unsupported';
   }
   return 'execution';
+}
+
+function ngspiceHasHardError(output) {
+  return /(^|\n)\s*(Error|Fatal):|fatal error|no circuit loaded|doAnalyses:|run simulation\(s\) aborted|timestep too small|singular matrix|unknown device type/i.test(
+    output,
+  );
 }
 
 async function fetchBytes(url) {
@@ -107,6 +114,9 @@ for (const field of requiredSourceFields) {
     failures.push(`source metadata missing: ${field}`);
   }
 }
+if (!/^[0-9a-f]{40}$/.test(manifest.source?.revision ?? '')) {
+  failures.push('source revision must be an immutable 40-character commit SHA');
+}
 if (manifest.circuits?.length !== 20) {
   failures.push(`expected exactly 20 circuits, found ${manifest.circuits?.length ?? 0}`);
 }
@@ -147,8 +157,10 @@ for (const circuit of manifest.circuits ?? []) {
   }
   if (ids.has(circuit.id)) failures.push(`${circuit.id}: duplicate id`);
   if (paths.has(circuit.localPath)) failures.push(`${circuit.id}: duplicate localPath`);
+  if (hashes.has(circuit.sha256)) failures.push(`${circuit.id}: duplicate fixture content`);
   ids.add(circuit.id);
   paths.add(circuit.localPath);
+  hashes.add(circuit.sha256);
 
   if (!categoryCounts.has(circuit.category)) {
     failures.push(`${circuit.id}: invalid category ${circuit.category}`);
@@ -253,10 +265,10 @@ for (const circuit of manifest.circuits ?? []) {
       } catch {
         rawSize = 0;
       }
-      if (!result.error && result.status === 0 && rawSize > 0) {
+      const output = `${result.stdout ?? ''}\n${result.stderr ?? ''}\n${result.error?.message ?? ''}`;
+      if (!result.error && result.status === 0 && rawSize > 0 && !ngspiceHasHardError(output)) {
         ngspiceObserved = { status: 'pass' };
       } else {
-        const output = `${result.stdout ?? ''}\n${result.stderr ?? ''}\n${result.error?.message ?? ''}`;
         ngspiceObserved = { status: 'fail', failureKind: classifyNgspice(output) };
       }
     } finally {
