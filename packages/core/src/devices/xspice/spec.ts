@@ -173,6 +173,19 @@ const D_DT: XspiceCodeModelSpec = {
   ],
 };
 
+/** s_xfer/ifspec.ifs; omitted ICs are expanded to zero at the model boundary. */
+const S_XFER: XspiceCodeModelSpec = {
+  name: 's_xfer',
+  connections: [{ ...input('in'), allowedTypes: ['v', 'vd', 'i', 'id'] }, output('out')],
+  params: [
+    real('in_offset', 0), real('gain', 1),
+    real('num_coeff', undefined, { vector: true, vectorBounds: [1, undefined] }),
+    real('den_coeff', undefined, { vector: true, vectorBounds: [1, undefined] }),
+    { name: 'int_ic', type: 'real', defaultValue: [], vector: true, nullAllowed: true },
+    real('denormalized_freq', 1),
+  ],
+};
+
 /** climit/ifspec.ifs */
 const CLIMIT: XspiceCodeModelSpec = {
   name: 'climit',
@@ -344,7 +357,7 @@ const DAC_BRIDGE: XspiceCodeModelSpec = {
 /** Implemented code models keyed by lower-case ngspice Spice_Model_Name. */
 export const XSPICE_CODE_MODEL_SPECS: ReadonlyMap<string, XspiceCodeModelSpec> = new Map(
   [
-    GAIN, SUMMER, MULT, DIVIDE, PWL, LIMIT, INT, D_DT,
+    GAIN, SUMMER, MULT, DIVIDE, PWL, LIMIT, INT, D_DT, S_XFER,
     CLIMIT, HYST, ILIMIT, SLEW, SINE, CMETER, LMETER, PSWITCH, ASWITCH,
     ADC_BRIDGE, DAC_BRIDGE,
     unaryGate('d_buffer'), unaryGate('d_inverter'),
