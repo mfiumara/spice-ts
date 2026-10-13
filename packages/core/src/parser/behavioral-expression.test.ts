@@ -157,6 +157,29 @@ describe('behavioral source expressions', () => {
     expect(evaluate('pwr(v(x),2)', { x: 3 })).toEqual({ value: 9, gradient: { x: 6 } });
   });
 
+  it('keeps the pow()/^ slope finite at a zero base with an exponent below 1 (#886)', () => {
+    // c*pwr(0, c-1) is a pole; ngspice-47 PTpwr moves the zero base to
+    // PTfudge_factor = gmin*1e-20 = 1e-32 (PSpice mode), so the slope is
+    // c*1e-32^(c-1): 0.5*1e16 for c = 0.5.
+    const fudge = 1e-12 * 1e-20;
+    for (const text of ['pow(v(x),0.5)', 'v(x)^0.5', 'v(x)**0.5']) {
+      const result = evaluate(text, { x: 0 });
+      expect(result.value).toBe(0);
+      expect(result.gradient.x).toBe(0.5 * Math.pow(fudge, -0.5));
+    }
+    // `-0.5` folds to one ngspice constant, so the literal-exponent rule applies.
+    expect(evaluate('pow(v(x),-0.5)', { x: 0 }).gradient.x).toBe(-0.5 * Math.pow(fudge, -1.5));
+    expect(evaluate('pow(v(x),-0.5)', { x: -1 })).toEqual({ value: 0, gradient: { x: 0.5 } });
+    expect(evaluate('v(x)^(1/2)', { x: 0 }).gradient.x).toBe(0.5 * Math.pow(fudge, -0.5));
+    // PSpice pwrs(x, a) = sgn(x)*pow(x, a): sgn(0) = 0 zeroes the finite slope.
+    expect(evaluate('pwrs(v(x),0.5)', { x: 0 })).toEqual({ value: 0, gradient: { x: 0 } });
+    // An exponent >= 1 has no pole and keeps ngspice's exact slope at 0.
+    expect(evaluate('pow(v(x),1)', { x: 0 })).toEqual({ value: 0, gradient: { x: 1 } });
+    expect(evaluate('pow(v(x),1.5)', { x: 0 })).toEqual({ value: 0, gradient: { x: 0 } });
+    // pwr(a,c) already differentiates through PTpower (0 at a zero base).
+    expect(evaluate('pwr(v(x),0.5)', { x: 0 })).toEqual({ value: 0, gradient: { x: 0 } });
+  });
+
   it('implements comparisons, logic and the ternary operator with zero derivatives', () => {
     const at = (x: number) => ({ x });
     expect(evaluate('v(x) > 1', at(2)).value).toBe(1);

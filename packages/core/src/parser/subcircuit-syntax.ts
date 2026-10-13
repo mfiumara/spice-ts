@@ -160,12 +160,12 @@ export interface SubcircuitBodyScope {
 export function splitNestedSubcircuits(lines: readonly ParsedLine[]): SubcircuitBodyScope {
   const body: ParsedLine[] = [];
   const definitions = new Map<string, SubcktDefinition>();
-  let nested: SubcktDefinition | null = null;
+  let nested: (SubcktDefinition & { bodyLines: number[] }) | null = null;
   let depth = 0;
   for (const line of lines) {
     const first = line.tokens[0]?.toUpperCase();
     if (nested === null) {
-      if (first === '.SUBCKT') nested = { ...parseSubcircuitHeader(line.raw), body: [] };
+      if (first === '.SUBCKT') nested = { ...parseSubcircuitHeader(line.raw), body: [], bodyLines: [] };
       else body.push(line);
       continue;
     }
@@ -177,6 +177,7 @@ export function splitNestedSubcircuits(lines: readonly ParsedLine[]): Subcircuit
     if (first === '.SUBCKT') depth++;
     else if (first === '.ENDS') depth--;
     nested.body.push(line.raw);
+    nested.bodyLines.push(line.lineNumber);
   }
   if (nested !== null) {
     throw new Error(`Missing .ends for subcircuit '${nested.name}'`);

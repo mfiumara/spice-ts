@@ -742,6 +742,21 @@ function ptPwr(a: number, b: number): number {
   return a < 0 ? -Math.pow(-a, b) : Math.pow(a, b);
 }
 
+/**
+ * PTpwr inside the `pow()`/`^` derivative tree. ngspice-47 PTpwr moves a zero
+ * base off the pole when the exponent is negative (`arg1 += PTfudge_factor`,
+ * gmin*1e-20) so the Jacobian stays finite; it applies that guard in PSpice
+ * compatibility mode, the mode whose `pwrs()` spice-ts always expands. In
+ * default mode ngspice-47 evaluates the slope as +Infinity, so `pow(V, 0.5)`
+ * starting from V = 0 relies on its sparse solver's Inf/NaN handling
+ * (converges when V moves off 0, aborts the .op when V stays at 0; #886).
+ * spice-ts applies the guard everywhere: only the Jacobian at a = 0 exactly
+ * changes, never a value or a slope ngspice computes finitely.
+ */
+function ptPwrSlope(a: number, b: number): number {
+  return ptPwr(a === 0 && b < 0 ? DIVIDE_FUDGE : a, b);
+}
+
 /** ngspice PTlog / PTlog10: -1e99 at 0, HUGE below. */
 function ptLog(x: number, log: (x: number) => number): number {
   if (x < 0) return Infinity;
@@ -820,6 +835,21 @@ function unaryFunction(name: BehavioralFunction, x: number): [value: number, slo
   }
 }
 
+/**
+ * Whether ngspice's parse tree holds `node` as one PT_CONSTANT: inpptree.c
+ * mkf folds a function of a constant (unary minus included, so `-0.5` is a
+ * constant) and mkb folds an operator on two constants. PTdifferentiate's
+ * literal-exponent and literal-base power rules test exactly that.
+ */
+function isConstantTree(node: BehavioralExpression): boolean {
+  switch (node.kind) {
+    case 'number': return true;
+    case 'negate': return isConstantTree(node.operand);
+    case 'binary': return isConstantTree(node.left) && isConstantTree(node.right);
+    default: return false;
+  }
+}
+
 /** ngspice rewrites `a OP b` as OP0(a - b) (eq0, ne0, gt0, lt0, ge0, le0). */
 function compare(op: BehavioralComparison, difference: number): number {
   switch (op) {
@@ -847,6 +877,11 @@ export function compileBehavioralExpression(expression: BehavioralExpression): C
    * exponent c gives c*pwr(a, c-1)*da (ngspice-47 keeps the sign of a here),
    * a literal base gives pow(a,b)*db*log|a|, otherwise
    * pow(a,b)*(b*da/a + db*log|a|).
+   *
+   * At a = 0 with c < 1, pwr(0, c-1) is +Infinity: Newton's very first
+   * iterate (all node voltages 0) would put an infinite entry in the
+   * Jacobian. The derivative uses {@link ptPwrSlope}, ngspice's own guard
+   * for this pole (PTpwr's PSpice-mode PTfudge_factor base, #886).
    */
   const powerGradient = (
     gradient: Float64Array,
@@ -857,7 +892,7 @@ export function compileBehavioralExpression(expression: BehavioralExpression): C
     literalBase: boolean,
   ): void => {
     if (literalExponent) {
-      const slope = b * ptPwr(a, b - 1);
+      const slope = b * ptPwrSlope(a, b - 1);
       for (let i = 0; i < size; i++) gradient[i] = slope * baseGradient[i];
       return;
     }
@@ -1037,8 +1072,8 @@ export function compileBehavioralExpression(expression: BehavioralExpression): C
     const left = build(leftNode);
     const right = build(rightNode);
     const leftGradient = new Float64Array(size);
-    const literalExponent = rightNode.kind === 'number';
-    const literalBase = leftNode.kind === 'number';
+    const literalExponent = isConstantTree(rightNode);
+    const literalBase = isConstantTree(leftNode);
     return (voltages, gradient, environment) => {
       const a = left(voltages, leftGradient, environment);
       const b = right(voltages, gradient, environment);
@@ -1083,8 +1118,8 @@ export function compileBehavioralExpression(expression: BehavioralExpression): C
     const left = build(leftNode);
     const right = build(rightNode);
     const leftGradient = new Float64Array(size);
-    const literalExponent = rightNode.kind === 'number';
-    const literalBase = leftNode.kind === 'number';
+    const literalExponent = isConstantTree(rightNode);
+    const literalBase = isConstantTree(leftNode);
     return (voltages, gradient, environment) => {
       const a = left(voltages, leftGradient, environment);
       const b = right(voltages, gradient, environment);

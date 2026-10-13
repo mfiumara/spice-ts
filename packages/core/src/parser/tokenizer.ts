@@ -45,7 +45,7 @@ const EXACT_ACCUMULATION_LIMIT = 2 ** 49;
  * matters for mantissas of 16 or more significant digits;
  * below that every step is exact on any build.
  */
-function accumulateDigits(mantissa: number, digits: string): number {
+export function accumulateDigits(mantissa: number, digits: string): number {
   let m = mantissa;
   for (let i = 0; i < digits.length; i++) {
     const code = digits.charCodeAt(i);

@@ -1,0 +1,5 @@
+{"circuit":"cmos-inverter-chain-tran","nodes":1000,"rounds":9,"wall":{"base":182.8,"branch":176,"speedup":1.051,"speedupRange":["1.017","1.116"]},"cpu":{"base":207.4,"branch":212.5,"speedup":1.007,"speedupRange":["0.963","1.206"]}}
+{"circuit":"cmos-inverter-chain-tran","nodes":10000,"rounds":9,"wall":{"base":2041.5,"branch":1947.5,"speedup":1.029,"speedupRange":["0.907","1.196"]},"cpu":{"base":2288.6,"branch":2222.8,"speedup":1.03,"speedupRange":["0.900","1.224"]}}
+{"circuit":"cmos-inverter-chain-tran","nodes":50000,"rounds":5,"wall":{"base":23907.9,"branch":19745.6,"speedup":1.121,"speedupRange":["0.998","1.376"]},"cpu":{"base":26221.7,"branch":22174.6,"speedup":1.06,"speedupRange":["0.987","1.307"]}}
+{"circuit":"rc-ladder-tran","nodes":10000,"rounds":15,"wall":{"base":210.1,"branch":219.9,"speedup":0.969,"speedupRange":["0.848","1.093"]},"cpu":{"base":291,"branch":301.7,"speedup":1.005,"speedupRange":["0.791","1.190"]}}
+{"circuit":"resistor-mesh-op","nodes":10000,"rounds":15,"wall":{"base":128.9,"branch":130.4,"speedup":0.984,"speedupRange":["0.856","1.425"]},"cpu":{"base":201.1,"branch":205.7,"speedup":1.004,"speedupRange":["0.741","1.300"]}}

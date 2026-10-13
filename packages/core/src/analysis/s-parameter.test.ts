@@ -149,6 +149,29 @@ describe('.sp S-parameter analysis', () => {
     expectComplex(sp.vector('SOpt')[1], [2.302652946236932e-05, 0.001446799515927517], 1);
   });
 
+  it('normalises two-port noise by CKTtemp, not resistor TEMP/T_ABS, like ngspice span.c (#846)', async () => {
+    // ngspice-47 (ngbehavior=psa), identical netlists: Cy follows each resistor's own
+    // temperature (resnoise.c) but span.c divides it by 4 k CKTtemp.
+    const hot = { cy: 2.0601819617401584e-21, nf: 52.929700636742879, nfmin: 52.929697886399083, rn: 4.9081399280579658e6 };
+    const decks: Array<[string, string, typeof hot]> = [
+      ['model T_ABS', TWO_PORT.replace('Rpt in x 100', 'Rpt in x RHOT 100').replace('R2 x out 10', 'R2 x out RHOT 10')
+        .replace('.sp', '.model RHOT RES(T_ABS=100)\n.sp'), hot],
+      ['instance temp=', TWO_PORT.replace('Rpt in x 100', 'Rpt in x 100 temp=100').replace('R2 x out 10', 'R2 x out 10 temp=100'), hot],
+      ['mixed instance temperatures', TWO_PORT.replace('Rpt in x 100', 'Rpt in x 100 temp=100').replace('R2 x out 10', 'R2 x out 10 dtemp=-20'),
+        { cy: 1.5467367805253214e-21, nf: 51.684788918340310, nfmin: 51.684786167872133, rn: 3.6849174935401436e6 }],
+      ['model T_ABS at .options temp=80', TWO_PORT.replace('Rpt in x 100', 'Rpt in x RHOT 100').replace('R2 x out 10', 'R2 x out RHOT 10')
+        .replace('.sp', '.model RHOT RES(T_ABS=100)\n.options temp=80\n.sp'),
+        { cy: 2.0601819617401584e-21, nf: 52.223495913963845, nfmin: 52.223493163622521, rn: 4.1715367390814060e6 }],
+    ];
+    for (const [label, deck, expected] of decks) {
+      const sp = (await simulate(deck)).sParameters!;
+      expect(Math.abs(sp.vector('Cy_2_2')[2].real - expected.cy), label).toBeLessThanOrEqual(1e-9 * 1e-21);
+      expect(Math.abs(sp.vector('NF')[2].real - expected.nf), label).toBeLessThanOrEqual(1e-8);
+      expect(Math.abs(sp.vector('NFmin')[2].real - expected.nfmin), label).toBeLessThanOrEqual(1e-8);
+      expect(Math.abs(sp.vector('Rn')[2].real - expected.rn) / expected.rn, label).toBeLessThanOrEqual(1e-9);
+    }
+  });
+
   it('computes the full noise correlation matrix for three ports', async () => {
     const result = await simulate(`three port sp noise
 V1 in 0 dc 0 ac 1 portnum 1 z0 100

@@ -762,6 +762,11 @@ export interface SubcktDefinition {
   params: Record<string, number | string>;
   /** Raw netlist lines between `.subckt` and `.ends` */
   body: string[];
+  /**
+   * Deck line number of each `body` line, so errors in the body point at the
+   * source card. Without it, errors give line numbers relative to the body.
+   */
+  bodyLines?: number[];
 }
 
 /** Sweep mode for .step directive */

@@ -14,6 +14,7 @@ const RESISTANCE_MIN = 1e-12;
 /** Instance parameters a `.model R` card may default (ngspice inpgmod.c instance defaults). */
 const MODEL_INSTANCE_DEFAULTS: Record<string, string> = {
   RESISTANCE: 'R', AC: 'AC', TC: 'TC1', SCALE: 'SCALE', NOISY: 'NOISY', NOISE: 'NOISY',
+  TEMP: 'TEMP', DTEMP: 'DTEMP',
 };
 
 export interface ResolvedResistor {
@@ -27,7 +28,8 @@ export interface ResolvedResistor {
  * ngspice-47 RESupdate_conduct does: an explicit value wins, then
  * `RSH * (L - 2*SHORT) / (W - 2*NARROW)` when `L*W*RSH > 0`, then the model `R`.
  * Instance `TC1`/`TC2`/`TCE` override the model's; any `TCE` selects the
- * exponential `1.01^(TCE*dT)` temperature factor.
+ * exponential `1.01^(TCE*dT)` temperature factor. A model `TEMP`/`DTEMP`
+ * (PSpice `T_ABS`/`T_REL_GLOBAL`, #846) defaults the instance's own.
  *
  * With none of those, ngspice warns and uses 1 mOhm (restemp.c). A given value
  * with `0 < |R| < 1e-12` is clamped to `+/-1e-12` (resparam.c RES_RESIST). An
@@ -87,6 +89,8 @@ export function resolveResistor(
       tc2: instance.TC2 ?? card.TC2 ?? card.TC2R,
       tce: instance.TCE ?? card.TCE,
       tnom: instance.TNOM ?? card.TNOM,
+      temperature: instance.TEMP,
+      deltaTemperature: instance.DTEMP,
       multiplier: instance.M,
       scale: instance.SCALE,
       acResistance: instance.AC,
