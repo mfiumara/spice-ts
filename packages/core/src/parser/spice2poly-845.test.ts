@@ -200,9 +200,7 @@ describe('SPICE2 POLY(n) controlled sources like ngspice-47 spice2poly (#845)', 
     'rin in inn 10k', 'rf inn out 47k',
     'xu1 0 inn vcc vee out boyle',
     'rl out 0 2k',
-    // ngspice-47 runs with trtol 1 once POLY sources make XSPICE 'A' devices
-    // (cktdojob.c); spice-ts B-sources do not trigger that yet (#862), so both decks set it.
-    '.options trtol=1',
+    // No .options trtol: the POLY sources lower it to 1 as in ngspice-47 (#862).
     analysis,
   );
 

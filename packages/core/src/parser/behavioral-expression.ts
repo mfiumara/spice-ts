@@ -66,6 +66,12 @@ export interface BehavioralInstanceParams {
   dtemp?: number;
   /** ngspice `reciproctc=1`: divide by the temperature factor instead. */
   reciproctc?: boolean;
+  /**
+   * spice-ts `spice2poly=1`: the source is a SPICE2 POLY(n) card, which
+   * ngspice-47 runs as an XSPICE 'A' device (enhtrans.c), so the circuit takes
+   * the XSPICE trtol of cktdojob.c (#862). The POLY translation sets it.
+   */
+  spice2poly?: boolean;
 }
 
 export type BehavioralSourceKind = 'current' | 'voltage';
@@ -87,7 +93,7 @@ const B_CARD = /^(\S+)\s+([^\s(),=]+)\s+([^\s(),=]+)\s*(.*)$/;
 const B_CARD_HEAD = /^(\s*[bB]\S*\s+[^\s(),=]+\s+[^\s(),=]+\s*)([iIvV]\s*=)([\s\S]*)$/;
 const ASSIGNMENT = /^([iv])\s*=\s*([\s\S]+)$/i;
 const INSTANCE_PARAMETER = /^([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(\S+)\s*/;
-const INSTANCE_PARAMETERS = new Set(['tc1', 'tc2', 'temp', 'dtemp', 'reciproctc']);
+const INSTANCE_PARAMETERS = new Set(['tc1', 'tc2', 'temp', 'dtemp', 'reciproctc', 'spice2poly']);
 
 class ExpressionError extends Error {}
 
@@ -120,7 +126,10 @@ export function parseBehavioralSourceCard(raw: string, lineNumber: number): Beha
   }
 }
 
-/** ngspice's lexer stops at `tc1=`, `tc2=`, `temp=`, `dtemp=` and `reciproctc=`. */
+/**
+ * ngspice's lexer stops at `tc1=`, `tc2=`, `temp=`, `dtemp=` and `reciproctc=`;
+ * spice-ts adds `spice2poly=` for translated POLY cards.
+ */
 function parseInstanceParameters(text: string): BehavioralInstanceParams {
   const params: BehavioralInstanceParams = {};
   let rest = text;
@@ -138,6 +147,7 @@ function parseInstanceParameters(text: string): BehavioralInstanceParams {
       throw new ExpressionError(`Behavioral source parameter '${match[1]}' needs a number, got '${match[2]}'`);
     }
     if (name === 'reciproctc') params.reciproctc = value === 1;
+    else if (name === 'spice2poly') params.spice2poly = value === 1;
     else params[name as 'tc1' | 'tc2' | 'temp' | 'dtemp'] = value;
     rest = rest.slice(match[0].length);
   }

@@ -2681,8 +2681,10 @@ export class Circuit {
       simulationOptions: {
         ...this._simulationOptions,
         // ngspice cktdojob.c: with 'A' devices present, trtol above 1 becomes
-        // the `xtrtol` variable (set by `.options XTRTOL=`) or else 1.
-        ...(xspiceInstances.size > 0 && (this._simulationOptions.trtol ?? DEFAULT_OPTIONS.trtol) > 1
+        // the `xtrtol` variable (set by `.options XTRTOL=`) or else 1. POLY
+        // sources are 'A' devices in ngspice-47 (enhtrans.c, #862).
+        ...((xspiceInstances.size > 0 || expandedDescriptors.some(desc => desc.behavioral?.params.spice2poly))
+          && (this._simulationOptions.trtol ?? DEFAULT_OPTIONS.trtol) > 1
           ? { trtol: this._xspiceTrtol ?? 1 }
           : {}),
       },
