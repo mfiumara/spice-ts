@@ -12,6 +12,18 @@ test('mixed-case requested names use canonical lower-case series keys like ngspi
   assert.deepEqual(Object.keys(result.signals), ['v(in)', 'i(v1)']);
 });
 
+test('live ngspice quit terminates later control blocks; canonical projections are rejected', { skip: !process.env.XYCE_BIN }, () => {
+  const source = 'quit probe\nV1 in 0 1\nR1 in 0 1k\n.control\nop\nprint v(in)\nquit 0\n.endc\n.control\necho UNREACHABLE_DC\ndc V1 0 2 1\nprint v(in)\n.endc\n.end\n';
+  const plan = canonicalize(source);
+  assert.ok(plan.limitations.includes('Multiple .control blocks need circuit-global execution semantics'));
+  assert.equal(plan.netlist, source);
+  assert.deepEqual(plan.changes, []);
+  assert.throws(() => projectAnalysis(plan, 1), /Multiple \.control blocks/);
+  const original = runNgspiceReference(plan.netlist);
+  assert.match(original.output ?? '', /v\(in\) = 1\.000000e\+00/);
+  assert.doesNotMatch(original.output ?? '', /UNREACHABLE_DC|No\. of Data Rows\s*:\s*3/);
+});
+
 test('live shared DEVICE options preserve ngspice settings and are recognized by Xyce', { skip: !process.env.XYCE_BIN }, async () => {
   const settings = ['TEMP=150', 'TNOM=40', 'GMIN=1e-8', 'TEMP=150 TNOM=40 GMIN=1e-8'];
   for (const option of settings) {

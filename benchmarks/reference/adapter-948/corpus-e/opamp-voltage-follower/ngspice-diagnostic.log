@@ -6,12 +6,12 @@ Circuit: 2 stage op-amp, conected as voltage follower 02/16/88
 
 
 
-Total elapsed time (seconds) = 0.007 
+Total elapsed time (seconds) = 0.004 
 
 Total DRAM available = 49152.000 MB.
-DRAM currently available = 14329.000 MB.
-Maximum ngspice program size =    9.906 MB.
-Current ngspice program size =    9.906 MB.
+DRAM currently available = 13663.156 MB.
+Maximum ngspice program size =    9.938 MB.
+Current ngspice program size =    9.938 MB.
 
 
 Error on line 52 or its substitute:

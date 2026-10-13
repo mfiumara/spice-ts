@@ -12,17 +12,17 @@ No. of Data Columns : 25
 
 No. of Data Rows : 501
 .print line ignored since rawfile was produced.
-Total elapsed time (seconds) = 0.007 
+Total elapsed time (seconds) = 0.011 
 Total DRAM available = 49152.000 MB.
-DRAM currently available = 14320.203 MB.
-Maximum ngspice program size =   10.391 MB.
-Current ngspice program size =   10.391 MB.
-26 page faults, 0 vol + 8 invol = 8 context switches.
+DRAM currently available = 13575.344 MB.
+Maximum ngspice program size =   10.438 MB.
+Current ngspice program size =   10.438 MB.
+26 page faults, 0 vol + 114 invol = 114 context switches.
 
 Number of lines in the deck = 32
-Netlist loading time = 0.000204
-Subckt and Param expansion time = 0.000195
-Netlist parsing time = 0.00017
+Netlist loading time = 0.00026
+Subckt and Param expansion time = 0.000326
+Netlist parsing time = 0.000294
 
 Nominal temperature = 27
 Operating temperature = 27
@@ -35,12 +35,12 @@ Circuit total non-zeroes = 0
 Transient timepoints = 0
 Accepted timepoints = 0
 Rejected timepoints = 0
-Total analysis time (seconds) = 0.004097
-Matrix load time = 0.000401
+Total analysis time (seconds) = 0.006071
+Matrix load time = 0.000648
 Matrix synchronize time = 0
-Matrix reorder time = 7.00001E-06
-Matrix factor time = 0.000132
-Matrix solve time = 0.000137
+Matrix reorder time = 1E-05
+Matrix factor time = 0.000216
+Matrix solve time = 0.000211
 Transient analysis time = 0
 Transient load time = 0
 Transient sync time = 0

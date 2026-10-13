@@ -6,12 +6,12 @@ Circuit: difpair ckt - simple differential pair
 
 
 
-Total elapsed time (seconds) = 0.005 
+Total elapsed time (seconds) = 0.004 
 
 Total DRAM available = 49152.000 MB.
-DRAM currently available = 14470.688 MB.
-Maximum ngspice program size =    9.906 MB.
-Current ngspice program size =    9.906 MB.
+DRAM currently available = 13638.719 MB.
+Maximum ngspice program size =    9.875 MB.
+Current ngspice program size =    9.875 MB.
 
 
 Error on line 48 or its substitute:

@@ -9,9 +9,9 @@ Circuit: # voltage source test
 Total elapsed time (seconds) = 0.003 
 
 Total DRAM available = 49152.000 MB.
-DRAM currently available = 14448.438 MB.
-Maximum ngspice program size =    9.828 MB.
-Current ngspice program size =    9.828 MB.
+DRAM currently available = 13638.719 MB.
+Maximum ngspice program size =    9.844 MB.
+Current ngspice program size =    9.844 MB.
 
 
 Error on line 8 or its substitute:

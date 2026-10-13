@@ -9,7 +9,7 @@ Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
 
 Using SPARSE 1.3 as Direct Linear Solver
 No. of Data Columns : 25  
- Reference value :  1.26231e-06
+ Reference value :  1.41120e-06
 No. of Data Rows : 2429
 .print line ignored since rawfile was produced.
 .plot line ignored since rawfile was produced.

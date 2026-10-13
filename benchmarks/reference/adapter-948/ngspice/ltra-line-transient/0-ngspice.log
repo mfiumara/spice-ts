@@ -25,12 +25,12 @@ vdd#branch                           -5.01e-12
 
 No. of Data Rows : 497
 
-Total analysis time (seconds) = 0.005026
+Total analysis time (seconds) = 0.00691
 
-Total elapsed time (seconds) = 0.008 
+Total elapsed time (seconds) = 0.011 
 
 Total DRAM available = 49152.000 MB.
-DRAM currently available = 14962.844 MB.
-Maximum ngspice program size =   10.297 MB.
-Current ngspice program size =   10.297 MB.
+DRAM currently available = 13895.578 MB.
+Maximum ngspice program size =   10.312 MB.
+Current ngspice program size =   10.312 MB.
 

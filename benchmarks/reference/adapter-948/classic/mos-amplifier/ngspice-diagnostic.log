@@ -40,21 +40,21 @@ vddn#branch                         0.00521514
 vccp#branch                        -0.00521514
 vin#branch                                   0
 
- Reference value :  1.31553e-06
+ Reference value :  5.24882e-06
 No. of Data Rows : 2429
 .print line ignored since rawfile was produced.
 .plot line ignored since rawfile was produced.
-Total elapsed time (seconds) = 0.381 
+Total elapsed time (seconds) = 0.323 
 Total DRAM available = 49152.000 MB.
-DRAM currently available = 14294.719 MB.
-Maximum ngspice program size =   10.266 MB.
-Current ngspice program size =   10.266 MB.
-24 page faults, 0 vol + 124 invol = 124 context switches.
+DRAM currently available = 13631.297 MB.
+Maximum ngspice program size =   10.297 MB.
+Current ngspice program size =   10.297 MB.
+24 page faults, 0 vol + 41 invol = 41 context switches.
 
 Number of lines in the deck = 39
-Netlist loading time = 0.00031
-Subckt and Param expansion time = 0.000448
-Netlist parsing time = 0.000411
+Netlist loading time = 0.000235
+Subckt and Param expansion time = 0.000316
+Netlist parsing time = 0.000291
 
 Nominal temperature = 27
 Operating temperature = 27
@@ -67,18 +67,18 @@ Circuit total non-zeroes = 0
 Transient timepoints = 3195
 Accepted timepoints = 2429
 Rejected timepoints = 766
-Total analysis time (seconds) = 0.374053
-Matrix load time = 0.279737
+Total analysis time (seconds) = 0.318223
+Matrix load time = 0.229837
 Matrix synchronize time = 0
-Matrix reorder time = 2.3E-05
-Matrix factor time = 0.029466
-Matrix solve time = 0.019588
-Transient analysis time = 0.372397
-Transient load time = 0.279007
+Matrix reorder time = 1.9E-05
+Matrix factor time = 0.027386
+Matrix solve time = 0.019348
+Transient analysis time = 0.317063
+Transient load time = 0.229396
 Transient sync time = 0
-Transient factor time = 0.029396
-Transient solve time = 0.019546
-Transient trunc time = 0.004299
+Transient factor time = 0.027341
+Transient solve time = 0.019318
+Transient trunc time = 0.003579
 Transient iterations for the last time point = 0
 AC analysis time = 0
 AC load time = 0

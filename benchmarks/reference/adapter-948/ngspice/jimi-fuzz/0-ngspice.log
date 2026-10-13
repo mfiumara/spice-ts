@@ -29,15 +29,15 @@ Node                                   Voltage
 v_v1#branch                       -0.000955929
 v_v2#branch                                  0
 
- Reference value :  5.37990e-01 Reference value :  1.14858e+00 Reference value :  1.74732e+00 Reference value :  2.34079e+00 Reference value :  2.91860e+00 Reference value :  3.56590e+00 Reference value :  4.13920e+00 Reference value :  4.78335e+00
+ Reference value :  6.80048e-01 Reference value :  1.37131e+00 Reference value :  2.05754e+00 Reference value :  2.74066e+00 Reference value :  3.43659e+00 Reference value :  4.14908e+00 Reference value :  4.79812e+00
 No. of Data Rows : 243504
 
-Total analysis time (seconds) = 2.18664
+Total analysis time (seconds) = 1.83608
 
-Total elapsed time (seconds) = 2.190 
+Total elapsed time (seconds) = 1.840 
 
 Total DRAM available = 49152.000 MB.
-DRAM currently available = 14934.031 MB.
-Maximum ngspice program size =   10.219 MB.
-Current ngspice program size =   10.219 MB.
+DRAM currently available = 14304.328 MB.
+Maximum ngspice program size =   10.172 MB.
+Current ngspice program size =   10.172 MB.
 

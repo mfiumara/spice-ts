@@ -3,7 +3,7 @@
 ***** Welcome to the Xyce(TM) Parallel Electronic Simulator
 *****
 ***** This is version XyceNF Release 7.10.0
-***** Date: Wed Oct 14 00:31:57 CEST 2026
+***** Date: Wed Oct 14 00:58:35 CEST 2026
 
 
 ***** Executing netlist input.cir
@@ -30,13 +30,13 @@
 	Number Failed Linear Solves:		0
 	Number Residual Evaluations:		387
 	Number Nonlinear Convergence Failures:	0
-	Total Residual Load Time:		0.000295877 seconds
-	Total Jacobian Load Time:		0.000245333 seconds
-	Total Linear Solution Time:		0.000684977 seconds
+	Total Residual Load Time:		0.000408173 seconds
+	Total Jacobian Load Time:		0.000311852 seconds
+	Total Linear Solution Time:		0.000898361 seconds
 
 
-***** Total Simulation Solvers Run Time: 0.00379086 seconds
-***** Total Elapsed Run Time:            0.00499701 seconds
+***** Total Simulation Solvers Run Time: 0.0051651 seconds
+***** Total Elapsed Run Time:            0.00671101 seconds
 *****
 ***** End of Xyce(TM) Simulation
 *****
@@ -44,20 +44,20 @@
 Timing summary of 1 processor
                  Stats                   Count       CPU Time              Wall Time
 ---------------------------------------- ----- --------------------- ---------------------
-Xyce                                         1        0.004 (100.0%)        0.005 (100.0%)
-  Analysis                                   1        0.003 (73.74%)        0.004 (68.66%)
-    DC Sweep                                 1        0.003 (73.66%)        0.004 (68.60%)
-      Solve                                101        0.002 (53.08%)        0.003 (45.81%)
-        Residual                           387        0.000 ( 9.29%)        0.000 ( 7.92%)
-        Jacobian                           286        0.000 ( 7.46%)        0.000 ( 6.30%)
-        Linear Solve                       286        0.001 (18.85%)        0.001 (14.27%)
-      Successful Step                      101        0.001 (17.99%)        0.001 (18.47%)
-  Netlist Import                             1        0.000 (11.53%)        0.001 (10.74%)
-    Parse Context                            1        0.000 ( 1.76%)        0.000 ( 1.89%)
-    Distribute Devices                       1        0.000 ( 5.13%)        0.000 ( 3.90%)
-    Verify Devices                           1        0.000 ( 0.05%)        0.000 ( 0.09%)
-    Instantiate                              1        0.000 ( 1.43%)        0.000 ( 1.04%)
-  Late Initialization                        1        0.000 ( 6.37%)        0.000 ( 5.70%)
-    Global Indices                           1        0.000 ( 0.89%)        0.000 ( 0.64%)
-  Setup Matrix Structure                     1        0.000 ( 1.30%)        0.000 ( 1.47%)
+Xyce                                         1        0.005 (100.0%)        0.007 (100.0%)
+  Analysis                                   1        0.004 (75.33%)        0.005 (70.54%)
+    DC Sweep                                 1        0.004 (75.27%)        0.005 (70.49%)
+      Solve                                101        0.003 (54.19%)        0.003 (47.60%)
+        Residual                           387        0.000 ( 9.71%)        0.001 ( 8.16%)
+        Jacobian                           286        0.000 ( 7.65%)        0.000 ( 6.44%)
+        Linear Solve                       286        0.001 (19.12%)        0.001 (14.64%)
+      Successful Step                      101        0.001 (18.21%)        0.001 (19.21%)
+  Netlist Import                             1        0.001 (11.02%)        0.001 (10.30%)
+    Parse Context                            1        0.000 ( 1.62%)        0.000 ( 1.82%)
+    Distribute Devices                       1        0.000 ( 5.07%)        0.000 ( 3.85%)
+    Verify Devices                           1        0.000 ( 0.04%)        0.000 ( 0.08%)
+    Instantiate                              1        0.000 ( 1.41%)        0.000 ( 1.04%)
+  Late Initialization                        1        0.000 ( 5.99%)        0.000 ( 5.24%)
+    Global Indices                           1        0.000 ( 0.91%)        0.000 ( 0.64%)
+  Setup Matrix Structure                     1        0.000 ( 1.21%)        0.000 ( 1.34%)
 

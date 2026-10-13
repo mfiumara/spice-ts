@@ -25,14 +25,14 @@ v1#branch                                    0
 No. of Data Rows : 1019
 .print line ignored since rawfile was produced.
 
-Total analysis time (seconds) = 0.003538
+Total analysis time (seconds) = 0.004532
 
-Total elapsed time (seconds) = 0.007 
+Total elapsed time (seconds) = 0.009 
 
 Total DRAM available = 49152.000 MB.
-DRAM currently available = 14448.438 MB.
-Maximum ngspice program size =   10.109 MB.
-Current ngspice program size =   10.109 MB.
+DRAM currently available = 13576.891 MB.
+Maximum ngspice program size =   10.094 MB.
+Current ngspice program size =   10.094 MB.
 
 
 Note: v1: dc value used for op instead of transient time=0 value.

@@ -59,10 +59,13 @@ Mechanical rules, with no fixture-name branches:
 
 - Standalone `.op` exports via Xyce `.print DC`. Both parsers return one sample
   on a synthetic zero grid.
-- Static `.control` analyses become dot cards. A single `run` uses existing
+- A single static `.control` block's analyses become dot cards. A single `run` uses existing
   static analyses. Output-only display/print/plot/listing/echo and terminal
   cleanup commands are recorded and removed. `alter`, `let`, conditional flow,
   solver `set`, repeated `run`, and mixed static/executed analyses are unsupported.
+  Multiple `.control` blocks are always unsupported: circuit-global termination,
+  cleanup and `run` state cannot be proven by independent static projections.
+  Rejection is atomic, retains original bytes, and disallows every projection.
 - `.print`, `.plot`, `.save`, `.probe`, listing/width/status cards and their
   continuations are removed from the shared deck before engine output is added.
 - Bookkeeping `.options` flags ACCT/NOACCT/LIST/NODE/POST/TRANS/NOPAGE are removed
@@ -137,6 +140,41 @@ Provenance is unchanged. Original fixtures and redistribution licences are recor
 in `benchmarks/SOURCES.md` and the five corpus manifests. These canonical copies
 are mechanically derived from those licensed originals. No new source was imported,
 so SOURCES.md, Linux/container installation scripts, and sibling lanes are untouched.
+
+## PR #965 cross-block remediation
+
+Review rejected `342d9bd1ddd7bc11f266063d8793a97c78baf6ee` because a later
+`.control` reset the terminal flag after `quit`, inventing an unreachable DC
+analysis. Rather than special-case that deck, the adapter now rejects all
+multi-block control programs. This also excludes apparently simple multiple
+blocks until circuit-global execution and plot/circuit cleanup have a proven
+static model. Established single-block OP, ordered analyses and `run` lowering
+remain covered and supported.
+
+`../remediation-red.log` reproduces the failure before the fix;
+`../remediation-green.log` passes all 9 targeted tests. The new regression checks
+quit followed by another block, cross-block remcirc/destroy/run, repeated runs,
+plain multiple-analysis blocks and an empty first block, including exact CRLF
+and trailing-whitespace preservation and rejection of every ordinal projection.
+`../remediation-live.log` passes 19 node tests with native tools enabled, including
+ngspice's actual OP-only execution after quit (later DC never reached).
+`../remediation-offline.log` passes 11 tests, with 8 live tests skipped.
+
+The guarded all-100 rerun refreshed `report.json`, source/output hashes and native
+logs. `../remediation-comparison.log` records comparison against the rejected
+head's receipt: all 100 fixture outcomes, transformations, losses and eligible
+and partial metrics are identical. Counts remain Xyce 30/16/54, ngspice 63/37,
+26 comparable, 54 unsupported, 9 transformed-with-loss, 11 native-failure.
+No fixture in this subset depended on multi-block lowering. The immutable
+bootstrap `../corpus-report.json` was not regenerated; its SHA-256 remains
+`1615dbc03728fc3a9cb2aaaec6e06c8dfb7f45e0e8aa1b7fbd67b5a4446f916f`.
+
+`../remediation-build.log` and `../remediation-lint.log` record passing gates.
+The initial guarded full suite passed before the additional live regression;
+the final rerun (`../remediation-full-tests.log`) exceeded the terminal's
+420-second tool limit under shared host load, with no failed assertion reported
+before termination. Required GitHub CI on the final exact head is the full gate;
+the timeout is not reported as a passing final full suite.
 
 Remaining unsupported settings, control programs, hierarchical output names,
 ahkab waveform/model dialects and native model gaps are explicitly retained in

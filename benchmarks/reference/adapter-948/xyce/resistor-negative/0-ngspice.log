@@ -12,12 +12,12 @@ No. of Data Columns : 3
 
 No. of Data Rows : 6
 
-Total analysis time (seconds) = 0.000695
+Total analysis time (seconds) = 0.000652
 
-Total elapsed time (seconds) = 0.006 
+Total elapsed time (seconds) = 0.005 
 
 Total DRAM available = 49152.000 MB.
-DRAM currently available = 14448.438 MB.
-Maximum ngspice program size =   10.062 MB.
-Current ngspice program size =   10.062 MB.
+DRAM currently available = 13576.891 MB.
+Maximum ngspice program size =   10.094 MB.
+Current ngspice program size =   10.094 MB.
 

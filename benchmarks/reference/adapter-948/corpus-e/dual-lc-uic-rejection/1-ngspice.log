@@ -14,12 +14,12 @@ Operating point simulation skipped by 'uic',
 
 No. of Data Rows : 1011
 
-Total analysis time (seconds) = 0.003299
+Total analysis time (seconds) = 0.004209
 
-Total elapsed time (seconds) = 0.006 
+Total elapsed time (seconds) = 0.008 
 
 Total DRAM available = 49152.000 MB.
-DRAM currently available = 14329.000 MB.
+DRAM currently available = 13663.156 MB.
 Maximum ngspice program size =   10.094 MB.
 Current ngspice program size =   10.094 MB.
 

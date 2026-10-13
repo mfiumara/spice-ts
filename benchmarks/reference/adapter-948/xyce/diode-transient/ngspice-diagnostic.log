@@ -6,12 +6,12 @@ Circuit: diode circuit netlist
 
 
 
-Total elapsed time (seconds) = 0.006 
+Total elapsed time (seconds) = 0.004 
 
 Total DRAM available = 49152.000 MB.
-DRAM currently available = 14294.719 MB.
-Maximum ngspice program size =    9.828 MB.
-Current ngspice program size =    9.828 MB.
+DRAM currently available = 13576.891 MB.
+Maximum ngspice program size =    9.859 MB.
+Current ngspice program size =    9.859 MB.
 
 
 Error on line 45 or its substitute:

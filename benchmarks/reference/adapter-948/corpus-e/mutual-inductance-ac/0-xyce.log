@@ -3,7 +3,7 @@
 ***** Welcome to the Xyce(TM) Parallel Electronic Simulator
 *****
 ***** This is version XyceNF Release 7.10.0
-***** Date: Wed Oct 14 00:31:59 CEST 2026
+***** Date: Wed Oct 14 00:58:37 CEST 2026
 
 
 ***** Executing netlist input.cir
@@ -32,13 +32,13 @@
 	Number Failed Linear Solves:		0
 	Number Residual Evaluations:		3
 	Number Nonlinear Convergence Failures:	0
-	Total Residual Load Time:		8.82149e-06 seconds
-	Total Jacobian Load Time:		5.96046e-06 seconds
-	Total Linear Solution Time:		4.81606e-05 seconds
+	Total Residual Load Time:		9.05991e-06 seconds
+	Total Jacobian Load Time:		5.00679e-06 seconds
+	Total Linear Solution Time:		3.79086e-05 seconds
 
 
-***** Total Simulation Solvers Run Time: 0.00107408 seconds
-***** Total Elapsed Run Time:            0.00317121 seconds
+***** Total Simulation Solvers Run Time: 0.000792027 seconds
+***** Total Elapsed Run Time:            0.00226283 seconds
 *****
 ***** End of Xyce(TM) Simulation
 *****
@@ -46,21 +46,21 @@
 Timing summary of 1 processor
                  Stats                   Count       CPU Time              Wall Time
 ---------------------------------------- ----- --------------------- ---------------------
-Xyce                                         1        0.002 (100.0%)        0.004 (100.0%)
-  Analysis                                   1        0.001 (25.95%)        0.001 (26.87%)
-    AC                                       1        0.001 (25.81%)        0.001 (26.78%)
-      DC Nonlinear Solve                     1        0.000 ( 6.55%)        0.000 ( 6.58%)
-        Residual                             3        0.000 ( 0.48%)        0.000 ( 0.30%)
-        Jacobian                             1        0.000 ( 0.22%)        0.000 ( 0.21%)
-        Linear Solve                         1        0.000 ( 1.58%)        0.000 ( 1.24%)
-      AC Linear Solve                        9        0.000 ( 5.32%)        0.000 ( 3.64%)
-        Linear Solve                         9        0.000 ( 5.23%)        0.000 ( 3.40%)
-  Netlist Import                             1        0.001 (31.84%)        0.001 (26.03%)
-    Parse Context                            1        0.000 ( 6.86%)        0.000 ( 6.11%)
-    Distribute Devices                       1        0.000 (12.18%)        0.000 ( 8.12%)
-    Verify Devices                           1        0.000 ( 0.13%)        0.000 ( 0.21%)
-    Instantiate                              1        0.000 ( 3.87%)        0.000 ( 2.57%)
-  Late Initialization                        1        0.000 (19.88%)        0.001 (15.01%)
-    Global Indices                           1        0.000 ( 1.63%)        0.000 ( 0.97%)
-  Setup Matrix Structure                     1        0.000 ( 2.64%)        0.000 ( 3.01%)
+Xyce                                         1        0.002 (100.0%)        0.003 (100.0%)
+  Analysis                                   1        0.000 (27.20%)        0.001 (27.38%)
+    AC                                       1        0.000 (27.08%)        0.001 (27.28%)
+      DC Nonlinear Solve                     1        0.000 ( 7.03%)        0.000 ( 7.21%)
+        Residual                             3        0.000 ( 0.55%)        0.000 ( 0.40%)
+        Jacobian                             1        0.000 ( 0.24%)        0.000 ( 0.18%)
+        Linear Solve                         1        0.000 ( 1.77%)        0.000 ( 1.37%)
+      AC Linear Solve                        9        0.000 ( 5.87%)        0.000 ( 3.94%)
+        Linear Solve                         9        0.000 ( 5.68%)        0.000 ( 3.58%)
+  Netlist Import                             1        0.000 (30.50%)        0.001 (24.87%)
+    Parse Context                            1        0.000 ( 7.09%)        0.000 ( 6.19%)
+    Distribute Devices                       1        0.000 ( 9.90%)        0.000 ( 6.33%)
+    Verify Devices                           1        0.000 ( 0.12%)        0.000 ( 0.18%)
+    Instantiate                              1        0.000 ( 3.91%)        0.000 ( 2.58%)
+  Late Initialization                        1        0.000 (19.68%)        0.000 (14.33%)
+    Global Indices                           1        0.000 ( 1.83%)        0.000 ( 1.06%)
+  Setup Matrix Structure                     1        0.000 ( 2.81%)        0.000 ( 3.00%)
 

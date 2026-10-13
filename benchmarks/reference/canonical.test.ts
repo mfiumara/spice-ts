@@ -37,6 +37,27 @@ test('run uses deck analyses once and ordered projections share the same circuit
     assert.ok(projected.includes('R1 in 0 1k'));
   }
 });
+test('multiple control blocks fail closed atomically, including cross-block termination and cleanup', () => {
+  for (const cards of [
+    '.control\nop\nquit 0\n.endc\n.control\ndc V1 0 2 1\n.endc',
+    '.control\nop\nremcirc\n.endc\n.control\ndc V1 0 2 1\n.endc',
+    '.control\nop\ndestroy all\n.endc\n.control\ndc V1 0 2 1\n.endc',
+    '.op\n.control\nremcirc\n.endc\n.control\nrun\n.endc',
+    '.op\n.control\ndestroy all\n.endc\n.control\nrun\n.endc',
+    '.op\n.control\nquit\n.endc\n.control\nrun\n.endc',
+    '.op\n.control\nrun\n.endc\n.control\nrun\n.endc',
+    '.control\nop\n.endc\n.control\ndc V1 0 2 1\n.endc',
+    '.control\n.endc\n.control\nop\n.endc',
+  ]) {
+    // CRLF and trailing whitespace must also survive rejected lowering verbatim.
+    const source = deck(cards).replace(/\n/g, '\r\n') + '  \r\n';
+    const plan = canonicalize(source);
+    assert.ok(plan.limitations.includes('Multiple .control blocks need circuit-global execution semantics'), cards);
+    assert.equal(plan.netlist, source, cards);
+    assert.deepEqual(plan.changes, [], cards);
+    for (const [ordinal] of plan.analyses.entries()) assert.throws(() => projectAnalysis(plan, ordinal), /Multiple \.control blocks/);
+  }
+});
 test('stateful and conditional control commands fail closed', () => {
   for (const command of ['alter V1 2', 'let x=1', 'if x > 0', 'set reltol=1e-3', 'reset', 'quit 1']) {
     assert.ok(canonicalize(deck(`.control\nop\n${command}\n.endc`)).limitations.length, command);

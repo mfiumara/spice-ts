@@ -34,6 +34,10 @@ export function canonicalize(source: string): CanonicalCircuit {
     if (index === 0) { records.push(record); continue; }
     if (!logical || logical.startsWith('*')) { records.push(record); continue; }
     if (/^\.control\b/i.test(logical)) {
+      // Control blocks share circuit/plot state and quit terminates the whole
+      // program. Independent static projections cannot prove cross-block
+      // execution, cleanup or run semantics; reject the entire source instead.
+      if (hasControl) limitations.push('Multiple .control blocks need circuit-global execution semantics');
       hasControl = true;
       if (control) limitations.push('Nested .control');
       control = true; terminal = false; changes.push('Lower static .control block'); continue;

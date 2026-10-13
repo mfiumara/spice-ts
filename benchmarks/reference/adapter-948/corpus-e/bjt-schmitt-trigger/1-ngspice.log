@@ -6,10 +6,10 @@ Circuit: schmitt ckt - ecl compatible schmitt trigger
 
 
 
-Total elapsed time (seconds) = 0.003 
+Total elapsed time (seconds) = 0.004 
 
 Total DRAM available = 49152.000 MB.
-DRAM currently available = 14470.688 MB.
+DRAM currently available = 13663.156 MB.
 Maximum ngspice program size =    9.875 MB.
 Current ngspice program size =    9.875 MB.
 
