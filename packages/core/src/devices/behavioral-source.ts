@@ -128,7 +128,9 @@ export abstract class BehavioralSource implements DeviceModel {
     const value = this.evaluateExpression();
     const previous = this.previousValue;
     const floor = this.branches.length > 0 ? tolerances.vntol : tolerances.abstol;
-    return Math.abs(previous - value) <= tolerances.reltol * Math.max(Math.abs(value), Math.abs(previous)) + floor;
+    // asrcconv.c flags non-convergence only when diff > tol, so a NaN
+    // difference (inf - inf at a +inf expression value) passes.
+    return !(Math.abs(previous - value) > tolerances.reltol * Math.max(Math.abs(value), Math.abs(previous)) + floor);
   }
 
   private evaluateExpression(): number {
