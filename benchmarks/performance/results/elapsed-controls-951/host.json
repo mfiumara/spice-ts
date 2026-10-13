@@ -1,0 +1,101 @@
+{
+  "platform": "macOS-27.0.1-arm64-arm-64bit",
+  "continuousClock": "mach_continuous_time",
+  "baselineRevision": "45650391b788c91084b6b472dbe1fdcefbd52a19",
+  "childLimitSeconds": 30.0,
+  "cumulativeLimitSeconds": 300.0,
+  "pollSeconds": 0.01,
+  "killReserveSeconds": 0.25,
+  "plan": [
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 1000,
+      "variant": "baseline"
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 1000,
+      "variant": "control"
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 1000,
+      "variant": "baseline"
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 1000,
+      "variant": "control"
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 1000,
+      "variant": "baseline"
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 1000,
+      "variant": "control"
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 10000,
+      "variant": "baseline"
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 10000,
+      "variant": "control"
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "variant": "baseline"
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "variant": "control"
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 10000,
+      "variant": "baseline"
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 10000,
+      "variant": "control"
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 50000,
+      "variant": "baseline"
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 50000,
+      "variant": "control"
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "variant": "baseline"
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "variant": "control"
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 50000,
+      "variant": "baseline"
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 50000,
+      "variant": "control"
+    }
+  ]
+}

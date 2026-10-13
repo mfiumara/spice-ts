@@ -1,0 +1,21 @@
+{
+  "planned": 18,
+  "started": 17,
+  "completed": 16,
+  "censored": 1,
+  "stopReason": "deadline-reserve",
+  "start": {
+    "continuous": 101990.04142712499,
+    "monotonic": 0.03450325,
+    "realtime": 1791926275.042167
+  },
+  "end": {
+    "continuous": 102042.56804508332,
+    "monotonic": 52.561118166,
+    "realtime": 1791926327.568824
+  },
+  "actualRunSeconds": 52.526617958326824,
+  "sumChildActualSeconds": 52.515188166711596,
+  "deadlineAndBudgetCertified": false,
+  "allStartedProcessGroupsGone": true
+}

@@ -1,0 +1,819 @@
+{
+  "planned": 18,
+  "started": 17,
+  "completed": 16,
+  "censored": 1,
+  "stopReason": "deadline-reserve",
+  "actualRunSeconds": 52.526617958326824,
+  "maxChildSeconds": 29.80141275000642,
+  "clockDisagreements": [],
+  "observedBoundsSatisfied": true,
+  "fullCalibrationCompleted": false,
+  "pairedSimulationPhases": 16,
+  "pairedFactorPhases": 6,
+  "calibration": {
+    "validatedParentIntervals": 18,
+    "validatedNodeLifetimes": 16,
+    "missingNodeLifetimes": [
+      "16-cmos-inverter-chain-tran-50000-baseline"
+    ],
+    "maxParentMonotonicDisagreementMs": 0.0030423268242429913,
+    "maxParentRealtimeDisagreementMs": 0.03914616536349058,
+    "maxNodeRealtimeDisagreementMs": 0.9187919999999394
+  },
+  "comparisons": [
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 1000,
+      "mode": "simulate",
+      "phase": "cold",
+      "baselineMs": 66.996125,
+      "controlMs": 69.546875,
+      "baselineStatus": "ok",
+      "controlStatus": "ok",
+      "controlDifferencePercent": 3.8073097511236664,
+      "invariants": {
+        "outputSha256": "6a650522805562c8018777ab78a344668d2fb12038fd6e4fcfd7cc3302c4e8a7",
+        "deckSha256": "0944ed6b76f64f56c8e04b48919f1e12b9de19df4e5a08708c4be314fa7a91b7",
+        "vectors": 1002,
+        "values": 120240,
+        "actualNodes": 1000,
+        "convergence": {
+          "dc": {
+            "newtonIterations": 1,
+            "acceptedSolves": 1,
+            "rejectedSolves": 0,
+            "sourceStepAttempts": 0,
+            "sourceStepFailures": 0,
+            "gminStepAttempts": 0,
+            "gminStepFailures": 0,
+            "failure": null
+          },
+          "transient": {
+            "acceptedSteps": 119,
+            "rejectedSteps": 0,
+            "newtonIterations": 238,
+            "nrRetries": 0,
+            "lteRetries": 0,
+            "minimumAcceptedTimestep": 1.0000000000000001e-11,
+            "failure": null
+          }
+        }
+      }
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 1000,
+      "mode": "simulate",
+      "phase": "warm",
+      "baselineMs": 45.07179199999999,
+      "controlMs": 47.83070799999999,
+      "baselineStatus": "ok",
+      "controlStatus": "ok",
+      "controlDifferencePercent": 6.12115888358733,
+      "invariants": {
+        "outputSha256": "6a650522805562c8018777ab78a344668d2fb12038fd6e4fcfd7cc3302c4e8a7",
+        "deckSha256": "0944ed6b76f64f56c8e04b48919f1e12b9de19df4e5a08708c4be314fa7a91b7",
+        "vectors": 1002,
+        "values": 120240,
+        "actualNodes": 1000,
+        "convergence": {
+          "dc": {
+            "newtonIterations": 1,
+            "acceptedSolves": 1,
+            "rejectedSolves": 0,
+            "sourceStepAttempts": 0,
+            "sourceStepFailures": 0,
+            "gminStepAttempts": 0,
+            "gminStepFailures": 0,
+            "failure": null
+          },
+          "transient": {
+            "acceptedSteps": 119,
+            "rejectedSteps": 0,
+            "newtonIterations": 238,
+            "nrRetries": 0,
+            "lteRetries": 0,
+            "minimumAcceptedTimestep": 1.0000000000000001e-11,
+            "failure": null
+          }
+        }
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 1000,
+      "mode": "simulate",
+      "phase": "cold",
+      "baselineMs": 33.95075,
+      "controlMs": 33.870583,
+      "baselineStatus": "ok",
+      "controlStatus": "ok",
+      "controlDifferencePercent": -0.23612733150223386,
+      "invariants": {
+        "outputSha256": "07c7b7f8d8e21c2a963959d6e080707a4e465f349ad3d4757598b4d70ab23999",
+        "deckSha256": "6c6d5adb109cdde9ac844c3346135f4e7ffc352626b2f3c430598c0ebd9d8d40",
+        "vectors": 1025,
+        "values": 1025,
+        "actualNodes": 1024,
+        "convergence": {
+          "dc": {
+            "newtonIterations": 2,
+            "acceptedSolves": 1,
+            "rejectedSolves": 0,
+            "sourceStepAttempts": 0,
+            "sourceStepFailures": 0,
+            "gminStepAttempts": 0,
+            "gminStepFailures": 0,
+            "failure": null
+          },
+          "transient": {
+            "acceptedSteps": 0,
+            "rejectedSteps": 0,
+            "newtonIterations": 0,
+            "nrRetries": 0,
+            "lteRetries": 0,
+            "minimumAcceptedTimestep": null,
+            "failure": null
+          }
+        }
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 1000,
+      "mode": "simulate",
+      "phase": "warm",
+      "baselineMs": 23.091207999999995,
+      "controlMs": 20.761250000000004,
+      "baselineStatus": "ok",
+      "controlStatus": "ok",
+      "controlDifferencePercent": -10.090238674390662,
+      "invariants": {
+        "outputSha256": "07c7b7f8d8e21c2a963959d6e080707a4e465f349ad3d4757598b4d70ab23999",
+        "deckSha256": "6c6d5adb109cdde9ac844c3346135f4e7ffc352626b2f3c430598c0ebd9d8d40",
+        "vectors": 1025,
+        "values": 1025,
+        "actualNodes": 1024,
+        "convergence": {
+          "dc": {
+            "newtonIterations": 2,
+            "acceptedSolves": 1,
+            "rejectedSolves": 0,
+            "sourceStepAttempts": 0,
+            "sourceStepFailures": 0,
+            "gminStepAttempts": 0,
+            "gminStepFailures": 0,
+            "failure": null
+          },
+          "transient": {
+            "acceptedSteps": 0,
+            "rejectedSteps": 0,
+            "newtonIterations": 0,
+            "nrRetries": 0,
+            "lteRetries": 0,
+            "minimumAcceptedTimestep": null,
+            "failure": null
+          }
+        }
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 1000,
+      "mode": "isolate",
+      "phase": "cold",
+      "baselineMs": 9.939084000000001,
+      "controlMs": 9.663666,
+      "baselineStatus": "ok",
+      "controlStatus": "ok",
+      "controlDifferencePercent": -2.7710601902549814,
+      "invariants": {
+        "factorSha256": "03dae34f2766bce0f3b95161bc4fc881b0027e167a4aebd60d020291809a250a",
+        "solutionSha256": "eec390653c63d61c241fdaf66efb50bf8415005cb447afe001b29b7db5ef46c8",
+        "matrixSha256": "7b7bc3ff915c881ec5dbb46f568cf8437d7413981834d02ad4f299bb17e44dc6",
+        "rhsSha256": "1ec471955155745cec3c4ea343e74fe4ce63cfc0a7495b07dc89b2de09182887",
+        "numericFactorizations": 1,
+        "pivotReuseFactorizations": 0,
+        "supernodalUpdates": 1231,
+        "factorNonzeros": 23088,
+        "initialUCapacity": 3010,
+        "finalUCapacity": 24080,
+        "usedU": 12057
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 1000,
+      "mode": "isolate",
+      "phase": "warm",
+      "baselineMs": 1.484958000000006,
+      "controlMs": 1.5075000000000003,
+      "baselineStatus": "ok",
+      "controlStatus": "ok",
+      "controlDifferencePercent": 1.5180227319556705,
+      "invariants": {
+        "factorSha256": "03dae34f2766bce0f3b95161bc4fc881b0027e167a4aebd60d020291809a250a",
+        "solutionSha256": "eec390653c63d61c241fdaf66efb50bf8415005cb447afe001b29b7db5ef46c8",
+        "matrixSha256": "7b7bc3ff915c881ec5dbb46f568cf8437d7413981834d02ad4f299bb17e44dc6",
+        "rhsSha256": "1ec471955155745cec3c4ea343e74fe4ce63cfc0a7495b07dc89b2de09182887",
+        "numericFactorizations": 1,
+        "pivotReuseFactorizations": 0,
+        "supernodalUpdates": 1231,
+        "factorNonzeros": 23088,
+        "initialUCapacity": 3010,
+        "finalUCapacity": 24080,
+        "usedU": 12057
+      }
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 1000,
+      "mode": "simulate",
+      "phase": "cold",
+      "baselineMs": 270.882292,
+      "controlMs": 279.778417,
+      "baselineStatus": "ok",
+      "controlStatus": "ok",
+      "controlDifferencePercent": 3.2841294033350676,
+      "invariants": {
+        "outputSha256": "8301f2834fc8157f9c23bc1eb9044e09fdd90e180a32271104a1d1ad600d1f11",
+        "deckSha256": "1a9866593c778a9fa26e23c1916c7b00b1bdb1adc2e7a246d9e3f4aa4f1ca1e1",
+        "vectors": 1003,
+        "values": 214642,
+        "actualNodes": 1000,
+        "convergence": {
+          "dc": {
+            "newtonIterations": 138,
+            "acceptedSolves": 18,
+            "rejectedSolves": 0,
+            "sourceStepAttempts": 0,
+            "sourceStepFailures": 0,
+            "gminStepAttempts": 20,
+            "gminStepFailures": 2,
+            "failure": null
+          },
+          "transient": {
+            "acceptedSteps": 213,
+            "rejectedSteps": 0,
+            "newtonIterations": 466,
+            "nrRetries": 0,
+            "lteRetries": 0,
+            "minimumAcceptedTimestep": 1e-13,
+            "failure": null
+          }
+        }
+      }
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 1000,
+      "mode": "simulate",
+      "phase": "warm",
+      "baselineMs": 190.37154200000003,
+      "controlMs": 196.55224999999996,
+      "baselineStatus": "ok",
+      "controlStatus": "ok",
+      "controlDifferencePercent": 3.2466554271015635,
+      "invariants": {
+        "outputSha256": "8301f2834fc8157f9c23bc1eb9044e09fdd90e180a32271104a1d1ad600d1f11",
+        "deckSha256": "1a9866593c778a9fa26e23c1916c7b00b1bdb1adc2e7a246d9e3f4aa4f1ca1e1",
+        "vectors": 1003,
+        "values": 214642,
+        "actualNodes": 1000,
+        "convergence": {
+          "dc": {
+            "newtonIterations": 138,
+            "acceptedSolves": 18,
+            "rejectedSolves": 0,
+            "sourceStepAttempts": 0,
+            "sourceStepFailures": 0,
+            "gminStepAttempts": 20,
+            "gminStepFailures": 2,
+            "failure": null
+          },
+          "transient": {
+            "acceptedSteps": 213,
+            "rejectedSteps": 0,
+            "newtonIterations": 466,
+            "nrRetries": 0,
+            "lteRetries": 0,
+            "minimumAcceptedTimestep": 1e-13,
+            "failure": null
+          }
+        }
+      }
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 10000,
+      "mode": "simulate",
+      "phase": "cold",
+      "baselineMs": 333.343292,
+      "controlMs": 340.55641699999995,
+      "baselineStatus": "ok",
+      "controlStatus": "ok",
+      "controlDifferencePercent": 2.1638728521346406,
+      "invariants": {
+        "outputSha256": "cfed768fddaa3d8f6f44396c0b98d1e1101231083774afcf4f993b888a787ede",
+        "deckSha256": "eb21933fd99fcbc32276816a4f389ba216dcdddc29683551a67f606f352dfca7",
+        "vectors": 10002,
+        "values": 1200240,
+        "actualNodes": 10000,
+        "convergence": {
+          "dc": {
+            "newtonIterations": 1,
+            "acceptedSolves": 1,
+            "rejectedSolves": 0,
+            "sourceStepAttempts": 0,
+            "sourceStepFailures": 0,
+            "gminStepAttempts": 0,
+            "gminStepFailures": 0,
+            "failure": null
+          },
+          "transient": {
+            "acceptedSteps": 119,
+            "rejectedSteps": 0,
+            "newtonIterations": 238,
+            "nrRetries": 0,
+            "lteRetries": 0,
+            "minimumAcceptedTimestep": 1.0000000000000001e-11,
+            "failure": null
+          }
+        }
+      }
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 10000,
+      "mode": "simulate",
+      "phase": "warm",
+      "baselineMs": 255.06708300000003,
+      "controlMs": 256.51141699999994,
+      "baselineStatus": "ok",
+      "controlStatus": "ok",
+      "controlDifferencePercent": 0.5662565247589901,
+      "invariants": {
+        "outputSha256": "cfed768fddaa3d8f6f44396c0b98d1e1101231083774afcf4f993b888a787ede",
+        "deckSha256": "eb21933fd99fcbc32276816a4f389ba216dcdddc29683551a67f606f352dfca7",
+        "vectors": 10002,
+        "values": 1200240,
+        "actualNodes": 10000,
+        "convergence": {
+          "dc": {
+            "newtonIterations": 1,
+            "acceptedSolves": 1,
+            "rejectedSolves": 0,
+            "sourceStepAttempts": 0,
+            "sourceStepFailures": 0,
+            "gminStepAttempts": 0,
+            "gminStepFailures": 0,
+            "failure": null
+          },
+          "transient": {
+            "acceptedSteps": 119,
+            "rejectedSteps": 0,
+            "newtonIterations": 238,
+            "nrRetries": 0,
+            "lteRetries": 0,
+            "minimumAcceptedTimestep": 1.0000000000000001e-11,
+            "failure": null
+          }
+        }
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "mode": "simulate",
+      "phase": "cold",
+      "baselineMs": 192.72854200000003,
+      "controlMs": 200.60770799999997,
+      "baselineStatus": "ok",
+      "controlStatus": "ok",
+      "controlDifferencePercent": 4.088219585036823,
+      "invariants": {
+        "outputSha256": "7fe66c8319033d70158a6b010fa0f98b7d9374c27dbd0a855515f8087f43628f",
+        "deckSha256": "c88e6076daf2523437e3da014d7a3c329f679a7405f789530c5c805f447ed0dc",
+        "vectors": 10001,
+        "values": 10001,
+        "actualNodes": 10000,
+        "convergence": {
+          "dc": {
+            "newtonIterations": 2,
+            "acceptedSolves": 1,
+            "rejectedSolves": 0,
+            "sourceStepAttempts": 0,
+            "sourceStepFailures": 0,
+            "gminStepAttempts": 0,
+            "gminStepFailures": 0,
+            "failure": null
+          },
+          "transient": {
+            "acceptedSteps": 0,
+            "rejectedSteps": 0,
+            "newtonIterations": 0,
+            "nrRetries": 0,
+            "lteRetries": 0,
+            "minimumAcceptedTimestep": null,
+            "failure": null
+          }
+        }
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "mode": "simulate",
+      "phase": "warm",
+      "baselineMs": 128.08220899999998,
+      "controlMs": 132.159625,
+      "baselineStatus": "ok",
+      "controlStatus": "ok",
+      "controlDifferencePercent": 3.1834366629326594,
+      "invariants": {
+        "outputSha256": "7fe66c8319033d70158a6b010fa0f98b7d9374c27dbd0a855515f8087f43628f",
+        "deckSha256": "c88e6076daf2523437e3da014d7a3c329f679a7405f789530c5c805f447ed0dc",
+        "vectors": 10001,
+        "values": 10001,
+        "actualNodes": 10000,
+        "convergence": {
+          "dc": {
+            "newtonIterations": 2,
+            "acceptedSolves": 1,
+            "rejectedSolves": 0,
+            "sourceStepAttempts": 0,
+            "sourceStepFailures": 0,
+            "gminStepAttempts": 0,
+            "gminStepFailures": 0,
+            "failure": null
+          },
+          "transient": {
+            "acceptedSteps": 0,
+            "rejectedSteps": 0,
+            "newtonIterations": 0,
+            "nrRetries": 0,
+            "lteRetries": 0,
+            "minimumAcceptedTimestep": null,
+            "failure": null
+          }
+        }
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "mode": "isolate",
+      "phase": "cold",
+      "baselineMs": 57.93608400000001,
+      "controlMs": 56.041833,
+      "baselineStatus": "ok",
+      "controlStatus": "ok",
+      "controlDifferencePercent": -3.269553047458318,
+      "invariants": {
+        "factorSha256": "bfc036db6581f4c96c6d1bae520f301892f83512fd3ff7255215b643f5863d70",
+        "solutionSha256": "b392349e2d28754432a5a0cbd1eb6a42a6535672563108a9f65c7b3b29ef25d0",
+        "matrixSha256": "c8bd46313e94e3ede1c8be3a2d091a755ae7f8744bf8954701a46fb6c721c5d0",
+        "rhsSha256": "00fdb82df70687d2c65b20e7dcab1e2699104ed8e903fa8c50e11484b2f9a18f",
+        "numericFactorizations": 1,
+        "pivotReuseFactorizations": 0,
+        "supernodalUpdates": 16101,
+        "factorNonzeros": 396986,
+        "initialUCapacity": 29802,
+        "finalUCapacity": 238416,
+        "usedU": 203494
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "mode": "isolate",
+      "phase": "warm",
+      "baselineMs": 22.200874999999996,
+      "controlMs": 21.257666999999998,
+      "baselineStatus": "ok",
+      "controlStatus": "ok",
+      "controlDifferencePercent": -4.248517231865856,
+      "invariants": {
+        "factorSha256": "bfc036db6581f4c96c6d1bae520f301892f83512fd3ff7255215b643f5863d70",
+        "solutionSha256": "b392349e2d28754432a5a0cbd1eb6a42a6535672563108a9f65c7b3b29ef25d0",
+        "matrixSha256": "c8bd46313e94e3ede1c8be3a2d091a755ae7f8744bf8954701a46fb6c721c5d0",
+        "rhsSha256": "00fdb82df70687d2c65b20e7dcab1e2699104ed8e903fa8c50e11484b2f9a18f",
+        "numericFactorizations": 1,
+        "pivotReuseFactorizations": 0,
+        "supernodalUpdates": 16101,
+        "factorNonzeros": 396986,
+        "initialUCapacity": 29802,
+        "finalUCapacity": 238416,
+        "usedU": 203494
+      }
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 10000,
+      "mode": "simulate",
+      "phase": "cold",
+      "baselineMs": 2141.5585,
+      "controlMs": 2127.4272499999997,
+      "baselineStatus": "ok",
+      "controlStatus": "ok",
+      "controlDifferencePercent": -0.6598582294156552,
+      "invariants": {
+        "outputSha256": "43bfa25cd2463b7b6ee4b14961087467de6fc8379be8a7ffaec45e83dcdd6915",
+        "deckSha256": "2ce663326238609299d8628016b1211632f1474e9d40b6c39747fff964999a18",
+        "vectors": 10003,
+        "values": 2140642,
+        "actualNodes": 10000,
+        "convergence": {
+          "dc": {
+            "newtonIterations": 226,
+            "acceptedSolves": 25,
+            "rejectedSolves": 1,
+            "sourceStepAttempts": 0,
+            "sourceStepFailures": 0,
+            "gminStepAttempts": 29,
+            "gminStepFailures": 4,
+            "failure": null
+          },
+          "transient": {
+            "acceptedSteps": 213,
+            "rejectedSteps": 0,
+            "newtonIterations": 466,
+            "nrRetries": 0,
+            "lteRetries": 0,
+            "minimumAcceptedTimestep": 1e-13,
+            "failure": null
+          }
+        }
+      }
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 10000,
+      "mode": "simulate",
+      "phase": "warm",
+      "baselineMs": 1848.721833,
+      "controlMs": 1906.165833,
+      "baselineStatus": "ok",
+      "controlStatus": "ok",
+      "controlDifferencePercent": 3.107227868174367,
+      "invariants": {
+        "outputSha256": "43bfa25cd2463b7b6ee4b14961087467de6fc8379be8a7ffaec45e83dcdd6915",
+        "deckSha256": "2ce663326238609299d8628016b1211632f1474e9d40b6c39747fff964999a18",
+        "vectors": 10003,
+        "values": 2140642,
+        "actualNodes": 10000,
+        "convergence": {
+          "dc": {
+            "newtonIterations": 226,
+            "acceptedSolves": 25,
+            "rejectedSolves": 1,
+            "sourceStepAttempts": 0,
+            "sourceStepFailures": 0,
+            "gminStepAttempts": 29,
+            "gminStepFailures": 4,
+            "failure": null
+          },
+          "transient": {
+            "acceptedSteps": 213,
+            "rejectedSteps": 0,
+            "newtonIterations": 466,
+            "nrRetries": 0,
+            "lteRetries": 0,
+            "minimumAcceptedTimestep": 1e-13,
+            "failure": null
+          }
+        }
+      }
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 50000,
+      "mode": "simulate",
+      "phase": "cold",
+      "baselineMs": 1209.694833,
+      "controlMs": 1208.019625,
+      "baselineStatus": "ok",
+      "controlStatus": "ok",
+      "controlDifferencePercent": -0.1384818678480837,
+      "invariants": {
+        "outputSha256": "52ebad35966097da6334d001ceece5c3d325cbc6a9e00df2b1365c9ff9e2df02",
+        "deckSha256": "2fd0c2090d17dddf80980eb3391440a3e4f99e1a77d1158360ffedc4246a7ada",
+        "vectors": 50002,
+        "values": 6000240,
+        "actualNodes": 50000,
+        "convergence": {
+          "dc": {
+            "newtonIterations": 1,
+            "acceptedSolves": 1,
+            "rejectedSolves": 0,
+            "sourceStepAttempts": 0,
+            "sourceStepFailures": 0,
+            "gminStepAttempts": 0,
+            "gminStepFailures": 0,
+            "failure": null
+          },
+          "transient": {
+            "acceptedSteps": 119,
+            "rejectedSteps": 0,
+            "newtonIterations": 238,
+            "nrRetries": 0,
+            "lteRetries": 0,
+            "minimumAcceptedTimestep": 1.0000000000000001e-11,
+            "failure": null
+          }
+        }
+      }
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 50000,
+      "mode": "simulate",
+      "phase": "warm",
+      "baselineMs": 1112.623084,
+      "controlMs": 1096.6676670000002,
+      "baselineStatus": "ok",
+      "controlStatus": "ok",
+      "controlDifferencePercent": -1.4340361286266368,
+      "invariants": {
+        "outputSha256": "52ebad35966097da6334d001ceece5c3d325cbc6a9e00df2b1365c9ff9e2df02",
+        "deckSha256": "2fd0c2090d17dddf80980eb3391440a3e4f99e1a77d1158360ffedc4246a7ada",
+        "vectors": 50002,
+        "values": 6000240,
+        "actualNodes": 50000,
+        "convergence": {
+          "dc": {
+            "newtonIterations": 1,
+            "acceptedSolves": 1,
+            "rejectedSolves": 0,
+            "sourceStepAttempts": 0,
+            "sourceStepFailures": 0,
+            "gminStepAttempts": 0,
+            "gminStepFailures": 0,
+            "failure": null
+          },
+          "transient": {
+            "acceptedSteps": 119,
+            "rejectedSteps": 0,
+            "newtonIterations": 238,
+            "nrRetries": 0,
+            "lteRetries": 0,
+            "minimumAcceptedTimestep": 1.0000000000000001e-11,
+            "failure": null
+          }
+        }
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "mode": "simulate",
+      "phase": "cold",
+      "baselineMs": 816.852334,
+      "controlMs": 823.384083,
+      "baselineStatus": "ok",
+      "controlStatus": "ok",
+      "controlDifferencePercent": 0.799624207231564,
+      "invariants": {
+        "outputSha256": "1abd9b0b4e5c2234b3d04dfafa07100f89b2c44661211a64ed1398b2b4c70427",
+        "deckSha256": "f81ed198f7ba67068138846b12fe93b9ec957e6bb3a89300d2c7c50e30d47329",
+        "vectors": 50177,
+        "values": 50177,
+        "actualNodes": 50176,
+        "convergence": {
+          "dc": {
+            "newtonIterations": 2,
+            "acceptedSolves": 1,
+            "rejectedSolves": 0,
+            "sourceStepAttempts": 0,
+            "sourceStepFailures": 0,
+            "gminStepAttempts": 0,
+            "gminStepFailures": 0,
+            "failure": null
+          },
+          "transient": {
+            "acceptedSteps": 0,
+            "rejectedSteps": 0,
+            "newtonIterations": 0,
+            "nrRetries": 0,
+            "lteRetries": 0,
+            "minimumAcceptedTimestep": null,
+            "failure": null
+          }
+        }
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "mode": "simulate",
+      "phase": "warm",
+      "baselineMs": 740.2429999999999,
+      "controlMs": 739.8844999999999,
+      "baselineStatus": "ok",
+      "controlStatus": "ok",
+      "controlDifferencePercent": -0.0484300425671047,
+      "invariants": {
+        "outputSha256": "1abd9b0b4e5c2234b3d04dfafa07100f89b2c44661211a64ed1398b2b4c70427",
+        "deckSha256": "f81ed198f7ba67068138846b12fe93b9ec957e6bb3a89300d2c7c50e30d47329",
+        "vectors": 50177,
+        "values": 50177,
+        "actualNodes": 50176,
+        "convergence": {
+          "dc": {
+            "newtonIterations": 2,
+            "acceptedSolves": 1,
+            "rejectedSolves": 0,
+            "sourceStepAttempts": 0,
+            "sourceStepFailures": 0,
+            "gminStepAttempts": 0,
+            "gminStepFailures": 0,
+            "failure": null
+          },
+          "transient": {
+            "acceptedSteps": 0,
+            "rejectedSteps": 0,
+            "newtonIterations": 0,
+            "nrRetries": 0,
+            "lteRetries": 0,
+            "minimumAcceptedTimestep": null,
+            "failure": null
+          }
+        }
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "mode": "isolate",
+      "phase": "cold",
+      "baselineMs": 261.08691699999997,
+      "controlMs": 275.66766700000005,
+      "baselineStatus": "ok",
+      "controlStatus": "ok",
+      "controlDifferencePercent": 5.584634484002149,
+      "invariants": {
+        "factorSha256": "b373d4d418f67cdfa5395d1b2703bd432cda1251633219952b7ee67e00cb822a",
+        "solutionSha256": "5641282ad2c7235f5815a6b75c3133c51b53ac24298120412dddb64a0f362746",
+        "matrixSha256": "1478040580d5b14ae438daddc564dc489aabeb88ee213e963627f2b0cc601328",
+        "rhsSha256": "d3d0e1c4ec28f3b360cd1dce928f8c97d477cb5a3c4c11960329b78a08cbd08c",
+        "numericFactorizations": 1,
+        "pivotReuseFactorizations": 0,
+        "supernodalUpdates": 89122,
+        "factorNonzeros": 2988840,
+        "initialUCapacity": 150082,
+        "finalUCapacity": 2401312,
+        "usedU": 1519509
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "mode": "isolate",
+      "phase": "warm",
+      "baselineMs": 218.27800000000002,
+      "controlMs": 217.96191699999997,
+      "baselineStatus": "ok",
+      "controlStatus": "ok",
+      "controlDifferencePercent": -0.14480753900990573,
+      "invariants": {
+        "factorSha256": "b373d4d418f67cdfa5395d1b2703bd432cda1251633219952b7ee67e00cb822a",
+        "solutionSha256": "5641282ad2c7235f5815a6b75c3133c51b53ac24298120412dddb64a0f362746",
+        "matrixSha256": "1478040580d5b14ae438daddc564dc489aabeb88ee213e963627f2b0cc601328",
+        "rhsSha256": "d3d0e1c4ec28f3b360cd1dce928f8c97d477cb5a3c4c11960329b78a08cbd08c",
+        "numericFactorizations": 1,
+        "pivotReuseFactorizations": 0,
+        "supernodalUpdates": 89122,
+        "factorNonzeros": 2988840,
+        "initialUCapacity": 150082,
+        "finalUCapacity": 2401312,
+        "usedU": 1519509
+      }
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 50000,
+      "mode": "simulate",
+      "phase": "cold",
+      "baselineMs": 18402.207083,
+      "controlMs": null,
+      "baselineStatus": "stopped",
+      "controlStatus": "censored",
+      "controlDifferencePercent": null,
+      "censored": true
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 50000,
+      "mode": "simulate",
+      "phase": "warm",
+      "baselineMs": null,
+      "controlMs": null,
+      "baselineStatus": "stopped",
+      "controlStatus": "censored",
+      "controlDifferencePercent": null,
+      "censored": true
+    }
+  ],
+  "baselineRevision": "45650391b788c91084b6b472dbe1fdcefbd52a19"
+}
