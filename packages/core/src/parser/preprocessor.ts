@@ -415,11 +415,21 @@ function circuitTemperature(
       }
     }
   }
-  let scopes: ParamScopes | undefined;
+  // ngspice selects the last card before interpreting its value. Earlier
+  // cards must not produce errors/warnings or reach the downstream parser.
+  let effective: PendingStatement | undefined;
   for (const statement of statements) {
     if (statement.control || !/^\s*\.temp(?=\s|=|$)/i.test(statement.text)) continue;
+    if (warnings !== undefined && effective !== undefined) {
+      effective.text = '';
+      effective.substitute = false;
+    }
+    effective = statement;
+  }
+  if (effective !== undefined) {
+    const statement = effective;
     try {
-      scopes ??= createParamScopes(definitions, undefined, temperature, functions, false);
+      const scopes = createParamScopes(definitions, undefined, temperature, functions, false);
       const text = statement.text.slice(0, commentStart(statement.text));
       const expanded = substituteExpressions(quotedExpressionsAsBraces(expandUserFunctions(text, functions)), scopes.params);
       const card = tempDirective(expanded, statement.line)!;

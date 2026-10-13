@@ -55,3 +55,37 @@ Later manifest handoff: ticket871 can move from blanket unsupported to successfu
 Old tests that asserted all `.temp` cards fail were changed to assert multi-value rejection or the existing non-nominal noise limitation. The differential-noise smoke harness similarly expects the unchanged compile-time temperature rejection; its netlist and numerical model are unchanged.
 
 /poteto-mode activation: read installed alias ~/.claude/skills/poteto-mode/SKILL.md, canonical pstack/SKILL.md and feature playbook. Shared parser/preprocessor ownership stays in this one bounded lane; independent exact-head spice-ts-review child is the publication gate. Supervisor alone may merge after that review and exact-head required CI.
+
+## PR #924 remediation: select before validating
+
+The rejected head `93ba64d3fdaca0f8677217de1bef4082ad15cdf5` validated every `.temp` card, including overwritten cards. Native ngspice-47 instead selects the last card before interpreting its value. The remediation evaluates only that effective card and blanks obsolete cards before downstream parameter substitution and parsing. Final-card multi-value, nonphysical/nonfinite and temperature-dependent limitations remain unchanged.
+
+Data shape: the selected card is an optional existing `PendingStatement`. Selection precedes value evaluation; no new parser or simulator API is added. Both callers of `circuitTemperature` use this selection, including unconditional temperature used for `.if` decisions. Only the final preprocessing pass suppresses obsolete statements, preserving line positions and branch selection.
+
+Regression coverage exercises sync/async parsing and batch/stream transient results at 77 C after overridden multi-value, nonphysical, malformed, undefined-parameter and TEMPER-expression cards. The final effective unsupported cards still reject through all four surfaces. RED was recorded before the fix in commit `986a3b5a`: 33 tests, 5 failed, 28 passed, exit1. GREEN: 33 dedicated tests and 317 focused tests pass, exit0. Logs use the `remediation-` prefix; the original receipts above remain unchanged.
+
+Reproduce against the rejected source, not the original main baseline:
+
+    git archive 93ba64d3fdaca0f8677217de1bef4082ad15cdf5 packages/core/src packages/core/package.json | tar -x -C benchmarks/temp-directive-871/baseline
+    spice-heavy pnpm exec tsx benchmarks/temp-directive-871/compare.ts remediation-before.json benchmarks/temp-directive-871/baseline/packages/core/src/simulate.ts
+    spice-heavy pnpm exec tsx benchmarks/temp-directive-871/compare.ts remediation-after.json
+
+Both comparison commands exit0. The JSON baseline field is the measurement-time HEAD `986a3b5a`, before the fix was committed. The explicit module path above identifies the immutable rejected source used for the before report. The after report uses the working-tree fix. Timing remains single-run process/in-process wall time, not a speed comparison.
+
+The 18 paired rows retain all 16 original deck hashes and maximum/RMS error metrics unchanged, plus two original MIT controls. Both engines receive identical netlists:
+
+- `overridden-multiple.cir`: `.temp 27 77` then `.temp 77`. Before throws unsupported multi-temperature; after succeeds at 77 C.
+- `overridden-nonphysical.cir`: `.temp -300` then `.temp 77`. Before throws invalid temperature; after succeeds at 77 C.
+- Both new controls have ngspice and spice-ts i(V1) = -0.0009285051067780873 A and TEMPER voltage = 77 V. Maximum and RMS relative error are exactly zero for both matched OP signals.
+- Native exits0 for all18 rows. Fourteen controls have zero maximum/RMS relative error. Final multi-value and VBIC99 losses retain null metrics. Formal-k cards/original retain relative errors 8.333333333333332 and 8.333334826666905, respectively. No loss is hidden or counted as parity.
+
+Remediation verification:
+
+- `pnpm install --frozen-lockfile`: exit0. Initial test attempt without dependencies returned254 (`vitest` missing); the recorded RED follows installation.
+- `pnpm -C packages/core exec vitest run src/parser/temp-directive-871.test.ts src/parser/preprocessor.test.ts src/parser/options-directives.test.ts src/parser/ngspice-compatibility.test.ts src/options-temp.test.ts src/parser/param-functions-870.test.ts src/analysis/noise.test.ts`: exit0, 317 passed.
+- `pnpm build && pnpm lint`: both exit0.
+- `spice-heavy pnpm test`: exit0, core3510 passed/2 skipped, all other package suites pass; root benchmark Node suite144 passed/4 skipped/0 failed.
+- `spice-heavy pnpm exec tsx benchmarks/accuracy.ts`: exit0. The existing BJT CE analytic metric remains 2.61%; the report contains no aligned native metrics, so it is not a new ngspice parity claim. Generated shared accuracy-results.json was restored.
+- Guarded before/after comparison: exit0, 18 paired hashes verified, original16 hashes/metrics unchanged.
+
+/poteto-mode remediation activation: read installed spice-ts-engineer pstack `skills/poteto-mode/SKILL.md`, bug-fix playbook and `skills/how/SKILL.md` directly after the plugin-qualified skill loader reported unavailable. Scope remains preprocessor, dedicated tests and this receipt directory. No control, XSPICE, circuit, solver, device, shared provenance or CI edits.

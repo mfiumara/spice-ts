@@ -10,7 +10,7 @@ async function main() {
   const root = resolve('benchmarks/temp-directive-871');
   const { simulate } = await import(pathToFileURL(resolve(process.argv[3] ?? 'packages/core/src/simulate.ts')).href);
   const rows = [];
-  const names = ['single', 'before-options', 'after-options', 'repeated', 'multiple', 'empty', 'invalid', 'suffix', 'equals', 'spaced-equals', 'expression', 'quote', 'device'];
+  const names = ['single', 'before-options', 'after-options', 'repeated', 'multiple', 'empty', 'invalid', 'suffix', 'equals', 'spaced-equals', 'expression', 'quote', 'device', 'overridden-multiple', 'overridden-nonphysical'];
   const paths = names.map(name => [name, resolve(root, 'controls', `${name}.cir`)]);
   paths.push(['temper_capture_cards', resolve('benchmarks/corpus/ngspice-bugs/tickets/871/temper_capture_cards.cir')]);
   paths.push(['temper_capture_original', resolve('benchmarks/corpus/ngspice-bugs/fetched/871/temper_capture.cir')]);
