@@ -1,17 +1,31 @@
+import { ParseError } from './errors.js';
 import { evaluateExpression } from './parser/expression.js';
+import { toParseError } from './parser/preprocessor.js';
 import { parseNumber } from './parser/tokenizer.js';
 
 const ASSIGNMENT = /([A-Za-z_]\w*)\s*=\s*(\{[^}]*\}|\S+)/g;
 /** An identifier not preceded by a word character or a dot (so not the `k` of `3k` or `e3` of `1e3`). */
 const IDENTIFIER = /(?<![\w.])[A-Za-z_]\w*/g;
 
+/** One `.param` card of a subcircuit body. */
+export interface SubcircuitParamCard {
+  /** Text after `.param` (`a=1 b={a*2}`) */
+  content: string;
+  /** Deck line number of the card */
+  line: number;
+  /** Raw text of the card */
+  raw: string;
+}
+
 interface BodyParam {
   name: string;
   expression: string;
+  card: SubcircuitParamCard;
 }
 
-/** The assignments of one subcircuit `.param` card body (`a=1 b={a*2}`). */
-function paramAssignments(content: string): BodyParam[] {
+/** The assignments of one subcircuit `.param` card. */
+function paramAssignments(card: SubcircuitParamCard): BodyParam[] {
+  const { content } = card;
   const assignments = [...content.matchAll(ASSIGNMENT)];
   if (assignments.length === 0) return [];
   // A single assignment reads the whole rest of the card, as at the top level.
@@ -21,7 +35,23 @@ function paramAssignments(content: string): BodyParam[] {
   return pairs.map(([name, value]) => ({
     name: name.toUpperCase(),
     expression: value.startsWith('{') && value.endsWith('}') ? value.slice(1, -1) : value,
+    card,
   }));
+}
+
+/** Evaluates one parameter; a failure is a ParseError at its `.param` card. */
+function evaluateParam(param: BodyParam, scope: Record<string, number>): number {
+  try {
+    return evaluateExpression(param.expression, scope);
+  } catch (error) {
+    if (error instanceof ParseError) throw error;
+    // A bare SPICE number (e.g. `1meg`) is not an expression.
+    try {
+      return parseNumber(param.expression);
+    } catch {
+      throw toParseError(error, param.card.line, param.card.raw);
+    }
+  }
 }
 
 /**
@@ -35,10 +65,14 @@ function paramAssignments(content: string): BodyParam[] {
  * A name defined twice takes its last definition, as sequential evaluation of
  * the reordered cards gives.
  *
- * @param cards - Contents of the body's `.param` cards (text after `.param`), in deck order
+ * @param cards - The body's `.param` cards, in deck order
  * @param scope - Instance scope (subcircuit parameters, enclosing scopes via the prototype)
+ * @throws ParseError at the defining card for a circular dependency or an undefined name
  */
-export function evaluateSubcircuitParams(cards: readonly string[], scope: Record<string, number>): void {
+export function evaluateSubcircuitParams(
+  cards: readonly SubcircuitParamCard[],
+  scope: Record<string, number>,
+): void {
   const pending = new Map<string, BodyParam>();
   for (const card of cards) {
     for (const param of paramAssignments(card)) {
@@ -49,7 +83,8 @@ export function evaluateSubcircuitParams(cards: readonly string[], scope: Record
   const visiting: string[] = [];
   const resolve = (param: BodyParam): void => {
     if (visiting.includes(param.name)) {
-      throw new Error(`Circular .param dependency: ${[...visiting, param.name].join(' -> ')}`);
+      const cycle = [...visiting.slice(visiting.indexOf(param.name)), param.name].join(' -> ');
+      throw new ParseError(`Circular .param dependency: ${cycle}`, param.card.line, param.card.raw);
     }
     visiting.push(param.name);
     for (const [identifier] of param.expression.matchAll(IDENTIFIER)) {
@@ -59,11 +94,7 @@ export function evaluateSubcircuitParams(cards: readonly string[], scope: Record
     visiting.pop();
     if (!pending.has(param.name)) return;
     pending.delete(param.name);
-    try {
-      scope[param.name] = evaluateExpression(param.expression, scope);
-    } catch {
-      scope[param.name] = parseNumber(param.expression);
-    }
+    scope[param.name] = evaluateParam(param, scope);
   };
   for (const param of [...pending.values()]) {
     if (pending.has(param.name)) resolve(param);

@@ -3401,7 +3401,12 @@ export class Circuit {
     const result: DeviceDescriptor[] = [];
 
     // Tokenize body lines; nested .subckt blocks are definitions, not devices.
-    const { lines: parsedLines, definitions } = splitNestedSubcircuits(tokenizeNetlist(def.body.join('\n')));
+    // Body lines carry their deck line numbers when the parser recorded them.
+    const bodyLines = tokenizeNetlist(def.body.join('\n')).map(line => ({
+      ...line,
+      lineNumber: def.bodyLines?.[line.lineNumber - 1] ?? line.lineNumber,
+    }));
+    const { lines: parsedLines, definitions } = splitNestedSubcircuits(bodyLines);
 
     // ngspice-47 subckt.c modtranslate: a .model card in the body becomes a
     // per-instance model `<instance>:<name>`, and the body's device cards (and
@@ -3425,7 +3430,7 @@ export class Circuit {
     // cards are evaluated before its elements, in dependency order (#857).
     evaluateSubcircuitParams(
       parsedLines.filter(({ tokens }) => tokens[0]?.toUpperCase() === '.PARAM')
-        .map(({ tokens }) => tokens.slice(1).join(' ')),
+        .map(({ tokens, lineNumber, raw }) => ({ content: tokens.slice(1).join(' '), line: lineNumber, raw })),
       localParams,
     );
 

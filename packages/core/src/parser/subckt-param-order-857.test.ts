@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { ParseError } from '../errors.js';
 import { simulate } from '../simulate.js';
 
 // Issue #857: inside a `.subckt`, a `.param` card below the element that uses it.
@@ -179,5 +180,72 @@ describe('subcircuit .param below its use (ngspice-47 inp_reorder_params_subckt,
       '.end',
     ];
     expect(await vo(deck)).toBeCloseTo(0.25, 12);
+  });
+
+  // ngspice-47 rejects both decks below at the defining card ("circular
+  // parameter dependency", "Undefined parameter [zz]"); spice-ts reports them
+  // as a ParseError at the deck line of that `.param` card, as at top level.
+  async function failure(lines: string[]): Promise<ParseError> {
+    const error = await simulate(lines.join('\n')).then(() => undefined, (e: unknown) => e);
+    expect(error).toBeInstanceOf(ParseError);
+    return error as ParseError;
+  }
+
+  it('reports a circular subckt .param dependency as a ParseError at the .param card', async () => {
+    const error = await failure([
+      'subckt param cycle',
+      '.subckt rc in out gnd',
+      'R1 in out {a}',
+      'R2 out gnd 1k',
+      '.param a={b} b={a}',
+      '.ends rc',
+      'V1 in 0 1',
+      'X1 in o 0 rc',
+      '.op',
+      '.end',
+    ]);
+    expect(error.line).toBe(5);
+    expect(error.context).toBe('.param a={b} b={a}');
+    expect(error.message).toContain('Circular .param dependency: A -> B -> A');
+  });
+
+  it('reports an undefined name in a subckt .param as a ParseError at the .param card', async () => {
+    const error = await failure([
+      'subckt param undefined',
+      '.subckt rc in out gnd',
+      'R1 in out {a}',
+      'R2 out gnd 1k',
+      '* comment lines and blank lines keep deck line numbers',
+      '',
+      '.param a={zz*3}',
+      '.ends rc',
+      'V1 in 0 1',
+      'X1 in o 0 rc',
+      '.op',
+      '.end',
+    ]);
+    expect(error.line).toBe(7);
+    expect(error.context).toBe('.param a={zz*3}');
+    expect(error.message).toContain("Undefined parameter 'zz'");
+  });
+
+  it('reports an undefined name in a nested subckt .param at its deck line', async () => {
+    const error = await failure([
+      'nested subckt param undefined',
+      '.subckt outer in out gnd',
+      '.subckt inner a b',
+      'R1 a b {q}',
+      '.param q={missing}',
+      '.ends inner',
+      'X1 in out inner',
+      'R2 out gnd 1k',
+      '.ends outer',
+      'V1 in 0 1',
+      'X1 in o 0 outer',
+      '.op',
+      '.end',
+    ]);
+    expect(error.line).toBe(5);
+    expect(error.message).toContain("Undefined parameter 'missing'");
   });
 });
