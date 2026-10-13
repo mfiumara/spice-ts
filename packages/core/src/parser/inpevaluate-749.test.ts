@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { parseNumber } from './tokenizer.js';
 import { simulate } from '../simulate.js';
 import { parse } from './index.js';
-import { formatNumber } from '../circuit.js';
+import { formatNumber } from '../netlist-number.js';
 
 // #749: ngspice-47 INPevaluate (src/spicelib/parser/inpeval.c) builds a literal
 // as sign * mantissa * pow(10, exponent), not as the correctly rounded value.
@@ -179,5 +179,90 @@ describe('formatNumber writes literals the parser reads back bitwise (#749)', ()
       const value = (random() - 0.5) * 10 ** (Math.floor(random() * 60) - 30);
       expectReadsBack(value, `double #${i}`);
     }
+  });
+});
+
+/** Deterministic 64-bit LCG (Knuth MMIX) over raw double bit patterns. */
+function bitPatterns(seed: bigint): () => bigint {
+  let state = seed;
+  return () => {
+    state = BigInt.asUintN(64, state * 6364136223846793005n + 1442695040888963407n);
+    return state;
+  };
+}
+
+const view = new DataView(new ArrayBuffer(8));
+const fromBits = (bits: bigint) => { view.setBigUint64(0, bits); return view.getFloat64(0); };
+const magnitudeBits = (value: number) => { view.setFloat64(0, value); return BigInt.asUintN(63, view.getBigUint64(0)); };
+const ulpDistance = (a: number, b: number) => {
+  const x = magnitudeBits(a), y = magnitudeBits(b);
+  return Math.sign(a) !== Math.sign(b) ? x + y : x > y ? x - y : y - x;
+};
+
+/** Values ngspice-47 INPevaluate has no literal for (see formatNumber): all below 1e-297. */
+const UNREACHABLE_BELOW = 1e-297;
+
+describe('formatNumber reaches every double that INPevaluate can produce (#806)', () => {
+  it.each([
+    // #806 examples that drifted one ulp: the 17-digit search missed them.
+    8029.858574736863, 3.911591935902834, 233797.5804693997, 0.000007564046885818243, 3.876247147563845e-19,
+    // Found by the bit-pattern sweep below on the #783 formatter.
+    -1.9190584215176654e+174, -3.76686182129787e-124, 2.0790523791349468e+239, -3.6667875911350772e+186,
+    3.98375773972795e+59, 4.3339018281780725e+164, -1.8623377486422715e-47, 2.1226847879982163e-268,
+    // Extremes.
+    Number.MAX_VALUE, -Number.MAX_VALUE, 2.2250738585072014e-308, 1e-323, 2 ** -1073, 2 ** -1022 - 2 ** -1073,
+  ])('%s', value => {
+    expectReadsBack(value, String(value));
+    expectReadsBack(-value, String(-value));
+  });
+
+  it('round-trips 1M random bit patterns with 0 ulp drift, except the unreachable values below 1e-297', () => {
+    const next = bitPatterns(806n);
+    let checked = 0;
+    let unreachable = 0;
+    for (let i = 0; i < 1_000_000; i++) {
+      const value = fromBits(next());
+      if (!Number.isFinite(value)) continue;
+      checked++;
+      const text = formatNumber(value);
+      const read = parseNumber(text);
+      if (Object.is(read, value)) continue;
+      // No literal reads back as `value`: the nearest double with one is written instead.
+      expect(Math.abs(value) < UNREACHABLE_BELOW && ulpDistance(read, value) === 1n,
+        `bits #${i}: ${value} written as ${text} reads back as ${read}`).toBe(true);
+      unreachable++;
+    }
+    expect(checked).toBeGreaterThan(999_000);
+    // About 1 in 1024 bit patterns is below 2^-1021 (exponent field 0 or 1), and about half of
+    // those are odd multiples of 2^-1074 that no literal reaches: 518 of 1M for this seed.
+    expect(unreachable).toBeLessThan(600);
+  }, 120_000);
+
+  it('writes every value around the subnormal range within one ulp, exactly when a literal exists', () => {
+    const next = bitPatterns(1074n);
+    let exact = 0;
+    for (let i = 0; i < 20_000; i++) {
+      // Exponent field 0..63: subnormals up to about 2e-289.
+      const bits = next();
+      const value = fromBits(BigInt.asUintN(58, bits) | (bits >> 63n << 63n));
+      if (value === 0) continue;
+      const read = parseNumber(formatNumber(value));
+      if (Object.is(read, value)) exact++;
+      else expect(Math.abs(value) < UNREACHABLE_BELOW && ulpDistance(read, value) === 1n, `${value}`).toBe(true);
+    }
+    // Every even multiple of 2^-1074 is reachable as M * 1e-323 (1e-323 is 2 * 2^-1074).
+    expect(exact).toBeGreaterThan(20_000 * 0.9);
+  });
+
+  it('writes the even neighbour of an unreachable odd subnormal, toward zero first', () => {
+    // 3 * 2^-1074: M * pow(10, E) only gives even multiples of 2^-1074 this small.
+    const value = 3 * Number.MIN_VALUE;
+    expect(parseNumber(formatNumber(value))).toBe(2 * Number.MIN_VALUE);
+    expect(parseNumber(formatNumber(-value))).toBe(-2 * Number.MIN_VALUE);
+  });
+
+  it('writes 2^-1074 as 0 (no literal reaches it) instead of looping on 2^-1074 / 25.4 = 0', () => {
+    expect(formatNumber(Number.MIN_VALUE)).toBe('0');
+    expect(formatNumber(-Number.MIN_VALUE)).toBe('-0');
   });
 });

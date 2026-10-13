@@ -64,6 +64,7 @@ import type { ControlScript } from './parser/control/script.js';
 import { DEFAULT_OPTIONS, GROUND_NODE } from './types.js';
 import { evaluateExpression } from './parser/expression.js';
 import { parseNumber, tokenizeLine, tokenizeNetlist } from './parser/tokenizer.js';
+import { formatNumber } from './netlist-number.js';
 import { isPspiceSwitchModel, translatePspiceSwitchModel } from './parser/pspice-switch.js';
 import { parseModelCard } from './parser/model-parser.js';
 import { assertDeviceModelType, normalizeModelType } from './parser/model-type.js';
@@ -377,87 +378,6 @@ function formatBehavioralSource(desc: DeviceDescriptor): string {
   const instance = Object.entries(params)
     .map(([key, value]) => `${key}=${typeof value === 'boolean' ? Number(value) : formatNumber(value)}`);
   return [desc.name, desc.nodes[0], desc.nodes[1], assignment, ...instance].join(' ');
-}
-
-/**
- * The shortest literal that the netlist parser reads back as exactly `value`.
- * Literals are read as ngspice-47 INPevaluate does (#749): an integer
- * mantissa M times pow(10, E) (times 25.4 first for `mil`), which is not
- * always the correctly rounded value, so Number#toString does not always
- * round-trip (0.30000000000000004, the parsed `0.3`, prints back as `0.3`,
- * and `30u` is 2.9999999999999997e-5, which no plain decimal reads back to).
- * For each precision this tries the plain decimal, then the integer-mantissa
- * form `<M>e<E>` (`30e-6`), which is built exactly as the parser builds the
- * value; then the `mil` form (`74mil` is 74 * 25.4 * 1e-6, which no decimal
- * reaches); then mantissas next to the rounded one.
- *
- * @internal Exported for the round-trip tests.
- */
-export function formatNumber(value: number): string {
-  if (!Number.isFinite(value)) return String(value);
-  if (value === 0) return Object.is(value, -0) ? '-0' : '0';
-  for (let digits = 1; digits <= 17; digits++) {
-    const text = Number(value.toPrecision(digits)).toString();
-    if (readsBackAs(text, value)) return text;
-    const integerForm = roundedMantissaForm(value, digits, DECIMAL);
-    if (readsBackAs(integerForm, value)) return integerForm;
-  }
-  for (let digits = 1; digits <= 17; digits++) {
-    const milForm = roundedMantissaForm(value, digits, MIL);
-    if (readsBackAs(milForm, value)) return milForm;
-  }
-  return nearestMantissaForm(value, DECIMAL) ?? nearestMantissaForm(value, MIL) ?? value.toString();
-}
-
-/** How INPevaluate scales the mantissa for a literal ending in `suffix`. */
-interface MantissaUnit { suffix: string; factor: number; exponentOffset: number }
-const DECIMAL: MantissaUnit = { suffix: '', factor: 1, exponentOffset: 0 };
-const MIL: MantissaUnit = { suffix: 'mil', factor: 25.4, exponentOffset: 6 };
-
-function mantissaLiteral(sign: string, mantissa: string, scale: number, unit: MantissaUnit): string {
-  const exponent = scale + unit.exponentOffset;
-  return `${sign}${mantissa}${exponent === 0 ? '' : `e${exponent}`}${unit.suffix}`;
-}
-
-/** `value` rounded to `digits` significant digits, written as `<M>e<E><unit>` with integer M. */
-function roundedMantissaForm(value: number, digits: number, unit: MantissaUnit): string {
-  const [mantissa, exponent] = (Math.abs(value) / unit.factor).toExponential(digits - 1).split('e');
-  return mantissaLiteral(value < 0 ? '-' : '', mantissa.replace('.', ''), Number(exponent) - (digits - 1), unit);
-}
-
-/**
- * A `<M>e<E><unit>` literal for `value` when no rounded mantissa reads back
- * to it: integer mantissas next to `value / pow(10, E)`, from 17 digits (one
- * mantissa step is about one ulp of the product) up to 23 digits, where
- * accumulating the digits rounds and the extra digits pick the rounding.
- */
-function nearestMantissaForm(value: number, unit: MantissaUnit): string | undefined {
-  const magnitude = Math.abs(value) / unit.factor;
-  const sign = value < 0 ? '-' : '';
-  const topScale = Math.floor(Math.log10(magnitude)) - 16;
-  for (let scale = topScale + 1; scale >= topScale - 6; scale--) {
-    const rounded = Math.round(magnitude / Number(`1e${scale}`));
-    if (!Number.isFinite(rounded)) continue; // pow(10, E) underflows to 0 for subnormal values
-    const nearest = BigInt(rounded);
-    for (let step = 0n; step <= MANTISSA_SEARCH_STEPS; step++) {
-      for (const mantissa of step === 0n ? [nearest] : [nearest - step, nearest + step]) {
-        if (mantissa <= 0n) continue;
-        const text = mantissaLiteral(sign, mantissa.toString(), scale, unit);
-        if (readsBackAs(text, value)) return text;
-      }
-    }
-  }
-  return undefined;
-}
-
-const MANTISSA_SEARCH_STEPS = 64n;
-
-function readsBackAs(text: string, value: number): boolean {
-  try {
-    return Object.is(parseNumber(text), value);
-  } catch {
-    return false; // e.g. `Infinity` from rounding a value near Number.MAX_VALUE
-  }
 }
 
 function formatParams(params?: Record<string, number>): string {
