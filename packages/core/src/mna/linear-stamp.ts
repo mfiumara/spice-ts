@@ -1,7 +1,7 @@
 import type { MNAAssembler } from './assembler.js';
 import { DEVICE_GMIN, type DeviceModel, type StampContext } from '../devices/device.js';
-import { Resistor } from '../devices/resistor.js';
-import { Capacitor } from '../devices/capacitor.js';
+import { Resistor, resistorConductanceRevision } from '../devices/resistor.js';
+import { Capacitor, capacitorCapacitanceRevision } from '../devices/capacitor.js';
 import { MOSFET } from '../devices/mosfet.js';
 
 /**
@@ -22,9 +22,12 @@ import { MOSFET } from '../devices/mosfet.js';
  * from value slots resolved once per locked topology, and each maximal run of
  * consecutive plain MOSFETs by {@link MOSFET.batchStamp}, which performs the
  * same additions as {@link MOSFET.stamp} from cached slots. Every other device
- * is still stamped through its own method. Values are read from the device at
- * stamp time (`conductance`, `capacitance`, the solution vector), so parameter
- * changes apply as before. Each slot receives exactly the additions the
+ * is still stamped through its own method. Resistor conductances and
+ * capacitor capacitances are copied into a typed array per run and recopied
+ * whenever any of them is written (a class-wide revision the property setters
+ * bump, #890), so parameter changes apply as before without the kernel
+ * reading one device object per entry; MOSFETs read the solution vector at
+ * stamp time. Each slot receives exactly the additions the
  * devices would make, in the same order, so matrices are bit-identical to
  * per-device stamping.
  */
@@ -45,6 +48,14 @@ interface Step {
   readonly run: readonly (Resistor | Capacitor)[];
   /** Four value slots per two-terminal run device: (n1,n1), (n2,n2), (n1,n2), (n2,n1); -1 = not stamped. */
   readonly slots: Int32Array;
+  /**
+   * Conductance (static) or capacitance (dynamic) of each run device, copied
+   * when {@link revision} last changed (issue #890). Reading a typed array
+   * instead of one object per device is what makes the kernel fast.
+   */
+  readonly values: Float64Array;
+  /** Resistor/capacitor value revision {@link values} was filled at; -1 = never. */
+  revision: number;
   /** MOSFET run devices, in netlist order. */
   readonly mosfets: MOSFET[];
 }
@@ -79,6 +90,7 @@ const programs: WeakMap<MNAAssembler, Map<readonly DeviceModel[], Entry>>[] = [
 ];
 
 const NO_SLOTS = new Int32Array(0);
+const NO_VALUES = new Float64Array(0);
 
 /** Exactly a Resistor (no subclass, no own override) in conductance form. */
 function isPlainResistor(device: DeviceModel): device is Resistor {
@@ -132,12 +144,15 @@ function buildProgram(assembler: MNAAssembler, devices: readonly DeviceModel[], 
   const flush = (): void => {
     if (run.length > 0) {
       steps.push({
-        kernel: KERNEL_TWO_TERMINAL, device: null, run, slots: scratch.slice(0, 4 * run.length), mosfets: [],
+        kernel: KERNEL_TWO_TERMINAL, device: null, run, slots: scratch.slice(0, 4 * run.length),
+        values: new Float64Array(run.length), revision: -1, mosfets: [],
       });
       run = [];
     }
     if (mosfets.length > 0) {
-      steps.push({ kernel: KERNEL_MOSFET, device: null, run: [], slots: NO_SLOTS, mosfets });
+      steps.push({
+        kernel: KERNEL_MOSFET, device: null, run: [], slots: NO_SLOTS, values: NO_VALUES, revision: -1, mosfets,
+      });
       mosfets = [];
     }
   };
@@ -160,7 +175,9 @@ function buildProgram(assembler: MNAAssembler, devices: readonly DeviceModel[], 
     // Not a kernel device, or not in the locked pattern: its own stamp
     // handles (or reports) it.
     flush();
-    steps.push({ kernel: KERNEL_DEVICE, device, run: [], slots: NO_SLOTS, mosfets: [] });
+    steps.push({
+      kernel: KERNEL_DEVICE, device, run: [], slots: NO_SLOTS, values: NO_VALUES, revision: -1, mosfets: [],
+    });
   }
   flush();
   return { steps };
@@ -193,6 +210,22 @@ function programFor(
 }
 
 /**
+ * Copy the run's current conductances (resistor run) or capacitances
+ * (capacitor run) into `step.values` and record `revision`. Every write of a
+ * resistor conductance or capacitor capacitance bumps its class revision, so
+ * values copied at an unchanged revision equal the device fields exactly.
+ */
+function refillValues(step: Step, revision: number): Float64Array {
+  const { run, values } = step;
+  for (let i = 0; i < run.length; i++) {
+    const device = run[i];
+    values[i] = device instanceof Resistor ? device.conductance : device.capacitance;
+  }
+  step.revision = revision;
+  return values;
+}
+
+/**
  * Equivalent to `for (const d of devices) d.stamp(ctx)`, with `ctx` the
  * assembler's current stamp context.
  */
@@ -206,6 +239,7 @@ export function stampStaticDevices(
   }
   const { steps } = program;
   const gv = assembler.gValues;
+  const revision = resistorConductanceRevision();
   for (let s = 0; s < steps.length; s++) {
     const step = steps[s];
     if (step.kernel === KERNEL_DEVICE) {
@@ -222,10 +256,10 @@ export function stampStaticDevices(
       );
       continue;
     }
-    const run = step.run as readonly Resistor[];
+    const conductances = step.revision === revision ? step.values : refillValues(step, revision);
     const slots = step.slots;
-    for (let i = 0, k = 0; i < run.length; i++, k += 4) {
-      const g = run[i].conductance;
+    for (let i = 0, k = 0; i < conductances.length; i++, k += 4) {
+      const g = conductances[i];
       const s11 = slots[k];
       const s22 = slots[k + 1];
       const s12 = slots[k + 2];
@@ -253,16 +287,17 @@ export function stampDynamicDevices(
   }
   const { steps } = program;
   const cv = assembler.cValues;
+  const revision = capacitorCapacitanceRevision();
   for (let s = 0; s < steps.length; s++) {
     const step = steps[s];
     if (step.kernel === KERNEL_DEVICE) {
       step.device!.stampDynamic!(ctx);
       continue;
     }
-    const run = step.run as readonly Capacitor[];
+    const capacitances = step.revision === revision ? step.values : refillValues(step, revision);
     const slots = step.slots;
-    for (let i = 0, k = 0; i < run.length; i++, k += 4) {
-      const c = run[i].capacitance;
+    for (let i = 0, k = 0; i < capacitances.length; i++, k += 4) {
+      const c = capacitances[i];
       const s11 = slots[k];
       const s22 = slots[k + 1];
       const s12 = slots[k + 2];

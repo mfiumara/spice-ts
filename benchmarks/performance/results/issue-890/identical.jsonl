@@ -1,0 +1,6 @@
+{"circuit":"rc-ladder-tran","nodes":10000,"samples":1200240,"differing":0,"identical":true}
+{"circuit":"rc-ladder-tran","nodes":50000,"samples":6000240,"differing":0,"identical":true}
+{"circuit":"resistor-mesh-op","nodes":10000,"samples":10001,"differing":0,"identical":true}
+{"circuit":"resistor-mesh-op","nodes":50000,"samples":50177,"differing":0,"identical":true}
+{"circuit":"cmos-inverter-chain-tran","nodes":1000,"samples":214642,"differing":0,"identical":true}
+{"circuit":"cmos-inverter-chain-tran","nodes":10000,"samples":2140642,"differing":0,"identical":true}
