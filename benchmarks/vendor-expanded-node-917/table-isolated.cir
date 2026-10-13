@@ -1,0 +1,10 @@
+Self-authored isolated TABLE lowering reduction, MIT, Refs #917
+Vdrive IN 0 DC 0.25 AC 1
+Xstage IN OUT HELPER stage
+.subckt stage in out helper
+Rout out 0 1k
+Gtable out 0 TABLE {V(in)} = (-1,-0.001) (0,0) (1,0.001)
+Bnonlinear helper 0 V={V(in)*V(in)}
+.ends stage
+.ac dec 10 1 100
+.end

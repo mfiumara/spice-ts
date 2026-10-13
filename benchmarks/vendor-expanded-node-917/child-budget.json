@@ -1,0 +1,949 @@
+[
+  {
+    "argv": [
+      "/usr/bin/tar",
+      "-xf",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/question.7z",
+      "-C",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/extracted"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 0.008197499999999969
+  },
+  {
+    "argv": [
+      "node",
+      "--import",
+      "tsx",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/base_159.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 0.5330745
+  },
+  {
+    "argv": [
+      "ngspice",
+      "-b",
+      "-r",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/base_159.cir.raw",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/base_159.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 0.046599292000000014
+  },
+  {
+    "argv": [
+      "node",
+      "--import",
+      "tsx",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/variant_159.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 0.3094663329999999
+  },
+  {
+    "argv": [
+      "ngspice",
+      "-b",
+      "-r",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/variant_159.cir.raw",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/variant_159.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 0.049758458000000005
+  },
+  {
+    "argv": [
+      "node",
+      "--import",
+      "tsx",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/base_159.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 0.608704083
+  },
+  {
+    "argv": [
+      "node",
+      "--import",
+      "tsx",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/base_159.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 0.5236617090000001
+  },
+  {
+    "argv": [
+      "node",
+      "--import",
+      "tsx",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 1,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 0.798875166,
+    "provenance": "First TABLE trial overlapped briefly with source clone before child.lock was added; no engine/reference overlap"
+  },
+  {
+    "argv": [
+      "git",
+      "clone",
+      "--depth",
+      "1",
+      "--branch",
+      "ngspice-47",
+      "https://git.code.sf.net/p/ngspice/ngspice",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/ngspice-source"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 6.829598416
+  },
+  {
+    "argv": [
+      "node",
+      "--import",
+      "tsx",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 0.5161287920000001
+  },
+  {
+    "argv": [
+      "node",
+      "--import",
+      "tsx",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 1.0175265420000001
+  },
+  {
+    "argv": [
+      "node",
+      "--import",
+      "tsx",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/base_159.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 0.591718708
+  },
+  {
+    "argv": [
+      "ngspice",
+      "-b",
+      "-r",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/base_159.cir.raw",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/base_159.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 0.07986420799999994
+  },
+  {
+    "argv": [
+      "node",
+      "--import",
+      "tsx",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/variant_159.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 0.501869833
+  },
+  {
+    "argv": [
+      "ngspice",
+      "-b",
+      "-r",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/variant_159.cir.raw",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/variant_159.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 0.07826437499999983
+  },
+  {
+    "argv": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/ngspice-source",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 0.014955042000000002
+  },
+  {
+    "argv": [
+      "ngspice",
+      "--version"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 0.012786875000000003
+  },
+  {
+    "argv": [
+      "node",
+      "--version"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 0.016674667000000004
+  },
+  {
+    "argv": [
+      "pnpm",
+      "--version"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 0.16006083299999996
+  },
+  {
+    "argv": [
+      "sysctl",
+      "-n",
+      "machdep.cpu.brand_string"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 0.0047827910000000085
+  },
+  {
+    "argv": [
+      "node",
+      "--import",
+      "tsx",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 0.409134625
+  },
+  {
+    "argv": [
+      "ngspice",
+      "-b",
+      "-r",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/table.cir.raw",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 0.018428208999999973
+  },
+  {
+    "argv": [
+      "node",
+      "--import",
+      "tsx",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table-isolated.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 0.332389166
+  },
+  {
+    "argv": [
+      "ngspice",
+      "-b",
+      "-r",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/table-isolated.cir.raw",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table-isolated.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 0.017611500000000002
+  },
+  {
+    "argv": [
+      "node",
+      "--import",
+      "tsx",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table-lowered.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 1,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 0.31768720799999994
+  },
+  {
+    "argv": [
+      "node",
+      "--import",
+      "tsx",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 0.5701337080000001
+  },
+  {
+    "argv": [
+      "ngspice",
+      "-b",
+      "-r",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/table.cir.raw",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 0.04429054100000007
+  },
+  {
+    "argv": [
+      "node",
+      "--import",
+      "tsx",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table-isolated.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 1.0324129590000002
+  },
+  {
+    "argv": [
+      "ngspice",
+      "-b",
+      "-r",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/table-isolated.cir.raw",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table-isolated.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 0.03850037499999992
+  },
+  {
+    "argv": [
+      "node",
+      "--import",
+      "tsx",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table-lowered.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 1,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 1.0057107500000002
+  },
+  {
+    "argv": [
+      "node",
+      "--import",
+      "tsx",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 0.418852
+  },
+  {
+    "argv": [
+      "ngspice",
+      "-b",
+      "-r",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/table.cir.raw",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 0.022027708000000035
+  },
+  {
+    "argv": [
+      "node",
+      "--import",
+      "tsx",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table-isolated.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 0.4280868749999999
+  },
+  {
+    "argv": [
+      "ngspice",
+      "-b",
+      "-r",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/table-isolated.cir.raw",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table-isolated.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 0.02134295899999994
+  },
+  {
+    "argv": [
+      "node",
+      "--import",
+      "tsx",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table-lowered.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 0.37445054200000005
+  },
+  {
+    "argv": [
+      "ngspice",
+      "-b",
+      "-r",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/table-lowered.cir.raw",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table-lowered.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 0.01899033299999986
+  },
+  {
+    "argv": [
+      "node",
+      "--import",
+      "tsx",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/parity-red.mts"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 1,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 0.32157304200000003
+  },
+  {
+    "argv": [
+      "node",
+      "--import",
+      "tsx",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/base_159.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 0.48337112500000007
+  },
+  {
+    "argv": [
+      "ngspice",
+      "-b",
+      "-r",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/base_159.cir.raw",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/base_159.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 0.07083925000000002
+  },
+  {
+    "argv": [
+      "node",
+      "--import",
+      "tsx",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/variant_159.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 0.48801487500000007
+  },
+  {
+    "argv": [
+      "ngspice",
+      "-b",
+      "-r",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/variant_159.cir.raw",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/variant_159.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 0.07121354199999996
+  },
+  {
+    "argv": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 30,
+    "wallSeconds": 0.01382833299999997
+  },
+  {
+    "argv": [
+      "pnpm",
+      "exec",
+      "tsx",
+      "--test",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/evidence.test.mts"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 29,
+    "wallSeconds": 0.759310292
+  },
+  {
+    "argv": [
+      "pnpm",
+      "build"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 29,
+    "wallSeconds": 13.472747666
+  },
+  {
+    "argv": [
+      "pnpm",
+      "lint"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 29,
+    "wallSeconds": 7.210651666999999
+  },
+  {
+    "argv": [
+      "pnpm",
+      "test"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": -9,
+    "timedOut": true,
+    "limitSeconds": 29,
+    "wallSeconds": 29.019113792
+  },
+  {
+    "argv": [
+      "pnpm",
+      "-C",
+      "packages/core",
+      "exec",
+      "tsc",
+      "--noEmit",
+      "--strict",
+      "--skipLibCheck",
+      "--module",
+      "NodeNext",
+      "--target",
+      "ES2022",
+      "--moduleResolution",
+      "NodeNext",
+      "--types",
+      "node",
+      "../../benchmarks/vendor-expanded-node-917/trace.mts",
+      "../../benchmarks/vendor-expanded-node-917/evidence.test.mts",
+      "../../benchmarks/vendor-expanded-node-917/parity-red.mts"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 29,
+    "wallSeconds": 3.6260823749999997
+  },
+  {
+    "argv": [
+      "pnpm",
+      "exec",
+      "tsx",
+      "--test",
+      "benchmarks/vendor-expanded-node-917/evidence.test.mts"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 29,
+    "wallSeconds": 3.3610255409948877
+  },
+  {
+    "argv": [
+      "pnpm",
+      "-C",
+      "packages/core",
+      "exec",
+      "tsc",
+      "--noEmit",
+      "--strict",
+      "--skipLibCheck",
+      "--module",
+      "NodeNext",
+      "--target",
+      "ES2022",
+      "--moduleResolution",
+      "NodeNext",
+      "--types",
+      "node",
+      "../../benchmarks/vendor-expanded-node-917/trace.mts",
+      "../../benchmarks/vendor-expanded-node-917/evidence.test.mts",
+      "../../benchmarks/vendor-expanded-node-917/parity-red.mts"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 29,
+    "wallSeconds": 4.389698708000651
+  },
+  {
+    "argv": [
+      "node",
+      "--import",
+      "tsx",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/base_159.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 29,
+    "wallSeconds": 0.4924981250005658
+  },
+  {
+    "argv": [
+      "ngspice",
+      "-b",
+      "-r",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/base_159.cir.raw",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/base_159.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 29,
+    "wallSeconds": 0.07719891600572737
+  },
+  {
+    "argv": [
+      "node",
+      "--import",
+      "tsx",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/variant_159.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 29,
+    "wallSeconds": 0.5771043749991804
+  },
+  {
+    "argv": [
+      "ngspice",
+      "-b",
+      "-r",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/variant_159.cir.raw",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/variant_159.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 29,
+    "wallSeconds": 0.09464966599625768
+  },
+  {
+    "argv": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 29,
+    "wallSeconds": 0.02199349999864353
+  },
+  {
+    "argv": [
+      "node",
+      "--import",
+      "tsx",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 29,
+    "wallSeconds": 0.6760866660042666
+  },
+  {
+    "argv": [
+      "ngspice",
+      "-b",
+      "-r",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/table.cir.raw",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 29,
+    "wallSeconds": 0.04921916699822759
+  },
+  {
+    "argv": [
+      "node",
+      "--import",
+      "tsx",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table-isolated.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 29,
+    "wallSeconds": 0.919721499994921
+  },
+  {
+    "argv": [
+      "ngspice",
+      "-b",
+      "-r",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/table-isolated.cir.raw",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table-isolated.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 29,
+    "wallSeconds": 0.046345542003109585
+  },
+  {
+    "argv": [
+      "node",
+      "--import",
+      "tsx",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/trace.mts",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table-lowered.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 29,
+    "wallSeconds": 0.8477743750045192
+  },
+  {
+    "argv": [
+      "ngspice",
+      "-b",
+      "-r",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run/table-lowered.cir.raw",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/table-lowered.cir"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/.run",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 29,
+    "wallSeconds": 0.01708012499875622
+  },
+  {
+    "argv": [
+      "node",
+      "--import",
+      "tsx",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/parity-red.mts"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 1,
+    "timedOut": false,
+    "limitSeconds": 29,
+    "wallSeconds": 0.19692216699331766
+  },
+  {
+    "argv": [
+      "pnpm",
+      "exec",
+      "tsx",
+      "--test",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa/benchmarks/vendor-expanded-node-917/evidence.test.mts"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 29,
+    "wallSeconds": 0.41608637500030454
+  },
+  {
+    "argv": [
+      "pnpm",
+      "build"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 29,
+    "wallSeconds": 10.804900750001252
+  },
+  {
+    "argv": [
+      "pnpm",
+      "lint"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 29,
+    "wallSeconds": 1.9414966249969439
+  },
+  {
+    "argv": [
+      "pnpm",
+      "test"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": -9,
+    "timedOut": true,
+    "limitSeconds": 29,
+    "wallSeconds": 29.01496283299639
+  },
+  {
+    "argv": [
+      "pnpm",
+      "exec",
+      "tsx",
+      "--test",
+      "benchmarks/vendor-expanded-node-917/evidence.test.mts"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 29,
+    "wallSeconds": 1.1034099579992471
+  },
+  {
+    "argv": [
+      "pnpm",
+      "-C",
+      "packages/core",
+      "exec",
+      "tsc",
+      "--noEmit",
+      "--strict",
+      "--skipLibCheck",
+      "--module",
+      "NodeNext",
+      "--target",
+      "ES2022",
+      "--moduleResolution",
+      "NodeNext",
+      "--types",
+      "node",
+      "../../benchmarks/vendor-expanded-node-917/trace.mts",
+      "../../benchmarks/vendor-expanded-node-917/evidence.test.mts",
+      "../../benchmarks/vendor-expanded-node-917/parity-red.mts"
+    ],
+    "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5b61f6aa",
+    "exit": 0,
+    "timedOut": false,
+    "limitSeconds": 29,
+    "wallSeconds": 1.7849968340015039
+  }
+]
