@@ -3,6 +3,13 @@
 This file records the provenance and redistribution decision for benchmark fixtures.
 The machine-readable catalogue is `benchmarks/corpus/ngspice/manifest.json`.
 
+## corpus-j partial novel source survey (#940)
+
+- 11 novel verbatim SpiceSharpParser inputs, not the requested 20: https://github.com/SpiceSharp/SpiceSharpParser at `8fc01560fe303eeebaeb5cbf5edfe77bf635e1c7`, SPDX `MIT`. Original paths, revision URLs, byte hashes and empty include closures are recorded per fixture in [corpus-j/SOURCES.md](corpus/corpus-j/SOURCES.md) and [manifest.json](corpus/corpus-j/manifest.json). Original MIT copyright/licence retained byte-identically under `licenses/spicesharpparser/LICENSE`.
+- Original paths at that revision: `circuits/a-devices/{clock-divider,controlled-clamp-varistor,edge-capture-dff,fm-modulator,non-ground-common-latch,ota-current-limiter,phase-detector,sample-and-hold-sensor}.cir`; `circuits/cookbook/custom-components/simple-pll/simple-pll.cir`; `src/SpiceSharpParser.IntegrationTests/Examples/Circuits/{band-pass_1,band-pass_2}.cir`. Every fixture is standalone (include closure empty), no vendor model redistribution. These are existing original upstream decks, never generated derivatives.
+- eSim survey only: https://github.com/FOSSEE/eSim at `1a25a46ce15e0ccc35296dd513f40249c089a5a7`, `GPL-3.0-only`; licence retained in corpus-j. All 65 explicitly surveyed paths were duplicate/no-analysis/include-dependent; no eSim deck, PDK or vendor companion is committed. PWL-file sources are also excluded. Exact inspected exclusions and input hashes are retained in the manifest.
+- Both engines receive unchanged bytes through existing corpus-f runners, with a scoped serial 19 s execution deadline/20 s owned process-group bound and <=900 s persisted cumulative child-wall budget. No source-success filtering or per-circuit tolerance tuning. Published losses: all 11 both-failed; ngspice 8 failed/3 unsupported, spice-ts 11 unsupported. Nine cross-dialect LTspice A-device inputs and two `mc()` filters have no ngspice reference. Empty/null waveform metrics are unavailable, never zero errors. This is a partial survey receipt, not expanded measured parity or a speed win. No daytime aggregate refresh; nightly #855 owns incorporation.
+
 ## B-source finite-Jacobian overflow probes (#899)
 
 - Source: original project-authored netlists in `benchmarks/bsource-overflow-899/compare.ts`, MIT (repository `LICENSE`); https://github.com/mfiumara/spice-ts/issues/899. No third-party circuit or source code is redistributed.
