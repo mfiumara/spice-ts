@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: MIT
 import gzip
 import json
+import math
 import re
 from pathlib import Path
 import subprocess
@@ -12,6 +13,19 @@ from run import Budget, REPO, ROOT, digest, metrics, raw_samples
 
 
 class EvidenceTests(unittest.TestCase):
+    def assertEvidenceEqual(self, actual, expected):
+        # Only float roundoff is tolerated; structures, counts and hashes stay exact.
+        self.assertIs(type(actual), type(expected))
+        if isinstance(expected, dict):
+            self.assertEqual(actual.keys(), expected.keys())
+            for key in expected:
+                self.assertEvidenceEqual(actual[key], expected[key])
+        elif isinstance(expected, float):
+            self.assertTrue(math.isclose(actual, expected, rel_tol=1e-12, abs_tol=0.0),
+                            f'{actual!r} != {expected!r} within relative float tolerance')
+        else:
+            self.assertEqual(actual, expected)
+
     @classmethod
     def setUpClass(cls):
         (ROOT / '.run').mkdir(exist_ok=True)
@@ -58,7 +72,7 @@ class EvidenceTests(unittest.TestCase):
                     import hashlib
                     self.assertEqual(hashlib.sha256(raw).hexdigest(), plot['rawSha256'])
                     actual = next(p for p in native['plots'] if p['kind'] == plot['kind'])
-                    self.assertEqual(metrics(actual, raw_samples(raw.decode()), plot['kind']), plot['metrics'])
+                    self.assertEvidenceEqual(metrics(actual, raw_samples(raw.decode()), plot['kind']), plot['metrics'])
                 ac, tran = [p['metrics'] for p in row['metrics']]
                 self.assertEqual(ac['matchedPoints'], ac['referencePoints'])
                 self.assertLess(tran['matchedPoints'], tran['referencePoints'])
@@ -67,7 +81,7 @@ class EvidenceTests(unittest.TestCase):
     def test_ledger_and_limits(self):
         ledger = json.loads(gzip.decompress((ROOT / 'budget-ledger.json.gz').read_bytes()))
         self.assertEqual(len(ledger), self.report['budget']['children'])
-        self.assertEqual(sum(r['wallSeconds'] for r in ledger), self.report['budget']['actualWallSeconds'])
+        self.assertEvidenceEqual(sum(r['wallSeconds'] for r in ledger), self.report['budget']['actualWallSeconds'])
         self.assertLess(sum(r['wallSeconds'] for r in ledger), 300)
         self.assertTrue(all(r['wallSeconds'] < 15 for r in ledger))
         first = json.loads((ROOT / 'first-attempt.json').read_text())
@@ -93,6 +107,14 @@ class EvidenceTests(unittest.TestCase):
         self.assertIn('license for this document: CC-BY-SA v4.0', (ROOT / 'source/COPYING').read_text())
 
     def test_metric_no_interpolation_and_zero_floor(self):
+        self.assertEvidenceEqual({'rms': 7.712823752999999, 'count': 27, 'missing': None},
+                                 {'rms': 7.712823752999998, 'count': 27, 'missing': None})
+        for actual, expected in [(1.000000000002, 1.0), (1e-30, 0.0),
+                                 ({'count': 28}, {'count': 27}),
+                                 ({'count': 27.0}, {'count': 27}),
+                                 ({'rms': 1.0}, {'max': 1.0}), ('changed', 'original')]:
+            with self.assertRaises(AssertionError):
+                self.assertEvidenceEqual(actual, expected)
         native = {'x': [0, 2], 'vectors': {'v(out)': [0, 2]}}
         reference = {'x': [0, 1, 2], 'vectors': {'v(out)': [0, 1, 3]}}
         result = metrics(native, reference, 'tran')

@@ -25,3 +25,28 @@ All commands executed in the isolated task worktree. Production baseline
 Exact-head test20/test22/build/accuracy CI is authoritative and will be recorded
 in the task handoff after publication. No local aggregate run or daytime aggregate
 hold. No local accuracy claim substituted for required accuracy CI.
+
+## PR #946 offline-audit remediation
+
+The original committed evidence at ef66cd33249a99946bfd873d4a1ff864e17049d0
+fails on Python 3.14.7 due to last-bit floating summation/RMS differences:
+
+- RED: `python3.14 benchmarks/xspice-residual-after-931/test_evidence.py -v`:
+  exit 1, 5 passed / 2 failed (offline recomparison and ledger sum).
+- GREEN, same command after the verifier-only fix: exit 0, 7/7 passed.
+- `python3 benchmarks/xspice-residual-after-931/test_evidence.py -v` on
+  Python 3.9.6: exit 0, 7/7 passed.
+- `pnpm install --frozen-lockfile`, `pnpm build`, `pnpm lint`: each exit 0.
+- `pnpm -C packages/core exec vitest run src/devices/xspice`: exit 0,
+  5 files / 54 tests passed.
+- `spice-heavy pnpm test`: exit 0.
+- `git diff --check`: exit 0.
+
+Only verifier floating values use `math.isclose(rel_tol=1e-12, abs_tol=0.0)`.
+Types, dictionary keys, integer counts, hashes and other values remain exact;
+coordinate matching and the metric implementation are untouched. The existing
+metric test also rejects out-of-tolerance drift, nonzero versus zero, changed
+counts/types/keys and changed strings. No recorded artifact was regenerated:
+the ledger, failed attempt and metrics retain their original bytes, including
+27/15119 transient coordinate matches and node3 relative error 15.8382%.
+No production edit, new simulator result, speedup or parity gain is claimed.
