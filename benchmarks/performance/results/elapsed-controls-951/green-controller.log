@@ -1,0 +1,130 @@
+test_continuous_backwards_or_nonfinite (test_controls.ControlsTest) ... ok
+test_cumulative_includes_between_child_gaps (test_controls.ControlsTest) ... ok
+test_deadline_is_inclusive (test_controls.ControlsTest) ... ok
+test_negative_nonfinite_and_missing_node_receipts (test_controls.ControlsTest) ... ok
+test_node_lifetime_and_phases_contained (test_controls.ControlsTest) ... ok
+test_normal_elapsed (test_controls.ControlsTest) ... ok
+test_realtime_forward_and_backward_steps (test_controls.ControlsTest) ... ok
+test_small_clock_read_skew_allowed (test_controls.ControlsTest) ... ok
+test_suspend_charged_and_rejected (test_controls.ControlsTest) ... ok
+test_actual_overshoot_is_reported_not_clipped (test_runner.RunnerTest) ... ERROR
+test_deadline_reserve_stops_before_hard_limit (test_runner.RunnerTest) ... ERROR
+test_first_realtime_jump_stops (test_runner.RunnerTest) ... ERROR
+test_first_suspension_kills_owned_child_and_censors_all_remaining (test_runner.RunnerTest) ... ERROR
+
+======================================================================
+ERROR: test_actual_overshoot_is_reported_not_clipped (test_runner.RunnerTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_c74059c6/benchmarks/performance/results/elapsed-controls-951/test_runner.py", line 79, in test_actual_overshoot_is_reported_not_clipped
+    self.exercise(ClockSample(35, 35, 1035), 'child-deadline')
+  File "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_c74059c6/benchmarks/performance/results/elapsed-controls-951/test_runner.py", line 56, in exercise
+    self.assertEqual(run.main(), 2)
+  File "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_c74059c6/benchmarks/performance/results/elapsed-controls-951/run.py", line 40, in main
+    host = dict(platform=platform.platform(), continuousClock=clock.name,
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/platform.py", line 1215, in platform
+    system, node, release, version, machine, processor = uname()
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/platform.py", line 802, in __iter__
+    (self.processor,)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/functools.py", line 969, in __get__
+    val = self.func(instance)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/platform.py", line 797, in processor
+    return _unknown_as_blank(_Processor.get())
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/platform.py", line 749, in get
+    return func() or ''
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/platform.py", line 768, in from_subprocess
+    return subprocess.check_output(
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py", line 424, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py", line 505, in run
+    with Popen(*popenargs, **kwargs) as process:
+AttributeError: __enter__
+
+======================================================================
+ERROR: test_deadline_reserve_stops_before_hard_limit (test_runner.RunnerTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_c74059c6/benchmarks/performance/results/elapsed-controls-951/test_runner.py", line 82, in test_deadline_reserve_stops_before_hard_limit
+    self.exercise(ClockSample(29.8, 29.8, 1029.8), 'deadline-reserve')
+  File "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_c74059c6/benchmarks/performance/results/elapsed-controls-951/test_runner.py", line 56, in exercise
+    self.assertEqual(run.main(), 2)
+  File "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_c74059c6/benchmarks/performance/results/elapsed-controls-951/run.py", line 40, in main
+    host = dict(platform=platform.platform(), continuousClock=clock.name,
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/platform.py", line 1215, in platform
+    system, node, release, version, machine, processor = uname()
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/platform.py", line 802, in __iter__
+    (self.processor,)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/functools.py", line 969, in __get__
+    val = self.func(instance)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/platform.py", line 797, in processor
+    return _unknown_as_blank(_Processor.get())
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/platform.py", line 749, in get
+    return func() or ''
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/platform.py", line 768, in from_subprocess
+    return subprocess.check_output(
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py", line 424, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py", line 505, in run
+    with Popen(*popenargs, **kwargs) as process:
+AttributeError: __enter__
+
+======================================================================
+ERROR: test_first_realtime_jump_stops (test_runner.RunnerTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_c74059c6/benchmarks/performance/results/elapsed-controls-951/test_runner.py", line 76, in test_first_realtime_jump_stops
+    self.exercise(ClockSample(1, 1, 5000), 'realtime-disagreement')
+  File "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_c74059c6/benchmarks/performance/results/elapsed-controls-951/test_runner.py", line 56, in exercise
+    self.assertEqual(run.main(), 2)
+  File "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_c74059c6/benchmarks/performance/results/elapsed-controls-951/run.py", line 40, in main
+    host = dict(platform=platform.platform(), continuousClock=clock.name,
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/platform.py", line 1215, in platform
+    system, node, release, version, machine, processor = uname()
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/platform.py", line 802, in __iter__
+    (self.processor,)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/functools.py", line 969, in __get__
+    val = self.func(instance)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/platform.py", line 797, in processor
+    return _unknown_as_blank(_Processor.get())
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/platform.py", line 749, in get
+    return func() or ''
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/platform.py", line 768, in from_subprocess
+    return subprocess.check_output(
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py", line 424, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py", line 505, in run
+    with Popen(*popenargs, **kwargs) as process:
+AttributeError: __enter__
+
+======================================================================
+ERROR: test_first_suspension_kills_owned_child_and_censors_all_remaining (test_runner.RunnerTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_c74059c6/benchmarks/performance/results/elapsed-controls-951/test_runner.py", line 73, in test_first_suspension_kills_owned_child_and_censors_all_remaining
+    self.exercise(ClockSample(1000, 1, 2000), 'monotonic-disagreement')
+  File "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_c74059c6/benchmarks/performance/results/elapsed-controls-951/test_runner.py", line 56, in exercise
+    self.assertEqual(run.main(), 2)
+  File "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_c74059c6/benchmarks/performance/results/elapsed-controls-951/run.py", line 40, in main
+    host = dict(platform=platform.platform(), continuousClock=clock.name,
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/platform.py", line 1215, in platform
+    system, node, release, version, machine, processor = uname()
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/platform.py", line 802, in __iter__
+    (self.processor,)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/functools.py", line 969, in __get__
+    val = self.func(instance)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/platform.py", line 797, in processor
+    return _unknown_as_blank(_Processor.get())
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/platform.py", line 749, in get
+    return func() or ''
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/platform.py", line 768, in from_subprocess
+    return subprocess.check_output(
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py", line 424, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py", line 505, in run
+    with Popen(*popenargs, **kwargs) as process:
+AttributeError: __enter__
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.006s
+
+FAILED (errors=4)

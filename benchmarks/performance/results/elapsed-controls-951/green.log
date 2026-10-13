@@ -1,0 +1,14 @@
+test_continuous_backwards_or_nonfinite (__main__.ControlsTest) ... ok
+test_cumulative_includes_between_child_gaps (__main__.ControlsTest) ... ok
+test_deadline_is_inclusive (__main__.ControlsTest) ... ok
+test_negative_nonfinite_and_missing_node_receipts (__main__.ControlsTest) ... ok
+test_node_lifetime_and_phases_contained (__main__.ControlsTest) ... ok
+test_normal_elapsed (__main__.ControlsTest) ... ok
+test_realtime_forward_and_backward_steps (__main__.ControlsTest) ... ok
+test_small_clock_read_skew_allowed (__main__.ControlsTest) ... ok
+test_suspend_charged_and_rejected (__main__.ControlsTest) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.000s
+
+OK

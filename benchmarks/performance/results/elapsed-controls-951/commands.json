@@ -1,0 +1,27 @@
+{
+  "workingDirectory": "repository root",
+  "baselineRevision": "45650391b788c91084b6b472dbe1fdcefbd52a19",
+  "commands": [
+    {"command": "python3 benchmarks/performance/results/elapsed-controls-951/test_controls.py", "exit": 1, "log": "red.log", "stage": "RED missing controls module"},
+    {"command": "python3 benchmarks/performance/results/elapsed-controls-951/test_controls.py", "exit": 0, "log": "green.log", "tests": 9},
+    {"command": "pnpm install --frozen-lockfile", "exit": 0, "log": "install.log"},
+    {"command": "python3 benchmarks/performance/results/elapsed-controls-951/prepare.py", "exit": 1, "log": "prepare.log", "stage": "Python3.9 tar filter unsupported, no measurement child launched"},
+    {"command": "python3 -m unittest discover -s benchmarks/performance/results/elapsed-controls-951 -p 'test_*.py' -v", "exit": 1, "log": "green-controller.log", "stage": "offline fake process exposed unmocked metadata subprocess"},
+    {"command": "python3 benchmarks/performance/results/elapsed-controls-951/prepare.py", "exit": 0, "log": "prepare-repair.log"},
+    {"command": "python3 -m unittest discover -s benchmarks/performance/results/elapsed-controls-951 -p 'test_*.py' -v", "exit": 0, "log": "green-controller-repair.log", "tests": 13},
+    {"command": "spice-heavy python3 benchmarks/performance/results/elapsed-controls-951/run.py", "exit": 2, "log": "calibration.log", "stage": "single permitted calibration, deadline-reserve hard stop, no rerun", "childrenStarted": 17, "childrenCompleted": 16, "childrenCensored": 1, "actualElapsedSeconds": 52.526617958326824, "maximumChildSeconds": 29.80141275000642},
+    {"command": "python3 benchmarks/performance/results/elapsed-controls-951/test_verify.py", "exit": 1, "log": "receipt-red.log", "stage": "RED missing verifier module"},
+    {"command": "python3 -m unittest discover -s benchmarks/performance/results/elapsed-controls-951 -p 'test_*.py' -v", "exit": 0, "log": "offline-final.log", "tests": 21},
+    {"command": "python3 -m unittest discover -s benchmarks/performance/results/elapsed-controls-951 -p 'test_*.py' -v", "exit": 0, "log": "offline-self-review.log", "tests": 22, "stage": "also reconcile a clock failure before the first child launch"},
+    {"command": "python3 benchmarks/performance/results/elapsed-controls-951/verify.py", "exit": 0, "log": "verify-final.log", "stage": "offline all-phase/ownership/source reconciliation"},
+    {"command": "pnpm build", "exit": 0, "log": "build.log.gz"},
+    {"command": "pnpm lint", "exit": 0, "log": "lint.log"},
+    {"command": "pnpm exec tsx --test benchmarks/performance/scaling-m2.test.ts", "exit": 0, "log": "fixtures.log"},
+    {"command": "spice-heavy pnpm test", "exit": 0, "log": "full-tests.log", "exitFile": "full-tests.exit"},
+    {"command": "git diff --quiet 45650391b788c91084b6b472dbe1fdcefbd52a19 -- benchmarks/performance/results/issue-938", "exit": 0, "stage": "immutable prior archive unchanged"},
+    {"command": "git diff --check", "exit": 0}
+  ],
+  "ngspiceExecuted": false,
+  "productionOptimizerTested": false,
+  "additionalCalibrationAllowed": false
+}

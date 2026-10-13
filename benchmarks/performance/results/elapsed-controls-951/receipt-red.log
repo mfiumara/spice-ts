@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_c74059c6/benchmarks/performance/results/elapsed-controls-951/test_verify.py", line 6, in <module>
+    from verify import summarize
+ModuleNotFoundError: No module named 'verify'

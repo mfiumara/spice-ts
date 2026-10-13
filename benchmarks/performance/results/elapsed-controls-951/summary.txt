@@ -1,0 +1,51 @@
+One unprofiled unchanged-control pair, milliseconds. Positive difference is a control loss.
+circuit size mode phase baseline control difference%
+rc-ladder-tran 1000 simulate cold 66.996 69.547 3.807
+rc-ladder-tran 1000 simulate warm 45.072 47.831 6.121
+resistor-mesh-op 1000 simulate cold 33.951 33.871 -0.236
+resistor-mesh-op 1000 simulate warm 23.091 20.761 -10.090
+resistor-mesh-op 1000 isolate cold 9.939 9.664 -2.771
+resistor-mesh-op 1000 isolate warm 1.485 1.508 1.518
+cmos-inverter-chain-tran 1000 simulate cold 270.882 279.778 3.284
+cmos-inverter-chain-tran 1000 simulate warm 190.372 196.552 3.247
+rc-ladder-tran 10000 simulate cold 333.343 340.556 2.164
+rc-ladder-tran 10000 simulate warm 255.067 256.511 0.566
+resistor-mesh-op 10000 simulate cold 192.729 200.608 4.088
+resistor-mesh-op 10000 simulate warm 128.082 132.160 3.183
+resistor-mesh-op 10000 isolate cold 57.936 56.042 -3.270
+resistor-mesh-op 10000 isolate warm 22.201 21.258 -4.249
+cmos-inverter-chain-tran 10000 simulate cold 2141.559 2127.427 -0.660
+cmos-inverter-chain-tran 10000 simulate warm 1848.722 1906.166 3.107
+rc-ladder-tran 50000 simulate cold 1209.695 1208.020 -0.138
+rc-ladder-tran 50000 simulate warm 1112.623 1096.668 -1.434
+resistor-mesh-op 50000 simulate cold 816.852 823.384 0.800
+resistor-mesh-op 50000 simulate warm 740.243 739.884 -0.048
+resistor-mesh-op 50000 isolate cold 261.087 275.668 5.585
+resistor-mesh-op 50000 isolate warm 218.278 217.962 -0.145
+cmos-inverter-chain-tran 50000 simulate cold 18402.207 None None
+cmos-inverter-chain-tran 50000 simulate warm None None None
+{
+  "planned": 18,
+  "started": 17,
+  "completed": 16,
+  "censored": 1,
+  "stopReason": "deadline-reserve",
+  "actualRunSeconds": 52.526617958326824,
+  "maxChildSeconds": 29.80141275000642,
+  "clockDisagreements": [],
+  "observedBoundsSatisfied": true,
+  "fullCalibrationCompleted": false,
+  "pairedSimulationPhases": 16,
+  "pairedFactorPhases": 6,
+  "calibration": {
+    "validatedParentIntervals": 18,
+    "validatedNodeLifetimes": 16,
+    "missingNodeLifetimes": [
+      "16-cmos-inverter-chain-tran-50000-baseline"
+    ],
+    "maxParentMonotonicDisagreementMs": 0.0030423268242429913,
+    "maxParentRealtimeDisagreementMs": 0.03914616536349058,
+    "maxNodeRealtimeDisagreementMs": 0.9187919999999394
+  },
+  "baselineRevision": "45650391b788c91084b6b472dbe1fdcefbd52a19"
+}
