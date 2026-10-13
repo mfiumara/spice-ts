@@ -280,6 +280,11 @@ interface MosfetStepLimitBatch {
 
 const stepLimitBatches = new WeakMap<readonly MOSFET[], MosfetStepLimitBatch>();
 
+/** The shared {@link MosfetStateStore} of a device list, valid while {@link stateStoreEpoch} is unchanged. */
+const predictorStores = new WeakMap<
+  readonly MOSFET[], { readonly length: number; readonly stateEpoch: number; readonly store: MosfetStateStore }
+>();
+
 // MosfetStateStore.values layout per instance.
 const STATE_VBS = 0;
 const STATE_VBD = 1;
@@ -357,8 +362,9 @@ class MosfetStateStore {
    * those inputs. Since that load, the row was at most changed by
    * {@link MOSFET.foldJunctionChargeCurrent} in STATE_CD/CBS/CBD/GBS/GBD,
    * which a hit restores from the cached pre-fold values. Every other writer
-   * of a state row (the vbs/vbd/von setters, per-device stamp and
-   * limitNewtonStep) calls {@link invalidateLoad} first; store merges start a
+   * of a state row (the vbs/vbd/von setters, per-device stamp,
+   * limitNewtonStep and the predictor's junction restore) calls
+   * {@link invalidateLoad} first; store merges start a
    * fresh cache, and a constants change empties it (NaN keys match nothing).
    */
   loadCache(): Float64Array {
@@ -375,6 +381,106 @@ class MosfetStateStore {
   /** A state row is written outside {@link MOSFET.batchStamp}: forget its cached load. */
   invalidateLoad(stateBase: number): void {
     if (this.loads !== undefined) this.loads[(stateBase / STATE_STRIDE) * LOAD_STRIDE + LOAD_VD] = NaN;
+  }
+
+  // Transient predictor (mos1load.c MODEINITPRED), see beginPredictor.
+  /** 1 for a member whose next load is the first iterate of a timepoint. */
+  predictFlags: Uint8Array | undefined;
+  /** Solution at the last accepted point (CKTstate1) and at the one before (CKTstate2). */
+  predictAccepted: Float64Array | undefined;
+  predictPrior: Float64Array | undefined;
+  /** x = dt / dt(n) of the current attempt; 0 extrapolates nothing. */
+  predictRatio = 0;
+  /** Limited vbs, vbd per member loaded at the accepted point (CKTstate1). */
+  private acceptedJunctions: Float64Array | undefined;
+  /** Accepted points recorded: 0, 1 (predictAccepted) or 2 (predictPrior too). */
+  private history = 0;
+  /** Step that reached the last accepted point (CKTdeltaOld[1]). */
+  private acceptedStep = 0;
+  /** An accepted point not yet recorded: 1 after an operating point, 2 after a step of pendingStep. */
+  private pending = 0;
+  private pendingStep = 0;
+  /** A transient Newton solve began since the last accepted point. */
+  private inTransient = false;
+
+  /** A member accepted a point reached by a step of `dt` (0 for an operating point). Idempotent per point. */
+  markAccepted(dt: number): void {
+    if (this.inTransient) {
+      this.pending = 2;
+      this.pendingStep = dt;
+      this.inTransient = false;
+    } else if (this.pending === 0) {
+      this.pending = 1;
+    }
+  }
+
+  resetPredictor(): void {
+    this.history = 0;
+    this.pending = 0;
+    this.inTransient = false;
+    this.predictRatio = 0;
+    this.predictFlags?.fill(0);
+  }
+
+  /**
+   * Start a transient Newton attempt of step `dt` from the accepted solution
+   * `accepted` for every member (see {@link MOSFET.beginTransientNewton}).
+   * The first attempt after an accepted point records it, a retry restores
+   * the junction voltages loaded there. Idempotent within one attempt.
+   */
+  beginPredictor(dt: number, accepted: Float64Array): void {
+    const count = this.members.length;
+    const values = this.values;
+    if (this.pending !== 0) {
+      let point = this.predictAccepted;
+      if (this.pending === 2 && this.history > 0) {
+        const recycled = this.predictPrior;
+        this.predictPrior = point;
+        point = recycled;
+        this.acceptedStep = this.pendingStep;
+        this.history = 2;
+      } else {
+        this.history = 1;
+      }
+      if (point === undefined || point.length !== accepted.length) point = new Float64Array(accepted.length);
+      point.set(accepted);
+      this.predictAccepted = point;
+      const junctions = this.acceptedJunctions ??= new Float64Array(2 * count);
+      for (let m = 0; m < count; m++) {
+        junctions[2 * m] = values[STATE_STRIDE * m + STATE_VBS];
+        junctions[2 * m + 1] = values[STATE_STRIDE * m + STATE_VBD];
+      }
+      this.pending = 0;
+    } else if (this.history > 0) {
+      // A retried timepoint limits against the accepted point again (CKTstate0 = CKTstate1).
+      const junctions = this.acceptedJunctions!;
+      for (let m = 0; m < count; m++) {
+        const base = STATE_STRIDE * m;
+        const vbs = junctions[2 * m];
+        const vbd = junctions[2 * m + 1];
+        if (Object.is(values[base + STATE_VBS], vbs) && Object.is(values[base + STATE_VBD], vbd)) continue;
+        this.invalidateLoad(base);
+        values[base + STATE_VBS] = vbs;
+        values[base + STATE_VBD] = vbd;
+      }
+    }
+    this.inTransient = true;
+    if (this.history === 0) return;
+    const step = this.acceptedStep;
+    this.predictRatio = this.history === 2 && step > 0 && dt > 0 ? dt / step : 0;
+    (this.predictFlags ??= new Uint8Array(count)).fill(1);
+  }
+
+  /**
+   * Predicted voltage of node `node` (-1 for ground): v(n) + x * (v(n) - v(n-1)),
+   * mos1load.c (1 + x) * v(n) - x * v(n-1) written so that a node that did
+   * not move is predicted exactly.
+   */
+  predictedVoltage(node: number): number {
+    if (node < 0) return 0;
+    const point = this.predictAccepted![node];
+    const ratio = this.predictRatio;
+    return ratio === 0 ? point : point + ratio * (point - this.predictPrior![node]);
   }
 }
 
@@ -847,10 +953,15 @@ export class MOSFET implements DeviceModel {
     const polarity = this.params.polarity;
     const [jD, nG, jS] = this.nodes;
     const jB = this.bulkNode;
-    const vD = jD >= 0 ? ctx.getVoltage(jD) : 0;
-    const vG = nG >= 0 ? ctx.getVoltage(nG) : 0;
-    const vS = jS >= 0 ? ctx.getVoltage(jS) : 0;
-    const vB = jB >= 0 ? ctx.getVoltage(jB) : 0;
+    // mos1load.c MODEINITPRED, as in batchStamp.
+    const store = this.stateStore;
+    const row = this.stateBase / STATE_STRIDE;
+    const predict = store.predictFlags !== undefined && store.predictFlags[row] !== 0;
+    if (predict) store.predictFlags![row] = 0;
+    const vD = predict ? store.predictedVoltage(jD) : jD >= 0 ? ctx.getVoltage(jD) : 0;
+    const vG = predict ? store.predictedVoltage(nG) : nG >= 0 ? ctx.getVoltage(nG) : 0;
+    const vS = predict ? store.predictedVoltage(jS) : jS >= 0 ? ctx.getVoltage(jS) : 0;
+    const vB = predict ? store.predictedVoltage(jB) : jB >= 0 ? ctx.getVoltage(jB) : 0;
 
     // Bulk junctions first: as in mos1load.c, the drain current uses the
     // DEVpnjlim-limited vbs/vbd. They stamp on the unswapped terminals.
@@ -1019,7 +1130,53 @@ export class MOSFET implements DeviceModel {
   }
 
   acceptTransientStep(ctx: StampContext): void {
-    if (!this.integratesTransientCharge) return;
+    // The accepted solution itself is recorded by the next beginTransientNewton.
+    this.stateStore.markAccepted(ctx.dt);
+    if (this.integratesTransientCharge) this.acceptCharges(ctx);
+  }
+
+  /**
+   * Start a transient Newton solve at a new or retried timepoint of step
+   * `dt` from the accepted solution `accepted`, as ngspice-47 mos1load.c
+   * MODEINITPRED: the first iterate is linearised at vgs, vds and vbs
+   * extrapolated from the two accepted points, v = (1 + x) * v(n) - x * v(n-1)
+   * with x = dt / dt(n), and limited against the junction voltages loaded at
+   * the accepted point (CKTstate0 = CKTstate1, also on a retry). After the
+   * operating point, with one accepted point, the prediction is that point
+   * (dctran.c copies CKTstate1 into CKTstate2).
+   *
+   * The extrapolation runs on the node voltages, the same linear map for the
+   * branch voltages, and is shared by every instance of the state store
+   * (one vector copy per timepoint instead of per-instance history). ngspice
+   * extrapolates the branch voltages of the last load of each accepted point
+   * (the iterate before the accepted solution); spice-ts uses the accepted
+   * solution, within the Newton tolerance of it, and the junction voltages
+   * of the last load before the step (after the trapezoidal history restamp).
+   * A node that did not move is predicted exactly, so a settled device keeps
+   * its cached load (#842).
+   *
+   * ponytail: the Meyer and junction charge companions are still evaluated
+   * at the iterate; ngspice extrapolates qgs/qgd/qgb on this iterate too.
+   */
+  beginTransientNewton(dt: number, accepted: Float64Array): void {
+    this.stateStore.beginPredictor(dt, accepted);
+  }
+
+  /** {@link beginTransientNewton} for every instance in `mosfets`, once per state store. */
+  static batchBeginTransientNewton(mosfets: readonly MOSFET[], dt: number, accepted: Float64Array): void {
+    const length = mosfets.length;
+    if (length === 0) return;
+    let cached = predictorStores.get(mosfets);
+    if (cached === undefined || cached.stateEpoch !== stateStoreEpoch || cached.length !== length) {
+      // Merging stores bumps the epoch, so resolve them before recording it.
+      const store = MOSFET.sharedStateStore(mosfets);
+      cached = { length, stateEpoch: stateStoreEpoch, store };
+      predictorStores.set(mosfets, cached);
+    }
+    cached.store.beginPredictor(dt, accepted);
+  }
+
+  private acceptCharges(ctx: StampContext): void {
     this.evaluateCharges(ctx);
     for (let index = 0; index < CHARGE_BRANCHES.length; index++) {
       const [p, n] = CHARGE_BRANCHES[index];
@@ -1034,11 +1191,12 @@ export class MOSFET implements DeviceModel {
 
   resetTransient(): void {
     this.charges.reset();
+    this.stateStore.resetPredictor();
   }
 
   /** ngspice MOS1trunc: the gate charges only, not the bulk junctions. */
   truncateTransientStep(ctx: StampContext, truncation: ChargeTruncation): number {
-    return this.charges.truncationTimestep(truncation, () => this.acceptTransientStep(ctx), MOS_GATE_CHARGES);
+    return this.charges.truncationTimestep(truncation, () => this.acceptCharges(ctx), MOS_GATE_CHARGES);
   }
 
   stampAC(ctx: StampContext, _omega: number): void {
@@ -1197,7 +1355,9 @@ export class MOSFET implements DeviceModel {
     const params = batch.params;
     const state = batch.state;
     const stateBases = batch.stateBases;
-    const loads = batch.store.loadCache();
+    const store = batch.store;
+    const loads = store.loadCache();
+    const predictFlags = store.predictFlags;
     const junction = junctionScratch;
     const channel = channelScratch;
     for (let m = 0; m < mosfets.length; m++) {
@@ -1205,16 +1365,21 @@ export class MOSFET implements DeviceModel {
       const s = BATCH_SLOTS * m;
       const k = BP_STRIDE * m;
       const r = stateBases[m];
-      const c = (r / STATE_STRIDE) * LOAD_STRIDE;
+      const row = r / STATE_STRIDE;
+      const c = row * LOAD_STRIDE;
       const jD = nodes[q];
       const nG = nodes[q + 1];
       const jS = nodes[q + 2];
       const jB = nodes[q + 3];
       const polarity = params[k + BP_POLARITY];
-      const vD = jD >= 0 ? solution[jD] : 0;
-      const vG = nG >= 0 ? solution[nG] : 0;
-      const vS = jS >= 0 ? solution[jS] : 0;
-      const vB = jB >= 0 ? solution[jB] : 0;
+      // The first iterate of a transient timepoint is linearised at the
+      // predicted terminal voltages (mos1load.c MODEINITPRED).
+      const predict = predictFlags !== undefined && predictFlags[row] !== 0;
+      if (predict) predictFlags![row] = 0;
+      const vD = predict ? store.predictedVoltage(jD) : jD >= 0 ? solution[jD] : 0;
+      const vG = predict ? store.predictedVoltage(nG) : nG >= 0 ? solution[nG] : 0;
+      const vS = predict ? store.predictedVoltage(jS) : jS >= 0 ? solution[jS] : 0;
+      const vB = predict ? store.predictedVoltage(jB) : jB >= 0 ? solution[jB] : 0;
       const inVbs = state[r + STATE_VBS];
       const inVbd = state[r + STATE_VBD];
 
