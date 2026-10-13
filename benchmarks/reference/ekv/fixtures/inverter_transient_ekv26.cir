@@ -1,0 +1,26 @@
+*Sample netlist for BSIM-MG 
+*Inverter Transient
+
+.model nmos1 nmos level=260 TNOM=27
+.model pmos1 pmos level=260 TNOM=27
+
+* --- Voltage Sources ---
+vdd   supply  0 dc 3.0
+vsig  vi  0 dc 0.5 sin (0 2.5 1MEG)
+
+* --- Inverter Subcircuit ---
+.subckt mg_inv vin vout vdd gnd
+Mp1 vout vin vdd vdd pmos1 W=1u L=1u AD=1e-12 AS=1e-12 PS=2e-6 PD=2e-6
+Mn1 vout vin gnd gnd nmos1 W=1u L=1u AD=1e-12 AS=1e-12 PS=2e-6 PD=2e-6
+.ends
+
+* --- Inverter ---
+Xinv1  vi 1 supply 0 mg_inv
+R1 1 0 1MEG
+* --- Transient Analysis ---
+.tran 10n 5u
+
+*COMP V(vi) offset=2.51
+*COMP v(1) offset=.01
+.print tran v(vi) v(1)
+.end

@@ -1,0 +1,21 @@
+{
+  "sourceRevision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+  "license": "GPL-3.0-or-later",
+  "licenseNotice": "benchmarks/corpus/xyce/LICENSE-NOTICE.md",
+  "licenseText": "benchmarks/corpus/xyce/COPYING.txt",
+  "mechanicalAdaptation": "None in fixtures. Missing .end appended for both engines at runtime.",
+  "fixtures": [
+    {
+      "name": "inverter_transient_ekv26",
+      "sha256": "c23703254e36b5454a2f02463e84cf16e6bb64a6b2a557b3a901486cdbe2dd98"
+    },
+    {
+      "name": "test_ekv26_nmos",
+      "sha256": "6ba9f1dc9d2ff57e7e5cd067b6be0a0bcaab39377f011712c2e9287b73bf8b64"
+    },
+    {
+      "name": "test_ekv26_pmos",
+      "sha256": "5a8b7a14f1e1ae916566c3ec4195e248f3dc34fcba4f74ef154936be5baa1fe9"
+    }
+  ]
+}
