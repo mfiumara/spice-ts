@@ -1,0 +1,141 @@
+import assert from 'node:assert/strict';
+import { readdirSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import test from 'node:test';
+import type { ComparisonFixture } from '../comparison-harness.js';
+import { parseXyceCsv, runXyce, translateForXyce } from './xyce.js';
+
+test('mixed-case requested names use canonical lower-case series keys like ngspice', () => {
+  const result = parseXyceCsv('{V1},V(IN),I(V1)\n0,0,0', 'dc', ['V(IN)', 'I(V1)']);
+  assert.deepEqual(Object.keys(result.signals), ['v(in)', 'i(v1)']);
+});
+
+function fixture(analysis: ComparisonFixture['analysis'] = 'dc'): ComparisonFixture {
+  const directive = analysis === 'dc' ? '.dc V1 0 1 .5' : analysis === 'ac' ? '.ac lin 3 1 3' : analysis === 'tran' ? '.tran .1 1' : '.op';
+  return { name: 'adapter-small', analysis, signals: ['v(in)', 'i(V1)'],
+    netlist: `adapter test\nV1 in 0 DC 1 AC 1\nR1 in 0 1k\n${directive}\n.end\n` };
+}
+
+test('DC CSV uses explicit primary sweep and preserves flattened nested rows', () => {
+  const series = parseXyceCsv('{V1},V(IN),I(V1)\n0,0,0\n.5,.5,-5e-4\n0,0,0\n.5,.5,-5e-4\n', 'dc', ['v(in)', 'i(V1)']);
+  assert.deepEqual(series.grid, [0, .5, 0, .5]);
+  assert.deepEqual(series.signals['i(v1)'], [{ re: 0, im: 0 }, { re: -.0005, im: 0 }, { re: 0, im: 0 }, { re: -.0005, im: 0 }]);
+});
+
+test('TRAN and AC CSV match case-insensitive headers, quoted differential voltage', () => {
+  assert.deepEqual(parseXyceCsv('\uFEFFtime,"V(A,B)",I(V1)\r\n0,2,-.1\r\n', 'tran', ['v(a,b)', 'i(v1)']), {
+    grid: [0], signals: { 'v(a,b)': [{ re: 2, im: 0 }], 'i(v1)': [{ re: -.1, im: 0 }] },
+  });
+  const native = parseXyceCsv('TIME,V(A,B),I(V1)\n0,2,-.1', 'tran', ['v(a,b)', 'i(v1)']);
+  assert.deepEqual(native.signals['v(a,b)'], [{ re: 2, im: 0 }]);
+  assert.deepEqual(parseXyceCsv('FREQ,VR(IN),VI(IN),IR(V1),II(V1)\n1,2,-3,-4,5', 'ac', ['v(in)', 'i(V1)']), {
+    grid: [1], signals: { 'v(in)': [{ re: 2, im: -3 }], 'i(v1)': [{ re: -4, im: 5 }] },
+  });
+});
+
+test('CSV rejects absent, duplicate, malformed, blank, nonfinite and truncated fields', () => {
+  for (const csv of [
+    '', 'TIME,V(IN)', 'V(IN)\n1', 'TIME,V(OTHER)\n0,1', 'TIME,V(IN),v(in)\n0,1,2',
+    'TIME,V(IN)\n0', 'TIME,V(IN)\n0,1,2', 'TIME,V(IN)\n0,', 'TIME,V(IN)\n0,NaN',
+    'TIME,V(IN)\nInfinity,1', 'TIME,V(IN)\n0,1e999', 'TIME,V(IN)\n0,1junk',
+    'TIME,V(IN)\n0,"1', 'TIME,V(IN)\n0,1\n\n1,2', 'TIME,,V(IN)\n0,1,2',
+  ]) assert.throws(() => parseXyceCsv(csv, 'tran', ['v(in)']), undefined, csv);
+  assert.throws(() => parseXyceCsv('FREQ,VR(IN)\n1,2', 'ac', ['v(in)']), /Missing CSV field/);
+  assert.throws(() => parseXyceCsv('V(IN)\n1', 'dc', ['v(in)']), /sweep parameter/);
+  assert.throws(() => parseXyceCsv('TIME,V(IN)\n0,1', 'op', ['v(in)']), /OP/);
+});
+
+test('translation replaces output continuations, preserves qualified options and LEVEL=260', () => {
+  const f = fixture();
+  f.netlist = f.netlist.replace('.end', '.print dc v(unrequested)\n+ i(unrequested)\n.plot dc v(in)\n+ v(other)\n.options NONLIN reltol=1e-7\n.model ekv NMOS LEVEL=260 VTO=.4\n.end');
+  const translated = translateForXyce(f);
+  assert.match(translated.netlist, /\.print DC format=csv file=output.csv precision=17 \{V1\} V\(in\) I\(V1\)/);
+  assert.doesNotMatch(translated.netlist, /unrequested|v\(other\)|\.plot/i);
+  assert.ok(translated.netlist.includes('.options NONLIN reltol=1e-7'));
+  assert.ok(translated.netlist.includes('.model ekv NMOS LEVEL=260 VTO=.4'));
+  assert.ok(translated.netlist.includes('V1 in 0 DC 1 AC 1'));
+  assert.equal(translated.changes.length, 3);
+  const nested = fixture();
+  nested.netlist = nested.netlist.replace('.dc V1 0 1 .5', '.dc V1 0 1 .5\n+ V2 0 2 1');
+  assert.ok(translateForXyce(nested).netlist.includes('.dc V1 0 1 .5\n+ V2 0 2 1'));
+  assert.match(translateForXyce(fixture('ac')).netlist, /VR\(in\) VI\(in\) IR\(V1\) II\(V1\)/);
+  assert.doesNotMatch(translateForXyce(fixture('tran')).netlist, /\bTIME\b/);
+});
+
+test('translation limitations return unsupported before launching executable', async () => {
+  const cases = [fixture('op'),
+    ...['.control\nrun\n.endc', '.options reltol=1e-8', '.option method=gear', '.options reltol 1e-8', '.step V1 0 1 .1', '.ac lin 2 1 2'].map(card => ({ ...fixture(), netlist: fixture().netlist.replace('.end', `${card}\n.end`) })),
+    { ...fixture(), signals: ['vm(in)'] }, { ...fixture(), signals: ['v(in);bad'] },
+    { ...fixture(), netlist: fixture().netlist.replace('DC 1 AC 1', 'type=vsource 1') },
+    { ...fixture(), netlist: fixture().netlist.replace('DC 1 AC 1', 'type=vdc vdc=1') },
+    { ...fixture(), netlist: fixture().netlist.replace('.end', '') },
+  ];
+  for (const f of cases) {
+    const result = await runXyce(f, { executable: '/nonexistent/xyce-adapter' });
+    assert.equal(result.status, 'unsupported', JSON.stringify(result));
+    assert.deepEqual(result.command, []);
+  }
+});
+
+test('missing executable, execution failure, absent output and timeout fail and clean cwd', async () => {
+  const directories = () => readdirSync(tmpdir()).filter(name => name.startsWith('spice-ts-xyce-')).sort();
+  const before = directories();
+  const missing = await runXyce(fixture(), { executable: '/nonexistent/xyce-adapter' });
+  assert.equal(missing.status, 'failed');
+  if (missing.status !== 'success') assert.match(missing.error, /ENOENT/);
+  // Node acts as an executable test double; all SPICE cards stay inside a JS comment.
+  for (const [script, message] of [
+    ['process.exit(2)', /exited 2/], ['', /ENOENT/], ['while(true) {}', /ETIMEDOUT/],
+    ["require('node:fs').writeFileSync('output.csv', '{V1},V(IN),I(V1)\\n0,NaN,0')", /nonfinite/],
+  ] as const) {
+    const f = fixture();
+    f.netlist = f.netlist.replace('adapter test', '/*') + `\n*/\n${script}\n`;
+    const result = await runXyce(f, { executable: process.execPath, timeoutMs: script.includes('while') ? 100 : 2000 });
+    assert.equal(result.status, 'failed');
+    if (result.status !== 'success') assert.match(result.error, message);
+  }
+  assert.deepEqual(directories(), before);
+});
+
+for (const analysis of ['dc', 'tran', 'ac'] as const) {
+  test(`live Xyce ${analysis}`, { skip: !process.env.XYCE_BIN }, async () => {
+    const result = await runXyce(fixture(analysis), { executable: process.env.XYCE_BIN });
+    assert.equal(result.status, 'success', JSON.stringify(result));
+    if (result.status !== 'success') return;
+    assert.ok(result.series.grid.length > 0);
+    if (analysis === 'dc') assert.deepEqual(result.series.grid, [0, .5, 1]);
+    if (analysis === 'ac') assert.deepEqual(result.series.grid, [1, 2, 3]);
+    result.series.signals['v(in)'].forEach((v, i) => {
+      const expected = analysis === 'dc' ? result.series.grid[i] : 1;
+      assert.ok(Math.abs(v.re - expected) < 1e-12);
+      assert.equal(v.im, 0);
+      assert.ok(Math.abs(result.series.signals['i(v1)'][i].re + expected / 1000) < 1e-12);
+    });
+  });
+}
+
+test('live Xyce nested DC retains primary sweep restarts', { skip: !process.env.XYCE_BIN }, async () => {
+  const f = fixture();
+  f.netlist = f.netlist.replace('R1 in 0 1k', 'R1 in 0 1k\nV2 aux 0 DC 0\nR2 aux 0 1k').replace('.dc V1 0 1 .5', '.dc V1 0 1 .5 V2 0 1 1');
+  const result = await runXyce(f);
+  assert.equal(result.status, 'success', JSON.stringify(result));
+  if (result.status === 'success') assert.deepEqual(result.series.grid, [0, .5, 1, 0, .5, 1]);
+});
+
+test('live Xyce AC preserves nonzero imaginary voltage and current', { skip: !process.env.XYCE_BIN }, async () => {
+  const f = fixture('ac');
+  f.signals = ['v(out)', 'i(V1)'];
+  f.netlist = f.netlist.replace('R1 in 0 1k', 'R1 in out 1k\nC1 out 0 1u').replace('.ac lin 3 1 3', '.ac lin 3 100 300');
+  const result = await runXyce(f);
+  assert.equal(result.status, 'success', JSON.stringify(result));
+  if (result.status !== 'success') return;
+  result.series.grid.forEach((frequency, i) => {
+    const x = 2 * Math.PI * frequency * .001;
+    const re = 1 / (1 + x * x), im = -x / (1 + x * x);
+    const voltage = result.series.signals['v(out)'][i], current = result.series.signals['i(v1)'][i];
+    assert.ok(Math.abs(voltage.re - re) < 1e-12);
+    assert.ok(Math.abs(voltage.im - im) < 1e-12);
+    assert.ok(Math.abs(current.re - (re - 1) / 1000) < 1e-12);
+    assert.ok(Math.abs(current.im - im / 1000) < 1e-12);
+  });
+});

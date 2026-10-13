@@ -3,6 +3,25 @@
 This file records the provenance and redistribution decision for benchmark fixtures.
 The machine-readable catalogue is `benchmarks/corpus/ngspice/manifest.json`.
 
+## Xyce second-reference bootstrap (#948)
+
+- `benchmarks/reference/ekv/fixtures/*.cir` are byte-identical copies of the three
+  `Netlists/EKV26` decks at Xyce_Regression revision
+  `7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2`.
+  Source: https://github.com/Xyce/Xyce_Regression/tree/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/EKV26.
+- Licence: GPL-3.0-or-later. Upstream notice and full licence are retained in
+  `benchmarks/corpus/xyce/LICENSE-NOTICE.md` and `benchmarks/corpus/xyce/COPYING.txt`.
+  Hashes and the redistribution decision are recorded in
+  `benchmarks/reference/ekv/manifest.json` and `benchmarks/REFERENCES.md`.
+- Runtime-only adaptations are corpus-wide and recorded per fixture: missing
+  `.end` is appended for both engines; Xyce output cards are replaced by CSV
+  probes. Circuit/model values, including LEVEL=260, are never downgraded.
+  Engine input bytes therefore differ at output cards, explicitly disclosed in
+  reports. The 100-fixture cross-check uses the existing five aggregate corpora
+  unchanged, retains every failure and does not refresh the aggregate ledger.
+- LEVEL=260 is EKV 2.6 in this upstream suite. spice-ts/ngspice MOS1 fallback
+  results are losses against EKV, not EKV parity. No simulator superiority claim.
+
 ## corpus-j partial novel source survey (#940)
 
 - 11 novel verbatim SpiceSharpParser inputs, not the requested 20: https://github.com/SpiceSharp/SpiceSharpParser at `8fc01560fe303eeebaeb5cbf5edfe77bf635e1c7`, SPDX `MIT`. Original paths, revision URLs, byte hashes and empty include closures are recorded per fixture in [corpus-j/SOURCES.md](corpus/corpus-j/SOURCES.md) and [manifest.json](corpus/corpus-j/manifest.json). Original MIT copyright/licence retained byte-identically under `licenses/spicesharpparser/LICENSE`.
