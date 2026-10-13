@@ -46,6 +46,51 @@ The fine column is a loss to report: spice-ts used to be closer to the TMAX-fine
 
 `triage-809.test.ts` now pins the tlines.spice result: ngspice's grid and its 0.00403 analytic error, instead of spice-ts's former exact answer.
 
+## Short-step history regression found in review of #892
+
+Rejected head `8585e399` treated every acceptance within 10 fs of the last
+retained point as a repeat and replaced that point, including its timestamp.
+With successive 5 fs steps the delayed history never accumulated. Only an
+exact repeated timepoint now replaces the last sample. A distinct later point
+within the minimum history spacing leaves the earlier sample intact, as in
+ngspice-47 TRAaccept. Older acceptances are ignored. There is no circuit-specific
+tolerance or timestep change.
+
+The regression in `transmission-line.test.ts` uses this identical deck in both
+engines (an original minimal matched-line test, not a new external source):
+
+```spice
+Short-step matched lossless line
+V1 source 0 PULSE(0 1 100f 10f 10f 10p 20p)
+RS source input 50
+T1 input 0 output 0 Z0=50 TD=500f
+RL output 0 50
+.tran 5f 2p 0 5f
+.end
+```
+
+RED at test commit `68bb06ab`: 4 tests passed and the new regression failed
+with 0.01666505880679309 V at the first settled sample, versus 0.5 V.
+Independent review of `8585e399` measured 0.2730156056925357 V at 2 ps.
+After the retention fix, a fresh same-deck ngspice-47 `-b -r` ASCII run gives:
+
+| Measurement | ngspice-47 | spice-ts after |
+|---|---|---|
+| Accepted output points | 414 | 406 |
+| Output at 2 ps | 0.5 V | 0.5 V |
+| Max absolute output before 580 fs | 0 V | 0 V |
+| Max absolute error from 0.5 V at/after 700 fs | 0 V | 1.11e-16 V |
+
+The pre-arrival check stays clear of the quadratic interpolation stencil near
+the 600 fs arrival. This fixes lost history, not full short-step grid parity;
+the 414 versus 406 point difference remains published. Public-device tests
+also pin exact repeats, close later acceptances and older acceptances.
+
+Fresh corpus-h parity runs after the fix retain the ordinary T-line result
+(819/819 points, 5.29e-14 headline; fine column 0.0563/0.0563), relay loss
+(0.0215; fine column 0.385/0.385), and astable loss (1.27). No fixtures,
+scoring tolerances, aggregate results or relay/astable implementations changed.
+
 ## bjt-relay-driver.cir: not a simulator bug (#592 grid artefact)
 
 The worst error is on the turn-on edge at 1.00025 ms. v(collector) falls about 12 V in about 60 ns, so 0.27 V (0.0215 of the 12.76 V peak) is about 1.3 ns of timing. ngspice's default grid brackets the edge more coarsely than spice-ts's.

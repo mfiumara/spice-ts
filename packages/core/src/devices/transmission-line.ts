@@ -13,10 +13,10 @@ const BREAKPOINT_RELTOL = 1;
 const BREAKPOINT_ABSTOL = 1;
 
 /**
- * Two accepted times closer than this are one history entry (ngspice-47
- * traacct.c appends a point only beyond CKTminBreak of the last one).
+ * Minimum spacing of retained history points (ngspice-47 traacct.c appends
+ * only beyond CKTminBreak). Close later samples leave the earlier point intact.
  */
-const SAME_TIME = 1e-14;
+const MIN_HISTORY_SPACING = 1e-14;
 
 /**
  * Ideal two-port lossless delay line using the SPICE T-element wave equations.
@@ -111,12 +111,14 @@ export class TransmissionLine implements DeviceModel {
     }
 
     const last = history[history.length - 1];
-    if (Math.abs(sample.time - last.time) <= SAME_TIME) {
+    if (sample.time === last.time) {
       // A repeated acceptance of the same timepoint replaces it.
       history[history.length - 1] = sample;
       return;
     }
-    if (sample.time < last.time) return;
+    // Never advance the retained timestamp for a distinct too-close sample:
+    // otherwise small accepted steps continually erase the delayed history.
+    if (sample.time - last.time <= MIN_HISTORY_SPACING) return;
     history.push(sample);
 
     const previous = history[history.length - 2];

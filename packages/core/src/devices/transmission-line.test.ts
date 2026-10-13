@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { parse } from '../parser/index.js';
 import { simulate } from '../simulate.js';
+import type { StampContext } from './device.js';
+import { TransmissionLine } from './transmission-line.js';
 
 function valueAtOrAfter(time: number[], values: number[], target: number): number {
   const index = time.findIndex(point => point >= target);
@@ -33,6 +35,33 @@ const NGSPICE_MISMATCHED: ReadonlyArray<{ time: number; node: string; value: num
 ];
 
 describe('bounded lossless transmission line transient execution', () => {
+  it.each([
+    { acceptedTime: 25e-15, expectedWave: 1, reason: 'close later sample' },
+    { acceptedTime: 15e-15, expectedWave: 1, reason: 'older sample' },
+    { acceptedTime: 20e-15, expectedWave: 2, reason: 'exact repeated timepoint' },
+  ])('preserves the retained timestamp for $reason', ({ acceptedTime, expectedWave }) => {
+    const line = new TransmissionLine('T1', [0, -1, 1, -1], 0, 1, 50, 500e-15);
+    const rhs = new Map<number, number>();
+    let wave = 0;
+    const ctx: StampContext = {
+      time: 0, dt: 5e-15, numNodes: 2, sourceScale: 1, useDcSourceValue: false,
+      stampG: () => {}, stampC: () => {},
+      stampB: (row, value) => { rhs.set(row, value); },
+      getVoltage: node => node === 0 ? wave : 0,
+      getCurrent: () => 0,
+    };
+    line.acceptTransientStep(ctx);
+    ctx.time = 20e-15;
+    wave = 1;
+    line.acceptTransientStep(ctx);
+    ctx.time = acceptedTime;
+    wave = 2;
+    line.acceptTransientStep(ctx);
+    ctx.time = 520e-15;
+    line.stamp(ctx);
+    expect(rhs.get(3)).toBeCloseTo(expectedWave, 12);
+  });
+
   it('retains delayed history when distinct accepted steps are only 5 fs apart', async () => {
     const result = await simulate(parse(`Short-step matched lossless line
 V1 source 0 PULSE(0 1 100f 10f 10f 10p 20p)
