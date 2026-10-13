@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_c74059c6/benchmarks/performance/results/elapsed-controls-951/test_controls.py", line 4, in <module>
+    from controls import ClockSample, Budget, clock_error, node_error
+ModuleNotFoundError: No module named 'controls'

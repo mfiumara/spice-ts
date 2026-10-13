@@ -1,0 +1,26 @@
+test_continuous_backwards_or_nonfinite (test_controls.ControlsTest) ... ok
+test_cumulative_includes_between_child_gaps (test_controls.ControlsTest) ... ok
+test_deadline_is_inclusive (test_controls.ControlsTest) ... ok
+test_negative_nonfinite_and_missing_node_receipts (test_controls.ControlsTest) ... ok
+test_node_lifetime_and_phases_contained (test_controls.ControlsTest) ... ok
+test_normal_elapsed (test_controls.ControlsTest) ... ok
+test_realtime_forward_and_backward_steps (test_controls.ControlsTest) ... ok
+test_small_clock_read_skew_allowed (test_controls.ControlsTest) ... ok
+test_suspend_charged_and_rejected (test_controls.ControlsTest) ... ok
+test_actual_overshoot_is_reported_not_clipped (test_runner.RunnerTest) ... ok
+test_deadline_reserve_stops_before_hard_limit (test_runner.RunnerTest) ... ok
+test_first_realtime_jump_stops (test_runner.RunnerTest) ... ok
+test_first_suspension_kills_owned_child_and_censors_all_remaining (test_runner.RunnerTest) ... ok
+test_actual_elapsed_corruption_rejected (test_verify.ReceiptTest) ... ok
+test_budget_and_cleanup_corruption_rejected (test_verify.ReceiptTest) ... ok
+test_claiming_full_certification_after_timeout_rejected (test_verify.ReceiptTest) ... ok
+test_clock_corruption_cannot_be_certified (test_verify.ReceiptTest) ... ok
+test_complete_plan_timeout_and_censoring (test_verify.ReceiptTest) ... ok
+test_corrupt_factor_and_output_rejected (test_verify.ReceiptTest) ... ok
+test_missing_duplicate_or_reordered_rows_rejected (test_verify.ReceiptTest) ... ok
+test_missing_phase_rejected (test_verify.ReceiptTest) ... ok
+
+----------------------------------------------------------------------
+Ran 21 tests in 0.038s
+
+OK

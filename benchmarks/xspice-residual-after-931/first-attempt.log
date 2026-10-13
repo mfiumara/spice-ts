@@ -1,0 +1,6 @@
+examples/xspice/original-examples/analog_models2_ac.deck reference success native unsupported
+examples/xspice/original-examples/analog_models2_dc.deck reference success native unsupported
+examples/xspice/original-examples/analog_models2_swept_dc.deck reference success native unsupported
+examples/xspice/original-examples/analog_models2_transient.deck reference success native unsupported
+examples/xspice/various/x_fer.cir reference success native success
+{"counts": {"success": 1, "unsupported": 4, "failed": 0, "timeout": 0, "not-run": 0}, "budget": {"actualWallSeconds": 4.520385043999999, "children": 14}}

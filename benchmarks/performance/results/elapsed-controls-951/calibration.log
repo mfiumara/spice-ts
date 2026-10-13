@@ -1,0 +1,39 @@
+00-rc-ladder-tran-1000-baseline ok None
+01-rc-ladder-tran-1000-control ok None
+02-resistor-mesh-op-1000-baseline ok None
+03-resistor-mesh-op-1000-control ok None
+04-cmos-inverter-chain-tran-1000-baseline ok None
+05-cmos-inverter-chain-tran-1000-control ok None
+06-rc-ladder-tran-10000-baseline ok None
+07-rc-ladder-tran-10000-control ok None
+08-resistor-mesh-op-10000-baseline ok None
+09-resistor-mesh-op-10000-control ok None
+10-cmos-inverter-chain-tran-10000-baseline ok None
+11-cmos-inverter-chain-tran-10000-control ok None
+12-rc-ladder-tran-50000-baseline ok None
+13-rc-ladder-tran-50000-control ok None
+14-resistor-mesh-op-50000-baseline ok None
+15-resistor-mesh-op-50000-control ok None
+16-cmos-inverter-chain-tran-50000-baseline stopped deadline-reserve
+17-cmos-inverter-chain-tran-50000-control censored deadline-reserve
+{
+  "planned": 18,
+  "started": 17,
+  "completed": 16,
+  "censored": 1,
+  "stopReason": "deadline-reserve",
+  "start": {
+    "continuous": 101990.04142712499,
+    "monotonic": 0.03450325,
+    "realtime": 1791926275.042167
+  },
+  "end": {
+    "continuous": 102042.56804508332,
+    "monotonic": 52.561118166,
+    "realtime": 1791926327.568824
+  },
+  "actualRunSeconds": 52.526617958326824,
+  "sumChildActualSeconds": 52.515188166711596,
+  "deadlineAndBudgetCertified": false,
+  "allStartedProcessGroupsGone": true
+}
