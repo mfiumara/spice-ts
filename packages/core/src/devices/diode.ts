@@ -5,6 +5,7 @@ import {
 } from './device.js';
 import { chargeTruncationTimestep } from './charge-state.js';
 import { assertNoUnsupportedTemperatureParameters, temperatureJunction } from './junction-temperature.js';
+import { pnjlim } from './devsup.js';
 
 export interface DiodeParams {
   IS: number;
@@ -1260,30 +1261,6 @@ function limitJunctionStep(
     }
   }
   return pnjlim(voltage, previousVoltage, thermalVoltage, criticalVoltage);
-}
-
-/** ngspice-47 devsup.c DEVpnjlim: limit a junction step relative to the last iterate. */
-function pnjlim(
-  voltage: number,
-  previousVoltage: number,
-  thermalVoltage: number,
-  criticalVoltage: number,
-): number {
-  if (voltage > criticalVoltage
-    && Math.abs(voltage - previousVoltage) > 2 * thermalVoltage) {
-    if (previousVoltage > 0) {
-      const ratio = (voltage - previousVoltage) / thermalVoltage;
-      return ratio > 0
-        ? previousVoltage + thermalVoltage * (2 + Math.log(ratio - 2))
-        : previousVoltage - thermalVoltage * (2 + Math.log(2 - ratio));
-    }
-    return thermalVoltage * Math.log(voltage / thermalVoltage);
-  }
-  if (voltage < 0) {
-    const minimum = previousVoltage > 0 ? -previousVoltage - 1 : 2 * previousVoltage - 1;
-    return Math.max(voltage, minimum);
-  }
-  return voltage;
 }
 
 function safeExponential(exponent: number): number {

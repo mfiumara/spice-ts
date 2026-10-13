@@ -4,8 +4,9 @@ import {
 } from './device.js';
 import { stampChargeBranch, stampChargeCurrent, TransientChargeState } from './charge-state.js';
 import {
-  branchVoltage, fetlim, limvds, meyerHalfCapacitances, pnjlim, stampCapacitance, stepScale,
+  branchVoltage, meyerHalfCapacitances, stampCapacitance,
 } from './mos6.js';
+import { fetlim, limvds, pnjlim, stepScale } from './devsup.js';
 import { InvalidCircuitError } from '../errors.js';
 
 /**
