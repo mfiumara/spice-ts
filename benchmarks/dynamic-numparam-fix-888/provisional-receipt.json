@@ -1,0 +1,991 @@
+{
+  "metadata": {
+    "baseline": {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6",
+      "exit": 0,
+      "signal": null,
+      "timedOut": false,
+      "seconds": 0.010741082999999998,
+      "stdout": "f807cd8a3368d344a3a21a9ee17ea52a84bfa748\n",
+      "stderr": ""
+    },
+    "ngspiceVersion": {
+      "argv": [
+        "ngspice",
+        "--version"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6",
+      "exit": 0,
+      "signal": null,
+      "timedOut": false,
+      "seconds": 0.013042874999999995,
+      "stdout": "******\n** ngspice-47 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2026, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n******\n",
+      "stderr": ""
+    },
+    "nodeVersion": {
+      "argv": [
+        "node",
+        "--version"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6",
+      "exit": 0,
+      "signal": null,
+      "timedOut": false,
+      "seconds": 0.014308333,
+      "stdout": "v22.23.1\n",
+      "stderr": ""
+    },
+    "pnpmVersion": {
+      "argv": [
+        "pnpm",
+        "--version"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6",
+      "exit": 0,
+      "signal": null,
+      "timedOut": false,
+      "seconds": 0.13564625000000002,
+      "stdout": "10.28.1\n",
+      "stderr": ""
+    },
+    "host": {
+      "system": "Darwin",
+      "release": "27.0.0",
+      "machine": "arm64"
+    },
+    "configuration": "ngspice -n disables .spiceinit; SPICE_ASCIIRAWFILE=1; no compatibility mode",
+    "runtimeBoundary": "Direct process-group wall, startup/parse/compile/OP/output included; not simulator kernel timing"
+  },
+  "source": {
+    "url": "https://git.code.sf.net/p/ngspice/ngspice",
+    "revision": "a80f6e3e95d51534905b1f23410a951802666656",
+    "revisionReceipt": {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run/upstream",
+      "exit": 0,
+      "signal": null,
+      "timedOut": false,
+      "seconds": 0.01146649999999999,
+      "stdout": "a80f6e3e95d51534905b1f23410a951802666656\n",
+      "stderr": ""
+    },
+    "hashes": {
+      "COPYING": "6d939001e899ede403277fb37124c2af6f1cf92926465cd8f4bf59859e06f579",
+      "src/frontend/numparam/numparam.h": "719df8690fdf1665306bd9eb0bfd660f7981a6020acc2917f0c84d5858375dad",
+      "src/frontend/numparam/xpressn.c": "e0b079e8c8dc7697e34a49f9b9c10af18d42c6ecdb757c5300c024fcf89e7ef0",
+      "src/frontend/numparam/spicenum.c": "1341278bb7c24690ba3c6be0356276f8fa6d16a51aec283b4ac1cbbd24d863a2",
+      "src/frontend/subckt.c": "2bbf6f248204d5bf6b82245527b860897bf2d0b3db4e35378774571a4b9ca22f",
+      "src/frontend/inpcom.c": "5ee51218fb36937ba55ee5e395ef837b34b65133914090db78d4930dae8f5e68"
+    }
+  },
+  "limits": {
+    "cases": 20,
+    "directChildSeconds": 12.0,
+    "cumulativeChildSeconds": 300.0
+  },
+  "actualChildSeconds": 5.513440246000001,
+  "rows": [
+    {
+      "id": "issue-888",
+      "observe": [
+        "v(o)"
+      ],
+      "purpose": "Unchanged #888 deck, no control block appended",
+      "deckHashBefore": "439adec059350f369867f6be9cdc2cc8b1ad45e774c8273ab84acc617f9d48a4",
+      "deckHashAfter": "439adec059350f369867f6be9cdc2cc8b1ad45e774c8273ab84acc617f9d48a4",
+      "reference": {
+        "argv": [
+          "ngspice",
+          "-n",
+          "-b",
+          "-r",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run/issue-888.raw",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/decks/issue-888.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run",
+        "exit": 0,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.017882874999999993,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: dynamic numparam scope\n\nASCII raw file \"/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run/issue-888.raw\"\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 3  \n\nNo. of Data Rows : 1\n\nTotal analysis time (seconds) = 0.000583\n\nTotal elapsed time (seconds) = 0.007 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 17832.141 MB.\nMaximum ngspice program size =   10.062 MB.\nCurrent ngspice program size =   10.062 MB.\n\n",
+        "stderr": ""
+      },
+      "referenceRaw": "Title: dynamic numparam scope\nDate: Tue Oct 13 17:46:32  2026\nCommand: ngspice-47, Build \nPlotname: Operating Point\nFlags: real\nNo. Variables: 3\nNo. Points: 1       \nVariables:\n\t0\tv(in)\tvoltage\n\t1\tv(o)\tvoltage\n\t2\ti(v1)\tcurrent\nValues:\n0\t\t1.000000000000000e+00\n\t2.500000000000000e-01\n\t-2.500000000000000e-04\n",
+      "referenceValues": {
+        "v(o)": 0.25
+      },
+      "referenceError": null,
+      "native": {
+        "argv": [
+          "node",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/decks/issue-888.cir",
+          "[\"v(o)\"]"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6",
+        "exit": 1,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.5783422920000001,
+        "stdout": "{\"status\":\"failure\",\"error\":\"Undefined variable 'pp'\",\"values\":null}\n",
+        "stderr": ""
+      },
+      "nativeValues": null,
+      "nativeError": "Undefined variable 'pp'",
+      "metrics": null
+    },
+    {
+      "id": "caller-shadows-global",
+      "observe": [
+        "v(o)"
+      ],
+      "purpose": "Caller body pp vs global pp",
+      "deckHashBefore": "824ec7fc7951ab5df078db939b70f51c15f365c1cb96578357ca293b3d3d0df2",
+      "deckHashAfter": "824ec7fc7951ab5df078db939b70f51c15f365c1cb96578357ca293b3d3d0df2",
+      "reference": {
+        "argv": [
+          "ngspice",
+          "-n",
+          "-b",
+          "-r",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run/caller-shadows-global.raw",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/decks/caller-shadows-global.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run",
+        "exit": 0,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.017813625000000055,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: caller-shadows-global\n\nASCII raw file \"/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run/caller-shadows-global.raw\"\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 3  \n\nNo. of Data Rows : 1\n\nTotal analysis time (seconds) = 0.000619\n\nTotal elapsed time (seconds) = 0.005 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 17832.141 MB.\nMaximum ngspice program size =   10.062 MB.\nCurrent ngspice program size =   10.062 MB.\n\n",
+        "stderr": ""
+      },
+      "referenceRaw": "Title: caller-shadows-global\nDate: Tue Oct 13 17:46:32  2026\nCommand: ngspice-47, Build \nPlotname: Operating Point\nFlags: real\nNo. Variables: 3\nNo. Points: 1       \nVariables:\n\t0\tv(in)\tvoltage\n\t1\tv(o)\tvoltage\n\t2\ti(v1)\tcurrent\nValues:\n0\t\t1.000000000000000e+00\n\t2.500000000000000e-01\n\t-2.500000000000000e-04\n",
+      "referenceValues": {
+        "v(o)": 0.25
+      },
+      "referenceError": null,
+      "native": {
+        "argv": [
+          "node",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/decks/caller-shadows-global.cir",
+          "[\"v(o)\"]"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6",
+        "exit": 0,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.34133066599999995,
+        "stdout": "{\"status\":\"success\",\"values\":{\"v(o)\":0.1}}\n",
+        "stderr": ""
+      },
+      "nativeValues": {
+        "v(o)": 0.1
+      },
+      "nativeError": null,
+      "metrics": {
+        "maxAbsolute": 0.15,
+        "rmsAbsolute": 0.15,
+        "maxRelative": 0.6,
+        "rmsRelative": 0.6
+      }
+    },
+    {
+      "id": "global-fallback",
+      "observe": [
+        "v(o)"
+      ],
+      "purpose": "No caller binding",
+      "deckHashBefore": "8e719a63644b508ea4cc82448feace6c865d56c48d6b02490544f96115474fdd",
+      "deckHashAfter": "8e719a63644b508ea4cc82448feace6c865d56c48d6b02490544f96115474fdd",
+      "reference": {
+        "argv": [
+          "ngspice",
+          "-n",
+          "-b",
+          "-r",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run/global-fallback.raw",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/decks/global-fallback.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run",
+        "exit": 0,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.018401875000000123,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: global-fallback\n\nASCII raw file \"/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run/global-fallback.raw\"\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 3  \n\nNo. of Data Rows : 1\n\nTotal analysis time (seconds) = 0.000679\n\nTotal elapsed time (seconds) = 0.006 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 17832.141 MB.\nMaximum ngspice program size =   10.047 MB.\nCurrent ngspice program size =   10.047 MB.\n\n",
+        "stderr": ""
+      },
+      "referenceRaw": "Title: global-fallback\nDate: Tue Oct 13 17:46:32  2026\nCommand: ngspice-47, Build \nPlotname: Operating Point\nFlags: real\nNo. Variables: 3\nNo. Points: 1       \nVariables:\n\t0\tv(in)\tvoltage\n\t1\tv(o)\tvoltage\n\t2\ti(v1)\tcurrent\nValues:\n0\t\t1.000000000000000e+00\n\t1.000000000000000e-01\n\t-1.000000000000000e-04\n",
+      "referenceValues": {
+        "v(o)": 0.1
+      },
+      "referenceError": null,
+      "native": {
+        "argv": [
+          "node",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/decks/global-fallback.cir",
+          "[\"v(o)\"]"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6",
+        "exit": 0,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.32952433299999995,
+        "stdout": "{\"status\":\"success\",\"values\":{\"v(o)\":0.1}}\n",
+        "stderr": ""
+      },
+      "nativeValues": {
+        "v(o)": 0.1
+      },
+      "nativeError": null,
+      "metrics": {
+        "maxAbsolute": 0.0,
+        "rmsAbsolute": 0.0,
+        "maxRelative": 0.0,
+        "rmsRelative": 0.0
+      }
+    },
+    {
+      "id": "callee-default-shadows-caller",
+      "observe": [
+        "v(o)"
+      ],
+      "purpose": "Literal default vs caller",
+      "deckHashBefore": "2c09796a93f27d05ef8b80b678e95d844c8c761f1ec26d7cfab584b8c46ee572",
+      "deckHashAfter": "2c09796a93f27d05ef8b80b678e95d844c8c761f1ec26d7cfab584b8c46ee572",
+      "reference": {
+        "argv": [
+          "ngspice",
+          "-n",
+          "-b",
+          "-r",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run/callee-default-shadows-caller.raw",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/decks/callee-default-shadows-caller.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run",
+        "exit": 0,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.01921358399999984,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: callee-default-shadows-caller\n\nASCII raw file \"/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run/callee-default-shadows-caller.raw\"\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 3  \n\nNo. of Data Rows : 1\n\nTotal analysis time (seconds) = 0.000694\n\nTotal elapsed time (seconds) = 0.006 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 17691.984 MB.\nMaximum ngspice program size =   10.047 MB.\nCurrent ngspice program size =   10.047 MB.\n\n",
+        "stderr": ""
+      },
+      "referenceRaw": "Title: callee-default-shadows-caller\nDate: Tue Oct 13 17:46:33  2026\nCommand: ngspice-47, Build \nPlotname: Operating Point\nFlags: real\nNo. Variables: 3\nNo. Points: 1       \nVariables:\n\t0\tv(in)\tvoltage\n\t1\tv(o)\tvoltage\n\t2\ti(v1)\tcurrent\nValues:\n0\t\t1.000000000000000e+00\n\t2.000000000000000e-01\n\t-2.000000000000000e-04\n",
+      "referenceValues": {
+        "v(o)": 0.2
+      },
+      "referenceError": null,
+      "native": {
+        "argv": [
+          "node",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/decks/callee-default-shadows-caller.cir",
+          "[\"v(o)\"]"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6",
+        "exit": 0,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.32857825000000007,
+        "stdout": "{\"status\":\"success\",\"values\":{\"v(o)\":0.2}}\n",
+        "stderr": ""
+      },
+      "nativeValues": {
+        "v(o)": 0.2
+      },
+      "nativeError": null,
+      "metrics": {
+        "maxAbsolute": 0.0,
+        "rmsAbsolute": 0.0,
+        "maxRelative": 0.0,
+        "rmsRelative": 0.0
+      }
+    },
+    {
+      "id": "callee-local-shadows-caller",
+      "observe": [
+        "v(o)"
+      ],
+      "purpose": "Callee body binding vs caller",
+      "deckHashBefore": "0d4f57588eb917da561e39317b974e74c4e6977d2089076f61319f93ecd3aa30",
+      "deckHashAfter": "0d4f57588eb917da561e39317b974e74c4e6977d2089076f61319f93ecd3aa30",
+      "reference": {
+        "argv": [
+          "ngspice",
+          "-n",
+          "-b",
+          "-r",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run/callee-local-shadows-caller.raw",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/decks/callee-local-shadows-caller.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run",
+        "exit": 0,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.01693033299999991,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: callee-local-shadows-caller\n\nASCII raw file \"/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run/callee-local-shadows-caller.raw\"\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 3  \n\nNo. of Data Rows : 1\n\nTotal analysis time (seconds) = 0.000624\n\nTotal elapsed time (seconds) = 0.005 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 17691.984 MB.\nMaximum ngspice program size =   10.062 MB.\nCurrent ngspice program size =   10.062 MB.\n\n",
+        "stderr": ""
+      },
+      "referenceRaw": "Title: callee-local-shadows-caller\nDate: Tue Oct 13 17:46:33  2026\nCommand: ngspice-47, Build \nPlotname: Operating Point\nFlags: real\nNo. Variables: 3\nNo. Points: 1       \nVariables:\n\t0\tv(in)\tvoltage\n\t1\tv(o)\tvoltage\n\t2\ti(v1)\tcurrent\nValues:\n0\t\t1.000000000000000e+00\n\t2.000000000000000e-01\n\t-2.000000000000000e-04\n",
+      "referenceValues": {
+        "v(o)": 0.2
+      },
+      "referenceError": null,
+      "native": {
+        "argv": [
+          "node",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/decks/callee-local-shadows-caller.cir",
+          "[\"v(o)\"]"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6",
+        "exit": 0,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.3158982079999999,
+        "stdout": "{\"status\":\"success\",\"values\":{\"v(o)\":0.2}}\n",
+        "stderr": ""
+      },
+      "nativeValues": {
+        "v(o)": 0.2
+      },
+      "nativeError": null,
+      "metrics": {
+        "maxAbsolute": 0.0,
+        "rmsAbsolute": 0.0,
+        "maxRelative": 0.0,
+        "rmsRelative": 0.0
+      }
+    },
+    {
+      "id": "explicit-shadows-default",
+      "observe": [
+        "v(o)"
+      ],
+      "purpose": "Declared X-line override vs default",
+      "deckHashBefore": "f0dab161338596aed818f9465ad3755b9ecdd77c2cf69b074d92bf803c005f8a",
+      "deckHashAfter": "f0dab161338596aed818f9465ad3755b9ecdd77c2cf69b074d92bf803c005f8a",
+      "reference": {
+        "argv": [
+          "ngspice",
+          "-n",
+          "-b",
+          "-r",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run/explicit-shadows-default.raw",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/decks/explicit-shadows-default.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run",
+        "exit": 0,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.012802834000000374,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: explicit-shadows-default\n\nASCII raw file \"/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run/explicit-shadows-default.raw\"\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 3  \n\nNo. of Data Rows : 1\n\nTotal analysis time (seconds) = 0.000511\n\nTotal elapsed time (seconds) = 0.003 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 17691.984 MB.\nMaximum ngspice program size =   10.078 MB.\nCurrent ngspice program size =   10.078 MB.\n\n",
+        "stderr": ""
+      },
+      "referenceRaw": "Title: explicit-shadows-default\nDate: Tue Oct 13 17:46:33  2026\nCommand: ngspice-47, Build \nPlotname: Operating Point\nFlags: real\nNo. Variables: 3\nNo. Points: 1       \nVariables:\n\t0\tv(in)\tvoltage\n\t1\tv(o)\tvoltage\n\t2\ti(v1)\tcurrent\nValues:\n0\t\t1.000000000000000e+00\n\t3.333333333333333e-01\n\t-3.333333333333334e-04\n",
+      "referenceValues": {
+        "v(o)": 0.3333333333333333
+      },
+      "referenceError": null,
+      "native": {
+        "argv": [
+          "node",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/decks/explicit-shadows-default.cir",
+          "[\"v(o)\"]"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6",
+        "exit": 0,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.34035712500000015,
+        "stdout": "{\"status\":\"success\",\"values\":{\"v(o)\":0.3333333333333333}}\n",
+        "stderr": ""
+      },
+      "nativeValues": {
+        "v(o)": 0.3333333333333333
+      },
+      "nativeError": null,
+      "metrics": {
+        "maxAbsolute": 0.0,
+        "rmsAbsolute": 0.0,
+        "maxRelative": 0.0,
+        "rmsRelative": 0.0
+      }
+    },
+    {
+      "id": "default-reads-caller",
+      "observe": [
+        "v(o)"
+      ],
+      "purpose": "Header default expression reads caller",
+      "deckHashBefore": "2eddf03610cbec41be6ea88e04b636fce3c11fff4638d9c400cbbf229eecf47c",
+      "deckHashAfter": "2eddf03610cbec41be6ea88e04b636fce3c11fff4638d9c400cbbf229eecf47c",
+      "reference": {
+        "argv": [
+          "ngspice",
+          "-n",
+          "-b",
+          "-r",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run/default-reads-caller.raw",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/decks/default-reads-caller.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run",
+        "exit": 0,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.018387832999999798,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: default-reads-caller\n\nASCII raw file \"/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run/default-reads-caller.raw\"\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 3  \n\nNo. of Data Rows : 1\n\nTotal analysis time (seconds) = 0.00061\n\nTotal elapsed time (seconds) = 0.006 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 17588.062 MB.\nMaximum ngspice program size =   10.078 MB.\nCurrent ngspice program size =   10.078 MB.\n\n",
+        "stderr": ""
+      },
+      "referenceRaw": "Title: default-reads-caller\nDate: Tue Oct 13 17:46:34  2026\nCommand: ngspice-47, Build \nPlotname: Operating Point\nFlags: real\nNo. Variables: 3\nNo. Points: 1       \nVariables:\n\t0\tv(in)\tvoltage\n\t1\tv(o)\tvoltage\n\t2\ti(v1)\tcurrent\nValues:\n0\t\t1.000000000000000e+00\n\t2.500000000000000e-01\n\t-2.500000000000000e-04\n",
+      "referenceValues": {
+        "v(o)": 0.25
+      },
+      "referenceError": null,
+      "native": {
+        "argv": [
+          "node",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/decks/default-reads-caller.cir",
+          "[\"v(o)\"]"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6",
+        "exit": 1,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.3139629159999999,
+        "stdout": "{\"status\":\"failure\",\"error\":\"Subcircuit 'leaf' (instance 'X1.X1') parameter 'RR=pp': Undefined variable 'pp'\",\"values\":null}\n",
+        "stderr": ""
+      },
+      "nativeValues": null,
+      "nativeError": "Subcircuit 'leaf' (instance 'X1.X1') parameter 'RR=pp': Undefined variable 'pp'",
+      "metrics": null
+    },
+    {
+      "id": "override-reads-caller",
+      "observe": [
+        "v(o)"
+      ],
+      "purpose": "X-line expression reads caller",
+      "deckHashBefore": "ff6eb82aefd4e5fea0648cdd95824df1b89cc8713e41e1fb8a071554086663e3",
+      "deckHashAfter": "ff6eb82aefd4e5fea0648cdd95824df1b89cc8713e41e1fb8a071554086663e3",
+      "reference": {
+        "argv": [
+          "ngspice",
+          "-n",
+          "-b",
+          "-r",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run/override-reads-caller.raw",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/decks/override-reads-caller.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run",
+        "exit": 0,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.016916375000000095,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: override-reads-caller\n\nASCII raw file \"/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run/override-reads-caller.raw\"\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 3  \n\nNo. of Data Rows : 1\n\nTotal analysis time (seconds) = 0.000638\n\nTotal elapsed time (seconds) = 0.005 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 17588.062 MB.\nMaximum ngspice program size =   10.047 MB.\nCurrent ngspice program size =   10.047 MB.\n\n",
+        "stderr": ""
+      },
+      "referenceRaw": "Title: override-reads-caller\nDate: Tue Oct 13 17:46:34  2026\nCommand: ngspice-47, Build \nPlotname: Operating Point\nFlags: real\nNo. Variables: 3\nNo. Points: 1       \nVariables:\n\t0\tv(in)\tvoltage\n\t1\tv(o)\tvoltage\n\t2\ti(v1)\tcurrent\nValues:\n0\t\t1.000000000000000e+00\n\t1.428571428571428e-01\n\t-1.428571428571428e-04\n",
+      "referenceValues": {
+        "v(o)": 0.1428571428571428
+      },
+      "referenceError": null,
+      "native": {
+        "argv": [
+          "node",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/decks/override-reads-caller.cir",
+          "[\"v(o)\"]"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6",
+        "exit": 0,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.3147159999999998,
+        "stdout": "{\"status\":\"success\",\"values\":{\"v(o)\":0.14285714285714285}}\n",
+        "stderr": ""
+      },
+      "nativeValues": {
+        "v(o)": 0.14285714285714285
+      },
+      "nativeError": null,
+      "metrics": {
+        "maxAbsolute": 5.551115123125783e-17,
+        "rmsAbsolute": 5.551115123125783e-17,
+        "maxRelative": 3.88578058618805e-16,
+        "rmsRelative": 3.88578058618805e-16
+      }
+    },
+    {
+      "id": "local-reads-caller",
+      "observe": [
+        "v(o)"
+      ],
+      "purpose": "Body dependency reads caller",
+      "deckHashBefore": "536e30d42697e70910fd52e2c5da6497e4a11c97bec333853a94fd00323aab22",
+      "deckHashAfter": "536e30d42697e70910fd52e2c5da6497e4a11c97bec333853a94fd00323aab22",
+      "reference": {
+        "argv": [
+          "ngspice",
+          "-n",
+          "-b",
+          "-r",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run/local-reads-caller.raw",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/decks/local-reads-caller.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run",
+        "exit": 0,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.01736145800000033,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: local-reads-caller\n\nASCII raw file \"/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run/local-reads-caller.raw\"\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 3  \n\nNo. of Data Rows : 1\n\nTotal analysis time (seconds) = 0.000608\n\nTotal elapsed time (seconds) = 0.005 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 17588.062 MB.\nMaximum ngspice program size =   10.078 MB.\nCurrent ngspice program size =   10.078 MB.\n\n",
+        "stderr": ""
+      },
+      "referenceRaw": "Title: local-reads-caller\nDate: Tue Oct 13 17:46:35  2026\nCommand: ngspice-47, Build \nPlotname: Operating Point\nFlags: real\nNo. Variables: 3\nNo. Points: 1       \nVariables:\n\t0\tv(in)\tvoltage\n\t1\tv(o)\tvoltage\n\t2\ti(v1)\tcurrent\nValues:\n0\t\t1.000000000000000e+00\n\t1.428571428571428e-01\n\t-1.428571428571428e-04\n",
+      "referenceValues": {
+        "v(o)": 0.1428571428571428
+      },
+      "referenceError": null,
+      "native": {
+        "argv": [
+          "node",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/decks/local-reads-caller.cir",
+          "[\"v(o)\"]"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6",
+        "exit": 1,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.28802562499999995,
+        "stdout": "{\"status\":\"failure\",\"error\":\"Parse error at line 4: Undefined parameter 'pp'\\n  .param rr={pp*2}\",\"values\":null}\n",
+        "stderr": ""
+      },
+      "nativeValues": null,
+      "nativeError": "Parse error at line 4: Undefined parameter 'pp'\n  .param rr={pp*2}",
+      "metrics": null
+    },
+    {
+      "id": "three-level-nearest",
+      "observe": [
+        "v(o)"
+      ],
+      "purpose": "Nearest dynamic binding",
+      "deckHashBefore": "d2f67146fdd1620e3b0c1c75b75e388216608c0777c7b931952f66d17030cddc",
+      "deckHashAfter": "d2f67146fdd1620e3b0c1c75b75e388216608c0777c7b931952f66d17030cddc",
+      "reference": {
+        "argv": [
+          "ngspice",
+          "-n",
+          "-b",
+          "-r",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run/three-level-nearest.raw",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/decks/three-level-nearest.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run",
+        "exit": 0,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.01612300000000033,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: three-level-nearest\n\nASCII raw file \"/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run/three-level-nearest.raw\"\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 3  \n\nNo. of Data Rows : 1\n\nTotal analysis time (seconds) = 0.0006\n\nTotal elapsed time (seconds) = 0.005 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 17588.062 MB.\nMaximum ngspice program size =   10.062 MB.\nCurrent ngspice program size =   10.062 MB.\n\n",
+        "stderr": ""
+      },
+      "referenceRaw": "Title: three-level-nearest\nDate: Tue Oct 13 17:46:35  2026\nCommand: ngspice-47, Build \nPlotname: Operating Point\nFlags: real\nNo. Variables: 3\nNo. Points: 1       \nVariables:\n\t0\tv(in)\tvoltage\n\t1\tv(o)\tvoltage\n\t2\ti(v1)\tcurrent\nValues:\n0\t\t1.000000000000000e+00\n\t2.000000000000000e-01\n\t-2.000000000000000e-04\n",
+      "referenceValues": {
+        "v(o)": 0.2
+      },
+      "referenceError": null,
+      "native": {
+        "argv": [
+          "node",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/decks/three-level-nearest.cir",
+          "[\"v(o)\"]"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6",
+        "exit": 1,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.27195012500000004,
+        "stdout": "{\"status\":\"failure\",\"error\":\"Undefined variable 'pp'\",\"values\":null}\n",
+        "stderr": ""
+      },
+      "nativeValues": null,
+      "nativeError": "Undefined variable 'pp'",
+      "metrics": null
+    },
+    {
+      "id": "three-level-fallback",
+      "observe": [
+        "v(o)"
+      ],
+      "purpose": "Ancestor through unbound middle",
+      "deckHashBefore": "56f3d082b7904e17227ad6c47c16df91033526a96fbf9a24c001f6288dc33bf2",
+      "deckHashAfter": "56f3d082b7904e17227ad6c47c16df91033526a96fbf9a24c001f6288dc33bf2",
+      "reference": {
+        "argv": [
+          "ngspice",
+          "-n",
+          "-b",
+          "-r",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run/three-level-fallback.raw",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/decks/three-level-fallback.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run",
+        "exit": 0,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.015684416000000034,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: three-level-fallback\n\nASCII raw file \"/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run/three-level-fallback.raw\"\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 3  \n\nNo. of Data Rows : 1\n\nTotal analysis time (seconds) = 0.00058\n\nTotal elapsed time (seconds) = 0.005 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 17560.562 MB.\nMaximum ngspice program size =   10.062 MB.\nCurrent ngspice program size =   10.062 MB.\n\n",
+        "stderr": ""
+      },
+      "referenceRaw": "Title: three-level-fallback\nDate: Tue Oct 13 17:46:35  2026\nCommand: ngspice-47, Build \nPlotname: Operating Point\nFlags: real\nNo. Variables: 3\nNo. Points: 1       \nVariables:\n\t0\tv(in)\tvoltage\n\t1\tv(o)\tvoltage\n\t2\ti(v1)\tcurrent\nValues:\n0\t\t1.000000000000000e+00\n\t2.500000000000000e-01\n\t-2.500000000000000e-04\n",
+      "referenceValues": {
+        "v(o)": 0.25
+      },
+      "referenceError": null,
+      "native": {
+        "argv": [
+          "node",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/decks/three-level-fallback.cir",
+          "[\"v(o)\"]"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6",
+        "exit": 1,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.27130862499999964,
+        "stdout": "{\"status\":\"failure\",\"error\":\"Undefined variable 'pp'\",\"values\":null}\n",
+        "stderr": ""
+      },
+      "nativeValues": null,
+      "nativeError": "Undefined variable 'pp'",
+      "metrics": null
+    },
+    {
+      "id": "repeated-siblings",
+      "observe": [
+        "v(o1)",
+        "v(o2)",
+        "v(o3)"
+      ],
+      "purpose": "No leakage across repeated siblings",
+      "deckHashBefore": "333db2834e4c22ea59fbc19665bcf5585fdd31ea87975a4c84cf64065a5c69f1",
+      "deckHashAfter": "333db2834e4c22ea59fbc19665bcf5585fdd31ea87975a4c84cf64065a5c69f1",
+      "reference": {
+        "argv": [
+          "ngspice",
+          "-n",
+          "-b",
+          "-r",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run/repeated-siblings.raw",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/decks/repeated-siblings.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run",
+        "exit": 0,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.015791250000000367,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: repeated-siblings\n\nASCII raw file \"/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run/repeated-siblings.raw\"\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 5  \n\nNo. of Data Rows : 1\n\nTotal analysis time (seconds) = 0.000576\n\nTotal elapsed time (seconds) = 0.005 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 17560.562 MB.\nMaximum ngspice program size =   10.047 MB.\nCurrent ngspice program size =   10.047 MB.\n\n",
+        "stderr": ""
+      },
+      "referenceRaw": "Title: repeated-siblings\nDate: Tue Oct 13 17:46:35  2026\nCommand: ngspice-47, Build \nPlotname: Operating Point\nFlags: real\nNo. Variables: 5\nNo. Points: 1       \nVariables:\n\t0\tv(in)\tvoltage\n\t1\tv(o1)\tvoltage\n\t2\tv(o2)\tvoltage\n\t3\tv(o3)\tvoltage\n\t4\ti(v1)\tcurrent\nValues:\n0\t\t1.000000000000000e+00\n\t2.500000000000000e-01\n\t2.000000000000000e-01\n\t2.500000000000000e-01\n\t-6.999999999999998e-04\n",
+      "referenceValues": {
+        "v(o1)": 0.25,
+        "v(o2)": 0.2,
+        "v(o3)": 0.25
+      },
+      "referenceError": null,
+      "native": {
+        "argv": [
+          "node",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/decks/repeated-siblings.cir",
+          "[\"v(o1)\", \"v(o2)\", \"v(o3)\"]"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6",
+        "exit": 1,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.27286883299999953,
+        "stdout": "{\"status\":\"failure\",\"error\":\"Undefined variable 'pp'\",\"values\":null}\n",
+        "stderr": ""
+      },
+      "nativeValues": null,
+      "nativeError": "Undefined variable 'pp'",
+      "metrics": null
+    },
+    {
+      "id": "lexical-param-857",
+      "observe": [
+        "v(o)"
+      ],
+      "purpose": "Nested lexical param order control #857",
+      "deckHashBefore": "e19265d88dcdfb31d09df3bd09fafc96dfac5b50f130312d2f69173ea0b526c6",
+      "deckHashAfter": "e19265d88dcdfb31d09df3bd09fafc96dfac5b50f130312d2f69173ea0b526c6",
+      "reference": {
+        "argv": [
+          "ngspice",
+          "-n",
+          "-b",
+          "-r",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run/lexical-param-857.raw",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/decks/lexical-param-857.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run",
+        "exit": 0,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.015763125000000322,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: lexical-param-857\n\nASCII raw file \"/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run/lexical-param-857.raw\"\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 3  \n\nNo. of Data Rows : 1\n\nTotal analysis time (seconds) = 0.000568\n\nTotal elapsed time (seconds) = 0.005 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 17560.562 MB.\nMaximum ngspice program size =   10.047 MB.\nCurrent ngspice program size =   10.047 MB.\n\n",
+        "stderr": ""
+      },
+      "referenceRaw": "Title: lexical-param-857\nDate: Tue Oct 13 17:46:36  2026\nCommand: ngspice-47, Build \nPlotname: Operating Point\nFlags: real\nNo. Variables: 3\nNo. Points: 1       \nVariables:\n\t0\tv(in)\tvoltage\n\t1\tv(o)\tvoltage\n\t2\ti(v1)\tcurrent\nValues:\n0\t\t1.000000000000000e+00\n\t2.500000000000000e-01\n\t-2.500000000000000e-04\n",
+      "referenceValues": {
+        "v(o)": 0.25
+      },
+      "referenceError": null,
+      "native": {
+        "argv": [
+          "node",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/decks/lexical-param-857.cir",
+          "[\"v(o)\"]"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6",
+        "exit": 0,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.27741987500000054,
+        "stdout": "{\"status\":\"success\",\"values\":{\"v(o)\":0.25}}\n",
+        "stderr": ""
+      },
+      "nativeValues": {
+        "v(o)": 0.25
+      },
+      "nativeError": null,
+      "metrics": {
+        "maxAbsolute": 0.0,
+        "rmsAbsolute": 0.0,
+        "maxRelative": 0.0,
+        "rmsRelative": 0.0
+      }
+    },
+    {
+      "id": "lexical-model-854",
+      "observe": [
+        "i(v1)",
+        "i(v2)"
+      ],
+      "purpose": "Issue #854 model control, branch currents",
+      "deckHashBefore": "2439bdc5958608ee1864ad6b020c2e7c36a031c716a2b6df19b99153c07badf8",
+      "deckHashAfter": "2439bdc5958608ee1864ad6b020c2e7c36a031c716a2b6df19b99153c07badf8",
+      "reference": {
+        "argv": [
+          "ngspice",
+          "-n",
+          "-b",
+          "-r",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run/lexical-model-854.raw",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/decks/lexical-model-854.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run",
+        "exit": 0,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.01651337499999972,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: lexical-model-854\n\nASCII raw file \"/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run/lexical-model-854.raw\"\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 4  \n\nNo. of Data Rows : 1\n\nTotal analysis time (seconds) = 0.00047\n\nTotal elapsed time (seconds) = 0.006 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 17560.562 MB.\nMaximum ngspice program size =   10.078 MB.\nCurrent ngspice program size =   10.078 MB.\n\n",
+        "stderr": ""
+      },
+      "referenceRaw": "Title: lexical-model-854\nDate: Tue Oct 13 17:46:36  2026\nCommand: ngspice-47, Build \nPlotname: Operating Point\nFlags: real\nNo. Variables: 4\nNo. Points: 1       \nVariables:\n\t0\tv(a)\tvoltage\n\t1\tv(b)\tvoltage\n\t2\ti(v2)\tcurrent\n\t3\ti(v1)\tcurrent\nValues:\n0\t\t6.000000000000001e-01\n\t6.000000000000001e-01\n\t-1.190421263617118e-02\n\t-1.187196295587072e-04\n",
+      "referenceValues": {
+        "i(v1)": -0.0001187196295587072,
+        "i(v2)": -0.01190421263617118
+      },
+      "referenceError": null,
+      "native": {
+        "argv": [
+          "node",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/decks/lexical-model-854.cir",
+          "[\"i(v1)\", \"i(v2)\"]"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6",
+        "exit": 0,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.26558675000000065,
+        "stdout": "{\"status\":\"success\",\"values\":{\"i(v1)\":-0.00011871962955870745,\"i(v2)\":-0.011904216930994818}}\n",
+        "stderr": ""
+      },
+      "nativeValues": {
+        "i(v1)": -0.00011871962955870745,
+        "i(v2)": -0.011904216930994818
+      },
+      "nativeError": null,
+      "metrics": {
+        "maxAbsolute": 4.294823637354672e-09,
+        "rmsAbsolute": 3.0368989179737622e-09,
+        "maxRelative": 3.6078183149255644e-07,
+        "rmsRelative": 2.5511127957728895e-07
+      }
+    },
+    {
+      "id": "lexical-model-not-dynamic",
+      "observe": [
+        "i(v1)"
+      ],
+      "purpose": "Top-level callee must not inherit caller model",
+      "deckHashBefore": "603b7b2e283dd2e1b938c70eb0c1e7bfa955b2a4321b00b0dce80d6dbdc0061e",
+      "deckHashAfter": "603b7b2e283dd2e1b938c70eb0c1e7bfa955b2a4321b00b0dce80d6dbdc0061e",
+      "reference": {
+        "argv": [
+          "ngspice",
+          "-n",
+          "-b",
+          "-r",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run/lexical-model-not-dynamic.raw",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/decks/lexical-model-not-dynamic.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run",
+        "exit": 0,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.015286375000000518,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: lexical-model-not-dynamic\n\nASCII raw file \"/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run/lexical-model-not-dynamic.raw\"\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 2  \n\nNo. of Data Rows : 1\n\nTotal analysis time (seconds) = 0.000595\n\nTotal elapsed time (seconds) = 0.005 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 17559.281 MB.\nMaximum ngspice program size =   10.062 MB.\nCurrent ngspice program size =   10.062 MB.\n\n",
+        "stderr": ""
+      },
+      "referenceRaw": "Title: lexical-model-not-dynamic\nDate: Tue Oct 13 17:46:36  2026\nCommand: ngspice-47, Build \nPlotname: Operating Point\nFlags: real\nNo. Variables: 2\nNo. Points: 1       \nVariables:\n\t0\tv(a)\tvoltage\n\t1\ti(v1)\tcurrent\nValues:\n0\t\t6.000000000000001e-01\n\t-1.187196295587072e-04\n",
+      "referenceValues": {
+        "i(v1)": -0.0001187196295587072
+      },
+      "referenceError": null,
+      "native": {
+        "argv": [
+          "node",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/decks/lexical-model-not-dynamic.cir",
+          "[\"i(v1)\"]"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6",
+        "exit": 0,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.2738847499999997,
+        "stdout": "{\"status\":\"success\",\"values\":{\"i(v1)\":-0.00011871962955870745}}\n",
+        "stderr": ""
+      },
+      "nativeValues": {
+        "i(v1)": -0.00011871962955870745
+      },
+      "nativeError": null,
+      "metrics": {
+        "maxAbsolute": 2.574980159653073e-19,
+        "rmsAbsolute": 2.574980159653073e-19,
+        "maxRelative": 2.1689590586026365e-15,
+        "rmsRelative": 2.1689590586026365e-15
+      }
+    },
+    {
+      "id": "lexical-definition-dynamic-param",
+      "observe": [
+        "v(o)"
+      ],
+      "purpose": "Lexical outer pp vs dynamic middle pp",
+      "deckHashBefore": "ee52287cb12e96fe2022ff90aed59a470ac3d7668a36efec2ca08ae3f38d5d4d",
+      "deckHashAfter": "ee52287cb12e96fe2022ff90aed59a470ac3d7668a36efec2ca08ae3f38d5d4d",
+      "reference": {
+        "argv": [
+          "ngspice",
+          "-n",
+          "-b",
+          "-r",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run/lexical-definition-dynamic-param.raw",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/decks/lexical-definition-dynamic-param.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run",
+        "exit": 0,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.015685707999999465,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: lexical-definition-dynamic-param\n\nASCII raw file \"/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/.run/lexical-definition-dynamic-param.raw\"\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 3  \n\nNo. of Data Rows : 1\n\nTotal analysis time (seconds) = 0.000599\n\nTotal elapsed time (seconds) = 0.005 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 17559.281 MB.\nMaximum ngspice program size =   10.047 MB.\nCurrent ngspice program size =   10.047 MB.\n\n",
+        "stderr": ""
+      },
+      "referenceRaw": "Title: lexical-definition-dynamic-param\nDate: Tue Oct 13 17:46:37  2026\nCommand: ngspice-47, Build \nPlotname: Operating Point\nFlags: real\nNo. Variables: 3\nNo. Points: 1       \nVariables:\n\t0\tv(in)\tvoltage\n\t1\tv(o)\tvoltage\n\t2\ti(v1)\tcurrent\nValues:\n0\t\t1.000000000000000e+00\n\t2.000000000000000e-01\n\t-2.000000000000000e-04\n",
+      "referenceValues": {
+        "v(o)": 0.2
+      },
+      "referenceError": null,
+      "native": {
+        "argv": [
+          "node",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6/benchmarks/dynamic-numparam-888/decks/lexical-definition-dynamic-param.cir",
+          "[\"v(o)\"]"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c4ee2d6",
+        "exit": 0,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.27792279099999995,
+        "stdout": "{\"status\":\"success\",\"values\":{\"v(o)\":0.25}}\n",
+        "stderr": ""
+      },
+      "nativeValues": {
+        "v(o)": 0.25
+      },
+      "nativeError": null,
+      "metrics": {
+        "maxAbsolute": 0.04999999999999999,
+        "rmsAbsolute": 0.04999999999999999,
+        "maxRelative": 0.24999999999999994,
+        "rmsRelative": 0.24999999999999994
+      }
+    }
+  ]
+}

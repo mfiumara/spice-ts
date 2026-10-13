@@ -1,0 +1,117 @@
+[
+  {
+    "id": "issue-888",
+    "observe": [
+      "v(o)"
+    ],
+    "purpose": "Unchanged #888 deck, no control block appended"
+  },
+  {
+    "id": "caller-shadows-global",
+    "observe": [
+      "v(o)"
+    ],
+    "purpose": "Caller body pp vs global pp"
+  },
+  {
+    "id": "global-fallback",
+    "observe": [
+      "v(o)"
+    ],
+    "purpose": "No caller binding"
+  },
+  {
+    "id": "callee-default-shadows-caller",
+    "observe": [
+      "v(o)"
+    ],
+    "purpose": "Literal default vs caller"
+  },
+  {
+    "id": "callee-local-shadows-caller",
+    "observe": [
+      "v(o)"
+    ],
+    "purpose": "Callee body binding vs caller"
+  },
+  {
+    "id": "explicit-shadows-default",
+    "observe": [
+      "v(o)"
+    ],
+    "purpose": "Declared X-line override vs default"
+  },
+  {
+    "id": "default-reads-caller",
+    "observe": [
+      "v(o)"
+    ],
+    "purpose": "Header default expression reads caller"
+  },
+  {
+    "id": "override-reads-caller",
+    "observe": [
+      "v(o)"
+    ],
+    "purpose": "X-line expression reads caller"
+  },
+  {
+    "id": "local-reads-caller",
+    "observe": [
+      "v(o)"
+    ],
+    "purpose": "Body dependency reads caller"
+  },
+  {
+    "id": "three-level-nearest",
+    "observe": [
+      "v(o)"
+    ],
+    "purpose": "Nearest dynamic binding"
+  },
+  {
+    "id": "three-level-fallback",
+    "observe": [
+      "v(o)"
+    ],
+    "purpose": "Ancestor through unbound middle"
+  },
+  {
+    "id": "repeated-siblings",
+    "observe": [
+      "v(o1)",
+      "v(o2)",
+      "v(o3)"
+    ],
+    "purpose": "No leakage across repeated siblings"
+  },
+  {
+    "id": "lexical-param-857",
+    "observe": [
+      "v(o)"
+    ],
+    "purpose": "Nested lexical param order control #857"
+  },
+  {
+    "id": "lexical-model-854",
+    "observe": [
+      "i(v1)",
+      "i(v2)"
+    ],
+    "purpose": "Issue #854 model control, branch currents"
+  },
+  {
+    "id": "lexical-model-not-dynamic",
+    "observe": [
+      "i(v1)"
+    ],
+    "purpose": "Top-level callee must not inherit caller model"
+  },
+  {
+    "id": "lexical-definition-dynamic-param",
+    "observe": [
+      "v(o)"
+    ],
+    "purpose": "Lexical outer pp vs dynamic middle pp"
+  }
+]

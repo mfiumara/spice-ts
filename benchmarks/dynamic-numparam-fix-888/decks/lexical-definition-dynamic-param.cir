@@ -1,0 +1,17 @@
+lexical-definition-dynamic-param
+.subckt outer in out gnd
+.param pp=3k
+.subckt leaf a b
+R1 a b {pp}
+.ends leaf
+.subckt middle a b
+.param pp=4k
+X1 a b leaf
+.ends middle
+X1 in out middle
+R2 out gnd 1k
+.ends outer
+V1 in 0 1
+X1 in o 0 outer
+.op
+.end
