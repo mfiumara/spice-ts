@@ -11,8 +11,9 @@ import { parseNumber } from './tokenizer.js';
  * `time`, `temper`, `v(node)`, `v(node1,node2)`, the branch current
  * `i(vsource)` of a branch-carrying source, unary `+ - !`, binary
  * `+ - * / ^ **`, comparisons `== != <> < <= > >=`, `&&`, `||`, the ternary
- * `c ? a : b` / `ternary_fcn(c, a, b)`, and every function listed in
- * {@link BEHAVIORAL_FUNCTIONS}. `.param` names, `{expr}` and `'expr'` are
+ * `c ? a : b` / `ternary_fcn(c, a, b)`, every function listed in
+ * {@link BEHAVIORAL_FUNCTIONS}, and the PSpice `if`, `limit`, `pwrs`, `stp`
+ * and `int` (see {@link PSPICE_FUNCTIONS}). `.param` names, `{expr}` and `'expr'` are
  * substituted before parsing, as ngspice's numparam front end does (see
  * {@link substituteBehavioralParameters}). `hertz`, `pwl(...)` and the PSPICE
  * logic operators `~ & |` are rejected explicitly.
@@ -90,6 +91,64 @@ const INSTANCE_PARAMETER = /^([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(\S+)\s*/;
 const INSTANCE_PARAMETERS = new Set(['tc1', 'tc2', 'temp', 'dtemp', 'reciproctc']);
 
 class ExpressionError extends Error {}
+
+const call = (name: BehavioralFunction, ...args: BehavioralExpression[]): BehavioralExpression => ({
+  kind: 'call',
+  name,
+  args,
+});
+
+const ARITY_WORDS: Record<number, string> = { 1: 'one argument', 2: 'two arguments', 3: 'three arguments' };
+
+/**
+ * PSpice functions ngspice-47 defines in compatibility mode
+ * (frontend/inpcompat.c pspice_compat prepends these `.func` cards, which
+ * numparam expands textually into every B-source expression):
+ *
+ *   .func limit(x, a, b) { ternary_fcn(a > b, max(min(x, a), b), max(min(x, b), a)) }
+ *   .func pwrs(x, a) { sgn(x) * pow(x, a) }
+ *   .func stp(x) { u(x) }
+ *   .func if(a, b, c) {ternary_fcn( a , b , c )}
+ *   .func int(x) { sgn(x)*floor(abs(x)) }
+ *
+ * Each call expands into the same parse tree, so values and the
+ * PTdifferentiate derivatives (Newton Jacobian) follow ngspice's tree.
+ * A repeated argument compiles once per occurrence, as in the textual
+ * expansion (a `ddt()` argument keeps one history per occurrence). Default-mode ngspice
+ * rejects these names ("no such function"), so accepting them always only
+ * widens the accepted decks. The sixth inpcompat.c function,
+ * `.func pwr(x, a) { pow(x, a) }`, is not applied: `pwr` is a native
+ * default-mode ngspice function (sign-preserving PTpwr) that spice-ts keeps.
+ */
+interface PspiceFunction {
+  arity: number;
+  expand(args: BehavioralExpression[]): BehavioralExpression;
+}
+
+const PSPICE_FUNCTIONS = new Map<string, PspiceFunction>(Object.entries({
+  limit: {
+    arity: 3,
+    expand: ([x, a, b]) => ({
+      kind: 'ternary',
+      condition: { kind: 'compare', op: '>', left: a, right: b },
+      whenTrue: call('max', call('min', x, a), b),
+      whenFalse: call('max', call('min', x, b), a),
+    }),
+  },
+  pwrs: {
+    arity: 2,
+    expand: ([x, a]) => ({ kind: 'binary', op: '*', left: call('sgn', x), right: call('pow', x, a) }),
+  },
+  stp: { arity: 1, expand: ([x]) => call('u', x) },
+  if: {
+    arity: 3,
+    expand: ([condition, whenTrue, whenFalse]) => ({ kind: 'ternary', condition, whenTrue, whenFalse }),
+  },
+  int: {
+    arity: 1,
+    expand: ([x]) => ({ kind: 'binary', op: '*', left: call('sgn', x), right: call('floor', call('abs', x)) }),
+  },
+} satisfies Record<string, PspiceFunction>));
 
 export function parseBehavioralSourceCard(raw: string, lineNumber: number): BehavioralSourceCard {
   const card = B_CARD.exec(raw.trim());
@@ -311,6 +370,13 @@ class Parser {
     if (name === 'ternary_fcn') {
       if (args.length !== 3) throw new ExpressionError('ternary_fcn() takes three arguments');
       return { kind: 'ternary', condition: args[0], whenTrue: args[1], whenFalse: args[2] };
+    }
+    const pspice = PSPICE_FUNCTIONS.get(name);
+    if (pspice) {
+      if (args.length !== pspice.arity) {
+        throw new ExpressionError(`${name}() takes ${ARITY_WORDS[pspice.arity]}`);
+      }
+      return pspice.expand(args);
     }
     if (!(BEHAVIORAL_FUNCTIONS as readonly string[]).includes(name)) {
       throw new ExpressionError(`Unsupported behavioral expression function '${original}'`);
