@@ -1,0 +1,31 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: * cockcroft-walton x8 multiplier
+
+
+warning, can't find model 'd' from line
+    d1 7 8 d
+warning, can't find model 'd' from line
+    d2 6 7 d
+warning, can't find model 'd' from line
+    d3 5 6 d
+warning, can't find model 'd' from line
+    d4 4 5 d
+warning, can't find model 'd' from line
+    d5 3 4 d
+warning, can't find model 'd' from line
+    d6 2 3 d
+warning, can't find model 'd' from line
+    d7 1 2 d
+warning, can't find model 'd' from line
+    d8 0 1 d
+Error in netlist line no. 19, new internal line no. 18:
+
+Undefined parameter [vdc]
+Error in netlist line no. 19, new internal line no. 18:
+
+Cannot compute substitute
+
+ERROR: fatal error in ngspice, exit(1)

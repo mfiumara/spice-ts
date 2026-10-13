@@ -4,10 +4,42 @@ import { tmpdir } from 'node:os';
 import test from 'node:test';
 import type { ComparisonFixture } from '../comparison-harness.js';
 import { parseXyceCsv, runXyce, translateForXyce } from './xyce.js';
+import { canonicalize, projectAnalysis } from './canonical.js';
+import { runNgspiceReference } from './expanded.js';
 
 test('mixed-case requested names use canonical lower-case series keys like ngspice', () => {
   const result = parseXyceCsv('{V1},V(IN),I(V1)\n0,0,0', 'dc', ['V(IN)', 'I(V1)']);
   assert.deepEqual(Object.keys(result.signals), ['v(in)', 'i(v1)']);
+});
+
+test('live ngspice quit terminates later control blocks; canonical projections are rejected', { skip: !process.env.XYCE_BIN }, () => {
+  const source = 'quit probe\nV1 in 0 1\nR1 in 0 1k\n.control\nop\nprint v(in)\nquit 0\n.endc\n.control\necho UNREACHABLE_DC\ndc V1 0 2 1\nprint v(in)\n.endc\n.end\n';
+  const plan = canonicalize(source);
+  assert.ok(plan.limitations.includes('Multiple .control blocks need circuit-global execution semantics'));
+  assert.equal(plan.netlist, source);
+  assert.deepEqual(plan.changes, []);
+  assert.throws(() => projectAnalysis(plan, 1), /Multiple \.control blocks/);
+  const original = runNgspiceReference(plan.netlist);
+  assert.match(original.output ?? '', /v\(in\) = 1\.000000e\+00/);
+  assert.doesNotMatch(original.output ?? '', /UNREACHABLE_DC|No\. of Data Rows\s*:\s*3/);
+});
+
+test('live shared DEVICE options preserve ngspice settings and are recognized by Xyce', { skip: !process.env.XYCE_BIN }, async () => {
+  const settings = ['TEMP=150', 'TNOM=40', 'GMIN=1e-8', 'TEMP=150 TNOM=40 GMIN=1e-8'];
+  for (const option of settings) {
+    const netlist = `settings probe\nV1 in 0 .5\nD1 in 0 dm\n.model dm D(IS=1e-14)\n.options ${option}\n.op\n.end\n`;
+    const plan = canonicalize(netlist);
+    assert.deepEqual(plan.limitations, []);
+    const original = runNgspiceReference(netlist, 'op');
+    const shared = projectAnalysis(plan, 0);
+    const mapped = runNgspiceReference(shared, 'op');
+    assert.equal(original.status, 'success');
+    assert.equal(mapped.status, 'success');
+    if (original.status === 'success' && mapped.status === 'success') assert.deepEqual(mapped.series, original.series);
+    const xyce = await runXyce({ name: 'options', analysis: 'op', netlist: shared, signals: ['v(in)', 'i(v1)'] });
+    assert.equal(xyce.status, 'success', JSON.stringify(xyce));
+    assert.doesNotMatch(xyce.output ?? '', /ignored|unrecognized|not supported/i);
+  }
 });
 
 function fixture(analysis: ComparisonFixture['analysis'] = 'dc'): ComparisonFixture {
@@ -42,7 +74,7 @@ test('CSV rejects absent, duplicate, malformed, blank, nonfinite and truncated f
   ]) assert.throws(() => parseXyceCsv(csv, 'tran', ['v(in)']), undefined, csv);
   assert.throws(() => parseXyceCsv('FREQ,VR(IN)\n1,2', 'ac', ['v(in)']), /Missing CSV field/);
   assert.throws(() => parseXyceCsv('V(IN)\n1', 'dc', ['v(in)']), /sweep parameter/);
-  assert.throws(() => parseXyceCsv('TIME,V(IN)\n0,1', 'op', ['v(in)']), /OP/);
+  assert.throws(() => parseXyceCsv('V(IN)\n1\n2', 'op', ['v(in)']), /OP/);
 });
 
 test('translation replaces output continuations, preserves qualified options and LEVEL=260', () => {
@@ -63,7 +95,7 @@ test('translation replaces output continuations, preserves qualified options and
 });
 
 test('translation limitations return unsupported before launching executable', async () => {
-  const cases = [fixture('op'),
+  const cases = [
     ...['.control\nrun\n.endc', '.options reltol=1e-8', '.option method=gear', '.options reltol 1e-8', '.step V1 0 1 .1', '.ac lin 2 1 2'].map(card => ({ ...fixture(), netlist: fixture().netlist.replace('.end', `${card}\n.end`) })),
     { ...fixture(), signals: ['vm(in)'] }, { ...fixture(), signals: ['v(in);bad'] },
     { ...fixture(), netlist: fixture().netlist.replace('DC 1 AC 1', 'type=vsource 1') },
@@ -82,6 +114,8 @@ test('missing executable, execution failure, absent output and timeout fail and 
   const before = directories();
   const missing = await runXyce(fixture(), { executable: '/nonexistent/xyce-adapter' });
   assert.equal(missing.status, 'failed');
+  assert.equal(missing.failureKind, 'execution');
+  assert.equal(missing.convergence, 'unknown');
   if (missing.status !== 'success') assert.match(missing.error, /ENOENT/);
   // Node acts as an executable test double; all SPICE cards stay inside a JS comment.
   for (const [script, message] of [
@@ -92,12 +126,14 @@ test('missing executable, execution failure, absent output and timeout fail and 
     f.netlist = f.netlist.replace('adapter test', '/*') + `\n*/\n${script}\n`;
     const result = await runXyce(f, { executable: process.execPath, timeoutMs: script.includes('while') ? 100 : 2000 });
     assert.equal(result.status, 'failed');
+    assert.equal(result.failureKind, script.includes('NaN') ? 'parse' : script === '' ? 'export' : 'execution');
+    assert.equal(result.convergence, script.includes('NaN') || script === '' ? 'not-run' : 'unknown');
     if (result.status !== 'success') assert.match(result.error, message);
   }
   assert.deepEqual(directories(), before);
 });
 
-for (const analysis of ['dc', 'tran', 'ac'] as const) {
+for (const analysis of ['op', 'dc', 'tran', 'ac'] as const) {
   test(`live Xyce ${analysis}`, { skip: !process.env.XYCE_BIN }, async () => {
     const result = await runXyce(fixture(analysis), { executable: process.env.XYCE_BIN });
     assert.equal(result.status, 'success', JSON.stringify(result));

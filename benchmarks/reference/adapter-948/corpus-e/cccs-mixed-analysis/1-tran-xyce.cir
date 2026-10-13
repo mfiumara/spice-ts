@@ -1,0 +1,19 @@
+# cccs test, with element probes (forces full eval)
+i1 1 0 dc 11 ac 11
+ri1 1 0 10
+e1 2 0 1 0 8
+re1 2 0 10
+* sense the voltage source (0 volts)
+i2 3 0 dc 11 ac 11
+ri2 4 0 10
+v2 3 4 0
+f2 5 0 v2 8
+rf2 5 0 10
+* sense a live voltage source
+v7 6 0 dc 11 ac 11
+rv7 6 0 10
+f7 7 0 v7 8
+rf7 7 0 10
+.tran .05 .1 0
+.print TRAN format=csv file=output.csv precision=17 I(e1) I(v2) I(v7) V(1) V(2) V(3) V(4) V(5) V(6) V(7)
+.end

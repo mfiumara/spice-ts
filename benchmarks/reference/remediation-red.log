@@ -1,0 +1,39 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_08ea3851/benchmarks/reference
+
+ ❯ canonical.test.ts (9 tests | 1 failed) 14ms
+   × multiple control blocks fail closed atomically, including cross-block termination and cleanup 5ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  canonical.test.ts > multiple control blocks fail closed atomically, including cross-block termination and cleanup
+AssertionError: .control
+op
+quit 0
+.endc
+.control
+dc V1 0 2 1
+.endc
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ canonical.test.ts:55:12
+     53|     const source = deck(cards).replace(/\n/g, '\r\n') + '  \r\n';
+     54|     const plan = canonicalize(source);
+     55|     assert.ok(plan.limitations.includes('Multiple .control blocks need…
+       |            ^
+     56|     assert.equal(plan.netlist, source, cards);
+     57|     assert.deepEqual(plan.changes, [], cards);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 8 passed (9)
+   Start at  00:54:11
+   Duration  412ms (transform 148ms, setup 0ms, import 177ms, tests 14ms, environment 0ms)
+

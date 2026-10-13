@@ -1,0 +1,26 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: * test diode
+
+
+
+Total elapsed time (seconds) = 0.004 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13638.719 MB.
+Maximum ngspice program size =    9.797 MB.
+Current ngspice program size =    9.797 MB.
+
+
+warning, can't find model 'di' from line
+    d1 2 0 di
+Error on line 4 or its substitute:
+  d1 2 0 di
+could not find a valid modelname
+    Simulation interrupted due to error!
+
+Error: circuit not parsed.
+Note: no resource usage information for 'time',
+	or no active circuit available

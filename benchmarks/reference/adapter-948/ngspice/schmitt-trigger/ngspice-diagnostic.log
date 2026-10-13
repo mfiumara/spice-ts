@@ -1,0 +1,21 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: schmitt ckt - ecl compatible schmitt trigger
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 11  
+
+No. of Data Rows : 135
+.print line ignored since rawfile was produced.
+.plot line ignored since rawfile was produced.
+
+
+Warning: option lvlcod is obsolete.
+Note: Starting dynamic gmin stepping
+Note: Dynamic gmin stepping completed
+.options: no listing, rawfile was generated.

@@ -1,0 +1,31 @@
+
+*****
+***** Welcome to the Xyce(TM) Parallel Electronic Simulator
+*****
+***** This is version XyceNF Release 7.10.0
+***** Date: Wed Oct 14 00:58:34 CEST 2026
+
+
+***** Executing netlist input.cir
+
+***** Reading and parsing netlist...
+Netlist warning in file input.cir at or near line 94
+ No model parameter XJ found for model P12L5 of type PMOS, parameter ignored.
+Netlist warning in file input.cir at or near line 84
+ No model parameter XJ found for model N10L5 of type NMOS, parameter ignored.
+Netlist error: There were 24 undefined symbols in .PRINT command: node
+ XNDINV1.12, node XNDINV1.13, node XNDINV1.14, node XNDINV1.22, node
+ XNDINV1.23, node XNDINV1.32, node XNDINV2.12, node XNDINV2.13, node
+ XNDINV2.14, node XNDINV2.22, node XNDINV2.23, node XNDINV2.32, node
+ XNDINV3.12, node XNDINV3.13, node XNDINV3.14, node XNDINV3.22, node
+ XNDINV3.23, node XNDINV3.32, node XNDINV4.12, node XNDINV4.13, node
+ XNDINV4.14, node XNDINV4.22, node XNDINV4.23, node XNDINV4.32
+Simulation aborted due to error.  There are 0 MSG_FATAL errors and 1 MSG_ERROR
+ errors
+*** Xyce Abort ***
+
+Simulation aborted due to error.  There are 0 MSG_FATAL errors and 1 MSG_ERROR
+ errors
+
+
+*** Xyce Abort ***

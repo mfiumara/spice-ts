@@ -1,0 +1,42 @@
+
+*****
+***** Welcome to the Xyce(TM) Parallel Electronic Simulator
+*****
+***** This is version XyceNF Release 7.10.0
+***** Date: Wed Oct 14 00:58:20 CEST 2026
+
+
+***** Executing netlist input.cir
+
+***** Reading and parsing netlist...
+Netlist error in file input.cir at or near line 12
+ Model is required for device ZD and no valid model card found.
+Netlist error in file input.cir at or near line 12
+ Model is required for device ZD and no valid model card found.
+Netlist error in file input.cir at or near line 12
+ Model is required for device ZD and no valid model card found.
+Netlist error in file input.cir at or near line 12
+ Model is required for device ZD and no valid model card found.
+Netlist error in file input.cir at or near line 12
+ Model is required for device ZD and no valid model card found.
+Netlist error in file input.cir at or near line 12
+ Model is required for device ZD and no valid model card found.
+Netlist error in file input.cir at or near line 12
+ Model is required for device ZD and no valid model card found.
+Netlist error in file input.cir at or near line 12
+ Model is required for device ZD and no valid model card found.
+Netlist error in file input.cir at or near line 12
+ Model is required for device ZD and no valid model card found.
+Netlist error in file input.cir at or near line 12
+ Model is required for device ZD and no valid model card found.
+Netlist error in file input.cir at or near line 12
+ Model is required for device ZD and no valid model card found.
+Simulation aborted due to error.  There are 0 MSG_FATAL errors and 11
+ MSG_ERROR errors
+*** Xyce Abort ***
+
+Simulation aborted due to error.  There are 0 MSG_FATAL errors and 11
+ MSG_ERROR errors
+
+
+*** Xyce Abort ***
