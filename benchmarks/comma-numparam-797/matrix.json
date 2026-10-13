@@ -1,0 +1,122 @@
+[
+  {
+    "id": "issue-1",
+    "path": "benchmarks/comma-numparam-797/decks/issue-1.cir",
+    "purpose": "Issue-listed list",
+    "params": "p1=2,p2=3,p3=4"
+  },
+  {
+    "id": "issue-2",
+    "path": "benchmarks/comma-numparam-797/decks/issue-2.cir",
+    "purpose": "Issue-listed list",
+    "params": "p1={2},p2={3},p3={4}"
+  },
+  {
+    "id": "issue-3",
+    "path": "benchmarks/comma-numparam-797/decks/issue-3.cir",
+    "purpose": "Issue-listed list",
+    "params": "p1=2, p2=3, p3=4"
+  },
+  {
+    "id": "issue-4",
+    "path": "benchmarks/comma-numparam-797/decks/issue-4.cir",
+    "purpose": "Issue-listed list",
+    "params": "p1={2}, p2={3},p3={4}"
+  },
+  {
+    "id": "issue-5",
+    "path": "benchmarks/comma-numparam-797/decks/issue-5.cir",
+    "purpose": "Issue-listed list",
+    "params": "p1=2 p2=3,p3=4"
+  },
+  {
+    "id": "issue-6",
+    "path": "benchmarks/comma-numparam-797/decks/issue-6.cir",
+    "purpose": "Issue-listed list",
+    "params": "p1={2},p2=3"
+  },
+  {
+    "id": "issue-7",
+    "path": "benchmarks/comma-numparam-797/decks/issue-7.cir",
+    "purpose": "Issue-listed list",
+    "params": "p1=2 ,p2=3"
+  },
+  {
+    "id": "defaults",
+    "path": "benchmarks/comma-numparam-797/decks/defaults.cir",
+    "purpose": "Boundary control",
+    "params": ""
+  },
+  {
+    "id": "plain-whitespace",
+    "path": "benchmarks/comma-numparam-797/decks/plain-whitespace.cir",
+    "purpose": "Boundary control",
+    "params": "p1=2 p2=3 p3=4"
+  },
+  {
+    "id": "braced-whitespace",
+    "path": "benchmarks/comma-numparam-797/decks/braced-whitespace.cir",
+    "purpose": "Boundary control",
+    "params": "p1={2} p2={3} p3={4}"
+  },
+  {
+    "id": "braced-comma-space",
+    "path": "benchmarks/comma-numparam-797/decks/braced-comma-space.cir",
+    "purpose": "Boundary control",
+    "params": "p1={2}, p2={3}, p3={4}"
+  },
+  {
+    "id": "braced-comma-tab",
+    "path": "benchmarks/comma-numparam-797/decks/braced-comma-tab.cir",
+    "purpose": "Boundary control",
+    "params": "p1={2},\tp2={3},\tp3={4}"
+  },
+  {
+    "id": "explicit-first",
+    "path": "benchmarks/comma-numparam-797/decks/explicit-first.cir",
+    "purpose": "Boundary control",
+    "params": "p1={2}"
+  },
+  {
+    "id": "reordered-glued",
+    "path": "benchmarks/comma-numparam-797/decks/reordered-glued.cir",
+    "purpose": "Boundary control",
+    "params": "p3={4},p2={3},p1={2}"
+  },
+  {
+    "id": "function-comma",
+    "path": "benchmarks/comma-numparam-797/decks/function-comma.cir",
+    "purpose": "Boundary control",
+    "params": "p1={max(2,1)} p2={3} p3={4}"
+  },
+  {
+    "id": "unbraced-trailing",
+    "path": "benchmarks/comma-numparam-797/decks/unbraced-trailing.cir",
+    "purpose": "Boundary control",
+    "params": "p1=2,"
+  },
+  {
+    "id": "unbraced-missing-value",
+    "path": "benchmarks/comma-numparam-797/decks/unbraced-missing-value.cir",
+    "purpose": "Boundary control",
+    "params": "p1= p2=3"
+  },
+  {
+    "id": "example01",
+    "path": "benchmarks/corpus/corpus-h/fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example01.cir",
+    "purpose": "Unchanged MIT corpus-h fixture",
+    "params": null
+  },
+  {
+    "id": "example01_stringwriter",
+    "path": "benchmarks/corpus/corpus-h/fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example01_stringwriter.cir",
+    "purpose": "Unchanged MIT corpus-h fixture",
+    "params": null
+  },
+  {
+    "id": "example01_without_params",
+    "path": "benchmarks/corpus/corpus-h/fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example01_without_params.cir",
+    "purpose": "Unchanged MIT corpus-h fixture",
+    "params": null
+  }
+]
