@@ -1,0 +1,37 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/packages/core
+
+ ❯ src/analysis/dc-floating-recovery-917.test.ts (4 tests | 1 failed) 21ms
+     × runs the identical MIT floating RC reduction through DC-before-AC 14ms
+     ✓ preserves an ordinary DC divider exactly 3ms
+     ✓ rejects conflicting ideal voltage sources 2ms
+     ✓ rejects an unbalanced DC current into the capacitive island 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/analysis/dc-floating-recovery-917.test.ts > floating passive DC recovery (#917) > runs the identical MIT floating RC reduction through DC-before-AC
+SingularMatrixError: Singular matrix: zero pivot at matrix column 1 (nodes: b)
+ ❯ Function.atPivot src/errors.ts:78:12
+     76|   ): SingularMatrixError {
+     77|     const variable = variables[pivotIndex];
+     78|     return new SingularMatrixError(
+       |            ^
+     79|       `zero pivot at matrix column ${pivotIndex}`,
+     80|       variable?.kind === 'node' ? [variable.name] : [],
+ ❯ GilbertPeierlsSolver.factorize src/solver/gilbert-peierls.ts:476:35
+ ❯ newtonRaphson src/analysis/newton-raphson.ts:135:12
+ ❯ solveOperatingPoint src/analysis/dc.ts:54:7
+ ❯ solveDCOperatingPoint src/analysis/dc.ts:94:5
+ ❯ solveCompiledAnalyses src/simulate.ts:236:38
+ ❯ simulate src/simulate.ts:166:18
+ ❯ src/analysis/dc-floating-recovery-917.test.ts:10:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 passed (4)
+   Start at  16:37:20
+   Duration  811ms (transform 593ms, setup 0ms, import 713ms, tests 21ms, environment 0ms)
+
+JUNIT report written to /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/packages/core/test-results.xml

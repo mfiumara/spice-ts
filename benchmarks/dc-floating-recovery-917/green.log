@@ -1,0 +1,15 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/packages/core
+
+ ✓ src/analysis/dc.test.ts (3 tests) 25ms
+ ✓ src/parser/bsource-caret-initial-iterate-891.test.ts (4 tests) 40ms
+ ✓ src/parser/bsource-finite-jacobian-overflow-899.test.ts (6 tests) 48ms
+ ✓ src/analysis/dc-floating-recovery-917.test.ts (18 tests) 171ms
+ ✓ src/parser/bsource-pow-zero-base-886.test.ts (7 tests) 214ms
+
+ Test Files  5 passed (5)
+      Tests  38 passed (38)
+   Start at  16:57:38
+   Duration  3.09s (transform 10.78s, setup 0ms, import 12.82s, tests 499ms, environment 0ms)
+
+JUNIT report written to /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/packages/core/test-results.xml

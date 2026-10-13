@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: MIT
 import { readFileSync } from 'node:fs';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { simulate } from '../simulate.js';
 import { parse } from '../parser/index.js';
 import { solveDCOperatingPoint } from './dc.js';
 import { newtonRaphson } from './newton-raphson.js';
 import { resolveOptions } from '../types.js';
 import { ProtocolExecutionError, ProtocolExecutionGuard } from '../protocol/execution-guard.js';
+import * as transientDriver from './transient-driver.js';
 
 const reduction = readFileSync(new URL('../../../../benchmarks/vendor-singular-917/floating-rc.cir', import.meta.url), 'utf8');
 
@@ -58,6 +59,26 @@ describe('floating passive DC recovery (#917)', () => {
     });
     expect(() => solveDCOperatingPoint(circuit, resolveOptions(), undefined, undefined, 'operating-point', guard)).toThrow(ProtocolExecutionError);
     expect(signal.aborted).toBe(true);
+  });
+
+  it('caps recovery at 10000 advances and disposes an unfinished driver', () => {
+    const circuit = parse(reduction).compile();
+    const advance = vi.fn();
+    const dispose = vi.fn();
+    const fake = {
+      isDone: false,
+      advanceSolution: advance,
+      currentSolution: () => new Float64Array(circuit.nodeCount + circuit.branchCount),
+      dispose,
+    } as unknown as ReturnType<typeof transientDriver.createDriverFromCompiled>;
+    const spy = vi.spyOn(transientDriver, 'createDriverFromCompiled').mockReturnValue(fake);
+    try {
+      expect(() => solveDCOperatingPoint(circuit, resolveOptions())).toThrow('Singular matrix');
+      expect(advance).toHaveBeenCalledTimes(10000);
+      expect(dispose).toHaveBeenCalledTimes(1);
+    } finally {
+      spy.mockRestore();
+    }
   });
 
   it('does not silently discard a caller-supplied initial solution', () => {
