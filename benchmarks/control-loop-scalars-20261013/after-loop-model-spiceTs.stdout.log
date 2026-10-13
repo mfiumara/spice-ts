@@ -1,0 +1,1 @@
+{"status":"failed","error":"Parse error at line 37: Unsupported .control command 'altermod': no top-level .model named 'R2'\n  altermod R2 r = $&rcur"}

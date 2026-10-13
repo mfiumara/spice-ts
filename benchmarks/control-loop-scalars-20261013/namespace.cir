@@ -1,0 +1,13 @@
+* csparam assignment preserves existing const vector semantics (MIT)
+R1 n1 0 1k
+V1 n1 0 1
+.csparam value = 3
+.control
+set curplot = new
+let value = 9
+echo $&value $&const.value
+destroy $curplot
+echo $&value
+quit
+.endc
+.end

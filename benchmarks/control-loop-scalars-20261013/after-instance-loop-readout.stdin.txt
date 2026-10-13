@@ -1,0 +1,9 @@
+readout wrapper
+.control
+set nomoremode
+set numdgt=17
+source /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e7a61100/benchmarks/corpus/corpus-f/fixtures/examples/loops/instance-loop.cir
+print vnode2 r2val
+quit
+.endc
+.end

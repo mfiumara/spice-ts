@@ -1,0 +1,189 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: readout wrapper
+
+
+Note: No compatibility mode selected!
+
+
+Circuit: * dc loop with model parameter
+
+
+**** run no. 0 with R2 = 1000 Ohms ****
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+voltage at node n1 is 0.5
+
+**** run no. 1 with R2 = 950 Ohms ****
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+voltage at node n1 is 0.512821
+
+**** run no. 2 with R2 = 900 Ohms ****
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+voltage at node n1 is 0.526316
+
+**** run no. 3 with R2 = 850 Ohms ****
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+voltage at node n1 is 0.540541
+
+**** run no. 4 with R2 = 800 Ohms ****
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+voltage at node n1 is 0.555556
+
+**** run no. 5 with R2 = 750 Ohms ****
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+voltage at node n1 is 0.571429
+
+**** run no. 6 with R2 = 700 Ohms ****
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+voltage at node n1 is 0.588235
+
+**** run no. 7 with R2 = 650 Ohms ****
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+voltage at node n1 is 0.606061
+
+**** run no. 8 with R2 = 600 Ohms ****
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+voltage at node n1 is 0.625
+
+**** run no. 9 with R2 = 550 Ohms ****
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+voltage at node n1 is 0.645161
+
+**** run no. 10 with R2 = 500 Ohms ****
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+voltage at node n1 is 0.666667
+
+**** run no. 11 with R2 = 450 Ohms ****
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+voltage at node n1 is 0.689655
+
+**** run no. 12 with R2 = 400 Ohms ****
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+voltage at node n1 is 0.714286
+
+**** run no. 13 with R2 = 350 Ohms ****
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+voltage at node n1 is 0.740741
+
+**** run no. 14 with R2 = 300 Ohms ****
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+voltage at node n1 is 0.769231
+
+**** run no. 15 with R2 = 250 Ohms ****
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+voltage at node n1 is 0.8
+
+**** run no. 16 with R2 = 200 Ohms ****
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+voltage at node n1 is 0.833333
+
+**** run no. 17 with R2 = 150 Ohms ****
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+voltage at node n1 is 0.869565
+
+**** run no. 18 with R2 = 100 Ohms ****
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+voltage at node n1 is 0.909091
+                                   outputdata
+                                   unknown  Tue Oct 13 18:01:38  2026
+--------------------------------------------------------------------------------
+Index   vnode2          r2val           
+--------------------------------------------------------------------------------
+0	5.00000000000000000e-01	1.00000000000000000e+03	
+1	5.12820512820512775e-01	9.50000000000000000e+02	
+2	5.26315789473684181e-01	9.00000000000000000e+02	
+3	5.40540540540540571e-01	8.50000000000000000e+02	
+4	5.55555555555555469e-01	8.00000000000000000e+02	
+5	5.71428571428571508e-01	7.50000000000000000e+02	
+6	5.88235294117647078e-01	7.00000000000000000e+02	
+7	6.06060606060606077e-01	6.50000000000000000e+02	
+8	6.25000000000000000e-01	6.00000000000000000e+02	
+9	6.45161290322580627e-01	5.50000000000000000e+02	
+10	6.66666666666666630e-01	5.00000000000000000e+02	
+11	6.89655172413793149e-01	4.50000000000000000e+02	
+12	7.14285714285714302e-01	4.00000000000000000e+02	
+13	7.40740740740740700e-01	3.50000000000000000e+02	
+14	7.69230769230769273e-01	3.00000000000000000e+02	
+15	8.00000000000000044e-01	2.50000000000000000e+02	
+16	8.33333333333333259e-01	2.00000000000000000e+02	
+17	8.69565217391304435e-01	1.50000000000000000e+02	
+18	9.09090909090909172e-01	1.00000000000000000e+02	
+ngspice-47 done
