@@ -8,6 +8,7 @@
  *   pnpm exec tsx benchmarks/corpus/corpus-f/outcomes.ts --check    # rerun and compare, write nothing
  *   pnpm exec tsx benchmarks/corpus/corpus-f/outcomes.ts --jobs 4   # parallel fixtures (default 6)
  *   pnpm exec tsx benchmarks/corpus/corpus-f/outcomes.ts --relabel  # recompute buckets/issue links only
+ *   pnpm exec tsx benchmarks/corpus/corpus-f/outcomes.ts --fine-reference [--accept-drift]  # add the #592 column to committed transient rows
  *
  * Each fixture runs in its own child process; ngspice and spice-ts each have a 120 s bound.
  */
@@ -19,6 +20,7 @@ import { basename, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { deserialize, serialize } from 'node:v8';
 import { SPICE_TS_TIMEOUT_MS } from '../../aggregate-report.js';
+import { type FineReference, FINE_REFERENCE_RULE, FINE_REFERENCE_TIMEOUT_MS, fineReferenceColumn, fineReferenceSection } from '../../fine-reference.js';
 import {
   analysisType,
   type ClassicAnalysisType,
@@ -29,6 +31,7 @@ import type { CorpusFCircuit, CorpusFManifest } from './ingest.js';
 import {
   asPacked,
   compareInBatches,
+  defaultBatchSamples,
   lazyExecution,
   PACKED_SAMPLES,
   type PackedAnalysis,
@@ -69,6 +72,8 @@ const JSON_PATH = resolve(CORPUS_ROOT, 'outcomes.json');
 const MARKDOWN_PATH = resolve(CORPUS_ROOT, 'README.md');
 /** Some CIDER decks need about 115 s alone in ngspice-47, so its bound is wider than spice-ts's 120 s. */
 const NGSPICE_TIMEOUT_MS = 600_000;
+/** Per-fixture child bound: both default runs, the fine-reference ngspice run (#592) and slack. */
+export const FIXTURE_CHILD_TIMEOUT_MS = NGSPICE_TIMEOUT_MS + SPICE_TS_TIMEOUT_MS + FINE_REFERENCE_TIMEOUT_MS + 60_000;
 const CHILD_FLAG = '--corpus-f-fixture-child';
 const SPICE_TS_CHILD_FLAG = '--corpus-f-spice-ts-child';
 
@@ -100,6 +105,11 @@ export interface FixtureOutcome {
   worstSignal: string | null;
   outcome: Outcome;
   gapBucket: string | null;
+  /**
+   * Diagnostic fine-step reference column (#592), present when the headline comparison includes a
+   * transient. It never changes `outcome`, which the headline column alone defines.
+   */
+  fineReference?: FineReference;
 }
 
 export interface CorpusFReport {
@@ -115,6 +125,8 @@ export interface CorpusFReport {
     perCircuitToleranceTuning: false;
     matchThreshold: number;
     matchRule: string;
+    /** Absent before #592. */
+    fineReference?: string;
     deterministicHashExcludes: ['environment', 'tools.node', 'ngspice.analyses', 'spiceTs.analyses'];
   };
   totals: {
@@ -173,7 +185,7 @@ export const FOLLOW_UP_ISSUES: ReadonlyArray<{ url: string; scope: string }> = [
   { url: 'https://github.com/mfiumara/spice-ts/issues/591', scope: 'closed by #601: MOS1 Meyer gate capacitance from TOX; residual i(vs) mismatch is grid discretisation per #627/#629, routed to #592' },
   { url: 'https://github.com/mfiumara/spice-ts/issues/626', scope: 'BSIM3 4-bit NAND adder (examples/snapshot/adder_mos_circ.cir): internal-node mismatch 1.54 after #624/#648; root cause not established (#511 triage)' },
   { url: 'https://github.com/mfiumara/spice-ts/issues/655', scope: 'TRNOISE/TRRANDOM decks compare independent random realisations; ngspice-47 reseeds each run, so these values are not reproducible (transient-noise simple-noise, rts-1)' },
-  { url: 'https://github.com/mfiumara/spice-ts/issues/592', scope: 'metric: ngspice\'s coarse default-step output is scored as spice-ts error (rca3040, switches-manual-p92; rtlinv, mos-test, fourbitadder and ltra2_2_line match after the #689 step-control merge; #511 triage)' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/592', scope: 'metric: ngspice\'s coarse default-step output is scored as spice-ts error (rca3040, switches-manual-p92; rtlinv, mos-test, fourbitadder and ltra2_2_line match after the #689 step-control merge; #511 triage). The headline metric is unchanged; the transient fine-step reference section at the end of this table publishes both default runs against one ngspice fine-TMAX reference per deck' },
   { url: 'https://github.com/mfiumara/spice-ts/issues/593', scope: 'metric: zero/near-zero ngspice peaks turned fV-uV residuals into mismatches; fixed by the per-quantity VNTOL/ABSTOL peak floor in the match rule above (rca3040 AC v(2) now 5.64e-10; #511 triage)' },
   { url: 'https://github.com/mfiumara/spice-ts/issues/698', scope: 'fourbitadder TTL internal nodes kept 1-7 uV residuals above the VNTOL floor (split from #593); the deck matches (0.00313) on main 3b9c836f, re-check before closing' },
 ];
@@ -333,10 +345,15 @@ export function referenceSelection(execution: Pick<EngineExecution, 'analyses'>)
   return (type, signal) => produced.get(type)?.has(signal) ?? false;
 }
 
-/** Runs one fixture through both engines and reduces it to its published outcome. */
+/**
+ * Runs one fixture through both engines and reduces it to its published outcome. With the default
+ * ngspice reference, a fixture whose headline comparison includes a transient also gets the
+ * fine-step reference column (#592); a custom reference (the control-vector supplement) does not.
+ */
 export async function runFixture(
   circuit: CorpusFCircuit,
   reference: (input: Buffer, circuit: CorpusFCircuit, select: ReferenceSelection) => Promise<ReferenceRun<EngineExecution | PackedExecution>> = runNgspicePacked,
+  options: { fineReference?: boolean } = {},
 ): Promise<FixtureOutcome> {
   const input = await readFile(resolve(circuit.localPath));
   if (sha256(input) !== circuit.sha256) throw new Error(`${circuit.id}: fixture SHA-256 mismatch`);
@@ -381,6 +398,18 @@ export async function runFixture(
   if (ngspice.firstErrorLine) result.ngspice.firstErrorLine = ngspice.firstErrorLine;
   if (ngspice.note) result.ngspice.note = ngspice.note;
   if (spiceTsError) result.spiceTs.firstErrorLine = spiceTsError;
+  const defaultReference = reference === runNgspicePacked || reference === runNgspice;
+  if ((options.fineReference ?? defaultReference) && comparisons.some(comparison => comparison.analysis === 'tran')) {
+    // Lazy views: the fine column reads the default runs signal by signal, like the headline (#839).
+    result.fineReference = await fineReferenceColumn({
+      deck: input.toString('utf8'),
+      fileName: basename(circuit.localPath),
+      spiceTs: spiceTsView,
+      ngspice: lazyExecution(ngspiceExecution),
+      headline: comparisons,
+      budget: defaultBatchSamples(),
+    });
+  }
   return result;
 }
 
@@ -467,7 +496,7 @@ export async function buildReport(manifest: CorpusFManifest, jobs: number, only?
     while (next < circuits.length) {
       const index = next;
       next += 1;
-      const result = await runChild(circuits[index].id, NGSPICE_TIMEOUT_MS + SPICE_TS_TIMEOUT_MS + 60_000);
+      const result = await runChild(circuits[index].id, FIXTURE_CHILD_TIMEOUT_MS);
       if ('error' in result && !('outcome' in result)) throw new Error(`${circuits[index].id}: ${result.error}`);
       results[index] = result as FixtureOutcome;
       done += 1;
@@ -500,6 +529,7 @@ export async function buildReport(manifest: CorpusFManifest, jobs: number, only?
       perCircuitToleranceTuning: false,
       matchThreshold: MATCH_THRESHOLD,
       matchRule: MATCH_RULE,
+      fineReference: FINE_REFERENCE_RULE,
       deterministicHashExcludes: ['environment', 'tools.node', 'ngspice.analyses', 'spiceTs.analyses'],
     },
     ...summarize(results),
@@ -567,8 +597,72 @@ export function renderMarkdown(report: CorpusFReport): string {
       return `| [${fixture.sourcePath}](fixtures/${fixture.sourcePath})${fixture.sameNameAs.length > 0 ? ' †' : ''} | ${fixture.ngspice.status} | ${fixture.spiceTs.status} | ${fixture.outcome} | ${fixture.worstNormalizedError ?? ''} | ${cell(fixture.worstSignal)} | ${cell(errors)} |`;
     }),
     '',
+    ...fineReferenceSection(report.fixtures.map(fixture => ({
+      label: `[${fixture.sourcePath}](fixtures/${fixture.sourcePath})`,
+      status: fixture.outcome,
+      fineReference: fixture.fineReference,
+    }))),
   ];
   return lines.join('\n');
+}
+
+/** A committed row whose headline compared a transient: the rows that carry the #592 column. */
+export function isTransientRow(fixture: FixtureOutcome): boolean {
+  return fixture.comparedAnalyses > 0
+    && fixture.ngspice.analyses.some(analysis => analysis.startsWith('tran:'))
+    && fixture.spiceTs.analyses.some(analysis => analysis.startsWith('tran:'));
+}
+
+/**
+ * Adds the fine-reference column (#592) to committed rows without regenerating the whole corpus.
+ * Every transient row is rerun with `run` (the corpus's own fixture child, which computes the
+ * column); its headline fields must equal the committed row through the hashed view, and only
+ * `fineReference` is copied in. Headline drift (a committed row that is stale against the current
+ * engines) aborts unless `acceptDrift` is set; then the drifted row is replaced by its rerun in
+ * full, so its headline and fine columns come from the same run, and the drift is returned so it
+ * can be published. Callers recompute totals from the returned rows.
+ */
+export async function withFineReference(
+  fixtures: FixtureOutcome[],
+  run: (id: string) => Promise<FixtureOutcome | { id: string; error: string }>,
+  jobs: number,
+  label: string,
+  acceptDrift = false,
+): Promise<{ fixtures: FixtureOutcome[]; drift: string[] }> {
+  const headline = (fixture: FixtureOutcome): string => {
+    const { fineReference: _fine, ...rest } = fixture;
+    return JSON.stringify(deterministicView({ fixtures: [rest] } as unknown as CorpusFReport));
+  };
+  const candidates = fixtures.map((fixture, index) => ({ fixture, index })).filter(({ fixture }) => isTransientRow(fixture));
+  const updated = [...fixtures];
+  const drift: string[] = [];
+  let next = 0;
+  let done = 0;
+  const worker = async (): Promise<void> => {
+    while (next < candidates.length) {
+      const { fixture, index } = candidates[next];
+      next += 1;
+      const result = await run(fixture.id);
+      if ('error' in result && !('outcome' in result)) throw new Error(`${fixture.id}: ${result.error}`);
+      const rerun = result as FixtureOutcome;
+      done += 1;
+      if (headline(rerun) !== headline(fixture)) {
+        drift.push(`${fixture.id} (committed ${fixture.outcome} ${fixture.worstNormalizedError} ${fixture.worstSignal}, rerun ${rerun.outcome} ${rerun.worstNormalizedError} ${rerun.worstSignal})`);
+        if (acceptDrift) updated[index] = rerun;
+      } else {
+        const { fineReference: _previous, ...rest } = fixture;
+        updated[index] = rerun.fineReference ? { ...rest, fineReference: rerun.fineReference } : rest;
+      }
+      process.stderr.write(`${label} --fine-reference: ${done}/${candidates.length} ${fixture.id} ${rerun.fineReference?.status ?? 'no column'}\n`);
+    }
+  };
+  await Promise.all(Array.from({ length: Math.max(1, jobs) }, worker));
+  drift.sort();
+  if (drift.length > 0 && !acceptDrift) {
+    throw new Error(`${label}: headline drift against the committed report; refresh it, or rerun with --accept-drift to replace the drifted rows: ${drift.join('; ')}`);
+  }
+  for (const line of drift) process.stderr.write(`${label} --fine-reference: refreshed stale row ${line}\n`);
+  return { fixtures: updated, drift };
 }
 
 export function stableReport(report: CorpusFReport): string {
@@ -615,6 +709,17 @@ async function main(): Promise<void> {
   const check = argv.includes('--check');
   const jobsIndex = argv.indexOf('--jobs');
   const jobs = jobsIndex >= 0 ? Number(argv[jobsIndex + 1]) : 6;
+  if (argv.includes('--fine-reference')) {
+    const committed = JSON.parse(await readFile(JSON_PATH, 'utf8')) as CorpusFReport;
+    const { fixtures } = await withFineReference(committed.fixtures, id => runChild(id, FIXTURE_CHILD_TIMEOUT_MS), jobs, 'corpus-f', argv.includes('--accept-drift'));
+    const { outcomeSha256: _previous, ...rest } = committed;
+    const base = { ...rest, policy: { ...rest.policy, fineReference: FINE_REFERENCE_RULE }, ...summarize(fixtures), fixtures };
+    const report = { ...base, outcomeSha256: outcomeDigest(base) };
+    await writeFile(JSON_PATH, stableReport(report));
+    await writeReadme(report);
+    process.stderr.write(`corpus-f --fine-reference: outcome ${report.outcomeSha256}\n`);
+    return;
+  }
   process.stderr.write(`corpus-f report${check ? ' --check' : ''}: pid ${process.pid}; stop with: kill ${process.pid}\n`);
   const manifest = JSON.parse(await readFile(MANIFEST_PATH, 'utf8')) as CorpusFManifest;
   const report = await buildReport(manifest, jobs);

@@ -51,6 +51,7 @@
     "perCircuitToleranceTuning": false,
     "matchThreshold": 0.01,
     "matchRule": "matched = both engines succeed, every spice-ts analysis has an ngspice counterpart, and for every common signal max|spice-ts - ngspice| <= 0.01 x max(peak |ngspice signal|, floor), with the corpus-f floor: 0.0001 V for node voltages, 1e-10 A for branch currents, 1e-12 otherwise. Errors are taken at spice-ts points with ngspice interpolated (transient breakpoint alignment as in the aggregate report).",
+    "fineReference": "Fine-step reference (#592): ngspice-47 runs the same deck with every active .tran card rewritten to TMAX_fine = min(TSTEP, (TSTOP - TSTART)/50, deck TMAX if given) / 10, i.e. the ngspice default step ceiling divided by 10; TSTEP, TSTOP, TSTART, UIC and every other card are unchanged. The rule is the same for every transient fixture. No reference is generated when the deck has no parsable .tran card outside .control, or when TSTOP/TMAX_fine exceeds 1000000 steps; the ngspice run is bounded at 600 s. Each default run (spice-ts, ngspice) is scored by the same procedure: at the reference's output points, with the default run linearly interpolated onto them, over the transient signals of the headline comparison, normalised by the reference peak with the same per-quantity floors. The headline's one-sided breakpoint alignment applies at every default-run time point within ngspice's breakpoint merge distance (CKTminBreak = 0.00005 x TMAX_fine) of a reference time point; the headline matches breakpoints bit for bit, which here would favour ngspice, whose default run lands on its own reference's breakpoint times exactly while spice-ts's land a few ulps away. This charges each engine for its own published waveform, so a coarse output grid counts against whichever engine produced it. Status (matched/mismatch) is defined by the headline column only. One fine reference is not a convergence proof, and neither column is an accuracy ranking of the engines.",
     "deterministicHashExcludes": [
       "environment",
       "tools.node",
@@ -66,15 +67,15 @@
       "unsupported": 0
     },
     "spiceTs": {
-      "success": 19,
+      "success": 20,
       "failed": 1,
-      "unsupported": 5
+      "unsupported": 4
     },
     "outcomes": {
-      "matched": 18,
+      "matched": 19,
       "mismatch": 1,
       "not-compared": 0,
-      "spice-ts-loss": 6,
+      "spice-ts-loss": 5,
       "ngspice-failed": 0,
       "both-failed": 0
     },
@@ -88,10 +89,10 @@
         "both-failed": 0
       },
       "vacask": {
-        "matched": 10,
+        "matched": 11,
         "mismatch": 1,
         "not-compared": 0,
-        "spice-ts-loss": 1,
+        "spice-ts-loss": 0,
         "ngspice-failed": 0,
         "both-failed": 0
       }
@@ -118,15 +119,6 @@
         "esim-examples-fulladder-half-adder-cir-out"
       ],
       "issue": "https://github.com/mfiumara/spice-ts/issues/838"
-    },
-    {
-      "bucket": "expression: bare .param names as R/C/L values (R1 a b rval)",
-      "fixtures": 1,
-      "ngspiceSuccess": 1,
-      "ids": [
-        "vacask-test-spice-subckt-cir"
-      ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/837"
     }
   ],
   "fixtures": [
@@ -148,7 +140,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 45: XSPICE code model 'd_jkff' (.model 'u3') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inverter,"
+        "firstErrorLine": "Parse error at line 45: XSPICE code model 'd_jkff' (.model 'u3') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, adc_bridge, dac_bridge, d_buffer, d_"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -183,7 +175,25 @@
       "worstNormalizedError": 2e-12,
       "worstSignal": "tran v(out)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "6e-8"
+        ],
+        "headline": {
+          "worst": 2e-12,
+          "signal": "v(out)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.964,
+          "signal": "v(out)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.964,
+          "signal": "v(out)"
+        }
+      }
     },
     {
       "id": "esim-examples-fulladder-half-adder-cir-out",
@@ -258,7 +268,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 30: XSPICE code model 'd_jkff' (.model 'u9') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inverter,"
+        "firstErrorLine": "Parse error at line 30: XSPICE code model 'd_jkff' (.model 'u9') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, adc_bridge, dac_bridge, d_buffer, d_"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -349,7 +359,25 @@
       "worstNormalizedError": 1.45e-14,
       "worstSignal": "tran i(v1)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "0.0002"
+        ],
+        "headline": {
+          "worst": 1.45e-14,
+          "signal": "i(v1)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.00323,
+          "signal": "i(v1)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.00323,
+          "signal": "i(v1)"
+        }
+      }
     },
     {
       "id": "esim-examples-rl-rl-cir-out",
@@ -377,7 +405,25 @@
       "worstNormalizedError": 1.44e-14,
       "worstSignal": "tran v(out)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "0.0002"
+        ],
+        "headline": {
+          "worst": 1.44e-14,
+          "signal": "v(out)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.00323,
+          "signal": "v(out)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.00323,
+          "signal": "v(out)"
+        }
+      }
     },
     {
       "id": "esim-examples-rlc-rlc-cir-out",
@@ -405,7 +451,25 @@
       "worstNormalizedError": 2.26e-13,
       "worstSignal": "tran i(v1)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "0.0002"
+        ],
+        "headline": {
+          "worst": 2.26e-13,
+          "signal": "i(v1)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.0771,
+          "signal": "i(v1)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.0771,
+          "signal": "i(v1)"
+        }
+      }
     },
     {
       "id": "esim-examples-series-resonance-series-resonance-cir-out",
@@ -453,7 +517,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 13: XSPICE code model 'lcouple' (.model 'u1_primary') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_"
+        "firstErrorLine": "Parse error at line 13: XSPICE code model 'lcouple' (.model 'u1_primary') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, adc_bridge, dac_bridge, d_b"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -480,7 +544,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 11: XSPICE code model 'zener' (.model 'u1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inverter, "
+        "firstErrorLine": "Parse error at line 11: XSPICE code model 'zener' (.model 'u1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, adc_bridge, dac_bridge, d_buffer, d_i"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -515,7 +579,20 @@
       "worstNormalizedError": 2.1e-7,
       "worstSignal": "tran i(vs)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "unavailable",
+        "tmax": [
+          "1e-7"
+        ],
+        "reason": "TSTOP/TMAX_fine = 10000000 steps exceeds the 1000000-step budget",
+        "headline": {
+          "worst": 2.1e-7,
+          "signal": "i(vs)"
+        },
+        "spiceTsVsFine": null,
+        "ngspiceDefaultVsFine": null
+      }
     },
     {
       "id": "vacask-benchmark-mul-xyce-runme-sim",
@@ -543,7 +620,20 @@
       "worstNormalizedError": 0.000563,
       "worstSignal": "tran i(vs)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "unavailable",
+        "tmax": [
+          "1e-9"
+        ],
+        "reason": "TSTOP/TMAX_fine = 5000000 steps exceeds the 1000000-step budget",
+        "headline": {
+          "worst": 0.000563,
+          "signal": "i(vs)"
+        },
+        "spiceTsVsFine": null,
+        "ngspiceDefaultVsFine": null
+      }
     },
     {
       "id": "vacask-benchmark-rc-xyce-runme-sim",
@@ -571,7 +661,20 @@
       "worstNormalizedError": 1.11e-10,
       "worstSignal": "tran i(vs)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "unavailable",
+        "tmax": [
+          "1e-7"
+        ],
+        "reason": "TSTOP/TMAX_fine = 10000000 steps exceeds the 1000000-step budget",
+        "headline": {
+          "worst": 1.11e-10,
+          "signal": "i(vs)"
+        },
+        "spiceTsVsFine": null,
+        "ngspiceDefaultVsFine": null
+      }
     },
     {
       "id": "vacask-benchmark-vadistiller-bjtring-xyce-runme-sim",
@@ -599,7 +702,20 @@
       "worstNormalizedError": 2.19,
       "worstSignal": "tran v(3)",
       "outcome": "mismatch",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "unavailable",
+        "tmax": [
+          "1e-10"
+        ],
+        "reason": "TSTOP/TMAX_fine = 10000000 steps exceeds the 1000000-step budget",
+        "headline": {
+          "worst": 2.19,
+          "signal": "v(3)"
+        },
+        "spiceTsVsFine": null,
+        "ngspiceDefaultVsFine": null
+      }
     },
     {
       "id": "vacask-test-spice-cccs-cir",
@@ -627,7 +743,25 @@
       "worstNormalizedError": 0,
       "worstSignal": "tran i(vin)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "1e-7"
+        ],
+        "headline": {
+          "worst": 0,
+          "signal": "i(vin)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0,
+          "signal": "i(vin)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0,
+          "signal": "i(vin)"
+        }
+      }
     },
     {
       "id": "vacask-test-spice-diode-cir",
@@ -655,7 +789,25 @@
       "worstNormalizedError": 0.000193,
       "worstSignal": "tran v(2)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "0.000001"
+        ],
+        "headline": {
+          "worst": 0.000193,
+          "signal": "v(2)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.00539,
+          "signal": "i(vin)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.00539,
+          "signal": "v(2)"
+        }
+      }
     },
     {
       "id": "vacask-test-spice-mos-cir",
@@ -683,7 +835,25 @@
       "worstNormalizedError": 0.0000617,
       "worstSignal": "tran i(vin)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "1e-7"
+        ],
+        "headline": {
+          "worst": 0.0000617,
+          "signal": "i(vin)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.783,
+          "signal": "i(vin)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.783,
+          "signal": "i(vin)"
+        }
+      }
     },
     {
       "id": "vacask-test-spice-rc-cir",
@@ -711,7 +881,25 @@
       "worstNormalizedError": 1.1e-12,
       "worstSignal": "tran i(v1)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "1e-7"
+        ],
+        "headline": {
+          "worst": 1.1e-12,
+          "signal": "i(v1)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.0000139,
+          "signal": "v(2)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.0000139,
+          "signal": "v(2)"
+        }
+      }
     },
     {
       "id": "vacask-test-spice-regressions-cir",
@@ -739,7 +927,25 @@
       "worstNormalizedError": 2.81e-12,
       "worstSignal": "tran v(out)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "1e-9"
+        ],
+        "headline": {
+          "worst": 2.81e-12,
+          "signal": "v(out)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.0342,
+          "signal": "v(out)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.0342,
+          "signal": "v(out)"
+        }
+      }
     },
     {
       "id": "vacask-test-spice-subckt-cir",
@@ -757,16 +963,35 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Capacitor 'X1.C1' references unknown model 'cval'"
+        "status": "success",
+        "analyses": [
+          "tran:10022"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "expression: bare .param names as R/C/L values (R1 a b rval)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 3,
+      "worstNormalizedError": 8.67e-13,
+      "worstSignal": "tran v(in)",
+      "outcome": "matched",
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "1e-7"
+        ],
+        "headline": {
+          "worst": 8.67e-13,
+          "signal": "v(in)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.0000115,
+          "signal": "v(out1)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.0000115,
+          "signal": "v(out1)"
+        }
+      }
     },
     {
       "id": "vacask-test-spice-vcvs-cir",
@@ -794,7 +1019,25 @@
       "worstNormalizedError": 8.98e-15,
       "worstSignal": "tran v(1)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "1e-7"
+        ],
+        "headline": {
+          "worst": 8.98e-15,
+          "signal": "v(1)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.00000493,
+          "signal": "v(2)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.00000493,
+          "signal": "i(e1)"
+        }
+      }
     },
     {
       "id": "vacask-test-spice-warnonly-cir",
@@ -822,8 +1065,26 @@
       "worstNormalizedError": 1.78e-16,
       "worstSignal": "tran v(mid)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "1e-7"
+        ],
+        "headline": {
+          "worst": 1.78e-16,
+          "signal": "v(mid)"
+        },
+        "spiceTsVsFine": {
+          "worst": 1.78e-16,
+          "signal": "v(mid)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 3.47e-16,
+          "signal": "i(l2)"
+        }
+      }
     }
   ],
-  "outcomeSha256": "3a9364fd4ef021c6295604aa9f9d271aa0526ff2d7bb3e79128ab54949602a46"
+  "outcomeSha256": "c061bb6cf290a4935ae0e5e970a5388adef16a5de57aef322231ba29a4e662d9"
 }

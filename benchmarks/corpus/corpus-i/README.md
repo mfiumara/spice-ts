@@ -6,16 +6,16 @@ Every deck below is byte-identical to its pinned upstream revision (esim `1a25a4
 
 ## Totals
 
-- Fixtures: 25. Outcome SHA-256: `3a9364fd4ef021c6295604aa9f9d271aa0526ff2d7bb3e79128ab54949602a46`.
+- Fixtures: 25. Outcome SHA-256: `c061bb6cf290a4935ae0e5e970a5388adef16a5de57aef322231ba29a4e662d9`.
 - ngspice (ngspice-47): 25 success, 0 failed, 0 unsupported.
-- spice-ts (0.3.0): 19 success, 1 failed, 5 unsupported.
-- Outcomes: matched 18, mismatch 1, not-compared 0, spice-ts-loss 6, ngspice-failed 0, both-failed 0.
-- Of the 25 decks ngspice runs successfully, spice-ts matches 18, mismatches 1, produces no comparable result for 0 and fails 6.
+- spice-ts (0.3.0): 20 success, 1 failed, 4 unsupported.
+- Outcomes: matched 19, mismatch 1, not-compared 0, spice-ts-loss 5, ngspice-failed 0, both-failed 0.
+- Of the 25 decks ngspice runs successfully, spice-ts matches 19, mismatches 1, produces no comparable result for 0 and fails 5.
 
 | Source | Fixtures | Matched | Mismatch | Not compared | spice-ts loss | ngspice failed | Both failed |
 |---|---|---|---|---|---|---|---|
 | `esim` | 13 | 8 | 0 | 0 | 5 | 0 | 0 |
-| `vacask` | 12 | 10 | 1 | 0 | 1 | 0 | 0 |
+| `vacask` | 12 | 11 | 1 | 0 | 0 | 0 | 0 |
 
 ## Method
 
@@ -40,23 +40,21 @@ Grouped from spice-ts's own first error line (corpus-i rules, then corpus-h, cor
 |---|---|---|---|
 | device: XSPICE code models not yet implemented (d_jkff, lcouple, zener, ...) | 4 | 4 | https://github.com/mfiumara/spice-ts/issues/553 |
 | analysis: .ac with XSPICE event-driven digital instances | 1 | 1 | https://github.com/mfiumara/spice-ts/issues/838 |
-| expression: bare .param names as R/C/L values (R1 a b rval) | 1 | 1 | https://github.com/mfiumara/spice-ts/issues/837 |
 
-## Losses (7)
+## Losses (6)
 
 Every fixture that is not matched: spice-ts failures, mismatches above the threshold, and results that could not be compared.
 
 | Fixture | ngspice | spice-ts | Outcome | Worst | Worst signal | First error line (ngspice / spice-ts) |
 |---|---|---|---|---|---|---|
-| [esim/Examples/4_bit_JK_ff/4_bit_JK_ff.cir.out](fixtures/esim/Examples/4_bit_JK_ff/4_bit_JK_ff.cir.out) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 45: XSPICE code model 'd_jkff' (.model 'u3') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inverter, |
+| [esim/Examples/4_bit_JK_ff/4_bit_JK_ff.cir.out](fixtures/esim/Examples/4_bit_JK_ff/4_bit_JK_ff.cir.out) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 45: XSPICE code model 'd_jkff' (.model 'u3') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, adc_bridge, dac_bridge, d_buffer, d_ |
 | [esim/Examples/FullAdder/half_adder.cir.out](fixtures/esim/Examples/FullAdder/half_adder.cir.out) | success | failed | spice-ts-loss |  |  | spice-ts: XSPICE event-driven instance 'a1' (d_xor) is supported in .op and .tran only, not .ac |
-| [esim/Examples/JK_Flipflop/JK_Flipflop.cir.out](fixtures/esim/Examples/JK_Flipflop/JK_Flipflop.cir.out) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 30: XSPICE code model 'd_jkff' (.model 'u9') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inverter, |
-| [esim/Examples/Transformer/Transformer.cir.out](fixtures/esim/Examples/Transformer/Transformer.cir.out) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 13: XSPICE code model 'lcouple' (.model 'u1_primary') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_ |
-| [esim/Examples/Zener_Characteristic/Zener_Characteristic.cir.out](fixtures/esim/Examples/Zener_Characteristic/Zener_Characteristic.cir.out) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 11: XSPICE code model 'zener' (.model 'u1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inverter,  |
+| [esim/Examples/JK_Flipflop/JK_Flipflop.cir.out](fixtures/esim/Examples/JK_Flipflop/JK_Flipflop.cir.out) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 30: XSPICE code model 'd_jkff' (.model 'u9') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, adc_bridge, dac_bridge, d_buffer, d_ |
+| [esim/Examples/Transformer/Transformer.cir.out](fixtures/esim/Examples/Transformer/Transformer.cir.out) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 13: XSPICE code model 'lcouple' (.model 'u1_primary') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, adc_bridge, dac_bridge, d_b |
+| [esim/Examples/Zener_Characteristic/Zener_Characteristic.cir.out](fixtures/esim/Examples/Zener_Characteristic/Zener_Characteristic.cir.out) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 11: XSPICE code model 'zener' (.model 'u1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, adc_bridge, dac_bridge, d_buffer, d_i |
 | [vacask/benchmark/vadistiller/bjtring/xyce/runme.sim](fixtures/vacask/benchmark/vadistiller/bjtring/xyce/runme.sim) | success | success | mismatch | 2.19 | tran v(3) |  |
-| [vacask/test/spice_subckt.cir](fixtures/vacask/test/spice_subckt.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Capacitor 'X1.C1' references unknown model 'cval' |
 
-## Wins (18)
+## Wins (19)
 
 Fixtures where spice-ts matches ngspice-47 within the uniform threshold on every common signal.
 
@@ -78,5 +76,31 @@ Fixtures where spice-ts matches ngspice-47 within the uniform threshold on every
 | [vacask/test/spice_mos.cir](fixtures/vacask/test/spice_mos.cir) | success | success | matched | 0.0000617 | tran i(vin) |  |
 | [vacask/test/spice_rc.cir](fixtures/vacask/test/spice_rc.cir) | success | success | matched | 1.1e-12 | tran i(v1) |  |
 | [vacask/test/spice_regressions.cir](fixtures/vacask/test/spice_regressions.cir) | success | success | matched | 2.81e-12 | tran v(out) |  |
+| [vacask/test/spice_subckt.cir](fixtures/vacask/test/spice_subckt.cir) | success | success | matched | 8.67e-13 | tran v(in) |  |
 | [vacask/test/spice_vcvs.cir](fixtures/vacask/test/spice_vcvs.cir) | success | success | matched | 8.98e-15 | tran v(1) |  |
 | [vacask/test/spice_warnonly.cir](fixtures/vacask/test/spice_warnonly.cir) | success | success | matched | 1.78e-16 | tran v(mid) |  |
+
+## Transient fine-step reference (#592)
+
+- Fine-step reference (#592): ngspice-47 runs the same deck with every active .tran card rewritten to TMAX_fine = min(TSTEP, (TSTOP - TSTART)/50, deck TMAX if given) / 10, i.e. the ngspice default step ceiling divided by 10; TSTEP, TSTOP, TSTART, UIC and every other card are unchanged. The rule is the same for every transient fixture. No reference is generated when the deck has no parsable .tran card outside .control, or when TSTOP/TMAX_fine exceeds 1000000 steps; the ngspice run is bounded at 600 s. Each default run (spice-ts, ngspice) is scored by the same procedure: at the reference's output points, with the default run linearly interpolated onto them, over the transient signals of the headline comparison, normalised by the reference peak with the same per-quantity floors. The headline's one-sided breakpoint alignment applies at every default-run time point within ngspice's breakpoint merge distance (CKTminBreak = 0.00005 x TMAX_fine) of a reference time point; the headline matches breakpoints bit for bit, which here would favour ngspice, whose default run lands on its own reference's breakpoint times exactly while spice-ts's land a few ulps away. This charges each engine for its own published waveform, so a coarse output grid counts against whichever engine produced it. Status (matched/mismatch) is defined by the headline column only. One fine reference is not a convergence proof, and neither column is an accuracy ranking of the engines.
+- One fine reference is not a convergence proof: it is one more discretisation of the same circuit by the same engine. These columns are diagnostics of grid sensitivity, not an accuracy ranking and not a claim that either engine is more accurate. Status stays defined by the headline column.
+- Transient rows: 16; fine reference compared for 12, unavailable for 4. Above 0.01 among compared rows: headline (transient signals) 0, spice-ts vs fine 4, ngspice default vs fine 4.
+
+| Fixture | Status (headline) | Headline tran worst (vs ngspice default) | spice-ts vs fine | ngspice default vs fine | Fine TMAX | Note |
+|---|---|---|---|---|---|---|
+| [esim/Examples/BasicGates/BasicGates.cir.out](fixtures/esim/Examples/BasicGates/BasicGates.cir.out) | matched | 2e-12 (v(out)) | 0.964 (v(out)) | 0.964 (v(out)) | 6e-8 |  |
+| [esim/Examples/RC/RC.cir.out](fixtures/esim/Examples/RC/RC.cir.out) | matched | 1.45e-14 (i(v1)) | 0.00323 (i(v1)) | 0.00323 (i(v1)) | 0.0002 |  |
+| [esim/Examples/RL/RL.cir.out](fixtures/esim/Examples/RL/RL.cir.out) | matched | 1.44e-14 (v(out)) | 0.00323 (v(out)) | 0.00323 (v(out)) | 0.0002 |  |
+| [esim/Examples/RLC/RLC.cir.out](fixtures/esim/Examples/RLC/RLC.cir.out) | matched | 2.26e-13 (i(v1)) | 0.0771 (i(v1)) | 0.0771 (i(v1)) | 0.0002 |  |
+| [vacask/benchmark/graetz/xyce/runme.sim](fixtures/vacask/benchmark/graetz/xyce/runme.sim) | matched | 2.1e-7 (i(vs)) |  |  | 1e-7 | TSTOP/TMAX_fine = 10000000 steps exceeds the 1000000-step budget |
+| [vacask/benchmark/mul/xyce/runme.sim](fixtures/vacask/benchmark/mul/xyce/runme.sim) | matched | 0.000563 (i(vs)) |  |  | 1e-9 | TSTOP/TMAX_fine = 5000000 steps exceeds the 1000000-step budget |
+| [vacask/benchmark/rc/xyce/runme.sim](fixtures/vacask/benchmark/rc/xyce/runme.sim) | matched | 1.11e-10 (i(vs)) |  |  | 1e-7 | TSTOP/TMAX_fine = 10000000 steps exceeds the 1000000-step budget |
+| [vacask/benchmark/vadistiller/bjtring/xyce/runme.sim](fixtures/vacask/benchmark/vadistiller/bjtring/xyce/runme.sim) | mismatch | 2.19 (v(3)) |  |  | 1e-10 | TSTOP/TMAX_fine = 10000000 steps exceeds the 1000000-step budget |
+| [vacask/test/spice_cccs.cir](fixtures/vacask/test/spice_cccs.cir) | matched | 0 (i(vin)) | 0 (i(vin)) | 0 (i(vin)) | 1e-7 |  |
+| [vacask/test/spice_diode.cir](fixtures/vacask/test/spice_diode.cir) | matched | 0.000193 (v(2)) | 0.00539 (i(vin)) | 0.00539 (v(2)) | 0.000001 |  |
+| [vacask/test/spice_mos.cir](fixtures/vacask/test/spice_mos.cir) | matched | 0.0000617 (i(vin)) | 0.783 (i(vin)) | 0.783 (i(vin)) | 1e-7 |  |
+| [vacask/test/spice_rc.cir](fixtures/vacask/test/spice_rc.cir) | matched | 1.1e-12 (i(v1)) | 0.0000139 (v(2)) | 0.0000139 (v(2)) | 1e-7 |  |
+| [vacask/test/spice_regressions.cir](fixtures/vacask/test/spice_regressions.cir) | matched | 2.81e-12 (v(out)) | 0.0342 (v(out)) | 0.0342 (v(out)) | 1e-9 |  |
+| [vacask/test/spice_subckt.cir](fixtures/vacask/test/spice_subckt.cir) | matched | 8.67e-13 (v(in)) | 0.0000115 (v(out1)) | 0.0000115 (v(out1)) | 1e-7 |  |
+| [vacask/test/spice_vcvs.cir](fixtures/vacask/test/spice_vcvs.cir) | matched | 8.98e-15 (v(1)) | 0.00000493 (v(2)) | 0.00000493 (i(e1)) | 1e-7 |  |
+| [vacask/test/spice_warnonly.cir](fixtures/vacask/test/spice_warnonly.cir) | matched | 1.78e-16 (v(mid)) | 1.78e-16 (v(mid)) | 3.47e-16 (i(l2)) | 1e-7 |  |
