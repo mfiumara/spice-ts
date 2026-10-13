@@ -3,7 +3,6 @@ import { parseNumber } from './tokenizer.js';
 import {
   NGSPICE_XSPICE_CODE_MODELS,
   XSPICE_CODE_MODEL_SPECS,
-  type XspiceCodeModelSpec,
   type XspiceParamSpec,
   type XspiceParamValue,
 } from '../devices/xspice/spec.js';
@@ -271,9 +270,4 @@ function clampToLimits(
     }
     return v;
   });
-}
-
-/** Implemented code model spec for a parsed card. */
-export function xspiceSpecFor(model: XspiceModelCard): XspiceCodeModelSpec {
-  return XSPICE_CODE_MODEL_SPECS.get(model.codeModel)!;
 }

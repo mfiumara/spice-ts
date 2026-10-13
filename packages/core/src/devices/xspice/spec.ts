@@ -12,11 +12,6 @@ export type XspiceAnalogPortType = 'v' | 'vd' | 'i' | 'id' | 'vnam' | 'g' | 'gd'
 /** Port types spice-ts resolves: the analog ones plus the event-driven digital `%d`. */
 export type XspicePortType = XspiceAnalogPortType | 'd';
 
-/** Every port type the XSPICE grammar accepts after a `%`. */
-export const XSPICE_PORT_TYPES: ReadonlySet<string> = new Set([
-  'v', 'vd', 'i', 'id', 'vnam', 'g', 'gd', 'h', 'hd', 'd',
-]);
-
 export interface XspiceConnectionSpec {
   readonly name: string;
   readonly direction: 'in' | 'out' | 'inout';
@@ -345,11 +340,6 @@ const DAC_BRIDGE: XspiceCodeModelSpec = {
     real('t_rise', 1e-9, { limits: [1e-12, undefined] }), real('t_fall', 1e-9, { limits: [1e-12, undefined] }),
   ],
 };
-
-/** Implemented event-driven (digital) code models and node bridges. */
-export const XSPICE_DIGITAL_CODE_MODELS: ReadonlySet<string> = new Set([
-  'adc_bridge', 'dac_bridge', 'd_buffer', 'd_inverter', 'd_and', 'd_nand', 'd_or', 'd_nor', 'd_xor', 'd_xnor',
-]);
 
 /** Implemented code models keyed by lower-case ngspice Spice_Model_Name. */
 export const XSPICE_CODE_MODEL_SPECS: ReadonlyMap<string, XspiceCodeModelSpec> = new Map(

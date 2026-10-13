@@ -72,11 +72,6 @@ export interface VBICTemperatureState {
   PS: number;
 }
 
-/** Thermal voltage kT/q of a device at `temperature` degrees Celsius. */
-export function vbicThermalVoltage(temperature: number): number {
-  return BOLTZMANN * (CELSIUS_TO_KELVIN + temperature) / CHARGE;
-}
-
 /** Map the bounded VBIC parameters from TNOM to `temperature` (degrees Celsius). */
 export function resolveVBICTemperature(
   params: VBICTemperatureInput,
