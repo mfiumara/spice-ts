@@ -3,6 +3,7 @@ import type { MNAAssembler } from '../mna/assembler.js';
 import type { DCConvergenceTelemetry, ResolvedOptions } from '../types.js';
 import { ConvergenceError } from '../errors.js';
 import { MOSFET } from '../devices/mosfet.js';
+import { BehavioralSource } from '../devices/behavioral-source.js';
 import { stampStaticDevices } from '../mna/linear-stamp.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 
@@ -75,6 +76,14 @@ export function newtonRaphson(
   let otherDevices: DeviceModel[] | null = null;
   const selfLimiting = devices.filter(device => device.limitedLastStamp !== undefined);
   const convergenceTested = devices.filter(device => device.convergenceTest !== undefined);
+  const behavioral = devices.filter((device): device is BehavioralSource => device instanceof BehavioralSource);
+  let certifiedOverflow = false;
+  const acceptOverflow = behavioral.length > 0
+    ? (candidate: Float64Array) => {
+      certifiedOverflow = behavioral.some(device => device.hasInfiniteValueAtFiniteControls(candidate));
+      return certifiedOverflow;
+    }
+    : undefined;
   // The iterate two solves back, to recognise a rounding-floor two-cycle.
   const twoBack = convergenceTested.length > 0 ? new Float64Array(assembler.solution.length) : undefined;
 
@@ -124,7 +133,9 @@ export function newtonRaphson(
 
     const solver = assembler.getSparseSolver();
     solver.factorize(assembler.getCscMatrix());
-    const x = solver.solve(new Float64Array(assembler.b));
+    const previousOverflow = certifiedOverflow;
+    certifiedOverflow = false;
+    const x = solver.solve(new Float64Array(assembler.b), acceptOverflow);
     applyDeviceStepLimits(devices, assembler.prevSolution, x);
     assembler.solution.set(x);
 
@@ -138,6 +149,11 @@ export function newtonRaphson(
         || (iter >= 2 && isRoundingFloorCycle(assembler.solution, assembler.prevSolution, twoBack!, assembler.numNodes))
       )
     ) {
+      // A certified infinite expression yields inf - inf in the next affine
+      // stamp. ngspice reports CKTrhsOld (the linearisation point), not that
+      // NaN solve (#847). Keep that certified point only on this exceptional
+      // path; finite solves retain the project's converged-solve convention.
+      if (previousOverflow) assembler.solution.set(assembler.prevSolution);
       if (telemetry) {
         telemetry.newtonIterations += iter + 1;
         telemetry.acceptedSolves++;

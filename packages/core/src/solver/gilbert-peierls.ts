@@ -1012,7 +1012,7 @@ export class GilbertPeierlsSolver implements SparseSolver {
     this.uValues = values;
   }
 
-  solve(b: Float64Array): Float64Array {
+  solve(b: Float64Array, acceptOverflow?: (candidate: Float64Array) => boolean): Float64Array {
     if (!this.factorized) {
       throw new Error('Must call factorize before solve');
     }
@@ -1053,6 +1053,7 @@ export class GilbertPeierlsSolver implements SparseSolver {
     // longer read once y = Pb is formed. Reusing it as x avoids allocating
     // another n-element vector for every Newton solve.
     const x = b;
+    let overflowColumn = -1;
     for (let j = n - 1; j >= 0; j--) {
       // Numeric factorization appends each U diagonal after every off-diagonal
       // entry in its column, so the column end already identifies the pivot.
@@ -1065,7 +1066,10 @@ export class GilbertPeierlsSolver implements SparseSolver {
       // evaluates to +inf at the all-zero first iterate, then Newton moves
       // on from the finite entries; #891), so it passes through.
       if (finiteRhs && zj - zj !== 0) {
-        throw SingularMatrixError.atPivot(colPerm[j], this.variables);
+        if (acceptOverflow === undefined) {
+          throw SingularMatrixError.atPivot(colPerm[j], this.variables);
+        }
+        if (overflowColumn < 0) overflowColumn = colPerm[j];
       }
       x[colPerm[j]] = zj;
       for (let p = uColPtr[j]; p < uColPtr[j + 1]; p++) {
@@ -1076,6 +1080,11 @@ export class GilbertPeierlsSolver implements SparseSolver {
       }
     }
 
+    // Complete substitution before certification so Newton can evaluate the
+    // device expression at the candidate's finite controls, not at the RHS.
+    if (overflowColumn >= 0 && !acceptOverflow!(x)) {
+      throw SingularMatrixError.atPivot(overflowColumn, this.variables);
+    }
     return x;
   }
 }

@@ -1,0 +1,113 @@
+{
+  "environment": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "release": "27.0.0",
+    "node": "v22.23.1"
+  },
+  "modulePath": "/Users/mattiafiumara/.hermes/kanban/boards/spice-ts/workspaces/t_07641651/baseline-899/packages/core/src/simulate.ts",
+  "ngspiceVersion": "******\n** ngspice-47 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2026, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n******\n",
+  "note": "Single-run timings include ngspice process startup and spice-ts in-process first-call overhead; not a speed comparison. Infinity is compared by sign, not RMS arithmetic.",
+  "rows": [
+    {
+      "name": "positive",
+      "deck": "overflow\nV1 in 0 400\nB2 n2 0 V = V(in)*1e307\nR2 n2 0 1k\n.op\n.end\n",
+      "sha256": "e65cf4e3d53f94bda23715c75c55137d45b1bf2a8f7e213d26a2aff8769b1ee4",
+      "ngspice": {
+        "exit": 0,
+        "values": [
+          400,
+          "Infinity",
+          "-Infinity"
+        ],
+        "ms": 15.893707999999947
+      },
+      "spiceTs": {
+        "error": "SingularMatrixError: Singular matrix: zero pivot at matrix column 1 (nodes: n2)",
+        "ms": 11.903500000000008
+      },
+      "match": false
+    },
+    {
+      "name": "negative",
+      "deck": "overflow\nV1 in 0 -400\nB2 n2 0 V = V(in)*1e307\nR2 n2 0 1k\n.op\n.end\n",
+      "sha256": "3f4ccc76b992fcc97a3db083c79a7dc4cd7393abd5e145fff6f315057192a3c5",
+      "ngspice": {
+        "exit": 0,
+        "values": [
+          -400,
+          "-Infinity",
+          "Infinity"
+        ],
+        "ms": 14.88474999999994
+      },
+      "spiceTs": {
+        "error": "SingularMatrixError: Singular matrix: zero pivot at matrix column 1 (nodes: n2)",
+        "ms": 3.3609590000000935
+      },
+      "match": false
+    },
+    {
+      "name": "finite",
+      "deck": "overflow\nV1 in 0 10\nB2 n2 0 V = V(in)*1e307\nR2 n2 0 1k\n.op\n.end\n",
+      "sha256": "570215f8ba6107f73ef1da15d9935c5d5c53651c653045eebac2b312d7b564cf",
+      "ngspice": {
+        "exit": 0,
+        "values": [
+          10,
+          1e+308,
+          -1e+305
+        ],
+        "ms": 14.851332999999954
+      },
+      "spiceTs": {
+        "values": [
+          10,
+          1e+308,
+          -1e+305
+        ],
+        "error": null,
+        "ms": 2.2706249999999955
+      },
+      "match": true
+    },
+    {
+      "name": "bounded",
+      "deck": "overflow\nV1 in 0 400\nB2 n2 0 V = tanh(V(in)*1e307)\nR2 n2 0 1k\n.op\n.end\n",
+      "sha256": "4f37de7a278275788f0c33045717523d3daf86012fba455504b3e289e4aef944",
+      "ngspice": {
+        "exit": 0,
+        "values": [
+          400,
+          1,
+          -0.001
+        ],
+        "ms": 14.052749999999946
+      },
+      "spiceTs": {
+        "values": [
+          400,
+          1,
+          -0.001
+        ],
+        "error": null,
+        "ms": 1.624541000000022
+      },
+      "match": true
+    },
+    {
+      "name": "conflict",
+      "deck": "overflow\nV1 in 0 400\nB2 n2 0 V = V(in)*1e307\nV2 n2 0 1\nR2 n2 0 1k\n.op\n.end\n",
+      "sha256": "f73fe68f3b8877ec3aa2fa3293cb9e9f354055c525c4c48df7d7050b7b0a75de",
+      "ngspice": {
+        "exit": 1,
+        "ms": 14.579166999999984
+      },
+      "spiceTs": {
+        "error": "SingularMatrixError: Singular matrix: zero pivot at matrix column 4 (nodes: ; branches: V2)",
+        "ms": 1.3567500000000337
+      },
+      "match": true
+    }
+  ]
+}
