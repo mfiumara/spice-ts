@@ -3,6 +3,11 @@
 This file records the provenance and redistribution decision for benchmark fixtures.
 The machine-readable catalogue is `benchmarks/corpus/ngspice/manifest.json`.
 
+## X-call RHS continuation remediation (#797 / PR955)
+
+- `benchmarks/comma-numparam-fix-797/rhs-continuation/*.cir` are original project-authored OP probes, MIT (repository `LICENSE`), for https://github.com/mfiumara/spice-ts/issues/797 and https://github.com/mfiumara/spice-ts/pull/955. No third-party decks are copied.
+- `run.py before` / `run.py after`, under `spice-heavy`, retain same-byte SHA-256 hashes, ngspice-47 raw OP data, native values/errors and fixed shared-node error metrics. The after phase also reruns all 20 unchanged legacy inputs with their existing provenance. Earlier receipts are immutable; no speed claim or per-circuit settings.
+
 ## B-source finite-Jacobian overflow probes (#899)
 
 - Source: original project-authored netlists in `benchmarks/bsource-overflow-899/compare.ts`, MIT (repository `LICENSE`); https://github.com/mfiumara/spice-ts/issues/899. No third-party circuit or source code is redistributed.

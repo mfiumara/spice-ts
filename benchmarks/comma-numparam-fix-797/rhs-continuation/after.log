@@ -1,0 +1,33 @@
+spice-heavy: all 2 heavy slots busy, waiting...
+spice-heavy: got slot 0
+top-numeric reference {'v(o)': 5.0} native {'v(o)': 5}
+top-bare reference {'v(o)': 5.0} native {'v(o)': 5}
+top-braced reference {'v(o)': 5.0} native {'v(o)': 5}
+top-quoted reference {'v(o)': 5.0} native {'v(o)': 5}
+top-comments reference {'v(o)': 5.0} native {'v(o)': 5}
+nested-numeric reference {'v(o)': 5.0} native {'v(o)': 5}
+nested-bare reference {'v(o)': 5.0} native {'v(o)': 5}
+nested-braced reference {'v(o)': 5.0} native {'v(o)': 5}
+nested-quoted reference {'v(o)': 5.0} native {'v(o)': 5}
+nested-comments reference {'v(o)': 5.0} native {'v(o)': 5}
+issue-1 reference None native Subcircuit positional assignment: ; sign expected
+issue-2 reference {'v(o)': 211.0} native {'v(o)': 211}
+issue-3 reference None native Subcircuit positional assignment: ; sign expected
+issue-4 reference {'v(o)': 231.0} native {'v(o)': 231}
+issue-5 reference None native Subcircuit positional assignment: ; sign expected
+issue-6 reference {'v(o)': 211.0} native {'v(o)': 211}
+issue-7 reference {'v(o)': 211.0} native {'v(o)': 211}
+defaults reference {'v(o)': 111.0} native {'v(o)': 111}
+plain-whitespace reference {'v(o)': 234.0} native {'v(o)': 234}
+braced-whitespace reference {'v(o)': 234.0} native {'v(o)': 234}
+braced-comma-space reference {'v(o)': 234.0} native {'v(o)': 234}
+braced-comma-tab reference {'v(o)': 234.0} native {'v(o)': 234}
+explicit-first reference {'v(o)': 211.0} native {'v(o)': 211}
+reordered-glued reference {'v(o)': 114.0} native {'v(o)': 114}
+function-comma reference {'v(o)': 234.0} native {'v(o)': 234}
+unbraced-trailing reference None native Subcircuit positional assignment: ; sign expected
+unbraced-missing-value reference {'v(o)': 11.0} native Parse error at line 7: Undefined parameter 'p2'
+  X1 o s params: p1={p2=3}
+example01 reference {'v(n1)': -7.232339954481557, 'v(n2)': 0.01470588235294118, 'v(n3)': 0.01470588235294118} native {'v(n1)': -7.2323399544815565, 'v(n2)': 0.014705882352941176, 'v(n3)': 0.014705882352941176, 'v(x_entry1.mss)': 0.012499999999999999, 'v(x_entry1.msx)': -7.2323399544815565, 'v(x_entry1.msy)': -7.232339966981557, 'v(x_entry2.mss)': 0.0125, 'v(x_entry2.msx)': -7.2323399544815565, 'v(x_entry2.msy)': -7.232339966981558}
+example01_stringwriter reference {'v(n1)': 1.097091951232882, 'v(n2)': 0.01469654594025957, 'v(n3)': 0.01471521876562279} native {'v(n1)': 1.097091928994553, 'v(n2)': 0.01469654578356219, 'v(n3)': 0.014715218922320162, 'v(x_entry1.mss)': 0.012492063916027862, 'v(x_entry1.msx)': 1.097091928994553, 'v(x_entry1.msy)': 1.0970919165024893, 'v(x_entry2.mss)': 0.012507936083972139, 'v(x_entry2.msx)': 1.097091928994553, 'v(x_entry2.msy)': 1.0970919164866169}
+example01_without_params reference {'v(n1)': 1.097091951232882, 'v(n2)': 0.01469654594025957, 'v(n3)': 0.01471521876562279} native {'v(n1)': 1.097091928994553, 'v(n2)': 0.01469654578356219, 'v(n3)': 0.014715218922320162, 'v(x_entry1.mss)': 0.012492063916027862, 'v(x_entry1.msx)': 1.097091928994553, 'v(x_entry1.msy)': 1.0970919165024893, 'v(x_entry2.mss)': 0.012507936083972139, 'v(x_entry2.msx)': 1.097091928994553, 'v(x_entry2.msy)': 1.0970919164866169}
