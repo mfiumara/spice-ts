@@ -10,12 +10,11 @@ import { CHILD_BOUND_MS, WALL_BUDGET_MS, consumedWall, reduceRow, summarize, ROO
 const hash = (bytes: Buffer | string) => createHash('sha256').update(bytes).digest('hex');
 const manifestBytes = readFileSync(`${ROOT}/manifest.json`);
 const manifest = JSON.parse(manifestBytes.toString('utf8'));
+const historicalCircuits = manifest.circuits.slice(0, 11);
 
-test('explicit partial delivery has 11 genuinely novel decks, not a padded 20', async () => {
+test('historical partial delivery preserves its 11 genuinely novel decks', async () => {
   assert.equal(manifest.requestedFixtures, 20);
-  assert.equal(manifest.deliveredFixtures, 11);
-  assert.equal(manifest.partial, true);
-  assert.equal(manifest.circuits.length, 11);
+  assert.equal(historicalCircuits.length, 11);
   const existing = new Set<string>();
   for (const directory of await readdir('benchmarks/corpus')) {
     if (directory === 'corpus-j') continue;
@@ -29,7 +28,7 @@ test('explicit partial delivery has 11 genuinely novel decks, not a padded 20', 
     }
   }
   const seen = new Set<string>();
-  for (const circuit of manifest.circuits) {
+  for (const circuit of historicalCircuits) {
     const bytes = await readFile(circuit.localPath);
     assert.equal(hash(bytes), circuit.sha256);
     assert.equal(bytes.length, circuit.bytes);
@@ -44,7 +43,7 @@ test('explicit partial delivery has 11 genuinely novel decks, not a padded 20', 
     assert(circuit.sourceUrl.includes(`${circuit.revision}/${circuit.upstreamPath}`));
   }
   const files = await readdir(`${ROOT}/fixtures`, { recursive: true, withFileTypes: true });
-  assert.equal(files.filter(file => file.isFile()).length, 11, 'no stale/unmanifested companion or fixture');
+  assert.equal(files.filter(file => file.isFile()).length, manifest.circuits.length, 'no stale/unmanifested companion or fixture');
 });
 
 test('licence notices and exclusion provenance are hashed and pinned', async () => {
@@ -74,9 +73,9 @@ test('wall accounting preserves interrupted attempt reservation instead of reset
 
 test('committed report preserves all rows, every loss and metric/runtime boundaries', async () => {
   const report = JSON.parse(await readFile(`${ROOT}/outcomes.json`, 'utf8'));
-  assert.equal(report.manifestSha256, hash(manifestBytes));
+  assert.equal(report.manifestSha256, manifest.historicalManifestSha256);
   assert.equal(report.outcomeSha256, outcomeDigest(report));
-  assert.deepEqual(report.fixtures.map((r: { sha256: string }) => r.sha256), manifest.circuits.map((c: { sha256: string }) => c.sha256));
+  assert.deepEqual(report.fixtures.map((r: { sha256: string }) => r.sha256), historicalCircuits.map((c: { sha256: string }) => c.sha256));
   assert.deepEqual(report.totals, summarize(report.fixtures).totals);
   assert.deepEqual(report.gapBuckets, summarize(report.fixtures).gapBuckets);
   assert.equal(report.policy.fixtureAdaptation, 'none');

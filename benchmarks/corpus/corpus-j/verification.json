@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "corpus-j-part2-verification/v1",
+  "baseCommit": "c688539a55e222d125970b38c3a96226e8e917f7",
+  "coreTree": "5a9032be396266c4af51e295694eea1efe165b6c",
+  "newFixtures": 9,
+  "totalFixtures": 20,
+  "ngspiceRawSuccessesNew": 5,
+  "newOutcomes": { "matched": 3, "spice-ts-loss": 2, "both-failed": 4 },
+  "newEngineGroups": 18,
+  "newChildWallMs": 9505.948128000002,
+  "maxNewChildWallMs": 861.2487920000003,
+  "combinedChildWallMs": 18978.32133900001,
+  "commands": [
+    { "command": "pnpm install --frozen-lockfile", "exit": 0 },
+    { "command": "pnpm build", "exit": 0, "log": "build.log.gz" },
+    { "command": "pnpm lint", "exit": 0, "log": "lint.log.gz" },
+    { "command": "spice-heavy pnpm exec tsx benchmarks/corpus/corpus-j/part2.ts", "exit": 1, "note": "Initial wrapper failed before starting any engine: tsx CJS disallows top-level await. Corrected to async main; no wall reservations or omitted fixture outcomes." },
+    { "command": "spice-heavy pnpm exec tsx benchmarks/corpus/corpus-j/part2.ts", "exit": 0, "receipt": "part2-outcomes.json", "wallLedger": "part2-wall.jsonl" },
+    { "command": "pnpm exec tsx benchmarks/corpus/corpus-j/render-part2.ts", "exit": 0 },
+    { "command": "pnpm exec tsx --test benchmarks/corpus/corpus-j/corpus-j.test.ts benchmarks/corpus/corpus-j/part2.test.ts", "exit": 0, "testsPassed": 7, "log": "offline.log.gz" },
+    { "command": "spice-heavy pnpm test", "exit": 0, "coreTestsPassed": 3590, "coreTestsSkipped": 2, "log": "full-test.log.gz" },
+    { "command": "git diff --check", "exit": 0, "note": "Authored tracked edits. After staging originals, default cached whitespace check exits 2 on upstream whitespace; originals are deliberately not reformatted." },
+    { "command": "git diff --cached --check -- . :(exclude)benchmarks/corpus/corpus-j/fixtures/** :(exclude)benchmarks/corpus/corpus-j/licenses/**", "exit": 0, "note": "Authored files checked; verbatim upstream fixture and licence bytes exempt from whitespace cleanup." }
+  ],
+  "issues": [
+    { "fixture": "j-14", "bucket": "nested DC temperature source lookup", "url": "https://github.com/mfiumara/spice-ts/issues/956", "milestone": "M1 Correctness parity", "label": "bug" },
+    { "fixture": "j-16", "bucket": ".title metadata directive", "url": "https://github.com/mfiumara/spice-ts/issues/957", "milestone": "M1 Correctness parity", "label": "bug" }
+  ],
+  "historicalReceiptFilesUnchanged": ["outcomes.json", "wall.jsonl"],
+  "publicationGate": "Required exact-head test (20), test (22), build and accuracy CI plus independent spice-ts-review. Gate results go in the card handoff, not self-referential commit metadata.",
+  "hotspots": ["benchmarks/SOURCES.md: append-only central provenance section"],
+  "aggregate": "Deferred to nightly #855; no shared harness, aggregate, simulator, ROADMAP or CI edits."
+}
