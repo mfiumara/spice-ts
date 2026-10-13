@@ -1,0 +1,16 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_47d21d17/packages/core
+
+ ✓ src/solver/gilbert-peierls-reuse.test.ts (5 tests) 31ms
+ ✓ src/solver/gilbert-peierls-u-alias-926.test.ts (5 tests) 33ms
+ ✓ src/solver/gilbert-peierls.test.ts (31 tests) 266ms
+ ✓ src/solver/gilbert-peierls-equivalence.test.ts (11 tests) 2438ms
+     ✓ matches the frozen kernel when members cancel to exact zeros and pivots move  654ms
+     ✓ re-factorizes on reused pivots after supernode members cancel, bit-identically  1058ms
+
+ Test Files  4 passed (4)
+      Tests  52 passed (52)
+   Start at  17:51:04
+   Duration  2.96s (transform 733ms, setup 0ms, import 968ms, tests 2.77s, environment 0ms)
+
+JUNIT report written to /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_47d21d17/packages/core/test-results.xml

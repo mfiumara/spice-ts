@@ -1,0 +1,21 @@
+Verification receipts for issue #932
+
+pnpm install --frozen-lockfile: exit 0 (tool output; initial missing unbuilt MCP bin warning).
+Initial git fetch origin main and git merge --ff-only origin/main: exit 0; local anchor f807cd8a3368d344a3a21a9ee17ea52a84bfa748.
+Initial prepare.py: exit 0; actual archived origin/main e1597e192c26a231dd576c668524d887b6e63844, recorded in host.json. Shared-ref race disclosed, not f807-only baseline.
+spice-heavy python3 benchmarks/performance/results/issue-932/run.py: exit 0. One fixed 72-child plan. 66 ok, 6 timeout, 0 failed, 0 skipped. 427.8722589179961 cumulative actual child-wall seconds. All started groups absent. 18 isolated bit-identical phase pairs; 51 uninstrumented full-output control phase pairs.
+node --test benchmarks/performance/results/issue-932/check.test.mjs before metrics module: exit 1 (offline-red.log). This is offline tool RED, not candidate RED.
+Post-run f807 manifest reconstruction: exit 1, stale extracted parser files exposed (prepare-failed-reconstruction.log). No new timing run.
+Corrected actual-e159 pinned prepare.py with owned-tree cleanup: exit 0 (prepare.log, source-identity.json, reconstructed build.json).
+node benchmarks/performance/results/issue-932/summarize.mjs: exit 0 (summarize.log, summary.json, summary.txt).
+node --test benchmarks/performance/results/issue-932/check.test.mjs: exit 0; 6 tests pass including corruption/censoring assertions (offline-green.log).
+pnpm build: exit 0 (build.log).
+pnpm lint: exit 0 (lint.log).
+pnpm -C packages/core exec vitest run src/solver/gilbert-peierls.test.ts src/solver/gilbert-peierls-u-alias-926.test.ts src/solver/gilbert-peierls-equivalence.test.ts src/solver/gilbert-peierls-reuse.test.ts: exit 0; 52 tests/4 files (solver-tests.log).
+pnpm exec tsx --test benchmarks/performance/scaling-m2.test.ts: exit 0; 6 tests (fixture-tests.log).
+spice-heavy pnpm test: exit 0 (full-test.log and full-test-exit.txt). Core 3500 pass, 2 skipped. Final benchmark TAP 144 pass, 4 skipped. Other package counts remain in complete log.
+spice-heavy pnpm bench:accuracy: exit 0 (accuracy.log and accuracy-exit.txt). Eight named circuit rows; BJT bias retains ~ status at 2.61% theoretical error. No fresh scaling-ngspice ratio/parity claim. Generated accuracy-results.json copied here, shared tracked output restored.
+git diff --exit-code -- packages: exit 0. Production unchanged.
+
+Runtime versions: Node v22.23.1; pnpm 10.28.1; esbuild 0.28.1; Python 3.14.7. CPU/OS/RAM/load retained in host.json.
+No optimization candidate, no candidate mutation RED and no speedup claim. Instrumentation lives only in ignored generated diagnostic copy. Required exact-head GitHub CI and independent reviewer child are publication gates recorded in Kanban, not inferred from these local receipts.

@@ -1,0 +1,12 @@
+
+  ../../benchmarks/performance/results/issue-932/baseline.mjs  1.5mb ⚠️
+
+⚡ Done in 108ms
+
+  ../../benchmarks/performance/results/issue-932/diagnostic.mjs  1.5mb ⚠️
+
+⚡ Done in 77ms
+
+  ../../benchmarks/performance/results/issue-932/control.mjs  1.5mb ⚠️
+
+⚡ Done in 36ms

@@ -1,0 +1,16 @@
+{
+  "node": "v22.23.1",
+  "pnpm": "10.28.1",
+  "os": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+  "cpu": "Apple M5 Pro",
+  "ramBytes": "51539607552",
+  "loadStart": "17:48  up 22:50, 2 users, load averages: 3.37 4.94 6.88",
+  "baselineRevision": "e1597e192c26a231dd576c668524d887b6e63844",
+  "deadlineSeconds": 45.0,
+  "childWallBudgetSeconds": 900.0,
+  "captureHashes": {
+    "capture-resistor-mesh-op-1000.matrix.gz": "bd8a91422c30c7065d3786b78f27956d62477fd9a2afeb40eb610a885a6386c7",
+    "capture-resistor-mesh-op-10000.matrix.gz": "0453a66e7839b1dd28c848b432750276f7f4e19783d5229d001c96a7218ac77e",
+    "capture-resistor-mesh-op-50000.matrix.gz": "a07b4f4a12eb30464837af217edfba843336de0750584038764971ca9a23385b"
+  }
+}
