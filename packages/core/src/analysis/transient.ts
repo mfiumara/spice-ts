@@ -15,8 +15,14 @@ import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
  * Whether an accepted timepoint is part of the `.tran` output. Integration
  * always starts at t = 0; like ngspice dctran.c (`CKTtime >= CKTinitTime`),
  * only points at or after TSTART are saved.
+ *
+ * Under `uic` the t = 0 point is the UIC seed, not a solution: it holds only
+ * the .ic / IC= values, so source-driven nodes read 0 V (#856). ngspice-47
+ * never dumps it (dctran.c: `MODEUIC && CKTtime > 0 && CKTtime >=
+ * CKTinitTime`); its first output point is the first accepted step.
  */
 export function isSavedTransientPoint(analysis: TransientAnalysis, time: number): boolean {
+  if (analysis.useInitialConditions && time <= 0) return false;
   return time >= (analysis.startTime ?? 0);
 }
 

@@ -96,10 +96,11 @@ describe('ngspice-47 dctran order and step control (#742)', () => {
 
   it('sets the UIC breakpoint at TSTEP like ngspice-47', async () => {
     // ngspice takes 40011 points after t = 0; spice-ts matched none of them
-    // before (no TSTEP breakpoint, second step doubled).
+    // before (no TSTEP breakpoint, second step doubled). Under UIC neither
+    // writes a t = 0 row (#856).
     const transient = (await simulate(LC_TANK_UIC)).transient!;
-    expect(transient.time[0]).toBe(0);
-    expectSameGrid(transient.time.slice(1), LC_TANK_UIC_NGSPICE);
-    expect(transient.time).toHaveLength(40011 + 1);
+    expect(transient.time[0]).toBeGreaterThan(0);
+    expectSameGrid(transient.time, LC_TANK_UIC_NGSPICE);
+    expect(transient.time).toHaveLength(40011);
   });
 });
