@@ -1,0 +1,912 @@
+{
+  "schemaVersion": 1,
+  "issue": "https://github.com/mfiumara/spice-ts/issues/940",
+  "requestedFixtures": 20,
+  "deliveredFixtures": 11,
+  "partial": true,
+  "mechanicalAdaptation": "none",
+  "selection": "Partial source-survey artifact: every statically eligible novel standalone SpiceSharpParser deck, including ngspice-incompatible LTspice A-devices and stochastic mc() filters. The eSim survey (24 example pairs plus 17 PLL/mixed-signal/adder decks) yielded no novel standalone candidates. PWL file sources excluded in addition to unchanged corpus-h static rules. No engine probe or success filter. No derived variants or byte adaptation. Include closure is empty for every selected deck.",
+  "sources": [
+    {
+      "key": "esim",
+      "repository": "https://github.com/FOSSEE/eSim",
+      "revision": "1a25a46ce15e0ccc35296dd513f40249c089a5a7",
+      "license": "GPL-3.0-only",
+      "licenseFile": "LICENSE",
+      "basis": "Repository README License section explicitly states GNU GPL v3.0. Only standalone Examples decks without vendor libraries or separate notices are admitted.",
+      "licensePath": "benchmarks/corpus/corpus-j/licenses/esim/LICENSE",
+      "licenseSha256": "12ac5047f2af0522f06798b1589ffc4599bc29c91f954d7874e0320634e777c0"
+    },
+    {
+      "key": "spicesharpparser",
+      "repository": "https://github.com/SpiceSharp/SpiceSharpParser",
+      "revision": "8fc01560fe303eeebaeb5cbf5edfe77bf635e1c7",
+      "license": "MIT",
+      "licenseFile": "LICENSE",
+      "basis": "Repository-wide MIT grant; retained verbatim copyright and licence notice. Separate notices excluded.",
+      "licensePath": "benchmarks/corpus/corpus-j/licenses/spicesharpparser/LICENSE",
+      "licenseSha256": "36101d87e6558d862cfba70474a744978b49b792309b094a74ad229037695ada"
+    }
+  ],
+  "circuits": [
+    {
+      "id": "j-1",
+      "source": "spicesharpparser",
+      "upstreamPath": "circuits/a-devices/clock-divider.cir",
+      "sourcePath": "spicesharpparser/circuits/a-devices/clock-divider.cir",
+      "sourceUrl": "https://github.com/SpiceSharp/SpiceSharpParser/blob/8fc01560fe303eeebaeb5cbf5edfe77bf635e1c7/circuits/a-devices/clock-divider.cir",
+      "revision": "8fc01560fe303eeebaeb5cbf5edfe77bf635e1c7",
+      "licence": "MIT",
+      "sha256": "46785a9acadef21a91c8f14c99f9999e6774b36a58263b6bf2518c809ba17cef",
+      "bytes": 494,
+      "localPath": "benchmarks/corpus/corpus-j/fixtures/spicesharpparser/circuits/a-devices/clock-divider.cir",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "j-2",
+      "source": "spicesharpparser",
+      "upstreamPath": "circuits/a-devices/controlled-clamp-varistor.cir",
+      "sourcePath": "spicesharpparser/circuits/a-devices/controlled-clamp-varistor.cir",
+      "sourceUrl": "https://github.com/SpiceSharp/SpiceSharpParser/blob/8fc01560fe303eeebaeb5cbf5edfe77bf635e1c7/circuits/a-devices/controlled-clamp-varistor.cir",
+      "revision": "8fc01560fe303eeebaeb5cbf5edfe77bf635e1c7",
+      "licence": "MIT",
+      "sha256": "2fd0325400b0fcbf641cb592a262b2db790435cb023066ae69402f31eb2db35b",
+      "bytes": 394,
+      "localPath": "benchmarks/corpus/corpus-j/fixtures/spicesharpparser/circuits/a-devices/controlled-clamp-varistor.cir",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "j-3",
+      "source": "spicesharpparser",
+      "upstreamPath": "circuits/a-devices/edge-capture-dff.cir",
+      "sourcePath": "spicesharpparser/circuits/a-devices/edge-capture-dff.cir",
+      "sourceUrl": "https://github.com/SpiceSharp/SpiceSharpParser/blob/8fc01560fe303eeebaeb5cbf5edfe77bf635e1c7/circuits/a-devices/edge-capture-dff.cir",
+      "revision": "8fc01560fe303eeebaeb5cbf5edfe77bf635e1c7",
+      "licence": "MIT",
+      "sha256": "73be54f60495068e0b578c5fffd36f4a3e6bc14194e377646b641b4934a5f33d",
+      "bytes": 559,
+      "localPath": "benchmarks/corpus/corpus-j/fixtures/spicesharpparser/circuits/a-devices/edge-capture-dff.cir",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "j-4",
+      "source": "spicesharpparser",
+      "upstreamPath": "circuits/a-devices/fm-modulator.cir",
+      "sourcePath": "spicesharpparser/circuits/a-devices/fm-modulator.cir",
+      "sourceUrl": "https://github.com/SpiceSharp/SpiceSharpParser/blob/8fc01560fe303eeebaeb5cbf5edfe77bf635e1c7/circuits/a-devices/fm-modulator.cir",
+      "revision": "8fc01560fe303eeebaeb5cbf5edfe77bf635e1c7",
+      "licence": "MIT",
+      "sha256": "3b92619ee8c5d496162d74a3a1992a57558148f436385b63b8d0560d665c1872",
+      "bytes": 637,
+      "localPath": "benchmarks/corpus/corpus-j/fixtures/spicesharpparser/circuits/a-devices/fm-modulator.cir",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "j-5",
+      "source": "spicesharpparser",
+      "upstreamPath": "circuits/a-devices/non-ground-common-latch.cir",
+      "sourcePath": "spicesharpparser/circuits/a-devices/non-ground-common-latch.cir",
+      "sourceUrl": "https://github.com/SpiceSharp/SpiceSharpParser/blob/8fc01560fe303eeebaeb5cbf5edfe77bf635e1c7/circuits/a-devices/non-ground-common-latch.cir",
+      "revision": "8fc01560fe303eeebaeb5cbf5edfe77bf635e1c7",
+      "licence": "MIT",
+      "sha256": "9d1c9e9bdf4b35118ae86adfbf66a0dd16923aadc9bddc82f18d634a987c0f30",
+      "bytes": 624,
+      "localPath": "benchmarks/corpus/corpus-j/fixtures/spicesharpparser/circuits/a-devices/non-ground-common-latch.cir",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "j-6",
+      "source": "spicesharpparser",
+      "upstreamPath": "circuits/a-devices/ota-current-limiter.cir",
+      "sourcePath": "spicesharpparser/circuits/a-devices/ota-current-limiter.cir",
+      "sourceUrl": "https://github.com/SpiceSharp/SpiceSharpParser/blob/8fc01560fe303eeebaeb5cbf5edfe77bf635e1c7/circuits/a-devices/ota-current-limiter.cir",
+      "revision": "8fc01560fe303eeebaeb5cbf5edfe77bf635e1c7",
+      "licence": "MIT",
+      "sha256": "be70720fd2ca337d4ab660cacf1822c563d932aab66d8be0ba81fc38c6fc3bbd",
+      "bytes": 504,
+      "localPath": "benchmarks/corpus/corpus-j/fixtures/spicesharpparser/circuits/a-devices/ota-current-limiter.cir",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "j-7",
+      "source": "spicesharpparser",
+      "upstreamPath": "circuits/a-devices/phase-detector.cir",
+      "sourcePath": "spicesharpparser/circuits/a-devices/phase-detector.cir",
+      "sourceUrl": "https://github.com/SpiceSharp/SpiceSharpParser/blob/8fc01560fe303eeebaeb5cbf5edfe77bf635e1c7/circuits/a-devices/phase-detector.cir",
+      "revision": "8fc01560fe303eeebaeb5cbf5edfe77bf635e1c7",
+      "licence": "MIT",
+      "sha256": "6c779b3f2fe7971bd2749c6912fa60bd9a4a621333b656bf26820ccd0f5302d9",
+      "bytes": 498,
+      "localPath": "benchmarks/corpus/corpus-j/fixtures/spicesharpparser/circuits/a-devices/phase-detector.cir",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "j-8",
+      "source": "spicesharpparser",
+      "upstreamPath": "circuits/a-devices/sample-and-hold-sensor.cir",
+      "sourcePath": "spicesharpparser/circuits/a-devices/sample-and-hold-sensor.cir",
+      "sourceUrl": "https://github.com/SpiceSharp/SpiceSharpParser/blob/8fc01560fe303eeebaeb5cbf5edfe77bf635e1c7/circuits/a-devices/sample-and-hold-sensor.cir",
+      "revision": "8fc01560fe303eeebaeb5cbf5edfe77bf635e1c7",
+      "licence": "MIT",
+      "sha256": "aae914c122cdec4119a231d7be889177488acc31669282db9dc355299f6caf05",
+      "bytes": 489,
+      "localPath": "benchmarks/corpus/corpus-j/fixtures/spicesharpparser/circuits/a-devices/sample-and-hold-sensor.cir",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "j-9",
+      "source": "spicesharpparser",
+      "upstreamPath": "circuits/cookbook/custom-components/simple-pll/simple-pll.cir",
+      "sourcePath": "spicesharpparser/circuits/cookbook/custom-components/simple-pll/simple-pll.cir",
+      "sourceUrl": "https://github.com/SpiceSharp/SpiceSharpParser/blob/8fc01560fe303eeebaeb5cbf5edfe77bf635e1c7/circuits/cookbook/custom-components/simple-pll/simple-pll.cir",
+      "revision": "8fc01560fe303eeebaeb5cbf5edfe77bf635e1c7",
+      "licence": "MIT",
+      "sha256": "ae639d3543054e4513a6e38d08ffb2c853e3fc35e2886dd200eb1be078afed0e",
+      "bytes": 1317,
+      "localPath": "benchmarks/corpus/corpus-j/fixtures/spicesharpparser/circuits/cookbook/custom-components/simple-pll/simple-pll.cir",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "j-10",
+      "source": "spicesharpparser",
+      "upstreamPath": "src/SpiceSharpParser.IntegrationTests/Examples/Circuits/band-pass_1.cir",
+      "sourcePath": "spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/band-pass_1.cir",
+      "sourceUrl": "https://github.com/SpiceSharp/SpiceSharpParser/blob/8fc01560fe303eeebaeb5cbf5edfe77bf635e1c7/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/band-pass_1.cir",
+      "revision": "8fc01560fe303eeebaeb5cbf5edfe77bf635e1c7",
+      "licence": "MIT",
+      "sha256": "8a0a1412fc81e9bbd9dd275f9c940dd3b4511a7019453160d606dd4deb8f07a8",
+      "bytes": 188,
+      "localPath": "benchmarks/corpus/corpus-j/fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/band-pass_1.cir",
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "j-11",
+      "source": "spicesharpparser",
+      "upstreamPath": "src/SpiceSharpParser.IntegrationTests/Examples/Circuits/band-pass_2.cir",
+      "sourcePath": "spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/band-pass_2.cir",
+      "sourceUrl": "https://github.com/SpiceSharp/SpiceSharpParser/blob/8fc01560fe303eeebaeb5cbf5edfe77bf635e1c7/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/band-pass_2.cir",
+      "revision": "8fc01560fe303eeebaeb5cbf5edfe77bf635e1c7",
+      "licence": "MIT",
+      "sha256": "f3aa8d1724051cbc95f06133948e6c96cc46ee37e81eff591d4e882beabfeeaf",
+      "bytes": 233,
+      "localPath": "benchmarks/corpus/corpus-j/fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/band-pass_2.cir",
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    }
+  ],
+  "exclusions": [
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/BJT_Biascircuit/BJT_Biascircuit.cir",
+      "sha256": "f02d34e645379a4877cf2f8c15e172833d85049e81757b3232284cb968e884f4",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/BJT_Biascircuit/BJT_Biascircuit.cir.out",
+      "sha256": "bff3fed9388187df43ec97cbc4c714d56bda48c3c1d0db3155b011488764aff0",
+      "reason": "not-self-contained",
+      "detail": ".include NPN.lib"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/BJT_CB_config/BJT_CB_config.cir",
+      "sha256": "8467af731f4c4d4c09762bb2178fd6ee558ce60e75bbea7755767c746a1b1cd4",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/BJT_CB_config/BJT_CB_config.cir.out",
+      "sha256": "32019d5ac848e37e9dd76aa71b8e20e951716f7eb27a222a156130fddb4f10cc",
+      "reason": "not-self-contained",
+      "detail": ".include NPN.lib"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/BJT_CE_config/BJT_CE_config.cir",
+      "sha256": "6efbcfa11063692af6ac2fe8f30ac9a7c936d69e7966ebeb83465e7798e12741",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/BJT_CE_config/BJT_CE_config.cir.out",
+      "sha256": "f8ccdb9e8df1de7bdd2e3c5b26d7bfd73960f215e910f3f1e5aec19ad7fe74b5",
+      "reason": "not-self-contained",
+      "detail": ".include NPN.lib"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/BJT_Frequency_Response/BJT_Frequency_Response.cir",
+      "sha256": "f232d3c7c9eba01d31ba63d6236784903f2e9468726b650f8d2d585fe3f55e2a",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/BJT_Frequency_Response/BJT_Frequency_Response.cir.out",
+      "sha256": "fd8891b7b669dd45c73db78757079ff75bd73287f71e87825f88ef729257436b",
+      "reason": "not-self-contained",
+      "detail": ".include NPN.lib"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/BJT_amplifier/BJT_amplifier.cir",
+      "sha256": "b456659c9e2b45cab2d1d645e338eedd88f7dfe97eb6e3d20d7690be06b75cac",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/BJT_amplifier/BJT_amplifier.cir.out",
+      "sha256": "33ecb6305b260fbfcf7f084c94ae59ffa4f56e9d316884cb1599baee6fb759e8",
+      "reason": "not-self-contained",
+      "detail": ".include NPN.lib"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/CMOS_NAND_Gate/CMOS_NAND_Gate.cir",
+      "sha256": "4c9fffade59daea0c96815c4c551ee4e027f924cf1054119dd40a9fc731d18d9",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/CMOS_NAND_Gate/CMOS_NAND_Gate.cir.out",
+      "sha256": "3e64086dd20e3008ad1568f42e8777ce13148827fb04f3d9557df87da975600a",
+      "reason": "not-self-contained",
+      "detail": ".include CMOS_NAND.sub"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/Clampercircuit/Clampercircuit.cir",
+      "sha256": "f00ad57edc1fdb5717ea4bde3199b1a6dd72ed55492c18328c58450077e09bfc",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/Clampercircuit/Clampercircuit.cir.out",
+      "sha256": "43c83c560c1e7143ea2d6d7da7543c70e2ca59d3a9915d2340115a08841d4e9d",
+      "reason": "not-self-contained",
+      "detail": ".include D.lib"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/Clippercircuit/Clippercircuit.cir",
+      "sha256": "61e0d925db033f8155562f3b8831a777fde0b97c32c90c865fdef9b66b192aba",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/Clippercircuit/Clippercircuit.cir.out",
+      "sha256": "39fed8c4d2267e0d49e46c632cbb092b0fc4bef8c662b8c86e2bf36c80d9aada",
+      "reason": "not-self-contained",
+      "detail": ".include D.lib"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/Diode_characteristics/Diode_characteristics.cir",
+      "sha256": "c6cfad90c04c7df74fbf1f2e50081b958d26ac265a9f85e9e20c679708e7d5c4",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/Diode_characteristics/Diode_characteristics.cir.out",
+      "sha256": "5185a0d6450e1d269aca8370b75603e9defb395fde8d6b8968cfb4f26f2f4e94",
+      "reason": "not-self-contained",
+      "detail": ".include D.lib"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/FET_Amplifier/FET_Amplifier.cir",
+      "sha256": "c791d486d447ba27ad78c6458256be6fd8e21ce6085b05859dec91de66409ee6",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/FET_Amplifier/FET_Amplifier.cir.out",
+      "sha256": "da03b62ac93b2f1fa0f6be21bd65a208b4bd197f0f0834b87d6ddf2af801c7b9",
+      "reason": "not-self-contained",
+      "detail": ".include NJF.lib"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/FET_Characteristic/FET_Characteristic.cir",
+      "sha256": "b70d6c04968e5443681a6a6f1c72ceca50b6cd27a2621ace4ba07bc4bcc780cf",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/FET_Characteristic/FET_Characteristic.cir.out",
+      "sha256": "5f646d7df75ff328ca88a77061290c4638fa70c4d3841d48d59bcb52e3a31597",
+      "reason": "not-self-contained",
+      "detail": ".include NJF.lib"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/FrequencyResponse_JFET/FrequencyResponse_JFET.cir",
+      "sha256": "ba983b8cac68807d6174f9b09c76182d5909b21fed681beedc621cce2782efe2",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/FrequencyResponse_JFET/FrequencyResponse_JFET.cir.out",
+      "sha256": "135d7c5943a539099de33fc5bf08fff6671cef1457f9166308c1ddce42d7ae82",
+      "reason": "not-self-contained",
+      "detail": ".include NJF.lib"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/FullAdder/FullAdder.cir.out",
+      "sha256": "36a3af0f0aeb92c9dc439baff2e39580f29ba3705daa0eae6ebf65ed9f77e50d",
+      "reason": "not-self-contained",
+      "detail": ".include full_adder.sub"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/FullAdder/full_adder.cir.out",
+      "sha256": "cc750e6daf0c520d00999af5e6660090a6a81d87614369770cc0d04281d240f0",
+      "reason": "not-self-contained",
+      "detail": ".include half_adder.sub"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/FullAdder/half_adder.cir.out",
+      "sha256": "59a2cd60854b17cdb9174145553f4757568fcc85a77b8904726c0bde004a91a6",
+      "reason": "already-in-corpus-or-batch",
+      "detail": ""
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/Fullwavebridgerectifier/Fullwavebridgerectifier.cir",
+      "sha256": "44515714b0a5d7b4b00884089c9755b59a0be027435da97cfcb317567659580a",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/Fullwavebridgerectifier/Fullwavebridgerectifier.cir.out",
+      "sha256": "8b56dd95d2a742042c4b3411076171d98fa8b3daa193c5231fe0920245c50f37",
+      "reason": "not-self-contained",
+      "detail": ".include D.lib"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/Half_Adder/Half_Adder.cir.out",
+      "sha256": "7c09cbf2ebbcac0204589885ff77303daeb150af23ba477ba4fa211fd5a5a2d5",
+      "reason": "not-self-contained",
+      "detail": ".include half_adder.sub"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/Halfwave_Rectifier/Halfwave_Rectifier.cir",
+      "sha256": "5bd95effebfb800fd3259014ccd4590256c788a270e15c52faaa625ed4193f19",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/Halfwave_Rectifier/Halfwave_Rectifier.cir.out",
+      "sha256": "5a125f2a3ad6df448472c0460ca7e16dbfedfe3d590442b33f294546ff2ebab0",
+      "reason": "not-self-contained",
+      "detail": ".include D.lib"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/High_Pass_Filter/High_Pass_Filter.cir",
+      "sha256": "c7e71b4c63825601d63821be9454359c5c311ea48834779bdbc63a0b41aba6f6",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/High_Pass_Filter/High_Pass_Filter.cir.out",
+      "sha256": "4d22d93f19021b4fff7c08f7a8f5d2ac01e5794ae7768d34390d6726c1fc4351",
+      "reason": "already-in-corpus-or-batch",
+      "detail": ""
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/Low_Pass_Filter/Low_Pass_Filter.cir",
+      "sha256": "70f3519ae77f4081e80e01c13763766a99ee86888ecf93cf79397060039093a3",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/Low_Pass_Filter/Low_Pass_Filter.cir.out",
+      "sha256": "a05d40a505bfdc22a5816a355e362816e9b221692a3a731b33e8736fecd8e807",
+      "reason": "already-in-corpus-or-batch",
+      "detail": ""
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/Mixed_Signal/Cmosinverter/Cmosinverter.cir.out",
+      "sha256": "46ddae1a38c86ee5695991ed279fa8955dc13dbb2cc931ec9d858c49da249459",
+      "reason": "not-self-contained",
+      "detail": ".include INVCMOS.sub"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/Mixed_Signal/Cmosinverter/INVCMOS.cir.out",
+      "sha256": "c7946fee70798d4b8743b0a967e775b3f443a101932483f215599779a0098788",
+      "reason": "not-self-contained",
+      "detail": ".include NMOS-180nm.lib"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/Mixed_Signal/PWM_Decremental/PWM_Decremental.cir.out",
+      "sha256": "d5b1c661b6d974aea3dee127235cf2f2e25abe16ff691714c4c2bdf4f4e9331a",
+      "reason": "not-self-contained",
+      "detail": ".include lm_741.sub"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/Mixed_Signal/PWM_Decremental/lm_741.cir.out",
+      "sha256": "8f1a75550c65b7a63c17242113a34896f037bce81cba59263ca69e3cab9419d4",
+      "reason": "not-self-contained",
+      "detail": ".include npn_1.lib"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/Mixed_Signal/PWM_Incremental/PWM_Incremental.cir.out",
+      "sha256": "38efac288cfa0c3358d1b781b0e826692ea1f222b81cab2d8d6849b67a9d5601",
+      "reason": "not-self-contained",
+      "detail": ".include lm_741.sub"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/Mixed_Signal/PWM_Incremental/lm_741.cir.out",
+      "sha256": "8f1a75550c65b7a63c17242113a34896f037bce81cba59263ca69e3cab9419d4",
+      "reason": "not-self-contained",
+      "detail": ".include npn_1.lib"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/Mixed_Signal/custom_mixed_signal/custom_mixed_signal.cir.out",
+      "sha256": "3f847b37b7c9dc965f3bb1f38869ccc17bebbb84ebd497c13b31b6086c2481f6",
+      "reason": "not-self-contained",
+      "detail": ".include lm_741.sub"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/Mixed_Signal/custom_mixed_signal/lm_741.cir.out",
+      "sha256": "8f1a75550c65b7a63c17242113a34896f037bce81cba59263ca69e3cab9419d4",
+      "reason": "not-self-contained",
+      "detail": ".include npn_1.lib"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/Parallel_Resonance/Parallel_Resonance.cir",
+      "sha256": "b40f365675eb2cc1f7accba25a0ea2f887c03a5303c107dca3d59fc3898e31d8",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/Parallel_Resonance/Parallel_Resonance.cir.out",
+      "sha256": "565f24d0cc1becff6a8b53aef2a893699717e613c9b922eee37e8ef4cc9b7e7f",
+      "reason": "already-in-corpus-or-batch",
+      "detail": ""
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/Phase_Locked_Loop/Chargepump/Chargepump.cir.out",
+      "sha256": "5d8bf9b1c31f2cbaff5ac629a77c44e58609cbad27fff102640a3df6a69a766f",
+      "reason": "not-self-contained",
+      "detail": ".lib /home/fossee/ihp/IHP-Open-PDK/ihp-sg13g2/libs.tech/ngspice/models/cornerMOShv.lib"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/Phase_Locked_Loop/PFD/PFD.cir.out",
+      "sha256": "b8f12c67f1eb2b446681a7244a32dc3259b044e15d04e1eba78b1fe1cc3aeb20",
+      "reason": "not-self-contained",
+      "detail": ".lib /home/fossee/ihp/IHP-Open-PDK/ihp-sg13g2/libs.tech/ngspice/models/cornerMOSlv.lib"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/Phase_Locked_Loop/PLL/PLL.cir.out",
+      "sha256": "1ff2df25cece0c8f04005ecd363461bf8f56546a344041beb774b7fe80f453c9",
+      "reason": "not-self-contained",
+      "detail": ".lib /home/fossee/ihp/IHP-Open-PDK/ihp-sg13g2/libs.tech/ngspice/models/cornerMOSlv.lib"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/Phase_Locked_Loop/VCO_2/VCO_2.cir.out",
+      "sha256": "f7c8a0c998ef25230fd0c487c15477155026406f05f3e6a72780e9bd3ed1b8e2",
+      "reason": "not-self-contained",
+      "detail": ".lib /home/fossee/ihp/IHP-Open-PDK/ihp-sg13g2/libs.tech/ngspice/models/cornerMOShv.lib"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/Phase_Locked_Loop/freq_divider/freq_divider.cir.out",
+      "sha256": "3f66739290ea030bfe1c5c26ee94ef6c9afad6e5625f5a66f8623b278fc2b4a1",
+      "reason": "not-self-contained",
+      "detail": ".lib /home/fossee/ihp/IHP-Open-PDK/ihp-sg13g2/libs.tech/ngspice/models/cornerMOSlv.lib"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/RC/RC.cir",
+      "sha256": "b2349c53a853713069eaccd5db11b8b30c5b64529bc65f4c51b777d8d06643c7",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/RC/RC.cir.out",
+      "sha256": "16ad099fa0137e0ff9d3baf55342de52b63252b6c6c0e645aaf81bd23c194593",
+      "reason": "already-in-corpus-or-batch",
+      "detail": ""
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/RL/RL.cir",
+      "sha256": "28f8807a7c44187c1ed15419c893883ebed11d7fd505028ef450fc03616441da",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/RL/RL.cir.out",
+      "sha256": "6de917c92ca113be2ec027c23e749327f196b699f9f777145f79ae15fdacc93e",
+      "reason": "already-in-corpus-or-batch",
+      "detail": ""
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/RLC/RLC.cir",
+      "sha256": "d46237d3708e62cc5513a2768e7ddb376182d31f29a7053b9e5b6828fb81bb82",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/RLC/RLC.cir.out",
+      "sha256": "599e0fb1530011b74f1b77ce08508e9801a37c237304f1cfed4b5f5922b074a2",
+      "reason": "already-in-corpus-or-batch",
+      "detail": ""
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/Series_Resonance/Series_Resonance.cir",
+      "sha256": "d2c83cbd6dd96601f39a88632371d04fac7d1543a8cc5472377f63e57df449a1",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/Series_Resonance/Series_Resonance.cir.out",
+      "sha256": "39af0e0b85b1f1aff937533fa922220a28e026318e897c47d09ecbf69d1be49b",
+      "reason": "already-in-corpus-or-batch",
+      "detail": ""
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/Transformer/Transformer.cir",
+      "sha256": "337942df6708a6d2d9bd078ab51d4fbf1686b66b56b87ed3a78235279f9c0fed",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/Transformer/Transformer.cir.out",
+      "sha256": "2b16dd3f061b359955841e545caeea050dfb5ad28779186da7b11acbd5de8f07",
+      "reason": "already-in-corpus-or-batch",
+      "detail": ""
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/UJT_Relaxation_Oscillator/UJT_Relaxation_Oscillator.cir",
+      "sha256": "3d0b99146a4403f823b03290043183939b574faf31eab0bc44ab08a89e6ff218",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/UJT_Relaxation_Oscillator/UJT_Relaxation_Oscillator.cir.out",
+      "sha256": "df8fc8948b6bb7d247e850a0b2699d012ca11bd4830ff7a52b7697296ba0df44",
+      "reason": "not-self-contained",
+      "detail": ".include ujt.sub"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/Zener_Characteristic/Zener_Characteristic.cir",
+      "sha256": "4261f098ffbc5103da4c4e5a00dae29ecac6a12daa580198af59ee3bd8864c03",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "source": "esim",
+      "upstreamPath": "Examples/Zener_Characteristic/Zener_Characteristic.cir.out",
+      "sha256": "f5e26f798363fd041ce1b0b5cf6bcea22c4ab74f86dfbac9664a9d1cdadb275e",
+      "reason": "already-in-corpus-or-batch",
+      "detail": ""
+    },
+    {
+      "source": "spicesharpparser",
+      "upstreamPath": "circuits/cookbook/custom-components/ideal-diode-power-or/ideal-diode-power-or.cir",
+      "sha256": "04c3cf748eb3f49d1372ad0927621d3823902544cb3574958457aab80bccb4dc",
+      "reason": "already-in-corpus-or-batch",
+      "detail": ""
+    },
+    {
+      "source": "spicesharpparser",
+      "upstreamPath": "circuits/cookbook/pure-spice/active-anti-alias-filter/active-anti-alias-filter.cir",
+      "sha256": "73a0815308cd164de18f2cd0c1edbd1bdc49ffceb0867a49d86ed88e586c28d5",
+      "reason": "already-in-corpus-or-batch",
+      "detail": ""
+    },
+    {
+      "source": "spicesharpparser",
+      "upstreamPath": "circuits/cookbook/pure-spice/astable-led-flasher/astable-led-flasher.cir",
+      "sha256": "1763083434377613e91e23646532c7f3e27ad687ae60f420b9e7cf5562823fba",
+      "reason": "already-in-corpus-or-batch",
+      "detail": ""
+    },
+    {
+      "source": "spicesharpparser",
+      "upstreamPath": "circuits/cookbook/pure-spice/bjt-audio-preamplifier/bjt-audio-preamplifier.cir",
+      "sha256": "f9b1dac0411cf8922f6a6a50afbc69d489ac7784dbd75dfe1c64b1d4b4f9bf7c",
+      "reason": "already-in-corpus-or-batch",
+      "detail": ""
+    },
+    {
+      "source": "spicesharpparser",
+      "upstreamPath": "circuits/cookbook/pure-spice/bjt-relay-driver/bjt-relay-driver.cir",
+      "sha256": "228c90873b8e558a10d4613ad39dd695d94b6f03852eb9480f95b6ddea32bdc4",
+      "reason": "already-in-corpus-or-batch",
+      "detail": ""
+    },
+    {
+      "source": "spicesharpparser",
+      "upstreamPath": "circuits/cookbook/pure-spice/diode-envelope-detector/diode-envelope-detector.cir",
+      "sha256": "1df18775cc845f80e30bceddbc14af01adb2b226d1f9c8cc39e0b2834fea5986",
+      "reason": "already-in-corpus-or-batch",
+      "detail": ""
+    },
+    {
+      "source": "spicesharpparser",
+      "upstreamPath": "circuits/cookbook/pure-spice/loaded-voltage-divider/loaded-voltage-divider.cir",
+      "sha256": "dc737ae3c563f04c80bec31a5b554b7fc7d08a30fb3535e2e2de90216e179d5d",
+      "reason": "already-in-corpus-or-batch",
+      "detail": ""
+    },
+    {
+      "source": "spicesharpparser",
+      "upstreamPath": "circuits/cookbook/pure-spice/pwm-dac/pwm-dac.cir",
+      "sha256": "cab6a0d71e1622e0b2ab8d2cf12fb53ec557ef7fdef1e98e43867ebee9d732c2",
+      "reason": "already-in-corpus-or-batch",
+      "detail": ""
+    },
+    {
+      "source": "spicesharpparser",
+      "upstreamPath": "circuits/cookbook/pure-spice/rc-sensor-input-filter/rc-sensor-input-filter.cir",
+      "sha256": "bdb824c83e5d8185847cf8787f4e63dc4e74f0c04a48b05e5ea4a4903f8b42b2",
+      "reason": "already-in-corpus-or-batch",
+      "detail": ""
+    },
+    {
+      "source": "spicesharpparser",
+      "upstreamPath": "circuits/cookbook/pure-spice/rectifier-power-supply/rectifier-power-supply.cir",
+      "sha256": "c926a8bce62e8db4a6771e33af5a7d398fedc81bc67f23d7ba4ab70c4f9c7406",
+      "reason": "already-in-corpus-or-batch",
+      "detail": ""
+    },
+    {
+      "source": "spicesharpparser",
+      "upstreamPath": "circuits/cookbook/pure-spice/transmission-line-termination/transmission-line-termination.cir",
+      "sha256": "4599777f6a0e037f3ae1fc477d7436d700c651fada5a9205f916262433b85cb0",
+      "reason": "already-in-corpus-or-batch",
+      "detail": ""
+    },
+    {
+      "source": "spicesharpparser",
+      "upstreamPath": "circuits/digital-milestone-a/milestone-a-routing.cir",
+      "sha256": "85bdf23d996e3dc8f0549eda9bd97ef14f252fafcfd88bd2ef35f2314cad0fbc",
+      "reason": "not-self-contained",
+      "detail": ".include \"../../src/SpiceSharpParser.CustomComponents/Digital/Netlists/standard-digital.lib\""
+    },
+    {
+      "source": "spicesharpparser",
+      "upstreamPath": "circuits/digital-milestone-b/milestone-b-clocked-state.cir",
+      "sha256": "3628f9f9d3c1edba344be8995947e6cf5b0ecec063e8a5153d41a7fb2468cfd0",
+      "reason": "not-self-contained",
+      "detail": ".include \"../../src/SpiceSharpParser.CustomComponents/Digital/Netlists/standard-digital.lib\""
+    },
+    {
+      "source": "spicesharpparser",
+      "upstreamPath": "src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04.cir",
+      "sha256": "c681df5a0ea6a0ea1775ac1df5d75669a8a0ffa0609622e8ea6b93e5f50232ab",
+      "reason": "already-in-corpus-or-batch",
+      "detail": ""
+    },
+    {
+      "source": "spicesharpparser",
+      "upstreamPath": "src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04_nested.cir",
+      "sha256": "8641b833bf11ff88c1e856e1ac2a57e6342876604c6cf571fa45bf9ad80818b6",
+      "reason": "already-in-corpus-or-batch",
+      "detail": ""
+    },
+    {
+      "source": "spicesharpparser",
+      "upstreamPath": "src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04_reversed.cir",
+      "sha256": "5de9f37daa0fcc096723019a175886df5890c53fd84176fc5f8db9bb639f928b",
+      "reason": "already-in-corpus-or-batch",
+      "detail": ""
+    },
+    {
+      "source": "spicesharpparser",
+      "upstreamPath": "src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example05.cir",
+      "sha256": "3f56cfce00cee8df8e2348b751664a55319e6beaeb9e70a52c924a51af27b3de",
+      "reason": "already-in-corpus-or-batch",
+      "detail": ""
+    },
+    {
+      "source": "spicesharpparser",
+      "upstreamPath": "src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example06.cir",
+      "sha256": "c2643ae6341c6fdf1c52990dd9e1cc9920bb0c32ff9812f96c304f4590b1c721",
+      "reason": "already-in-corpus-or-batch",
+      "detail": ""
+    },
+    {
+      "source": "spicesharpparser",
+      "upstreamPath": "src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example07.cir",
+      "sha256": "8a73c5c1deb06c66f74588844479685018b940924f37eb27d397087aa97e6eb9",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "source": "spicesharpparser",
+      "upstreamPath": "src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example08.cir",
+      "sha256": "6e35639ef02931e608c44d9a8ce95627782c98497c86cb7738f20336c565566a",
+      "reason": "already-in-corpus-or-batch",
+      "detail": ""
+    },
+    {
+      "source": "spicesharpparser",
+      "upstreamPath": "src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example09.cir",
+      "sha256": "3a56f7847abe23fae8e2eb925d2c77b0aa5f2615acfd72acf947393134536e68",
+      "reason": "already-in-corpus-or-batch",
+      "detail": ""
+    },
+    {
+      "source": "spicesharpparser",
+      "upstreamPath": "src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example10.cir",
+      "sha256": "1a30a8af9c8f8d1814471b8d5b449db429f05955e276b8244ad8fa0c7dcd9d8c",
+      "reason": "already-in-corpus-or-batch",
+      "detail": ""
+    },
+    {
+      "source": "spicesharpparser",
+      "upstreamPath": "src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example11.cir",
+      "sha256": "4a2577f1b960e28eb7bec5026af49f40bc9c4c89abcab20bd55559de420fe713",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "source": "spicesharpparser",
+      "upstreamPath": "src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example12.cir",
+      "sha256": "8468ec6664ab4d9249880f0bac6fcb399524b81d78fff58712ff1bdc26c0c14f",
+      "reason": "not-self-contained",
+      "detail": "PWL file source requires unbundled Resources companion"
+    },
+    {
+      "source": "spicesharpparser",
+      "upstreamPath": "src/SpiceSharpParser.IntegrationTests/Examples/Circuits/MosfetExample.cir",
+      "sha256": "e1a660878ab878611b9c0da9af742b49e1e0a44b4de5a15e4abef13dd253d169",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "source": "spicesharpparser",
+      "upstreamPath": "src/SpiceSharpParser.IntegrationTests/Examples/Circuits/MosfetExample2.cir",
+      "sha256": "e190e66518f2070135a641fc3926f91338733023a00303d110f4327551aa6829",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "source": "spicesharpparser",
+      "upstreamPath": "src/SpiceSharpParser.IntegrationTests/Examples/Circuits/MosfetExample3.cir",
+      "sha256": "7b5199db78c759db5b39a7c31f115f328c3138bd184c07cc3862674165a041fc",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "source": "spicesharpparser",
+      "upstreamPath": "src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example01.cir",
+      "sha256": "e27cfb536b337101510c6317c701c9649f71fe756d07f2d7edd36d584c160e1f",
+      "reason": "already-in-corpus-or-batch",
+      "detail": ""
+    },
+    {
+      "source": "spicesharpparser",
+      "upstreamPath": "src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example01_stringwriter.cir",
+      "sha256": "d90dda49ba85ad794ccdf838abe0a5a22cbe6fb61124366acebbaf995882b875",
+      "reason": "already-in-corpus-or-batch",
+      "detail": ""
+    },
+    {
+      "source": "spicesharpparser",
+      "upstreamPath": "src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example01_without_params.cir",
+      "sha256": "5979031b71cc3661c0eac4a89185f5743811c7f717c004bb0eb65b1b0d4f910a",
+      "reason": "already-in-corpus-or-batch",
+      "detail": ""
+    },
+    {
+      "source": "spicesharpparser",
+      "upstreamPath": "src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example02.cir",
+      "sha256": "bff1a675c68390c0bd321c3003eaeca3298b8e04e48e78091c543ad5fca3ca7b",
+      "reason": "already-in-corpus-or-batch",
+      "detail": ""
+    },
+    {
+      "source": "spicesharpparser",
+      "upstreamPath": "src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example03.cir",
+      "sha256": "4874bdc5864748502ab27ff39d36530c968ae9c683faf6f51f67b67388c3398e",
+      "reason": "already-in-corpus-or-batch",
+      "detail": ""
+    }
+  ]
+}

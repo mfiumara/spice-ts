@@ -1,0 +1,467 @@
+{
+  "schemaVersion": "spice-ts-corpus-j-outcomes/v1",
+  "sources": [
+    {
+      "key": "esim",
+      "repository": "https://github.com/FOSSEE/eSim",
+      "revision": "1a25a46ce15e0ccc35296dd513f40249c089a5a7",
+      "license": "GPL-3.0-only",
+      "licenseFile": "LICENSE",
+      "basis": "Repository README License section explicitly states GNU GPL v3.0. Only standalone Examples decks without vendor libraries or separate notices are admitted.",
+      "licensePath": "benchmarks/corpus/corpus-j/licenses/esim/LICENSE",
+      "licenseSha256": "12ac5047f2af0522f06798b1589ffc4599bc29c91f954d7874e0320634e777c0"
+    },
+    {
+      "key": "spicesharpparser",
+      "repository": "https://github.com/SpiceSharp/SpiceSharpParser",
+      "revision": "8fc01560fe303eeebaeb5cbf5edfe77bf635e1c7",
+      "license": "MIT",
+      "licenseFile": "LICENSE",
+      "basis": "Repository-wide MIT grant; retained verbatim copyright and licence notice. Separate notices excluded.",
+      "licensePath": "benchmarks/corpus/corpus-j/licenses/spicesharpparser/LICENSE",
+      "licenseSha256": "36101d87e6558d862cfba70474a744978b49b792309b094a74ad229037695ada"
+    }
+  ],
+  "manifestSha256": "c0a1d231b9f2c2a4858f7dbc9bbf7421cdd2afd0a7ff0b7fde992c67d3e2972f",
+  "tools": {
+    "ngspice": "ngspice-47",
+    "spiceTs": "0.3.0",
+    "node": "v22.23.1"
+  },
+  "environment": {
+    "platform": "darwin",
+    "release": "27.0.0",
+    "arch": "arm64",
+    "cpu": "Apple M5 Pro"
+  },
+  "commands": {
+    "generate": "spice-heavy pnpm exec tsx benchmarks/corpus/corpus-j/parity.ts",
+    "verify": "pnpm exec tsx --test benchmarks/corpus/corpus-j/corpus-j.test.ts",
+    "ngspice": "unchanged corpus-f runNgspicePacked on original bytes",
+    "spiceTs": "unchanged corpus-f runBoundedSimulatePacked on original bytes"
+  },
+  "policy": {
+    "input": "byte-identical fixture for both engines",
+    "fixtureAdaptation": "none",
+    "perCircuitToleranceTuning": false,
+    "matchThreshold": 0.01,
+    "matchRule": "matched = both engines succeed, every spice-ts analysis has an ngspice counterpart, and for every common signal max|spice-ts - ngspice| <= 0.01 x max(peak |ngspice signal|, floor). The floor is uniform per quantity (#593): 0.0001 V for node voltages v(...) and 1e-10 A for branch currents i(...), so a signal whose ngspice peak is zero or tiny matches when the absolute difference is at most the ngspice-47 default VNTOL (0.000001 V) or ABSTOL (1e-12 A); every other quantity (pole/zero roots, noise spectra) keeps 1e-12. Deck .options tolerances are not consulted. Errors are taken at spice-ts points with ngspice interpolated (transient breakpoint alignment as in the aggregate report).",
+    "deterministicHashExcludes": [
+      "environment",
+      "tools.node",
+      "ngspice.analyses",
+      "spiceTs.analyses"
+    ],
+    "childGroupBoundMs": 20000,
+    "executionDeadlineMs": 19000,
+    "cumulativeChildWallBudgetMs": 900000,
+    "runtimeBoundary": "serial cold engine wrapper wall includes Node/tsx startup, unchanged shared engine adapter, output serialization and close; no warm speed claim",
+    "fineReference": "not run: would adapt original bytes; headline inputs unchanged",
+    "stochastic": "mc() decks retained; independent random realizations cannot establish deterministic waveform parity"
+  },
+  "actualCumulativeChildWallMs": 9472.373211000002,
+  "totals": {
+    "fixtures": 11,
+    "ngspice": {
+      "success": 0,
+      "failed": 8,
+      "unsupported": 3
+    },
+    "spiceTs": {
+      "success": 0,
+      "failed": 0,
+      "unsupported": 11
+    },
+    "outcomes": {
+      "matched": 0,
+      "mismatch": 0,
+      "not-compared": 0,
+      "spice-ts-loss": 0,
+      "ngspice-failed": 0,
+      "both-failed": 11
+    },
+    "bySource": {
+      "spicesharpparser": {
+        "matched": 0,
+        "mismatch": 0,
+        "not-compared": 0,
+        "spice-ts-loss": 0,
+        "ngspice-failed": 0,
+        "both-failed": 11
+      }
+    }
+  },
+  "gapBuckets": [
+    {
+      "bucket": "parse: other unsupported syntax",
+      "fixtures": 9,
+      "ngspiceSuccess": 0,
+      "ids": [
+        "j-1",
+        "j-2",
+        "j-3",
+        "j-4",
+        "j-5",
+        "j-6",
+        "j-7",
+        "j-8",
+        "j-9"
+      ],
+      "issue": null
+    },
+    {
+      "bucket": "expression: quoted/brace expressions in values (TEMPER, functions)",
+      "fixtures": 2,
+      "ngspiceSuccess": 0,
+      "ids": [
+        "j-10",
+        "j-11"
+      ],
+      "issue": null
+    }
+  ],
+  "fixtures": [
+    {
+      "id": "j-1",
+      "sourcePath": "spicesharpparser/circuits/a-devices/clock-divider.cir",
+      "sha256": "46785a9acadef21a91c8f14c99f9999e6774b36a58263b6bf2518c809ba17cef",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "failed",
+        "analyses": [],
+        "firstErrorLine": "Error on line 6 or its substitute:"
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "XSPICE instance 'ACOUNT' references unknown model '10'"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "both-failed",
+      "gapBucket": "parse: other unsupported syntax",
+      "comparisons": [],
+      "runtime": {
+        "spiceTsChildWallMs": 711.9682090000001,
+        "ngspiceChildWallMs": 283.30508299999997
+      }
+    },
+    {
+      "id": "j-2",
+      "sourcePath": "spicesharpparser/circuits/a-devices/controlled-clamp-varistor.cir",
+      "sha256": "2fd0325400b0fcbf641cb592a262b2db790435cb023066ae69402f31eb2db35b",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "failed",
+        "analyses": [],
+        "firstErrorLine": "Error on line 7 or its substitute:"
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "XSPICE instance 'AVAR' references unknown model '1T'"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "both-failed",
+      "gapBucket": "parse: other unsupported syntax",
+      "comparisons": [],
+      "runtime": {
+        "spiceTsChildWallMs": 727.1255420000002,
+        "ngspiceChildWallMs": 256.03595799999994
+      }
+    },
+    {
+      "id": "j-3",
+      "sourcePath": "spicesharpparser/circuits/a-devices/edge-capture-dff.cir",
+      "sha256": "73be54f60495068e0b578c5fffd36f4a3e6bc14194e377646b641b4934a5f33d",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "failed",
+        "analyses": [],
+        "firstErrorLine": "Error on line 8 or its substitute:"
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "XSPICE instance 'ADFF' references unknown model '10'"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "both-failed",
+      "gapBucket": "parse: other unsupported syntax",
+      "comparisons": [],
+      "runtime": {
+        "spiceTsChildWallMs": 696.6151250000003,
+        "ngspiceChildWallMs": 287.840334
+      }
+    },
+    {
+      "id": "j-4",
+      "sourcePath": "spicesharpparser/circuits/a-devices/fm-modulator.cir",
+      "sha256": "3b92619ee8c5d496162d74a3a1992a57558148f436385b63b8d0560d665c1872",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "failed",
+        "analyses": [],
+        "firstErrorLine": "Error on line 7 or its substitute:"
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "XSPICE instance 'AMOD' references unknown model '1'"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "both-failed",
+      "gapBucket": "parse: other unsupported syntax",
+      "comparisons": [],
+      "runtime": {
+        "spiceTsChildWallMs": 778.9382500000002,
+        "ngspiceChildWallMs": 298.6664169999999
+      }
+    },
+    {
+      "id": "j-5",
+      "sourcePath": "spicesharpparser/circuits/a-devices/non-ground-common-latch.cir",
+      "sha256": "9d1c9e9bdf4b35118ae86adfbf66a0dd16923aadc9bddc82f18d634a987c0f30",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "failed",
+        "analyses": [],
+        "firstErrorLine": "Error on line 8 or its substitute:"
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "XSPICE instance 'ASR' references unknown model '1'"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "both-failed",
+      "gapBucket": "parse: other unsupported syntax",
+      "comparisons": [],
+      "runtime": {
+        "spiceTsChildWallMs": 680.4184589999995,
+        "ngspiceChildWallMs": 228.95583400000032
+      }
+    },
+    {
+      "id": "j-6",
+      "sourcePath": "spicesharpparser/circuits/a-devices/ota-current-limiter.cir",
+      "sha256": "be70720fd2ca337d4ab660cacf1822c563d932aab66d8be0ba81fc38c6fc3bbd",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "failed",
+        "analyses": [],
+        "firstErrorLine": "Error on line 9 or its substitute:"
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "XSPICE instance 'AOTA' references unknown model '-5'"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "both-failed",
+      "gapBucket": "parse: other unsupported syntax",
+      "comparisons": [],
+      "runtime": {
+        "spiceTsChildWallMs": 594.641791,
+        "ngspiceChildWallMs": 201.95225000000028
+      }
+    },
+    {
+      "id": "j-7",
+      "sourcePath": "spicesharpparser/circuits/a-devices/phase-detector.cir",
+      "sha256": "6c779b3f2fe7971bd2749c6912fa60bd9a4a621333b656bf26820ccd0f5302d9",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "failed",
+        "analyses": [],
+        "firstErrorLine": "Error on line 7 or its substitute:"
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "XSPICE instance 'APD' references unknown model '-5'"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "both-failed",
+      "gapBucket": "parse: other unsupported syntax",
+      "comparisons": [],
+      "runtime": {
+        "spiceTsChildWallMs": 550.1177909999997,
+        "ngspiceChildWallMs": 202.9108329999999
+      }
+    },
+    {
+      "id": "j-8",
+      "sourcePath": "spicesharpparser/circuits/a-devices/sample-and-hold-sensor.cir",
+      "sha256": "aae914c122cdec4119a231d7be889177488acc31669282db9dc355299f6caf05",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "failed",
+        "analyses": [],
+        "firstErrorLine": "Error on line 7 or its substitute:"
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "XSPICE instance 'ASH' references unknown model '10'"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "both-failed",
+      "gapBucket": "parse: other unsupported syntax",
+      "comparisons": [],
+      "runtime": {
+        "spiceTsChildWallMs": 560.9110840000003,
+        "ngspiceChildWallMs": 198.44979200000034
+      }
+    },
+    {
+      "id": "j-9",
+      "sourcePath": "spicesharpparser/circuits/cookbook/custom-components/simple-pll/simple-pll.cir",
+      "sha256": "ae639d3543054e4513a6e38d08ffb2c853e3fc35e2886dd200eb1be078afed0e",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Error: no such function 'if' at line 19"
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "XSPICE instance 'APHASE' references unknown model '0'"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "both-failed",
+      "gapBucket": "parse: other unsupported syntax",
+      "comparisons": [],
+      "runtime": {
+        "spiceTsChildWallMs": 538.4152080000003,
+        "ngspiceChildWallMs": 210.72891699999946
+      }
+    },
+    {
+      "id": "j-10",
+      "sourcePath": "spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/band-pass_1.cir",
+      "sha256": "8a0a1412fc81e9bbd9dd275f9c940dd3b4511a7019453160d606dd4deb8f07a8",
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Error in netlist line no. 5, new internal line no. 3:"
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 3: Unknown function 'mc' LI IN MIDDLE {mc(0.6, tol)}"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "both-failed",
+      "gapBucket": "expression: quoted/brace expressions in values (TEMPER, functions)",
+      "comparisons": [],
+      "runtime": {
+        "spiceTsChildWallMs": 545.8553749999992,
+        "ngspiceChildWallMs": 195.34741700000086
+      }
+    },
+    {
+      "id": "j-11",
+      "sourcePath": "spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/band-pass_2.cir",
+      "sha256": "f3aa8d1724051cbc95f06133948e6c96cc46ee37e81eff591d4e882beabfeeaf",
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Error in netlist line no. 5, new internal line no. 3:"
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 3: Unknown function 'mc' LI IN MIDDLE {mc(0.6, tol)}"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "both-failed",
+      "gapBucket": "expression: quoted/brace expressions in values (TEMPER, functions)",
+      "comparisons": [],
+      "runtime": {
+        "spiceTsChildWallMs": 524.1957500000008,
+        "ngspiceChildWallMs": 198.97779199999968
+      }
+    }
+  ],
+  "outcomeSha256": "86217c344143a1426edc883bec5866efa9f8268184c563ff4a5ba4472117ca11"
+}
