@@ -128,7 +128,8 @@ describe('ngspice-bugs spice-ts verdicts', () => {
     });
   }
 
-  // Fetch-only decks (vendor libraries are not committed): run `fetch.ts 685 740 763` first.
+  // Fetch-only decks (vendor libraries are not committed): run `fetch.ts 685 740 763` first
+  // (#685: unzip TestVT.zip in fetched/685).
   // The manifest's edit is applied in memory: absolute .include paths become the attachment basename.
   for (const [ticket, libraries, tolerance, decks] of [
     [685, 'TestVT/Model', 1e-5, [['TestVT/TestDI_DMG6968UDM.cir', 1e-7, -1.35033248753e-8]]],
@@ -137,7 +138,7 @@ describe('ngspice-bugs spice-ts verdicts', () => {
   ] as const) {
     const dir = resolve(HERE, 'fetched', String(ticket));
     it(`#${ticket}: the DC-source decks complete and hold ngspice-47's operating point`, {
-      skip: existsSync(dir) ? false : `run fetch.ts ${ticket} first`,
+      skip: existsSync(resolve(dir, decks[0][0])) ? false : `run fetch.ts ${ticket} (and extract its archive) first`,
     }, async () => {
       const manifest = await loadManifest();
       assert.equal(outcome(entry(manifest, ticket)), 'spice-ts-correct');
