@@ -1,0 +1,37 @@
+TAP version 13
+# node:internal/modules/esm/resolve:275
+#     throw new ERR_MODULE_NOT_FOUND(
+#           ^
+# Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_c9acd572/benchmarks/corpus-f-syntax-current/reconcile.mjs' imported from /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_c9acd572/benchmarks/corpus-f-syntax-current/reconcile.test.mjs
+#     at finalizeResolution (node:internal/modules/esm/resolve:275:11)
+#     at moduleResolve (node:internal/modules/esm/resolve:861:10)
+#     at defaultResolve (node:internal/modules/esm/resolve:985:11)
+#     at \#cachedDefaultResolve (node:internal/modules/esm/loader:747:20)
+#     at ModuleLoader.resolve (node:internal/modules/esm/loader:724:38)
+#     at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:320:38)
+#     at ModuleJob._link (node:internal/modules/esm/module_job:182:49) {
+#   code: 'ERR_MODULE_NOT_FOUND',
+#   url: 'file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_c9acd572/benchmarks/corpus-f-syntax-current/reconcile.mjs'
+# }
+# Node.js v22.23.1
+# Subtest: benchmarks/corpus-f-syntax-current/reconcile.test.mjs
+not ok 1 - benchmarks/corpus-f-syntax-current/reconcile.test.mjs
+  ---
+  duration_ms: 33.824625
+  type: 'test'
+  location: '/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_c9acd572/benchmarks/corpus-f-syntax-current/reconcile.test.mjs:1:1'
+  failureType: 'testCodeFailure'
+  exitCode: 1
+  signal: ~
+  error: 'test failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 37.77325

@@ -1,0 +1,110 @@
+{
+  "selected": 59,
+  "historical": {
+    "unsupported": 59,
+    "ngspiceSuccess": 54
+  },
+  "current": {
+    "parse": {
+      "success": 15,
+      "unsupported": 44
+    },
+    "simulation": {
+      "unsupported": 14,
+      "not-run": 44,
+      "success": 1
+    },
+    "outcomes": {
+      "spice-ts-loss": 58,
+      "not-compared": 1
+    },
+    "buckets": {
+      "BJT excess phase PTF": 2,
+      "XSPICE code model: d_tristate": 1,
+      "control/vector/function execution": 4,
+      "model resolution/instance forms": 3,
+      "XSPICE code model: memristor": 1,
+      "string/vector numparam": 2,
+      "VBIC model/instance form": 4,
+      "Gear integration order 3": 1,
+      "native success, parity not computed": 1,
+      "thermal/self-heating": 1,
+      "XSPICE code model: delay": 1,
+      "XSPICE code model: d_cosim": 6,
+      "XSPICE code model: ota": 1,
+      "XSPICE code model: s_xfer": 5,
+      "XSPICE code model: triangle": 4,
+      "XSPICE invalid-input validation": 2,
+      "XSPICE code model: d_dff": 3,
+      "XSPICE code model: d_dlatch": 1,
+      "XSPICE code model: d_ram": 1,
+      "XSPICE code model: d_to_real": 2,
+      "XSPICE code model: capacitoric": 1,
+      "XSPICE code model: d_pwm": 1,
+      "XSPICE code model: seegen": 2,
+      "XSPICE code model: cpline": 2,
+      "XSPICE code model: cpmlin": 1,
+      "XSPICE code model: mlin": 2,
+      "XSPICE code model: astate": 2,
+      "XSPICE code model: pwlts": 1,
+      "numparam function/node substitution": 1
+    }
+  },
+  "ranked": [
+    {
+      "bucket": "XSPICE code-model coverage",
+      "fixtures": 38,
+      "historicalNgspiceSuccess": 36
+    },
+    {
+      "bucket": "control/vector/function execution",
+      "fixtures": 4,
+      "historicalNgspiceSuccess": 4
+    },
+    {
+      "bucket": "VBIC model/instance form",
+      "fixtures": 4,
+      "historicalNgspiceSuccess": 4
+    },
+    {
+      "bucket": "model resolution/instance forms",
+      "fixtures": 3,
+      "historicalNgspiceSuccess": 2
+    },
+    {
+      "bucket": "BJT excess phase PTF",
+      "fixtures": 2,
+      "historicalNgspiceSuccess": 2
+    },
+    {
+      "bucket": "string/vector numparam",
+      "fixtures": 2,
+      "historicalNgspiceSuccess": 2
+    },
+    {
+      "bucket": "Gear integration order 3",
+      "fixtures": 1,
+      "historicalNgspiceSuccess": 1
+    },
+    {
+      "bucket": "native success, parity not computed",
+      "fixtures": 1,
+      "historicalNgspiceSuccess": 1
+    },
+    {
+      "bucket": "numparam function/node substitution",
+      "fixtures": 1,
+      "historicalNgspiceSuccess": 1
+    },
+    {
+      "bucket": "thermal/self-heating",
+      "fixtures": 1,
+      "historicalNgspiceSuccess": 1
+    },
+    {
+      "bucket": "XSPICE invalid-input validation",
+      "fixtures": 2,
+      "historicalNgspiceSuccess": 0
+    }
+  ]
+}
