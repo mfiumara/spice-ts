@@ -252,7 +252,8 @@ describe('formatNumber reaches every double that INPevaluate can produce (#806)'
     }
     // Every even multiple of 2^-1074 is reachable as M * 1e-323 (1e-323 is 2 * 2^-1074).
     expect(exact).toBeGreaterThan(20_000 * 0.9);
-  });
+    // ~0.8 s locally, past vitest's 5 s default under --coverage on CI (#893).
+  }, 60_000);
 
   it('writes the even neighbour of an unreachable odd subnormal, toward zero first', () => {
     // 3 * 2^-1074: M * pow(10, E) only gives even multiples of 2^-1074 this small.
