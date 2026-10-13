@@ -1032,8 +1032,11 @@ export class GilbertPeierlsSolver implements SparseSolver {
     const y = this.workspace;
 
     // Apply permutation: y = Pb
+    let finiteRhs = true;
     for (let k = 0; k < n; k++) {
-      y[k] = b[perm[k]];
+      const value = b[perm[k]];
+      y[k] = value;
+      if (value - value !== 0) finiteRhs = false;
     }
     this.workspaceDirty = true;
 
@@ -1057,7 +1060,11 @@ export class GilbertPeierlsSolver implements SparseSolver {
       // Finite factors can still yield an overflowing solution (a long chain
       // of gain stages). Report it like a numeric zero pivot instead of
       // handing Inf/NaN to Newton, whose step tests cannot reject NaN.
-      if (zj - zj !== 0) {
+      // A non-finite right-hand side is a device stamp, not an overflow:
+      // ngspice-47 solves it with IEEE propagation (a B-source V(x)^-0.5
+      // evaluates to +inf at the all-zero first iterate, then Newton moves
+      // on from the finite entries; #891), so it passes through.
+      if (finiteRhs && zj - zj !== 0) {
         throw SingularMatrixError.atPivot(colPerm[j], this.variables);
       }
       x[colPerm[j]] = zj;

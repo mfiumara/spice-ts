@@ -690,9 +690,17 @@ function modulus(value: number, limit: number): number {
   return value - Math.trunc(value / limit) * limit;
 }
 
-/** ngspice PTeval reports E_PARMVAL when a node evaluates to HUGE (HUGE_VAL, +inf). */
+/**
+ * ngspice's HUGE: ngspice.h only defines it as HUGE_VAL when <math.h> lacks
+ * it (CYGWIN); glibc and macOS define HUGE as FLT_MAX. ptfuncs.c returns it
+ * as its range-error sentinel, so an IEEE +Infinity (pow(0, -0.5), an
+ * overflowing product) is an ordinary value, not an error (#891).
+ */
+const HUGE = 3.4028234663852886e38;
+
+/** ngspice PTeval reports E_PARMVAL when a node evaluates to exactly HUGE. */
 function checked(value: number, what: string, ...args: number[]): number {
-  if (value === Infinity) {
+  if (value === HUGE) {
     throw new BehavioralRangeError(`Behavioral expression: ${args.join(', ')} out of range for ${what}`);
   }
   return value;
@@ -701,7 +709,7 @@ function checked(value: number, what: string, ...args: number[]): number {
 /** ngspice PTdivide. */
 function ptDivide(a: number, b: number): number {
   const d = b >= 0 ? b + DIVIDE_FUDGE : b - DIVIDE_FUDGE;
-  return d === 0 ? Infinity : a / d;
+  return d === 0 ? HUGE : a / d;
 }
 
 const ulpView = new DataView(new ArrayBuffer(16));
@@ -759,14 +767,14 @@ function ptPwrSlope(a: number, b: number): number {
 
 /** ngspice PTlog / PTlog10: -1e99 at 0, HUGE below. */
 function ptLog(x: number, log: (x: number) => number): number {
-  if (x < 0) return Infinity;
+  if (x < 0) return HUGE;
   if (x === 0) return -1e99;
   return log(x);
 }
 
 /** ngspice PTsqrt: HUGE below 0. */
 function ptSqrt(x: number): number {
-  return x < 0 ? Infinity : Math.sqrt(x);
+  return x < 0 ? HUGE : Math.sqrt(x);
 }
 
 function ptExp(value: number): number {
@@ -836,18 +844,18 @@ function unaryFunction(name: BehavioralFunction, x: number): [value: number, slo
 }
 
 /**
- * Whether ngspice's parse tree holds `node` as one PT_CONSTANT: inpptree.c
- * mkf folds a function of a constant (unary minus included, so `-0.5` is a
- * constant) and mkb folds an operator on two constants. PTdifferentiate's
- * literal-exponent and literal-base power rules test exactly that.
+ * Whether ngspice's parse tree holds `node` as a PT_CONSTANT, the test of
+ * PTdifferentiate's literal-exponent and literal-base power rules. Only a
+ * plain number is: the bison actions PT_mkfnode/PT_mkbnode never fold, so
+ * `-0.5` stays PTF_UMINUS(0.5) and `(0-0.5)` a PT_MINUS node (inpptree.c
+ * notes "we can meet a PTF_UMINUS->PTF_CONSTANT instead of a plain
+ * PTF_CONSTANT"; only the derivative builders mkf/mkb fold constants).
+ * Instrumented ngspice-47 confirms it: d/dV of `V^-0.5`, `V^(-0.5)` and
+ * `V^(0-0.5)` at V = 0 is -0, the general rule pow(a,b)*(b*da/a + ...), not
+ * the literal rule's -0.5*pwr(0, -1.5) = -inf (#891).
  */
 function isConstantTree(node: BehavioralExpression): boolean {
-  switch (node.kind) {
-    case 'number': return true;
-    case 'negate': return isConstantTree(node.operand);
-    case 'binary': return isConstantTree(node.left) && isConstantTree(node.right);
-    default: return false;
-  }
+  return node.kind === 'number';
 }
 
 /** ngspice rewrites `a OP b` as OP0(a - b) (eq0, ne0, gt0, lt0, ge0, le0). */

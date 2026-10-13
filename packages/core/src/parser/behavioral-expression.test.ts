@@ -167,10 +167,14 @@ describe('behavioral source expressions', () => {
       expect(result.value).toBe(0);
       expect(result.gradient.x).toBe(0.5 * Math.pow(fudge, -0.5));
     }
-    // `-0.5` folds to one ngspice constant, so the literal-exponent rule applies.
-    expect(evaluate('pow(v(x),-0.5)', { x: 0 }).gradient.x).toBe(-0.5 * Math.pow(fudge, -1.5));
-    expect(evaluate('pow(v(x),-0.5)', { x: -1 })).toEqual({ value: 0, gradient: { x: 0.5 } });
-    expect(evaluate('v(x)^(1/2)', { x: 0 }).gradient.x).toBe(0.5 * Math.pow(fudge, -0.5));
+    // ngspice's parser never folds `-0.5` or `(1/2)` into one PT_CONSTANT, so
+    // they take the general rule pow(a,b)*(b*da/a + db*log|a|), which is 0
+    // at a zero base (#891). Instrumented ngspice-47 ASRC derivatives:
+    // pow(V,-0.5) at 0 -> -0, at -1 -> 0; V^(1/2) at 0 -> 0.
+    expect(evaluate('pow(v(x),-0.5)', { x: 0 })).toEqual({ value: 0, gradient: { x: -0 } });
+    expect(evaluate('pow(v(x),-0.5)', { x: -1 })).toEqual({ value: 0, gradient: { x: 0 } });
+    expect(evaluate('v(x)^(1/2)', { x: 0 })).toEqual({ value: 0, gradient: { x: 0 } });
+    expect(evaluate('v(x)^-0.5', { x: 0 })).toEqual({ value: Infinity, gradient: { x: -0 } });
     // PSpice pwrs(x, a) = sgn(x)*pow(x, a): sgn(0) = 0 zeroes the finite slope.
     expect(evaluate('pwrs(v(x),0.5)', { x: 0 })).toEqual({ value: 0, gradient: { x: 0 } });
     // An exponent >= 1 has no pole and keeps ngspice's exact slope at 0.
@@ -230,7 +234,9 @@ describe('behavioral source expressions', () => {
   it('reports values ngspice cannot evaluate as range errors', () => {
     expect(() => evaluate('sqrt(v(x))', { x: -1 })).toThrow(BehavioralRangeError);
     expect(() => evaluate('log(v(x))', { x: -1 })).toThrow(BehavioralRangeError);
-    expect(() => evaluate('10^v(x)', { x: 400 })).toThrow(BehavioralRangeError);
+    // An IEEE overflow is not ngspice's HUGE (FLT_MAX) sentinel: ngspice-47
+    // evaluates 10^400 to inf without "out of range" (#891).
+    expect(evaluate('10^v(x)', { x: 400 }).value).toBe(Infinity);
   });
 
   it('differentiates ddt() like ngspice PTddt: a lagged backward difference', () => {
