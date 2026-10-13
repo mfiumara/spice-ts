@@ -8,7 +8,7 @@ import subprocess
 import tempfile
 
 ROOT = Path(__file__).resolve().parent
-BASE = "DC temperature diode\nV in 0 0.6\nR in out 1k\nD out 0 dm\n.model dm d is=1e-14\n"
+BASE = "DC temperature diode\nV out 0 0.6\nD out 0 dm\n.model dm d is=1e-14 n=2\n"
 SWEEPS = {"nested": "V 0 1 0.5 temp -40 160 100", "primary": "temp -40 160 40"}
 version = subprocess.check_output(["ngspice", "--version"], text=True)
 assert "ngspice-47" in version

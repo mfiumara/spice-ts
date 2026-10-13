@@ -4,6 +4,7 @@ import { parse } from '../parser/index.js';
 import { simulate } from '../simulate.js';
 import { resolveOptions } from '../types.js';
 import { solveDCSweep } from './dc-sweep.js';
+import { Resistor } from '../devices/resistor.js';
 
 const root = new URL('../../../../benchmarks/dc-temp-956/', import.meta.url);
 const reference = JSON.parse(readFileSync(new URL('reference.json', root), 'utf8')) as {
@@ -37,7 +38,40 @@ describe('ngspice-47 DC TEMP (#956)', () => {
     expect(after.voltage('out')[0]).toBeCloseTo(baseline.voltage('out')[0], 12);
   });
 
-  it('rejects repeated TEMP targets case-insensitively', async () => {
-    await expect(simulate('V a 0 1\nR a 0 1k\n.dc temp 0 100 50 TeMp 0 100 50\n.end')).rejects.toThrow('repeated');
+  it('rejects repeated TEMP targets case-insensitively', () => {
+    const compiled = parse('Repeated targets\nV a 0 1\nR a 0 1k\n.end').compile();
+    expect(() => solveDCSweep(compiled, {
+      type: 'dc', source: 'temp', start: 0, stop: 100, step: 50,
+      secondary: { source: 'TeMp', start: 0, stop: 100, step: 50 },
+    }, resolveOptions())).toThrow("DC sweep source 'TeMp' is repeated");
+  });
+
+  it('preserves resistor instance TEMP/DTEMP and restores circuit temperature', () => {
+    const compiled = parse('Resistor temperatures\nV a 0 1\nR1 a 0 1k tc1=0.01 dtemp=10\nR2 a 0 1k tc1=0.01 temp=50\n.end').compile();
+    const resistors = compiled.devices.filter(device => device instanceof Resistor);
+    resistors.forEach(device => device.setTemperature(30));
+    const result = solveDCSweep(compiled, {
+      type: 'dc', source: 'tEmP', start: 0, stop: 100, step: 100,
+    }, resolveOptions());
+    expect(result.current('V')[0]).toBeCloseTo(-1 / 830 - 1 / 1230, 12);
+    expect(result.current('V')[1]).toBeCloseTo(-1 / 1830 - 1 / 1230, 12);
+    expect(resistors.map(device => device.getCircuitTemperature())).toEqual([30, 30]);
+    expect(resistors.map(device => device.getTemperature())).toEqual([40, 50]);
+  });
+
+  it('restores all temperatures and waveforms when a temperature hook throws', () => {
+    const compiled = parse('Failure restoration\nV a 0 1\nR a 0 1k\nD a 0 dm\n.model dm d\n.end').compile();
+    const diode = compiled.devices.find(device => device.name === 'D')!;
+    const setTemperature = diode.setTemperature!.bind(diode);
+    diode.setTemperature = value => {
+      setTemperature(value);
+      if (value === 100) throw new Error('temperature update failed');
+    };
+    const before = compiled.devices.map(device => device.getTemperature?.());
+    expect(() => solveDCSweep(compiled, {
+      type: 'dc', source: 'V', start: 0, stop: 1, step: 1,
+      secondary: { source: 'temp', start: 27, stop: 100, step: 73 },
+    }, resolveOptions())).toThrow('temperature update failed');
+    expect(compiled.devices.map(device => device.getTemperature?.())).toEqual(before);
   });
 });
