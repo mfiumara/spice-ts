@@ -1,0 +1,91 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: mosamp2 - mos amplifier - transient
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 25  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+15                                          15
+1                                      9.64517
+32                                         -20
+2                                     -11.7354
+30                                         -15
+5                                      9.46396
+4                                     -12.0678
+20                                   0.0419715
+8                                     -2.31454
+6                                      9.69776
+21                                           0
+7                                     -11.9005
+10                                    -10.3377
+9                                     -12.9978
+11                                    -12.0814
+12                                    -8.89401
+13                                    -12.2724
+14                                    -12.9655
+16                                     -11.047
+66                                   0.0419715
+vb#branch                          9.13779e-10
+vddn#branch                         0.00521514
+vccp#branch                        -0.00521514
+vin#branch                                   0
+
+ Reference value :  1.31553e-06
+No. of Data Rows : 2429
+.print line ignored since rawfile was produced.
+.plot line ignored since rawfile was produced.
+Total elapsed time (seconds) = 0.381 
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 14294.719 MB.
+Maximum ngspice program size =   10.266 MB.
+Current ngspice program size =   10.266 MB.
+24 page faults, 0 vol + 124 invol = 124 context switches.
+
+Number of lines in the deck = 39
+Netlist loading time = 0.00031
+Subckt and Param expansion time = 0.000448
+Netlist parsing time = 0.000411
+
+Nominal temperature = 27
+Operating temperature = 27
+Total iterations = 83747
+Transient iterations = 83599
+Circuit Equations = 25
+Circuit original non-zeroes = 158
+Circuit fill-in non-zeroes = 18
+Circuit total non-zeroes = 0
+Transient timepoints = 3195
+Accepted timepoints = 2429
+Rejected timepoints = 766
+Total analysis time (seconds) = 0.374053
+Matrix load time = 0.279737
+Matrix synchronize time = 0
+Matrix reorder time = 2.3E-05
+Matrix factor time = 0.029466
+Matrix solve time = 0.019588
+Transient analysis time = 0.372397
+Transient load time = 0.279007
+Transient sync time = 0
+Transient factor time = 0.029396
+Transient solve time = 0.019546
+Transient trunc time = 0.004299
+Transient iterations for the last time point = 0
+AC analysis time = 0
+AC load time = 0
+AC sync time = 0
+AC factor time = 0
+AC solve time = 0
+
+
+Note: Starting dynamic gmin stepping
+Note: Dynamic gmin stepping completed

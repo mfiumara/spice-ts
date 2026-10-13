@@ -1,0 +1,9 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8223ca21/benchmarks/reference
+
+
+ Test Files  1 passed (1)
+      Tests  8 passed (8)
+   Start at  00:32:01
+   Duration  224ms (transform 93ms, setup 0ms, import 114ms, tests 7ms, environment 0ms)
+

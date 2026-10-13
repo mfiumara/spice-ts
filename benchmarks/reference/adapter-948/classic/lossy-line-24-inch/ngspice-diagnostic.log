@@ -1,0 +1,98 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit:    bjtdriver -- 24inch lossy line -- diodecircuit
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 4  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+1                                            0
+10                                           5
+x1.22                                    4.939
+x1.18                                 0.646772
+x1.13                                 0.203472
+x1.16                                 0.562183
+x1.21                                 0.203465
+x1.9                                  0.203472
+x1.14                                 0.527391
+x1.15                                  1.08723
+x1.8                                   4.44876
+x1.17                               1.0624e-05
+x1.25                               1.0624e-05
+x1.12                               1.0624e-05
+x1.6                                   4.80281
+x1.26                                0.0179282
+x1.10                                  3.65972
+x1.7                                   3.89501
+x1.11                                  4.31428
+2                                      3.21755
+x1.24                                  4.77142
+x1.23                                        5
+x1.27                                  4.25678
+3                                      3.21742
+100                                    3.21755
+101                                    3.21742
+4                                  1.79122e-11
+x3.1                                    2.7071
+x3.2                                  0.902366
+x3.3                                   1.80473
+vtest2#branch                                0
+vtest1#branch                                0
+vcc#branch                          -0.0322161
+v1#branch                          0.000724206
+
+
+No. of Data Rows : 728
+Total elapsed time (seconds) = 0.017 
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 14320.203 MB.
+Maximum ngspice program size =   10.656 MB.
+Current ngspice program size =   10.656 MB.
+24 page faults, 0 vol + 9 invol = 9 context switches.
+
+Number of lines in the deck = 198
+Netlist loading time = 0.000408
+Subckt and Param expansion time = 0.000262
+Netlist parsing time = 0.000185
+
+Nominal temperature = 27
+Operating temperature = 27
+Total iterations = 2391
+Transient iterations = 2350
+Circuit Equations = 54
+Circuit original non-zeroes = 219
+Circuit fill-in non-zeroes = 22
+Circuit total non-zeroes = 0
+Transient timepoints = 762
+Accepted timepoints = 728
+Rejected timepoints = 34
+Total analysis time (seconds) = 0.013739
+Matrix load time = 0.008459
+Matrix synchronize time = 0
+Matrix reorder time = 2.6E-05
+Matrix factor time = 0.001213
+Matrix solve time = 0.000697
+Transient analysis time = 0.013106
+Transient load time = 0.008399
+Transient sync time = 0
+Transient factor time = 0.001193
+Transient solve time = 0.000682
+Transient trunc time = 0.000586
+Transient iterations for the last time point = 0
+AC analysis time = 0
+AC load time = 0
+AC sync time = 0
+AC factor time = 0
+AC solve time = 0
+
+
+Warning: option itl5 is currently unsupported.

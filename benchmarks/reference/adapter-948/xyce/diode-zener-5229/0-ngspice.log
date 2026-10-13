@@ -1,0 +1,24 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: mmsz5229bt1 zener subcircuit using pspice level 2 diode at elevated temperature
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 35.000000 and TNOM = 27.000000
+
+
+Total analysis time (seconds) = 0
+
+Total elapsed time (seconds) = 0.007 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 14294.719 MB.
+Maximum ngspice program size =    9.953 MB.
+Current ngspice program size =    9.953 MB.
+
+
+Fatal error: x1:dfor: Diode model level 2 is not supported.
+doAnalyses: no such parameter on this device or parameter is missing
+
+run simulation(s) aborted

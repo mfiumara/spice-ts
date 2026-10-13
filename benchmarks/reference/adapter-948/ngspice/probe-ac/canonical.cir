@@ -1,0 +1,13 @@
+.probe test with ac
+
+V1 1 0 dc 0 ac 1
+R1 1 2 1k 
+R2 2 3 1k
+R3 3 0 1k
+C2 2 3 1u
+C3 3 0 1u
+
+.ac dec 5 10 10000
+
+
+.end

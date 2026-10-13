@@ -1,0 +1,26 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: test circuit #1 for pz analysis:high pass filter
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+Using SPARSE 1.3 as Direct Linear Solver
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 2  
+
+No. of Data Rows : 1
+.print line ignored since rawfile was produced.
+
+Total analysis time (seconds) = 0.000525
+
+Total elapsed time (seconds) = 0.004 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 14294.719 MB.
+Maximum ngspice program size =   10.266 MB.
+Current ngspice program size =   10.266 MB.
+

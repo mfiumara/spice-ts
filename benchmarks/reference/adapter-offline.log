@@ -1,0 +1,118 @@
+TAP version 13
+# Subtest: canonical transform Vitest cases run in the existing offline CI gate
+ok 1 - canonical transform Vitest cases run in the existing offline CI gate
+  ---
+  duration_ms: 690.202875
+  type: 'test'
+  ...
+# Subtest: canonical evidence retains all 100 rows, exact shared inputs, outputs and losses
+ok 2 - canonical evidence retains all 100 rows, exact shared inputs, outputs and losses
+  ---
+  duration_ms: 38.383875
+  type: 'test'
+  ...
+# Subtest: 100 unique hash-pinned aggregate fixtures retain every attempted outcome
+ok 3 - 100 unique hash-pinned aggregate fixtures retain every attempted outcome
+  ---
+  duration_ms: 7.205041
+  type: 'test'
+  ...
+# Subtest: EKV evidence uses published decks and never labels MOS1 fallback as parity
+ok 4 - EKV evidence uses published decks and never labels MOS1 fallback as parity
+  ---
+  duration_ms: 34.5405
+  type: 'test'
+  ...
+# Subtest: mixed-case requested names use canonical lower-case series keys like ngspice
+ok 5 - mixed-case requested names use canonical lower-case series keys like ngspice
+  ---
+  duration_ms: 1.857208
+  type: 'test'
+  ...
+# Subtest: live shared DEVICE options preserve ngspice settings and are recognized by Xyce
+ok 6 - live shared DEVICE options preserve ngspice settings and are recognized by Xyce # SKIP
+  ---
+  duration_ms: 0.115958
+  type: 'test'
+  ...
+# Subtest: DC CSV uses explicit primary sweep and preserves flattened nested rows
+ok 7 - DC CSV uses explicit primary sweep and preserves flattened nested rows
+  ---
+  duration_ms: 0.401625
+  type: 'test'
+  ...
+# Subtest: TRAN and AC CSV match case-insensitive headers, quoted differential voltage
+ok 8 - TRAN and AC CSV match case-insensitive headers, quoted differential voltage
+  ---
+  duration_ms: 0.424667
+  type: 'test'
+  ...
+# Subtest: CSV rejects absent, duplicate, malformed, blank, nonfinite and truncated fields
+ok 9 - CSV rejects absent, duplicate, malformed, blank, nonfinite and truncated fields
+  ---
+  duration_ms: 0.58375
+  type: 'test'
+  ...
+# Subtest: translation replaces output continuations, preserves qualified options and LEVEL=260
+ok 10 - translation replaces output continuations, preserves qualified options and LEVEL=260
+  ---
+  duration_ms: 1.293541
+  type: 'test'
+  ...
+# Subtest: translation limitations return unsupported before launching executable
+ok 11 - translation limitations return unsupported before launching executable
+  ---
+  duration_ms: 0.832292
+  type: 'test'
+  ...
+# Subtest: missing executable, execution failure, absent output and timeout fail and clean cwd
+ok 12 - missing executable, execution failure, absent output and timeout fail and clean cwd
+  ---
+  duration_ms: 214.357084
+  type: 'test'
+  ...
+# Subtest: live Xyce op
+ok 13 - live Xyce op # SKIP
+  ---
+  duration_ms: 0.206792
+  type: 'test'
+  ...
+# Subtest: live Xyce dc
+ok 14 - live Xyce dc # SKIP
+  ---
+  duration_ms: 0.244209
+  type: 'test'
+  ...
+# Subtest: live Xyce tran
+ok 15 - live Xyce tran # SKIP
+  ---
+  duration_ms: 0.032875
+  type: 'test'
+  ...
+# Subtest: live Xyce ac
+ok 16 - live Xyce ac # SKIP
+  ---
+  duration_ms: 0.01975
+  type: 'test'
+  ...
+# Subtest: live Xyce nested DC retains primary sweep restarts
+ok 17 - live Xyce nested DC retains primary sweep restarts # SKIP
+  ---
+  duration_ms: 0.015708
+  type: 'test'
+  ...
+# Subtest: live Xyce AC preserves nonzero imaginary voltage and current
+ok 18 - live Xyce AC preserves nonzero imaginary voltage and current # SKIP
+  ---
+  duration_ms: 0.014458
+  type: 'test'
+  ...
+1..18
+# tests 18
+# suites 0
+# pass 11
+# fail 0
+# cancelled 0
+# skipped 7
+# todo 0
+# duration_ms 1080.55775

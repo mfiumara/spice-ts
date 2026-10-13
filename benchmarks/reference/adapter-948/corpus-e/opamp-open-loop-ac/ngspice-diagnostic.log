@@ -1,0 +1,24 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: 2 stage op-amp open loop  02/16/88
+
+
+
+Total elapsed time (seconds) = 0.003 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 14470.688 MB.
+Maximum ngspice program size =    9.922 MB.
+Current ngspice program size =    9.922 MB.
+
+
+Error on line 49 or its substitute:
+  .ac
+Missing DEC, OCT, or LIN.
+    Simulation interrupted due to error!
+
+Error: circuit not parsed.
+Note: no resource usage information for 'time',
+	or no active circuit available
