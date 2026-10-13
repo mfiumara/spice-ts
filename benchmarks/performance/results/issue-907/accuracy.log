@@ -1,0 +1,82 @@
+
+> spice-ts@ bench:accuracy /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_78a2411f
+> cd packages/core && pnpm build && cd ../.. && npx tsx benchmarks/accuracy.ts
+
+
+> @spice-ts/core@0.3.0 build /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_78a2411f/packages/core
+> tsup
+
+CLI Building entry: {"index":"src/index.ts","step-worker":"src/analysis/step-worker.ts","step-worker-browser":"src/analysis/step-worker-browser.ts"}
+CLI Using tsconfig: tsconfig.json
+CLI tsup v8.5.1
+CLI Using tsup config: /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_78a2411f/packages/core/tsup.config.ts
+CLI Target: es2022
+CLI Cleaning output folder
+ESM Build start
+CJS Build start
+ESM dist/chunk-IPU5UPPM.js          557.00 B
+ESM dist/index.js                   46.88 KB
+ESM dist/step-worker-browser.js     455.00 B
+ESM dist/step-worker.js             546.00 B
+ESM dist/chunk-WP6ACX2N.js          1.49 MB
+ESM dist/step-worker-browser.js.map 875.00 B
+ESM dist/chunk-IPU5UPPM.js.map      1.15 KB
+ESM dist/step-worker.js.map         872.00 B
+ESM dist/index.js.map               87.07 KB
+ESM dist/chunk-WP6ACX2N.js.map      3.21 MB
+ESM ⚡️ Build success in 197ms
+
+ WARN  [33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1m"import.meta" is not available with the "cjs" output format and will be empty[0m [empty-import-meta]
+
+    src/analysis/step-parallel.ts:114:27:
+[37m      114 │   return new URL(filename, [32mimport.meta[37m.url);
+          ╵                            [32m~~~~~~~~~~~[0m
+
+  You need to set the output format to "esm" for "import.meta" to work correctly.
+
+
+
+CJS dist/step-worker-browser.cjs     1.48 MB
+CJS dist/step-worker.cjs             1.48 MB
+CJS dist/index.cjs                   1.54 MB
+CJS dist/step-worker-browser.cjs.map 3.21 MB
+CJS dist/index.cjs.map               3.30 MB
+CJS dist/step-worker.cjs.map         3.21 MB
+CJS ⚡️ Build success in 315ms
+DTS Build start
+DTS ⚡️ Build success in 6070ms
+DTS dist/step-worker.d.ts          13.00 B
+DTS dist/index.d.ts                138.62 KB
+DTS dist/step-worker-browser.d.ts  13.00 B
+DTS dist/step-worker.d.cts         13.00 B
+DTS dist/index.d.cts               138.62 KB
+DTS dist/step-worker-browser.d.cts 13.00 B
+spice-ts Accuracy Report
+========================
+Date:    2026-10-13
+ngspice: enabled
+CI mode: no
+
+Running circuits...
+  RC step response... ✓
+  RLC resonance... ✓
+  BJT CE bias... ~
+  Diode rectifier... ✓
+  SPICE3: diff pair... ✓
+  SPICE3: bandpass RLC... ✓
+  SPICE3: one-stage OTA... ✓
+  SPICE3: RC ladder 5-stage... ✓
+
+Circuit                       Metric                          spice-ts      Err%       ngspice     Diff%  Status
+────────────────────────────────────────────────────────────────────────────────────────────────────────────
+rc-step-at-tau                V(out) at t=τ (V)                 3.1746     0.44%             —         —  ✓
+rlc-resonance                 f_osc (Hz)                        1579.0     0.79%             —         —  ✓
+bjt-ce-bias                   V(base) (V)                       2.0502     2.61%             —         —  ~
+diode-bridge-rectifier        V(out) min (V)                    0.0000     0.00%             —         —  ✓
+spice3-diff-pair              |V(out+) - V(out-)| (mV)          0.0000     0.00%             —         —  ✓  (V(out+)=11.4369V V(out-)=11.4369V)
+spice3-bandpass-rlc           f_peak (Hz)                       1584.9     0.42%             —         —  ✓
+spice3-ota-dc                 V(d2) (V)                         4.1047     0.01%             —         —  ✓  (V(d1)=4.1047V V(d2)=4.1047V)
+spice3-rc-ladder-5            f_-3dB (Hz)                       12.760     0.23%             —         —  ✓
+────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Results saved to /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_78a2411f/benchmarks/accuracy-results.json
