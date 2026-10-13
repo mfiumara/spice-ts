@@ -1,5 +1,5 @@
 import type { SubcktDefinition } from '../types.js';
-import { parseNumber, type ParsedLine } from './tokenizer.js';
+import { parseNumber, tokenizeLine, type ParsedLine } from './tokenizer.js';
 
 /**
  * ngspice's `params:` keyword, which may separate the ports from the
@@ -8,7 +8,7 @@ import { parseNumber, type ParsedLine } from './tokenizer.js';
 const PARAMS_KEYWORD = /^params:$/i;
 
 /** `name = value`, where value is `{...}`, `'...'` or a whitespace-free token. */
-const HEADER_ASSIGNMENT = /([A-Za-z_]\w*)\s*=\s*(\{[^{}]*\}|'[^']*'|\S+)/g;
+const HEADER_ASSIGNMENT = /([A-Za-z_]\w*)\s*=\s*(\{[^{}]*\}|'[^']*'|[^\s,]+)/g;
 
 export interface SubcircuitHeader {
   name: string;
@@ -81,11 +81,74 @@ function defaultValue(value: string): number | string {
   }
 }
 
+interface CallAssignment {
+  name: string;
+  value: string;
+  start: number;
+}
+
 /**
- * `name = value` on an X card whose value is a single bare token: not
- * braced or quoted, and free of `,` (comma lists are a separate gap, #797).
+ * ngspice-47 inp_get_params: a name is the whole non-whitespace span
+ * left of '=', bounded by the previous value. Braces end a value, whereas
+ * a bare value consumes its whole whitespace word. Thus ',beta' is not
+ * 'beta', and '2,' is not '2'. Scan before expression substitution (#797).
  */
-const CALL_ASSIGNMENT = /([A-Za-z_]\w*)\s*=\s*([^\s{}'",=]+)(?=\s|$)/g;
+function callAssignments(card: string): CallAssignment[] {
+  const assignments: CallAssignment[] = [];
+  let cursor = /^\s*\+/.exec(card)?.[0].length ?? 0;
+  for (;;) {
+    const equals = card.indexOf('=', cursor);
+    if (equals < 0) break;
+    let endName = equals;
+    while (endName > cursor && /\s/.test(card[endName - 1])) endName--;
+    let start = endName;
+    while (start > cursor && !/\s/.test(card[start - 1])) start--;
+    let valueStart = equals + 1;
+    while (valueStart < card.length && /\s/.test(card[valueStart])) valueStart++;
+    let end = valueStart;
+    if (card[valueStart] === '{') {
+      let depth = 0;
+      do {
+        if (card[end] === '{') depth++;
+        else if (card[end] === '}') depth--;
+        end++;
+      } while (end < card.length && depth > 0);
+      if (depth !== 0) throw new Error('Missing } in subcircuit call');
+    } else if (card[valueStart] === "'") {
+      const close = card.indexOf("'", valueStart + 1);
+      if (close < 0) throw new Error('Missing quote in subcircuit call');
+      end = close + 1;
+    } else {
+      while (end < card.length && !/\s/.test(card[end])) end++;
+    }
+    assignments.push({ name: card.slice(start, endName), value: card.slice(valueStart, end), start });
+    cursor = end;
+  }
+  return assignments;
+}
+
+function bareCommaValue(value: string): boolean {
+  return !value.startsWith('{') && !value.startsWith("'") && value.includes(',');
+}
+
+/** Parse canonical X assignments without letting the global tokenizer erase commas. */
+export function parseSubcircuitCallParams(raw: string, evaluate: (token: string) => string = token => token): Record<string, number> {
+  const params: Record<string, number> = {};
+  for (const { name, value } of callAssignments(raw)) {
+    if (!/^[A-Za-z_]\w*$/.test(name) || bareCommaValue(value)) continue;
+    params[name.toUpperCase()] = parseNumber(evaluate(value));
+  }
+  return params;
+}
+
+/** inp_fix_inst_line retains matched formal names before positional numparam validation. */
+export function validateSubcircuitCallCommas(raw: string, formals: Record<string, number | string>): void {
+  for (const { name, value } of callAssignments(raw)) {
+    if (Object.hasOwn(formals, name.toUpperCase()) && bareCommaValue(value)) {
+      throw new Error('Subcircuit positional assignment: ; sign expected');
+    }
+  }
+}
 
 /**
  * ngspice-47 inpcom.c (`inp_fix_param_values`) wraps the bare right-hand side
@@ -97,15 +160,25 @@ const CALL_ASSIGNMENT = /([A-Za-z_]\w*)\s*=\s*([^\s{}'",=]+)(?=\s|$)/g;
 export function bracedSubcircuitCallValues(line: string, commentStart: number): string {
   const card = line.slice(0, commentStart);
   if (!card.includes('=')) return line;
-  const braced = card.replace(CALL_ASSIGNMENT, (match, name: string, value: string) => {
+  const assignments = callAssignments(card);
+  if (assignments.length === 0) return line;
+  const values: string[] = [];
+  for (const { name, value } of assignments) {
+    // Comma-prefixed actual names cannot match an identifier formal. Discard
+    // them before their (possibly undefined) expressions are evaluated.
+    if (!/^[A-Za-z_]\w*$/.test(name)) continue;
+    if (value.startsWith('{') || value.startsWith("'") || bareCommaValue(value)) {
+      values.push(`${name}=${value}`);
+      continue;
+    }
     try {
       parseNumber(value);
-      return match;
+      values.push(`${name}=${value}`);
     } catch {
-      return `${name}={${value}}`;
+      values.push(`${name}={${value}}`);
     }
-  });
-  return braced + line.slice(commentStart);
+  }
+  return card.slice(0, assignments[0].start) + values.join(' ') + ' ' + line.slice(commentStart);
 }
 
 export interface SubcircuitCall {
@@ -122,7 +195,11 @@ export interface SubcircuitCall {
  * `X<name> <port>... <subckt> [params:] [name=value...]`: the last token
  * that is neither an assignment nor ngspice's `params:` keyword.
  */
-export function locateSubcircuitCall(tokens: readonly string[]): SubcircuitCall {
+export function locateSubcircuitCall(tokens: readonly string[], raw?: string): SubcircuitCall {
+  // A comma inside a bare actual may become a non-assignment token. It is
+  // not the subcircuit name. Locate that name using only the raw card prefix.
+  const firstAssignment = raw === undefined ? undefined : callAssignments(raw)[0];
+  if (firstAssignment !== undefined) tokens = tokenizeLine(raw!.slice(0, firstAssignment.start));
   let index = tokens.length - 1;
   while (index > 1 && tokens[index].includes('=')) index--;
   const nameIndex = index > 1 && PARAMS_KEYWORD.test(tokens[index]) ? index - 1 : index;
