@@ -10,13 +10,14 @@ import { parseNumber } from './tokenizer.js';
  * Supported: numbers with SPICE scale factors, the constants `pi` and `e`,
  * `time`, `temper`, `v(node)`, `v(node1,node2)`, the branch current
  * `i(vsource)` of a branch-carrying source, unary `+ - !`, binary
- * `+ - * / ^ **`, comparisons `== != <> < <= > >=`, `&&`, `||`, the ternary
+ * `+ - * / ^ **`, comparisons `== != <> < <= > >=`, `&&`, `||` (also `|`), the ternary
  * `c ? a : b` / `ternary_fcn(c, a, b)`, every function listed in
  * {@link BEHAVIORAL_FUNCTIONS}, and the PSpice `if`, `limit`, `pwrs`, `stp`
  * and `int` (see {@link PSPICE_FUNCTIONS}). `.param` names, `{expr}` and `'expr'` are
  * substituted before parsing, as ngspice's numparam front end does (see
  * {@link substituteBehavioralParameters}). `hertz`, `pwl(...)` and the PSPICE
- * logic operators `~ & |` are rejected explicitly.
+ * logic operators `~ &` are rejected explicitly. Single `|` is the boolean
+ * OR alias ngspice translates in included PSpice libraries (#903).
  */
 export type BehavioralFunction =
   | 'abs' | 'acos' | 'acosh' | 'asin' | 'asinh' | 'atan' | 'atanh'
@@ -230,7 +231,7 @@ export function parseBehavioralExpression(text: string): BehavioralExpression {
 
 /**
  * Recursive-descent form of the ngspice bison grammar. Precedence, lowest
- * first: `?:` (right), `||`, `&&`, `== !=`, `< <= > >=`, `+ -`, `* /`, unary
+ * first: `?:` (right), `||` / `|`, `&&`, `== !=`, `< <= > >=`, `+ -`, `* /`, unary
  * `- + !`, `^` (left). Unary minus binds looser than `^`: `-a^2` is `-(a^2)`.
  */
 class Parser {
@@ -254,7 +255,10 @@ class Parser {
 
   private parseOr(): BehavioralExpression {
     let left = this.parseAnd();
-    while (this.accept('||')) left = { kind: 'logical', op: '||', left, right: this.parseAnd() };
+    // Consume || first; both spellings use the same tree, truthiness and slopes.
+    while (this.accept('||') || this.accept('|')) {
+      left = { kind: 'logical', op: '||', left, right: this.parseAnd() };
+    }
     return left;
   }
 
