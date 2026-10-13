@@ -1,0 +1,9 @@
+MIT-authored scoped G TABLE sweep, endpoint clamps and smoothed corners
+.subckt lookup in out
+Glookup out 0 TABLE {v(in)} = (-1,-2m) (0,0) (1,3m)
+.ends lookup
+Vinput in 0 0
+Xlookup in out lookup
+Rload out 0 1k
+.dc Vinput -2 2 0.05
+.end

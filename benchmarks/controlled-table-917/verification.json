@@ -1,0 +1,27 @@
+{
+  "scope": "fail-closed safety alternative; TABLE numeric parity remains unimplemented",
+  "redCommitOriginal": "f07539c06b140514d7bd4bd05fc1eb4c8164efb2",
+  "redCommitAfterRebase": "18ae01dcc3649175ce876d6f5c5d5d10066d119e",
+  "greenCommitAfterRebase": "a485bb1819df815dd135cbefe78a69add931a525",
+  "commands": [
+    {"command": "pnpm install --frozen-lockfile", "exit": 0},
+    {"command": "pnpm -C packages/core exec vitest run src/parser/controlled-table-917.test.ts", "phase": "RED", "exit": 1, "failed": 11, "passed": 2},
+    {"command": "pnpm -C packages/core exec vitest run src/parser/controlled-table-917.test.ts src/parser/poly-trtol-862.test.ts src/parser/behavioral-expression.test.ts", "phase": "final GREEN", "exit": 0, "passed": 55},
+    {"command": "spice-heavy pnpm exec tsx benchmarks/controlled-table-917/compare.ts before.json", "exit": 0},
+    {"command": "spice-heavy pnpm exec tsx benchmarks/controlled-table-917/compare.ts after.json", "exit": 0},
+    {"command": "spice-heavy python3 benchmarks/controlled-table-917/vendor.py before", "exit": 0},
+    {"command": "spice-heavy python3 benchmarks/controlled-table-917/vendor.py after", "exit": 0},
+    {"command": "pnpm exec tsx --test benchmarks/controlled-table-917/evidence.test.mts", "exit": 0, "passed": 3},
+    {"command": "pnpm build", "phase": "before and after rebase", "exit": 0},
+    {"command": "pnpm lint", "phase": "before and after rebase", "exit": 0},
+    {"command": "spice-heavy pnpm test", "phase": "before rebase and final m= protection test", "exit": 0, "corePassed": 3604, "coreSkipped": 2},
+    {"command": "pnpm -C packages/core exec tsc --noEmit --strict --skipLibCheck --module ESNext --target ES2022 --moduleResolution Bundler --types node ../../benchmarks/controlled-table-917/compare.ts ../../benchmarks/controlled-table-917/vendor-native.mts ../../benchmarks/controlled-table-917/evidence.test.mts", "exit": 0}
+  ],
+  "numericParity": false,
+  "vendorNativeCompletionsBefore": 0,
+  "vendorNativeCompletionsAfter": 0,
+  "vendorNgspiceCompletionsBefore": 2,
+  "vendorNgspiceCompletionsAfter": 2,
+  "vendorAcRowsPerReference": 141,
+  "requiredExactHeadCI": "reported in PR and Kanban handoff, not inferred from pre-rebase full-suite run"
+}

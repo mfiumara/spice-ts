@@ -65,4 +65,9 @@ describe('controlled-source TABLE fails closed (#917)', () => {
     const raw = 'Glinear (out 0) (table in) {gain}';
     expect(tokenizeNetlist(raw)[0].raw).toBe(raw);
   });
+
+  it('does not mistake a linear TABLE control node with m= for TABLE syntax', () => {
+    const raw = 'Glinear out 0 table in 2 m=3';
+    expect(tokenizeNetlist(raw)[0].raw).toBe(raw);
+  });
 });

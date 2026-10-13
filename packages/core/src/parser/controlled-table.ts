@@ -15,7 +15,10 @@ export function assertNoControlledTable(tokens: readonly string[], lineNumber: n
   if (!/^[eg]/i.test(tokens[0] ?? '')) return;
   const fields = tokens.filter(token => token !== '(' && token !== ')');
   if (!/^table(?:=|$)/i.test(fields[3] ?? '')) return;
-  if (fields.length === 6 && !/[{}=]/.test(fields[4]) && !fields.slice(3).some(token => token.includes('='))) return;
+  const linearControls = fields.length >= 6 && !/[{}=]/.test(fields[4])
+    && !fields.slice(3, 6).some(token => token.includes('='))
+    && fields.slice(6).every(token => /^m=/i.test(token));
+  if (linearControls) return;
   throw new ParseError(
     `Controlled source '${tokens[0]}': TABLE syntax is not supported; `
       + 'ngspice-compatible smoothed, clamped transfer lowering is required',
