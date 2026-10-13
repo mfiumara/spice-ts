@@ -1,0 +1,89 @@
+{
+  "phases": [
+    {
+      "phase": "worker-entry",
+      "ms": 20.477333,
+      "memory": {
+        "rss": 44646400,
+        "heapTotal": 5652480,
+        "heapUsed": 4837768,
+        "external": 1850552,
+        "arrayBuffers": 12531
+      }
+    },
+    {
+      "phase": "core-imported",
+      "ms": 39.474125,
+      "memory": {
+        "rss": 56229888,
+        "heapTotal": 11255808,
+        "heapUsed": 9564256,
+        "external": 1851672,
+        "arrayBuffers": 13611
+      }
+    },
+    {
+      "phase": "warmup-complete",
+      "ms": 983.50425,
+      "warmupMs": 942.7926669999999,
+      "memory": {
+        "rss": 366854144,
+        "heapTotal": 156811264,
+        "heapUsed": 123462192,
+        "external": 134841408,
+        "arrayBuffers": 133003347
+      }
+    },
+    {
+      "phase": "simulate-start",
+      "ms": 1045.246708,
+      "memory": {
+        "rss": 370688000,
+        "heapTotal": 156811264,
+        "heapUsed": 123968144,
+        "external": 134841408,
+        "arrayBuffers": 133003347
+      }
+    },
+    {
+      "phase": "simulate-end",
+      "ms": 2006.918541,
+      "memory": {
+        "rss": 548864000,
+        "heapTotal": 158121984,
+        "heapUsed": 126846024,
+        "external": 121664544,
+        "arrayBuffers": 119826483
+      }
+    }
+  ],
+  "ms": 961.6718330000001,
+  "peakRssMiB": 556.65625,
+  "grid": [
+    0
+  ],
+  "values": [
+    0.125507584809263
+  ],
+  "convergence": {
+    "dc": {
+      "newtonIterations": 2,
+      "acceptedSolves": 1,
+      "rejectedSolves": 0,
+      "sourceStepAttempts": 0,
+      "sourceStepFailures": 0,
+      "gminStepAttempts": 0,
+      "gminStepFailures": 0,
+      "failure": null
+    },
+    "transient": {
+      "acceptedSteps": 0,
+      "rejectedSteps": 0,
+      "newtonIterations": 0,
+      "nrRetries": 0,
+      "lteRetries": 0,
+      "minimumAcceptedTimestep": null,
+      "failure": null
+    }
+  }
+}
