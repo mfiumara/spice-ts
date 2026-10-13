@@ -1688,5 +1688,78 @@
     }
   ],
   "traceProcessReceipts": 3,
-  "totalProcessReceipts": 42
+  "totalProcessReceipts": 42,
+  "preliminaryProvenance": {
+    "archiveSha256": "6cfe8055852f7de65eb46e789631be2f060dafbf477341642455360593363a6b",
+    "processReceipts": 39,
+    "statuses": {
+      "ok": 37,
+      "timeout": 2
+    },
+    "observedIntervalTotalMs": 179554.11087400003,
+    "discrepancies": [
+      {
+        "key": "simulate-cmos-inverter-chain-tran-50000-r0",
+        "repeat": 0,
+        "status": "timeout",
+        "phaseFile": "logs/simulate-cmos-inverter-chain-tran-50000-r0.jsonl",
+        "journalPhases": [
+          "cold"
+        ],
+        "archivedPhases": [
+          "cold",
+          "warm"
+        ],
+        "completedAfterJournalSnapshot": [
+          {
+            "phase": "warm",
+            "ms": 23100.32875,
+            "probeSha256": "20834a6e72295631a3ec4d23c6dc7f637db69a111116ffe90b090fe22fcd6e00"
+          }
+        ],
+        "observedIntervalMs": 45071.225875000004,
+        "archivedSimulateMs": 60245.006792,
+        "exceedsObservedInterval": true,
+        "exceedsDeclaredNodeCap": true,
+        "warmIncludedInBudgetStatistics": false
+      },
+      {
+        "key": "simulate-cmos-inverter-chain-tran-50000-r1",
+        "repeat": 1,
+        "status": "timeout",
+        "phaseFile": "logs/simulate-cmos-inverter-chain-tran-50000-r1.jsonl",
+        "journalPhases": [
+          "cold"
+        ],
+        "archivedPhases": [
+          "cold",
+          "warm"
+        ],
+        "completedAfterJournalSnapshot": [
+          {
+            "phase": "warm",
+            "ms": 22275.644125000003,
+            "probeSha256": "20834a6e72295631a3ec4d23c6dc7f637db69a111116ffe90b090fe22fcd6e00"
+          }
+        ],
+        "observedIntervalMs": 45053.274666000005,
+        "archivedSimulateMs": 45822.462375,
+        "exceedsObservedInterval": true,
+        "exceedsDeclaredNodeCap": true,
+        "warmIncludedInBudgetStatistics": false
+      }
+    ],
+    "actualNodeWallMs": null,
+    "actualNodeCapEnforced": false,
+    "survivorTails": "unknown; completed archived simulate intervals are lower bounds, not Node wall measurements",
+    "sharedLoad": "surviving Node children may have overlapped subsequent scheduled work"
+  },
+  "budgetProvenance": {
+    "scheduledProcessReceipts": 81,
+    "observedWrapperDirectChildIntervalTotalMs": 360221.56012700003,
+    "actualCombinedNodeWallMs": null,
+    "declaredBudgetMs": 900000,
+    "actualCombinedNodeWallBudgetVerified": false,
+    "reason": "Preliminary timeout killed /usr/bin/time, not Node; survivor tails and possible overlapping shared load are unmeasured"
+  }
 }

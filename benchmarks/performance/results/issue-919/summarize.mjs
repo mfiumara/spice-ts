@@ -7,6 +7,7 @@ import { deserialize } from 'node:v8';
 import { m2Netlist, M2_CIRCUITS } from '../../scaling-m2-fixture.mjs';
 import { errors } from '../issue-907/metrics.mjs';
 import { distribution, cpuSelf } from './metrics.mjs';
+import { preliminaryProvenance } from './provenance.mjs';
 const out = 'benchmarks/performance/results/issue-919';
 const rows = readFileSync(`${out}/samples.jsonl`, 'utf8').trim().split('\n').map(JSON.parse);
 assert.equal(rows.length, 39);
@@ -86,5 +87,14 @@ summary.phaseTaggedTraces = traceRows.map(row => {
 });
 summary.traceProcessReceipts = traceRows.length;
 summary.totalProcessReceipts = rows.length + traceRows.length;
+summary.preliminaryProvenance = preliminaryProvenance();
+summary.budgetProvenance = {
+  scheduledProcessReceipts: summary.totalProcessReceipts + summary.preliminaryProvenance.processReceipts,
+  observedWrapperDirectChildIntervalTotalMs: summary.preliminaryProvenance.observedIntervalTotalMs + rows.reduce((sum, r) => sum + r.wallMs, 0) + traceRows.reduce((sum, r) => sum + r.wallMs, 0),
+  actualCombinedNodeWallMs: null,
+  declaredBudgetMs: 900000,
+  actualCombinedNodeWallBudgetVerified: false,
+  reason: 'Preliminary timeout killed /usr/bin/time, not Node; survivor tails and possible overlapping shared load are unmeasured',
+};
 writeFileSync(`${out}/summary.json`, JSON.stringify(summary, null, 2));
 console.log(JSON.stringify({ processReceipts: summary.processReceipts, statuses: summary.statuses, controls: summary.controls, isolation: summary.isolation.map(({ profiles, ...rest }) => ({ ...rest, supernodeSelfMs: distribution(profiles.map(p => p.self.find(s => s.name === 'applySupernode')?.ms ?? 0)) })) }, null, 2));

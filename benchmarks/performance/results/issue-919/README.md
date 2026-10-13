@@ -101,11 +101,16 @@ full RSS ranges and phase memory snapshots remain in summary.json/samples.jsonl.
 | CMOS TRAN | 50k | 24491.786 [22139.415,34274.025] | 20761.593 [19911.071,21612.115], 2/3 only | 1078.062/1732.625, 2/3 warm only |
 
 The final 39-child epoch has 38 successes and one combined cold+warm deadline
-timeout. The preliminary epoch had 37 successes and two timeouts. The timeout
-does not erase the completed cold phase, and partial warm work is not timed as
-a successful simulate. All completed grids/probes exactly equal #907 doubles.
-Final+preliminary+tagged traces consumed 360.222 seconds of child wall across
-81 child processes, within the declared 900-second experiment budget.
+timeout. The preliminary journal has 37 successes and two wrapper timeouts.
+Completed cold phases are retained. Final partial warm work is not a successful
+simulate; preliminary archived warm completions after the wrapper deadline are
+reported separately below, excluded from in-budget warm statistics, not erased.
+Validated journal grids/probes exactly equal #907 doubles.
+Final+preliminary+tagged journals total 360221.560127 ms (360.222 seconds) of
+observed wrapper/direct-child intervals across 81 scheduled processes. This is
+NOT actual combined Node wall time: preliminary survivor tails are unknown.
+The observed interval sum is below the declared 900-second budget, but actual
+combined Node wall budget compliance cannot be verified from these receipts.
 
 ## Decision and exact next step
 
@@ -157,20 +162,41 @@ only isolated mesh first-OP replay checks the entire solved vector.
 
 ## Budget and reproducibility
 
-The preliminary epoch used 39 child processes (27 controls, 3 captures, 9
+The preliminary epoch scheduled 39 processes (27 controls, 3 captures, 9
 isolated profiles). Its complete host/journal/log/profile/capture set is preserved
-in preliminary-39.tar.gz. It used /usr/bin/time -l around Node. Two CMOS50k
-children retained cold results but exhausted the combined cold+warm 45s deadline.
-Those warm samples are censored, not zero or a success. No child from this card
-remained running when that epoch finished.
+unchanged in preliminary-39.tar.gz, SHA256
+`6cfe8055852f7de65eb46e789631be2f060dafbf477341642455360593363a6b`.
+It used /usr/bin/time -l around Node. The 45s timeout killed the wrapper, NOT
+Node; the actual Node cap did not hold. The two CMOS50k journal snapshots contain
+only cold phases, but their archived phase files also contain completed warm
+phases written by surviving Node children after the snapshots:
+
+| Repeat | Cold ms | Archived warm ms | Sum of simulate intervals ms | Observed wrapper interval ms |
+|---:|---:|---:|---:|---:|
+| 0 | 37144.678042 | 23100.328750 | 60245.006792 | 45071.225875 |
+| 1 | 23546.818250 | 22275.644125 | 45822.462375 | 45053.274666 |
+
+These are completed out-of-budget warm phases, not partial work or in-budget
+successes. Timeout statuses and in-budget censoring remain; the warm completions
+are exposed in summary.json.preliminaryProvenance, not silently discarded.
+The sums are simulate-only lower bounds, not full Node wall measurements.
+Survivor tails and actual exit times are unknown, and surviving Node work may
+have overlapped subsequent scheduled children and affected shared-host load.
+The earlier claim that no child remained running at epoch completion is not
+established by these receipts and is withdrawn.
 
 The final runner kills Node directly, not an outer time wrapper, at 45s.
 The final validation epoch repeats the same 39-child matrix. The three tagged
-trace children use direct Node too. Combined experiment budget is 81 processes
-and 900s of child-wall scheduling, not a new corpus run. The preliminary epoch
-and final epoch are harness validation controls on identical production code,
-not an optimization A/B. Preliminary measurement results remain accessible even
-if host load or the timeout outcomes change in the final epoch.
+trace children use direct Node too. The declared combined experiment budget was
+81 processes and 900s of child wall, not a new corpus run. Only the observed
+wrapper/direct-child journal interval total is known; actual combined Node wall
+and compliance with that declared wall budget are unknown. The preliminary
+and final epochs are harness validation controls on identical production code,
+not an optimization A/B. Final phase/profile measurements remain unchanged.
+Offline provenance.test.mjs reconciles all 39 preliminary journal snapshots with
+the immutable archive phase files, asserts both overruns and warm exclusions,
+and verifies all 39 final phase files exactly match the direct-node journal.
+No new heavy experiment is needed for this provenance correction.
 
 Memory samples include RSS/heap/external/arrayBuffers and process maxRSS.
 Warm process peaks include both calls and retained allocations, so higher warm
@@ -191,7 +217,7 @@ pnpm -C packages/core exec esbuild ../../benchmarks/performance/results/issue-91
 spice-heavy node benchmarks/performance/results/issue-919/run.mjs
 spice-heavy node benchmarks/performance/results/issue-919/trace.mjs
 node benchmarks/performance/results/issue-919/summarize.mjs
-node --test benchmarks/performance/results/issue-919/check.test.mjs
+node --test benchmarks/performance/results/issue-919/check.test.mjs benchmarks/performance/results/issue-919/provenance.test.mjs
 pnpm -C packages/core exec vitest run src/solver/gilbert-peierls.test.ts
 pnpm exec tsx --test benchmarks/performance/scaling-m2.test.ts
 spice-heavy pnpm test
@@ -204,3 +230,10 @@ six existing fixture tests pass. Guarded monorepo test exit0 with core3477 pass,
 in full-test.log. Guarded accuracy exit0; accuracy.log retains the actual output.
 Exact PR/full head SHA, required test(20),test(22),build,accuracy checks and independent
 review are merge gates recorded in Kanban. The engineer does not merge.
+
+Provenance rework validation: pre-fix summary fails the budget regression (RED);
+corrected summary passes all eight offline tests (GREEN). Frozen install, build
+and lint exit0; 31 solver and six fixture tests pass. Guarded full suite exits0,
+including core3477 pass/2 skipped and final benchmark144 pass/4 skipped. Offline
+summary regeneration is byte-identical; all prior final summary fields and the
+preliminary archive are unchanged. No new heavy corpus experiment was run.
