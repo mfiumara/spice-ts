@@ -34,6 +34,7 @@ The machine-readable catalogue is `benchmarks/corpus/ngspice/manifest.json`.
 - `compare.ts` sends identical bytes to spice-ts and ngspice-47 and records input hashes, runtime and max/RMS errors. No circuit-specific tolerance or solver settings. The residual diode OP voltage difference is published rather than hidden by an accuracy gate.
 - `vendor.mts` reruns the unchanged attachments of https://sourceforge.net/p/ngspice/bugs/784/ and https://sourceforge.net/p/ngspice/bugs/738/, fetched/hash-verified by `benchmarks/corpus/ngspice-bugs/fetch.ts`; the only deck edit is Windows include-path relocation. Existing attachment licence/redistribution restrictions remain in the ticket READMEs and manifest. Vendor libraries are not committed. Receipts explicitly retain downstream unsupported outcomes and null waveform metrics.
 
+
 ## Rust sparse LU spike (#802)
 
 - Source: matrices generated at run time by `benchmarks/rust-lu-spike/dump-matrices.ts` from the project-authored M2 scaling decks (`benchmarks/performance/scaling-m2-fixture.mjs`, MIT). Generated `.mtx` files are gitignored, not redistributed.

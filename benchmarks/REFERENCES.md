@@ -114,7 +114,7 @@ per-signal max/RMS absolute and relative error. Every fixture has
 | --- | --- | ---: | ---: | ---: |
 | test_ekv26_nmos | i(vdmon) | 1806 | 0.00229454302 A | 0.000804740361 A |
 | test_ekv26_pmos | i(vdmon) | 1806 | 0.00596812271 A | 0.00251432532 A |
-| inverter_transient_ekv26 | v(1) | 508 | 2.10188450 V | 0.631576604 V |
+| inverter_transient_ekv26 | v(1) | 508 | 2.10188451 V | 0.631576564 V |
 
 No before/after simulator gain: the core is unchanged. The new reference exposes
 losses that MOS1-vs-MOS1 ngspice parity could not reveal. Relative error excludes
