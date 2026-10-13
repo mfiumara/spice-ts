@@ -1,0 +1,14 @@
+repeated-siblings
+.subckt leaf a b
+R1 a b {pp}
+.ends leaf
+.subckt rc in out gnd params: pp=1k
+X1 in out leaf
+R2 out gnd 1k
+.ends rc
+V1 in 0 1
+Xa in o1 0 rc pp=3k
+Xb in o2 0 rc pp=4k
+Xc in o3 0 rc pp=3k
+.op
+.end

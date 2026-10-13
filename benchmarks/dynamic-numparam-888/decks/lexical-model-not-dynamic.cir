@@ -1,0 +1,13 @@
+lexical-model-not-dynamic
+.model DX D (IS=1e-14)
+.subckt leaf a b
+D1 a b DX
+.ends leaf
+.subckt caller a b
+.model DX D (IS=1e-10 RS=10)
+X1 a b leaf
+.ends caller
+V1 a 0 0.6
+X1 a 0 caller
+.op
+.end

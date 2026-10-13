@@ -1,0 +1,14 @@
+global-fallback
+.param pp=9k
+.subckt leaf a b
+R1 a b {pp}
+.ends leaf
+.subckt rc in out gnd
+
+X1 in out leaf
+R2 out gnd 1k
+.ends rc
+V1 in 0 1
+X1 in o 0 rc
+.op
+.end
