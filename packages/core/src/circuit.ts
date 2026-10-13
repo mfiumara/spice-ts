@@ -65,6 +65,7 @@ import { DEFAULT_OPTIONS, GROUND_NODE } from './types.js';
 import { evaluateExpression } from './parser/expression.js';
 import { parseNumber, tokenizeLine, tokenizeNetlist } from './parser/tokenizer.js';
 import { formatNumber } from './netlist-number.js';
+import { evaluateSubcircuitParams } from './subcircuit-params.js';
 import { isPspiceSwitchModel, translatePspiceSwitchModel } from './parser/pspice-switch.js';
 import { parseModelCard } from './parser/model-parser.js';
 import { assertDeviceModelType, normalizeModelType } from './parser/model-type.js';
@@ -164,6 +165,8 @@ interface SubcircuitScope {
   definitions: ReadonlyMap<string, SubcktDefinition>;
   /** Upper-case local `.model` name -> instance-scoped model name (#854). */
   models: ReadonlyMap<string, string>;
+  /** Parameter scope of the instance whose body holds these definitions (#857). */
+  params: Record<string, number>;
 }
 
 interface DeviceDescriptor {
@@ -3326,9 +3329,11 @@ export class Circuit {
       portMap.set(def.ports[i].toUpperCase(), connectedPorts[i]);
     }
 
-    // ngspice numparam scope: top-level .params, shadowed by the subcircuit's
-    // parameters and the .params of its body.
-    const localParams: Record<string, number> = Object.create(this.parameterScope()) as Record<string, number>;
+    // ngspice numparam scope: top-level .params, shadowed by the parameters of
+    // the enclosing instance a nested definition lives in (#857), then by the
+    // subcircuit's parameters and the .params of its body.
+    const parentParams = definitionScopes[0]?.params ?? this.parameterScope();
+    const localParams: Record<string, number> = Object.create(parentParams) as Record<string, number>;
     const overrides = new Map(Object.entries(instanceParams).map(([k, v]) => [k.toUpperCase(), v]));
     // Defaults are evaluated in declaration order after the instance
     // overrides, so `p2={p1*2}` follows an overridden p1 (ngspice-47).
@@ -3396,7 +3401,12 @@ export class Circuit {
     const result: DeviceDescriptor[] = [];
 
     // Tokenize body lines; nested .subckt blocks are definitions, not devices.
-    const { lines: parsedLines, definitions } = splitNestedSubcircuits(tokenizeNetlist(def.body.join('\n')));
+    // Body lines carry their deck line numbers when the parser recorded them.
+    const bodyLines = tokenizeNetlist(def.body.join('\n')).map(line => ({
+      ...line,
+      lineNumber: def.bodyLines?.[line.lineNumber - 1] ?? line.lineNumber,
+    }));
+    const { lines: parsedLines, definitions } = splitNestedSubcircuits(bodyLines);
 
     // ngspice-47 subckt.c modtranslate: a .model card in the body becomes a
     // per-instance model `<instance>:<name>`, and the body's device cards (and
@@ -3413,35 +3423,24 @@ export class Circuit {
       return name;
     };
     const bodyScopes = definitions.size > 0
-      ? [{ definitions, models: localModels }, ...definitionScopes]
+      ? [{ definitions, models: localModels, params: localParams }, ...definitionScopes]
       : definitionScopes;
+
+    // ngspice-47 inp_reorder_params_subckt/inp_sort_params: the body's .param
+    // cards are evaluated before its elements, in dependency order (#857).
+    evaluateSubcircuitParams(
+      parsedLines.filter(({ tokens }) => tokens[0]?.toUpperCase() === '.PARAM')
+        .map(({ tokens, lineNumber, raw }) => ({ content: tokens.slice(1).join(' '), line: lineNumber, raw })),
+      localParams,
+    );
 
     for (const { tokens, lineNumber, raw } of parsedLines) {
       guard?.checkpoint('compile:device');
       if (tokens.length === 0) continue;
       const first = tokens[0].toUpperCase();
 
-      // .model cards were registered per instance above.
-      if (first === '.MODEL') continue;
-
-      // Handle .param inside subcircuit body
-      if (first === '.PARAM') {
-        const paramContent = tokens.slice(1).join(' ');
-        const eqIdx = paramContent.indexOf('=');
-        if (eqIdx > 0) {
-          const name = paramContent.slice(0, eqIdx).trim().toUpperCase();
-          let valStr = paramContent.slice(eqIdx + 1).trim();
-          if (valStr.startsWith('{') && valStr.endsWith('}')) {
-            valStr = valStr.slice(1, -1);
-          }
-          try {
-            localParams[name] = evaluateExpression(valStr, localParams);
-          } catch {
-            localParams[name] = parseNumber(valStr);
-          }
-        }
-        continue;
-      }
+      // .model cards were registered per instance and .param cards evaluated above.
+      if (first === '.MODEL' || first === '.PARAM') continue;
 
       // Skip other dot commands (like .ends that leaked, etc.)
       if (first.startsWith('.')) continue;

@@ -725,7 +725,8 @@ function behavioralCardAsBSource(line: string): string | undefined {
   return behavioralResistorAsBSource(line) ?? behavioralControlledSourceAsBSource(line);
 }
 
-function toParseError(error: unknown, line: number, context: string): ParseError {
+/** @internal An expression evaluation error as a ParseError at a card, naming undefined parameters. */
+export function toParseError(error: unknown, line: number, context: string): ParseError {
   const message = (error as Error).message
     .replace(/^Undefined variable '([^']*)'$/, "Undefined parameter '$1'");
   return new ParseError(message, line, context);

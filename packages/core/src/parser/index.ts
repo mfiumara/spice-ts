@@ -135,7 +135,7 @@ function parseNetlist(
   if (lines.some(line => hasGndToken(line.tokens))) circuit.addGlobalNodes(['gnd']);
   for (const warning of [...controlWarnings, ...extracted.warnings]) circuit.addParseWarning(warning.message);
 
-  let subcktCollector: (SubcircuitHeader & { body: string[]; depth: number }) | null = null;
+  let subcktCollector: (SubcircuitHeader & { body: string[]; bodyLines: number[]; depth: number }) | null = null;
   let hasNoiseAnalysis = false;
   let hasPoleZeroAnalysis = false;
   let hasSensitivityAnalysis = false;
@@ -158,16 +158,19 @@ function parseNetlist(
         if (first === '.SUBCKT') {
           subcktCollector.depth++;
           subcktCollector.body.push(raw);
+          subcktCollector.bodyLines.push(lineNumber);
         } else if (first === '.ENDS') {
           if (subcktCollector.depth > 0) {
             subcktCollector.depth--;
             subcktCollector.body.push(raw);
+            subcktCollector.bodyLines.push(lineNumber);
           } else {
             circuit.addSubcircuit({
               name: subcktCollector.name,
               ports: subcktCollector.ports,
               params: subcktCollector.params,
               body: subcktCollector.body,
+              bodyLines: subcktCollector.bodyLines,
             });
             subcktCollector = null;
           }
@@ -183,12 +186,13 @@ function parseNetlist(
             }
           }
           subcktCollector.body.push(raw);
+          subcktCollector.bodyLines.push(lineNumber);
         }
         continue;
       }
 
       if (first === '.SUBCKT') {
-        subcktCollector = { ...parseSubcircuitHeader(raw), body: [], depth: 0 };
+        subcktCollector = { ...parseSubcircuitHeader(raw), body: [], bodyLines: [], depth: 0 };
         continue;
       }
 
