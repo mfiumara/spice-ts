@@ -1,0 +1,772 @@
+{
+  "baseline": "d4b1ce04b70f98986d825d1daee64fabcfc7ae61",
+  "sourceHashes": {
+    "beforeDC": "593fb008cae82d9b1f2505f4cc369c06b9a2690988fff9d14b4b3da7386662cf",
+    "afterDC": "dfdbf5b5f6b0c29c62869c76572f52523b71b1ec51154e77e032e6dc8f41ec26"
+  },
+  "host": {
+    "platform": "darwin",
+    "release": "27.0.0",
+    "cpu": "Apple M5 Pro",
+    "node": "v22.23.1"
+  },
+  "ngspiceVersion": "******\n** ngspice-47 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2026, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n******\n",
+  "configuration": "set ngbehavior=ltps\nset filetype=ascii\n",
+  "timeoutMs": 30000,
+  "metrics": "complex node-voltage relative error at every matched frequency, denominator = reference phasor magnitude; max and RMS across all nodes/rows",
+  "receipts": [
+    {
+      "name": "reduction",
+      "deckHashBefore": "23c05174610397c199ae3ad79444f830645ad1f04c29064d2a8442978edd5486",
+      "deckHashAfter": "23c05174610397c199ae3ad79444f830645ad1f04c29064d2a8442978edd5486",
+      "includesBefore": {},
+      "includesAfter": {},
+      "native": {
+        "before": {
+          "status": "failure",
+          "milliseconds": 10.775041999999985,
+          "error": "Singular matrix: zero pivot at matrix column 1 (nodes: b)",
+          "maxError": null,
+          "rmsError": null,
+          "invocation": [
+            "/Users/mattiafiumara/.hermes/node/bin/node",
+            "--import",
+            "tsx",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/benchmarks/dc-floating-recovery-917/worker.mts",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/benchmarks/dc-floating-recovery-917/.run/baseline/packages/core/src/simulate.ts",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/benchmarks/vendor-singular-917/floating-rc.cir"
+          ],
+          "exit": 0,
+          "signal": null,
+          "processMilliseconds": 560.7072909999999
+        },
+        "after": {
+          "status": "success",
+          "milliseconds": 20.767124999999965,
+          "dc": null,
+          "ac": {
+            "frequencies": [
+              1,
+              1.2589254117941673,
+              1.5848931924611136,
+              1.99526231496888,
+              2.5118864315095806,
+              3.16227766016838,
+              3.9810717055349736,
+              5.011872336272725,
+              6.309573444801935,
+              7.9432823472428185,
+              10.000000000000005,
+              12.58925411794168,
+              15.848931924611145,
+              19.95262314968881,
+              25.118864315095824,
+              31.622776601683825,
+              39.81071705534977,
+              50.11872336272729,
+              63.0957344480194,
+              79.43282347242825,
+              100.00000000000014,
+              125.89254117941691,
+              158.4893192461116,
+              199.52623149688827,
+              251.18864315095843,
+              316.2277660168385,
+              398.10717055349795,
+              501.1872336272732,
+              630.9573444801945,
+              794.3282347242831,
+              1000.000000000002
+            ],
+            "voltages": {
+              "a": [
+                {
+                  "magnitude": 0.33333426911607655,
+                  "phase": 0.09599970803665632
+                },
+                {
+                  "magnitude": 0.3333348164472062,
+                  "phase": 0.12085625698737164
+                },
+                {
+                  "magnitude": 0.33333568390582646,
+                  "phase": 0.15214858415605303
+                },
+                {
+                  "magnitude": 0.3333370587281521,
+                  "phase": 0.19154286311486754
+                },
+                {
+                  "magnitude": 0.3333392376572743,
+                  "phase": 0.24113647020868811
+                },
+                {
+                  "magnitude": 0.33334269098344427,
+                  "phase": 0.3035694229988325
+                },
+                {
+                  "magnitude": 0.33334816402665957,
+                  "phase": 0.38216446314034935
+                },
+                {
+                  "magnitude": 0.3333568379394959,
+                  "phase": 0.48110299170576637
+                },
+                {
+                  "magnitude": 0.3333705844714388,
+                  "phase": 0.6056457238926413
+                },
+                {
+                  "magnitude": 0.33339236951468426,
+                  "phase": 0.7624088124670572
+                },
+                {
+                  "magnitude": 0.33342689210758863,
+                  "phase": 0.9597081495531027
+                },
+                {
+                  "magnitude": 0.33348159574745917,
+                  "phase": 1.2079862105161068
+                },
+                {
+                  "magnitude": 0.33356826760258684,
+                  "phase": 1.5203362748919464
+                },
+                {
+                  "magnitude": 0.3337055640424361,
+                  "phase": 1.9131362755440366
+                },
+                {
+                  "magnitude": 0.3339229906785222,
+                  "phase": 2.4067950544847903
+                },
+                {
+                  "magnitude": 0.33426715370703297,
+                  "phase": 3.026589839779078
+                },
+                {
+                  "magnitude": 0.3348115266741149,
+                  "phase": 3.803520722496296
+                },
+                {
+                  "magnitude": 0.3356715805139186,
+                  "phase": 4.774999059275269
+                },
+                {
+                  "magnitude": 0.3370279044982146,
+                  "phase": 5.984976378260823
+                },
+                {
+                  "magnitude": 0.33916076605250234,
+                  "phase": 7.482740486826879
+                },
+                {
+                  "magnitude": 0.3424999217119463,
+                  "phase": 9.318984736500996
+                },
+                {
+                  "magnitude": 0.3476921019649279,
+                  "phase": 11.536915064871982
+                },
+                {
+                  "magnitude": 0.3556827248642868,
+                  "phase": 14.155483472306564
+                },
+                {
+                  "magnitude": 0.36779370159343017,
+                  "phase": 17.142595094576276
+                },
+                {
+                  "magnitude": 0.3857520080036686,
+                  "phase": 20.38079540386387
+                },
+                {
+                  "magnitude": 0.41158891891304233,
+                  "phase": 23.63845060776271
+                },
+                {
+                  "magnitude": 0.4473124261927208,
+                  "phase": 26.571377940186448
+                },
+                {
+                  "magnitude": 0.4942984266700363,
+                  "phase": 28.778051941025474
+                },
+                {
+                  "magnitude": 0.5524795544255814,
+                  "phase": 29.90363763787878
+                },
+                {
+                  "magnitude": 0.6196183345621394,
+                  "phase": 29.751256547696208
+                },
+                {
+                  "magnitude": 0.6911505318958409,
+                  "phase": 28.348153512815575
+                }
+              ],
+              "b": [
+                {
+                  "magnitude": 0.33333321636030555,
+                  "phase": -0.04799998877024557
+                },
+                {
+                  "magnitude": 0.3333331479436351,
+                  "phase": -0.060428397362566534
+                },
+                {
+                  "magnitude": 0.33333303951060617,
+                  "phase": -0.07607482853179914
+                },
+                {
+                  "magnitude": 0.33333286765605347,
+                  "phase": -0.09577250191947614
+                },
+                {
+                  "magnitude": 0.33333259528548725,
+                  "phase": -0.12057037073861282
+                },
+                {
+                  "magnitude": 0.3333321636085985,
+                  "phase": -0.1517889725848241
+                },
+                {
+                  "magnitude": 0.3333314794502717,
+                  "phase": -0.19109073334198154
+                },
+                {
+                  "magnitude": 0.33333039514102614,
+                  "phase": -0.24056845845656688
+                },
+                {
+                  "magnitude": 0.3333286766483592,
+                  "phase": -0.3028567046960519
+                },
+                {
+                  "magnitude": 0.3333259530754738,
+                  "phase": -0.3812719247767999
+                },
+                {
+                  "magnitude": 0.3333216366400991,
+                  "phase": -0.4799887710563167
+                },
+                {
+                  "magnitude": 0.3333147958945357,
+                  "phase": -0.6042617935246931
+                },
+                {
+                  "magnitude": 0.3333039549061429,
+                  "phase": -0.7607040319969648
+                },
+                {
+                  "magnitude": 0.33328677526402095,
+                  "phase": -0.9576367277093703
+                },
+                {
+                  "magnitude": 0.333259552806876,
+                  "phase": -1.2055275601384536
+                },
+                {
+                  "magnitude": 0.3332164217803121,
+                  "phase": -1.517538321010578
+                },
+                {
+                  "magnitude": 0.33314809799962625,
+                  "phase": -1.9102063628701647
+                },
+                {
+                  "magnitude": 0.33303989814196583,
+                  "phase": -2.4042865151029864
+                },
+                {
+                  "magnitude": 0.33286862866406147,
+                  "phase": -3.0257792709204594
+                },
+                {
+                  "magnitude": 0.33259772525730696,
+                  "phase": -3.8071623929134533
+                },
+                {
+                  "magnitude": 0.3321697238662997,
+                  "phase": -4.78881763508915
+                },
+                {
+                  "magnitude": 0.3314947590519362,
+                  "phase": -6.0205847029693125
+                },
+                {
+                  "magnitude": 0.33043338951162227,
+                  "phase": -7.563249211358304
+                },
+                {
+                  "magnitude": 0.3287719181036078,
+                  "phase": -9.489526835352779
+                },
+                {
+                  "magnitude": 0.3261892449792638,
+                  "phase": -11.88366475313693
+                },
+                {
+                  "magnitude": 0.32221781488381296,
+                  "phase": -14.838070093080782
+                },
+                {
+                  "magnitude": 0.316210292640353,
+                  "phase": -18.44444421224883
+                },
+                {
+                  "magnitude": 0.30734123246635947,
+                  "phase": -22.77625092938239
+                },
+                {
+                  "magnitude": 0.2946961023541265,
+                  "phase": -27.860463974011687
+                },
+                {
+                  "magnitude": 0.27750520703998516,
+                  "phase": -33.64197297082742
+                },
+                {
+                  "magnitude": 0.2555168639884891,
+                  "phase": -39.95486251564441
+                }
+              ],
+              "in": [
+                {
+                  "magnitude": 1,
+                  "phase": 0
+                },
+                {
+                  "magnitude": 1,
+                  "phase": 0
+                },
+                {
+                  "magnitude": 1,
+                  "phase": 0
+                },
+                {
+                  "magnitude": 1,
+                  "phase": 0
+                },
+                {
+                  "magnitude": 1,
+                  "phase": 0
+                },
+                {
+                  "magnitude": 1,
+                  "phase": 0
+                },
+                {
+                  "magnitude": 1,
+                  "phase": 0
+                },
+                {
+                  "magnitude": 1,
+                  "phase": 0
+                },
+                {
+                  "magnitude": 1,
+                  "phase": 0
+                },
+                {
+                  "magnitude": 1,
+                  "phase": 0
+                },
+                {
+                  "magnitude": 1,
+                  "phase": 0
+                },
+                {
+                  "magnitude": 1,
+                  "phase": 0
+                },
+                {
+                  "magnitude": 1,
+                  "phase": 0
+                },
+                {
+                  "magnitude": 1,
+                  "phase": 0
+                },
+                {
+                  "magnitude": 1,
+                  "phase": 0
+                },
+                {
+                  "magnitude": 1,
+                  "phase": 0
+                },
+                {
+                  "magnitude": 1,
+                  "phase": 0
+                },
+                {
+                  "magnitude": 1,
+                  "phase": 0
+                },
+                {
+                  "magnitude": 1,
+                  "phase": 0
+                },
+                {
+                  "magnitude": 1,
+                  "phase": 0
+                },
+                {
+                  "magnitude": 1,
+                  "phase": 0
+                },
+                {
+                  "magnitude": 1,
+                  "phase": 0
+                },
+                {
+                  "magnitude": 1,
+                  "phase": 0
+                },
+                {
+                  "magnitude": 1,
+                  "phase": 0
+                },
+                {
+                  "magnitude": 1,
+                  "phase": 0
+                },
+                {
+                  "magnitude": 1,
+                  "phase": 0
+                },
+                {
+                  "magnitude": 1,
+                  "phase": 0
+                },
+                {
+                  "magnitude": 1,
+                  "phase": 0
+                },
+                {
+                  "magnitude": 1,
+                  "phase": 0
+                },
+                {
+                  "magnitude": 1,
+                  "phase": 0
+                },
+                {
+                  "magnitude": 1,
+                  "phase": 0
+                }
+              ]
+            }
+          },
+          "invocation": [
+            "/Users/mattiafiumara/.hermes/node/bin/node",
+            "--import",
+            "tsx",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/benchmarks/dc-floating-recovery-917/worker.mts",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/packages/core/src/simulate.ts",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/benchmarks/vendor-singular-917/floating-rc.cir"
+          ],
+          "exit": 0,
+          "signal": null,
+          "processMilliseconds": 440.71516699999995
+        }
+      },
+      "reference": {
+        "invocation": [
+          "ngspice",
+          "-b",
+          "-r",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/benchmarks/dc-floating-recovery-917/.run/reduction.raw",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/benchmarks/vendor-singular-917/floating-rc.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/benchmarks/dc-floating-recovery-917/.run",
+        "exit": 0,
+        "signal": null,
+        "error": null,
+        "milliseconds": 22.094749999999976,
+        "acRows": 31,
+        "log": "Note: gnd in a subcircuit is not set to 0 automatically\n\nNote: Compatibility modes selected: ps lt\n\n\nCircuit: self-written mit floating passive dc component, issue 917\n\nASCII raw file \"/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/benchmarks/dc-floating-recovery-917/.run/reduction.raw\"\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 5  \n\nNo. of Data Rows : 31\n\nTotal analysis time (seconds) = 0.001427\n\nTotal elapsed time (seconds) = 0.008 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 19464.703 MB.\nMaximum ngspice program size =   10.094 MB.\nCurrent ngspice program size =   10.094 MB.\n\nWarning: singular matrix:  check node b\n\nNote: Starting dynamic gmin stepping\nWarning: singular matrix:  check node b\n\nWarning: Dynamic gmin stepping failed\nNote: Starting true gmin stepping\nWarning: singular matrix:  check node b\n\nWarning: singular matrix:  check node b\n\nWarning: singular matrix:  check node b\n\nWarning: singular matrix:  check node b\n\nWarning: True gmin stepping failed\nNote: Starting source stepping\nWarning: source stepping failed\nNote: Transient op started\nNote: Transient op finished successfully\n"
+      },
+      "maxError": 6.05355206622835e-14,
+      "rmsError": 1.023545913178503e-14,
+      "comparedValues": 93
+    },
+    {
+      "name": "base",
+      "deckHashBefore": "22cb849113e37af11faa951ce72e9d67f2ae38219918af7bf377f479afed8e5c",
+      "deckHashAfter": "22cb849113e37af11faa951ce72e9d67f2ae38219918af7bf377f479afed8e5c",
+      "includesBefore": {
+        "AD620.mod": "99c3a83c8e4a44fc1c2e5b878a061e03f959e223fa646bb849589e68f603f395",
+        "lmx58_lm2904.lib": "467a3e573420d1f5a21fab57b76be0e13073e854f609a73459a191958e314726",
+        "UA555.mod": "e4b70989b2ca1cd9e3177bc4d35224098360461a2b6901a688542e2d1af6d7bf"
+      },
+      "includesAfter": {
+        "AD620.mod": "99c3a83c8e4a44fc1c2e5b878a061e03f959e223fa646bb849589e68f603f395",
+        "lmx58_lm2904.lib": "467a3e573420d1f5a21fab57b76be0e13073e854f609a73459a191958e314726",
+        "UA555.mod": "e4b70989b2ca1cd9e3177bc4d35224098360461a2b6901a688542e2d1af6d7bf"
+      },
+      "native": {
+        "before": {
+          "status": "failure",
+          "milliseconds": 63.13074999999998,
+          "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)",
+          "maxError": null,
+          "rmsError": null,
+          "invocation": [
+            "/Users/mattiafiumara/.hermes/node/bin/node",
+            "--import",
+            "tsx",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/benchmarks/dc-floating-recovery-917/worker.mts",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/benchmarks/dc-floating-recovery-917/.run/baseline/packages/core/src/simulate.ts",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/.receipt-882/ngspice/784/base_159.cir"
+          ],
+          "exit": 0,
+          "signal": null,
+          "processMilliseconds": 466.9257090000001
+        },
+        "after": {
+          "status": "failure",
+          "milliseconds": 55.910709,
+          "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)",
+          "maxError": null,
+          "rmsError": null,
+          "invocation": [
+            "/Users/mattiafiumara/.hermes/node/bin/node",
+            "--import",
+            "tsx",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/benchmarks/dc-floating-recovery-917/worker.mts",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/packages/core/src/simulate.ts",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/.receipt-882/ngspice/784/base_159.cir"
+          ],
+          "exit": 0,
+          "signal": null,
+          "processMilliseconds": 404.15779199999974
+        }
+      },
+      "reference": {
+        "invocation": [
+          "ngspice",
+          "-b",
+          "-r",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/benchmarks/dc-floating-recovery-917/.run/base.raw",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/.receipt-882/ngspice/784/base_159.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/benchmarks/dc-floating-recovery-917/.run",
+        "exit": 0,
+        "signal": null,
+        "error": null,
+        "milliseconds": 60.24137499999961,
+        "acRows": 141,
+        "log": "Note: gnd in a subcircuit is not set to 0 automatically\n\nNote: Compatibility modes selected: ps lt\n\n\nCircuit: KiCad schematic\n\nASCII raw file \"/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/benchmarks/dc-floating-recovery-917/.run/base.raw\"\nReducing trtol to 1 for xspice 'A' devices\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 294  \n\nNo. of Data Rows : 141\n\nTotal analysis time (seconds) = 0.036721\n\nTotal elapsed time (seconds) = 0.047 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 19464.703 MB.\nMaximum ngspice program size =   11.812 MB.\nCurrent ngspice program size =   11.812 MB.\n\nNote: Starting dynamic gmin stepping\nNote: Dynamic gmin stepping completed\n"
+      },
+      "maxError": null,
+      "rmsError": null,
+      "comparedValues": 0
+    },
+    {
+      "name": "variant",
+      "deckHashBefore": "a5cc7a2cb92e1bac21fc554f882a74b72bf112b6d74cc615d98546c59697c21f",
+      "deckHashAfter": "a5cc7a2cb92e1bac21fc554f882a74b72bf112b6d74cc615d98546c59697c21f",
+      "includesBefore": {
+        "AD620.mod": "99c3a83c8e4a44fc1c2e5b878a061e03f959e223fa646bb849589e68f603f395",
+        "lmx58_lm2904.lib": "467a3e573420d1f5a21fab57b76be0e13073e854f609a73459a191958e314726",
+        "UA555.mod": "e4b70989b2ca1cd9e3177bc4d35224098360461a2b6901a688542e2d1af6d7bf"
+      },
+      "includesAfter": {
+        "AD620.mod": "99c3a83c8e4a44fc1c2e5b878a061e03f959e223fa646bb849589e68f603f395",
+        "lmx58_lm2904.lib": "467a3e573420d1f5a21fab57b76be0e13073e854f609a73459a191958e314726",
+        "UA555.mod": "e4b70989b2ca1cd9e3177bc4d35224098360461a2b6901a688542e2d1af6d7bf"
+      },
+      "native": {
+        "before": {
+          "status": "failure",
+          "milliseconds": 65.419959,
+          "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)",
+          "maxError": null,
+          "rmsError": null,
+          "invocation": [
+            "/Users/mattiafiumara/.hermes/node/bin/node",
+            "--import",
+            "tsx",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/benchmarks/dc-floating-recovery-917/worker.mts",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/benchmarks/dc-floating-recovery-917/.run/baseline/packages/core/src/simulate.ts",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/.receipt-882/ngspice/784/variant_159.cir"
+          ],
+          "exit": 0,
+          "signal": null,
+          "processMilliseconds": 493.6189999999997
+        },
+        "after": {
+          "status": "failure",
+          "milliseconds": 61.484541000000036,
+          "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)",
+          "maxError": null,
+          "rmsError": null,
+          "invocation": [
+            "/Users/mattiafiumara/.hermes/node/bin/node",
+            "--import",
+            "tsx",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/benchmarks/dc-floating-recovery-917/worker.mts",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/packages/core/src/simulate.ts",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/.receipt-882/ngspice/784/variant_159.cir"
+          ],
+          "exit": 0,
+          "signal": null,
+          "processMilliseconds": 503.3856660000001
+        }
+      },
+      "reference": {
+        "invocation": [
+          "ngspice",
+          "-b",
+          "-r",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/benchmarks/dc-floating-recovery-917/.run/variant.raw",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/.receipt-882/ngspice/784/variant_159.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/benchmarks/dc-floating-recovery-917/.run",
+        "exit": 0,
+        "signal": null,
+        "error": null,
+        "milliseconds": 69.86845799999992,
+        "acRows": 141,
+        "log": "Note: gnd in a subcircuit is not set to 0 automatically\n\nNote: Compatibility modes selected: ps lt\n\n\nCircuit: KiCad schematic\n\nASCII raw file \"/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/benchmarks/dc-floating-recovery-917/.run/variant.raw\"\nReducing trtol to 1 for xspice 'A' devices\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 300  \n\nNo. of Data Rows : 141\n\nTotal analysis time (seconds) = 0.044994\n\nTotal elapsed time (seconds) = 0.055 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 18658.719 MB.\nMaximum ngspice program size =   11.891 MB.\nCurrent ngspice program size =   11.891 MB.\n\nNote: Starting dynamic gmin stepping\nNote: Dynamic gmin stepping completed\n"
+      },
+      "maxError": null,
+      "rmsError": null,
+      "comparedValues": 0
+    },
+    {
+      "name": "divider",
+      "deckHashBefore": "c92df81ccbe5e6acc476870cfcb90197e93849929e299242470c471b2e04ac88",
+      "deckHashAfter": "c92df81ccbe5e6acc476870cfcb90197e93849929e299242470c471b2e04ac88",
+      "includesBefore": {},
+      "includesAfter": {},
+      "native": {
+        "before": {
+          "status": "success",
+          "milliseconds": 10.968624999999975,
+          "dc": {
+            "in": 3,
+            "out": 2
+          },
+          "ac": null,
+          "invocation": [
+            "/Users/mattiafiumara/.hermes/node/bin/node",
+            "--import",
+            "tsx",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/benchmarks/dc-floating-recovery-917/worker.mts",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/benchmarks/dc-floating-recovery-917/.run/baseline/packages/core/src/simulate.ts",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/benchmarks/dc-floating-recovery-917/.run/divider.cir"
+          ],
+          "exit": 0,
+          "signal": null,
+          "processMilliseconds": 409.12766699999975
+        },
+        "after": {
+          "status": "success",
+          "milliseconds": 12.509416999999985,
+          "dc": {
+            "in": 3,
+            "out": 2
+          },
+          "ac": null,
+          "invocation": [
+            "/Users/mattiafiumara/.hermes/node/bin/node",
+            "--import",
+            "tsx",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/benchmarks/dc-floating-recovery-917/worker.mts",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/packages/core/src/simulate.ts",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/benchmarks/dc-floating-recovery-917/.run/divider.cir"
+          ],
+          "exit": 0,
+          "signal": null,
+          "processMilliseconds": 355.2829999999999
+        }
+      },
+      "reference": {
+        "invocation": [
+          "ngspice",
+          "-b",
+          "-r",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/benchmarks/dc-floating-recovery-917/.run/divider.raw",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/benchmarks/dc-floating-recovery-917/.run/divider.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/benchmarks/dc-floating-recovery-917/.run",
+        "exit": 0,
+        "signal": null,
+        "error": null,
+        "milliseconds": 48.79441599999973,
+        "acRows": null,
+        "log": "Note: gnd in a subcircuit is not set to 0 automatically\n\nNote: Compatibility modes selected: ps lt\n\n\nCircuit: divider\n\nASCII raw file \"/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/benchmarks/dc-floating-recovery-917/.run/divider.raw\"\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 3  \n\nNo. of Data Rows : 1\n\nTotal analysis time (seconds) = 0.000862\n\nTotal elapsed time (seconds) = 0.012 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 18658.719 MB.\nMaximum ngspice program size =   10.094 MB.\nCurrent ngspice program size =   10.094 MB.\n\n"
+      },
+      "maxError": null,
+      "rmsError": null,
+      "comparedValues": 0
+    },
+    {
+      "name": "inconsistent",
+      "deckHashBefore": "bab88385f3c9ac84381223e4c7ae9e6004d773c85776fcb63ee5b0b8340af2c6",
+      "deckHashAfter": "bab88385f3c9ac84381223e4c7ae9e6004d773c85776fcb63ee5b0b8340af2c6",
+      "includesBefore": {},
+      "includesAfter": {},
+      "native": {
+        "before": {
+          "status": "failure",
+          "milliseconds": 12.15424999999999,
+          "error": "Singular matrix: zero pivot at matrix column 1 (nodes: b)",
+          "maxError": null,
+          "rmsError": null,
+          "invocation": [
+            "/Users/mattiafiumara/.hermes/node/bin/node",
+            "--import",
+            "tsx",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/benchmarks/dc-floating-recovery-917/worker.mts",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/benchmarks/dc-floating-recovery-917/.run/baseline/packages/core/src/simulate.ts",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/benchmarks/dc-floating-recovery-917/.run/inconsistent.cir"
+          ],
+          "exit": 0,
+          "signal": null,
+          "processMilliseconds": 396.9909579999994
+        },
+        "after": {
+          "status": "failure",
+          "milliseconds": 14.26524999999998,
+          "error": "Singular matrix: zero pivot at matrix column 1 (nodes: b)",
+          "maxError": null,
+          "rmsError": null,
+          "invocation": [
+            "/Users/mattiafiumara/.hermes/node/bin/node",
+            "--import",
+            "tsx",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/benchmarks/dc-floating-recovery-917/worker.mts",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/packages/core/src/simulate.ts",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/benchmarks/dc-floating-recovery-917/.run/inconsistent.cir"
+          ],
+          "exit": 0,
+          "signal": null,
+          "processMilliseconds": 387.31033300000036
+        }
+      },
+      "reference": {
+        "invocation": [
+          "ngspice",
+          "-b",
+          "-r",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/benchmarks/dc-floating-recovery-917/.run/inconsistent.raw",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/benchmarks/dc-floating-recovery-917/.run/inconsistent.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/benchmarks/dc-floating-recovery-917/.run",
+        "exit": 0,
+        "signal": null,
+        "error": null,
+        "milliseconds": 19.861375000000407,
+        "acRows": 31,
+        "log": "Note: gnd in a subcircuit is not set to 0 automatically\n\nNote: Compatibility modes selected: ps lt\n\n\nCircuit: self-written mit floating passive dc component, issue 917\n\nASCII raw file \"/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8472e6aa/benchmarks/dc-floating-recovery-917/.run/inconsistent.raw\"\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 5  \n\nNo. of Data Rows : 31\n\nTotal analysis time (seconds) = 0.001043\n\nTotal elapsed time (seconds) = 0.006 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 18839.844 MB.\nMaximum ngspice program size =   10.125 MB.\nCurrent ngspice program size =   10.125 MB.\n\nWarning: singular matrix:  check node b\n\nNote: Starting dynamic gmin stepping\nWarning: singular matrix:  check node b\n\nWarning: Dynamic gmin stepping failed\nNote: Starting true gmin stepping\nWarning: singular matrix:  check node b\n\nWarning: singular matrix:  check node b\n\nWarning: singular matrix:  check node b\n\nWarning: singular matrix:  check node b\n\nWarning: True gmin stepping failed\nNote: Starting source stepping\nWarning: source stepping failed\nNote: Transient op started\nNote: Transient op finished successfully\n"
+      },
+      "maxError": null,
+      "rmsError": null,
+      "comparedValues": 0
+    }
+  ]
+}

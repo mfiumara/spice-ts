@@ -1,0 +1,39 @@
+spice-heavy: all 2 heavy slots busy, waiting...
+spice-heavy: got slot 1
+[
+  {
+    name: 'reduction',
+    native: { before: [Object], after: [Object] },
+    referenceRows: 31,
+    maxError: 6.05355206622835e-14,
+    rmsError: 1.023545913178503e-14
+  },
+  {
+    name: 'base',
+    native: { before: [Object], after: [Object] },
+    referenceRows: 141,
+    maxError: null,
+    rmsError: null
+  },
+  {
+    name: 'variant',
+    native: { before: [Object], after: [Object] },
+    referenceRows: 141,
+    maxError: null,
+    rmsError: null
+  },
+  {
+    name: 'divider',
+    native: { before: [Object], after: [Object] },
+    referenceRows: null,
+    maxError: null,
+    rmsError: null
+  },
+  {
+    name: 'inconsistent',
+    native: { before: [Object], after: [Object] },
+    referenceRows: 31,
+    maxError: null,
+    rmsError: null
+  }
+]

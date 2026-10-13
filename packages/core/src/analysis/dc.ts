@@ -4,9 +4,14 @@ import { createMatrixVariableIdentities, MNAAssembler } from '../mna/assembler.j
 import { newtonRaphson } from './newton-raphson.js';
 import { DCResult } from '../results.js';
 import { createConvergenceTelemetry, snapshotConvergenceTelemetry } from '../convergence-telemetry.js';
-import { ConvergenceError } from '../errors.js';
+import { ConvergenceError, SingularMatrixError } from '../errors.js';
 import { createNodeStateSolution, initialConditionHolds } from './initial-state.js';
 import { DEVICE_GMIN } from '../devices/device.js';
+import { Capacitor } from '../devices/capacitor.js';
+import { Resistor } from '../devices/resistor.js';
+import { VoltageSource } from '../devices/voltage-source.js';
+import { CurrentSource } from '../devices/current-source.js';
+import { createDriverFromCompiled } from './transient-driver.js';
 import {
   ProtocolExecutionError,
   type ProtocolExecutionGuard,
@@ -54,6 +59,13 @@ export function solveDCOperatingPoint(
       newtonRaphson(assembler, devices, options, options.maxIterations, nodeNames, convergence.dc, guard);
     } catch (err) {
       if (err instanceof ProtocolExecutionError) throw err;
+      // A bounded passive subset of ngspice-47's final OPtran fallback.
+      // Do not turn arbitrary singular/nonfinite nonlinear stamps into a
+      // transient solution, or override an explicitly supplied initial state.
+      if (
+        err instanceof SingularMatrixError && !hasNonlinear && !initialSolution
+        && passiveTransientOperatingPoint(compiled, assembler, options, guard)
+      ) return;
       // Fallbacks: gmin stepping homotopies (dynamic, then true gmin), then
       // source stepping, as ngspice-47 CKTop runs them.
       if (
@@ -109,6 +121,102 @@ export function solveDCOperatingPoint(
     assembler,
     convergence,
   };
+}
+
+/**
+ * ngspice-47 cpinit/OPtran defaults: 100 ns steps, 10 us horizon, no ramp.
+ * This is a finite-time operating point, NOT a DC gauge constraint. In a
+ * floating RC island, zero initial charge selects the common mode, and the
+ * island can still carry decaying resistor current at the horizon.
+ *
+ * Only positive passive RC devices and constant independent sources are
+ * admitted. Other models need their own MODEINITTRAN state semantics proved
+ * before reusing this fallback. No ground shunt or relaxed tolerance is used.
+ */
+function passiveTransientOperatingPoint(
+  compiled: CompiledCircuit,
+  assembler: MNAAssembler,
+  options: ResolvedOptions,
+  guard?: ProtocolExecutionGuard,
+): boolean {
+  if (options.gmin !== 0 || compiled.initialConditions.length || compiled.nodeSets.length) return false;
+  const { devices, nodeCount } = compiled;
+  const parent = Int32Array.from({ length: nodeCount + 1 }, (_, i) => i);
+  const root = (node: number): number => {
+    let i = node < 0 ? nodeCount : node;
+    while (parent[i] !== i) {
+      parent[i] = parent[parent[i]];
+      i = parent[i];
+    }
+    return i;
+  };
+  const join = (a: number, b: number): void => { parent[root(a)] = root(b); };
+  let hasCapacitor = false;
+  for (const device of devices) {
+    if (Object.getPrototypeOf(device) === Capacitor.prototype) {
+      const capacitor = device as Capacitor;
+      if (!(capacitor.capacitance > 0) || !Number.isFinite(capacitor.capacitance) || capacitor.ic !== undefined) return false;
+      hasCapacitor = true;
+    } else if (Object.getPrototypeOf(device) === Resistor.prototype) {
+      const resistor = device as Resistor;
+      if (!(resistor.conductance > 0) || !Number.isFinite(resistor.conductance)) return false;
+      join(device.nodes[0], device.nodes[1]);
+    } else if (
+      Object.getPrototypeOf(device) === VoltageSource.prototype
+      || Object.getPrototypeOf(device) === CurrentSource.prototype
+    ) {
+      const source = device as VoltageSource | CurrentSource;
+      if (source.waveform.type !== 'dc' && source.waveform.type !== 'ac') return false;
+      if (device instanceof VoltageSource) {
+        if (device.port) return false;
+        join(device.nodes[0], device.nodes[1]);
+      }
+    } else {
+      return false;
+    }
+  }
+  if (!hasCapacitor) return false;
+
+  // A net DC injection into an isolated component has no static solution.
+  // OPtran could integrate it into a finite voltage at 10 us; do not mask
+  // this truly inconsistent DC topology. Test exact balance, not a looser
+  // current tolerance. The failed plain load is still in assembler.b.
+  const injected = new Float64Array(nodeCount + 1);
+  let floating = false;
+  const ground = root(-1);
+  for (let i = 0; i < nodeCount; i++) {
+    const component = root(i);
+    if (component !== ground) floating = true;
+    injected[component] += assembler.b[i];
+  }
+  if (!floating || injected.some((value, i) => i !== ground && value !== 0)) return false;
+
+  // Initial charge is zero for this restricted subset (no IC, no devices
+  // with hidden charge state). The supplied zero vector also prevents a
+  // recursive DC solve through the existing transient driver.
+  let driver: ReturnType<typeof createDriverFromCompiled> | undefined;
+  try {
+    driver = createDriverFromCompiled(compiled, options, {
+      stopTime: 1e-5,
+      timestep: 1e-7,
+      maxTimestep: 1e-7,
+      initialSolution: new Float64Array(assembler.systemSize),
+      guard,
+    });
+    for (let steps = 0; steps < 10000 && !driver.isDone; steps++) {
+      guard?.checkpoint('solve:transient-step');
+      driver.advanceSolution();
+    }
+    const solution = driver.currentSolution();
+    if (!driver.isDone || !solution.every(Number.isFinite)) return false;
+    assembler.solution.set(solution);
+    return true;
+  } catch (error) {
+    if (error instanceof ProtocolExecutionError) throw error;
+    return false;
+  } finally {
+    driver?.dispose();
+  }
 }
 
 

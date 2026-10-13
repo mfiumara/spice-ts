@@ -1,0 +1,418 @@
+[
+  {
+    "name": "base_159.cir",
+    "sha256": "22cb849113e37af11faa951ce72e9d67f2ae38219918af7bf377f479afed8e5c",
+    "milliseconds": 36.814333000000005,
+    "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)",
+    "factors": [
+      {
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 229 (nodes: <expanded behavioral node redacted>)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 229 (nodes: <expanded behavioral node redacted>)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 229 (nodes: <expanded behavioral node redacted>)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 229 (nodes: <expanded behavioral node redacted>)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 229 (nodes: <expanded behavioral node redacted>)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 229 (nodes: <expanded behavioral node redacted>)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 229 (nodes: <expanded behavioral node redacted>)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 229 (nodes: <expanded behavioral node redacted>)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 229 (nodes: <expanded behavioral node redacted>)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 0.001,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 0.005623413251903491,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 0.008659643233600653,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 0.009646616199111991,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 0.009910458562488608,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 0.009977539079932736,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 0.009994380034155531,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 0.009998594712341624,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 0.009999648659569824,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 0.01,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 0.02,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 0.05,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 0.1,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 0.2,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 0.3,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 0.4,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 0.5,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 0.6,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 0.7,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 0.8,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 0.9,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      }
+    ],
+    "maxError": null,
+    "rmsError": null
+  },
+  {
+    "name": "variant_159.cir",
+    "sha256": "a5cc7a2cb92e1bac21fc554f882a74b72bf112b6d74cc615d98546c59697c21f",
+    "milliseconds": 15.566709000000003,
+    "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)",
+    "factors": [
+      {
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 232 (nodes: <expanded behavioral node redacted>)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 232 (nodes: <expanded behavioral node redacted>)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 232 (nodes: <expanded behavioral node redacted>)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 232 (nodes: <expanded behavioral node redacted>)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 232 (nodes: <expanded behavioral node redacted>)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 232 (nodes: <expanded behavioral node redacted>)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 232 (nodes: <expanded behavioral node redacted>)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 232 (nodes: <expanded behavioral node redacted>)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 232 (nodes: <expanded behavioral node redacted>)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 0.001,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 0.005623413251903491,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 0.008659643233600653,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 0.009646616199111991,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 0.009910458562488608,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 0.009977539079932736,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 0.009994380034155531,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 0.009998594712341624,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 0.009999648659569824,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 0.01,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 0.02,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 0.05,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 0.1,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 0.2,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 0.3,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 0.4,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 0.5,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 0.6,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 0.7,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 0.8,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 0.9,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "nonfinite": 0,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      }
+    ],
+    "maxError": null,
+    "rmsError": null
+  }
+]

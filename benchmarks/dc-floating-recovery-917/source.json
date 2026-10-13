@@ -1,0 +1,13 @@
+{
+  "origin": "https://git.code.sf.net/p/ngspice/ngspice",
+  "tag": "ngspice-47",
+  "revision": "a80f6e3e95d51534905b1f23410a951802666656",
+  "verification": "git ls-remote origin refs/tags/ngspice-47 returned this revision; local read-only source checkout HEAD matches. SHA256 computed from git show <revision>:<file>, not an instrumented build.",
+  "licence": "ngspice COPYING, modified BSD; source is referenced, not copied here",
+  "files": {
+    "src/frontend/init.c": "bd52e96db74324e031400ccbbdbbd4fcbec9e2bd3477ae0d3c3a8020194b35bc",
+    "src/spicelib/analysis/cktop.c": "9f06d3ac7b6a8aa28bdb46f1af3157362c6ca4a2ecc701a388c990ac3a07eb5e",
+    "src/spicelib/analysis/optran.c": "293bd182839ac8f53e5b47186abfcdf9128ed17bd8cb33ba4083e10f71b00742",
+    "src/spicelib/devices/cap/capload.c": "c969db26eef78270ffc78ac2195bfde5724e1a30f82637fa6f7cc482f293675b"
+  }
+}
