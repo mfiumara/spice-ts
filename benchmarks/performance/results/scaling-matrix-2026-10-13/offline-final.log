@@ -1,0 +1,22 @@
+test_deadline_is_not_circuit_failure (test_matrix.MatrixTests) ... ok
+test_existing_receipts_refuse_launch (test_matrix.MatrixTests) ... ok
+test_headroom_includes_cleanup (test_matrix.MatrixTests) ... ok
+test_ngspice_timeout_is_not_spice_loss (test_matrix.MatrixTests) ... ok
+test_overshoot_is_not_clipped (test_matrix.MatrixTests) ... fake timeout 125000 child-deadline
+ok
+test_selects_spice_timeout_before_ratio (test_matrix.MatrixTests) ... ok
+test_suspension_is_invalid_not_timeout (test_matrix.MatrixTests) ... fake invalid-clock 1000000 monotonic-disagreement
+ok
+test_timeout_kills_only_owned_group (test_matrix.MatrixTests) ... fake timeout 119800.0 deadline-reserve
+ok
+test_archive (test_receipts.ReceiptTests) ... ok
+test_bad_deck (test_receipts.ReceiptTests) ... ok
+test_bad_elapsed (test_receipts.ReceiptTests) ... ok
+test_bad_result (test_receipts.ReceiptTests) ... ok
+test_probe_interpolation (test_receipts.ReceiptTests) ... ok
+test_rounded_final_time_matches_previous_point (test_receipts.ReceiptTests) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.301s
+
+OK

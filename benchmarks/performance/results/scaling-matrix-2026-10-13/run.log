@@ -1,0 +1,42 @@
+rc-ladder-tran-1000-spice-ts ok 133.70895833941177 None
+rc-ladder-tran-1000-ngspice ok 51.67950000031851 None
+resistor-mesh-op-1000-spice-ts ok 91.94554165878799 None
+resistor-mesh-op-1000-ngspice ok 51.30445832037367 None
+cmos-inverter-chain-tran-1000-spice-ts ok 329.83854165649973 None
+cmos-inverter-chain-tran-1000-ngspice ok 262.09416666824836 None
+rc-ladder-tran-10000-spice-ts ok 373.7155416602036 None
+rc-ladder-tran-10000-ngspice ok 186.38329165696632 None
+resistor-mesh-op-10000-spice-ts ok 268.0710833374178 None
+resistor-mesh-op-10000-ngspice ok 153.13604165567085 None
+cmos-inverter-chain-tran-10000-spice-ts ok 2347.86654166237 None
+cmos-inverter-chain-tran-10000-ngspice ok 3638.273916672915 None
+rc-ladder-tran-50000-spice-ts ok 1313.9921666734153 None
+rc-ladder-tran-50000-ngspice ok 1020.2168749965494 None
+resistor-mesh-op-50000-spice-ts ok 981.9271666638087 None
+resistor-mesh-op-50000-ngspice ok 736.7312083370052 None
+cmos-inverter-chain-tran-50000-spice-ts ok 19402.21754166123 None
+cmos-inverter-chain-tran-50000-ngspice ok 58215.365458338056 None
+rc-ladder-tran-1000-profile ok 136.57412500469945 None
+{
+  "start": {
+    "continuous": 104214.76296625,
+    "monotonic": 45519.262662083,
+    "realtime": 1791928499.785152
+  },
+  "end": {
+    "continuous": 104305.75028887499,
+    "monotonic": 45610.249982541,
+    "realtime": 1791928590.7794292
+  },
+  "actualRunSeconds": 90.98732262499107,
+  "clockError": null,
+  "matrixStarted": 18,
+  "matrixCompleted": 18,
+  "selected": [
+    "rc-ladder-tran",
+    1000
+  ],
+  "profileStatus": "ok",
+  "observedBoundsSatisfied": true,
+  "stopReason": null
+}
