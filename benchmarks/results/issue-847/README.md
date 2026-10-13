@@ -4,10 +4,11 @@ Finding: ngspice-47 reports the iterate that the converging Newton solve was
 linearised at (`CKTrhsOld`), not that solve. spice-ts reports the converging
 solve. Switching spice-ts to report its own linearisation point makes the
 #825 VSWITCH deck match ngspice exactly. It also moves 53 of the 71 compared
-aggregate rows, 33 of them away from ngspice, and breaks 173 of 3401
-ngspice-pinned core tests. spice-ts therefore keeps reporting the converged
-solve. Nothing in the simulator changes in this PR: this file publishes the
-measurement, and `ckt-rhsold.patch` is the exact change that was measured.
+aggregate rows, 33 of them away from ngspice, and fails 175 of 3401
+core tests with the shipped assertions unchanged. spice-ts therefore keeps
+reporting the converged solve. Nothing in the simulator changes in this PR:
+this file publishes the measurement, and `ckt-rhsold.patch` is the exact
+change that was measured.
 
 Machine: Apple M5 Pro, macOS Darwin 27.0.1 arm64, Node v22.23.1, ngspice-47
 (Homebrew). Base commit `49a4fed46065cfb466abc776a9d8738af7077689`.
@@ -51,10 +52,31 @@ VSWITCH DC sweep: the #825 test deck, `.dc Vc -2 2 0.25` with SMOD1 and SMOD2.
 | spice-ts as shipped (converged solve) | 9.914147e-01 (rel. diff 5.4e-4) |
 | spice-ts with `ckt-rhsold.patch` | 9.919552e-01 (exact) |
 
-The issue's two-point example (`.dc Vc -0.5 -0.25 0.25`) does not show the
-effect. There ngspice-47 itself prints 9.914147e-01, and so does spice-ts
-before and after the patch. The gap needs the longer sweep history of the
-test deck.
+The issue's one-switch, two-point example (`.dc Vc -0.5 -0.25 0.25`) does not
+show the effect: ngspice-47 prints 9.914147e-01. But that comparison changes
+the circuit contents as well as the sweep length. Independent controls on
+ngspice-47 give the following values at Vc = -0.25:
+
+| Circuit | `.dc Vc` range and step | v(out) | v(out2) |
+| --- | --- | --- | --- |
+| Original #825 two-switch deck | -2 2 0.25 | 9.919552e-01 | 4.256259e-02 |
+| Same two-switch deck, only `.dc` shortened | -0.5 -0.25 0.25 | 9.919552e-01 | 4.256259e-02 |
+| Original long sweep, only R2/S2/SMOD2 removed | -2 2 0.25 | 9.914147e-01 | absent |
+| One-switch, short sweep (issue example) | -0.5 -0.25 0.25 | 9.914147e-01 | absent |
+
+The short two-switch deck still shows the gap, and the long one-switch deck
+does not. These controls refute the earlier attribution to longer sweep
+history alone. They isolate circuit contents as a relevant difference here;
+they do not establish the internal cause of the changed Newton path.
+
+Reproduce from the repo root with
+`spice-heavy python3 benchmarks/results/issue-847/controls.py`. The runner
+extracts the first deck from the unchanged #825 test, changes only the fields described
+above, adds `.print`, and invokes `ngspice -b` with a local `.spiceinit`
+containing `set ngbehavior=psa`. All four control assertions pass.
+[`control-receipt.txt`](control-receipt.txt) contains every input deck and
+the raw ngspice output. These are disclosed control variants, not changes
+to benchmark fixtures, simulator code or shipped test tolerances.
 
 Diode operating point: `V1 in 0 DC 5`, `R1 in a 1k`, `D1 a 0 DMOD`,
 `.model DMOD D IS=1e-14 N=1`, `.op`.
@@ -76,7 +98,7 @@ helps where the Newton sequences coincide, as they do on the pswitch deck.
 
 The same tree was run twice, before and after `ckt-rhsold.patch`
 (`git apply benchmarks/results/issue-847/ckt-rhsold.patch`, rebuild core,
-`pnpm exec tsx benchmarks/aggregate-report.ts`).
+`spice-heavy pnpm exec tsx benchmarks/aggregate-report.ts`).
 
 On this base the generator refuses to run as committed, for two reasons that
 predate this issue. First, its pinned `SOURCES.md` and fixture-tree hashes are
@@ -164,12 +186,46 @@ improves. That is not evidence for adopting the patch.
 
 ## Core test suite with the patch
 
-`spice-heavy pnpm -C packages/core exec vitest run` with `ckt-rhsold.patch`
-applied gives 173 failed, 3226 passed and 2 skipped (3401). The failures are
-almost all ngspice-47-pinned parity tests: diode (48 across 8 files),
+The [independent review of head 6370e180](https://github.com/mfiumara/spice-ts/pull/896#pullrequestreview-5503590524)
+applied only the committed `ckt-rhsold.patch`, rebuilt core and ran
+`spice-heavy pnpm -C packages/core exec vitest run`. It reports **175 failed,
+3224 passed and 2 skipped (3401)**, with no timeout failures. This replaces
+the earlier 173/3226/2 claim, which is not a reproducible result for the exact
+committed patch and unchanged assertions. No additional test-edit variant is
+being claimed as evidence. Most failures are ngspice-47-pinned parity tests:
+diode (48 across 8 files),
 BSIM3v3/v3.2 i(VD) (31), BJT (15), the temperature parity tests (12), MOS2,
-MOS3, B-sources, `.tf`, `.pz`, `.noise` and `.disto`. The unpatched suite is
-this PR's CI run.
+MOS3, B-sources, `.tf`, `.pz`, `.noise` and `.disto`. The two additional failures
+are the shipped VSWITCH tests' explicit converged-value assertions, not timeouts.
+
+This remediation independently reran the unchanged VSWITCH file, first
+unpatched (7 passed), then with only the exact committed patch applied and
+core rebuilt (5 passed, 2 failed, no timeouts). The failures are:
+
+- `pspice-vswitch-825.test.ts:60`: relative error 5.45166524221006e-4,
+  exceeding the unchanged 1e-6 limit.
+- `pspice-vswitch-825.test.ts:180`: relative error 1.1393420088429874e-4,
+  exceeding the unchanged 1e-9 limit.
+
+Commands from the repo root:
+
+```sh
+pnpm -C packages/core exec vitest run src/devices/pspice-vswitch-825.test.ts
+git apply benchmarks/results/issue-847/ckt-rhsold.patch
+pnpm -C packages/core build
+pnpm -C packages/core exec vitest run src/devices/pspice-vswitch-825.test.ts
+# Expected experimental result: exit 1, 5 passed / 2 failed.
+git apply -R benchmarks/results/issue-847/ckt-rhsold.patch
+pnpm -C packages/core build
+```
+
+[`patched-vswitch-receipt.txt`](patched-vswitch-receipt.txt) contains the raw
+targeted failure output. No assertion was edited for this rerun. The full
+patched suite count above is attributed to the independent review, not a new
+full-suite run. The aggregate was not rerun during remediation: that same
+review independently reproduced both outcome hashes and all 33 worse / 17
+better / 3 mixed rows using the disclosed aggregate-only experimental edits.
+The unpatched full suite is gated by this PR's exact-head CI.
 
 ## Decision and what parity would need
 
