@@ -106,6 +106,11 @@ export class Resistor implements DeviceModel {
     this.applyTemperature();
   }
 
+  /** The circuit temperature (ngspice CKTtemp) in °C, ignoring instance `TEMP`/`DTEMP`. */
+  getCircuitTemperature(): number {
+    return this.temperature;
+  }
+
   /**
    * Instance temperature in °C (ngspice REStemp + RESdtemp, restemp.c): the
    * instance `TEMP` if given, else the circuit temperature plus `DTEMP`. It
