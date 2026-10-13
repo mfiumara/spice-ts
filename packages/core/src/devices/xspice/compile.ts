@@ -13,6 +13,7 @@ import {
 } from './models.js';
 import { OSCILLATOR_BEHAVIORS } from './oscillator-models.js';
 import { SWITCH_BEHAVIORS } from './switch-models.js';
+import { resolveSTransfer, STransferDevice } from './s-xfer.js';
 import { XSPICE_CODE_MODEL_SPECS, type XspiceParamValue } from './spec.js';
 import { XspiceDevice, type XspiceInputPort, type XspiceOutputPort } from './xspice-device.js';
 
@@ -52,6 +53,7 @@ export function prepareXspiceInstance(
   const spec = XSPICE_CODE_MODEL_SPECS.get(model.codeModel)!;
   const connections = resolveXspiceConnections(card, spec, ground);
   const params = resolveXspiceParams(card.name, model, spec, connections);
+  if (model.codeModel === 's_xfer') resolveSTransfer(params);
   const nodes: string[] = [];
   const digitalNodes: string[] = [];
   for (const connection of connections) {
@@ -144,6 +146,11 @@ export function createXspiceDevice(
       }
     });
   });
+  if (model.codeModel === 's_xfer') {
+    const transfer = resolveSTransfer(params);
+    const states = transfer.initial.map((_, i) => allocateBranch(`${card.name}#s_xfer_state_${i}`));
+    return new STransferDevice(card.name, inputs[0], outputs[0], transfer, states, model.warnings);
+  }
   const firstPort = connections[0]?.ports[0];
   const metered = firstPort?.positive === undefined || firstPort.type === 'd' ? -1 : resolveNode(firstPort.positive);
   const netlist = new NetlistProbe(metered);
@@ -248,6 +255,10 @@ export function assertXspiceAnalyses(
   }
   for (const instance of instances) {
     const { codeModel } = instance.model;
+    if (codeModel === 's_xfer') {
+      const unsupported = analyses.find(analysis => !['op', 'dc', 'ac', 'tran'].includes(analysis));
+      if (unsupported) throw new InvalidCircuitError(`XSPICE s_xfer instance '${instance.card.name}' does not support .${unsupported}`);
+    }
     if (codeModel === 'int') {
       const unsupported = analyses.find(analysis => analysis === 'tf' || analysis === 'pz' || analysis === 'sens');
       if (unsupported) {

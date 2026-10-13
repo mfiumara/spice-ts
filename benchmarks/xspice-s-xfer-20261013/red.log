@@ -1,0 +1,178 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_451061b9/packages/core
+
+ ❯ src/devices/xspice/s-xfer.test.ts (12 tests | 8 failed) 47ms
+     × uses reversed integrator ICs at DC, not the DC Laplace gain 27ms
+     × defaults omitted ICs to zero 2ms
+     × normalizes descending coefficients and frequency in AC 1ms
+     × runs a transient and resets history across repeated runs 1ms
+     × rejects unsupported or invalid parameters num_coeff=[1] den_coeff=[1 1 1 1] 6ms
+     × rejects unsupported or invalid parameters num_coeff=[1 1 1] den_coeff=[1 1 1] 2ms
+     × rejects unsupported or invalid parameters num_coeff=[1] den_coeff=[0 1 1] 2ms
+     ✓ rejects unsupported or invalid parameters num_coeff=[1] den_coeff=[1 1 1] int_ic=[0] 1ms
+     × rejects unsupported or invalid parameters num_coeff=[1] den_coeff=[1 1] denormalized_freq=0 2ms
+     ✓ rejects unsupported analysis .noise v(out) v1 dec 2 1 10 1ms
+     ✓ rejects unsupported analysis .tf v(out) v1 1ms
+     ✓ rejects unsupported analysis .pz in 0 out 0 vol pz 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/devices/xspice/s-xfer.test.ts > bounded ngspice-47 s_xfer > uses reversed integrator ICs at DC, not the DC Laplace gain
+UnsupportedCodeModelError: Parse error at line 4: XSPICE code model 's_xfer' (.model 'filter') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)
+  .model filter s_xfer(num_coeff=[2 3] den_coeff=[2 4 6] int_ic=[5 7] gain=3)
+ ❯ parseXspiceModelCard src/parser/xspice-parser.ts:163:20
+    161|   if (!name || !codeModel) throw new ParseError('.model card is missin…
+    162|   const spec = XSPICE_CODE_MODEL_SPECS.get(codeModel);
+    163|   if (!spec) throw new UnsupportedCodeModelError(name, codeModel, line…
+       |                    ^
+    164|
+    165|   const params = new Map<string, XspiceParamValue[]>();
+ ❯ parseDotCommand src/parser/index.ts:666:32
+ ❯ parseNetlist src/parser/index.ts:244:9
+ ❯ parseAsync src/parser/index.ts:382:10
+ ❯ simulate src/simulate.ts:124:15
+ ❯ src/devices/xspice/s-xfer.test.ts:10:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  src/devices/xspice/s-xfer.test.ts > bounded ngspice-47 s_xfer > defaults omitted ICs to zero
+UnsupportedCodeModelError: Parse error at line 4: XSPICE code model 's_xfer' (.model 'filter') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)
+  .model filter s_xfer(num_coeff=[1] den_coeff=[1 1.414214 1] denormalized_freq=628)
+ ❯ parseXspiceModelCard src/parser/xspice-parser.ts:163:20
+    161|   if (!name || !codeModel) throw new ParseError('.model card is missin…
+    162|   const spec = XSPICE_CODE_MODEL_SPECS.get(codeModel);
+    163|   if (!spec) throw new UnsupportedCodeModelError(name, codeModel, line…
+       |                    ^
+    164|
+    165|   const params = new Map<string, XspiceParamValue[]>();
+ ❯ parseDotCommand src/parser/index.ts:666:32
+ ❯ parseNetlist src/parser/index.ts:244:9
+ ❯ parseAsync src/parser/index.ts:382:10
+ ❯ simulate src/simulate.ts:124:15
+ ❯ src/devices/xspice/s-xfer.test.ts:14:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  src/devices/xspice/s-xfer.test.ts > bounded ngspice-47 s_xfer > normalizes descending coefficients and frequency in AC
+UnsupportedCodeModelError: Parse error at line 4: XSPICE code model 's_xfer' (.model 'filter') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)
+  .model filter s_xfer(num_coeff=[1] den_coeff=[1 1.414214 1] denormalized_freq=628)
+ ❯ parseXspiceModelCard src/parser/xspice-parser.ts:163:20
+    161|   if (!name || !codeModel) throw new ParseError('.model card is missin…
+    162|   const spec = XSPICE_CODE_MODEL_SPECS.get(codeModel);
+    163|   if (!spec) throw new UnsupportedCodeModelError(name, codeModel, line…
+       |                    ^
+    164|
+    165|   const params = new Map<string, XspiceParamValue[]>();
+ ❯ parseDotCommand src/parser/index.ts:666:32
+ ❯ parseNetlist src/parser/index.ts:244:9
+ ❯ parseAsync src/parser/index.ts:382:10
+ ❯ simulate src/simulate.ts:124:15
+ ❯ src/devices/xspice/s-xfer.test.ts:17:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  src/devices/xspice/s-xfer.test.ts > bounded ngspice-47 s_xfer > runs a transient and resets history across repeated runs
+UnsupportedCodeModelError: Parse error at line 4: XSPICE code model 's_xfer' (.model 'filter') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)
+  .model filter s_xfer(num_coeff=[1] den_coeff=[1 1] denormalized_freq=1000)
+ ❯ parseXspiceModelCard src/parser/xspice-parser.ts:163:20
+    161|   if (!name || !codeModel) throw new ParseError('.model card is missin…
+    162|   const spec = XSPICE_CODE_MODEL_SPECS.get(codeModel);
+    163|   if (!spec) throw new UnsupportedCodeModelError(name, codeModel, line…
+       |                    ^
+    164|
+    165|   const params = new Map<string, XspiceParamValue[]>();
+ ❯ parseDotCommand src/parser/index.ts:666:32
+ ❯ parseNetlist src/parser/index.ts:244:9
+ ❯ parseAsync src/parser/index.ts:382:10
+ ❯ simulate src/simulate.ts:124:15
+ ❯ src/devices/xspice/s-xfer.test.ts:27:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  src/devices/xspice/s-xfer.test.ts > bounded ngspice-47 s_xfer > rejects unsupported or invalid parameters num_coeff=[1] den_coeff=[1 1 1 1]
+AssertionError: expected [Function] to throw error including 'order' but got 'Parse error at line 4: XSPICE code mo…'
+
+- Expected
++ Received
+
+- order
++ Parse error at line 4: XSPICE code model 's_xfer' (.model 'filter') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)
++   .model filter s_xfer(num_coeff=[1] den_coeff=[1 1 1 1])
+
+ ❯ src/devices/xspice/s-xfer.test.ts:41:56
+     39|     ['num_coeff=[1] den_coeff=[1 1] denormalized_freq=0', 'positive'],
+     40|   ])('rejects unsupported or invalid parameters %s', (params, error) =…
+     41|     expect(() => parse(deck('.op', params)).compile()).toThrow(error);
+       |                                                        ^
+     42|   });
+     43|   it.each(['.noise v(out) v1 dec 2 1 10', '.tf v(out) v1', '.pz in 0 o…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  src/devices/xspice/s-xfer.test.ts > bounded ngspice-47 s_xfer > rejects unsupported or invalid parameters num_coeff=[1 1 1] den_coeff=[1 1 1]
+AssertionError: expected [Function] to throw error including 'strictly proper' but got 'Parse error at line 4: XSPICE code mo…'
+
+- Expected
++ Received
+
+- strictly proper
++ Parse error at line 4: XSPICE code model 's_xfer' (.model 'filter') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)
++   .model filter s_xfer(num_coeff=[1 1 1] den_coeff=[1 1 1])
+
+ ❯ src/devices/xspice/s-xfer.test.ts:41:56
+     39|     ['num_coeff=[1] den_coeff=[1 1] denormalized_freq=0', 'positive'],
+     40|   ])('rejects unsupported or invalid parameters %s', (params, error) =…
+     41|     expect(() => parse(deck('.op', params)).compile()).toThrow(error);
+       |                                                        ^
+     42|   });
+     43|   it.each(['.noise v(out) v1 dec 2 1 10', '.tf v(out) v1', '.pz in 0 o…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  src/devices/xspice/s-xfer.test.ts > bounded ngspice-47 s_xfer > rejects unsupported or invalid parameters num_coeff=[1] den_coeff=[0 1 1]
+AssertionError: expected [Function] to throw error including 'leading' but got 'Parse error at line 4: XSPICE code mo…'
+
+- Expected
++ Received
+
+- leading
++ Parse error at line 4: XSPICE code model 's_xfer' (.model 'filter') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)
++   .model filter s_xfer(num_coeff=[1] den_coeff=[0 1 1])
+
+ ❯ src/devices/xspice/s-xfer.test.ts:41:56
+     39|     ['num_coeff=[1] den_coeff=[1 1] denormalized_freq=0', 'positive'],
+     40|   ])('rejects unsupported or invalid parameters %s', (params, error) =…
+     41|     expect(() => parse(deck('.op', params)).compile()).toThrow(error);
+       |                                                        ^
+     42|   });
+     43|   it.each(['.noise v(out) v1 dec 2 1 10', '.tf v(out) v1', '.pz in 0 o…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+ FAIL  src/devices/xspice/s-xfer.test.ts > bounded ngspice-47 s_xfer > rejects unsupported or invalid parameters num_coeff=[1] den_coeff=[1 1] denormalized_freq=0
+AssertionError: expected [Function] to throw error including 'positive' but got 'Parse error at line 4: XSPICE code mo…'
+
+- Expected
++ Received
+
+- positive
++ Parse error at line 4: XSPICE code model 's_xfer' (.model 'filter') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)
++   .model filter s_xfer(num_coeff=[1] den_coeff=[1 1] denormalized_freq=0)
+
+ ❯ src/devices/xspice/s-xfer.test.ts:41:56
+     39|     ['num_coeff=[1] den_coeff=[1 1] denormalized_freq=0', 'positive'],
+     40|   ])('rejects unsupported or invalid parameters %s', (params, error) =…
+     41|     expect(() => parse(deck('.op', params)).compile()).toThrow(error);
+       |                                                        ^
+     42|   });
+     43|   it.each(['.noise v(out) v1 dec 2 1 10', '.tf v(out) v1', '.pz in 0 o…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  8 failed | 4 passed (12)
+   Start at  17:20:57
+   Duration  3.39s (transform 2.73s, setup 0ms, import 3.12s, tests 47ms, environment 0ms)
+
+JUNIT report written to /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_451061b9/packages/core/test-results.xml
