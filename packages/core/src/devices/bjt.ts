@@ -295,6 +295,24 @@ function limitJunctionStep(
   return proposedVoltage;
 }
 
+/** ngspice-47 devsup.c DEVpnjlim. */
+function pnjlim(proposed: number, previous: number, thermalVoltage: number, criticalVoltage: number): number {
+  if (proposed > criticalVoltage && Math.abs(proposed - previous) > 2 * thermalVoltage) {
+    if (previous > 0) {
+      const ratio = (proposed - previous) / thermalVoltage;
+      return ratio > 0
+        ? previous + thermalVoltage * (2 + Math.log(ratio - 2))
+        : previous - thermalVoltage * (2 + Math.log(2 - ratio));
+    }
+    return thermalVoltage * Math.log(proposed / thermalVoltage);
+  }
+  if (proposed < 0) {
+    const minimum = previous > 0 ? -previous - 1 : 2 * previous - 1;
+    return Math.max(proposed, minimum);
+  }
+  return proposed;
+}
+
 function junctionStepScale(
   proposedVoltage: number,
   previousVoltage: number,
@@ -328,6 +346,10 @@ export function resolveBJTParams(
   // bjtsetup.c: an ISE or ISC above 1e-4 is read as a multiple of IS.
   const leakageCurrent = (value: number | undefined) =>
     value === undefined ? 0 : value > 1e-4 ? saturationCurrent * value : value;
+  // bjttemp.c: an Early voltage or knee current of 0 (the bjtsetup.c default)
+  // means infinite; the inverse is 1/param only when param != 0 (#844).
+  const infiniteWhenZero = (value: number | undefined) =>
+    value === undefined || value === 0 ? Infinity : value;
   const baseResistance = params.RB ?? 0;
   const resolved: BJTParams = {
     LEVEL: params.LEVEL ?? 1,
@@ -336,12 +358,12 @@ export function resolveBJTParams(
     IS: saturationCurrent,
     NF: params.NF ?? 1,
     NR: params.NR ?? 1,
-    VAF: params.VAF ?? Infinity,
-    IKF: params.IKF ?? Infinity,
+    VAF: infiniteWhenZero(params.VAF),
+    IKF: infiniteWhenZero(params.IKF),
     ISE: leakageCurrent(params.ISE),
     NE: params.NE ?? 1.5,
-    VAR: params.VAR ?? Infinity,
-    IKR: params.IKR ?? Infinity,
+    VAR: infiniteWhenZero(params.VAR),
+    IKR: infiniteWhenZero(params.IKR),
     ISC: leakageCurrent(params.ISC),
     NC: params.NC ?? 2,
     // bjtsetup.c: NKF defaults to 0.5 (the square root) and is capped at 1.
@@ -418,12 +440,21 @@ export function resolveBJTParams(
  * IRB law, between the base and base-prime nodes. It only differs from a
  * fixed RB when RB > 0 (with RB = 0 bjtsetup.c merges the two nodes) and
  * RBM != RB (rbpi = RB - RBM = 0 leaves gx = 1/RBM = 1/RB whatever IRB is).
- * Such a device stamps gx itself, on a fifth (external base) node. Accepts
- * resolved parameters or the raw model card (RBM defaulting to RB).
+ * Such a device stamps gx itself, on a fifth (external base) node.
+ *
+ * A device with RB > 0 also needs that external base node when XCJC < 1 and
+ * CJC > 0: bjtload.c puts the B-C depletion fraction (1 - XCJC)*CJC (qbx,
+ * capbx) between the external base and the collector-prime node, outside
+ * RB (#861). It then stamps gx itself too (1/RB when RBM = RB). Accepts
+ * resolved parameters or the raw model card (RBM defaulting to RB, XCJC to 1).
  */
-export function hasBiasDependentBaseResistance(params: { RB?: number; RBM?: number }): boolean {
+export function hasBiasDependentBaseResistance(
+  params: { RB?: number; RBM?: number; XCJC?: number; CJC?: number },
+): boolean {
   const baseResistance = params.RB ?? 0;
-  return baseResistance > 0 && (params.RBM ?? baseResistance) !== baseResistance;
+  if (!(baseResistance > 0)) return false;
+  if ((params.RBM ?? baseResistance) !== baseResistance) return true;
+  return (params.XCJC ?? 1) < 1 && (params.CJC ?? 0) > 0;
 }
 
 /** Gummel-Poon instance geometry: ngspice-47 bjt.c `area`, `areab`, `areac` and `m`. */
@@ -521,17 +552,12 @@ function validateChargeStorage(params: BJTParams, excessPhase: number): void {
   if (excessPhase !== 0) {
     throw new Error("Unsupported BJT model parameter: 'PTF' (excess phase is not implemented)");
   }
-  // The base-collector fraction outside RB connects to the external base,
-  // which the device does not see once RB is expanded into a resistor.
-  if (params.XCJC < 1 && params.CJC > 0 && params.RB > 0) {
-    throw new Error("Unsupported BJT model parameter: 'XCJC' < 1 together with RB > 0");
-  }
 }
 
 export class BJT implements DeviceModel {
   readonly branches: number[] = [];
   readonly isNonlinear = true;
-  /** {@link truncateTransientStep} is the complete ngspice-47 step bound (BJTtrunc: qbe, qbc, qsub). */
+  /** {@link truncateTransientStep} is the complete ngspice-47 step bound (BJTtrunc: qbe, qbc, qsub; not qbx). */
   readonly truncationCoversCharges = true;
   readonly params: BJTParams;
   readonly suppliedParams: Readonly<Record<string, number>>;
@@ -550,14 +576,16 @@ export class BJT implements DeviceModel {
    */
   readonly stampDynamic?: (ctx: StampContext) => void;
   /**
-   * Charge-storing BJTs integrate qbe (with its dQbe/dVbc cross term), qbc and
-   * qsub themselves in transient analysis, as ngspice bjtload.c NIintegrates them.
+   * Charge-storing BJTs integrate qbe (with its dQbe/dVbc cross term), qbc,
+   * qsub and qbx themselves in transient analysis, as ngspice bjtload.c
+   * NIintegrates them.
    */
   readonly integratesTransientCharge: boolean;
-  private readonly charges = new TransientChargeState(3);
+  private readonly charges = new TransientChargeState(4);
   private readonly chargePoint: BJTChargePoint = {
     nodeVBE: 0, nodeVBC: 0, vSub: 0, substrateNode: -1,
     qBE: 0, capBE: 0, crossCapacitance: 0, qBC: 0, capBC: 0, qSub: 0, capSub: 0,
+    nodeVBX: 0, qBX: 0, capBX: 0,
   };
   private readonly junction: JunctionPoint = { current: 0, conductance: 0 };
   private readonly dcPoint: BJTDCPoint = {
@@ -567,7 +595,7 @@ export class BJT implements DeviceModel {
   /** Linearisation point of the last stamp (ngspice CKTstate0 vbe/vbc/cc/cb/gm/go/gpi/gmu) for bjtconv.c. */
   private readonly lastLoad = {
     vBE: 0, vBC: 0, collectorCurrent: 0, baseCurrent: 0,
-    gmForward: 0, gmReverse: 0, gpi: 0, gmu: 0, transient: false,
+    gmForward: 0, gmReverse: 0, gpi: 0, gmu: 0,
   };
   /**
    * Bias-dependent base resistance (RBM != RB, see
@@ -575,6 +603,45 @@ export class BJT implements DeviceModel {
    * between the external base (5th node) and the base-prime node (2nd node).
    */
   private readonly stampsBaseResistance: boolean;
+  /** Instance multiplier M: ngspice tSatCur, and so tVcrit, excludes it. */
+  private readonly multiplier: number;
+  /** ngspice-47 bjttemp.c BJTtVcrit and BJTtSubVcrit (50 V without ISS) at the device temperature. */
+  private criticalVoltage = 0;
+  private substrateCriticalVoltage = 50;
+  /**
+   * Transient Newton junction state (ngspice bjtload.c): `iterate` is
+   * CKTstate0 (the limited junction voltages of the last load), `accepted`
+   * CKTstate1 and `prior` CKTstate2, with `acceptedStep` CKTdeltaOld[1].
+   * Indices are BASE_EMITTER, BASE_COLLECTOR and SUBSTRATE.
+   */
+  private readonly iterateJunctions = new Float64Array(3);
+  /** Junction voltages the present transient load linearises at. */
+  private readonly limitedJunctions = new Float64Array(3);
+  private readonly acceptedJunctions = new Float64Array(3);
+  private readonly priorJunctions = new Float64Array(3);
+  private readonly newtonJunctions = new Float64Array(3);
+  private hasAcceptedJunctions = false;
+  private hasPriorJunctions = false;
+  private acceptedStep: number | undefined;
+  /** Between beginTransientNewton and the next accepted point. */
+  private inTransientNewton = false;
+  /** The next load is the first iterate of a timepoint (MODEINITPRED). */
+  private predictJunctions = false;
+  /** {@link newtonJunctions} holds an unused undamped Newton solve. */
+  private hasNewtonJunctions = false;
+  /** Whether the last load limited a junction (ngspice icheck -> CKTnoncon). */
+  private limited = false;
+  /**
+   * The transient charges of this iteration are evaluated at the limited
+   * junction voltages the load linearised at (bjtload.c computes qbe, qbc
+   * and qsub after DEVpnjlim), not at the node voltages.
+   */
+  private chargesAtLimitedJunctions = false;
+  /**
+   * Transient Newton leaves the BJT nodes undamped: like ngspice, the device
+   * limits its own junctions against the previous iterate (DEVpnjlim).
+   */
+  readonly limitsOwnJunctions = true;
 
   constructor(
     readonly name: string,
@@ -587,6 +654,7 @@ export class BJT implements DeviceModel {
     // tSatCur already carries AREA, so the default B-C current is IS*AREA^2 (*M).
     this.baseCollectorArea = bjtBaseCollectorArea(resolved.SUBS, instance);
     this.nominal = scaleBJTInstance(resolved, instance);
+    this.multiplier = instance?.M ?? 1;
     this.params = { ...this.nominal };
     this.baseCollectorSatCur = this.nominal.IS * this.baseCollectorArea;
     this.applyTemperature();
@@ -635,6 +703,7 @@ export class BJT implements DeviceModel {
     if (kelvin === nominalKelvin) {
       Object.assign(params, nominal);
       this.baseCollectorSatCur = params.IS * this.baseCollectorArea;
+      this.updateCriticalVoltages();
       return;
     }
     const ratlog = Math.log(kelvin / nominalKelvin);
@@ -658,10 +727,21 @@ export class BJT implements DeviceModel {
     params.CJC = collector.capacitance;
     params.VJS = substrate.potential;
     params.CJS = substrate.capacitance;
+    this.updateCriticalVoltages();
+  }
+
+  /** bjttemp.c: tVcrit = vt*ln(vt/(sqrt(2)*tSatCur)), tSatCur without M; likewise tSubVcrit. */
+  private updateCriticalVoltages(): void {
+    const { IS, ISS } = this.params;
+    const vt = this.vt;
+    this.criticalVoltage = vt * Math.log(vt / (Math.SQRT2 * IS / this.multiplier));
+    this.substrateCriticalVoltage = ISS > 0
+      ? vt * Math.log(vt / (Math.SQRT2 * ISS / this.multiplier))
+      : 50;
   }
 
   stampTransientCharge(ctx: StampContext, integration: ChargeIntegration): void {
-    const point = this.evaluateCharges(ctx);
+    const point = this.evaluateCharges(ctx, this.chargesAtLimitedJunctions);
     const charges = this.charges;
     charges.begin(integration);
     const { polarity } = this.params;
@@ -671,10 +751,23 @@ export class BJT implements DeviceModel {
     // The charges are functions of the node junction voltages, so a converged
     // point carries exactly the integrated current.
     const crossConductance = factor * point.crossCapacitance;
+    const emitterChargeCurrent = charges.current(BASE_EMITTER, point.qBE);
+    const collectorChargeCurrent = charges.current(BASE_COLLECTOR, point.qBC);
+    const emitterChargeConductance = factor * point.capBE;
+    const collectorChargeConductance = factor * point.capBC;
+    // bjtload.c adds the integrated qbe/qbc currents and conductances to the
+    // stored cc, cb, gpi and gmu that bjtconv.c tests: gpi += geq(qbe),
+    // gmu += geq(qbc), cb += cqbe + cqbc, cc -= cqbc (polarity domain).
+    const load = this.lastLoad;
+    load.baseCurrent += emitterChargeCurrent + collectorChargeCurrent;
+    load.collectorCurrent -= collectorChargeCurrent;
+    load.gpi += emitterChargeConductance;
+    load.gmu += collectorChargeConductance;
+    load.gmReverse += collectorChargeConductance;
     stampChargeBranch(
       ctx, nB, nE,
-      polarity * charges.current(BASE_EMITTER, point.qBE) - crossConductance * polarity * point.nodeVBC,
-      factor * point.capBE, polarity * point.nodeVBE,
+      polarity * emitterChargeCurrent - crossConductance * polarity * point.nodeVBC,
+      emitterChargeConductance, polarity * point.nodeVBE,
     );
     if (crossConductance !== 0) {
       // dQbe/dVbc: the B-E charge current is controlled by the B-C voltage.
@@ -688,8 +781,8 @@ export class BJT implements DeviceModel {
       }
     }
     stampChargeBranch(
-      ctx, nB, nC, polarity * charges.current(BASE_COLLECTOR, point.qBC),
-      factor * point.capBC, polarity * point.nodeVBC,
+      ctx, nB, nC, polarity * collectorChargeCurrent,
+      collectorChargeConductance, polarity * point.nodeVBC,
     );
     // Substrate charge between the substrate-connect node and the substrate
     // terminal: its voltage is -type*subs*vsub.
@@ -698,6 +791,12 @@ export class BJT implements DeviceModel {
       ctx, point.substrateNode, this.substrateNode,
       substrateSign * charges.current(SUBSTRATE, point.qSub),
       factor * point.capSub, substrateSign * point.vSub,
+    );
+    // bjtload.c qbx (geqbx, ceqbx) from the external base to the collector
+    // prime. Its current is not part of cb/cc, so bjtconv.c does not see it.
+    stampChargeBranch(
+      ctx, this.externalBaseNode, nC, polarity * charges.current(EXTERNAL_BASE_COLLECTOR, point.qBX),
+      factor * point.capBX, polarity * point.nodeVBX,
     );
   }
 
@@ -711,25 +810,146 @@ export class BJT implements DeviceModel {
       ctx, SUBS === 1 ? nC : nB, this.substrateNode,
       -polarity * SUBS * charges.acceptedChargeCurrent(SUBSTRATE),
     );
+    stampChargeCurrent(
+      ctx, this.externalBaseNode, nC, polarity * charges.acceptedChargeCurrent(EXTERNAL_BASE_COLLECTOR),
+    );
   }
 
   acceptTransientStep(ctx: StampContext): void {
+    this.acceptJunctions(ctx);
+    this.acceptCharges(ctx);
+  }
+
+  /**
+   * Commit the accepted junction voltages (ngspice CKTstate1 after the state
+   * rotation). The operating point restarts the history, so the first
+   * transient step starts from it unextrapolated (MODEINITTRAN).
+   */
+  private acceptJunctions(ctx: StampContext): void {
+    if (this.inTransientNewton && this.hasAcceptedJunctions) {
+      this.priorJunctions.set(this.acceptedJunctions);
+      this.hasPriorJunctions = true;
+      this.acceptedStep = ctx.dt;
+    } else {
+      this.hasPriorJunctions = false;
+      this.acceptedStep = undefined;
+    }
+    this.nodeJunctions(this.acceptedJunctions, node => ctx.getVoltage(node));
+    this.hasAcceptedJunctions = true;
+    this.inTransientNewton = false;
+    this.predictJunctions = false;
+    this.hasNewtonJunctions = false;
+    this.chargesAtLimitedJunctions = false;
+    this.limited = false;
+  }
+
+  /** Polarity-domain vbe, vbc and vsub (bjtload.c) at the node voltages `voltage`. */
+  private nodeJunctions(out: Float64Array, voltage: (node: number) => number): void {
+    const { polarity, SUBS } = this.params;
+    const [nC, nB, nE] = this.nodes;
+    const at = (node: number): number => node >= 0 ? voltage(node) : 0;
+    const substrateConnect = SUBS === 1 ? nC : nB;
+    out[BASE_EMITTER] = polarity * (at(nB) - at(nE));
+    out[BASE_COLLECTOR] = polarity * (at(nB) - at(nC));
+    out[SUBSTRATE] = polarity * SUBS * (at(this.substrateNode) - at(substrateConnect));
+  }
+
+  private acceptCharges(ctx: StampContext): void {
     if (!this.integratesTransientCharge) return;
-    const point = this.evaluateCharges(ctx);
+    const point = this.evaluateCharges(ctx, false);
     const charges = this.charges;
     charges.accept(BASE_EMITTER, point.qBE);
     charges.accept(BASE_COLLECTOR, point.qBC);
     charges.accept(SUBSTRATE, point.qSub);
+    charges.accept(EXTERNAL_BASE_COLLECTOR, point.qBX);
     charges.commit();
   }
 
   resetTransient(): void {
     this.charges.reset();
+    this.hasAcceptedJunctions = false;
+    this.hasPriorJunctions = false;
+    this.acceptedStep = undefined;
+    this.inTransientNewton = false;
+    this.predictJunctions = false;
+    this.hasNewtonJunctions = false;
+    this.chargesAtLimitedJunctions = false;
+    this.limited = false;
   }
 
-  /** ngspice BJTtrunc: qbe, qbc and qsub. */
+  /**
+   * ngspice MODEINITPRED copies CKTstate1 into CKTstate0, so a new or retried
+   * timepoint limits its first iterate against the accepted junctions.
+   */
+  beginTransientNewton(): void {
+    if (this.hasAcceptedJunctions) this.iterateJunctions.set(this.acceptedJunctions);
+    this.inTransientNewton = this.hasAcceptedJunctions;
+    this.predictJunctions = this.hasAcceptedJunctions;
+    this.hasNewtonJunctions = false;
+  }
+
+  /**
+   * Limit the next iterate from the undamped Newton solve: node damping of a
+   * shared node may hold a terminal back, and limiting against that lagging
+   * node would ratchet the junction away from the Newton step.
+   */
+  observeTransientNewton(solution: Float64Array): void {
+    if (!this.inTransientNewton) return;
+    this.nodeJunctions(this.newtonJunctions, node => solution[node]);
+    this.hasNewtonJunctions = true;
+  }
+
+  limitedLastStamp(): boolean {
+    return this.limited;
+  }
+
+  /**
+   * ngspice-47 bjtload.c transient junction voltages: the first iterate of a
+   * timepoint extrapolates the two accepted points (MODEINITPRED, xfact =
+   * CKTdelta/CKTdeltaOld[1]); every iterate is then limited against the
+   * previous one (CKTstate0) with DEVpnjlim at vt and tVcrit (tSubVcrit, or
+   * 50 V without ISS, for vsub), and the limited voltages become CKTstate0.
+   * A limited iterate is not converged (icheck -> CKTnoncon). Writes the
+   * polarity-domain vbe, vbc and vsub into `out`.
+   */
+  private transientJunctions(out: Float64Array, ctx: StampContext): void {
+    if (this.predictJunctions) {
+      // vbe and vbc are extrapolated; vsub is read from the last solution
+      // (CKTrhsOld), here the accepted point, and only limited.
+      this.nodeJunctions(out, node => ctx.getVoltage(node));
+      const accepted = this.acceptedJunctions;
+      const step = this.acceptedStep;
+      if (this.hasPriorJunctions && step !== undefined && step > 0 && ctx.dt > 0) {
+        const ratio = ctx.dt / step;
+        const prior = this.priorJunctions;
+        out[BASE_EMITTER] = (1 + ratio) * accepted[BASE_EMITTER] - ratio * prior[BASE_EMITTER];
+        out[BASE_COLLECTOR] = (1 + ratio) * accepted[BASE_COLLECTOR] - ratio * prior[BASE_COLLECTOR];
+      } else {
+        out[BASE_EMITTER] = accepted[BASE_EMITTER];
+        out[BASE_COLLECTOR] = accepted[BASE_COLLECTOR];
+      }
+    } else if (this.hasNewtonJunctions) {
+      out.set(this.newtonJunctions);
+    } else {
+      this.nodeJunctions(out, node => ctx.getVoltage(node));
+    }
+    this.predictJunctions = false;
+    this.hasNewtonJunctions = false;
+    const iterate = this.iterateJunctions;
+    const vt = this.vt;
+    const vbe = pnjlim(out[BASE_EMITTER], iterate[BASE_EMITTER], vt, this.criticalVoltage);
+    const vbc = pnjlim(out[BASE_COLLECTOR], iterate[BASE_COLLECTOR], vt, this.criticalVoltage);
+    const vsub = pnjlim(out[SUBSTRATE], iterate[SUBSTRATE], vt, this.substrateCriticalVoltage);
+    this.limited = vbe !== out[BASE_EMITTER] || vbc !== out[BASE_COLLECTOR] || vsub !== out[SUBSTRATE];
+    out[BASE_EMITTER] = vbe;
+    out[BASE_COLLECTOR] = vbc;
+    out[SUBSTRATE] = vsub;
+    iterate.set(out);
+  }
+
+  /** ngspice BJTtrunc: qbe, qbc and qsub; qbx is integrated but not truncated. */
   truncateTransientStep(ctx: StampContext, truncation: ChargeTruncation): number {
-    return this.charges.truncationTimestep(truncation, () => this.acceptTransientStep(ctx));
+    return this.charges.truncationTimestep(truncation, () => this.acceptCharges(ctx), TRUNCATED_CHARGES);
   }
 
   limitNewtonStep(previous: Float64Array, candidate: Float64Array): number {
@@ -762,6 +982,15 @@ export class BJT implements DeviceModel {
   /** Substrate terminal (the optional 4th node); omitted, it is ground as in ngspice. */
   private get substrateNode(): number {
     return this.nodes[3] ?? -1;
+  }
+
+  /**
+   * ngspice BJTbaseNode: the external base (5th node) when the device stamps
+   * its base resistance, otherwise the base node itself (RB expanded into a
+   * resistor, or RB = 0 where bjtsetup.c merges base and base prime).
+   */
+  private get externalBaseNode(): number {
+    return this.nodes[4] ?? this.nodes[1];
   }
 
   /**
@@ -811,12 +1040,12 @@ export class BJT implements DeviceModel {
   /**
    * ngspice-47 bjtconv.c: the collector and base currents predicted at the new
    * Newton solution from the last load's linearisation must match the loaded
-   * currents within RELTOL*max + ABSTOL. Applied to the operating point; the
-   * transient load adds charge currents this DC-only check does not model.
+   * currents within RELTOL*max + ABSTOL, in DC and transient alike. In
+   * transient the stored currents and conductances include the integrated
+   * qbe/qbc terms ({@link stampTransientCharge}), as bjtload.c stores them.
    */
   convergenceTest(solution: Float64Array, tolerances: ConvergenceTolerances): boolean {
     const load = this.lastLoad;
-    if (load.transient) return true;
     const { polarity } = this.params;
     const [nC, nB, nE] = this.nodes;
     const voltage = (node: number): number => (node >= 0 ? solution[node] : 0);
@@ -878,10 +1107,20 @@ export class BJT implements DeviceModel {
     const vB = nB >= 0 ? ctx.getVoltage(nB) : 0;
     const vE = nE >= 0 ? ctx.getVoltage(nE) : 0;
 
-    // Junction voltages (polarity flips for PNP). No clamp: Newton steps are
-    // limited relative to the previous iterate in limitNewtonStep (#538).
-    const vBE = polarity * (vB - vE);
-    const vBC = polarity * (vB - vC);
+    // Junction voltages (polarity flips for PNP). No clamp: DC Newton steps
+    // are limited relative to the previous iterate in limitNewtonStep (#538);
+    // transient Newton limits them here, as bjtload.c does (#818).
+    let vBE = polarity * (vB - vE);
+    let vBC = polarity * (vB - vC);
+    this.limited = false;
+    this.chargesAtLimitedJunctions = false;
+    if (this.inTransientNewton && substrateJunction) {
+      const junctions = this.limitedJunctions;
+      this.transientJunctions(junctions, ctx);
+      vBE = junctions[BASE_EMITTER];
+      vBC = junctions[BASE_COLLECTOR];
+      this.chargesAtLimitedJunctions = true;
+    }
 
     const dc = this.evaluateDC(vBE, vBC);
     const IC = dc.collectorCurrent;
@@ -899,7 +1138,6 @@ export class BJT implements DeviceModel {
     load.gmReverse = gm_r;
     load.gpi = go_be;
     load.gmu = go_bc;
-    load.transient = ctx.dt > 0;
 
     // Equivalent currents for Newton-Raphson companion model
     // For IC: IC_eq = IC - gm_f * vBE + gm_r * vBC
@@ -983,7 +1221,9 @@ export class BJT implements DeviceModel {
     const substrateConnect = SUBS === 1 ? this.nodes[0] : this.nodes[1];
     const voltage = (node: number): number => node >= 0 ? ctx.getVoltage(node) : 0;
     const sign = polarity * SUBS;
-    const terminalVoltage = voltage(substrate) - voltage(substrateConnect);
+    const terminalVoltage = this.chargesAtLimitedJunctions
+      ? sign * this.limitedJunctions[SUBSTRATE]
+      : voltage(substrate) - voltage(substrateConnect);
     const { current, conductance } = substrateJunction(sign * terminalVoltage, ISS, NS * this.vt);
     // Physical current from the substrate into the substrate-connect node.
     stampChargeBranch(ctx, substrate, substrateConnect, sign * current, conductance, terminalVoltage);
@@ -992,15 +1232,19 @@ export class BJT implements DeviceModel {
   /**
    * Stamp the linearised charge storage of ngspice's BJT (bjtload.c /
    * bjtacld.c): B-E depletion plus TF diffusion (with XTF/VTF/ITF and base
-   * charge), B-C depletion plus TR diffusion, the dQbe/dVbc cross term and the
-   * substrate junction to the substrate terminal. Polarity cancels in every capacitance.
+   * charge), the XCJC fraction of the B-C depletion plus TR diffusion, the
+   * dQbe/dVbc cross term, the substrate junction to the substrate terminal and
+   * the remaining B-C depletion from the external base. Polarity cancels in
+   * every capacitance.
    */
   private stampChargeStorage(ctx: StampContext): void {
     const [nC, nB, nE] = this.nodes;
-    const { capBE, capBC, capSub, crossCapacitance, substrateNode } = this.evaluateCharges(ctx);
+    const { capBE, capBC, capSub, capBX, crossCapacitance, substrateNode } = this.evaluateCharges(ctx);
     stampCapacitance(ctx, nB, nE, capBE);
     stampCapacitance(ctx, nB, nC, capBC);
     stampCapacitance(ctx, substrateNode, this.substrateNode, capSub);
+    // bjtacld.c xcbx between the external base and the collector prime.
+    stampCapacitance(ctx, this.externalBaseNode, nC, capBX);
     if (crossCapacitance !== 0) {
       // dQbe/dVbc: charge between B and E controlled by the B-C voltage.
       if (nB >= 0) {
@@ -1015,14 +1259,14 @@ export class BJT implements DeviceModel {
   }
 
   /**
-   * ngspice bjtload.c charges qbe, qbc and qsub (polarity domain) with their
-   * capacitances dQ/dV and the dQbe/dVbc cross capacitance, at the present
-   * terminal voltages. Writes into a reused object.
+   * ngspice bjtload.c charges qbe, qbc, qsub and qbx (polarity domain) with
+   * their capacitances dQ/dV and the dQbe/dVbc cross capacitance, at the
+   * present terminal voltages. Writes into a reused object.
    */
-  private evaluateCharges(ctx: StampContext): BJTChargePoint {
+  private evaluateCharges(ctx: StampContext, atLimitedJunctions = false): BJTChargePoint {
     const {
       IS, NF, NR, polarity,
-      CJE, VJE, MJE, TF, XTF, VTF, ITF, CJC, VJC, MJC, TR, CJS, VJS, MJS, FC, SUBS,
+      CJE, VJE, MJE, TF, XTF, VTF, ITF, CJC, VJC, MJC, XCJC, TR, CJS, VJS, MJS, FC, SUBS,
     } = this.params;
     const [nC, nB, nE] = this.nodes;
     const voltage = (node: number): number => node >= 0 ? ctx.getVoltage(node) : 0;
@@ -1030,8 +1274,9 @@ export class BJT implements DeviceModel {
     const vtR = NR * this.vt;
     // ngspice evaluates the charges at the junction voltages it linearises at;
     // depletion charge needs the true reverse bias.
-    const vBE = polarity * (voltage(nB) - voltage(nE));
-    const vBC = polarity * (voltage(nB) - voltage(nC));
+    const limited = this.limitedJunctions;
+    const vBE = atLimitedJunctions ? limited[BASE_EMITTER] : polarity * (voltage(nB) - voltage(nE));
+    const vBC = atLimitedJunctions ? limited[BASE_COLLECTOR] : polarity * (voltage(nB) - voltage(nC));
 
     // ngspice bjtload.c builds the diffusion charges from cbe/gbe and cbc/gbc
     // (the junction law without gmin, reverse law included).
@@ -1080,11 +1325,21 @@ export class BJT implements DeviceModel {
       qBE += TF * diffusionCurrent;
       capBE += TF * diffusionConductance;
     }
-    const depletionBC = depletionCharge(vBC, CJC, VJC, MJC, FC);
+    // bjtload.c: czbc = XCJC*ctot on the internal base (qbc), czbx = ctot -
+    // czbc from the external base (qbx). vbx is the node voltage difference
+    // (CKTrhsOld), never limited.
+    const internalCJC = CJC * XCJC;
+    const depletionBC = depletionCharge(vBC, internalCJC, VJC, MJC, FC);
+    const qBC = TR * reverseCurrent + depletionBC.charge;
+    const capBC = TR * reverseConductance + depletionBC.capacitance;
+    const vBX = polarity * (voltage(this.externalBaseNode) - voltage(nC));
+    const depletionBX = depletionCharge(vBX, CJC - internalCJC, VJC, MJC, FC);
 
     const substrateNode = SUBS === 1 ? nC : nB;
     // ngspice bjtload.c vsub = type*subs*(V(substrate) - V(substrate-connect)).
-    const vSub = polarity * SUBS * (voltage(this.substrateNode) - voltage(substrateNode));
+    const vSub = atLimitedJunctions
+      ? limited[SUBSTRATE]
+      : polarity * SUBS * (voltage(this.substrateNode) - voltage(substrateNode));
     let qSub = 0;
     let capSub = 0;
     if (CJS !== 0) {
@@ -1106,10 +1361,13 @@ export class BJT implements DeviceModel {
     point.qBE = qBE;
     point.capBE = capBE;
     point.crossCapacitance = crossCapacitance;
-    point.qBC = TR * reverseCurrent + depletionBC.charge;
-    point.capBC = TR * reverseConductance + depletionBC.capacitance;
+    point.qBC = qBC;
+    point.capBC = capBC;
     point.qSub = qSub;
     point.capSub = capSub;
+    point.nodeVBX = vBX;
+    point.qBX = depletionBX.charge;
+    point.capBX = depletionBX.capacitance;
     return point;
   }
 }
@@ -1128,11 +1386,19 @@ interface BJTChargePoint {
   capBC: number;
   qSub: number;
   capSub: number;
+  /** Polarity-domain external base to collector-prime voltage (bjtload.c vbx). */
+  nodeVBX: number;
+  qBX: number;
+  capBX: number;
 }
 
 const BASE_EMITTER = 0;
 const BASE_COLLECTOR = 1;
 const SUBSTRATE = 2;
+/** bjtload.c qbx: the (1 - XCJC) B-C depletion charge outside RB. */
+const EXTERNAL_BASE_COLLECTOR = 3;
+/** BJTtrunc estimates the step from qbe, qbc and qsub only. */
+const TRUNCATED_CHARGES = [BASE_EMITTER, BASE_COLLECTOR, SUBSTRATE] as const;
 
 function stampConductance(ctx: StampContext, a: number, b: number, conductance: number): void {
   if (conductance === 0) return;

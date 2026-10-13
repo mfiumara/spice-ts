@@ -71,6 +71,14 @@ export function assertNoiseDevicesSupported(compiled: CompiledCircuit): void {
           );
         }
       }
+      // A BJT that stamps its own base resistance (RBM != RB, or XCJC < 1
+      // with RB > 0, #861) has no expanded RB resistor to carry the
+      // bjtnoise.c RB thermal noise; reject rather than drop that source.
+      if (device.nodes[4] !== undefined) {
+        throw new InvalidCircuitError(
+          `.noise does not support BJT base resistance with XCJC < 1 for '${device.name}'`,
+        );
+      }
     } else if (device instanceof BSIM3v3) kind = 'MOSFET';
     // b1noi.c / b2noi.c are not ported; reject rather than treat the channel as noiseless.
     else if (device instanceof ClassicBsimMosfet) kind = `MOSFET ${device.setup.kind}`;

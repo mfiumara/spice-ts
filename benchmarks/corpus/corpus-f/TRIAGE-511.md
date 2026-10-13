@@ -193,6 +193,21 @@ Changes within a class: rca3040 0.0511 → 0.0118 (worst now tran v(31); still #
 
 Control-vector supplement, compared with main's committed section (27/39/1/123/1/16, scored with the old floor): 34 matched, 35 mismatched, 1 not compared, 120 spice-ts losses, 1 ngspice-only failure, 16 both-engine failures. Class transitions: mismatch → matched for mos-test, cpl_ibm2, ltra2_2_line, ltra3_2_line, ltra7_4_line and inv_vdmos; loss → matched for regression/misc/convergence; loss → mismatch for cpl_ibm1a (0.293) and cpl3_4_line (0.116). The rows moved by the floor are those of the fifth refresh (MOS1_out, soa_chk, VDMOS-DIO) plus temper-1 (matched, op v(1) 2.68e-6 → 2.68e-14). Other moves are simulator drift, not bisected: cpl_ibm1 1.47 → 0.293, cpl1_4_line 1.8 → 0.213, cpl2_2_line 0.996 → 0.348, ltra1_4_line 0.917 → 0.0998, txl4_1_line 0.612 → 0.0817, ltra6_2_line 0.421 → 0.58 (worse), and the stochastic noise decks 3.8 / 1.61 → 6.68 / 1.7 (#655). None of these is triaged here. The mismatches stay published losses.
 
+### Seventh refresh on main `449ce900` (#592)
+
+The #592 card adds a fine-step reference column to transient rows and regenerates batch 1 on main `449ce900` (the #592 branch merged with main) with `spice-heavy pnpm exec tsx benchmarks/corpus/corpus-f/outcomes.ts --jobs 3` after `pnpm -C packages/core build`. The column is computed after the headline comparison and changes no outcome, worst value or signal, so every headline change below comes from simulator merges between `3b9c836f` and `449ce900`, not from #592. They are not bisected. The control-vector supplement was not regenerated.
+
+Batch 1: 60 matched, 16 mismatched, 62 not compared, 168 spice-ts losses, 30 both-engine failures (outcome SHA-256 `bcf75a8a…`; was 52/14/56/184/30 on `3b9c836f`). Class transitions (18):
+
+- spice-ts loss → matched (6): measure/rc-meas-ac.sp, transient-noise/noise_vnoi.cir, various/bjtnoise.cir, various/v-i-sources-am-ffm.cir, original-examples digital_invert and digital_models1.
+- spice-ts loss → not compared (6): noise/bipolar-noise.cir, transient-noise/noi-sc-tr.cir, xspice/see/set1.cir, regression/lib-processing scope-1, scope-2 and scope-3.
+- spice-ts loss → mismatch (4, deferred to #597): transient-noise/shot_ng (1.48, stochastic, #655), original-examples digital_models (1 tran i(v1)), mixed_io_size (0.208 tran v(4)), mixed_ref (0.0123 tran v(10)).
+- mismatch → matched (2): tests/transmission/txl1_1_line (0.0236 → 0.0036) and cpl3_4_line (0.116 → 2.44e-11).
+
+Changes within a class: mos-test 0.00811 → 4.23e-5; mosmem 0.00999 → 0.000636; fourbitadder 0.00313 → 0.00143; rtlinv 0.00238 → 0.00148; rca3040 0.0118 → 0.0111 (still a mismatch); txl2_3_line 0.0878 → 0.0194; cpl_ibm2 0.00669 → 0.00306; res_array 0.000452 → 8.81e-16; ro_11_vdmos 0.00694 → 0.00324; switches-manual-p92 0.74 → 0.75; adder_bip 0.016 → 0.0163; measure/func_cap 0.5 → 1 (worse); analog_models1 transient 0.122 → 0.121; analog_models3 transient 0.0181 → 0.0178. The stochastic noise decks moved to 2.63 / 1.41 (#655). 112 other rows changed only their recorded error text.
+
+The fine-step reference section of README.md lists, for every transient row, the headline value next to spice-ts and ngspice default runs scored against one ngspice fine-TMAX reference. For the #592 rows: rca3040 0.0111 headline, 0.0489 for both default runs against the reference (v(1), the 50 MHz source node sampled at 2 ns by both engines); analog_models1 transient 0.121 headline, spice-ts 0.00193 and ngspice default 0.109 against the reference; switches-manual-p92 0.75 headline, spice-ts 1 and ngspice default 0.68. One fine reference is not a convergence proof.
+
 ## RED and GREEN mean different things on a triage card
 
 This PR changes no simulator code; `packages/` is identical to main `03706cc7`. Run:

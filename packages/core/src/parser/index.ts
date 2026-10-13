@@ -38,6 +38,7 @@ import { parseZInstance } from './z-device-parser.js';
 import { locateSubcircuitCall, parseSubcircuitHeader, type SubcircuitHeader } from './subcircuit-syntax.js';
 import { parseSwitchInstance } from './switch-parser.js';
 import { parseXspiceInstance, parseXspiceModelCard, xspiceModelType } from './xspice-parser.js';
+import { isPspiceSwitchModel, translatePspiceSwitchModel } from './pspice-switch.js';
 import { isNgspiceOptionField, splitXyceOptionPackage } from './xyce-option-packages.js';
 import type { AnalysisDirective, IncludeResolver, IntegrationMethod, SimulationOptions } from '../types.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
@@ -83,7 +84,8 @@ export function parse(netlist: string): Circuit {
   const { title, control } = splitTitledDeck(netlist);
   const preprocessed = preprocessDeckSync(control.netlist, undefined, 1);
   return parseNetlist(
-    `${title}\n${preprocessed.text}`, true, undefined, control.blocks, preprocessed.parameters, control.warnings,
+    `${title}\n${preprocessed.text}`, true, undefined, control.blocks, preprocessed.parameters,
+    [...control.warnings, ...preprocessed.warnings],
   );
 }
 
@@ -97,7 +99,8 @@ export function parse(netlist: string): Circuit {
 export function parseTitleless(netlist: string): Circuit {
   const control = extractControlBlocks(translateMicroSign(netlist), false);
   const preprocessed = preprocessDeckSync(control.netlist, undefined, 0);
-  return parseNetlist(preprocessed.text, false, undefined, control.blocks, preprocessed.parameters, control.warnings);
+  return parseNetlist(preprocessed.text, false, undefined, control.blocks, preprocessed.parameters,
+    [...control.warnings, ...preprocessed.warnings]);
 }
 
 /**
@@ -172,8 +175,12 @@ function parseNetlist(
           // Subcircuit bodies are compiled later; reject unsupported model types now,
           // while the source line is still known.
           if (first === '.MODEL') {
-            assertSupportedModelType(tokens, lineNumber, raw);
-            assertSupportedResistorModel(tokens, lineNumber, raw);
+            if (isPspiceSwitchModel(tokens)) {
+              translatePspiceSwitchModel(raw, lineNumber);
+            } else {
+              assertSupportedModelType(tokens, lineNumber, raw);
+              assertSupportedResistorModel(tokens, lineNumber, raw);
+            }
           }
           subcktCollector.body.push(raw);
         }
@@ -368,7 +375,8 @@ export async function parseAsync(
   const { title, control } = splitTitledDeck(netlist);
   const preprocessed = await preprocessDeck(control.netlist, resolver, undefined, 1);
   return parseNetlist(
-    `${title}\n${preprocessed.text}`, true, undefined, control.blocks, preprocessed.parameters, control.warnings,
+    `${title}\n${preprocessed.text}`, true, undefined, control.blocks, preprocessed.parameters,
+    [...control.warnings, ...preprocessed.warnings],
   );
 }
 
@@ -380,7 +388,8 @@ export async function parseTitlelessAsync(
 ): Promise<Circuit> {
   const control = extractControlBlocks(translateMicroSign(netlist), false);
   const preprocessed = await preprocessDeck(control.netlist, resolver, guard, 0);
-  return parseNetlist(preprocessed.text, false, guard, control.blocks, preprocessed.parameters, control.warnings);
+  return parseNetlist(preprocessed.text, false, guard, control.blocks, preprocessed.parameters,
+    [...control.warnings, ...preprocessed.warnings]);
 }
 
 const OUTPUT_ONLY_OPTION_FLAGS = new Set([
@@ -639,14 +648,23 @@ function parseDotCommand(
       break;
     }
     case '.MODEL': {
-      if (xspiceModelType(tokens) !== undefined) {
+      let modelTokens = tokens;
+      if (isPspiceSwitchModel(tokens)) {
+        const translated = translatePspiceSwitchModel(context, lineNumber);
+        if (translated.kind === 'xspice') {
+          circuit.addXspiceModel(translated.card);
+          break;
+        }
+        modelTokens = tokenizeLine(translated.raw);
+      }
+      if (xspiceModelType(modelTokens) !== undefined) {
         circuit.addXspiceModel(parseXspiceModelCard(context, lineNumber));
         break;
       }
-      assertSupportedModelType(tokens, lineNumber, context);
-      assertSupportedResistorModel(tokens, lineNumber, context);
-      const model = parseTransmissionLineModelCard(tokens, lineNumber)
-        ?? parseModelCard(tokens, lineNumber, message => circuit.addParseWarning(message));
+      assertSupportedModelType(modelTokens, lineNumber, context);
+      assertSupportedResistorModel(modelTokens, lineNumber, context);
+      const model = parseTransmissionLineModelCard(modelTokens, lineNumber)
+        ?? parseModelCard(modelTokens, lineNumber, message => circuit.addParseWarning(message));
       circuit.addModel(model);
       break;
     }
@@ -1040,6 +1058,16 @@ function parseSimulationOptions(
       options.integrationMethod = method;
       continue;
     }
+    if (name === 'rshunt') {
+      // ngspice-47 cktsopt.c OPT_ENH_RSHUNT: a value above 1e-30 enables the
+      // node-to-ground shunts; anything else is ignored with a warning and
+      // leaves an earlier RSHUNT in place.
+      const value = parseNumber(rawValue);
+      if (!Number.isFinite(value)) throw new Error(`Invalid .options rshunt value: '${rawValue}'`);
+      if (value > 1e-30) options.rshunt = value;
+      else hooks.warn?.(`Ignored .options rshunt=${rawValue}: ngspice-47 ignores an RSHUNT of at most 1e-30 ("Rshunt option too small")`);
+      continue;
+    }
     if (name === 'maxord') {
       const value = parseNumber(rawValue);
       if (!Number.isFinite(value)) throw new Error(`Invalid .options maxord value: '${rawValue}'`);
@@ -1261,7 +1289,7 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number, raw
       // X<name> <port1> <port2> ... <subcktName> [params:] [param=val ...]
       const call = locateSubcircuitCall(tokens);
       const subcktName = tokens[call.nameIndex];
-      const ports = tokens.slice(1, call.nameIndex);
+      const ports = call.ports;
       const xParams = parseInstanceParams(tokens, call.paramStart);
       circuit.addSubcircuitInstance(name, ports, subcktName, xParams);
       break;

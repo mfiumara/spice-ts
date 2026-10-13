@@ -1,0 +1,9 @@
+{"round":1,"build":"ngspice-47","circuit":"rc-ladder-tran","nodes":50000,"ms":974.0}
+{"round":1,"build":"ngspice-47","circuit":"resistor-mesh-op","nodes":50000,"ms":51081.8}
+{"round":1,"build":"ngspice-47","circuit":"cmos-inverter-chain-tran","nodes":50000,"ms":77251.4}
+{"round":2,"build":"ngspice-47","circuit":"rc-ladder-tran","nodes":50000,"ms":1543.1}
+{"round":2,"build":"ngspice-47","circuit":"resistor-mesh-op","nodes":50000,"ms":80941.4}
+{"round":2,"build":"ngspice-47","circuit":"cmos-inverter-chain-tran","nodes":50000,"ms":78583.8}
+{"round":3,"build":"ngspice-47","circuit":"rc-ladder-tran","nodes":50000,"ms":1370.2}
+{"round":3,"build":"ngspice-47","circuit":"resistor-mesh-op","nodes":50000,"ms":79096.6}
+{"round":3,"build":"ngspice-47","circuit":"cmos-inverter-chain-tran","nodes":50000,"ms":81176.1}

@@ -6,6 +6,7 @@ import type {
 import type { CircuitIR } from './ir/types.js';
 import { buildIR } from './ir/builder.js';
 import { Resistor } from './devices/resistor.js';
+import { NodeShunt } from './devices/node-shunt.js';
 import { resolveResistor } from './devices/resistor-model.js';
 import { VoltageSource } from './devices/voltage-source.js';
 import { CurrentSource } from './devices/current-source.js';
@@ -13,7 +14,7 @@ import { TransientNoiseContext } from './devices/transient-noise.js';
 import { Capacitor } from './devices/capacitor.js';
 import { Inductor } from './devices/inductor.js';
 import { MutualInductor } from './devices/mutual-inductor.js';
-import { Diode, diodeZeroBiasCapacitance } from './devices/diode.js';
+import { Diode, canonicalDiodeModelParams, diodeZeroBiasCapacitance } from './devices/diode.js';
 import { BJT, hasBiasDependentBaseResistance } from './devices/bjt.js';
 import { VBIC, resolveVBICParams, vbicNodeCount } from './devices/vbic.js';
 import { MOSFET } from './devices/mosfet.js';
@@ -62,7 +63,8 @@ import { assertControlledSourceCard, withoutNodePairParentheses } from './parser
 import type { ControlScript } from './parser/control/script.js';
 import { DEFAULT_OPTIONS, GROUND_NODE } from './types.js';
 import { evaluateExpression } from './parser/expression.js';
-import { parseNumber, tokenizeNetlist } from './parser/tokenizer.js';
+import { parseNumber, tokenizeLine, tokenizeNetlist } from './parser/tokenizer.js';
+import { isPspiceSwitchModel, translatePspiceSwitchModel } from './parser/pspice-switch.js';
 import { parseModelCard } from './parser/model-parser.js';
 import { assertDeviceModelType, normalizeModelType } from './parser/model-type.js';
 import {
@@ -70,7 +72,7 @@ import {
   transientNoiseWaveform, transientRandomWaveform, VOLTAGE_SOURCE_MULTIPLIER_ERROR,
 } from './parser/waveform-parser.js';
 import { invalidPassiveInstanceLine, parsePassiveElement } from './parser/passive-parser.js';
-import { locateSubcircuitCall } from './parser/subcircuit-syntax.js';
+import { locateSubcircuitCall, splitNestedSubcircuits } from './parser/subcircuit-syntax.js';
 import { parseResistorElement } from './parser/resistor-parser.js';
 import { parseZInstance } from './parser/z-device-parser.js';
 import { parseSwitchInstance } from './parser/switch-parser.js';
@@ -153,6 +155,14 @@ export interface CompiledCircuit {
   initialConditions: NodeInitialState[];
   /** Node-voltage Newton guesses from `.nodeset`. */
   nodeSets: NodeInitialState[];
+}
+
+/** Definitions nested in one subcircuit instance body, and that body's local models. */
+interface SubcircuitScope {
+  /** Nested `.subckt` definitions, keyed by upper-case name. */
+  definitions: ReadonlyMap<string, SubcktDefinition>;
+  /** Upper-case local `.model` name -> instance-scoped model name (#854). */
+  models: ReadonlyMap<string, string>;
 }
 
 interface DeviceDescriptor {
@@ -882,8 +892,9 @@ export class Circuit {
   private _steps: StepAnalysis[] = [];
   private _models: Map<string, ModelParams> = new ModelTable();
   /**
-   * Upper-case names of `.model` cards defined inside a subcircuit body. ngspice
-   * gives every subcircuit instance its own copy of such a model (`x1:name`).
+   * Upper-case instance-scoped names (`X1:NAME`) of `.model` cards defined
+   * inside a subcircuit body. ngspice-47 subckt.c gives every subcircuit
+   * instance its own copy of such a model, visible only to that body (#854).
    */
   private readonly _subcircuitModelNames = new Set<string>();
   /** XSPICE code model cards, keyed by upper-case model name like {@link ModelTable}. */
@@ -2005,6 +2016,7 @@ export class Circuit {
       ['integrationMethod', 'method', value => value === 'trapezoidal' ? 'trap' : value === 'gear2' ? 'gear' : String(value)],
       ['trtol', 'trtol', String],
       ['chgtol', 'chgtol', String],
+      ['rshunt', 'rshunt', String],
     ];
     const serializedOptions = optionNames.flatMap(([key, name, format]) => {
       const value = this._simulationOptions[key];
@@ -2014,11 +2026,12 @@ export class Circuit {
     if (this._xspiceTrtol !== undefined) serializedOptions.push(`xtrtol=${this._xspiceTrtol}`);
     if (serializedOptions.length > 0) lines.push(`.options ${serializedOptions.join(' ')}`);
 
+    // Subcircuit-local models are written by their .subckt body, not here.
     for (const model of this._models.values()) {
-      lines.push(formatModel(model));
+      if (!this._subcircuitModelNames.has(model.name.toUpperCase())) lines.push(formatModel(model));
     }
     for (const model of this._xspiceModels.values()) {
-      lines.push(model.raw);
+      if (!this._subcircuitModelNames.has(model.name.toUpperCase())) lines.push(model.raw);
     }
 
     if (this._globalNodes.size > 0) lines.push(`.global ${this.globalNodes.join(' ')}`);
@@ -2132,11 +2145,28 @@ export class Circuit {
     // XSPICE A instances: their nodes follow from the code model's port table.
     const xspiceInstances = new Map<DeviceDescriptor, PreparedXspiceInstance>();
     for (const desc of expandedDescriptors) {
+      if (desc.type === 'S' || desc.type === 'W') {
+        // A PSpice VSWITCH (ISWITCH) switch: ngspice-47 inpcompat.c rewrites the S (W)
+        // card into a pswitch (aswitch) instance, see pspiceSwitchInstance.
+        const switchModel = this._xspiceModels.get(desc.modelName!.toUpperCase());
+        if (!switchModel?.pspiceSwitch) continue;
+        if (switchModel.pspiceSwitch !== desc.type) {
+          // ngspice rewrites only the matching letter and renames the model to
+          // a<name>, so the other switch letter finds no model of that name.
+          throw new InvalidCircuitError(
+            `${desc.type === 'S' ? 'Switch' : 'Current switch'} '${desc.name}': model '${desc.modelName}' is a PSpice `
+              + `${switchModel.pspiceSwitch === 'S' ? 'VSWITCH (S instances only)' : 'ISWITCH (W instances only)'}`,
+          );
+        }
+        xspiceInstances.set(desc, prepareXspiceInstance(pspiceSwitchInstance(desc), switchModel, false, GROUND_NODE));
+        continue;
+      }
       if (desc.type !== 'A') continue;
+      const model = this._xspiceModels.get(desc.modelName!.toUpperCase());
       const prepared = prepareXspiceInstance(
         desc.xspice!,
-        this._xspiceModels.get(desc.modelName!.toUpperCase()),
-        this._models.has(desc.modelName!),
+        model?.pspiceSwitch ? undefined : model,
+        this._models.has(desc.modelName!) || model?.pspiceSwitch !== undefined,
         GROUND_NODE,
       );
       desc.nodes = [...prepared.nodes];
@@ -2453,11 +2483,8 @@ export class Circuit {
             // Instance W/L/AD/AS/PD/PS/DELVTO/MULU0/M; b3set.c supplies the defaults.
             const bsim3 = new BSIM3v3(desc.name, nodeIdxs, modelParams, desc.params ?? {}, polarity, model.version);
             devices.push(bsim3);
-            // A subcircuit-local card is a separate ngspice model per subcircuit instance.
-            const modelName = model.name.toUpperCase();
-            const scope = this._subcircuitModelNames.has(modelName)
-              ? desc.name.slice(0, Math.max(0, desc.name.lastIndexOf('.'))) : '';
-            const key = `${scope}\u0000${modelName}`;
+            // A subcircuit-local card is already a separate model per instance (#854).
+            const key = model.name.toUpperCase();
             const group = bsim3ModelInstances.get(key);
             if (group) group.push(bsim3); else bsim3ModelInstances.set(key, [bsim3]);
           } else if (level === 6) {
@@ -2553,6 +2580,13 @@ export class Circuit {
         }
         case 'S':
         case 'W': {
+          const codeModelSwitch = xspiceInstances.get(desc);
+          if (codeModelSwitch) {
+            devices.push(createXspiceDevice(codeModelSwitch, resolveNode, () => {
+              throw new Error(`switch '${desc.name}' has no branch`);
+            })!);
+            break;
+          }
           const type = desc.type === 'S' ? 'SW' : 'CSW';
           const model = this.requireModel(desc.type === 'S' ? 'Switch' : 'Current switch', desc);
           const { model: switchModel, warnings } = resolveSwitchModel(
@@ -2600,6 +2634,24 @@ export class Circuit {
     }
 
     if (eventNetwork) devices.push(eventNetwork.network);
+    // ngspice-47 loads the RSHUNT conductances after every device (cktload.c).
+    const rshunt = this._simulationOptions.rshunt;
+    if (rshunt !== undefined) {
+      if (!Number.isFinite(rshunt) || rshunt <= 1e-30) {
+        throw new InvalidCircuitError(`Invalid rshunt: ${rshunt} (must be a finite resistance above 1e-30 ohm)`);
+      }
+      const line = expandedDescriptors.find(desc => desc.type === 'T' || desc.type === 'O');
+      if (line) {
+        // ngspice-47 trasetup.c (T: i1, i2, int1, int2) and ltraset.c (O: i1,
+        // i2) make the line's internal rows with CKTmkVolt, so RSHUNT shunts
+        // them too; spice-ts's line models have no such node rows.
+        throw new InvalidCircuitError(
+          `Unsupported .options rshunt with transmission line '${line.name}': `
+          + 'ngspice-47 also shunts the internal rows of T and O (LTRA) lines, which the spice-ts line models do not have',
+        );
+      }
+      devices.push(new NodeShunt(rshunt));
+    }
     bindXspiceSources(devices, deviceMap);
     for (const instances of bsim3ModelInstances.values()) BSIM3v3.linkBsim3v32SizeRecordReuse(instances);
     for (const { device, controlSource } of pendingCurrentSwitches) {
@@ -2731,7 +2783,6 @@ export class Circuit {
           globalNodes,
           guard,
           1,
-          1,
         );
         result.push(...expanded);
       } else {
@@ -2816,14 +2867,26 @@ export class Circuit {
         const hasJunctionCharge = isPositiveFinite(junctionCapacitance)
           || (isPositiveFinite(sidewallCapacitance) && effectivePerimeter > 0)
           || isPositiveFinite(transitTime);
-        if (isPositiveFinite(seriesResistance) && hasJunctionCharge) {
+        // ngspice-47 diosetup.c gives every RS > 0 a prime node; spice-ts folds
+        // it into a two-terminal diode unless the junction stores charge or
+        // RSHUNT must shunt that node to ground too (#824).
+        const needsPrimeNode = hasJunctionCharge || this._simulationOptions.rshunt !== undefined;
+        if (isPositiveFinite(seriesResistance) && needsPrimeNode) {
           const [anode, cathode] = desc.nodes;
           const junction = internalNodeName(desc.name, 'rs');
+          // ngspice-47 diotemp.c:253-258 scales RS by 1 + TRS1*dT + TRS2*dT^2
+          // around the diode TNOM: the resistor TC1/TC2 law with the same TNOM.
+          const card = model ? canonicalDiodeModelParams(desc.name, model.params) : {};
+          const trs1 = card.TRS1 ?? 0;
+          const trs2 = card.TRS2 ?? 0;
           result.push({
             type: 'R',
             name: `${desc.name}.RS`,
             nodes: [anode, junction],
             value: seriesResistance / effectiveArea,
+            ...(trs1 !== 0 || trs2 !== 0
+              ? { params: { TC1: trs1, TC2: trs2, TNOM: card.TNOM ?? NOMINAL_TEMPERATURE_C } }
+              : {}),
           });
           result.push({
             ...desc,
@@ -3262,6 +3325,41 @@ export class Circuit {
     return true;
   }
 
+  /**
+   * Register the `.model` cards of one subcircuit instance body under their
+   * instance-scoped names, returning upper-case local name -> scoped name.
+   */
+  private registerSubcircuitModels(
+    instanceName: string,
+    lines: readonly { tokens: string[]; lineNumber: number; raw: string }[],
+  ): Map<string, string> {
+    const local = new Map<string, string>();
+    for (const { tokens, lineNumber, raw } of lines) {
+      if (tokens[0]?.toUpperCase() !== '.MODEL') continue;
+      let modelTokens = tokens;
+      if (isPspiceSwitchModel(tokens)) {
+        const translated = translatePspiceSwitchModel(raw, lineNumber);
+        if (translated.kind === 'xspice') {
+          const scoped = `${instanceName}:${translated.card.name}`;
+          this._xspiceModels.set(scoped.toUpperCase(), { ...translated.card, name: scoped });
+          this._subcircuitModelNames.add(scoped.toUpperCase());
+          local.set(translated.card.name.toUpperCase(), scoped);
+          continue;
+        }
+        modelTokens = tokenizeLine(translated.raw);
+      }
+      const modelParams = parseTransmissionLineModelCard(modelTokens, 0)
+        ?? parseModelCard(modelTokens, 0, message => this.addParseWarning(message));
+      const scoped = `${instanceName}:${modelParams.name}`;
+      // Validate under the name written on the card, so errors name it (#544).
+      const type = normalizeModelType(modelParams.name, modelParams.type);
+      this._models.set(scoped, { ...modelParams, name: scoped, type });
+      this._subcircuitModelNames.add(scoped.toUpperCase());
+      local.set(modelParams.name.toUpperCase(), scoped);
+    }
+    return local;
+  }
+
   private expandSubcircuit(
     instanceName: string,
     connectedPorts: string[],
@@ -3271,6 +3369,7 @@ export class Circuit {
     globalNodes: ReadonlyMap<string, string>,
     guard?: ProtocolExecutionGuard,
     depth = 1,
+    scopes: readonly SubcircuitScope[] = [],
     inheritedMultiplicity = 1,
   ): DeviceDescriptor[] {
     guard?.maximum('maxSubcircuitDepth', depth, 'compile');
@@ -3280,7 +3379,12 @@ export class Circuit {
       throw new CycleError([...visited, key]);
     }
 
-    const def = this._subcircuits.get(key);
+    // Resolve innermost-first through the definitions nested in the enclosing
+    // subcircuits (#826), then the top level. A nested definition sees the
+    // scopes it was defined in.
+    const scopeIndex = scopes.findIndex(scope => scope.definitions.has(key));
+    const def = scopeIndex >= 0 ? scopes[scopeIndex].definitions.get(key) : this._subcircuits.get(key);
+    const definitionScopes = scopeIndex >= 0 ? scopes.slice(scopeIndex) : [];
     if (!def) {
       throw new Error(`Undefined subcircuit '${subcktName}'`);
     }
@@ -3366,23 +3470,34 @@ export class Circuit {
 
     const result: DeviceDescriptor[] = [];
 
-    // Tokenize body lines
-    const parsedLines = tokenizeNetlist(def.body.join('\n'));
+    // Tokenize body lines; nested .subckt blocks are definitions, not devices.
+    const { lines: parsedLines, definitions } = splitNestedSubcircuits(tokenizeNetlist(def.body.join('\n')));
+
+    // ngspice-47 subckt.c modtranslate: a .model card in the body becomes a
+    // per-instance model `<instance>:<name>`, and the body's device cards (and
+    // those of definitions nested in it) are rewritten to it. Lookup is
+    // lexical: own body, then enclosing definition bodies, then top level (#854).
+    const localModels = this.registerSubcircuitModels(instanceName, parsedLines);
+    const modelScopes = [localModels, ...definitionScopes.map(scope => scope.models)];
+    const scopeModel = (name: string): string => {
+      const upper = name.toUpperCase();
+      for (const models of modelScopes) {
+        const scoped = models.get(upper);
+        if (scoped !== undefined) return scoped;
+      }
+      return name;
+    };
+    const bodyScopes = definitions.size > 0
+      ? [{ definitions, models: localModels }, ...definitionScopes]
+      : definitionScopes;
 
     for (const { tokens, lineNumber, raw } of parsedLines) {
       guard?.checkpoint('compile:device');
       if (tokens.length === 0) continue;
       const first = tokens[0].toUpperCase();
 
-      // Handle .model inside subcircuit — register locally AND globally
-      if (first === '.MODEL') {
-        const modelParams = parseTransmissionLineModelCard(tokens, 0)
-          ?? parseModelCard(tokens, 0, message => this.addParseWarning(message));
-        // Register in the circuit's global model map so compile() can find it
-        this.registerModel(modelParams);
-        this._subcircuitModelNames.add(modelParams.name.toUpperCase());
-        continue;
-      }
+      // .model cards were registered per instance above.
+      if (first === '.MODEL') continue;
 
       // Handle .param inside subcircuit body
       if (first === '.PARAM') {
@@ -3408,7 +3523,7 @@ export class Circuit {
 
       const devName = `${instanceName}.${tokens[0]}`;
       const devType = tokens[0][0].toUpperCase();
-      const firstNew = result.length;
+      const firstDescriptor = result.length;
 
       switch (devType) {
         case 'R': {
@@ -3681,7 +3796,7 @@ export class Circuit {
           // Nested subcircuit instance — recursively expand
           const call = locateSubcircuitCall(tokens);
           const nestedSubcktName = tokens[call.nameIndex];
-          const nestedPorts = tokens.slice(1, call.nameIndex).map(mapNode);
+          const nestedPorts = call.ports.map(mapNode);
           const evaluatedTokens = tokens.map(t => evalToken(t));
           const nestedParams = parseInstanceParams(evaluatedTokens, call.paramStart);
 
@@ -3697,6 +3812,7 @@ export class Circuit {
             globalNodes,
             guard,
             depth + 1,
+            bodyScopes,
             multiplicity,
           );
           result.push(...nested);
@@ -3705,9 +3821,13 @@ export class Circuit {
         default:
           throw new ParseError(`Unsupported device card: '${devType}'`, lineNumber, raw);
       }
-      if (multiplicity !== 1 && devType !== 'X') {
-        for (let i = firstNew; i < result.length; i++) {
-          const warning = applyInstanceMultiplicity(result[i], multiplicity, instanceName);
+      // Nested X expansions resolved their own model scopes and multiplicity already.
+      if (devType !== 'X') {
+        for (let i = firstDescriptor; i < result.length; i++) {
+          const desc = result[i];
+          if (desc.modelName !== undefined) desc.modelName = scopeModel(desc.modelName);
+          if (multiplicity === 1) continue;
+          const warning = applyInstanceMultiplicity(desc, multiplicity, instanceName);
           if (warning !== undefined && !this._parseWarnings.includes(warning)) this._parseWarnings.push(warning);
         }
       }
@@ -3716,4 +3836,28 @@ export class Circuit {
 
     return result;
   }
+}
+
+/**
+ * The A card ngspice-47 inpcompat.c writes for an S instance of a PSpice
+ * VSWITCH model, `a<name> %gd(nc+ nc-) %gd(n+ n-) a<model>`, or for a W
+ * instance of a PSpice ISWITCH model, `a<name> %vnam(<vcontrol>) %gd(n+ n-) a<model>`
+ * (the instance keeps its S/W name here).
+ */
+function pspiceSwitchInstance(desc: DeviceDescriptor): XspiceInstanceCard {
+  const [nodePos, nodeNeg, ctrlPos, ctrlNeg] = desc.nodes;
+  const port = (type: string, ...names: string[]) => [
+    { kind: 'percent', text: '%' }, { kind: 'string', text: type },
+    ...names.map(text => ({ kind: 'string', text }) as const),
+  ] as const;
+  const control = desc.type === 'W'
+    ? { tokens: port('vnam', desc.controlSource!), raw: `%vnam(${desc.controlSource})` }
+    : { tokens: port('gd', ctrlPos, ctrlNeg), raw: `%gd(${ctrlPos} ${ctrlNeg})` };
+  return {
+    name: desc.name,
+    connectionTokens: [...control.tokens, ...port('gd', nodePos, nodeNeg)],
+    modelName: desc.modelName!,
+    raw: `a${desc.name} ${control.raw} %gd(${nodePos} ${nodeNeg}) a${desc.modelName}`,
+    line: 0,
+  };
 }

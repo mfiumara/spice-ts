@@ -4,7 +4,7 @@ Generated from `../../manifest.json` by `render.ts`; do not edit by hand.
 
 - Ticket: https://sourceforge.net/p/ngspice/bugs/740/ (status `open`, opened 2025-02-23)
 - Category: simulator-numerics
-- Outcome: ngspice defective, spice-ts cannot run the deck (feature unsupported)
+- Outcome: ngspice defective, spice-ts correct
 
 ## Decks
 
@@ -27,7 +27,7 @@ Edits relative to the ticket: Absolute Windows .include/.lib paths (D:/spice_lib
 
 ## Expected answer
 
-The two netlists are electrically equivalent (series split of an element / extra element on an open or already-defined node), so a correct simulator must produce the same waveforms for both; converging on one and failing on the other is a numerical failure of the solver, not a property of the circuit. Here the netlist also has no ground node; every node is tied to ground only through .options rshunt=1G. (basis: first-principles)
+The two netlists are electrically equivalent (series split of an element / extra element on an open or already-defined node), so a correct simulator must produce the same waveforms for both; converging on one and failing on the other is a numerical failure of the solver, not a property of the circuit. Here the netlist also has no ground node; every node is tied to ground only through .options rshunt=1G, so the split's extra node NewPin14 adds one more 1 GOhm shunt and the DC current shifts slightly (ngspice-47 operating point i(V1) = -1.959222e-8 A for circuit, -1.973652e-8 A for split). The source is DC, so each deck must complete and hold its operating point. (basis: first-principles)
 
 ## Results
 
@@ -35,7 +35,7 @@ The two netlists are electrically equivalent (series split of an element / extra
 |---|---|---|
 | ngspice-47 | error | Both variants now fail: circuit: "Timestep too small; time = 1.90129e-12 ... node net-_l1-pad1_"; split: same at 3.04931e-13 s. Identical in LTPS mode. |
 | ngspice master | hang | circuit: "Timestep too small; time = 2.48364e-12 ... node net-_l1-pad1_", aborted; split: exceeds the 120 s bound (exit 142) in both modes. [ngspice pre-master-48 HEAD 3ef069fb, same command as 47, default and LTPS] |
-| spice-ts | unsupported | ParseError: Unsupported .options field: 'rshunt' |
+| spice-ts | right | Both decks complete: circuit 120 rows to 10 ns, split 1011 rows to 100 ns. The t=0 i(V1) matches ngspice-47's operating point to 3e-8 relative on both (-1.959222e-8 and -1.973652e-8 A), and i(V1) holds it: within 0.04% (circuit) and 0.02% (split) after 1 ns. In the first 10 ps (ps-sized steps across the 211 nF/696 nF capacitors) round-off in C dV/dt moves the 20 nA current by up to 2.7% (circuit) and 0.2% (split). [spice-ts with .options rshunt (#824), simulate() on the same *.local.cir bytes with a filesystem include resolver] |
 
 Reproduces on ngspice-47: partially. Check: Both circuit.local.cir and split.local.cir abort with Timestep too small (ticket: only split failed on ngspice-43).
 

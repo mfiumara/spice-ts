@@ -1,8 +1,11 @@
 import { evaluateExpression } from './expression.js';
-import { conditionExpression, expandUserFunctions, parseFuncCard, type FunctionScope, type UserFunction } from './numparam.js';
+import {
+  braceBareParameters, conditionExpression, expandUserFunctions, parseFuncCard, type FunctionScope, type UserFunction,
+} from './numparam.js';
 import { NODE_DEPENDENT_EXPRESSION, substituteBehavioralParameters } from './behavioral-expression.js';
 import { parseNumber } from './tokenizer.js';
 import { translateMicroSign } from './micro-sign.js';
+import { bracedSubcircuitCallValues } from './subcircuit-syntax.js';
 import { CycleError, ParseError } from '../errors.js';
 import type { IncludeResolver } from '../types.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
@@ -56,6 +59,8 @@ export interface PreprocessedDeck {
    * referencing one from a subcircuit reports it as undefined.
    */
   parameters: Record<string, number>;
+  /** Non-fatal preprocessing diagnostics, surfaced as circuit parse warnings. */
+  warnings: { message: string; line: number }[];
 }
 
 export async function preprocessDeck(
@@ -111,6 +116,9 @@ function* preprocessSteps(
     statement.control = false;
   }
   expandFunctionCalls(state);
+  // inpcom.c inp_quote_params: brace bare parameter names on R/C/L cards (#837).
+  const numericParams = new Set([...definitions].filter(([, definition]) => !definition.stringValue).map(([name]) => name));
+  braceBareParameters(statements, numericParams).forEach((text, index) => { statements[index].text = text; });
   // ngspice collects every top-level `.param` before substituting, so a
   // parameter may be used before its definition and the last definition wins.
   const temperatureSweep = statements.find(isTemperatureSweep);
@@ -136,7 +144,7 @@ function* preprocessSteps(
       // Unused by the top level, or reported there; see PreprocessedDeck.
     }
   }
-  return { text, parameters };
+  return { text, parameters, warnings: state.warnings };
 }
 
 /** One `.if`/`.elseif`/`.else` branch; `condition` is absent for `.else`. */
@@ -177,6 +185,9 @@ interface CollectState {
   /** Index 0 is the top level; each `.subckt` opens a nested scope. */
   functionScopes: FunctionScopeFrame[];
   scopeStack: number[];
+  warnings: { message: string; line: number }[];
+  /** ngspice-47 reports unusual leading characters once per deck (#843). */
+  warnedUnusualLeadingCharacter: boolean;
 }
 
 function newCollectState(): CollectState {
@@ -188,6 +199,8 @@ function newCollectState(): CollectState {
     openBlocks: [],
     functionScopes: [{ parent: -1, functions: new Map() }],
     scopeStack: [0],
+    warnings: [],
+    warnedUnusualLeadingCharacter: false,
   };
 }
 
@@ -196,6 +209,25 @@ const FUNC_DIRECTIVE = /^\.func(?![\w])/i;
 const CSPARAM_DIRECTIVE = /^\.csparam(?![\w])/i;
 /** Output cards whose text ngspice-47 numparam never substitutes (#714). */
 const OUTPUT_CARD = /^\.(?:print|plot)(?![\w])/i;
+/**
+ * ngspice-47 inpcom.c inp_check_syntax: a card whose first non-blank character
+ * is one of these is turned into a `*` comment, with a warning (#843).
+ */
+const UNUSUAL_LEADING_CHARACTERS = new Set(['=', '[', ']', '?', '(', ')', '&', '%', '$', '"', '!', ':', ',', '\f']);
+const UNUSUAL_LEADING_WARNING = (character: string) =>
+  `Unusual leading characters like '${character}' or others out of '= [] ? () & % $"!:,\\f' `
+  + "in netlist or included files, will be replaced with '*'";
+
+/**
+ * The card after ngspice's leading space/tab skip when ngspice-47 comments it
+ * out: an unusual leading character (warned) or `#` (silent); else undefined.
+ */
+function commentedOutCard(line: string): { card: string; warn: boolean } | undefined {
+  const card = line.replace(/^[ \t]+/, '');
+  if (card.startsWith('#')) return { card, warn: false };
+  return UNUSUAL_LEADING_CHARACTERS.has(card[0]) ? { card, warn: true } : undefined;
+}
+
 const PARAM_ASSIGNMENT = /([A-Za-z_]\w*)\s*=\s*(\{[^}]+\}|'[^']*'|"[^"]*"|\S+)/g;
 
 /**
@@ -699,6 +731,9 @@ function* collectStatements(
   let inSubckt = 0;
   let inControl = false;
   let inOutputCard = false;
+  let inSubcircuitCall = false;
+  // A card ngspice-47 comments out takes its `+` continuations with it (#843).
+  let inCommentedOutCard = false;
 
   for (const [index, line] of lines.entries()) {
     guard?.checkpoint('parse:line');
@@ -715,8 +750,35 @@ function* collectStatements(
       passThrough();
       continue;
     }
+    const commentedOut = inControl ? undefined : commentedOutCard(line);
+    if (commentedOut) {
+      if (commentedOut.warn && !state.warnedUnusualLeadingCharacter) {
+        state.warnedUnusualLeadingCharacter = true;
+        const file = chain[chain.length - 1];
+        const where = file === undefined ? `line ${lineNumber}` : `line ${lineNumber} of ${file}`;
+        state.warnings.push({
+          message: `${UNUSUAL_LEADING_WARNING(commentedOut.card[0])}: check line '${commentedOut.card.trimEnd()}' (${where})`,
+          line: lineNumber,
+        });
+      }
+      inCommentedOutCard = true;
+      statements.push({ text: `*${commentedOut.card.slice(1)}`, substitute: false, line: lineNumber, scope });
+      continue;
+    }
+    if (trimmed !== '') {
+      if (inCommentedOutCard && trimmed.startsWith('+')) {
+        blank();
+        continue;
+      }
+      inCommentedOutCard = false;
+    }
     // A `+` continuation (blank and comment lines may sit in between) belongs to the preceding card.
-    if (trimmed !== '' && !trimmed.startsWith('+')) inOutputCard = OUTPUT_CARD.test(trimmed);
+    if (trimmed !== '' && !trimmed.startsWith('+')) {
+      inOutputCard = OUTPUT_CARD.test(trimmed);
+      inSubcircuitCall = /^x/i.test(trimmed);
+    }
+    // An X card and its `+` continuations, with bare `name=value` values braced (#788).
+    const card = inSubcircuitCall ? bracedSubcircuitCallValues(line, commentStart(line)) : line;
 
     const conditional = inControl ? null : CONDITIONAL_CARD.exec(trimmed);
     if (conditional) {
@@ -767,7 +829,7 @@ function* collectStatements(
     if (inSubckt > 0) {
       let text: string;
       try {
-        text = behavioralCardAsBSource(line) ?? compactSubcircuitExpressions(line);
+        text = behavioralCardAsBSource(card) ?? compactSubcircuitExpressions(card);
       } catch (error) {
         throw toParseError(error, lineNumber, trimmed);
       }
@@ -885,7 +947,7 @@ function* collectStatements(
       continue;
     }
 
-    statements.push({ text: line, substitute: true, line: lineNumber, ...guarded });
+    statements.push({ text: card, substitute: true, line: lineNumber, ...guarded });
   }
 }
 

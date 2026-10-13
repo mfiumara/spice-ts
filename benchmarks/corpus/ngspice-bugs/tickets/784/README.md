@@ -33,7 +33,7 @@ The two netlists are electrically equivalent (series split of an element / extra
 |---|---|---|
 | ngspice-47 | right | LTPS mode: base and variant both complete, 141 rows each. Default mode: both fail "no such function 'if'" (PSpice function, documented to need compat mode). |
 | ngspice master | not-run | not re-run on master: the defect does not reproduce on ngspice-47 |
-| spice-ts | unsupported | UnsupportedModelTypeError: .model 'BB_SW' has unsupported type 'VSWITCH' (vendor PSpice library) |
+| spice-ts | unsupported | PSpice `VSWITCH` accepted since #825 (ngspice-47 inpcompat.c: VON/VOFF -> XSPICE pswitch, VT/VH -> SW); both decks now stop at UnsupportedResistorParameterError: Unsupported resistor parameters: 'T_ABS' (`.model R_NOISELESS RES(T_ABS=-273.15)` in the supplied AD620.mod; https://github.com/mfiumara/spice-ts/issues/846). [spice-ts at the #825 branch, simulate() with a filesystem include resolver mapping the D:/spice_lib paths to the attached libraries] Before #825: UnsupportedModelTypeError: .model 'BB_SW' has unsupported type 'VSWITCH' (vendor PSpice library) |
 
 Reproduces on ngspice-47: no. Check: n/a
 

@@ -133,7 +133,7 @@ describe('Diode', () => {
     expect(diode.params.BV).toBe(7.255);
   });
 
-  it.each(['IBVL', 'NBVL', 'TLEV', 'TRS1', 'TRS2'])(
+  it.each(['IBVL', 'NBVL', 'TLEV'])(
     'rejects unsupported level-2 breakdown field %s explicitly',
     (parameter) => {
       expect(() => parse(`unsupported diode level-2 field

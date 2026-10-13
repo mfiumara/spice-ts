@@ -1,0 +1,42 @@
+Total elapsed time (seconds) = 0.182 
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 24502.000 MB.
+Maximum ngspice program size =   29.562 MB.
+Current ngspice program size =   29.562 MB.
+24 page faults, 0 vol + 110 invol = 110 context switches.
+
+Number of lines in the deck = 20004
+Netlist loading time = 0.025246
+Subckt and Param expansion time = 0.017362
+Netlist parsing time = 0.013986
+
+Nominal temperature = 27
+Operating temperature = 27
+Total iterations = 241
+Transient iterations = 238
+Circuit Equations = 10002
+Circuit original non-zeroes = 30000
+Circuit fill-in non-zeroes = 0
+Circuit total non-zeroes = 0
+Transient timepoints = 120
+Accepted timepoints = 120
+Rejected timepoints = 0
+Total analysis time (seconds) = 0.135693
+Matrix load time = 0.058729
+Matrix synchronize time = 0
+Matrix reorder time = 0.000808
+Matrix factor time = 0.022862
+Matrix solve time = 0.012649
+Transient analysis time = 0.129831
+Transient load time = 0.057058
+Transient sync time = 0
+Transient factor time = 0.022716
+Transient solve time = 0.012507
+Transient trunc time = 0.03123
+Transient iterations for the last time point = 0
+AC analysis time = 0
+AC load time = 0
+AC sync time = 0
+AC factor time = 0
+AC solve time = 0
+

@@ -614,7 +614,9 @@ function parseWarnings(circuit: Circuit): SimulationWarning[] {
 }
 
 function validateCircuit(compiled: CompiledCircuit, warnings: SimulationWarning[]): void {
-  if (compiled.nodeCount === 0) {
+  // ngspice-47 runs a deck whose nodes are all XSPICE digital (event) nodes,
+  // such as eSim's half_adder; the analog system is then empty.
+  if (compiled.nodeCount === 0 && !compiled.devices.some(device => device.eventDriven !== undefined)) {
     throw new InvalidCircuitError('Circuit has no nodes');
   }
   if (compiled.analyses.length === 0 && compiled.poleZeroAnalyses.length === 0) {

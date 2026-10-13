@@ -162,9 +162,8 @@ describe('malformed controlled-source cards fail with a structured ParseError (#
     });
   }
 
-  it('names the unsupported POLY form instead of reading it as a gain', async () => {
-    const error = await caught('t\nV1 a 0 2\nR1 a 0 1k\nE1 b 0 poly(1) a 0 0 1\nR2 b 0 1k\n.op\n.end');
-    expect(error).toBeInstanceOf(ParseError);
-    expect((error as Error).message).toContain("Unsupported POLY form on controlled source 'E1'");
+  it('runs the POLY form as its polynomial instead of reading it as a gain (#845)', async () => {
+    const result = await simulate('t\nV1 a 0 2\nR1 a 0 1k\nE1 b 0 poly(1) a 0 0 1\nR2 b 0 1k\n.op\n.end');
+    expect(result.dc!.voltage('b')).toBeCloseTo(2, 12);
   });
 });

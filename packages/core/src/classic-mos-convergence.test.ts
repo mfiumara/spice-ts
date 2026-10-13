@@ -45,11 +45,13 @@ describe('classic MOS transient convergence (issue #302)', () => {
     // discretisation error: with `.tran 0.1us 10us 0 10n` (or 2n, 1n) ngspice
     // ends at 9.4639607061, its `.op` value with VIN = 0, 1.45e-5 below its
     // default run. Since spice-ts retries Newton failures at order 1 with
-    // ngspice's 100-iteration limit (#804), it ends at 9.463964: 1.1e-5 from
-    // ngspice's default run, which is within that spread, and 3e-6 from the
-    // settled value.
+    // ngspice's 100-iteration limit (#804), it ended at 9.463964. With
+    // ngspice-47's NIconvTest branch-current test and the transient BJT
+    // Newton rules (#818) it ends at 9.463972: 3.0e-6 from ngspice's default
+    // run (the same deck and step control) and 1.15e-5 from the settled
+    // value, inside ngspice's own 1.45e-5 default-vs-refined spread.
     const v5 = transient.voltage('5').at(-1)!;
-    expect(Math.abs(v5 - 9.46397521)).toBeLessThan(1.5e-5);
-    expect(Math.abs(v5 - 9.4639607061)).toBeLessThan(5e-6);
+    expect(Math.abs(v5 - 9.46397521)).toBeLessThan(5e-6);
+    expect(Math.abs(v5 - 9.4639607061)).toBeLessThan(1.45e-5);
   });
 });

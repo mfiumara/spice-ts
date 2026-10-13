@@ -32,7 +32,7 @@ undetermined: a KiCad op-amp test bench built from vendor PSpice macromodels; no
 |---|---|---|
 | ngspice-47 | error | Default mode: "Error on line 120 ... circuit not parsed" (PSpice syntax). LTPS mode: "TRAN: Timestep too small; time = 2.89999e-10 ... trouble with node a$poly$e.xu68.e_u1_e5#branch_1_0", aborted. |
 | ngspice master | error | LTPS: "TRAN: Timestep too small; time = 2.47251e-10 ... node a$poly$e.xu68.e_u1_e5#branch_1_0", aborted; default mode still fails to parse. [ngspice pre-master-48 HEAD 3ef069fb, same command as 47, default and LTPS] |
-| spice-ts | unsupported | UnsupportedModelTypeError: .model 'Rmod11' has unsupported type 'RES' (vendor PSpice library) |
+| spice-ts | unsupported | PSpice `VSWITCH` accepted since #825 (ngspice-47 inpcompat.c: VON/VOFF -> XSPICE pswitch, VT/VH -> SW); the deck now stops at the next vendor-library construct: ParseError Unsupported POLY form on controlled source 'E_E2' (`E_E2 39 0 POLY(1) V- V+ 1.0 .5 0 0` in the supplied OPA690.LIB; https://github.com/mfiumara/spice-ts/issues/845). [spice-ts at the #825 branch, simulate() with a filesystem include resolver mapping the D:/spice_lib paths to the attached libraries] Before #825: PSpice `RES` model type accepted since #823; every deck now stops at the next vendor-library construct: UnsupportedModelTypeError .model 'SMOD1' has unsupported type 'VSWITCH' (PSpice switch model, ngspice translates it in PSpice compatibility mode; tracked in https://github.com/mfiumara/spice-ts/issues/825). Before #823: UnsupportedModelTypeError: .model 'Rmod11' has unsupported type 'RES' (vendor PSpice library) |
 
 Reproduces on ngspice-47: yes. Check: LTPS run aborts with Timestep too small at t=2.9e-10 s.
 

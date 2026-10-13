@@ -1,0 +1,1090 @@
+{
+  "schemaVersion": "spice-ts-corpus-i-outcomes/v1",
+  "sources": [
+    {
+      "key": "esim",
+      "revision": "1a25a46ce15e0ccc35296dd513f40249c089a5a7",
+      "license": "GPL-3.0-only"
+    },
+    {
+      "key": "kicad",
+      "revision": "240efadec4b408919fef7e79deb54ac7c1269597",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "key": "ngspice-cmos",
+      "revision": "9f470c6d2558dc3d63fc21681dbdc131a7fea095",
+      "license": "MIT"
+    },
+    {
+      "key": "rioslinares",
+      "revision": "a8f956378acff356a071d974df894c70b37067b0",
+      "license": "GPL-3.0-only"
+    },
+    {
+      "key": "vacask",
+      "revision": "fb8cc2055a4f10cff1de8017b554d22ea57ce448",
+      "license": "AGPL-3.0-only"
+    }
+  ],
+  "manifestSha256": "2f909353575d97ce918188ec1d583bcd7088d691690f24cab716a834332ccd40",
+  "tools": {
+    "ngspice": "ngspice-47",
+    "spiceTs": "0.3.0",
+    "node": "v22.23.1"
+  },
+  "environment": {
+    "platform": "darwin",
+    "release": "27.0.0",
+    "arch": "arm64",
+    "cpu": "Apple M5 Pro"
+  },
+  "commands": {
+    "generate": "pnpm build && spice-heavy pnpm exec tsx benchmarks/corpus/corpus-i/parity.ts",
+    "verify": "spice-heavy pnpm exec tsx benchmarks/corpus/corpus-i/parity.ts --check",
+    "ngspice": "ngspice -b -r <raw> <identical-fixture> (HOME=<tmp> with .spiceinit \"set filetype=ascii\")",
+    "spiceTs": "@spice-ts/core simulate(<identical-fixture>) in a bounded child process (no parse() pre-check)"
+  },
+  "policy": {
+    "input": "byte-identical fixture for both engines",
+    "fixtureAdaptation": "none",
+    "perCircuitToleranceTuning": false,
+    "matchThreshold": 0.01,
+    "matchRule": "matched = both engines succeed, every spice-ts analysis has an ngspice counterpart, and for every common signal max|spice-ts - ngspice| <= 0.01 x max(peak |ngspice signal|, floor), with the corpus-f floor: 0.0001 V for node voltages, 1e-10 A for branch currents, 1e-12 otherwise. Errors are taken at spice-ts points with ngspice interpolated (transient breakpoint alignment as in the aggregate report).",
+    "fineReference": "Fine-step reference (#592): ngspice-47 runs the same deck with every active .tran card rewritten to TMAX_fine = min(TSTEP, (TSTOP - TSTART)/50, deck TMAX if given) / 10, i.e. the ngspice default step ceiling divided by 10; TSTEP, TSTOP, TSTART, UIC and every other card are unchanged. The rule is the same for every transient fixture. No reference is generated when the deck has no parsable .tran card outside .control, or when TSTOP/TMAX_fine exceeds 1000000 steps; the ngspice run is bounded at 600 s. Each default run (spice-ts, ngspice) is scored by the same procedure: at the reference's output points, with the default run linearly interpolated onto them, over the transient signals of the headline comparison, normalised by the reference peak with the same per-quantity floors. The headline's one-sided breakpoint alignment applies at every default-run time point within ngspice's breakpoint merge distance (CKTminBreak = 0.00005 x TMAX_fine) of a reference time point; the headline matches breakpoints bit for bit, which here would favour ngspice, whose default run lands on its own reference's breakpoint times exactly while spice-ts's land a few ulps away. This charges each engine for its own published waveform, so a coarse output grid counts against whichever engine produced it. Status (matched/mismatch) is defined by the headline column only. One fine reference is not a convergence proof, and neither column is an accuracy ranking of the engines.",
+    "deterministicHashExcludes": [
+      "environment",
+      "tools.node",
+      "ngspice.analyses",
+      "spiceTs.analyses"
+    ]
+  },
+  "totals": {
+    "fixtures": 25,
+    "ngspice": {
+      "success": 25,
+      "failed": 0,
+      "unsupported": 0
+    },
+    "spiceTs": {
+      "success": 20,
+      "failed": 1,
+      "unsupported": 4
+    },
+    "outcomes": {
+      "matched": 19,
+      "mismatch": 1,
+      "not-compared": 0,
+      "spice-ts-loss": 5,
+      "ngspice-failed": 0,
+      "both-failed": 0
+    },
+    "bySource": {
+      "esim": {
+        "matched": 8,
+        "mismatch": 0,
+        "not-compared": 0,
+        "spice-ts-loss": 5,
+        "ngspice-failed": 0,
+        "both-failed": 0
+      },
+      "vacask": {
+        "matched": 11,
+        "mismatch": 1,
+        "not-compared": 0,
+        "spice-ts-loss": 0,
+        "ngspice-failed": 0,
+        "both-failed": 0
+      }
+    }
+  },
+  "gapBuckets": [
+    {
+      "bucket": "device: XSPICE code models not yet implemented (d_jkff, lcouple, zener, ...)",
+      "fixtures": 4,
+      "ngspiceSuccess": 4,
+      "ids": [
+        "esim-examples-4-bit-jk-ff-4-bit-jk-ff-cir-out",
+        "esim-examples-jk-flipflop-jk-flipflop-cir-out",
+        "esim-examples-transformer-transformer-cir-out",
+        "esim-examples-zener-characteristic-zener-characteristic-cir-out"
+      ],
+      "issue": "https://github.com/mfiumara/spice-ts/issues/553"
+    },
+    {
+      "bucket": "analysis: .ac with XSPICE event-driven digital instances",
+      "fixtures": 1,
+      "ngspiceSuccess": 1,
+      "ids": [
+        "esim-examples-fulladder-half-adder-cir-out"
+      ],
+      "issue": "https://github.com/mfiumara/spice-ts/issues/838"
+    }
+  ],
+  "fixtures": [
+    {
+      "id": "esim-examples-4-bit-jk-ff-4-bit-jk-ff-cir-out",
+      "sourcePath": "esim/Examples/4_bit_JK_ff/4_bit_JK_ff.cir.out",
+      "sha256": "27f0e501541885e458a9eb8c74b5437a0b6caf594ba83d9a317bdeb80ab15666",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:156"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 45: XSPICE code model 'd_jkff' (.model 'u3') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, adc_bridge, dac_bridge, d_buffer, d_"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "device: XSPICE code models not yet implemented (d_jkff, lcouple, zener, ...)"
+    },
+    {
+      "id": "esim-examples-basicgates-basicgates-cir-out",
+      "sourcePath": "esim/Examples/BasicGates/BasicGates.cir.out",
+      "sha256": "0fb66c6f57e97417a7a4b8558e002ba1a536fec33a7b5721904ebdde68652dc2",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:170"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:170"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 5,
+      "worstNormalizedError": 2e-12,
+      "worstSignal": "tran v(out)",
+      "outcome": "matched",
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "6e-8"
+        ],
+        "headline": {
+          "worst": 2e-12,
+          "signal": "v(out)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.964,
+          "signal": "v(out)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.964,
+          "signal": "v(out)"
+        }
+      }
+    },
+    {
+      "id": "esim-examples-fulladder-half-adder-cir-out",
+      "sourcePath": "esim/Examples/FullAdder/half_adder.cir.out",
+      "sha256": "59a2cd60854b17cdb9174145553f4757568fcc85a77b8904726c0bde004a91a6",
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "ac:1"
+        ]
+      },
+      "spiceTs": {
+        "status": "failed",
+        "analyses": [],
+        "firstErrorLine": "XSPICE event-driven instance 'a1' (d_xor) is supported in .op and .tran only, not .ac"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "analysis: .ac with XSPICE event-driven digital instances"
+    },
+    {
+      "id": "esim-examples-high-pass-filter-high-pass-filter-cir-out",
+      "sourcePath": "esim/Examples/High_Pass_Filter/High_Pass_Filter.cir.out",
+      "sha256": "4d22d93f19021b4fff7c08f7a8f5d2ac01e5794ae7768d34390d6726c1fc4351",
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "ac:121"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "ac:121"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 3,
+      "worstNormalizedError": 1.14e-11,
+      "worstSignal": "ac i(v1)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "esim-examples-jk-flipflop-jk-flipflop-cir-out",
+      "sourcePath": "esim/Examples/JK_Flipflop/JK_Flipflop.cir.out",
+      "sha256": "0e302d54e56d2fe0015711913f25b5aec1fa78a35266bc53bb9dfde46920b224",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:167"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 30: XSPICE code model 'd_jkff' (.model 'u9') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, adc_bridge, dac_bridge, d_buffer, d_"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "device: XSPICE code models not yet implemented (d_jkff, lcouple, zener, ...)"
+    },
+    {
+      "id": "esim-examples-low-pass-filter-low-pass-filter-cir-out",
+      "sourcePath": "esim/Examples/Low_Pass_Filter/Low_Pass_Filter.cir.out",
+      "sha256": "a05d40a505bfdc22a5816a355e362816e9b221692a3a731b33e8736fecd8e807",
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "ac:101"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "ac:101"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 3,
+      "worstNormalizedError": 6.94e-16,
+      "worstSignal": "ac i(v1)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "esim-examples-parallel-resonance-parallel-resonance-cir-out",
+      "sourcePath": "esim/Examples/Parallel_Resonance/Parallel_Resonance.cir.out",
+      "sha256": "565f24d0cc1becff6a8b53aef2a893699717e613c9b922eee37e8ef4cc9b7e7f",
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "ac:20"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "ac:20"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 4,
+      "worstNormalizedError": 6.33e-16,
+      "worstSignal": "ac i(l1)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "esim-examples-rc-rc-cir-out",
+      "sourcePath": "esim/Examples/RC/RC.cir.out",
+      "sha256": "16ad099fa0137e0ff9d3baf55342de52b63252b6c6c0e645aaf81bd23c194593",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:77"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:77"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 3,
+      "worstNormalizedError": 1.45e-14,
+      "worstSignal": "tran i(v1)",
+      "outcome": "matched",
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "0.0002"
+        ],
+        "headline": {
+          "worst": 1.45e-14,
+          "signal": "i(v1)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.00323,
+          "signal": "i(v1)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.00323,
+          "signal": "i(v1)"
+        }
+      }
+    },
+    {
+      "id": "esim-examples-rl-rl-cir-out",
+      "sourcePath": "esim/Examples/RL/RL.cir.out",
+      "sha256": "6de917c92ca113be2ec027c23e749327f196b699f9f777145f79ae15fdacc93e",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:77"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:77"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 4,
+      "worstNormalizedError": 1.44e-14,
+      "worstSignal": "tran v(out)",
+      "outcome": "matched",
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "0.0002"
+        ],
+        "headline": {
+          "worst": 1.44e-14,
+          "signal": "v(out)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.00323,
+          "signal": "v(out)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.00323,
+          "signal": "v(out)"
+        }
+      }
+    },
+    {
+      "id": "esim-examples-rlc-rlc-cir-out",
+      "sourcePath": "esim/Examples/RLC/RLC.cir.out",
+      "sha256": "599e0fb1530011b74f1b77ce08508e9801a37c237304f1cfed4b5f5922b074a2",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:138"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:138"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 5,
+      "worstNormalizedError": 2.26e-13,
+      "worstSignal": "tran i(v1)",
+      "outcome": "matched",
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "0.0002"
+        ],
+        "headline": {
+          "worst": 2.26e-13,
+          "signal": "i(v1)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.0771,
+          "signal": "i(v1)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.0771,
+          "signal": "i(v1)"
+        }
+      }
+    },
+    {
+      "id": "esim-examples-series-resonance-series-resonance-cir-out",
+      "sourcePath": "esim/Examples/Series_Resonance/Series_Resonance.cir.out",
+      "sha256": "39af0e0b85b1f1aff937533fa922220a28e026318e897c47d09ecbf69d1be49b",
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "ac:20"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "ac:20"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 5,
+      "worstNormalizedError": 7.65e-15,
+      "worstSignal": "ac v(out)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "esim-examples-transformer-transformer-cir-out",
+      "sourcePath": "esim/Examples/Transformer/Transformer.cir.out",
+      "sha256": "2b16dd3f061b359955841e545caeea050dfb5ad28779186da7b11acbd5de8f07",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:59"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 13: XSPICE code model 'lcouple' (.model 'u1_primary') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, adc_bridge, dac_bridge, d_b"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "device: XSPICE code models not yet implemented (d_jkff, lcouple, zener, ...)"
+    },
+    {
+      "id": "esim-examples-zener-characteristic-zener-characteristic-cir-out",
+      "sourcePath": "esim/Examples/Zener_Characteristic/Zener_Characteristic.cir.out",
+      "sha256": "f5e26f798363fd041ce1b0b5cf6bcea22c4ab74f86dfbac9664a9d1cdadb275e",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:161"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 11: XSPICE code model 'zener' (.model 'u1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, adc_bridge, dac_bridge, d_buffer, d_i"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "device: XSPICE code models not yet implemented (d_jkff, lcouple, zener, ...)"
+    },
+    {
+      "id": "vacask-benchmark-graetz-xyce-runme-sim",
+      "sourcePath": "vacask/benchmark/graetz/xyce/runme.sim",
+      "sha256": "4b343ae26516665e4dd9f454a098b3f26f1968d5fc53939c04ee789aa83c1162",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:1000008"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:1000008"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 5,
+      "worstNormalizedError": 2.1e-7,
+      "worstSignal": "tran i(vs)",
+      "outcome": "matched",
+      "gapBucket": null,
+      "fineReference": {
+        "status": "unavailable",
+        "tmax": [
+          "1e-7"
+        ],
+        "reason": "TSTOP/TMAX_fine = 10000000 steps exceeds the 1000000-step budget",
+        "headline": {
+          "worst": 2.1e-7,
+          "signal": "i(vs)"
+        },
+        "spiceTsVsFine": null,
+        "ngspiceDefaultVsFine": null
+      }
+    },
+    {
+      "id": "vacask-benchmark-mul-xyce-runme-sim",
+      "sourcePath": "vacask/benchmark/mul/xyce/runme.sim",
+      "sha256": "5b115709df18072e2c49ec52614cc8c3d0620237e69f6b4fee57cfbc800ea0a2",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:500017"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:500017"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 7,
+      "worstNormalizedError": 0.000563,
+      "worstSignal": "tran i(vs)",
+      "outcome": "matched",
+      "gapBucket": null,
+      "fineReference": {
+        "status": "unavailable",
+        "tmax": [
+          "1e-9"
+        ],
+        "reason": "TSTOP/TMAX_fine = 5000000 steps exceeds the 1000000-step budget",
+        "headline": {
+          "worst": 0.000563,
+          "signal": "i(vs)"
+        },
+        "spiceTsVsFine": null,
+        "ngspiceDefaultVsFine": null
+      }
+    },
+    {
+      "id": "vacask-benchmark-rc-xyce-runme-sim",
+      "sourcePath": "vacask/benchmark/rc/xyce/runme.sim",
+      "sha256": "1f328abf869a649d4d4b0dc0edd653c16ad5e3b4bf2788ad15b09bdae6abc682",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:1006014"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:1006014"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 3,
+      "worstNormalizedError": 1.11e-10,
+      "worstSignal": "tran i(vs)",
+      "outcome": "matched",
+      "gapBucket": null,
+      "fineReference": {
+        "status": "unavailable",
+        "tmax": [
+          "1e-7"
+        ],
+        "reason": "TSTOP/TMAX_fine = 10000000 steps exceeds the 1000000-step budget",
+        "headline": {
+          "worst": 1.11e-10,
+          "signal": "i(vs)"
+        },
+        "spiceTsVsFine": null,
+        "ngspiceDefaultVsFine": null
+      }
+    },
+    {
+      "id": "vacask-benchmark-vadistiller-bjtring-xyce-runme-sim",
+      "sourcePath": "vacask/benchmark/vadistiller/bjtring/xyce/runme.sim",
+      "sha256": "3b326fc2e8babd3496f56c2b8554621341d2a8ecd377451363516d4ee0d39af9",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:1000024"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:1000024"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 20,
+      "worstNormalizedError": 2.19,
+      "worstSignal": "tran v(3)",
+      "outcome": "mismatch",
+      "gapBucket": null,
+      "fineReference": {
+        "status": "unavailable",
+        "tmax": [
+          "1e-10"
+        ],
+        "reason": "TSTOP/TMAX_fine = 10000000 steps exceeds the 1000000-step budget",
+        "headline": {
+          "worst": 2.19,
+          "signal": "v(3)"
+        },
+        "spiceTsVsFine": null,
+        "ngspiceDefaultVsFine": null
+      }
+    },
+    {
+      "id": "vacask-test-spice-cccs-cir",
+      "sourcePath": "vacask/test/spice_cccs.cir",
+      "sha256": "b4da520e9728fbd46a5442813c0d25ae70d5a30b436aff04e5ce7d46007907c7",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:10008"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:10008"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 5,
+      "worstNormalizedError": 0,
+      "worstSignal": "tran i(vin)",
+      "outcome": "matched",
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "1e-7"
+        ],
+        "headline": {
+          "worst": 0,
+          "signal": "i(vin)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0,
+          "signal": "i(vin)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0,
+          "signal": "i(vin)"
+        }
+      }
+    },
+    {
+      "id": "vacask-test-spice-diode-cir",
+      "sourcePath": "vacask/test/spice_diode.cir",
+      "sha256": "6a7cea2f6075b74a9f54b9766d3eb02df657124d342fb94174ed7a3631ac757c",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:1008"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:1008"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 3,
+      "worstNormalizedError": 0.000193,
+      "worstSignal": "tran v(2)",
+      "outcome": "matched",
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "0.000001"
+        ],
+        "headline": {
+          "worst": 0.000193,
+          "signal": "v(2)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.00539,
+          "signal": "i(vin)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.00539,
+          "signal": "v(2)"
+        }
+      }
+    },
+    {
+      "id": "vacask-test-spice-mos-cir",
+      "sourcePath": "vacask/test/spice_mos.cir",
+      "sha256": "2de58e92deb8b3b884331f719fe990689dcb4dca7dfa1295bfa1cef7094f306d",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:10020"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:10020"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 5,
+      "worstNormalizedError": 0.0000617,
+      "worstSignal": "tran i(vin)",
+      "outcome": "matched",
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "1e-7"
+        ],
+        "headline": {
+          "worst": 0.0000617,
+          "signal": "i(vin)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.783,
+          "signal": "i(vin)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.783,
+          "signal": "i(vin)"
+        }
+      }
+    },
+    {
+      "id": "vacask-test-spice-rc-cir",
+      "sourcePath": "vacask/test/spice_rc.cir",
+      "sha256": "f0f2f85520cd113569641377e5659e401cae5f5645174aa7c708a52e01d3b818",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:10024"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:10024"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 3,
+      "worstNormalizedError": 1.1e-12,
+      "worstSignal": "tran i(v1)",
+      "outcome": "matched",
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "1e-7"
+        ],
+        "headline": {
+          "worst": 1.1e-12,
+          "signal": "i(v1)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.0000139,
+          "signal": "v(2)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.0000139,
+          "signal": "v(2)"
+        }
+      }
+    },
+    {
+      "id": "vacask-test-spice-regressions-cir",
+      "sourcePath": "vacask/test/spice_regressions.cir",
+      "sha256": "75ad7c7f93e9246b369df93d3a7e27e36ab6d042d2fb1e52e1b91868533a590e",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:2066"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:2066"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 5,
+      "worstNormalizedError": 2.81e-12,
+      "worstSignal": "tran v(out)",
+      "outcome": "matched",
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "1e-9"
+        ],
+        "headline": {
+          "worst": 2.81e-12,
+          "signal": "v(out)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.0342,
+          "signal": "v(out)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.0342,
+          "signal": "v(out)"
+        }
+      }
+    },
+    {
+      "id": "vacask-test-spice-subckt-cir",
+      "sourcePath": "vacask/test/spice_subckt.cir",
+      "sha256": "6eaeac5f149ec5ca3f2ccd51fe7ddf7c4a539a86cf64eb03d49185e01ecfb43e",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:10022"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:10022"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 3,
+      "worstNormalizedError": 8.67e-13,
+      "worstSignal": "tran v(in)",
+      "outcome": "matched",
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "1e-7"
+        ],
+        "headline": {
+          "worst": 8.67e-13,
+          "signal": "v(in)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.0000115,
+          "signal": "v(out1)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.0000115,
+          "signal": "v(out1)"
+        }
+      }
+    },
+    {
+      "id": "vacask-test-spice-vcvs-cir",
+      "sourcePath": "vacask/test/spice_vcvs.cir",
+      "sha256": "11a5bd3eedbec2e3cf378deb1deb75b9cef067e832f09c435d36a9d6b1e285ba",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:5008"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:5008"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 4,
+      "worstNormalizedError": 8.98e-15,
+      "worstSignal": "tran v(1)",
+      "outcome": "matched",
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "1e-7"
+        ],
+        "headline": {
+          "worst": 8.98e-15,
+          "signal": "v(1)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.00000493,
+          "signal": "v(2)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.00000493,
+          "signal": "i(e1)"
+        }
+      }
+    },
+    {
+      "id": "vacask-test-spice-warnonly-cir",
+      "sourcePath": "vacask/test/spice_warnonly.cir",
+      "sha256": "a6d688122c4a8fb8979671f808592256b5a588e93367626ec8d9df57cbcaa4e6",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:10008"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:10008"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 10,
+      "worstNormalizedError": 1.78e-16,
+      "worstSignal": "tran v(mid)",
+      "outcome": "matched",
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "1e-7"
+        ],
+        "headline": {
+          "worst": 1.78e-16,
+          "signal": "v(mid)"
+        },
+        "spiceTsVsFine": {
+          "worst": 1.78e-16,
+          "signal": "v(mid)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 3.47e-16,
+          "signal": "i(l2)"
+        }
+      }
+    }
+  ],
+  "outcomeSha256": "c061bb6cf290a4935ae0e5e970a5388adef16a5de57aef322231ba29a4e662d9"
+}

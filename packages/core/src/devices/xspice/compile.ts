@@ -12,12 +12,13 @@ import {
   XSPICE_BEHAVIORS, type BehaviorFactory, type CodeModelBehavior, type XspiceNetlistProbe,
 } from './models.js';
 import { OSCILLATOR_BEHAVIORS } from './oscillator-models.js';
+import { SWITCH_BEHAVIORS } from './switch-models.js';
 import { XSPICE_CODE_MODEL_SPECS, type XspiceParamValue } from './spec.js';
 import { XspiceDevice, type XspiceInputPort, type XspiceOutputPort } from './xspice-device.js';
 
 /** Every implemented code model behavior keyed by lower-case ngspice Spice_Model_Name. */
 const BEHAVIORS: ReadonlyMap<string, BehaviorFactory> = new Map<string, BehaviorFactory>([
-  ...XSPICE_BEHAVIORS, ...LIMITER_BEHAVIORS, ...OSCILLATOR_BEHAVIORS,
+  ...XSPICE_BEHAVIORS, ...LIMITER_BEHAVIORS, ...OSCILLATOR_BEHAVIORS, ...SWITCH_BEHAVIORS,
 ]);
 
 /** An A instance whose connections and parameters were resolved against its code model. */
@@ -215,7 +216,8 @@ export function bindXspiceSources(devices: readonly DeviceModel[], deviceMap: Re
     if (probe) probe.devices = devices;
     for (const { port, source } of device.unresolvedSources) {
       const controlling = [...deviceMap.entries()].find(([name]) => name.toUpperCase() === source.toUpperCase())?.[1];
-      if (!controlling || controlling.branches.length === 0 || !/^v/i.test(source)) {
+      // A subcircuit source is named `<instance path>.<name>`: test its own name.
+      if (!controlling || controlling.branches.length === 0 || !/(^|\.)v[^.]*$/i.test(source)) {
         throw new InvalidCircuitError(`${device.name}: unknown controlling source ${source}`);
       }
       device.bindSourceBranch(port, controlling.branches[0]);
@@ -236,10 +238,12 @@ export function assertXspiceAnalyses(
     throw new InvalidCircuitError('XSPICE A devices do not support .disto (no distortion terms)');
   }
   const digital = instances.find(instance => DIGITAL_MODELS.has(instance.model.codeModel));
-  const unsupportedEvent = digital && analyses.find(analysis => analysis !== 'op' && analysis !== 'tran');
+  // .ac follows ngspice-47 acan.c: EVTop sets the digital state, the sweep
+  // loads only analog instances (the analog halves of the bridges).
+  const unsupportedEvent = digital && analyses.find(analysis => analysis !== 'op' && analysis !== 'tran' && analysis !== 'ac');
   if (digital && unsupportedEvent) {
     throw new InvalidCircuitError(
-      `XSPICE event-driven instance '${digital.card.name}' (${digital.model.codeModel}) is supported in .op and .tran only, not .${unsupportedEvent}`,
+      `XSPICE event-driven instance '${digital.card.name}' (${digital.model.codeModel}) is supported in .op, .tran and .ac only, not .${unsupportedEvent}`,
     );
   }
   for (const instance of instances) {
