@@ -3,6 +3,12 @@
 This file records the provenance and redistribution decision for benchmark fixtures.
 The machine-readable catalogue is `benchmarks/corpus/ngspice/manifest.json`.
 
+## B-source finite-Jacobian overflow probes (#899)
+
+- Source: original project-authored netlists in `benchmarks/bsource-overflow-899/compare.ts`, MIT (repository `LICENSE`); https://github.com/mfiumara/spice-ts/issues/899. No third-party circuit or source code is redistributed.
+- Both engines receive identical deck bytes without parameter or tolerance tuning. `before.json` / `after.json` retain SHA-256, statuses, signed infinite outputs, finite outputs and single-run timings. Generated decks and raw ngspice logs can be reproduced with `spice-heavy pnpm exec tsx benchmarks/bsource-overflow-899/compare.ts`.
+- Scope is five small OP probes, not a corpus-wide performance or accuracy claim. Infinite outputs are compared by sign; RMS/relative errors involving infinity are undefined. The conflicting-source probe remains a failure in both engines.
+
 ## Rust sparse LU spike (#802)
 
 - Source: matrices generated at run time by `benchmarks/rust-lu-spike/dump-matrices.ts` from the project-authored M2 scaling decks (`benchmarks/performance/scaling-m2-fixture.mjs`, MIT). Generated `.mtx` files are gitignored, not redistributed.

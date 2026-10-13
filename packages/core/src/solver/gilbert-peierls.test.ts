@@ -595,6 +595,18 @@ describe('GilbertPeierlsSolver', () => {
         const rhs = new Float64Array(n);
         rhs[n - 1] = 1;
         expect(() => solver.solve(rhs), ordering).toThrow(SingularMatrixError);
+        // Newton's optional validator does not disable the guard: rejection
+        // sees the completed candidate (including its finite tail) and throws.
+        let validated = false;
+        rhs.fill(0);
+        rhs[n - 1] = 1;
+        expect(() => solver.solve(rhs, candidate => {
+          validated = true;
+          expect(candidate[n - 1]).toBe(1);
+          expect(candidate[0]).toBe(Infinity);
+          return false;
+        }), ordering).toThrow(SingularMatrixError);
+        expect(validated).toBe(true);
       }
     });
 
