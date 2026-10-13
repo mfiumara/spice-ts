@@ -1,0 +1,17 @@
+
+> spice-ts@ lint /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_fc2832df
+> pnpm -r lint
+
+Scope: 9 of 10 workspace projects
+packages/core lint$ tsc --noEmit
+packages/protocol lint$ tsc --noEmit
+packages/protocol lint: Done
+packages/core lint: Done
+packages/ui lint$ tsc --noEmit
+packages/mcp lint$ tsc --noEmit
+packages/circuit-json lint$ tsc --noEmit
+packages/wasm lint$ tsc --noEmit
+packages/circuit-json lint: Done
+packages/ui lint: Done
+packages/mcp lint: Done
+packages/wasm lint: Done
