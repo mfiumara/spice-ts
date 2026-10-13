@@ -1,0 +1,200 @@
+{
+  "schemaVersion": "spice-ts-ngspice-comparison/v2",
+  "generatedAt": "2026-10-13T12:31:25.766Z",
+  "environment": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "node": "v22.23.1",
+    "cpu": "Apple M5 Pro"
+  },
+  "tools": {
+    "spiceTs": {
+      "version": "0.3.0",
+      "command": [
+        "pnpm",
+        "exec",
+        "tsx",
+        "benchmarks/subckt-model-expressions-882/compare.ts"
+      ]
+    },
+    "ngspice": {
+      "version": "ngspice-47",
+      "command": [
+        "ngspice",
+        "-b",
+        "-r",
+        "<raw>",
+        "<netlist>"
+      ]
+    }
+  },
+  "alignment": {
+    "targetGrid": "spice-ts",
+    "interpolation": "linear",
+    "relativeZeroThreshold": 1e-15
+  },
+  "fixtures": [
+    {
+      "name": "subckt-model-expressions-784",
+      "analysis": "op",
+      "netlistSha256": "654e71c0740e157cd1e29a9e3bdc36c851ed6c9963df4075dd6eb9b0a0f78d2b",
+      "status": "compared",
+      "signals": [
+        "v(a)"
+      ],
+      "spiceTs": {
+        "status": "success",
+        "convergence": "converged",
+        "runtimeMs": 399.544417,
+        "command": [
+          "@spice-ts/core",
+          "simulate",
+          "<subckt-model-expressions-784.cir>"
+        ],
+        "series": {
+          "grid": [
+            0
+          ],
+          "signals": {
+            "v(a)": [
+              {
+                "re": 0.8315409330750719,
+                "im": 0
+              }
+            ]
+          }
+        }
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "runtimeMs": 25.908334000000025,
+        "command": [
+          "ngspice",
+          "-b",
+          "-r",
+          "<temporary-rawfile>",
+          "<subckt-model-expressions-784.cir>"
+        ],
+        "series": {
+          "grid": [
+            0
+          ],
+          "signals": {
+            "v(a)": [
+              {
+                "re": 0.8315447180864542,
+                "im": 0
+              }
+            ]
+          }
+        }
+      },
+      "metrics": {
+        "grid": {
+          "spiceTsPoints": 1,
+          "ngspicePoints": 1,
+          "alignedPoints": 1,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "v(a)": {
+            "status": "compared",
+            "sampleCount": 1,
+            "absoluteError": {
+              "max": 0.0000037850113823179043,
+              "rms": 0.0000037850113823179043
+            },
+            "relativeError": {
+              "max": 0.000004551783325649582,
+              "rms": 0.000004551783325649582,
+              "sampleCount": 1,
+              "excludedZeroReferences": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "subckt-model-expressions-738",
+      "analysis": "op",
+      "netlistSha256": "0dd5431c29e05e86afb5d9cd12bdb6fb248788bc26ca7ba650395bd0ec426398",
+      "status": "compared",
+      "signals": [
+        "v(a)"
+      ],
+      "spiceTs": {
+        "status": "success",
+        "convergence": "converged",
+        "runtimeMs": 34.53083300000003,
+        "command": [
+          "@spice-ts/core",
+          "simulate",
+          "<subckt-model-expressions-738.cir>"
+        ],
+        "series": {
+          "grid": [
+            0
+          ],
+          "signals": {
+            "v(a)": [
+              {
+                "re": 0.8315409330750719,
+                "im": 0
+              }
+            ]
+          }
+        }
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "runtimeMs": 27.144042000000013,
+        "command": [
+          "ngspice",
+          "-b",
+          "-r",
+          "<temporary-rawfile>",
+          "<subckt-model-expressions-738.cir>"
+        ],
+        "series": {
+          "grid": [
+            0
+          ],
+          "signals": {
+            "v(a)": [
+              {
+                "re": 0.8315447180864542,
+                "im": 0
+              }
+            ]
+          }
+        }
+      },
+      "metrics": {
+        "grid": {
+          "spiceTsPoints": 1,
+          "ngspicePoints": 1,
+          "alignedPoints": 1,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "v(a)": {
+            "status": "compared",
+            "sampleCount": 1,
+            "absoluteError": {
+              "max": 0.0000037850113823179043,
+              "rms": 0.0000037850113823179043
+            },
+            "relativeError": {
+              "max": 0.000004551783325649582,
+              "rms": 0.000004551783325649582,
+              "sampleCount": 1,
+              "excludedZeroReferences": 0
+            }
+          }
+        }
+      }
+    }
+  ]
+}

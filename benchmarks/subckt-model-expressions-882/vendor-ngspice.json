@@ -1,0 +1,12 @@
+{
+  "version": "ngspice-47",
+  "platform": "darwin arm64 Apple M5 Pro",
+  "compatibility": "set ngbehavior=ltps",
+  "filetype": "ascii",
+  "command": "spice-heavy sh -c 'cd .receipt-882/ngspice/784; ngspice -b -r base.raw base_159.cir; ngspice -b -r variant.raw variant_159.cir; cd ../738; ngspice -b -r op1177.raw OP1177ARM_OPA818.cir'",
+  "fixtures": [
+    { "ticket": 784, "name": "base_159.cir", "exitCode": 0, "status": "success", "dataRows": 141, "localHash": "7c7c5daec2efaf9feda3011fa14d8371fc996efe2e137b2a421e0fd436833d45", "maxError": null, "rmsError": null },
+    { "ticket": 784, "name": "variant_159.cir", "exitCode": 0, "status": "success", "dataRows": 141, "localHash": "86451185ad7e104c0934544d56af22f52dd1c369b7a5d5c73651dba44c0c9c2f", "maxError": null, "rmsError": null },
+    { "ticket": 738, "name": "OP1177ARM_OPA818.cir", "exitCode": 1, "status": "failed", "dataRows": 814, "localHash": "16943bbbc0837832b0001bf3f5774a245c67ae4e64903fd62831e129f27c2cea", "error": "doAnalyses: TRAN: Timestep too small; time = 1.30176e-05, timestep = 2.5e-16: trouble with xu12:dz-instance d.xu12.d1; run simulation(s) aborted", "maxError": null, "rmsError": null }
+  ]
+}

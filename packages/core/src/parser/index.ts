@@ -179,10 +179,11 @@ function parseNetlist(
           // while the source line is still known.
           if (first === '.MODEL') {
             if (isPspiceSwitchModel(tokens)) {
-              translatePspiceSwitchModel(raw, lineNumber);
+              // Values in body model expressions require the instance scope.
+              if (!raw.includes('{')) translatePspiceSwitchModel(raw, lineNumber);
             } else {
               assertSupportedModelType(tokens, lineNumber, raw);
-              assertSupportedResistorModel(tokens, lineNumber, raw);
+              if (!raw.includes('{')) assertSupportedResistorModel(tokens, lineNumber, raw);
             }
           }
           subcktCollector.body.push(raw);
