@@ -1,0 +1,403 @@
+{
+  "schemaVersion": "spice-ts-corpus-j-part2/v1",
+  "sources": [
+    {
+      "key": "ngspice-current",
+      "repository": "https://sourceforge.net/p/ngspice/ngspice",
+      "revision": "a80f6e3e95d51534905b1f23410a951802666656",
+      "license": "BSD-3-Clause",
+      "licenseFile": "COPYING",
+      "basis": "COPYING lines 14-15 explicitly adopt Modified BSD for all source, test and example files except listed paths. Selected examples are outside every exception; inline models are generic authored examples, not vendor libraries.",
+      "licensePath": "benchmarks/corpus/corpus-j/licenses/ngspice-current/COPYING",
+      "licenseSha256": "6d939001e899ede403277fb37124c2af6f1cf92926465cd8f4bf59859e06f579"
+    },
+    {
+      "key": "spicelib",
+      "repository": "https://github.com/nunobrum/spicelib",
+      "revision": "d8f8ecceeb361741f1f660f03b03ac49697f8700",
+      "license": "GPL-3.0-only",
+      "licenseFile": "LICENSE",
+      "basis": "Repository-wide LICENSE GPLv3, pyproject GPL-3.0 and README GNU V3 License. Original examples only, not machine-edited golden output; no vendor models or third-party notices.",
+      "licensePath": "benchmarks/corpus/corpus-j/licenses/spicelib/LICENSE",
+      "licenseSha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
+    }
+  ],
+  "manifestSha256": "369285f1435ed5722ad72a2e5e7c836df4592f088206d4f96086ad1751be7ac4",
+  "coreTree": "5a9032be396266c4af51e295694eea1efe165b6c",
+  "tools": {
+    "ngspice": "ngspice-47",
+    "spiceTs": "0.3.0",
+    "node": "v22.23.1"
+  },
+  "environment": {
+    "platform": "darwin",
+    "release": "27.0.0",
+    "arch": "arm64",
+    "cpu": "Apple M5 Pro"
+  },
+  "commands": {
+    "generate": "spice-heavy pnpm exec tsx benchmarks/corpus/corpus-j/part2.ts",
+    "verify": "pnpm exec tsx --test benchmarks/corpus/corpus-j/corpus-j.test.ts benchmarks/corpus/corpus-j/part2.test.ts",
+    "ngspice": "unchanged runControlReference for control decks, runNgspicePacked otherwise",
+    "spiceTs": "unchanged runBoundedSimulatePacked on identical original bytes"
+  },
+  "policy": {
+    "input": "byte-identical",
+    "fixtureAdaptation": "none",
+    "perCircuitToleranceTuning": false,
+    "matchThreshold": 0.01,
+    "matchRule": "matched = both engines succeed, every spice-ts analysis has an ngspice counterpart, and for every common signal max|spice-ts - ngspice| <= 0.01 x max(peak |ngspice signal|, floor). The floor is uniform per quantity (#593): 0.0001 V for node voltages v(...) and 1e-10 A for branch currents i(...), so a signal whose ngspice peak is zero or tiny matches when the absolute difference is at most the ngspice-47 default VNTOL (0.000001 V) or ABSTOL (1e-12 A); every other quantity (pole/zero roots, noise spectra) keeps 1e-12. Deck .options tolerances are not consulted. Errors are taken at spice-ts points with ngspice interpolated (transient breakpoint alignment as in the aggregate report).",
+    "childGroupBoundMs": 20000,
+    "executionDeadlineMs": 19000,
+    "cumulativeChildWallBudgetMs": 900000,
+    "runtimeBoundary": "serial cold owned engine group; includes Node/tsx, adapter, parse/solve, output export and serialization; no speed claim",
+    "controlExport": "unchanged corpus-f source/write wrapper exports first plot of each declared type, defers quit/exit; no netlist edits; repeated control runs beyond plot1 are not compared",
+    "fineReference": "none; no adapted deck"
+  },
+  "actualCumulativeChildWallMs": 24974.658300000017,
+  "totals": {
+    "fixtures": 9,
+    "ngspice": {
+      "success": 5,
+      "failed": 1,
+      "unsupported": 3
+    },
+    "spiceTs": {
+      "success": 0,
+      "failed": 9,
+      "unsupported": 0
+    },
+    "outcomes": {
+      "matched": 0,
+      "mismatch": 0,
+      "not-compared": 0,
+      "spice-ts-loss": 5,
+      "ngspice-failed": 0,
+      "both-failed": 4
+    },
+    "bySource": {
+      "ngspice-current": {
+        "matched": 0,
+        "mismatch": 0,
+        "not-compared": 0,
+        "spice-ts-loss": 4,
+        "ngspice-failed": 0,
+        "both-failed": 0
+      },
+      "spicelib": {
+        "matched": 0,
+        "mismatch": 0,
+        "not-compared": 0,
+        "spice-ts-loss": 1,
+        "ngspice-failed": 0,
+        "both-failed": 4
+      }
+    }
+  },
+  "gapBuckets": [
+    {
+      "bucket": "execution: other failure",
+      "fixtures": 9,
+      "ngspiceSuccess": 5,
+      "ids": [
+        "j-12",
+        "j-13",
+        "j-14",
+        "j-15",
+        "j-16",
+        "j-17",
+        "j-18",
+        "j-19",
+        "j-20"
+      ],
+      "issue": null
+    }
+  ],
+  "fixtures": [
+    {
+      "id": "j-12",
+      "sourcePath": "ngspice-current/examples/measure/rc-meas-ac-control.sp",
+      "sha256": "94e9eb54ea9d56d8a81cf50dde33b49e77917b9d260a3064cc11fa082e601b4b",
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "ac:41"
+        ]
+      },
+      "spiceTs": {
+        "status": "failed",
+        "analyses": [],
+        "firstErrorLine": "Cannot find module '/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_a502e10f/packages/core/dist/index.js' imported from /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_a502e10f/benchmarks/corpus/classic/report.ts"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "execution: other failure",
+      "comparisons": [],
+      "runtime": {
+        "spiceTsChildWallMs": 422.7812499999999,
+        "ngspiceChildWallMs": 229.07187500000003
+      }
+    },
+    {
+      "id": "j-13",
+      "sourcePath": "ngspice-current/examples/p-to-n-examples/aswitch-pswitch.cir",
+      "sha256": "08e1740f1b0b12bd6cdbf27c4d5df63bbc25a392a9725db0eb6ca467c60b012f",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:301"
+        ]
+      },
+      "spiceTs": {
+        "status": "failed",
+        "analyses": [],
+        "firstErrorLine": "Cannot find module '/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_a502e10f/packages/core/dist/index.js' imported from /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_a502e10f/benchmarks/corpus/classic/report.ts"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "execution: other failure",
+      "comparisons": [],
+      "runtime": {
+        "spiceTsChildWallMs": 457.3772919999999,
+        "ngspiceChildWallMs": 248.00262499999985
+      }
+    },
+    {
+      "id": "j-14",
+      "sourcePath": "ngspice-current/examples/mos/nmos_pmos_BSIM330.sp",
+      "sha256": "64980e734428b4a24605d1fff5004cd393a1108be56e36618c1c280847fc0952",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:186"
+        ]
+      },
+      "spiceTs": {
+        "status": "failed",
+        "analyses": [],
+        "firstErrorLine": "Cannot find module '/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_a502e10f/packages/core/dist/index.js' imported from /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_a502e10f/benchmarks/corpus/classic/report.ts"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "execution: other failure",
+      "comparisons": [],
+      "runtime": {
+        "spiceTsChildWallMs": 423.4399589999998,
+        "ngspiceChildWallMs": 239.61200000000008
+      }
+    },
+    {
+      "id": "j-15",
+      "sourcePath": "ngspice-current/examples/xspice/original-examples/xspice.deck",
+      "sha256": "b62c51739831020f5580a7b0c22892910cdcde92b63a11737f84674bff8b6f96",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:214"
+        ]
+      },
+      "spiceTs": {
+        "status": "failed",
+        "analyses": [],
+        "firstErrorLine": "Cannot find module '/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_a502e10f/packages/core/dist/index.js' imported from /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_a502e10f/benchmarks/corpus/classic/report.ts"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "execution: other failure",
+      "comparisons": [],
+      "runtime": {
+        "spiceTsChildWallMs": 424.13774999999987,
+        "ngspiceChildWallMs": 231.8327919999997
+      }
+    },
+    {
+      "id": "j-16",
+      "sourcePath": "spicelib/examples/testfiles/test_kicad_nets.cir",
+      "sha256": "5a124dc0286910a59a8782d0094a9bf8a57507a9c864090b6745ef4230b88f7f",
+      "analyses": [
+        "op"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "op:1"
+        ]
+      },
+      "spiceTs": {
+        "status": "failed",
+        "analyses": [],
+        "firstErrorLine": "Cannot find module '/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_a502e10f/packages/core/dist/index.js' imported from /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_a502e10f/benchmarks/corpus/classic/report.ts"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "execution: other failure",
+      "comparisons": [],
+      "runtime": {
+        "spiceTsChildWallMs": 427.28300000000036,
+        "ngspiceChildWallMs": 229.69349999999986
+      }
+    },
+    {
+      "id": "j-17",
+      "sourcePath": "spicelib/examples/testfiles/ac_rawtest.net",
+      "sha256": "e6e98a5a3f5536846f743974350c5ac38fb348bc2d393857279078ba62342dc2",
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Error on line 6 or its substitute:"
+      },
+      "spiceTs": {
+        "status": "failed",
+        "analyses": [],
+        "firstErrorLine": "Cannot find module '/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_a502e10f/packages/core/dist/index.js' imported from /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_a502e10f/benchmarks/corpus/classic/report.ts"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "both-failed",
+      "gapBucket": "execution: other failure",
+      "comparisons": [],
+      "runtime": {
+        "spiceTsChildWallMs": 425.23425,
+        "ngspiceChildWallMs": 228.77708299999995
+      }
+    },
+    {
+      "id": "j-18",
+      "sourcePath": "spicelib/examples/testfiles/ngsteps.net",
+      "sha256": "68b0ca2e2eba7d8e59942ce491b91b44c003d6c8f87c3abbd28cbd04bdfde8ea",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Error on line 44 or its substitute:"
+      },
+      "spiceTs": {
+        "status": "failed",
+        "analyses": [],
+        "firstErrorLine": "Cannot find module '/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_a502e10f/packages/core/dist/index.js' imported from /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_a502e10f/benchmarks/corpus/classic/report.ts"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "both-failed",
+      "gapBucket": "execution: other failure",
+      "comparisons": [],
+      "runtime": {
+        "spiceTsChildWallMs": 432.3647089999995,
+        "ngspiceChildWallMs": 231.78250000000025
+      }
+    },
+    {
+      "id": "j-19",
+      "sourcePath": "spicelib/examples/testfiles/sens_ngspice_rawtest.net",
+      "sha256": "561115941ce8997a21386c15fec66def353eef9aea22460f89b9eb75afe28918",
+      "analyses": [],
+      "unmappedAnalyses": [
+        "sens"
+      ],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "failed",
+        "analyses": [],
+        "firstErrorLine": "Fatal error: pmos: Nsub < Ni"
+      },
+      "spiceTs": {
+        "status": "failed",
+        "analyses": [],
+        "firstErrorLine": "Cannot find module '/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_a502e10f/packages/core/dist/index.js' imported from /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_a502e10f/benchmarks/corpus/classic/report.ts"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "both-failed",
+      "gapBucket": "execution: other failure",
+      "comparisons": [],
+      "runtime": {
+        "spiceTsChildWallMs": 430.95695799999976,
+        "ngspiceChildWallMs": 243.90479199999936
+      }
+    },
+    {
+      "id": "j-20",
+      "sourcePath": "spicelib/examples/testfiles/tran_rawtest.net",
+      "sha256": "fd9800b396c7d5a9a628ddb991a9337ee657ce4acaafd26ac5bb92716f572241",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Error on line 11 or its substitute:"
+      },
+      "spiceTs": {
+        "status": "failed",
+        "analyses": [],
+        "firstErrorLine": "Cannot find module '/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_a502e10f/packages/core/dist/index.js' imported from /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_a502e10f/benchmarks/corpus/classic/report.ts"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "both-failed",
+      "gapBucket": "execution: other failure",
+      "comparisons": [],
+      "runtime": {
+        "spiceTsChildWallMs": 436.63258399999995,
+        "ngspiceChildWallMs": 233.4520419999999
+      }
+    }
+  ],
+  "outcomeSha256": "fd91ccfaf243ad9826006203c990bdcdc5e83c9b65a597d64aab32812e11a874"
+}
