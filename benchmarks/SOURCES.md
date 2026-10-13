@@ -9,6 +9,13 @@ The machine-readable catalogue is `benchmarks/corpus/ngspice/manifest.json`.
 - Both engines receive identical deck bytes without parameter or tolerance tuning. `before.json` / `after.json` retain SHA-256, statuses, signed infinite outputs, finite outputs and single-run timings. Generated decks and raw ngspice logs can be reproduced with `spice-heavy pnpm exec tsx benchmarks/bsource-overflow-899/compare.ts`.
 - Scope is five small OP probes, not a corpus-wide performance or accuracy claim. Infinite outputs are compared by sign; RMS/relative errors involving infinity are undefined. The conflicting-source probe remains a failure in both engines.
 
+## Subcircuit model-expression probes (#882)
+
+- `benchmarks/subckt-model-expressions-882/{784,738}.cir` are self-written minimal diode/parameter probes, MIT (repository LICENSE), reducing the syntax reported in https://github.com/mfiumara/spice-ts/issues/882. They are not vendor model copies and are not replacements for corpus fixtures.
+- `compare.ts` sends identical bytes to spice-ts and ngspice-47 and records input hashes, runtime and max/RMS errors. No circuit-specific tolerance or solver settings. The residual diode OP voltage difference is published rather than hidden by an accuracy gate.
+- `vendor.mts` reruns the unchanged attachments of https://sourceforge.net/p/ngspice/bugs/784/ and https://sourceforge.net/p/ngspice/bugs/738/, fetched/hash-verified by `benchmarks/corpus/ngspice-bugs/fetch.ts`; the only deck edit is Windows include-path relocation. Existing attachment licence/redistribution restrictions remain in the ticket READMEs and manifest. Vendor libraries are not committed. Receipts explicitly retain downstream unsupported outcomes and null waveform metrics.
+
+
 ## Rust sparse LU spike (#802)
 
 - Source: matrices generated at run time by `benchmarks/rust-lu-spike/dump-matrices.ts` from the project-authored M2 scaling decks (`benchmarks/performance/scaling-m2-fixture.mjs`, MIT). Generated `.mtx` files are gitignored, not redistributed.

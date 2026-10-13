@@ -28,13 +28,24 @@ export interface ResistorParameters {
   warnings?: readonly string[];
 }
 
+/**
+ * Bumped on every write of any {@link Resistor.conductance} (issue #890).
+ * Stamp programs cache conductances in typed arrays and refill them only when
+ * this changes, so the per-iteration kernel never chases device objects.
+ */
+let conductanceRevision = 0;
+
+/** Current {@link conductanceRevision}: unchanged means no resistor conductance was written. */
+export function resistorConductanceRevision(): number {
+  return conductanceRevision;
+}
+
 export class Resistor implements DeviceModel {
   readonly branches: number[];
   readonly isNonlinear = false;
   /** Effective DC resistance after temperature, `SCALE` and `M`. */
   resistance = 0;
-  /** Effective DC conductance, ngspice RESconduct = M / (R * factor * SCALE). */
-  conductance = 0;
+  private conductanceValue = 0;
   /** Effective AC conductance (ngspice RESacConduct) when `ac=` is given. */
   acConductance: number | undefined;
   private nominalResistance: number;
@@ -56,6 +67,16 @@ export class Resistor implements DeviceModel {
     this.nominalResistance = resistance;
     if (parameters.warnings?.length) this.modelWarnings = parameters.warnings;
     this.applyTemperature();
+  }
+
+  /** Effective DC conductance, ngspice RESconduct = M / (R * factor * SCALE). */
+  get conductance(): number {
+    return this.conductanceValue;
+  }
+
+  set conductance(value: number) {
+    this.conductanceValue = value;
+    conductanceRevision++;
   }
 
   /** False when the instance sets `noisy=0`. */

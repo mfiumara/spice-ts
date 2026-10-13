@@ -977,7 +977,7 @@ function* collectStatements(
 
 // `keepNodeDependent` leaves B-card `{...}` that read v()/i() to the B-card
 // front end, which keeps them as ASRC sub-expressions.
-function substituteExpressions(
+export function substituteExpressions(
   line: string,
   params: Record<string, number>,
   keepNodeDependent = false,

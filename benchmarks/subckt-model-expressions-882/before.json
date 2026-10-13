@@ -1,0 +1,97 @@
+{
+  "baseSha": "ac0d03dffe7a38927cbc43a7d42a4acd618e1c02",
+  "fixtures": [
+    {
+      "name": "subckt-model-expressions-784",
+      "analysis": "op",
+      "netlistSha256": "654e71c0740e157cd1e29a9e3bdc36c851ed6c9963df4075dd6eb9b0a0f78d2b",
+      "status": "failed",
+      "signals": [
+        "v(a)"
+      ],
+      "spiceTs": {
+        "status": "failed",
+        "convergence": "failed",
+        "runtimeMs": 45.05920800000001,
+        "command": [
+          "baseline ac0d03df",
+          "simulate",
+          "subckt-model-expressions-784"
+        ],
+        "error": "Cannot parse number: '{pwr(flwf,0.5)/1e11}'"
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "runtimeMs": 36.976541999999995,
+        "command": [
+          "ngspice",
+          "-b",
+          "-r",
+          "<temporary-rawfile>",
+          "<subckt-model-expressions-784.cir>"
+        ],
+        "series": {
+          "grid": [
+            0
+          ],
+          "signals": {
+            "v(a)": [
+              {
+                "re": 0.8315447180864542,
+                "im": 0
+              }
+            ]
+          }
+        }
+      },
+      "metrics": null
+    },
+    {
+      "name": "subckt-model-expressions-738",
+      "analysis": "op",
+      "netlistSha256": "0dd5431c29e05e86afb5d9cd12bdb6fb248788bc26ca7ba650395bd0ec426398",
+      "status": "failed",
+      "signals": [
+        "v(a)"
+      ],
+      "spiceTs": {
+        "status": "failed",
+        "convergence": "failed",
+        "runtimeMs": 20.654458999999974,
+        "command": [
+          "baseline ac0d03df",
+          "simulate",
+          "subckt-model-expressions-738"
+        ],
+        "error": "Cannot parse number: '{pwr(flw,0.5)/1e11}'"
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "runtimeMs": 18.806583999999987,
+        "command": [
+          "ngspice",
+          "-b",
+          "-r",
+          "<temporary-rawfile>",
+          "<subckt-model-expressions-738.cir>"
+        ],
+        "series": {
+          "grid": [
+            0
+          ],
+          "signals": {
+            "v(a)": [
+              {
+                "re": 0.8315447180864542,
+                "im": 0
+              }
+            ]
+          }
+        }
+      },
+      "metrics": null
+    }
+  ]
+}
