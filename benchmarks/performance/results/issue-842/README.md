@@ -125,6 +125,48 @@ transient takes **24% more Newton iterations than ngspice-47 (599 vs 483) for th
 That is a parity gap to chase, not a speed task. The mesh gap is ngspice's sparse reorder. Samples are
 interleaved but not CPU-isolated.
 
+## Review fix: junction charge folds (PR #859 review of `8b561cbb`)
+
+`stampTransientCharge` folds the bulk junction charge currents into STATE_CD/CBS/CBD/GBS/GBD after every load
+(mos1load.c: cbd += cqbd, cd -= cqbd, gbd += geq, cbs += cqbs, gbs += geq). At `8b561cbb` a cache hit left the
+folded row in place, so the next fold stacked on the previous one and `convergenceTest` (mos1conv.c) read the
+stacked values. The cache now also stores the load's pre-fold STATE_CD/CBS/CBD (GBS/GBD were already cached),
+and a hit restores all five before the fold runs again. The scaling decks above have no junction capacitance,
+so they never fold; their only cost is three extra stores per miss and five per hit.
+
+State writers audited: `recordMos1Load` (batched miss and per-device `stamp`, which invalidates first), the
+vbs/vbd/von setters and `limitNewtonStep` (invalidate), `foldJunctionChargeCurrent` (restored on a hit), store
+merges (fresh cache), constants change (cache emptied).
+
+Regression tests in `mosfet-load-cache-842.test.ts`: the reviewer's probe (batched load + `stampTransientCharge`
+vs the uncached per-device path on a CBD/CBS and CJ/CJSW/TOX deck, 24 passes with Euler and trapezoidal, G, b,
+every state value and `convergenceTest` compared bit for bit) and an 8-stage junction-cap transient that counts
+folds starting from the previous fold's output. On `712611c1` (the reviewed code rebased onto `c14f5ad0`) both
+fail: `pass 2 M1 state[13]: 0.0004000000013866242 !== 0.00020000000138662412` and 31 stacked folds. With the fix
+both pass, together with all of `src/devices` (82 files, 989 tests) and `transient-iteration-invariant-710`.
+
+A 25-stage junction-cap chain (the test's deck, `.tran 0.2n 30n`, 213 points) gives the same waveform digest
+(`scripts/jcap-digest.mjs`: sha256 of the time points and all 29 voltage/current series, `59139967cfee9e83`) on
+base `c14f5ad0`, on the reviewed code and with the fix. The stacked values only reached the convergence test, and on this deck they did not change a
+Newton decision. That is luck, not a property, so the fix stands.
+
+### A/B re-measure after the fix
+
+Base = `main` at `c14f5ad0`, branch = the fix. Same `scripts/ab.sh`, `spice-heavy`, load average 7 to 8, other
+lanes active. 1k and 10k: median of 3 warm calls per process; 50k: one cold call per process.
+
+| deck | base median (range) ms | branch median (range) ms | speedup, median of pairs (range) | n | digest |
+|---|---|---|---|---|---|
+| cmos-inverter-chain-tran 1k (`ab-r2-1k-repeated.jsonl`) | 162 (158-689) | 144 (134-242) | 1.188x (1.050-2.844) | 5 | identical 884bc08a23df |
+| rc-ladder-tran 1k, control (`ab-r2-1k-repeated.jsonl`) | 21 (21-27) | 23 (21-30) | 0.951x (0.892-1.019) | 5 | identical 253060d6a53a |
+| cmos-inverter-chain-tran 10k (`ab-r2-10k-cmos-repeated.jsonl`) | 2382 (1786-3133) | 2272 (1658-2675) | 1.077x (0.891-1.379) | 5 | identical 86b987c9da8c |
+| cmos-inverter-chain-tran 50k (`ab-r2-50k.jsonl`) | 22498 (21109-24036) | 18397 (17644-30834) | 1.147x (0.730-1.362) | 3 | identical a8a9d19d6dfe |
+
+The 10k pair median dropped from 1.207x to 1.077x with a much wider range (base 1786-3133 ms) on a busier host,
+so the 10k number is noisier than before rather than clearly lower; 1k and 50k agree with the earlier runs.
+The 1k RC ladder never reaches MOS1 code, and its 2 ms gap is noise at that size. The earlier tables above are
+kept as measured on `eb173b51`.
+
 ## Measured and not kept
 
 - A first version of the memo copied cached junction/channel outputs into scratch arrays and rewrote all 15
@@ -168,6 +210,7 @@ WARMUPS=1 REPEATS=3 ... scripts/ab.sh ab-10k-cmos-op-repeated.jsonl 5 10000 cmos
 spice-heavy scripts/ngspice-runs.sh <deck-dir> ngspice-50k.jsonl 3 50000 rc-ladder-tran resistor-mesh-op cmos-inverter-chain-tran
 node scripts/summary.mjs <ab.jsonl>... --ng ngspice
 python3 scripts/mutants.py
+node scripts/jcap-digest.mjs <core dist dir> 25
 ```
 
 (Paths relative to `benchmarks/performance/results/issue-842/`, except `ab.sh` / `run.mjs`, which resolve the
