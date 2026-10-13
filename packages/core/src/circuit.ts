@@ -102,7 +102,7 @@ import {
 } from './devices/passive-model.js';
 import {
   CycleError, InvalidCircuitError, ParseError, UnsupportedModelLevelError, UnsupportedModelVersionError,
-  UnsupportedTemperatureError,
+  UnsupportedTemperatureError, UnsupportedMultiplicityError,
 } from './errors.js';
 import type { ProtocolExecutionGuard } from './protocol/execution-guard.js';
 import { CaseFoldedNameSet, CaseInsensitiveMap } from './case-fold.js';
@@ -290,6 +290,49 @@ function behavioralDescriptor(
   return {
     type: 'B', name, nodes: [nPlus, nMinus, ...controls], expression, behavioral: { kind, params },
   };
+}
+
+/** Cards whose `m` instance parameter scales the device (M parallel copies). */
+const MULTIPLIED_INSTANCE_TYPES = new Set<DeviceDescriptor['type']>(['R', 'C', 'L', 'D', 'Q', 'M']);
+
+/**
+ * Voltage-defined cards: m parallel copies of an ideal voltage constraint are
+ * the same constraint. ngspice-47 inp_fix_subckt_multiplier (inpcom.c) skips
+ * them (V, E, H, K and B v= cards), as it skips S, W, O, T, U, Y and P cards.
+ */
+const MULTIPLICITY_INVARIANT_TYPES = new Set<DeviceDescriptor['type']>(['V', 'E', 'H', 'K']);
+
+/** Cards ngspice-47 leaves unscaled although m parallel copies would differ. */
+const NGSPICE_UNSCALED_TYPES = new Set<DeviceDescriptor['type']>(['S', 'W', 'O', 'Y', 'P']);
+
+/**
+ * Apply a subcircuit instance multiplicity to one expanded card (#810). The
+ * instance multiplicity multiplies the card's own `m`, as the ngspice manual
+ * specifies (ngspice-47 replaces it instead: ngspice bug #693). Returns a
+ * warning for cards ngspice-47 leaves unscaled; throws
+ * {@link UnsupportedMultiplicityError} for cards ngspice scales but spice-ts
+ * cannot.
+ */
+function applyInstanceMultiplicity(
+  desc: DeviceDescriptor,
+  multiplicity: number,
+  instanceName: string,
+): string | undefined {
+  if (MULTIPLIED_INSTANCE_TYPES.has(desc.type)) {
+    desc.params = { ...desc.params, M: (desc.params?.M ?? 1) * multiplicity };
+    return undefined;
+  }
+  if (desc.type === 'I') {
+    desc.multiplier = (desc.multiplier ?? 1) * multiplicity;
+    return undefined;
+  }
+  if (MULTIPLICITY_INVARIANT_TYPES.has(desc.type)) return undefined;
+  if (desc.type === 'B' && desc.behavioral?.kind === 'voltage') return undefined;
+  if (NGSPICE_UNSCALED_TYPES.has(desc.type)) {
+    return `${desc.type} device '${desc.name}' is not scaled by the multiplicity m=${multiplicity}`
+      + ` of subcircuit instance '${instanceName}' (ngspice-47 does not scale ${desc.type} cards)`;
+  }
+  throw new UnsupportedMultiplicityError(desc.name, desc.type, instanceName, multiplicity);
 }
 
 /**
@@ -3330,6 +3373,7 @@ export class Circuit {
     guard?: ProtocolExecutionGuard,
     depth = 1,
     scopes: readonly SubcircuitScope[] = [],
+    inheritedMultiplicity = 1,
   ): DeviceDescriptor[] {
     guard?.maximum('maxSubcircuitDepth', depth, 'compile');
     const key = subcktName.toUpperCase();
@@ -3387,6 +3431,14 @@ export class Circuit {
     for (const [name, value] of overrides) {
       if (!declared.has(name)) localParams[name] = value;
     }
+
+    // #810: X-line `m=` makes the instance m parallel copies of the
+    // subcircuit, scaling every card of the body (nested instances included)
+    // on top of the card's own m and of any enclosing instance's m. When the
+    // subcircuit declares a parameter named m, the X-line m is that ordinary
+    // parameter instead (as in ngspice-47 inp_fix_inst_calls_for_numparam).
+    const multiplicity = inheritedMultiplicity
+      * (declared.has('M') ? 1 : overrides.get('M') ?? 1);
 
     // Map a node name from the subcircuit body to the actual circuit node
     const mapNode = (bodyNode: string): string => {
@@ -3764,6 +3816,7 @@ export class Circuit {
             guard,
             depth + 1,
             bodyScopes,
+            multiplicity,
           );
           result.push(...nested);
           break;
@@ -3771,11 +3824,14 @@ export class Circuit {
         default:
           throw new ParseError(`Unsupported device card: '${devType}'`, lineNumber, raw);
       }
-      // Nested X expansions resolved their own model scopes already.
+      // Nested X expansions resolved their own model scopes and multiplicity already.
       if (devType !== 'X') {
         for (let i = firstDescriptor; i < result.length; i++) {
           const desc = result[i];
           if (desc.modelName !== undefined) desc.modelName = scopeModel(desc.modelName);
+          if (multiplicity === 1) continue;
+          const warning = applyInstanceMultiplicity(desc, multiplicity, instanceName);
+          if (warning !== undefined && !this._parseWarnings.includes(warning)) this._parseWarnings.push(warning);
         }
       }
       guard?.maximum('maxComponents', result.length, 'compile');

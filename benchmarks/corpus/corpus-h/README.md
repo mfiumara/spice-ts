@@ -6,7 +6,7 @@ Every deck below is byte-identical to its pinned upstream revision (ahkab `1e893
 
 ## Totals
 
-- Fixtures: 52. Outcome SHA-256: `12df0645881703295931656693dc74d0004fa194ecaa46181ac8e13f2d47f16e`.
+- Fixtures: 52. Outcome SHA-256: `7fe7efbdb3b6c0596b46961ce6ed0ecf1005249a3eb779948beca090adfb3bfc`.
 - ngspice (ngspice-47): 52 success, 0 failed, 0 unsupported.
 - spice-ts (0.3.0): 51 success, 0 failed, 1 unsupported.
 - Outcomes: matched 40, mismatch 11, not-compared 0, spice-ts-loss 1, ngspice-failed 0, both-failed 0.
@@ -54,15 +54,15 @@ Every fixture that is not matched: spice-ts failures, mismatches above the thres
 | Fixture | ngspice | spice-ts | Outcome | Worst | Worst signal | First error line (ngspice / spice-ts) |
 |---|---|---|---|---|---|---|
 | [kicad/qa/data/eeschema/issue13431.spice](fixtures/kicad/qa/data/eeschema/issue13431.spice) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 22: .model 'ctest' has unsupported type 'CMETER' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .model ctest cmeter(gain=1.0) |
-| [kicad/qa/data/eeschema/spice_netlists/legacy_sources/legacy_sources.spice](fixtures/kicad/qa/data/eeschema/spice_netlists/legacy_sources/legacy_sources.spice) | success | success | mismatch | 2.43 | tran i(v9) |  |
+| [kicad/qa/data/eeschema/spice_netlists/legacy_sources/legacy_sources.spice](fixtures/kicad/qa/data/eeschema/spice_netlists/legacy_sources/legacy_sources.spice) | success | success | mismatch | 3.54 | tran v(/itrrandom) |  |
 | [kicad/qa/data/eeschema/spice_netlists/tlines/tlines.spice](fixtures/kicad/qa/data/eeschema/spice_netlists/tlines/tlines.spice) | success | success | mismatch | 0.0453 | tran v(/z0_out) |  |
 | [spicesharpparser/circuits/cookbook/pure-spice/astable-led-flasher/astable-led-flasher.cir](fixtures/spicesharpparser/circuits/cookbook/pure-spice/astable-led-flasher/astable-led-flasher.cir) | success | success | mismatch | 1.27 | tran v(base2) |  |
 | [spicesharpparser/circuits/cookbook/pure-spice/bjt-relay-driver/bjt-relay-driver.cir](fixtures/spicesharpparser/circuits/cookbook/pure-spice/bjt-relay-driver/bjt-relay-driver.cir) | success | success | mismatch | 0.0215 | tran v(collector) |  |
 | [spicesharpparser/circuits/cookbook/pure-spice/transmission-line-termination/transmission-line-termination.cir](fixtures/spicesharpparser/circuits/cookbook/pure-spice/transmission-line-termination/transmission-line-termination.cir) | success | success | mismatch | 0.0625 | tran v(open_out) |  |
-| [spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04.cir](fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04.cir) | success | success | mismatch | 0.7 | op i(v1) |  |
-| [spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04_nested.cir](fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04_nested.cir) | success | success | mismatch | 0.7 | op i(v1) |  |
-| [spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04_reversed.cir](fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04_reversed.cir) | success | success | mismatch | 0.7 | op i(v1) |  |
-| [spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example05.cir](fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example05.cir) | success | success | mismatch | 0.7 | op i(v1) |  |
+| [spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04.cir](fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04.cir) | success | success | mismatch | 2 | op i(v1) |  |
+| [spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04_nested.cir](fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04_nested.cir) | success | success | mismatch | 2 | op i(v1) |  |
+| [spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04_reversed.cir](fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04_reversed.cir) | success | success | mismatch | 2 | op i(v1) |  |
+| [spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example05.cir](fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example05.cir) | success | success | mismatch | 2 | op i(v1) |  |
 | [spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example01.cir](fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example01.cir) | success | success | mismatch | 1.15 | op v(n1) |  |
 | [xictools/wrspice/examples/schmitt.cir](fixtures/xictools/wrspice/examples/schmitt.cir) † | success | success | mismatch | 0.107 | tran i(vin) |  |
 
@@ -122,7 +122,7 @@ Fixtures where spice-ts matches ngspice-47 within the uniform threshold on every
 | Fixture | Status (headline) | Headline tran worst (vs ngspice default) | spice-ts vs fine | ngspice default vs fine | Fine TMAX | Note |
 |---|---|---|---|---|---|---|
 | [kicad/qa/data/eeschema/issue13162.spice](fixtures/kicad/qa/data/eeschema/issue13162.spice) | matched | 3.65e-13 (i(vin1)) | 0.561 (i(vin1)) | 0.561 (i(vin1)) | 0.00001 |  |
-| [kicad/qa/data/eeschema/spice_netlists/legacy_sources/legacy_sources.spice](fixtures/kicad/qa/data/eeschema/spice_netlists/legacy_sources/legacy_sources.spice) | mismatch | 2.43 (i(v9)) | 1.95 (i(v9)) | 2.19 (v(/itrrandom)) | 1e-10 |  |
+| [kicad/qa/data/eeschema/spice_netlists/legacy_sources/legacy_sources.spice](fixtures/kicad/qa/data/eeschema/spice_netlists/legacy_sources/legacy_sources.spice) | mismatch | 3.54 (v(/itrrandom)) | 1.91 (v(/itrnoise)) | 1.87 (i(v8)) | 1e-10 |  |
 | [kicad/qa/data/eeschema/spice_netlists/tlines/tlines.spice](fixtures/kicad/qa/data/eeschema/spice_netlists/tlines/tlines.spice) | mismatch | 0.0453 (v(/z0_out)) | 0.00234 (v(/rlgc_out)) | 0.0433 (v(/rlgc_out)) | 1e-7 |  |
 | [pyspice/examples/c-examples/ngspice_cb/examples/adder_mos.cir](fixtures/pyspice/examples/c-examples/ngspice_cb/examples/adder_mos.cir) | matched | 1.7e-13 (v(1)) | 2.19e-13 (v(3)) | 3.39e-13 (v(4)) | 5e-11 |  |
 | [pyspice/examples/spice-examples/ac-coupled-transistor-amplifier.cir](fixtures/pyspice/examples/spice-examples/ac-coupled-transistor-amplifier.cir) | matched | 0.00000806 (v(emit)) | 0.00000845 (i(vin)) | 0.00000494 (i(vin)) | 1e-7 |  |

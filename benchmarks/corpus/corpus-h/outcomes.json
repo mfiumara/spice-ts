@@ -268,8 +268,8 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 27,
-      "worstNormalizedError": 2.43,
-      "worstSignal": "tran i(v9)",
+      "worstNormalizedError": 3.54,
+      "worstSignal": "tran v(/itrrandom)",
       "outcome": "mismatch",
       "gapBucket": null,
       "fineReference": {
@@ -278,16 +278,16 @@
           "1e-10"
         ],
         "headline": {
-          "worst": 2.43,
-          "signal": "i(v9)"
+          "worst": 3.54,
+          "signal": "v(/itrrandom)"
         },
         "spiceTsVsFine": {
-          "worst": 1.95,
-          "signal": "i(v9)"
+          "worst": 1.91,
+          "signal": "v(/itrnoise)"
         },
         "ngspiceDefaultVsFine": {
-          "worst": 2.19,
-          "signal": "v(/itrrandom)"
+          "worst": 1.87,
+          "signal": "i(v8)"
         }
       }
     },
@@ -1257,7 +1257,7 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 1,
-      "worstNormalizedError": 0.7,
+      "worstNormalizedError": 2,
       "worstSignal": "op i(v1)",
       "outcome": "mismatch",
       "gapBucket": null
@@ -1285,7 +1285,7 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 1,
-      "worstNormalizedError": 0.7,
+      "worstNormalizedError": 2,
       "worstSignal": "op i(v1)",
       "outcome": "mismatch",
       "gapBucket": null
@@ -1313,7 +1313,7 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 1,
-      "worstNormalizedError": 0.7,
+      "worstNormalizedError": 2,
       "worstSignal": "op i(v1)",
       "outcome": "mismatch",
       "gapBucket": null
@@ -1341,7 +1341,7 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 1,
-      "worstNormalizedError": 0.7,
+      "worstNormalizedError": 2,
       "worstSignal": "op i(v1)",
       "outcome": "mismatch",
       "gapBucket": null
@@ -2113,5 +2113,5 @@
       "gapBucket": null
     }
   ],
-  "outcomeSha256": "12df0645881703295931656693dc74d0004fa194ecaa46181ac8e13f2d47f16e"
+  "outcomeSha256": "7fe7efbdb3b6c0596b46961ce6ed0ecf1005249a3eb779948beca090adfb3bfc"
 }
