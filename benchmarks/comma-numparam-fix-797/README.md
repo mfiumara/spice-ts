@@ -1,4 +1,81 @@
-# #797 bounded production attempt stopped at RED
+# #797 raw X-call scanner and formal-default correction
+
+## Accepted scope expansion and final implementation
+
+The supervisor authorised formal-default normalisation and formal-aware comma
+validation after the bounded attempt below stopped at RED. Production now scans
+raw assignment boundaries before substitution, discards comma-prefixed names,
+and preserves bare comma words until the called definition is resolved. Both
+top-level and nested calls validate only comma words whose names match formal
+parameters. No global tokenizer or device semantics changed. `.subckt` default
+commas are separators, including defaults not overridden by the instance.
+
+The original unchanged example01 now succeeds. Native V(N1) is
+-7.2323399544815565 V. Full three-point max/RMS absolute errors improve from
+8.329431883476111 / 4.808999740127627 V to
+8.881784197001252e-16 / 5.127978741977898e-16 V. Both sibling controls are
+unchanged. All 20 saved inputs and source/licence hashes remain represented in
+`before.json` and `final.json`; no deck adaptation or tolerance adjustment.
+
+Final results are **15 numerical agreements, 4 both-failed cases, 1 status loss**,
+not 19 runnable successes. The preserved malformed `p1= p2=3` loss still reports
+undefined p2 rather than using a per-case zero substitution. Issue 3/5 remain
+reference failures. Original receipts and rejected prototypes are historical
+evidence and have not been overwritten. The final production receipt records
+implementation commit 88aed9d3; subsequent commits add evidence only.
+
+| case | before max/RMS relative | final max/RMS relative | final status |
+| --- | ---: | ---: | --- |
+| issue-1 | null | null | both failed |
+| issue-2 | 0.10900473933649289 / 0.10900473933649289 | 0 / 0 | agree |
+| issue-3 | null | null | both failed |
+| issue-4 | 0.012987012987012988 / 0.012987012987012988 | 0 / 0 | agree |
+| issue-5 | null | null | both failed |
+| issue-6 | 0.0947867298578199 / 0.0947867298578199 | 0 / 0 | agree |
+| issue-7 | 0.0947867298578199 / 0.0947867298578199 | 0 / 0 | agree |
+| defaults | 0 / 0 | 0 / 0 | agree |
+| plain-whitespace | 0 / 0 | 0 / 0 | agree |
+| braced-whitespace | 0 / 0 | 0 / 0 | agree |
+| braced-comma-space | 0 / 0 | 0 / 0 | agree |
+| braced-comma-tab | 0 / 0 | 0 / 0 | agree |
+| explicit-first | 0 / 0 | 0 / 0 | agree |
+| reordered-glued | 1.0526315789473684 / 1.0526315789473684 | 0 / 0 | agree |
+| function-comma | 0 / 0 | 0 / 0 | agree |
+| unbraced-trailing | null | null | both failed |
+| unbraced-missing-value | null | null | native failed |
+| example01 | 1.1516925277156995 / 0.6649301929672683 | 2.359223927328457e-16 / 2.0526421133915498e-16 | agree |
+| example01_stringwriter | 2.02702507580167e-8 / 1.4582630755065776e-8 | 2.02702507580167e-8 / 1.4582630755065776e-8 | agree |
+| example01_without_params | 2.02702507580167e-8 / 1.4582630755065776e-8 | 2.02702507580167e-8 / 1.4582630755065776e-8 | agree |
+
+### RED / GREEN and execution receipts
+
+Expanded RED was committed as f7d20254 before production edits.
+`pnpm -C packages/core exec vitest run src/parser/comma-numparam-797.test.ts`
+exited 1 in `expanded-red.log` (and the resumed pre-expansion RED also exited 1).
+
+    pnpm -C packages/core exec vitest run src/parser/comma-numparam-797.test.ts src/parser/subckt-param-order-857.test.ts src/subcircuit-params.test.ts src/subcircuit-port-parens-864.test.ts src/subcircuit-dynamic-params-888.test.ts src/altermod-alias.test.ts src/parser/control/csparam-loop-930.test.ts
+    pnpm -C packages/core exec vitest run src/parser src/circuit.test.ts
+    pnpm build
+    pnpm lint
+    spice-heavy python3 benchmarks/comma-numparam-fix-797/run.py final
+    python3 benchmarks/comma-numparam-fix-797/verify.py
+
+All commands exited 0. The reserved parser, dynamic-scope, alias, order and port
+regressions plus the csparam controls pass 90 tests. The
+parser/circuit command is recorded in `green-parser-circuit.log`. Build/lint
+receipts are `build.log` / `lint.log`. Early unsuccessful development runs are
+retained under `green-targeted*.log` and are not claimed as passing.
+No redundant full local monorepo suite was run. Required exact-head Node20,
+Node22, build and accuracy CI remains the authoritative full gate.
+
+Final owned serial child wall is 8.919235873 s. Cumulative owned child wall,
+including the three earlier comparisons, is 28.231265000 s, below 300 s.
+Every owned child is bounded to 12 s; no timeout or global kill occurred.
+Offline verification checks all 80 receipt rows across four phases, raw OP
+values, same-byte input hashes, source provenance and metrics/nulls. No speed
+claim is made.
+
+## Historical bounded attempt stopped at RED
 
 This is not a production fix or a parity success. The rejected scanner is saved
 as `rejected-prototype.patch` and has been removed from production. The dedicated

@@ -1,0 +1,71 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_832f6221/packages/core
+
+ ✓ src/parser/expression.test.ts (166 tests) 19ms
+ ✓ src/parser/behavioral-expression.test.ts (35 tests) 22ms
+ ✓ src/parser/preprocessor.test.ts (48 tests) 28ms
+ ✓ src/parser/tokenizer.test.ts (38 tests) 465ms
+     ✓ matches the reference implementation on a deterministic fuzz corpus  370ms
+ ✓ src/circuit.test.ts (39 tests) 46ms
+ ✓ src/parser/options-xyce-packages-713.test.ts (49 tests) 47ms
+ ✓ src/parser/subckt-param-order-857.test.ts (12 tests) 63ms
+ ✓ src/parser/waveform-parser.test.ts (22 tests) 66ms
+ ✓ src/parser/bjt-parser.test.ts (42 tests) 78ms
+ ✓ src/parser/bare-param-rlc-837.test.ts (14 tests) 92ms
+ ✓ src/parser/numparam-extensions.test.ts (34 tests) 172ms
+ ✓ src/parser/control/savecurrents-686.test.ts (7 tests) 184ms
+ ✓ src/parser/parser.test.ts (47 tests) 190ms
+ ✓ src/parser/options-directives.test.ts (115 tests) 240ms
+ ✓ src/parser/control-analysis.test.ts (20 tests) 223ms
+ ✓ src/parser/spice2poly-845.test.ts (13 tests) 290ms
+ ✓ src/parser/xyce-primitive-compatibility.test.ts (38 tests) 315ms
+ ✓ src/parser/control/control-script.test.ts (38 tests) 291ms
+ ✓ src/parser/control/sp-sens-750.test.ts (20 tests) 476ms
+ ✓ src/parser/control/spectrum-752.test.ts (33 tests) 584ms
+ ✓ src/parser/model-level-limit-747.test.ts (12 tests) 330ms
+ ✓ src/parser/ngspice-compatibility.test.ts (49 tests) 93ms
+ ✓ src/parser/subckt-model-expressions-882.test.ts (10 tests) 138ms
+ ✓ src/parser/numparam-quoted-expressions.test.ts (4 tests) 137ms
+ ✓ src/parser/bsource-pspice-functions-879.test.ts (4 tests) 147ms
+ ✓ src/parser/gnucap-source-forms.test.ts (10 tests) 136ms
+ ✓ src/parser/bsource-single-pipe-or-903.test.ts (31 tests) 98ms
+ ✓ src/parser/corpus-h-parse-gaps-790.test.ts (13 tests) 167ms
+ ✓ src/parser/unusual-leading-chars-843.test.ts (20 tests) 194ms
+ ✓ src/parser/unsupported-model-type.test.ts (28 tests) 100ms
+ ✓ src/parser/bsim-model-version.test.ts (10 tests) 197ms
+ ✓ src/parser/control/setplot-errors-798.test.ts (7 tests) 155ms
+ ✓ src/parser/control/edit-comments-787.test.ts (8 tests) 212ms
+ ✓ src/parser/options-494.test.ts (36 tests) 277ms
+ ✓ src/parser/param-functions-870.test.ts (6 tests) 117ms
+ ✓ src/parser/temp-directive-871.test.ts (33 tests) 295ms
+ ✓ src/parser/options-612.test.ts (13 tests) 212ms
+ ✓ src/parser/model-bare-tokens.test.ts (12 tests) 54ms
+ ✓ src/parser/gnd-alias-772.test.ts (7 tests) 87ms
+ ✓ src/parser/parse-preprocess-parity.test.ts (14 tests) 101ms
+ ✓ src/parser/micro-sign-508.test.ts (6 tests) 108ms
+ ✓ src/parser/bjt-unrecognized-model-parameter-767.test.ts (5 tests) 123ms
+ ✓ src/parser/passive-value-less-733.test.ts (5 tests) 128ms
+ ✓ src/parser/poly-trtol-862.test.ts (5 tests) 223ms
+ ✓ src/parser/control/misplaced-endc-666.test.ts (6 tests) 119ms
+ ✓ src/parser/comma-numparam-797.test.ts (23 tests) 134ms
+ ✓ src/parser/passive-lead-value-719.test.ts (1 test) 73ms
+ ✓ src/parser/print-brace-714.test.ts (11 tests) 78ms
+ ✓ src/parser/bsource-caret-initial-iterate-891.test.ts (4 tests) 45ms
+ ✓ src/parser/diode-parser.test.ts (8 tests) 7ms
+ ✓ src/parser/bsource-pow-zero-base-886.test.ts (7 tests) 149ms
+ ✓ src/parser/xcard-bare-params-788.test.ts (4 tests) 51ms
+ ✓ src/parser/control/csparam-loop-930.test.ts (9 tests) 144ms
+ ✓ src/parser/transmission-line-parser.test.ts (11 tests) 99ms
+ ✓ src/parser/bsource-finite-jacobian-overflow-899.test.ts (6 tests) 115ms
+ ✓ src/parser/inpevaluate-749.test.ts (106 tests) 50271ms
+     ✓ round-trips 20k generated literals (1-4 digit mantissa, optional fraction, every scale factor)  820ms
+     ✓ round-trips 5k arbitrary doubles between 1e-30 and 1e30 (Circuit API and JSON values)  573ms
+     ✓ round-trips 1M random bit patterns with 0 ulp drift, except the unreachable values below 1e-297  47224ms
+     ✓ writes every value around the subnormal range within one ulp, exactly when a literal exists  1320ms
+
+ Test Files  56 passed (56)
+      Tests  1374 passed (1374)
+   Start at  23:39:30
+   Duration  53.02s (transform 28.10s, setup 0ms, import 53.51s, tests 59.01s, environment 4ms)
+
+JUNIT report written to /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_832f6221/packages/core/test-results.xml

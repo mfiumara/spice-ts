@@ -14,7 +14,7 @@ spec = importlib.util.spec_from_file_location('diagnosis', DIAGNOSIS / 'compare.
 runner = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(runner)
 phase = sys.argv[1]
-assert phase in ('before', 'after', 'after-continuation')
+assert phase in ('before', 'after', 'after-continuation', 'final')
 output = HERE / (phase + '.json')
 assert not output.exists(), 'Existing evidence retained, no silent reruns'
 budget = HERE / 'budget.json'

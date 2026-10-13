@@ -12,7 +12,7 @@ assert spec is not None and spec.loader is not None
 runner = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(runner)
 original = json.loads((HERE.parent / 'comma-numparam-797/receipt.json').read_text())
-phases = ('before', 'after', 'after-continuation')
+phases = ('before', 'after', 'after-continuation', 'final')
 cumulative = 0.0
 for phase in phases:
     report = json.loads((HERE / (phase + '.json')).read_text())
