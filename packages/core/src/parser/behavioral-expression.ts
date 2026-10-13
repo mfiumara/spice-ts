@@ -602,11 +602,6 @@ export function behavioralControlNodes(expression: BehavioralExpression): string
   return behavioralControls(expression).nodes;
 }
 
-/** Distinct `i()` sources of an expression, in first-reference order. */
-export function behavioralControlSources(expression: BehavioralExpression): string[] {
-  return behavioralControls(expression).sources;
-}
-
 function behavioralControls(expression: BehavioralExpression): { nodes: string[]; sources: string[] } {
   const nodes: string[] = [];
   const sources: string[] = [];

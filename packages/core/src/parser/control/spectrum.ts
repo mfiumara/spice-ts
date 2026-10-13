@@ -10,12 +10,6 @@
  * power of two, Bluestein's chirp-z otherwise), never zero-padded.
  */
 
-/** The window functions ngspice accepts for `set specwindow` (fftext.c fft_windows). */
-export const SPECTRUM_WINDOWS = [
-  'none', 'rectangular', 'triangle', 'bartlet', 'bartlett', 'hann', 'hanning', 'cosine', 'hamming', 'blackman',
-  'blackmanharris', 'flattop', 'gaussian',
-] as const;
-
 /**
  * fftext.c fft_windows: the window weights for samples at `time`, or
  * undefined for an unknown window name. Windows end at `maxt` and span `span`.

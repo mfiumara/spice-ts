@@ -38,10 +38,6 @@ export function scalar(value: number, name = 'constant'): ControlVector {
   return realVector(name, [value]);
 }
 
-export function vectorLength(vector: ControlVector): number {
-  return vector.re.length;
-}
-
 export function isComplex(vector: ControlVector): boolean {
   return vector.im !== undefined;
 }
