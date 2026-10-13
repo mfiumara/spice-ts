@@ -133,6 +133,53 @@ describe('linear stamp programs (#570)', () => {
     expectSamePass(actual, expected, compiled.devices);
   });
 
+  it('picks up direct conductance and capacitance writes between passes (#890)', () => {
+    const { compiled, expected, actual } = setup();
+    expectSamePass(actual, expected, compiled.devices);
+    for (const device of compiled.devices) {
+      if (device instanceof Resistor) device.conductance *= 1.5;
+      if (device instanceof Capacitor) device.capacitance *= 0.75;
+    }
+    expectSamePass(actual, expected, compiled.devices);
+    // Writing a single device of each kind must still refresh its run.
+    const r = compiled.devices.find(d => d instanceof Resistor && d.name.toLowerCase() === 'r3') as Resistor;
+    const c = compiled.devices.find(d => d instanceof Capacitor && d.name.toLowerCase() === 'c2') as Capacitor;
+    r.conductance = 1 / 123;
+    c.capacitance = 4.7e-9;
+    expectSamePass(actual, expected, compiled.devices);
+  });
+
+  it('reads no device value in a pass when none changed (#890)', () => {
+    // A large two-terminal run, as on the M2 RC ladder. Once the program is
+    // built and filled, the kernels read conductances/capacitances from typed
+    // arrays, not from one device object per entry.
+    const n = 64;
+    const lines = ['V1 n0 0 1'];
+    for (let i = 1; i < n; i++) lines.push(`R${i} n${i - 1} n${i} 1k`, `C${i} n${i} 0 1p`);
+    const compiled = parse(`${lines.join('\n')}\n.tran 1n 10n\n`).compile();
+    const assembler = new MNAAssembler(compiled.nodeCount, compiled.branchCount);
+    genericPass(assembler, compiled.devices);
+    assembler.lockTopology();
+    const dyn = dynamic(compiled.devices);
+    for (let pass = 0; pass < 4; pass++) programPass(assembler, compiled.devices, dyn);
+    let reads = 0;
+    const counted: [DeviceModel, string][] = [];
+    for (const device of compiled.devices) {
+      const key = device instanceof Resistor ? 'conductance' : device instanceof Capacitor ? 'capacitance' : undefined;
+      if (key === undefined) continue;
+      const record = device as unknown as Record<string, number>;
+      const value = record[key];
+      Object.defineProperty(device, key, {
+        configurable: true,
+        get: () => { reads++; return value; },
+      });
+      counted.push([device, key]);
+    }
+    expect(counted.length).toBe(2 * (n - 1));
+    programPass(assembler, compiled.devices, dyn);
+    expect(reads).toBe(0);
+  });
+
   it('rebuilds its slots after the topology is relocked', () => {
     const { compiled, expected, actual } = setup();
     expectSamePass(actual, expected, compiled.devices);

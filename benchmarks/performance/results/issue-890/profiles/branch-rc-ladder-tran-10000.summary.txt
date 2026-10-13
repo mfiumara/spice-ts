@@ -1,0 +1,25 @@
+benchmarks/performance/results/issue-890/profiles/branch-rc-ladder-tran-10000.cpuprofile: 283 samples, 1230.3 ms sampled
+
+Top self time
+     128.3 ms  10.4%  (garbage collector)
+     124.3 ms  10.1%  solveLinearized packages/core/dist/chunk-A3GGDGYN.js:35465
+      51.8 ms   4.2%  buildCompanionSystem packages/core/dist/chunk-A3GGDGYN.js:35163
+      48.3 ms   3.9%  flush packages/core/dist/chunk-A3GGDGYN.js:36816
+      40.8 ms   3.3%  evaluate packages/core/dist/chunk-A3GGDGYN.js:35833
+      33.5 ms   2.7%  acceptAll packages/core/dist/chunk-A3GGDGYN.js:4087
+      31.0 ms   2.5%  truncationTimestepAll packages/core/dist/chunk-A3GGDGYN.js:4109
+      29.1 ms   2.4%  braceBareParameters packages/core/dist/chunk-A3GGDGYN.js:28708
+      27.7 ms   2.3%  attemptStep packages/core/dist/chunk-A3GGDGYN.js:35360
+      26.5 ms   2.2%  stampPrevB packages/core/dist/chunk-A3GGDGYN.js:36348
+
+Top inclusive time
+    1230.3 ms 100.0%  (root)
+     982.4 ms  79.8%  simulate packages/core/dist/chunk-A3GGDGYN.js:42759
+     744.9 ms  60.5%  solveCompiledAnalyses packages/core/dist/chunk-A3GGDGYN.js:42814
+     643.2 ms  52.3%  solveTransient packages/core/dist/chunk-A3GGDGYN.js:36835
+     533.2 ms  43.3%  advanceSolution packages/core/dist/chunk-A3GGDGYN.js:36047
+     361.9 ms  29.4%  attemptStep packages/core/dist/chunk-A3GGDGYN.js:35360
+     229.5 ms  18.6%  parseAsync packages/core/dist/chunk-A3GGDGYN.js:31561
+     165.2 ms  13.4%  solveLinearized packages/core/dist/chunk-A3GGDGYN.js:35465
+     144.7 ms  11.8%  (anonymous) benchmarks/performance/profile-scaling-m2.mjs:1
+     132.8 ms  10.8%  preprocessDeck packages/core/dist/chunk-A3GGDGYN.js:28839

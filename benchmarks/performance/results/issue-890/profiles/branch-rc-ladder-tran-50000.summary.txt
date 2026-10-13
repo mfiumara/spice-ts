@@ -1,0 +1,25 @@
+benchmarks/performance/results/issue-890/profiles/branch-rc-ladder-tran-50000.cpuprofile: 1117 samples, 5948.8 ms sampled
+
+Top self time
+     930.7 ms  15.6%  (garbage collector)
+     415.4 ms   7.0%  evaluate packages/core/dist/chunk-A3GGDGYN.js:35833
+     338.4 ms   5.7%  solveLinearized packages/core/dist/chunk-A3GGDGYN.js:35465
+     299.5 ms   5.0%  buildCompanionSystem packages/core/dist/chunk-A3GGDGYN.js:35163
+     244.5 ms   4.1%  stampStaticDevices packages/core/dist/chunk-A3GGDGYN.js:34603
+     200.9 ms   3.4%  flush packages/core/dist/chunk-A3GGDGYN.js:36816
+     191.3 ms   3.2%  lockTopology packages/core/dist/chunk-A3GGDGYN.js:34112
+     169.6 ms   2.9%  factorize packages/core/dist/chunk-A3GGDGYN.js:33229
+     155.7 ms   2.6%  set packages/core/dist/chunk-A3GGDGYN.js:25516
+     124.9 ms   2.1%  acceptAll packages/core/dist/chunk-A3GGDGYN.js:4087
+
+Top inclusive time
+    5948.8 ms 100.0%  (root)
+    4659.2 ms  78.3%  simulate packages/core/dist/chunk-A3GGDGYN.js:42759
+    3619.4 ms  60.8%  solveCompiledAnalyses packages/core/dist/chunk-A3GGDGYN.js:42814
+    3236.5 ms  54.4%  solveTransient packages/core/dist/chunk-A3GGDGYN.js:36835
+    2795.3 ms  47.0%  advanceSolution packages/core/dist/chunk-A3GGDGYN.js:36047
+    1723.2 ms  29.0%  attemptStep packages/core/dist/chunk-A3GGDGYN.js:35360
+     930.7 ms  15.6%  (garbage collector)
+     854.3 ms  14.4%  parseAsync packages/core/dist/chunk-A3GGDGYN.js:31561
+     784.3 ms  13.2%  buildCompanionSystem packages/core/dist/chunk-A3GGDGYN.js:35163
+     624.1 ms  10.5%  solveLinearized packages/core/dist/chunk-A3GGDGYN.js:35465
