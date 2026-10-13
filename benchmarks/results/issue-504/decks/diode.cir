@@ -1,9 +1,0 @@
-biased diode pz
-vdd 3 0 5
-r1 3 1 1k
-d1 1 0 dmod
-c1 1 2 10p
-r2 2 0 1k
-.model dmod d is=1e-14 cjo=2p tt=1n
-.pz 1 0 2 0 cur pz
-.end

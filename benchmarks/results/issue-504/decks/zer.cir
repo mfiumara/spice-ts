@@ -1,7 +1,0 @@
-zeros only
-r1 1 0 1k
-c1 1 2 1n
-r2 2 0 1k
-c2 2 0 2n
-.pz 1 0 2 0 cur zer
-.end
