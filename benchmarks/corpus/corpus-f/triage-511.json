@@ -59,9 +59,9 @@
     },
     {
       "id": "fourbitadder-uv-residual",
-      "kind": "simulator",
+      "kind": "fixed",
       "issue": "https://github.com/mfiumara/spice-ts/issues/698",
-      "summary": "fourbitadder TTL NAND internal nodes x*.8 (75-125 uV peaks) keep 1-7 uV residuals above the 1 uV VNTOL floor; the 1.1 uV residual with both engines at TMAX 10 ps is not root-caused. On main 3b9c836f (after #689 CKTtrunc step control; not bisected) the unchanged deck matches at 0.00313, so the published metric no longer shows the residual; #698 stays open until re-checked."
+      "summary": "fourbitadder TTL NAND internal nodes x*.8 (75-125 uV peaks) kept 1-7 uV residuals above the 1 uV VNTOL floor on b1a1ff58. Fixed by transient step control, bisected with triage-detail.ts; the BJT load, gmin and the convergence test were not involved. #689 (ngspice CKTtrunc) cut the default-step worst on the 8 sub-mV signals from 7.39 uV to 0.327 uV and the TMAX 10 ps worst over all 270 signals from 11.7 uV to 4.14 uV; #758 (ngspice dctran first step and order control) cut them to 0.148 uV and 50 nV. Guarded by the live #698 tests in triage-511.test.ts."
     }
   ],
   "fixtures": [
@@ -84,7 +84,7 @@
       "issueTable": { "outcome": "mismatch", "worst": 8.64, "signal": "tran v(x1.x1.x1.x7.8)" },
       "current": { "outcome": "matched", "worst": 0.00143, "signal": "tran v(x1.x1.x1.x7.8)" },
       "rootCauses": ["reference-grid-artefact", "fourbitadder-uv-residual"],
-      "evidence": "Worst signals are TTL NAND internal nodes x*.8 with 75-125 uV peaks on a 5 V circuit (abs 6.7 uV). At ngspice points: 0.0377. spice-ts default vs fine-step ngspice (TMAX 10 ps): 0.0107 on its grid; ngspice default vs the same reference: 0.0415 on its grid. Residual 1.1 uV (1.02-1.07% of a ~100 uV peak) on 5/270 signals at t~13 ps with both engines at TMAX 10 ps is not yet root-caused; tracked in #593. On b1a1ff58 with the #593 floor: 0.0674 (abs 6.74 uV on a 99.6 uV peak). The 1e-4 V floor only moves the two signals with peaks below 100 uV, v(x1.x1.x1.x7.8) 0.0677 -> 0.0674 and v(x1.x1.x1.x6.8) 0.0386 -> 0.0302; 12 signals stay over 1%. The residual is above VNTOL, so the floor does not hide it; tracked in #698. On main 3b9c836f (merge of #593 with main after #689 ngspice CKTtrunc step control, #686, #691, #696, #479; not bisected): matched, 0.00313 tran v(x1.x2.x1.x6.8); the 0.0674 row is gone, #698 stays open until the residual is re-checked with triage-detail."
+      "evidence": "Worst signals are TTL NAND internal nodes x*.8 with 75-125 uV peaks on a 5 V circuit (abs 6.7 uV). At ngspice points: 0.0377. spice-ts default vs fine-step ngspice (TMAX 10 ps): 0.0107 on its grid; ngspice default vs the same reference: 0.0415 on its grid. Residual 1.1 uV (1.02-1.07% of a ~100 uV peak) on 5/270 signals at t~13 ps with both engines at TMAX 10 ps is not yet root-caused; tracked in #593. On b1a1ff58 with the #593 floor: 0.0674 (abs 6.74 uV on a 99.6 uV peak). The 1e-4 V floor only moves the two signals with peaks below 100 uV, v(x1.x1.x1.x7.8) 0.0677 -> 0.0674 and v(x1.x1.x1.x6.8) 0.0386 -> 0.0302; 12 signals stay over 1%. The residual is above VNTOL, so the floor does not hide it; tracked in #698. On main 3b9c836f (merge of #593 with main after #689 ngspice CKTtrunc step control, #686, #691, #696, #479; not bisected): matched, 0.00313 tran v(x1.x2.x1.x6.8); the 0.0674 row is gone. #698 re-check on 49a4fed4 (bisected): default steps 0.00143 tran v(x1.x1.x1.x7.8), 0/270 over 1%, the 8 signals with sub-mV peaks within 0.148 uV (7.39 uV on b1a1ff58, 0.327 uV on faa48247 before #758); both engines at TMAX 10 ps: worst 7.23e-6 normalised, every signal within 50 nV (11.7 uV on b1a1ff58, 4.14 uV on faa48247). #689 and #758 removed the residual."
     },
     {
       "id": "tests-transmission-ltra2-2-line-cir",

@@ -35,7 +35,7 @@ Every deck below is byte-identical to ngspice `3ef069fb1f04177a153f342a32d941fc2
 - https://github.com/mfiumara/spice-ts/issues/655: TRNOISE/TRRANDOM decks compare independent random realisations; ngspice-47 reseeds each run, so these values are not reproducible (transient-noise simple-noise, rts-1).
 - https://github.com/mfiumara/spice-ts/issues/592: metric: ngspice's coarse default-step output is scored as spice-ts error (rca3040, switches-manual-p92; rtlinv, mos-test, fourbitadder and ltra2_2_line match after the #689 step-control merge; #511 triage). The headline metric is unchanged; the transient fine-step reference section at the end of this table publishes both default runs against one ngspice fine-TMAX reference per deck.
 - https://github.com/mfiumara/spice-ts/issues/593: metric: zero/near-zero ngspice peaks turned fV-uV residuals into mismatches; fixed by the per-quantity VNTOL/ABSTOL peak floor in the match rule above (rca3040 AC v(2) now 5.64e-10; #511 triage).
-- https://github.com/mfiumara/spice-ts/issues/698: fourbitadder TTL internal nodes kept 1-7 uV residuals above the VNTOL floor (split from #593); the deck matches (0.00313) on main 3b9c836f, re-check before closing.
+- https://github.com/mfiumara/spice-ts/issues/698: closed: fourbitadder TTL internal nodes kept 1-7 uV residuals above the VNTOL floor (split from #593); bisected to transient step control, not the BJT model: #689 (ngspice CKTtrunc) and #758 (dctran first step and order) bring the uV-level nodes within 0.15 uV at default steps and every signal within 50 nV at TMAX 10 ps (regression guard in triage-511.test.ts).
 
 ## spice-ts gap buckets
 
