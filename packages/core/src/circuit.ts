@@ -1004,7 +1004,12 @@ export class Circuit {
    * @returns undefined on success, or why the change is not supported
    */
   alterModel(name: string, parameter: string, value: number): string | undefined {
-    const model = this._models.get(name);
+    // ngspice also accepts a device name as an alias for its shared model.
+    // An X descriptor names a subcircuit, not a device model.
+    const descriptor = this.descriptors.find(candidate => candidate.name.toUpperCase() === name.toUpperCase());
+    const model = descriptor
+      ? (descriptor.modelName && descriptor.type !== 'X' ? this._models.get(descriptor.modelName) : undefined)
+      : this._models.get(name);
     if (!model) return `no top-level .model named '${name}'`;
     model.params = { ...model.params, [parameter.toUpperCase()]: value };
     return undefined;

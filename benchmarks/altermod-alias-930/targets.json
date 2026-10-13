@@ -1,0 +1,12 @@
+{
+  "command": [
+    "ngspice",
+    "-b",
+    "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_bfce7e89/benchmarks/altermod-alias-930/targets.cir"
+  ],
+  "sha256": "7a5bbcf7902940008b8fff96096d9391df033e2c499fb24f326c4006951353a9",
+  "exitCode": 0,
+  "timeout": false,
+  "wallSeconds": 0.013993582999999997,
+  "totalActualChildWallSeconds": 4.284786708
+}

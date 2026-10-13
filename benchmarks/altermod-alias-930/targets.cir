@@ -1,0 +1,23 @@
+altermod target lookup order and errors
+V1 supply 0 1
+R1 supply a shared
+R2 supply b R1
+RA a 0 1k
+RB b 0 1k
+.model shared R (r=1k)
+.model R1 R (r=3k)
+.control
+set numdgt=17
+altermod shared r=2k
+op
+print v(a) v(b)
+altermod r1 r=4k
+op
+print v(a) v(b)
+altermod missing r=5k
+altermod RA r=5k
+altermod V1 r=5k
+op
+print v(a) v(b)
+.endc
+.end
