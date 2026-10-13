@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 
 import {
-  auditCorpusE,
   classifyNgspiceFailure,
   classifySpiceTsFailure,
   fixtureSetHash,
@@ -26,8 +27,43 @@ test('failure classifiers cover every audit cause', () => {
   assert.equal(classifySpiceTsFailure({ errorName: 'Error', errorMessage: 'worker exited' }), 'execution');
 });
 
-test('all unchanged corpus-E fixtures produce the audited engine outcomes', async () => {
-  const receipt = await auditCorpusE();
+test('historical corpus-E receipt retains its audited outcomes and unchanged fixture provenance', () => {
+  // This is the receipt at 80cd1312, not a claim about the current simulator.
+  // Live regeneration belongs to audit.mjs, not the offline CI test.
+  const receipt = JSON.parse(readFileSync(new URL('./receipt.json', import.meta.url), 'utf8'));
+  const sha256 = value => createHash('sha256').update(value).digest('hex');
+  const manifestBytes = readFileSync(new URL('../corpus/corpus-e/manifest.json', import.meta.url));
+  assert.equal(sha256(manifestBytes), 'bbe9d93df21a96913f479bb4f3bff3157eaf30d919aa6967b69f238679e88739');
+  const manifest = JSON.parse(manifestBytes.toString('utf8'));
+  assert.equal(receipt.versions.spiceTsHead, '80cd13123ef9943b27bf2dca5134c0b0016b55e0');
+  assert.equal(receipt.source.repository, manifest.source.repository);
+  assert.equal(receipt.source.revision, manifest.source.revision);
+  assert.equal(manifest.circuits.length, 20);
+  assert.equal(new Set(receipt.fixtures.map(fixture => fixture.id)).size, 20);
+  for (const fixture of receipt.fixtures) {
+    const circuit = manifest.circuits.find(circuit => circuit.id === fixture.id);
+    assert.ok(circuit, fixture.id);
+    assert.equal(fixture.localPath, circuit.localPath);
+    assert.equal(fixture.sha256, circuit.sha256);
+    assert.equal(sha256(readFileSync(new URL(`../../${fixture.localPath}`, import.meta.url))), fixture.sha256);
+  }
+  for (const engine of ['ngspice', 'spiceTs']) {
+    const totals = Object.fromEntries(['pass', 'parser', 'device/model', 'analysis', 'convergence', 'execution'].map(cause => [cause, 0]));
+    for (const fixture of receipt.fixtures) totals[fixture[engine].status === 'pass' ? 'pass' : fixture[engine].cause] += 1;
+    assert.deepEqual(receipt.totals[engine], totals);
+  }
+  const outcomes = receipt.fixtures.map(({ id, sha256: hash, ngspice, spiceTs }) => ({
+    id, sha256: hash,
+    ngspice: { status: ngspice.status, cause: ngspice.cause ?? null },
+    spiceTs: { status: spiceTs.status, cause: spiceTs.cause ?? null },
+  }));
+  assert.equal(sha256(JSON.stringify(outcomes)), receipt.outcomeSha256);
+  for (const transition of receipt.issue228Transitions) {
+    const fixture = receipt.fixtures.find(fixture => fixture.id === transition.id);
+    assert.ok(fixture, transition.id);
+    assert.deepEqual(transition.after, fixture.spiceTs.status === 'pass' ? { status: 'pass' } : { status: 'fail', cause: fixture.spiceTs.cause });
+    assert.equal(transition.changed, transition.before.status !== transition.after.status || transition.before.cause !== transition.after.cause);
+  }
 
   assert.equal(receipt.fixtures.length, 20);
   assert.equal(fixtureSetHash(receipt.fixtures), EXPECTED_FIXTURE_SET_HASH);
