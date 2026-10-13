@@ -1,0 +1,12 @@
+test_all_buckets_and_losses (__main__.EvidenceTests) ... ok
+test_budget_exhaustion_and_owned_timeout (__main__.EvidenceTests) ... ok
+test_exact_five_inputs_and_no_includes (__main__.EvidenceTests) ... ok
+test_hashes_and_offline_recomparison (__main__.EvidenceTests) ... ok
+test_ledger_and_limits (__main__.EvidenceTests) ... ok
+test_metric_no_interpolation_and_zero_floor (__main__.EvidenceTests) ... ok
+test_model_analysis_and_licence_closure (__main__.EvidenceTests) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.100s
+
+OK

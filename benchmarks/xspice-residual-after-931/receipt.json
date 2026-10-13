@@ -1,0 +1,583 @@
+{
+  "baselineSha": "8e32f51f555a2941a30ccfa9281a75f8ef2dbe30",
+  "sourcePin": "3ef069fb1f04177a153f342a32d941fc20ff047e",
+  "host": "macOS-27.0.1-arm64-arm-64bit",
+  "limits": {
+    "childSeconds": 15,
+    "totalSeconds": 300,
+    "cleanup": "SIGKILL owned process group only"
+  },
+  "alignment": "No interpolation; coordinates within rel 1e-10, transient abs 1e-15; relative denominator floor 1e-12. Partial matching is not parity.",
+  "source": {
+    "name": "ngspice examples and regression tests",
+    "repository": "https://sourceforge.net/p/ngspice/ngspice/ci/master/tree/",
+    "gitUrl": "https://git.code.sf.net/p/ngspice/ngspice",
+    "revision": "3ef069fb1f04177a153f342a32d941fc20ff047e",
+    "license": "BSD-3-Clause",
+    "licenseUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/COPYING",
+    "licenseTextSourcePath": "COPYING",
+    "licenseTextLocalPath": "benchmarks/corpus/corpus-f/LICENSE.txt",
+    "licenseTextSha256": "6d939001e899ede403277fb37124c2af6f1cf92926465cd8f4bf59859e06f579",
+    "redistributionDecision": "Allowed. Every committed deck is under examples/ or tests/, which upstream COPYING places under Modified BSD; decks with a third-party notice are excluded and not committed.",
+    "mechanicalAdaptation": "None. Every fixture is byte-identical to the pinned revision (SHA-256 pinned per file)."
+  },
+  "fixtures": [
+    {
+      "manifest": {
+        "id": "examples-xspice-original-examples-analog-models2-ac-deck",
+        "sourcePath": "examples/xspice/original-examples/analog_models2_ac.deck",
+        "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/original-examples/analog_models2_ac.deck",
+        "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/original-examples/analog_models2_ac.deck",
+        "sha256": "1da7eb3c93f30cac5aec4f6be9dd1ade2ef4c9b4336988a6fbd8b6a5bec33189",
+        "bytes": 1376,
+        "licence": "BSD-3-Clause",
+        "analyses": [
+          "ac"
+        ],
+        "unmappedAnalyses": [],
+        "sameNameAs": []
+      },
+      "inputHashes": {
+        "upstream": "1da7eb3c93f30cac5aec4f6be9dd1ade2ef4c9b4336988a6fbd8b6a5bec33189",
+        "ngspiceBefore": "1da7eb3c93f30cac5aec4f6be9dd1ade2ef4c9b4336988a6fbd8b6a5bec33189",
+        "nativeRead": "1da7eb3c93f30cac5aec4f6be9dd1ade2ef4c9b4336988a6fbd8b6a5bec33189",
+        "after": "1da7eb3c93f30cac5aec4f6be9dd1ade2ef4c9b4336988a6fbd8b6a5bec33189"
+      },
+      "includeClosure": [],
+      "reference": {
+        "status": "success",
+        "exit": 0,
+        "wallSeconds": 0.013766791,
+        "command": [
+          "ngspice",
+          "-n",
+          "-b",
+          "-r",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/benchmarks/xspice-residual-after-931/.run/examples-xspice-original-examples-analog-models2-ac-deck.raw",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/benchmarks/corpus/corpus-f/fixtures/examples/xspice/original-examples/analog_models2_ac.deck"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/benchmarks/xspice-residual-after-931/.run",
+        "stdin": null,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: code model test - swept dc: int, d_dt, s_xfer, core, lcouple\n\nASCII raw file \"/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/benchmarks/xspice-residual-after-931/.run/examples-xspice-original-examples-analog-models2-ac-deck.raw\"\nReducing trtol to 1 for xspice 'A' devices\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 16  \n\nNo. of Data Rows : 21\n\nTotal analysis time (seconds) = 0.000804\n\nTotal elapsed time (seconds) = 0.004 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 18553.984 MB.\nMaximum ngspice program size =   10.281 MB.\nCurrent ngspice program size =   10.281 MB.\n\n",
+        "stderr": ""
+      },
+      "native": {
+        "status": "success",
+        "exit": 0,
+        "wallSeconds": 0.47407941699999995,
+        "command": [
+          "pnpm",
+          "exec",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/benchmarks/xspice-residual-after-931/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/benchmarks/corpus/corpus-f/fixtures/examples/xspice/original-examples/analog_models2_ac.deck"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b",
+        "stdin": null,
+        "stdout": "(see compressed native artifact)",
+        "stderr": ""
+      },
+      "nativeResult": {
+        "status": "unsupported",
+        "inputSha256": "1da7eb3c93f30cac5aec4f6be9dd1ade2ef4c9b4336988a6fbd8b6a5bec33189",
+        "error": {
+          "name": "UnsupportedCodeModelError",
+          "message": "Parse error at line 36: XSPICE code model 'core' (.model 'core1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, s_xfer, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .model core1 core (H_array=[-2.0 -1.0 1.0 2.0] B_array=[-2.0 -1.0 1.0 2.0] area=1.0 length=1.0 input_domain=1.0e-6 fraction=TRUE mode=1 in_low=-1.0 in_high=1.0 hyst=0.5 out_lower_limit=-1.0 out_upper_limit=1.0)",
+          "code": "UNSUPPORTED_XSPICE_CODE_MODEL",
+          "model": "core",
+          "line": 36
+        }
+      },
+      "metrics": null,
+      "referenceRawSha256": "80843509e9b4df6a0386b8fa6eeaf71a60073a618997e09ad4b633c685208710",
+      "bucket": "unsupported"
+    },
+    {
+      "manifest": {
+        "id": "examples-xspice-original-examples-analog-models2-dc-deck",
+        "sourcePath": "examples/xspice/original-examples/analog_models2_dc.deck",
+        "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/original-examples/analog_models2_dc.deck",
+        "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/original-examples/analog_models2_dc.deck",
+        "sha256": "18c89dadf95c13213e5b840467b021578352c09513cf6928a3e4a37e42592a74",
+        "bytes": 1280,
+        "licence": "BSD-3-Clause",
+        "analyses": [
+          "op"
+        ],
+        "unmappedAnalyses": [],
+        "sameNameAs": []
+      },
+      "inputHashes": {
+        "upstream": "18c89dadf95c13213e5b840467b021578352c09513cf6928a3e4a37e42592a74",
+        "ngspiceBefore": "18c89dadf95c13213e5b840467b021578352c09513cf6928a3e4a37e42592a74",
+        "nativeRead": "18c89dadf95c13213e5b840467b021578352c09513cf6928a3e4a37e42592a74",
+        "after": "18c89dadf95c13213e5b840467b021578352c09513cf6928a3e4a37e42592a74"
+      },
+      "includeClosure": [],
+      "reference": {
+        "status": "success",
+        "exit": 0,
+        "wallSeconds": 0.014069958999999965,
+        "command": [
+          "ngspice",
+          "-n",
+          "-b",
+          "-r",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/benchmarks/xspice-residual-after-931/.run/examples-xspice-original-examples-analog-models2-dc-deck.raw",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/benchmarks/corpus/corpus-f/fixtures/examples/xspice/original-examples/analog_models2_dc.deck"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/benchmarks/xspice-residual-after-931/.run",
+        "stdin": null,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: code model test - dc: int, d_dt, s_xfer, core, lcouple\n\nASCII raw file \"/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/benchmarks/xspice-residual-after-931/.run/examples-xspice-original-examples-analog-models2-dc-deck.raw\"\nReducing trtol to 1 for xspice 'A' devices\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 13  \n\nNo. of Data Rows : 1\n\nTotal analysis time (seconds) = 0.000554\n\nTotal elapsed time (seconds) = 0.004 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 18553.984 MB.\nMaximum ngspice program size =   10.281 MB.\nCurrent ngspice program size =   10.281 MB.\n\n",
+        "stderr": ""
+      },
+      "native": {
+        "status": "success",
+        "exit": 0,
+        "wallSeconds": 0.436696,
+        "command": [
+          "pnpm",
+          "exec",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/benchmarks/xspice-residual-after-931/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/benchmarks/corpus/corpus-f/fixtures/examples/xspice/original-examples/analog_models2_dc.deck"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b",
+        "stdin": null,
+        "stdout": "(see compressed native artifact)",
+        "stderr": ""
+      },
+      "nativeResult": {
+        "status": "unsupported",
+        "inputSha256": "18c89dadf95c13213e5b840467b021578352c09513cf6928a3e4a37e42592a74",
+        "error": {
+          "name": "UnsupportedCodeModelError",
+          "message": "Parse error at line 34: XSPICE code model 'core' (.model 'core1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, s_xfer, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .model core1 core (H_array=[-2.0 -1.0 1.0 2.0] B_array=[-2.0 -1.0 1.0 2.0] area=1.0 length=1.0 input_domain=1.0e-6 fraction=TRUE mode=1 in_low=-1.0 in_high=1.0 hyst=0.5 out_lower_limit=-1.0 out_upper_limit=1.0)",
+          "code": "UNSUPPORTED_XSPICE_CODE_MODEL",
+          "model": "core",
+          "line": 34
+        }
+      },
+      "metrics": null,
+      "referenceRawSha256": "da2096ccf2c9257cf92d128e70014a39219177f991f58d2824530013dcfc7c82",
+      "bucket": "unsupported"
+    },
+    {
+      "manifest": {
+        "id": "examples-xspice-original-examples-analog-models2-swept-dc-deck",
+        "sourcePath": "examples/xspice/original-examples/analog_models2_swept_dc.deck",
+        "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/original-examples/analog_models2_swept_dc.deck",
+        "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/original-examples/analog_models2_swept_dc.deck",
+        "sha256": "4ea7fcb4878b0d68bbd7dfa4b9647aeecdbb6399fb624d2a80067d09659abf2f",
+        "bytes": 1358,
+        "licence": "BSD-3-Clause",
+        "analyses": [
+          "dc"
+        ],
+        "unmappedAnalyses": [],
+        "sameNameAs": []
+      },
+      "inputHashes": {
+        "upstream": "4ea7fcb4878b0d68bbd7dfa4b9647aeecdbb6399fb624d2a80067d09659abf2f",
+        "ngspiceBefore": "4ea7fcb4878b0d68bbd7dfa4b9647aeecdbb6399fb624d2a80067d09659abf2f",
+        "nativeRead": "4ea7fcb4878b0d68bbd7dfa4b9647aeecdbb6399fb624d2a80067d09659abf2f",
+        "after": "4ea7fcb4878b0d68bbd7dfa4b9647aeecdbb6399fb624d2a80067d09659abf2f"
+      },
+      "includeClosure": [],
+      "reference": {
+        "status": "success",
+        "exit": 0,
+        "wallSeconds": 0.01606062499999994,
+        "command": [
+          "ngspice",
+          "-n",
+          "-b",
+          "-r",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/benchmarks/xspice-residual-after-931/.run/examples-xspice-original-examples-analog-models2-swept-dc-deck.raw",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/benchmarks/corpus/corpus-f/fixtures/examples/xspice/original-examples/analog_models2_swept_dc.deck"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/benchmarks/xspice-residual-after-931/.run",
+        "stdin": null,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: code model test - swept dc: int, d_dt, s_xfer, core, lcouple\n\nASCII raw file \"/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/benchmarks/xspice-residual-after-931/.run/examples-xspice-original-examples-analog-models2-swept-dc-deck.raw\"\nReducing trtol to 1 for xspice 'A' devices\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 16  \n\nNo. of Data Rows : 20\n\nTotal analysis time (seconds) = 0.00083\n\nTotal elapsed time (seconds) = 0.005 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 18553.984 MB.\nMaximum ngspice program size =   10.328 MB.\nCurrent ngspice program size =   10.328 MB.\n\n",
+        "stderr": ""
+      },
+      "native": {
+        "status": "success",
+        "exit": 0,
+        "wallSeconds": 0.4888248340000001,
+        "command": [
+          "pnpm",
+          "exec",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/benchmarks/xspice-residual-after-931/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/benchmarks/corpus/corpus-f/fixtures/examples/xspice/original-examples/analog_models2_swept_dc.deck"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b",
+        "stdin": null,
+        "stdout": "(see compressed native artifact)",
+        "stderr": ""
+      },
+      "nativeResult": {
+        "status": "unsupported",
+        "inputSha256": "4ea7fcb4878b0d68bbd7dfa4b9647aeecdbb6399fb624d2a80067d09659abf2f",
+        "error": {
+          "name": "UnsupportedCodeModelError",
+          "message": "Parse error at line 34: XSPICE code model 'core' (.model 'core1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, s_xfer, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .model core1 core (H_array=[-2.0 -1.0 1.0 2.0] B_array=[-2.0 -1.0 1.0 2.0] area=1.0 length=1.0 input_domain=1.0e-6 fraction=TRUE mode=1 in_low=-1.0 in_high=1.0 hyst=0.5 out_lower_limit=-1.0 out_upper_limit=1.0)",
+          "code": "UNSUPPORTED_XSPICE_CODE_MODEL",
+          "model": "core",
+          "line": 34
+        }
+      },
+      "metrics": null,
+      "referenceRawSha256": "33f95408c1a01cfa03b0c4e5c86ace29817d4515e1dc05100abfa5253c50bf3e",
+      "bucket": "unsupported"
+    },
+    {
+      "manifest": {
+        "id": "examples-xspice-original-examples-analog-models2-transient-deck",
+        "sourcePath": "examples/xspice/original-examples/analog_models2_transient.deck",
+        "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/original-examples/analog_models2_transient.deck",
+        "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/original-examples/analog_models2_transient.deck",
+        "sha256": "fe76d6d563e41bb4b7055ff91fb253c770ad1a406c8eb3995869e65d490f6eb0",
+        "bytes": 1407,
+        "licence": "BSD-3-Clause",
+        "analyses": [
+          "tran"
+        ],
+        "unmappedAnalyses": [],
+        "sameNameAs": []
+      },
+      "inputHashes": {
+        "upstream": "fe76d6d563e41bb4b7055ff91fb253c770ad1a406c8eb3995869e65d490f6eb0",
+        "ngspiceBefore": "fe76d6d563e41bb4b7055ff91fb253c770ad1a406c8eb3995869e65d490f6eb0",
+        "nativeRead": "fe76d6d563e41bb4b7055ff91fb253c770ad1a406c8eb3995869e65d490f6eb0",
+        "after": "fe76d6d563e41bb4b7055ff91fb253c770ad1a406c8eb3995869e65d490f6eb0"
+      },
+      "includeClosure": [],
+      "reference": {
+        "status": "success",
+        "exit": 0,
+        "wallSeconds": 0.017191417000000042,
+        "command": [
+          "ngspice",
+          "-n",
+          "-b",
+          "-r",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/benchmarks/xspice-residual-after-931/.run/examples-xspice-original-examples-analog-models2-transient-deck.raw",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/benchmarks/corpus/corpus-f/fixtures/examples/xspice/original-examples/analog_models2_transient.deck"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/benchmarks/xspice-residual-after-931/.run",
+        "stdin": null,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: code model test - transient: int, d_dt, s_xfer, core, lcouple\n\nASCII raw file \"/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/benchmarks/xspice-residual-after-931/.run/examples-xspice-original-examples-analog-models2-transient-deck.raw\"\nReducing trtol to 1 for xspice 'A' devices\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 16  \n\nInitial Transient Solution\n--------------------------\n\nNode                                   Voltage\n----                                   -------\n1                                            0\n2                                            0\n10                                           0\n20                                           0\n30                                           0\n40                                           0\n45                                           0\n50                                           0\nv2#branch                                    0\nv1#branch                                    0\na2#branch_1_0                                0\na1#branch_1_0                                0\na3#branch_1_0                                0\na5#branch_0_0                                0\na5#branch_1_0                                0\n\n\nNo. of Data Rows : 145\n\nTotal analysis time (seconds) = 0.003337\n\nTotal elapsed time (seconds) = 0.007 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 18596.391 MB.\nMaximum ngspice program size =   10.406 MB.\nCurrent ngspice program size =   10.406 MB.\n\n",
+        "stderr": ""
+      },
+      "native": {
+        "status": "success",
+        "exit": 0,
+        "wallSeconds": 0.523799208,
+        "command": [
+          "pnpm",
+          "exec",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/benchmarks/xspice-residual-after-931/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/benchmarks/corpus/corpus-f/fixtures/examples/xspice/original-examples/analog_models2_transient.deck"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b",
+        "stdin": null,
+        "stdout": "(see compressed native artifact)",
+        "stderr": ""
+      },
+      "nativeResult": {
+        "status": "unsupported",
+        "inputSha256": "fe76d6d563e41bb4b7055ff91fb253c770ad1a406c8eb3995869e65d490f6eb0",
+        "error": {
+          "name": "UnsupportedCodeModelError",
+          "message": "Parse error at line 37: XSPICE code model 'core' (.model 'core1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, s_xfer, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .model core1 core (H_array=[-2.0 -1.0 1.0 2.0] B_array=[-2.0 -1.0 1.0 2.0] area=1.0 length=1.0 input_domain=1.0e-6 fraction=TRUE mode=1 in_low=-1.0 in_high=1.0 hyst=0.5 out_lower_limit=-1.0 out_upper_limit=1.0)",
+          "code": "UNSUPPORTED_XSPICE_CODE_MODEL",
+          "model": "core",
+          "line": 37
+        }
+      },
+      "metrics": null,
+      "referenceRawSha256": "e7b8531c6b10dcd0661c4284d92b4690cdd82421538e0517ef171582a2887c54",
+      "bucket": "unsupported"
+    },
+    {
+      "manifest": {
+        "id": "examples-xspice-various-x-fer-cir",
+        "sourcePath": "examples/xspice/various/x_fer.cir",
+        "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/various/x_fer.cir",
+        "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/various/x_fer.cir",
+        "sha256": "deba88972ca3fa36754a85cb2a859fd34c30794b9647c3155450b6d0de59b913",
+        "bytes": 1525,
+        "licence": "BSD-3-Clause",
+        "analyses": [
+          "ac",
+          "tran"
+        ],
+        "unmappedAnalyses": [],
+        "sameNameAs": []
+      },
+      "inputHashes": {
+        "upstream": "deba88972ca3fa36754a85cb2a859fd34c30794b9647c3155450b6d0de59b913",
+        "ngspiceBefore": "deba88972ca3fa36754a85cb2a859fd34c30794b9647c3155450b6d0de59b913",
+        "nativeRead": "deba88972ca3fa36754a85cb2a859fd34c30794b9647c3155450b6d0de59b913",
+        "after": "deba88972ca3fa36754a85cb2a859fd34c30794b9647c3155450b6d0de59b913"
+      },
+      "includeClosure": [],
+      "reference": {
+        "status": "success",
+        "exit": 0,
+        "wallSeconds": 0.13020141699999987,
+        "command": [
+          "ngspice",
+          "-n",
+          "-b",
+          "-r",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/benchmarks/xspice-residual-after-931/.run/examples-xspice-various-x-fer-cir.raw",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/benchmarks/corpus/corpus-f/fixtures/examples/xspice/various/x_fer.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/benchmarks/xspice-residual-after-931/.run",
+        "stdin": null,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: * chebyshev low-pass filter\n\nReducing trtol to 1 for xspice 'A' devices\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\n\nNo. of Data Rows : 351\nfa12_0db            =  2.38648e+02\nfa14_0db            =  2.99839e+03\nfil1max             =  -3.05022e-03 at=  5.01187e+02\nfil1max             =  -3.05022e-03 at=  5.01187e+02\nbwfil1              =  1.58915e+02 targ=  5.89092e+02 trig=  4.30177e+02\nReducing trtol to 1 for xspice 'A' devices\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\n\nInitial Transient Solution\n--------------------------\n\nNode                                   Voltage\n----                                   -------\nnode1                                        0\nnode2                                        0\nnode3                                        0\nnint1                                        0\nnode4                                        0\nnode5                                        0\nl1#branch                                    0\nvin#branch                                   0\na16#branch_1_0                               0\na14#branch_1_0                               0\na12#branch_1_0                               0\n\n\nNo. of Data Rows : 15119\nASCII raw file \"/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/benchmarks/xspice-residual-after-931/.run/examples-xspice-various-x-fer-cir.raw\"\nReducing trtol to 1 for xspice 'A' devices\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\n\nTotal analysis time (seconds) = 0.114638\n\nTotal elapsed time (seconds) = 0.119 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 18596.391 MB.\nMaximum ngspice program size =   12.234 MB.\nCurrent ngspice program size =   12.234 MB.\n\n",
+        "stderr": "\nWarning: command 'plot' is not available during batch simulation, ignored!\n    You may use Gnuplot instead.\n\n\nWarning: command 'plot' is not available during batch simulation, ignored!\n    You may use Gnuplot instead.\n\n\nWarning: command 'plot' is not available during batch simulation, ignored!\n    You may use Gnuplot instead.\n\n\nWarning: command 'plot' is not available during batch simulation, ignored!\n    You may use Gnuplot instead.\n\n"
+      },
+      "native": {
+        "status": "success",
+        "exit": 0,
+        "wallSeconds": 0.7385633329999997,
+        "command": [
+          "pnpm",
+          "exec",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/benchmarks/xspice-residual-after-931/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/benchmarks/corpus/corpus-f/fixtures/examples/xspice/various/x_fer.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b",
+        "stdin": null,
+        "stdout": "(see compressed native artifact)",
+        "stderr": ""
+      },
+      "nativeResult": {
+        "status": "success",
+        "inputSha256": "deba88972ca3fa36754a85cb2a859fd34c30794b9647c3155450b6d0de59b913",
+        "warnings": [],
+        "measurements": [
+          {
+            "name": "fa12_0db",
+            "analysis": "ac",
+            "function": "when",
+            "line": 43,
+            "status": "ok",
+            "value": 238.64848892746812
+          },
+          {
+            "name": "fa14_0db",
+            "analysis": "ac",
+            "function": "when",
+            "line": 45,
+            "status": "ok",
+            "value": 2998.387308883136
+          },
+          {
+            "name": "fil1max",
+            "analysis": "ac",
+            "function": "max",
+            "line": 47,
+            "status": "ok",
+            "value": -0.0030502209674805837,
+            "at": 501.1872336272813
+          },
+          {
+            "name": "fil1max",
+            "analysis": "ac",
+            "function": "max",
+            "line": 48,
+            "status": "ok",
+            "value": -0.0030502209674796187,
+            "at": 501.1872336272813
+          },
+          {
+            "name": "bwfil1",
+            "analysis": "ac",
+            "function": "trig",
+            "line": 51,
+            "status": "ok",
+            "value": 158.91497635778614,
+            "targ": 589.0922292497462,
+            "trig": 430.17725289196005
+          }
+        ]
+      },
+      "metrics": [
+        {
+          "kind": "ac",
+          "rawSha256": "695eca46b0577725d9f054e52c44cb4ad52962bbc867443ba37b6684c577ff30",
+          "metrics": {
+            "matchedPoints": 351,
+            "referencePoints": 351,
+            "nativePoints": 351,
+            "vectors": {
+              "v(node1)": {
+                "maxAbsolute": 9.094947017729283e-16,
+                "rmsAbsolute": 1.5571985844496474e-16,
+                "maxRelative": 9.094947017729283e-16,
+                "rmsRelative": 1.5571985844496474e-16
+              },
+              "v(node2)": {
+                "maxAbsolute": 6.206335383118183e-16,
+                "rmsAbsolute": 1.8135939963912317e-16,
+                "maxRelative": 1.0345056513461508e-15,
+                "rmsRelative": 3.2006742495690247e-16
+              },
+              "v(node3)": {
+                "maxAbsolute": 6.628005886499562e-16,
+                "rmsAbsolute": 1.463642043851348e-16,
+                "maxRelative": 6.290473761907946e-14,
+                "rmsRelative": 7.733874361956306e-15
+              },
+              "v(node4)": {
+                "maxAbsolute": 1.4043333874306805e-15,
+                "rmsAbsolute": 1.0214998323741503e-16,
+                "maxRelative": 9.054383868683293e-15,
+                "rmsRelative": 1.0935336397503425e-15
+              },
+              "v(node5)": {
+                "maxAbsolute": 3.7238012298709097e-16,
+                "rmsAbsolute": 1.1315250843346162e-16,
+                "maxRelative": 3.5827785199619137e-11,
+                "rmsRelative": 3.796107027303806e-12
+              }
+            }
+          }
+        },
+        {
+          "kind": "tran",
+          "rawSha256": "9db8df10e7e714d6c9c4e7eea352a0439b9ee6d311d6e24685e174165f03373a",
+          "metrics": {
+            "matchedPoints": 27,
+            "referencePoints": 15119,
+            "nativePoints": 15440,
+            "vectors": {
+              "v(node1)": {
+                "maxAbsolute": 2.4784951868639382e-11,
+                "rmsAbsolute": 4.908816576786056e-12,
+                "maxRelative": 4.922130631289378e-11,
+                "rmsRelative": 1.0016957364280347e-11
+              },
+              "v(node2)": {
+                "maxAbsolute": 5.6878714218056015e-05,
+                "rmsAbsolute": 2.505414350309329e-05,
+                "maxRelative": 0.1579506004526393,
+                "rmsRelative": 0.03039764798548878
+              },
+              "v(node3)": {
+                "maxAbsolute": 0.0001749331573597246,
+                "rmsAbsolute": 4.940997871241817e-05,
+                "maxRelative": 0.15838169214093897,
+                "rmsRelative": 0.04496087998992005
+              },
+              "v(node4)": {
+                "maxAbsolute": 5.785364517313374e-08,
+                "rmsAbsolute": 2.0933067270203597e-08,
+                "maxRelative": 2.2191312354423197e-06,
+                "rmsRelative": 8.355325936558961e-07
+              },
+              "v(node5)": {
+                "maxAbsolute": 0.0004450189933000448,
+                "rmsAbsolute": 0.0001442300109583751,
+                "maxRelative": 0.05669224716250645,
+                "rmsRelative": 0.0129043460538097
+              }
+            }
+          }
+        }
+      ],
+      "referenceExtraction": {
+        "status": "success",
+        "exit": 0,
+        "wallSeconds": 0.19520241599999988,
+        "command": [
+          "ngspice",
+          "-n",
+          "-b"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/benchmarks/xspice-residual-after-931/.run",
+        "stdin": "* Read-only export driver, not a replacement circuit\n.control\nset filetype=ascii\nsource /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/benchmarks/corpus/corpus-f/fixtures/examples/xspice/various/x_fer.cir\nsetplot ac1\nwrite /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/benchmarks/xspice-residual-after-931/.run/xfer-ac.raw all\nsetplot tran1\nwrite /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/benchmarks/xspice-residual-after-931/.run/xfer-tran.raw all\nquit\n.endc\n.end\n",
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: * read-only export driver, not a replacement circuit\n\n\nNote: No compatibility mode selected!\n\n\nCircuit: * chebyshev low-pass filter\n\nReducing trtol to 1 for xspice 'A' devices\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\n\nNo. of Data Rows : 351\nfa12_0db            =  2.38648e+02\nfa14_0db            =  2.99839e+03\nfil1max             =  -3.05022e-03 at=  5.01187e+02\nfil1max             =  -3.05022e-03 at=  5.01187e+02\nbwfil1              =  1.58915e+02 targ=  5.89092e+02 trig=  4.30177e+02\nReducing trtol to 1 for xspice 'A' devices\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\n\nInitial Transient Solution\n--------------------------\n\nNode                                   Voltage\n----                                   -------\nnode1                                        0\nnode2                                        0\nnode3                                        0\nnint1                                        0\nnode4                                        0\nnode5                                        0\nl1#branch                                    0\nvin#branch                                   0\na16#branch_1_0                               0\na14#branch_1_0                               0\na12#branch_1_0                               0\n\n\nNo. of Data Rows : 15119\nASCII raw file \"/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/benchmarks/xspice-residual-after-931/.run/xfer-ac.raw\"\nASCII raw file \"/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/benchmarks/xspice-residual-after-931/.run/xfer-tran.raw\"\nngspice-47 done\n",
+        "stderr": "\nWarning: command 'plot' is not available during batch simulation, ignored!\n    You may use Gnuplot instead.\n\n\nWarning: command 'plot' is not available during batch simulation, ignored!\n    You may use Gnuplot instead.\n\n\nWarning: command 'plot' is not available during batch simulation, ignored!\n    You may use Gnuplot instead.\n\n\nWarning: command 'plot' is not available during batch simulation, ignored!\n    You may use Gnuplot instead.\n\n"
+      },
+      "bucket": "success"
+    }
+  ],
+  "versions": {
+    "ngspice": {
+      "status": "success",
+      "exit": 0,
+      "wallSeconds": 0.009578291999999995,
+      "command": [
+        "ngspice",
+        "--version"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b",
+      "stdin": null,
+      "stdout": "******\n** ngspice-47 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2026, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n******\n",
+      "stderr": ""
+    },
+    "node": {
+      "status": "success",
+      "exit": 0,
+      "wallSeconds": 0.013200542000000003,
+      "command": [
+        "node",
+        "--version"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b",
+      "stdin": null,
+      "stdout": "v22.23.1\n",
+      "stderr": ""
+    },
+    "pnpm": {
+      "status": "success",
+      "exit": 0,
+      "wallSeconds": 0.121204458,
+      "command": [
+        "pnpm",
+        "--version"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b",
+      "stdin": null,
+      "stdout": "10.28.1\n",
+      "stderr": ""
+    }
+  },
+  "ngspiceBinary": {
+    "path": "/opt/homebrew/Cellar/ngspice/47/bin/ngspice",
+    "sha256": "9ccc39c9b87a717db0244770596eeb01fc51e635f39dc32d77b3dc9ce4e17922"
+  },
+  "childEnvironment": {
+    "SPICE_ASCIIRAWFILE": "1",
+    "DISPLAY": "",
+    "ngspiceStartup": "-n (no personal startup file)"
+  },
+  "budget": {
+    "actualWallSeconds": 7.712823752999998,
+    "children": 28
+  },
+  "sourceHashes": {
+    "source/COPYING": "6d939001e899ede403277fb37124c2af6f1cf92926465cd8f4bf59859e06f579",
+    "source/src/xspice/icm/analog/s_xfer/ifspec.ifs": "afc17c3ed3a6dc3292650c1d68c6cb78ac09044da4527b468e0fd7f683ec0ac4",
+    "source/src/xspice/icm/analog/s_xfer/cfunc.mod": "85b2c0a254268b9b2ff9a01b0a37074956c64fef9339c3feb99c64b9e6d6a30f",
+    "source/src/xspice/icm/xtradev/core/ifspec.ifs": "ebab8a605b717536ae5c8c7c1b129f9436b086ee43b4ef79be5092322af91b85",
+    "source/src/xspice/icm/xtradev/core/cfunc.mod": "2f3241eeedfc2b74a27c46e8eff07b3f515943e327e40097ac7442c551a70ec0",
+    "source/src/xspice/icm/xtradev/lcouple/ifspec.ifs": "84c773df6f671b5515a512e4299e564f01a2b109b415007b136d43e70fe221ed",
+    "source/src/xspice/icm/xtradev/lcouple/cfunc.mod": "557d7690035474aab54a2c53d68a59e79c72c4efaafd9c3c5b1a0adb6d54bedd"
+  },
+  "counts": {
+    "success": 1,
+    "unsupported": 4,
+    "failed": 0,
+    "timeout": 0,
+    "not-run": 0
+  }
+}
