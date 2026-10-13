@@ -39,10 +39,11 @@ export interface XspiceModelCard {
   readonly warnings: readonly string[];
   readonly raw: string;
   /**
-   * Translated from a PSpice `VSWITCH` model (ngspice-47 inpcompat.c): only
-   * S instances use it, each compiled to a pswitch device.
+   * Translated from a PSpice `VSWITCH` (`'S'`, a pswitch) or `ISWITCH` (`'W'`,
+   * an aswitch) model by ngspice-47 inpcompat.c: only instances of that switch
+   * letter use it, each compiled to the code-model device.
    */
-  readonly pspiceVswitch?: boolean;
+  readonly pspiceSwitch?: 'S' | 'W';
 }
 
 /**

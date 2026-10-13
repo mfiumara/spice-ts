@@ -216,7 +216,8 @@ export function bindXspiceSources(devices: readonly DeviceModel[], deviceMap: Re
     if (probe) probe.devices = devices;
     for (const { port, source } of device.unresolvedSources) {
       const controlling = [...deviceMap.entries()].find(([name]) => name.toUpperCase() === source.toUpperCase())?.[1];
-      if (!controlling || controlling.branches.length === 0 || !/^v/i.test(source)) {
+      // A subcircuit source is named `<instance path>.<name>`: test its own name.
+      if (!controlling || controlling.branches.length === 0 || !/(^|\.)v[^.]*$/i.test(source)) {
         throw new InvalidCircuitError(`${device.name}: unknown controlling source ${source}`);
       }
       device.bindSourceBranch(port, controlling.branches[0]);
