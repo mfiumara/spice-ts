@@ -1,0 +1,23 @@
+{
+  "start": {
+    "continuous": 104214.76296625,
+    "monotonic": 45519.262662083,
+    "realtime": 1791928499.785152
+  },
+  "end": {
+    "continuous": 104305.75028887499,
+    "monotonic": 45610.249982541,
+    "realtime": 1791928590.7794292
+  },
+  "actualRunSeconds": 90.98732262499107,
+  "clockError": null,
+  "matrixStarted": 18,
+  "matrixCompleted": 18,
+  "selected": [
+    "rc-ladder-tran",
+    1000
+  ],
+  "profileStatus": "ok",
+  "observedBoundsSatisfied": true,
+  "stopReason": null
+}

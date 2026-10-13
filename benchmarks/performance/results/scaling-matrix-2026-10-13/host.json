@@ -1,0 +1,18 @@
+{
+  "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+  "machine": "arm64",
+  "cpu": "Apple M5 Pro",
+  "ramBytes": 51539607552,
+  "revision": "951e1e3d651fd5c3efc2cfecdc9761b39bc05fe9",
+  "node": "v22.23.1",
+  "ngspice": "******\n** ngspice-47 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2026, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n******\n",
+  "ngspicePath": "/opt/homebrew/bin/ngspice",
+  "ngspiceExecutableSha256": "9ccc39c9b87a717db0244770596eeb01fc51e635f39dc32d77b3dc9ce4e17922",
+  "continuousClock": "mach_continuous_time",
+  "childSeconds": 120,
+  "totalSeconds": 900,
+  "pollSeconds": 0.01,
+  "killReserveSeconds": 0.25,
+  "controlsSha256": "ac88efe4b72f8fc33f4cf18073d310153671620ee6178c01d9bfd35a65a8d6d4",
+  "coreBundleSha256": "488e406cc865b2e709c6ba712b0b36ef44b2657ca85ff4a91a14a8b156f53851"
+}

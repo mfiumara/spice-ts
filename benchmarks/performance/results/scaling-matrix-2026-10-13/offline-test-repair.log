@@ -1,0 +1,49 @@
+test_deadline_is_not_circuit_failure (test_matrix.MatrixTests) ... ok
+test_existing_receipts_refuse_launch (test_matrix.MatrixTests) ... ok
+test_headroom_includes_cleanup (test_matrix.MatrixTests) ... ok
+test_ngspice_timeout_is_not_spice_loss (test_matrix.MatrixTests) ... ok
+test_overshoot_is_not_clipped (test_matrix.MatrixTests) ... ERROR
+test_selects_spice_timeout_before_ratio (test_matrix.MatrixTests) ... ok
+test_suspension_is_invalid_not_timeout (test_matrix.MatrixTests) ... ERROR
+test_timeout_kills_only_owned_group (test_matrix.MatrixTests) ... ERROR
+
+======================================================================
+ERROR: test_overshoot_is_not_clipped (test_matrix.MatrixTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_001689b9/benchmarks/performance/results/scaling-matrix-2026-10-13/test_matrix.py", line 61, in test_overshoot_is_not_clipped
+    self.exercise_child(ClockSample(125, 125, 1125), 'timeout')
+  File "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_001689b9/benchmarks/performance/results/scaling-matrix-2026-10-13/test_matrix.py", line 51, in exercise_child
+    row = matrix.run_child(dict(key='fake', engine='ngspice'), ['fake'], clock, Budget(zero), io.StringIO())
+  File "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_001689b9/benchmarks/performance/results/scaling-matrix-2026-10-13/matrix.py", line 118, in run_child
+    journal.write(json.dumps(row, allow_nan=False) + '\n'); journal.flush(); os.fsync(journal.fileno())
+io.UnsupportedOperation: fileno
+
+======================================================================
+ERROR: test_suspension_is_invalid_not_timeout (test_matrix.MatrixTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_001689b9/benchmarks/performance/results/scaling-matrix-2026-10-13/test_matrix.py", line 64, in test_suspension_is_invalid_not_timeout
+    self.exercise_child(ClockSample(1000, 1, 2000), 'invalid-clock')
+  File "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_001689b9/benchmarks/performance/results/scaling-matrix-2026-10-13/test_matrix.py", line 51, in exercise_child
+    row = matrix.run_child(dict(key='fake', engine='ngspice'), ['fake'], clock, Budget(zero), io.StringIO())
+  File "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_001689b9/benchmarks/performance/results/scaling-matrix-2026-10-13/matrix.py", line 118, in run_child
+    journal.write(json.dumps(row, allow_nan=False) + '\n'); journal.flush(); os.fsync(journal.fileno())
+io.UnsupportedOperation: fileno
+
+======================================================================
+ERROR: test_timeout_kills_only_owned_group (test_matrix.MatrixTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_001689b9/benchmarks/performance/results/scaling-matrix-2026-10-13/test_matrix.py", line 58, in test_timeout_kills_only_owned_group
+    self.exercise_child(ClockSample(119.8, 119.8, 1119.8), 'timeout')
+  File "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_001689b9/benchmarks/performance/results/scaling-matrix-2026-10-13/test_matrix.py", line 51, in exercise_child
+    row = matrix.run_child(dict(key='fake', engine='ngspice'), ['fake'], clock, Budget(zero), io.StringIO())
+  File "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_001689b9/benchmarks/performance/results/scaling-matrix-2026-10-13/matrix.py", line 118, in run_child
+    journal.write(json.dumps(row, allow_nan=False) + '\n'); journal.flush(); os.fsync(journal.fileno())
+io.UnsupportedOperation: fileno
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.009s
+
+FAILED (errors=3)

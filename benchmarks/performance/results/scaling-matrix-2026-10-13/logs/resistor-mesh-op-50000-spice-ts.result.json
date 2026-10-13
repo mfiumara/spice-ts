@@ -1,0 +1,46 @@
+{
+  "deckSha256": "f81ed198f7ba67068138846b12fe93b9ec957e6bb3a89300d2c7c50e30d47329",
+  "parseMs": 248.01749999999998,
+  "simulateMs": 575.473917,
+  "outputSha256": "1abd9b0b4e5c2234b3d04dfafa07100f89b2c44661211a64ed1398b2b4c70427",
+  "vectors": 50177,
+  "count": 50177,
+  "grid": [
+    0
+  ],
+  "values": [
+    0.125507584809263
+  ],
+  "convergence": {
+    "dc": {
+      "newtonIterations": 2,
+      "acceptedSolves": 1,
+      "rejectedSolves": 0,
+      "sourceStepAttempts": 0,
+      "sourceStepFailures": 0,
+      "gminStepAttempts": 0,
+      "gminStepFailures": 0,
+      "failure": null
+    },
+    "transient": {
+      "acceptedSteps": 0,
+      "rejectedSteps": 0,
+      "newtonIterations": 0,
+      "nrRetries": 0,
+      "lteRetries": 0,
+      "minimumAcceptedTimestep": null,
+      "failure": null
+    }
+  },
+  "memory": {
+    "rss": 367869952,
+    "heapTotal": 154828800,
+    "heapUsed": 131654624,
+    "external": 109200317,
+    "arrayBuffers": 107195787
+  },
+  "lifetime": {
+    "performanceMs": 865.4428330000001,
+    "realtimeMs": 866
+  }
+}
