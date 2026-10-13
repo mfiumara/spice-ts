@@ -60,4 +60,9 @@ describe('controlled-source TABLE fails closed (#917)', () => {
     expect(tokenizeNetlist(raw)[0].raw).toBe(raw);
     expect(() => assertControlledSourceCard([`${type}linear`, 'out', '0', 'table', 'in', '2'], 1, raw)).not.toThrow();
   });
+
+  it('preserves paired linear control nodes and a parameterized gain', () => {
+    const raw = 'Glinear (out 0) (table in) {gain}';
+    expect(tokenizeNetlist(raw)[0].raw).toBe(raw);
+  });
 });
