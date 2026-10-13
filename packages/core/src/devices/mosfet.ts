@@ -353,10 +353,13 @@ class MosfetStateStore {
 
   /**
    * The load cache. Invariant: a member's row with a non-NaN key describes
-   * the last write to that member's state row, made by a batched load with
-   * those inputs. Every other writer of a state row calls
-   * {@link invalidateLoad} first; a constants change empties the cache (NaN
-   * keys match nothing).
+   * the last load written to that member's state row, a batched load with
+   * those inputs. Since that load, the row was at most changed by
+   * {@link MOSFET.foldJunctionChargeCurrent} in STATE_CD/CBS/CBD/GBS/GBD,
+   * which a hit restores from the cached pre-fold values. Every other writer
+   * of a state row (the vbs/vbd/von setters, per-device stamp and
+   * limitNewtonStep) calls {@link invalidateLoad} first; store merges start a
+   * fresh cache, and a constants change empties it (NaN keys match nothing).
    */
   loadCache(): Float64Array {
     let loads = this.loads;
@@ -394,7 +397,13 @@ const LOAD_GM = 11;
 const LOAD_GDS = 12;
 const LOAD_GMBS = 13;
 const LOAD_IEQ = 14;
-const LOAD_STRIDE = 15;
+// The load's pre-fold STATE_CD/CBS/CBD (its STATE_GBS/GBD are LOAD_GBS/GBD):
+// a hit restores them, since stampTransientCharge folds the junction charge
+// currents into those five state values after every load.
+const LOAD_CD = 15;
+const LOAD_CBS = 16;
+const LOAD_CBD = 17;
+const LOAD_STRIDE = 18;
 
 /** ngspice devsup.c DEVfetlim: limit a gate voltage step around threshold `vto`. */
 function fetlim(vnew: number, vold: number, vto: number): number {
@@ -1237,11 +1246,17 @@ export class MOSFET implements DeviceModel {
         && Object.is(kVbs, inVbs) && Object.is(kVbd, inVbd) && Object.is(kGmin, gmin)
       ) {
         // The device's last load had exactly these inputs, and its state row
-        // still holds that load's writes (see MosfetStateStore.loadCache), so
-        // evaluating again would rewrite the same state and stamp the same
-        // values: reuse them.
+        // still holds that load's writes except for junction charge folds
+        // (see MosfetStateStore.loadCache), so evaluating again would rewrite
+        // the same state and stamp the same values: restore the fold-affected
+        // state and reuse the rest.
         gbs = loads[c + LOAD_GBS];
         gbd = loads[c + LOAD_GBD];
+        state[r + STATE_CD] = loads[c + LOAD_CD];
+        state[r + STATE_CBS] = loads[c + LOAD_CBS];
+        state[r + STATE_CBD] = loads[c + LOAD_CBD];
+        state[r + STATE_GBS] = gbs;
+        state[r + STATE_GBD] = gbd;
         ceqbs = loads[c + LOAD_CEQBS];
         ceqbd = loads[c + LOAD_CEQBD];
         gm = loads[c + LOAD_GM];
@@ -1293,6 +1308,9 @@ export class MOSFET implements DeviceModel {
         loads[c + LOAD_GDS] = gds;
         loads[c + LOAD_GMBS] = gmbs;
         loads[c + LOAD_IEQ] = Ieq;
+        loads[c + LOAD_CD] = state[r + STATE_CD];
+        loads[c + LOAD_CBS] = state[r + STATE_CBS];
+        loads[c + LOAD_CBD] = state[r + STATE_CBD];
       }
 
       if (jB >= 0) {
