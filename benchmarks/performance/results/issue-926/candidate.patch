@@ -1,0 +1,30 @@
+diff --git a/packages/core/src/solver/gilbert-peierls.ts b/packages/core/src/solver/gilbert-peierls.ts
+index 4e5f8b5c..f2b9c355 100644
+--- a/packages/core/src/solver/gilbert-peierls.ts
++++ b/packages/core/src/solver/gilbert-peierls.ts
+@@ -771,6 +771,8 @@ export class GilbertPeierlsSolver implements SparseSolver {
+     // them in), accumulated in a register over its contiguous block row.
+     let up = state[0];
+     let count = 0;
++    let uRows = this.uRows;
++    let uValues = this.uValues;
+     for (let m = first - s0; m < size; m++) {
+       const row = perm[s0 + m];
+       const base = valPtr + (len - m) * width;
+@@ -778,9 +780,13 @@ export class GilbertPeierlsSolver implements SparseSolver {
+       for (let t = 0; t < count; t++) u -= snValues[base + applied[t]] * appliedU[t];
+       workspace[row] = u;
+       if (u === 0) continue;
+-      if (up === this.uValues.length) this.growUFactors(up + 1);
+-      this.uRows[up] = s0 + m;
+-      this.uValues[up] = u;
++      if (up === uValues.length) {
++        this.growUFactors(up + 1);
++        uRows = this.uRows;
++        uValues = this.uValues;
++      }
++      uRows[up] = s0 + m;
++      uValues[up] = u;
+       up++;
+       applied[count] = m;
+       appliedU[count] = u;

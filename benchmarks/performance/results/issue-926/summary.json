@@ -1,0 +1,1947 @@
+{
+  "cells": 108,
+  "statuses": {
+    "ok": 106,
+    "timeout": 2
+  },
+  "completedPairs": 52,
+  "identity": [
+    {
+      "key": [
+        "rc-ladder-tran",
+        1000,
+        "cold",
+        0
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "rc-ladder-tran",
+        1000,
+        "warm",
+        0
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "resistor-mesh-op",
+        1000,
+        "cold",
+        0
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "resistor-mesh-op",
+        1000,
+        "warm",
+        0
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "cmos-inverter-chain-tran",
+        1000,
+        "cold",
+        0
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "cmos-inverter-chain-tran",
+        1000,
+        "warm",
+        0
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "rc-ladder-tran",
+        10000,
+        "cold",
+        0
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "rc-ladder-tran",
+        10000,
+        "warm",
+        0
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "resistor-mesh-op",
+        10000,
+        "cold",
+        0
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "resistor-mesh-op",
+        10000,
+        "warm",
+        0
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "cmos-inverter-chain-tran",
+        10000,
+        "cold",
+        0
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "cmos-inverter-chain-tran",
+        10000,
+        "warm",
+        0
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "rc-ladder-tran",
+        50000,
+        "cold",
+        0
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "rc-ladder-tran",
+        50000,
+        "warm",
+        0
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "resistor-mesh-op",
+        50000,
+        "cold",
+        0
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "resistor-mesh-op",
+        50000,
+        "warm",
+        0
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "cmos-inverter-chain-tran",
+        50000,
+        "cold",
+        0
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "cmos-inverter-chain-tran",
+        50000,
+        "warm",
+        0
+      ],
+      "statuses": [
+        "timeout",
+        "ok"
+      ],
+      "bitIdentical": null
+    },
+    {
+      "key": [
+        "rc-ladder-tran",
+        1000,
+        "cold",
+        1
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "rc-ladder-tran",
+        1000,
+        "warm",
+        1
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "resistor-mesh-op",
+        1000,
+        "cold",
+        1
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "resistor-mesh-op",
+        1000,
+        "warm",
+        1
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "cmos-inverter-chain-tran",
+        1000,
+        "cold",
+        1
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "cmos-inverter-chain-tran",
+        1000,
+        "warm",
+        1
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "rc-ladder-tran",
+        10000,
+        "cold",
+        1
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "rc-ladder-tran",
+        10000,
+        "warm",
+        1
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "resistor-mesh-op",
+        10000,
+        "cold",
+        1
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "resistor-mesh-op",
+        10000,
+        "warm",
+        1
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "cmos-inverter-chain-tran",
+        10000,
+        "cold",
+        1
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "cmos-inverter-chain-tran",
+        10000,
+        "warm",
+        1
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "rc-ladder-tran",
+        50000,
+        "cold",
+        1
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "rc-ladder-tran",
+        50000,
+        "warm",
+        1
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "resistor-mesh-op",
+        50000,
+        "cold",
+        1
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "resistor-mesh-op",
+        50000,
+        "warm",
+        1
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "cmos-inverter-chain-tran",
+        50000,
+        "cold",
+        1
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "cmos-inverter-chain-tran",
+        50000,
+        "warm",
+        1
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "rc-ladder-tran",
+        1000,
+        "cold",
+        2
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "rc-ladder-tran",
+        1000,
+        "warm",
+        2
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "resistor-mesh-op",
+        1000,
+        "cold",
+        2
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "resistor-mesh-op",
+        1000,
+        "warm",
+        2
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "cmos-inverter-chain-tran",
+        1000,
+        "cold",
+        2
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "cmos-inverter-chain-tran",
+        1000,
+        "warm",
+        2
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "rc-ladder-tran",
+        10000,
+        "cold",
+        2
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "rc-ladder-tran",
+        10000,
+        "warm",
+        2
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "resistor-mesh-op",
+        10000,
+        "cold",
+        2
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "resistor-mesh-op",
+        10000,
+        "warm",
+        2
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "cmos-inverter-chain-tran",
+        10000,
+        "cold",
+        2
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "cmos-inverter-chain-tran",
+        10000,
+        "warm",
+        2
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "rc-ladder-tran",
+        50000,
+        "cold",
+        2
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "rc-ladder-tran",
+        50000,
+        "warm",
+        2
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "resistor-mesh-op",
+        50000,
+        "cold",
+        2
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "resistor-mesh-op",
+        50000,
+        "warm",
+        2
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "cmos-inverter-chain-tran",
+        50000,
+        "cold",
+        2
+      ],
+      "statuses": [
+        "ok",
+        "ok"
+      ],
+      "bitIdentical": true
+    },
+    {
+      "key": [
+        "cmos-inverter-chain-tran",
+        50000,
+        "warm",
+        2
+      ],
+      "statuses": [
+        "ok",
+        "timeout"
+      ],
+      "bitIdentical": null
+    }
+  ],
+  "budget": {
+    "planned": 108,
+    "totalChildWallSeconds": 573.8708480490022,
+    "limitSeconds": 900.0,
+    "loadEnd": "17:08  up 22:10, 2 users, load averages: 7.93 8.72 9.17",
+    "allStartedProcessGroupsGone": true
+  },
+  "summary": [
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 1000,
+      "mode": "cold",
+      "variant": "baseline",
+      "statuses": {
+        "ok": 3
+      },
+      "simulateMs": {
+        "median": 81.90558300000001,
+        "min": 80.55391700000001,
+        "max": 89.837834
+      },
+      "childWallMs": {
+        "median": 158.5820420004893,
+        "min": 154.21141700062435,
+        "max": 168.61658400011947
+      },
+      "peakRssMiB": {
+        "median": 90.203125,
+        "min": 90.046875,
+        "max": 90.40625
+      },
+      "warmupMs": {
+        "median": 0,
+        "min": 0,
+        "max": 0
+      },
+      "importMs": {
+        "median": 36.715709000000004,
+        "min": 33.773958,
+        "max": 37.16912500000001
+      }
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 1000,
+      "mode": "cold",
+      "variant": "candidate",
+      "statuses": {
+        "ok": 3
+      },
+      "simulateMs": {
+        "median": 80.61887499999999,
+        "min": 79.95741699999999,
+        "max": 87.792167
+      },
+      "childWallMs": {
+        "median": 154.9097500028438,
+        "min": 153.73699999327073,
+        "max": 165.7725839977502
+      },
+      "peakRssMiB": {
+        "median": 90,
+        "min": 89.484375,
+        "max": 90.328125
+      },
+      "warmupMs": {
+        "median": 0,
+        "min": 0,
+        "max": 0
+      },
+      "importMs": {
+        "median": 33.448708,
+        "min": 33.260958,
+        "max": 37.196167
+      }
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 1000,
+      "mode": "warm",
+      "variant": "baseline",
+      "statuses": {
+        "ok": 3
+      },
+      "simulateMs": {
+        "median": 58.81429200000002,
+        "min": 54.434207999999984,
+        "max": 58.94191699999999
+      },
+      "childWallMs": {
+        "median": 215.02999999938766,
+        "min": 211.55649999855086,
+        "max": 221.35550000530202
+      },
+      "peakRssMiB": {
+        "median": 112.265625,
+        "min": 99.859375,
+        "max": 113.09375
+      },
+      "warmupMs": {
+        "median": 87.10895900000001,
+        "min": 81.40870899999999,
+        "max": 88.629084
+      },
+      "importMs": {
+        "median": 34.434791000000004,
+        "min": 33.685333,
+        "max": 36.52175
+      }
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 1000,
+      "mode": "warm",
+      "variant": "candidate",
+      "statuses": {
+        "ok": 3
+      },
+      "simulateMs": {
+        "median": 63.86450000000002,
+        "min": 56.050167000000016,
+        "max": 66.19566699999999
+      },
+      "childWallMs": {
+        "median": 229.23249999439577,
+        "min": 207.87275000475347,
+        "max": 232.30895799497375
+      },
+      "peakRssMiB": {
+        "median": 111.640625,
+        "min": 111.390625,
+        "max": 112.546875
+      },
+      "warmupMs": {
+        "median": 86.62937500000001,
+        "min": 81.237041,
+        "max": 89.025125
+      },
+      "importMs": {
+        "median": 36.842042000000006,
+        "min": 33.531166,
+        "max": 37.868167
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 1000,
+      "mode": "cold",
+      "variant": "baseline",
+      "statuses": {
+        "ok": 3
+      },
+      "simulateMs": {
+        "median": 56.256249999999994,
+        "min": 53.982666,
+        "max": 59.33124999999999
+      },
+      "childWallMs": {
+        "median": 136.60395800252445,
+        "min": 129.39704199379776,
+        "max": 139.47950000147102
+      },
+      "peakRssMiB": {
+        "median": 87.078125,
+        "min": 86.71875,
+        "max": 87.09375
+      },
+      "warmupMs": {
+        "median": 0,
+        "min": 0,
+        "max": 0
+      },
+      "importMs": {
+        "median": 36.773125,
+        "min": 34.784083,
+        "max": 37.829208
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 1000,
+      "mode": "cold",
+      "variant": "candidate",
+      "statuses": {
+        "ok": 3
+      },
+      "simulateMs": {
+        "median": 55.548458000000004,
+        "min": 53.500040999999996,
+        "max": 55.633874999999996
+      },
+      "childWallMs": {
+        "median": 132.62270899576833,
+        "min": 130.9828750017914,
+        "max": 132.83841600059532
+      },
+      "peakRssMiB": {
+        "median": 87.140625,
+        "min": 87.015625,
+        "max": 87.15625
+      },
+      "warmupMs": {
+        "median": 0,
+        "min": 0,
+        "max": 0
+      },
+      "importMs": {
+        "median": 36.981583,
+        "min": 36.922625,
+        "max": 37.307541
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 1000,
+      "mode": "warm",
+      "variant": "baseline",
+      "statuses": {
+        "ok": 3
+      },
+      "simulateMs": {
+        "median": 25.392124999999993,
+        "min": 24.968458000000012,
+        "max": 27.00954200000001
+      },
+      "childWallMs": {
+        "median": 159.09699999610893,
+        "min": 155.83112499734852,
+        "max": 160.51366600004258
+      },
+      "peakRssMiB": {
+        "median": 89.84375,
+        "min": 88.9375,
+        "max": 90.015625
+      },
+      "warmupMs": {
+        "median": 55.440709,
+        "min": 52.68987500000001,
+        "max": 58.314625
+      },
+      "importMs": {
+        "median": 36.96424999999999,
+        "min": 36.526417,
+        "max": 37.138291
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 1000,
+      "mode": "warm",
+      "variant": "candidate",
+      "statuses": {
+        "ok": 3
+      },
+      "simulateMs": {
+        "median": 26.326666000000003,
+        "min": 26.076999999999998,
+        "max": 27.554457999999997
+      },
+      "childWallMs": {
+        "median": 156.21533400553744,
+        "min": 153.4011250041658,
+        "max": 164.9026250015595
+      },
+      "peakRssMiB": {
+        "median": 90.140625,
+        "min": 90,
+        "max": 90.171875
+      },
+      "warmupMs": {
+        "median": 52.51912500000001,
+        "min": 51.873667,
+        "max": 57.726957999999996
+      },
+      "importMs": {
+        "median": 36.902499999999996,
+        "min": 34.160292,
+        "max": 38.13225
+      }
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 1000,
+      "mode": "cold",
+      "variant": "baseline",
+      "statuses": {
+        "ok": 3
+      },
+      "simulateMs": {
+        "median": 335.115583,
+        "min": 329.26375,
+        "max": 337.849083
+      },
+      "childWallMs": {
+        "median": 412.28520800359547,
+        "min": 409.83650000271155,
+        "max": 420.2573750008014
+      },
+      "peakRssMiB": {
+        "median": 124.03125,
+        "min": 123.25,
+        "max": 125.234375
+      },
+      "warmupMs": {
+        "median": 0,
+        "min": 0,
+        "max": 0
+      },
+      "importMs": {
+        "median": 37.249667,
+        "min": 36.960459,
+        "max": 38.787625000000006
+      }
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 1000,
+      "mode": "cold",
+      "variant": "candidate",
+      "statuses": {
+        "ok": 3
+      },
+      "simulateMs": {
+        "median": 339.490208,
+        "min": 333.956125,
+        "max": 348.961041
+      },
+      "childWallMs": {
+        "median": 420.7567920020665,
+        "min": 416.4759170016623,
+        "max": 428.2397920032963
+      },
+      "peakRssMiB": {
+        "median": 122.765625,
+        "min": 122.703125,
+        "max": 124.921875
+      },
+      "warmupMs": {
+        "median": 0,
+        "min": 0,
+        "max": 0
+      },
+      "importMs": {
+        "median": 36.719792,
+        "min": 36.409125,
+        "max": 37.278417000000005
+      }
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 1000,
+      "mode": "warm",
+      "variant": "baseline",
+      "statuses": {
+        "ok": 3
+      },
+      "simulateMs": {
+        "median": 230.93608300000005,
+        "min": 228.86712500000004,
+        "max": 240.731084
+      },
+      "childWallMs": {
+        "median": 649.5759169993107,
+        "min": 646.773000000394,
+        "max": 664.4287919989438
+      },
+      "peakRssMiB": {
+        "median": 144.875,
+        "min": 144.1875,
+        "max": 145.765625
+      },
+      "warmupMs": {
+        "median": 339.293125,
+        "min": 339.103708,
+        "max": 345.86475
+      },
+      "importMs": {
+        "median": 37.116709,
+        "min": 36.583291,
+        "max": 37.259833
+      }
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 1000,
+      "mode": "warm",
+      "variant": "candidate",
+      "statuses": {
+        "ok": 3
+      },
+      "simulateMs": {
+        "median": 241.95425000000006,
+        "min": 230.76345899999995,
+        "max": 246.835333
+      },
+      "childWallMs": {
+        "median": 668.0638749967329,
+        "min": 644.4579170056386,
+        "max": 670.4632920009317
+      },
+      "peakRssMiB": {
+        "median": 145.515625,
+        "min": 145.3125,
+        "max": 145.875
+      },
+      "warmupMs": {
+        "median": 340.9675,
+        "min": 333.446375,
+        "max": 345.058584
+      },
+      "importMs": {
+        "median": 38.027166,
+        "min": 37.170875,
+        "max": 38.118333
+      }
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 10000,
+      "mode": "cold",
+      "variant": "baseline",
+      "statuses": {
+        "ok": 3
+      },
+      "simulateMs": {
+        "median": 410.989917,
+        "min": 408.788625,
+        "max": 422.063583
+      },
+      "childWallMs": {
+        "median": 502.60337500367314,
+        "min": 499.7977919992991,
+        "max": 511.34279200050514
+      },
+      "peakRssMiB": {
+        "median": 185.96875,
+        "min": 184.296875,
+        "max": 191.609375
+      },
+      "warmupMs": {
+        "median": 0,
+        "min": 0,
+        "max": 0
+      },
+      "importMs": {
+        "median": 37.561125000000004,
+        "min": 37.23,
+        "max": 37.646708000000004
+      }
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 10000,
+      "mode": "cold",
+      "variant": "candidate",
+      "statuses": {
+        "ok": 3
+      },
+      "simulateMs": {
+        "median": 411.14404199999996,
+        "min": 405.983334,
+        "max": 415.32516699999996
+      },
+      "childWallMs": {
+        "median": 504.6970409966889,
+        "min": 495.5909580021398,
+        "max": 507.3515830008546
+      },
+      "peakRssMiB": {
+        "median": 184.59375,
+        "min": 184.53125,
+        "max": 186.875
+      },
+      "warmupMs": {
+        "median": 0,
+        "min": 0,
+        "max": 0
+      },
+      "importMs": {
+        "median": 37.191333,
+        "min": 37.1035,
+        "max": 37.59075
+      }
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 10000,
+      "mode": "warm",
+      "variant": "baseline",
+      "statuses": {
+        "ok": 3
+      },
+      "simulateMs": {
+        "median": 315.36354199999994,
+        "min": 312.41800000000006,
+        "max": 368.52429200000006
+      },
+      "childWallMs": {
+        "median": 829.3007500033127,
+        "min": 810.0869999980205,
+        "max": 962.3375420051161
+      },
+      "peakRssMiB": {
+        "median": 263.21875,
+        "min": 258.453125,
+        "max": 264.828125
+      },
+      "warmupMs": {
+        "median": 416.732625,
+        "min": 404.830459,
+        "max": 491.011125
+      },
+      "importMs": {
+        "median": 36.891583999999995,
+        "min": 36.652666999999994,
+        "max": 41.486625000000004
+      }
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 10000,
+      "mode": "warm",
+      "variant": "candidate",
+      "statuses": {
+        "ok": 3
+      },
+      "simulateMs": {
+        "median": 326.96324999999996,
+        "min": 311.235541,
+        "max": 342.8945
+      },
+      "childWallMs": {
+        "median": 865.2120839979034,
+        "min": 812.3693329980597,
+        "max": 905.5240000016056
+      },
+      "peakRssMiB": {
+        "median": 258.421875,
+        "min": 257.640625,
+        "max": 260.546875
+      },
+      "warmupMs": {
+        "median": 448.848167,
+        "min": 408.391708,
+        "max": 460.153459
+      },
+      "importMs": {
+        "median": 37.2825,
+        "min": 36.054459,
+        "max": 41.286457999999996
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "mode": "cold",
+      "variant": "baseline",
+      "statuses": {
+        "ok": 3
+      },
+      "simulateMs": {
+        "median": 272.811125,
+        "min": 268.838792,
+        "max": 295.518459
+      },
+      "childWallMs": {
+        "median": 362.7011670032516,
+        "min": 350.3268749991548,
+        "max": 386.09229100256925
+      },
+      "peakRssMiB": {
+        "median": 150.34375,
+        "min": 149.890625,
+        "max": 150.484375
+      },
+      "warmupMs": {
+        "median": 0,
+        "min": 0,
+        "max": 0
+      },
+      "importMs": {
+        "median": 37.9755,
+        "min": 36.819500000000005,
+        "max": 39.449040999999994
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "mode": "cold",
+      "variant": "candidate",
+      "statuses": {
+        "ok": 3
+      },
+      "simulateMs": {
+        "median": 301.165625,
+        "min": 267.597042,
+        "max": 313.63725
+      },
+      "childWallMs": {
+        "median": 388.9896249966114,
+        "min": 349.55283399904147,
+        "max": 398.9839159985422
+      },
+      "peakRssMiB": {
+        "median": 150.671875,
+        "min": 149.140625,
+        "max": 151.15625
+      },
+      "warmupMs": {
+        "median": 0,
+        "min": 0,
+        "max": 0
+      },
+      "importMs": {
+        "median": 38.040458,
+        "min": 36.47695900000001,
+        "max": 39.956500000000005
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "mode": "warm",
+      "variant": "baseline",
+      "statuses": {
+        "ok": 3
+      },
+      "simulateMs": {
+        "median": 223.00016700000003,
+        "min": 195.41833299999996,
+        "max": 245.68587499999995
+      },
+      "childWallMs": {
+        "median": 592.0942500015371,
+        "min": 550.8241250063293,
+        "max": 648.3703749981942
+      },
+      "peakRssMiB": {
+        "median": 185.734375,
+        "min": 181.390625,
+        "max": 187.015625
+      },
+      "warmupMs": {
+        "median": 282.27104099999997,
+        "min": 270.15666699999997,
+        "max": 301.965458
+      },
+      "importMs": {
+        "median": 36.500625,
+        "min": 36.267624999999995,
+        "max": 39.844042
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "mode": "warm",
+      "variant": "candidate",
+      "statuses": {
+        "ok": 3
+      },
+      "simulateMs": {
+        "median": 225.20175,
+        "min": 200.51208299999996,
+        "max": 347.416083
+      },
+      "childWallMs": {
+        "median": 609.7537079986068,
+        "min": 557.9438749991823,
+        "max": 881.7817079980159
+      },
+      "peakRssMiB": {
+        "median": 187.53125,
+        "min": 183.46875,
+        "max": 189.09375
+      },
+      "warmupMs": {
+        "median": 290.939792,
+        "min": 275.266292,
+        "max": 430.26487499999996
+      },
+      "importMs": {
+        "median": 40.652792,
+        "min": 35.662583,
+        "max": 46.098084
+      }
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 10000,
+      "mode": "cold",
+      "variant": "baseline",
+      "statuses": {
+        "ok": 3
+      },
+      "simulateMs": {
+        "median": 3009.252333,
+        "min": 2921.941417,
+        "max": 3601.4348330000003
+      },
+      "childWallMs": {
+        "median": 3108.3990420011105,
+        "min": 3033.4624590032035,
+        "max": 3741.7027089977637
+      },
+      "peakRssMiB": {
+        "median": 362.21875,
+        "min": 359.515625,
+        "max": 363.15625
+      },
+      "warmupMs": {
+        "median": 0,
+        "min": 0,
+        "max": 0
+      },
+      "importMs": {
+        "median": 43.006209,
+        "min": 34.691041,
+        "max": 57.441167
+      }
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 10000,
+      "mode": "cold",
+      "variant": "candidate",
+      "statuses": {
+        "ok": 3
+      },
+      "simulateMs": {
+        "median": 2842.3808329999997,
+        "min": 2753.6803330000002,
+        "max": 4532.735375
+      },
+      "childWallMs": {
+        "median": 2940.152458002558,
+        "min": 2859.575832997507,
+        "max": 4654.282749994309
+      },
+      "peakRssMiB": {
+        "median": 360.34375,
+        "min": 358.578125,
+        "max": 362.125
+      },
+      "warmupMs": {
+        "median": 0,
+        "min": 0,
+        "max": 0
+      },
+      "importMs": {
+        "median": 37.492792,
+        "min": 34.935417,
+        "max": 42.354375000000005
+      }
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 10000,
+      "mode": "warm",
+      "variant": "baseline",
+      "statuses": {
+        "ok": 3
+      },
+      "simulateMs": {
+        "median": 2293.788833,
+        "min": 2150.2551670000003,
+        "max": 3205.0744590000004
+      },
+      "childWallMs": {
+        "median": 5041.94266700506,
+        "min": 4862.122583996097,
+        "max": 7829.830832997686
+      },
+      "peakRssMiB": {
+        "median": 490.046875,
+        "min": 486.265625,
+        "max": 496.546875
+      },
+      "warmupMs": {
+        "median": 2646.595084,
+        "min": 2616.053958,
+        "max": 4476.744041
+      },
+      "importMs": {
+        "median": 34.867834,
+        "min": 33.773208000000004,
+        "max": 60.17337500000001
+      }
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 10000,
+      "mode": "warm",
+      "variant": "candidate",
+      "statuses": {
+        "ok": 3
+      },
+      "simulateMs": {
+        "median": 2431.4218749999995,
+        "min": 2281.4253750000003,
+        "max": 2482.978708
+      },
+      "childWallMs": {
+        "median": 5258.653666998725,
+        "min": 5148.8586670020595,
+        "max": 6590.744540997548
+      },
+      "peakRssMiB": {
+        "median": 488.875,
+        "min": 486.0625,
+        "max": 497.546875
+      },
+      "warmupMs": {
+        "median": 2762.868,
+        "min": 2723.7079590000003,
+        "max": 3981.475167
+      },
+      "importMs": {
+        "median": 36.894834,
+        "min": 33.325917,
+        "max": 45.83483299999999
+      }
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 50000,
+      "mode": "cold",
+      "variant": "baseline",
+      "statuses": {
+        "ok": 3
+      },
+      "simulateMs": {
+        "median": 1717.883875,
+        "min": 1284.498833,
+        "max": 1909.965458
+      },
+      "childWallMs": {
+        "median": 1869.7651249967748,
+        "min": 1408.0103750020498,
+        "max": 2070.117041999765
+      },
+      "peakRssMiB": {
+        "median": 471.765625,
+        "min": 433.046875,
+        "max": 476.40625
+      },
+      "warmupMs": {
+        "median": 0,
+        "min": 0,
+        "max": 0
+      },
+      "importMs": {
+        "median": 41.747334,
+        "min": 29.195541999999996,
+        "max": 43.306833
+      }
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 50000,
+      "mode": "cold",
+      "variant": "candidate",
+      "statuses": {
+        "ok": 3
+      },
+      "simulateMs": {
+        "median": 1641.950334,
+        "min": 1295.484416,
+        "max": 1697.8480000000002
+      },
+      "childWallMs": {
+        "median": 1800.2830840050592,
+        "min": 1413.8566670008004,
+        "max": 1847.40245899593
+      },
+      "peakRssMiB": {
+        "median": 471.953125,
+        "min": 470.828125,
+        "max": 474.96875
+      },
+      "warmupMs": {
+        "median": 0,
+        "min": 0,
+        "max": 0
+      },
+      "importMs": {
+        "median": 37.081625,
+        "min": 31.073541,
+        "max": 41.7555
+      }
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 50000,
+      "mode": "warm",
+      "variant": "baseline",
+      "statuses": {
+        "ok": 3
+      },
+      "simulateMs": {
+        "median": 1470.8385419999997,
+        "min": 1367.483792,
+        "max": 3854.453666999999
+      },
+      "childWallMs": {
+        "median": 3313.1764589998056,
+        "min": 3050.2751669991994,
+        "max": 10743.517625000095
+      },
+      "peakRssMiB": {
+        "median": 597.328125,
+        "min": 577.53125,
+        "max": 700.71875
+      },
+      "warmupMs": {
+        "median": 1707.494708,
+        "min": 1512.9642079999999,
+        "max": 6606.894666
+      },
+      "importMs": {
+        "median": 37.209500000000006,
+        "min": 37.155667,
+        "max": 118.02170900000002
+      }
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 50000,
+      "mode": "warm",
+      "variant": "candidate",
+      "statuses": {
+        "ok": 3
+      },
+      "simulateMs": {
+        "median": 5875.556415999999,
+        "min": 1459.471084,
+        "max": 6838.140084000001
+      },
+      "childWallMs": {
+        "median": 9537.299749994418,
+        "min": 3379.519125002844,
+        "max": 12218.926541005203
+      },
+      "peakRssMiB": {
+        "median": 573.859375,
+        "min": 531.8125,
+        "max": 695.53125
+      },
+      "warmupMs": {
+        "median": 3284.791834,
+        "min": 1778.363208,
+        "max": 5023.49275
+      },
+      "importMs": {
+        "median": 33.530667,
+        "min": 27.334292,
+        "max": 45.776875000000004
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "mode": "cold",
+      "variant": "baseline",
+      "statuses": {
+        "ok": 3
+      },
+      "simulateMs": {
+        "median": 1410.445084,
+        "min": 1088.737167,
+        "max": 5068.800042
+      },
+      "childWallMs": {
+        "median": 1562.3655829986092,
+        "min": 1203.496374997485,
+        "max": 5401.655000001483
+      },
+      "peakRssMiB": {
+        "median": 350.390625,
+        "min": 348.9375,
+        "max": 352.734375
+      },
+      "warmupMs": {
+        "median": 0,
+        "min": 0,
+        "max": 0
+      },
+      "importMs": {
+        "median": 52.91541699999999,
+        "min": 37.29579199999999,
+        "max": 97.34937500000001
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "mode": "cold",
+      "variant": "candidate",
+      "statuses": {
+        "ok": 3
+      },
+      "simulateMs": {
+        "median": 1683.8822089999999,
+        "min": 974.28725,
+        "max": 3182.0205
+      },
+      "childWallMs": {
+        "median": 1866.8033750000177,
+        "min": 1080.2616250002757,
+        "max": 3371.574333003082
+      },
+      "peakRssMiB": {
+        "median": 356.484375,
+        "min": 350.28125,
+        "max": 358.15625
+      },
+      "warmupMs": {
+        "median": 0,
+        "min": 0,
+        "max": 0
+      },
+      "importMs": {
+        "median": 58.808333,
+        "min": 38.302833,
+        "max": 62.921583000000005
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "mode": "warm",
+      "variant": "baseline",
+      "statuses": {
+        "ok": 3
+      },
+      "simulateMs": {
+        "median": 1008.8355840000002,
+        "min": 945.3500410000001,
+        "max": 1952.2226670000005
+      },
+      "childWallMs": {
+        "median": 2388.2910840038676,
+        "min": 2124.491542002943,
+        "max": 4289.909082996019
+      },
+      "peakRssMiB": {
+        "median": 443,
+        "min": 441.359375,
+        "max": 454.5
+      },
+      "warmupMs": {
+        "median": 1236.9136250000001,
+        "min": 1067.970708,
+        "max": 2119.6531250000003
+      },
+      "importMs": {
+        "median": 54.172084,
+        "min": 36.797208,
+        "max": 56.501084000000006
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "mode": "warm",
+      "variant": "candidate",
+      "statuses": {
+        "ok": 3
+      },
+      "simulateMs": {
+        "median": 1094.811709,
+        "min": 1037.746458,
+        "max": 1189.6805419999998
+      },
+      "childWallMs": {
+        "median": 2354.217666994373,
+        "min": 2226.1421250004787,
+        "max": 2698.6121670051944
+      },
+      "peakRssMiB": {
+        "median": 469.296875,
+        "min": 462.015625,
+        "max": 555.09375
+      },
+      "warmupMs": {
+        "median": 1181.547541,
+        "min": 1012.555208,
+        "max": 1364.5089580000001
+      },
+      "importMs": {
+        "median": 46.333583,
+        "min": 37.240459,
+        "max": 50.696957999999995
+      }
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 50000,
+      "mode": "cold",
+      "variant": "baseline",
+      "statuses": {
+        "ok": 3
+      },
+      "simulateMs": {
+        "median": 22620.220291,
+        "min": 21753.797375,
+        "max": 23156.431791
+      },
+      "childWallMs": {
+        "median": 22824.573792000592,
+        "min": 21931.557500000054,
+        "max": 23345.54454099998
+      },
+      "peakRssMiB": {
+        "median": 1081.90625,
+        "min": 1079.625,
+        "max": 1091.6875
+      },
+      "warmupMs": {
+        "median": 0,
+        "min": 0,
+        "max": 0
+      },
+      "importMs": {
+        "median": 36.717749999999995,
+        "min": 33.616708,
+        "max": 37.759792000000004
+      }
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 50000,
+      "mode": "cold",
+      "variant": "candidate",
+      "statuses": {
+        "ok": 3
+      },
+      "simulateMs": {
+        "median": 26140.104667,
+        "min": 21309.200958,
+        "max": 36539.711583
+      },
+      "childWallMs": {
+        "median": 26358.797458997287,
+        "min": 21494.769375000033,
+        "max": 36710.209416996804
+      },
+      "peakRssMiB": {
+        "median": 1080.1875,
+        "min": 1064.78125,
+        "max": 1092.78125
+      },
+      "warmupMs": {
+        "median": 0,
+        "min": 0,
+        "max": 0
+      },
+      "importMs": {
+        "median": 33.081916,
+        "min": 30.047917,
+        "max": 40.609875
+      }
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 50000,
+      "mode": "warm",
+      "variant": "baseline",
+      "statuses": {
+        "timeout": 1,
+        "ok": 2
+      },
+      "simulateMs": {
+        "median": 20738.593833,
+        "min": 20607.670374999998,
+        "max": 20869.517291
+      },
+      "childWallMs": {
+        "median": 42168.132874998264,
+        "min": 41624.475208998774,
+        "max": 42711.790540997754
+      },
+      "peakRssMiB": {
+        "median": 1696.203125,
+        "min": 1693.875,
+        "max": 1698.53125
+      },
+      "warmupMs": {
+        "median": 21231.5053545,
+        "min": 20809.291917000002,
+        "max": 21653.718792
+      },
+      "importMs": {
+        "median": 36.979396,
+        "min": 34.299125000000004,
+        "max": 39.659667
+      }
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 50000,
+      "mode": "warm",
+      "variant": "candidate",
+      "statuses": {
+        "ok": 2,
+        "timeout": 1
+      },
+      "simulateMs": {
+        "median": 21150.6491875,
+        "min": 19656.821500000002,
+        "max": 22644.476875
+      },
+      "childWallMs": {
+        "median": 41854.355082996335,
+        "min": 41073.98787499551,
+        "max": 42634.72229099716
+      },
+      "peakRssMiB": {
+        "median": 1719.390625,
+        "min": 1702.828125,
+        "max": 1735.953125
+      },
+      "warmupMs": {
+        "median": 20486.0112705,
+        "min": 19758.929375,
+        "max": 21213.093166
+      },
+      "importMs": {
+        "median": 37.097208499999994,
+        "min": 36.830124999999995,
+        "max": 37.364292
+      }
+    }
+  ]
+}
