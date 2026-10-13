@@ -1,0 +1,289 @@
+[
+  {
+    "size": 1000,
+    "argv": [
+      "--trace-opt",
+      "--trace-deopt",
+      "--print-bytecode",
+      "--print-bytecode-filter=applySupernode",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e10428ab/benchmarks/performance/results/issue-919/worker.mjs",
+      "isolate",
+      "resistor-mesh-op",
+      "1000",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e10428ab/benchmarks/performance/results/issue-919/profiles/capture-resistor-mesh-op-1000-r3"
+    ],
+    "exit": 0,
+    "signal": null,
+    "wallMs": 152.739584,
+    "samples": [
+      {
+        "phase": "cold",
+        "factorMs": 25.82799999999999,
+        "solveMs": 1.0636669999999953,
+        "numericFactorizations": 1,
+        "pivotReuseFactorizations": 0,
+        "supernodalUpdates": 1231,
+        "factorNonzeros": 23088,
+        "solutionSha256": "eec390653c63d61c241fdaf66efb50bf8415005cb447afe001b29b7db5ef46c8",
+        "startMemory": {
+          "rss": 63864832,
+          "heapTotal": 14614528,
+          "heapUsed": 10291736,
+          "external": 2795946,
+          "arrayBuffers": 673339,
+          "peakRssMiB": 60.90625
+        },
+        "endMemory": {
+          "rss": 81592320,
+          "heapTotal": 20381696,
+          "heapUsed": 14165136,
+          "external": 3296341,
+          "arrayBuffers": 1135010,
+          "peakRssMiB": 77.8125
+        }
+      },
+      {
+        "phase": "warm",
+        "factorMs": 2.1652909999999963,
+        "solveMs": 0.8367080000000016,
+        "numericFactorizations": 1,
+        "pivotReuseFactorizations": 0,
+        "supernodalUpdates": 1231,
+        "factorNonzeros": 23088,
+        "solutionSha256": "eec390653c63d61c241fdaf66efb50bf8415005cb447afe001b29b7db5ef46c8",
+        "startMemory": {
+          "rss": 81838080,
+          "heapTotal": 20381696,
+          "heapUsed": 14477648,
+          "external": 3695124,
+          "arrayBuffers": 1533793,
+          "peakRssMiB": 78.046875
+        },
+        "endMemory": {
+          "rss": 82493440,
+          "heapTotal": 20643840,
+          "heapUsed": 12280216,
+          "external": 4081665,
+          "arrayBuffers": 1920334,
+          "peakRssMiB": 78.671875
+        }
+      },
+      {
+        "phase": "growth-diagnostic",
+        "initialCapacity": 3010,
+        "finalCapacity": 24080,
+        "used": 12057,
+        "growth": [
+          {
+            "required": 3011,
+            "before": 3010,
+            "after": 6020
+          },
+          {
+            "required": 6021,
+            "before": 6020,
+            "after": 12040
+          },
+          {
+            "required": 12041,
+            "before": 12040,
+            "after": 24080
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "size": 10000,
+    "argv": [
+      "--trace-opt",
+      "--trace-deopt",
+      "--print-bytecode",
+      "--print-bytecode-filter=applySupernode",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e10428ab/benchmarks/performance/results/issue-919/worker.mjs",
+      "isolate",
+      "resistor-mesh-op",
+      "10000",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e10428ab/benchmarks/performance/results/issue-919/profiles/capture-resistor-mesh-op-10000-r3"
+    ],
+    "exit": 0,
+    "signal": null,
+    "wallMs": 406.540125,
+    "samples": [
+      {
+        "phase": "cold",
+        "factorMs": 81.663042,
+        "solveMs": 4.434791000000018,
+        "numericFactorizations": 1,
+        "pivotReuseFactorizations": 0,
+        "supernodalUpdates": 16101,
+        "factorNonzeros": 396986,
+        "solutionSha256": "b392349e2d28754432a5a0cbd1eb6a42a6535672563108a9f65c7b3b29ef25d0",
+        "startMemory": {
+          "rss": 78495744,
+          "heapTotal": 30818304,
+          "heapUsed": 12161024,
+          "external": 8534520,
+          "arrayBuffers": 6411913,
+          "peakRssMiB": 74.859375
+        },
+        "endMemory": {
+          "rss": 107118592,
+          "heapTotal": 31080448,
+          "heapUsed": 17780712,
+          "external": 16579147,
+          "arrayBuffers": 14417816,
+          "peakRssMiB": 102.15625
+        }
+      },
+      {
+        "phase": "warm",
+        "factorMs": 32.22429199999999,
+        "solveMs": 1.1541670000000295,
+        "numericFactorizations": 1,
+        "pivotReuseFactorizations": 0,
+        "supernodalUpdates": 16101,
+        "factorNonzeros": 396986,
+        "solutionSha256": "b392349e2d28754432a5a0cbd1eb6a42a6535672563108a9f65c7b3b29ef25d0",
+        "startMemory": {
+          "rss": 109641728,
+          "heapTotal": 31080448,
+          "heapUsed": 20212424,
+          "external": 21777658,
+          "arrayBuffers": 19616327,
+          "peakRssMiB": 104.5625
+        },
+        "endMemory": {
+          "rss": 123256832,
+          "heapTotal": 31080448,
+          "heapUsed": 12448200,
+          "external": 27101326,
+          "arrayBuffers": 24939995,
+          "peakRssMiB": 117.546875
+        }
+      },
+      {
+        "phase": "growth-diagnostic",
+        "initialCapacity": 29802,
+        "finalCapacity": 238416,
+        "used": 203494,
+        "growth": [
+          {
+            "required": 29803,
+            "before": 29802,
+            "after": 59604
+          },
+          {
+            "required": 59605,
+            "before": 59604,
+            "after": 119208
+          },
+          {
+            "required": 119209,
+            "before": 119208,
+            "after": 238416
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "size": 50000,
+    "argv": [
+      "--trace-opt",
+      "--trace-deopt",
+      "--print-bytecode",
+      "--print-bytecode-filter=applySupernode",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e10428ab/benchmarks/performance/results/issue-919/worker.mjs",
+      "isolate",
+      "resistor-mesh-op",
+      "50000",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e10428ab/benchmarks/performance/results/issue-919/profiles/capture-resistor-mesh-op-50000-r3"
+    ],
+    "exit": 0,
+    "signal": null,
+    "wallMs": 1661.2527499999999,
+    "samples": [
+      {
+        "phase": "cold",
+        "factorMs": 319.15541700000006,
+        "solveMs": 6.862875000000031,
+        "numericFactorizations": 1,
+        "pivotReuseFactorizations": 0,
+        "supernodalUpdates": 89122,
+        "factorNonzeros": 2988840,
+        "solutionSha256": "5641282ad2c7235f5815a6b75c3133c51b53ac24298120412dddb64a0f362746",
+        "startMemory": {
+          "rss": 142852096,
+          "heapTotal": 63651840,
+          "heapUsed": 43632440,
+          "external": 33918652,
+          "arrayBuffers": 31796045,
+          "peakRssMiB": 136.25
+        },
+        "endMemory": {
+          "rss": 250413056,
+          "heapTotal": 52871168,
+          "heapUsed": 21238200,
+          "external": 93735788,
+          "arrayBuffers": 91574457,
+          "peakRssMiB": 238.8125
+        }
+      },
+      {
+        "phase": "warm",
+        "factorMs": 338.63304199999993,
+        "solveMs": 7.941291999999976,
+        "numericFactorizations": 1,
+        "pivotReuseFactorizations": 0,
+        "supernodalUpdates": 89122,
+        "factorNonzeros": 2988840,
+        "solutionSha256": "5641282ad2c7235f5815a6b75c3133c51b53ac24298120412dddb64a0f362746",
+        "startMemory": {
+          "rss": 255377408,
+          "heapTotal": 53280768,
+          "heapUsed": 25026456,
+          "external": 119882616,
+          "arrayBuffers": 117721285,
+          "peakRssMiB": 243.546875
+        },
+        "endMemory": {
+          "rss": 277692416,
+          "heapTotal": 47890432,
+          "heapUsed": 20792480,
+          "external": 82127817,
+          "arrayBuffers": 79966486,
+          "peakRssMiB": 264.84375
+        }
+      },
+      {
+        "phase": "growth-diagnostic",
+        "initialCapacity": 150082,
+        "finalCapacity": 2401312,
+        "used": 1519509,
+        "growth": [
+          {
+            "required": 150083,
+            "before": 150082,
+            "after": 300164
+          },
+          {
+            "required": 300165,
+            "before": 300164,
+            "after": 600328
+          },
+          {
+            "required": 600329,
+            "before": 600328,
+            "after": 1200656
+          },
+          {
+            "required": 1200657,
+            "before": 1200656,
+            "after": 2401312
+          }
+        ]
+      }
+    ]
+  }
+]

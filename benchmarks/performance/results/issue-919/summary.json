@@ -1,0 +1,1692 @@
+{
+  "measuredRevision": "c03dae530f9428f025d03e1a7f5a0f132a995da6",
+  "processReceipts": 39,
+  "statuses": {
+    "ok": 38,
+    "timeout": 1
+  },
+  "controls": [
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 1000,
+      "phase": "cold",
+      "completed": 3,
+      "timedOutChildren": 0,
+      "simulateMs": {
+        "count": 3,
+        "median": 81.35825,
+        "min": 78.49425,
+        "max": 93.659209
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 87.296875,
+        "min": 86.703125,
+        "max": 87.359375
+      },
+      "probeSha256": "d7d165fbfea26ffde224afda244e8e938280f53b4b3c08c04ac7d0df80f404dd",
+      "parity": {
+        "points": 120,
+        "maxAbs": 7.771561172376096e-16,
+        "rmsAbs": 3.6795602554110414e-16,
+        "maxPeakRelative": 2.2566854215014007e-15,
+        "rmsPeakRelative": 1.068460995383673e-15,
+        "maxGridAbs": 6.617444900424222e-24
+      }
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 1000,
+      "phase": "warm",
+      "completed": 3,
+      "timedOutChildren": 0,
+      "simulateMs": {
+        "count": 3,
+        "median": 57.78937500000001,
+        "min": 54.58620900000001,
+        "max": 62.854457999999994
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 105.328125,
+        "min": 100.71875,
+        "max": 108.765625
+      },
+      "probeSha256": "d7d165fbfea26ffde224afda244e8e938280f53b4b3c08c04ac7d0df80f404dd",
+      "parity": {
+        "points": 120,
+        "maxAbs": 7.771561172376096e-16,
+        "rmsAbs": 3.6795602554110414e-16,
+        "maxPeakRelative": 2.2566854215014007e-15,
+        "rmsPeakRelative": 1.068460995383673e-15,
+        "maxGridAbs": 6.617444900424222e-24
+      }
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 10000,
+      "phase": "cold",
+      "completed": 3,
+      "timedOutChildren": 0,
+      "simulateMs": {
+        "count": 3,
+        "median": 400.849375,
+        "min": 391.513167,
+        "max": 403.925125
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 176.09375,
+        "min": 175.953125,
+        "max": 176.609375
+      },
+      "probeSha256": "d7d165fbfea26ffde224afda244e8e938280f53b4b3c08c04ac7d0df80f404dd",
+      "parity": {
+        "points": 120,
+        "maxAbs": 7.771561172376096e-16,
+        "rmsAbs": 3.6795602554110414e-16,
+        "maxPeakRelative": 2.2566854215014007e-15,
+        "rmsPeakRelative": 1.068460995383673e-15,
+        "maxGridAbs": 6.617444900424222e-24
+      }
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 10000,
+      "phase": "warm",
+      "completed": 3,
+      "timedOutChildren": 0,
+      "simulateMs": {
+        "count": 3,
+        "median": 305.422208,
+        "min": 282.306625,
+        "max": 318.290541
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 251.0625,
+        "min": 246.609375,
+        "max": 251.171875
+      },
+      "probeSha256": "d7d165fbfea26ffde224afda244e8e938280f53b4b3c08c04ac7d0df80f404dd",
+      "parity": {
+        "points": 120,
+        "maxAbs": 7.771561172376096e-16,
+        "rmsAbs": 3.6795602554110414e-16,
+        "maxPeakRelative": 2.2566854215014007e-15,
+        "rmsPeakRelative": 1.068460995383673e-15,
+        "maxGridAbs": 6.617444900424222e-24
+      }
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 50000,
+      "phase": "cold",
+      "completed": 3,
+      "timedOutChildren": 0,
+      "simulateMs": {
+        "count": 3,
+        "median": 1458.358833,
+        "min": 1349.342666,
+        "max": 1572.1495
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 410.078125,
+        "min": 406.03125,
+        "max": 411.359375
+      },
+      "probeSha256": "d7d165fbfea26ffde224afda244e8e938280f53b4b3c08c04ac7d0df80f404dd",
+      "parity": {
+        "points": 120,
+        "maxAbs": 7.771561172376096e-16,
+        "rmsAbs": 3.6795602554110414e-16,
+        "maxPeakRelative": 2.2566854215014007e-15,
+        "rmsPeakRelative": 1.068460995383673e-15,
+        "maxGridAbs": 6.617444900424222e-24
+      }
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 50000,
+      "phase": "warm",
+      "completed": 3,
+      "timedOutChildren": 0,
+      "simulateMs": {
+        "count": 3,
+        "median": 1380.6791670000002,
+        "min": 1240.7591250000003,
+        "max": 1431.6507080000001
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 613.890625,
+        "min": 612.140625,
+        "max": 669.65625
+      },
+      "probeSha256": "d7d165fbfea26ffde224afda244e8e938280f53b4b3c08c04ac7d0df80f404dd",
+      "parity": {
+        "points": 120,
+        "maxAbs": 7.771561172376096e-16,
+        "rmsAbs": 3.6795602554110414e-16,
+        "maxPeakRelative": 2.2566854215014007e-15,
+        "rmsPeakRelative": 1.068460995383673e-15,
+        "maxGridAbs": 6.617444900424222e-24
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 1000,
+      "phase": "cold",
+      "completed": 3,
+      "timedOutChildren": 0,
+      "simulateMs": {
+        "count": 3,
+        "median": 56.639084,
+        "min": 50.301916999999996,
+        "max": 57.23287500000001
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 84.15625,
+        "min": 83.984375,
+        "max": 84.953125
+      },
+      "probeSha256": "3e841c976c07f1fa0fcb6bb42ccbaea92da4cc6eea768c201bd72cde1ddf860b",
+      "parity": {
+        "points": 1,
+        "maxAbs": 5.964673199798654e-14,
+        "rmsAbs": 5.964673199798654e-14,
+        "maxPeakRelative": 3.274778694868735e-13,
+        "rmsPeakRelative": 3.274778694868735e-13,
+        "maxGridAbs": 0
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 1000,
+      "phase": "warm",
+      "completed": 3,
+      "timedOutChildren": 0,
+      "simulateMs": {
+        "count": 3,
+        "median": 25.936209000000005,
+        "min": 24.013000000000005,
+        "max": 26.367125
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 87.125,
+        "min": 86.953125,
+        "max": 87.5625
+      },
+      "probeSha256": "3e841c976c07f1fa0fcb6bb42ccbaea92da4cc6eea768c201bd72cde1ddf860b",
+      "parity": {
+        "points": 1,
+        "maxAbs": 5.964673199798654e-14,
+        "rmsAbs": 5.964673199798654e-14,
+        "maxPeakRelative": 3.274778694868735e-13,
+        "rmsPeakRelative": 3.274778694868735e-13,
+        "maxGridAbs": 0
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "phase": "cold",
+      "completed": 3,
+      "timedOutChildren": 0,
+      "simulateMs": {
+        "count": 3,
+        "median": 275.70691700000003,
+        "min": 260.58612500000004,
+        "max": 279.648209
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 146.578125,
+        "min": 146.5625,
+        "max": 147.484375
+      },
+      "probeSha256": "719f05ee5b5c01e7d23789c1bdcd1ddf7f57946d71c85534611aa32cda790417",
+      "parity": {
+        "points": 1,
+        "maxAbs": 4.687361609967411e-13,
+        "rmsAbs": 4.687361609967411e-13,
+        "maxPeakRelative": 3.253418142687601e-12,
+        "rmsPeakRelative": 3.253418142687601e-12,
+        "maxGridAbs": 0
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "phase": "warm",
+      "completed": 3,
+      "timedOutChildren": 0,
+      "simulateMs": {
+        "count": 3,
+        "median": 179.472375,
+        "min": 178.06537499999996,
+        "max": 181.56991699999998
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 194.8125,
+        "min": 194.4375,
+        "max": 197.15625
+      },
+      "probeSha256": "719f05ee5b5c01e7d23789c1bdcd1ddf7f57946d71c85534611aa32cda790417",
+      "parity": {
+        "points": 1,
+        "maxAbs": 4.687361609967411e-13,
+        "rmsAbs": 4.687361609967411e-13,
+        "maxPeakRelative": 3.253418142687601e-12,
+        "rmsPeakRelative": 3.253418142687601e-12,
+        "maxGridAbs": 0
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "phase": "cold",
+      "completed": 3,
+      "timedOutChildren": 0,
+      "simulateMs": {
+        "count": 3,
+        "median": 1004.773042,
+        "min": 989.845417,
+        "max": 1166.665125
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 360.078125,
+        "min": 357.734375,
+        "max": 362.1875
+      },
+      "probeSha256": "ae696e91cb0a0ec4ecebd8b5714f7dfb56dcb001038e8474ac9373147b038689",
+      "parity": {
+        "points": 1,
+        "maxAbs": 1.883937450486428e-12,
+        "rmsAbs": 1.883937450486428e-12,
+        "maxPeakRelative": 1.5010546600651854e-11,
+        "rmsPeakRelative": 1.5010546600651854e-11,
+        "maxGridAbs": 0
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "phase": "warm",
+      "completed": 3,
+      "timedOutChildren": 0,
+      "simulateMs": {
+        "count": 3,
+        "median": 924.484667,
+        "min": 907.8032500000002,
+        "max": 1068.072916
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 568.5,
+        "min": 560.203125,
+        "max": 570.5625
+      },
+      "probeSha256": "ae696e91cb0a0ec4ecebd8b5714f7dfb56dcb001038e8474ac9373147b038689",
+      "parity": {
+        "points": 1,
+        "maxAbs": 1.883937450486428e-12,
+        "rmsAbs": 1.883937450486428e-12,
+        "maxPeakRelative": 1.5010546600651854e-11,
+        "rmsPeakRelative": 1.5010546600651854e-11,
+        "maxGridAbs": 0
+      }
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 1000,
+      "phase": "cold",
+      "completed": 3,
+      "timedOutChildren": 0,
+      "simulateMs": {
+        "count": 3,
+        "median": 311.0635,
+        "min": 296.04108299999996,
+        "max": 378.339125
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 122.234375,
+        "min": 122.0625,
+        "max": 123.546875
+      },
+      "probeSha256": "19b5994b3e3f9c7b0028a6940c2e7cab6dac54a9cd297bcb7211eef28a3cf68a",
+      "parity": {
+        "points": 214,
+        "maxAbs": 0.00039369360861024605,
+        "rmsAbs": 0.00004218086115977272,
+        "maxPeakRelative": 0.001124668309854744,
+        "rmsPeakRelative": 0.0001204984708698788,
+        "maxGridAbs": 0
+      }
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 1000,
+      "phase": "warm",
+      "completed": 3,
+      "timedOutChildren": 0,
+      "simulateMs": {
+        "count": 3,
+        "median": 228.89112499999993,
+        "min": 203.89420900000005,
+        "max": 253.29954199999997
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 143.484375,
+        "min": 143.09375,
+        "max": 145.59375
+      },
+      "probeSha256": "19b5994b3e3f9c7b0028a6940c2e7cab6dac54a9cd297bcb7211eef28a3cf68a",
+      "parity": {
+        "points": 214,
+        "maxAbs": 0.00039369360861024605,
+        "rmsAbs": 0.00004218086115977272,
+        "maxPeakRelative": 0.001124668309854744,
+        "rmsPeakRelative": 0.0001204984708698788,
+        "maxGridAbs": 0
+      }
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 10000,
+      "phase": "cold",
+      "completed": 3,
+      "timedOutChildren": 0,
+      "simulateMs": {
+        "count": 3,
+        "median": 2728.0805,
+        "min": 2233.1221250000003,
+        "max": 2761.088541
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 340.578125,
+        "min": 339.53125,
+        "max": 341.578125
+      },
+      "probeSha256": "19b5994b3e3f9c7b0028a6940c2e7cab6dac54a9cd297bcb7211eef28a3cf68a",
+      "parity": {
+        "points": 214,
+        "maxAbs": 0.00039369360861024605,
+        "rmsAbs": 0.00004218086115978648,
+        "maxPeakRelative": 0.001124668309854744,
+        "rmsPeakRelative": 0.0001204984708699181,
+        "maxGridAbs": 0
+      }
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 10000,
+      "phase": "warm",
+      "completed": 3,
+      "timedOutChildren": 0,
+      "simulateMs": {
+        "count": 3,
+        "median": 2208.1775000000002,
+        "min": 1900.1321249999996,
+        "max": 2467.235541
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 449.15625,
+        "min": 448.140625,
+        "max": 455.40625
+      },
+      "probeSha256": "19b5994b3e3f9c7b0028a6940c2e7cab6dac54a9cd297bcb7211eef28a3cf68a",
+      "parity": {
+        "points": 214,
+        "maxAbs": 0.00039369360861024605,
+        "rmsAbs": 0.00004218086115978648,
+        "maxPeakRelative": 0.001124668309854744,
+        "rmsPeakRelative": 0.0001204984708699181,
+        "maxGridAbs": 0
+      }
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 50000,
+      "phase": "cold",
+      "completed": 3,
+      "timedOutChildren": 1,
+      "simulateMs": {
+        "count": 3,
+        "median": 24491.785875,
+        "min": 22139.415334,
+        "max": 34274.025292
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 1078.0625,
+        "min": 1062.15625,
+        "max": 1104.546875
+      },
+      "probeSha256": "20834a6e72295631a3ec4d23c6dc7f637db69a111116ffe90b090fe22fcd6e00",
+      "parity": {
+        "status": "unavailable",
+        "reason": "Inherited #906 3/3 ngspice CMOS50k timeouts at 45s; no new reference run"
+      }
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 50000,
+      "phase": "warm",
+      "completed": 2,
+      "timedOutChildren": 1,
+      "simulateMs": {
+        "count": 2,
+        "median": 20761.5928335,
+        "min": 19911.071084,
+        "max": 21612.114583000002
+      },
+      "processPeakRssMiB": {
+        "count": 2,
+        "median": 1732.625,
+        "min": 1716.15625,
+        "max": 1749.09375
+      },
+      "probeSha256": "20834a6e72295631a3ec4d23c6dc7f637db69a111116ffe90b090fe22fcd6e00",
+      "parity": {
+        "status": "unavailable",
+        "reason": "Inherited #906 3/3 ngspice CMOS50k timeouts at 45s; no new reference run"
+      }
+    }
+  ],
+  "isolation": [
+    {
+      "size": 1000,
+      "phase": "cold",
+      "factorMs": {
+        "count": 3,
+        "median": 12.925333000000009,
+        "min": 11.946875000000006,
+        "max": 14.718250000000012
+      },
+      "solveMs": {
+        "count": 3,
+        "median": 1.1442499999999995,
+        "min": 0.957540999999992,
+        "max": 1.1667079999999999
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 77.25,
+        "min": 77.015625,
+        "max": 77.609375
+      },
+      "supernodalUpdates": 1231,
+      "factorNonzeros": 23088,
+      "growth": {
+        "phase": "growth-diagnostic",
+        "initialCapacity": 3010,
+        "finalCapacity": 24080,
+        "used": 12057,
+        "growth": [
+          {
+            "required": 3011,
+            "before": 3010,
+            "after": 6020
+          },
+          {
+            "required": 6021,
+            "before": 6020,
+            "after": 12040
+          },
+          {
+            "required": 12041,
+            "before": 12040,
+            "after": 24080
+          }
+        ]
+      },
+      "profiles": [
+        {
+          "prefix": "capture-resistor-mesh-op-1000-r0-cold",
+          "self": [
+            {
+              "name": "post",
+              "ms": 11.333
+            },
+            {
+              "name": "(garbage collector)",
+              "ms": 6.25
+            },
+            {
+              "name": "factorize",
+              "ms": 3.042
+            },
+            {
+              "name": "compileForInternalLoader",
+              "ms": 1.125
+            },
+            {
+              "name": "applySupernode",
+              "ms": 1.041
+            }
+          ]
+        },
+        {
+          "prefix": "capture-resistor-mesh-op-1000-r1-cold",
+          "self": [
+            {
+              "name": "post",
+              "ms": 12.292
+            },
+            {
+              "name": "",
+              "ms": 7.916
+            },
+            {
+              "name": "applySupernode",
+              "ms": 6.792
+            },
+            {
+              "name": "solve",
+              "ms": 1.75
+            },
+            {
+              "name": "heapPopMin",
+              "ms": 1.042
+            }
+          ]
+        },
+        {
+          "prefix": "capture-resistor-mesh-op-1000-r2-cold",
+          "self": [
+            {
+              "name": "post",
+              "ms": 12
+            },
+            {
+              "name": "applySupernode",
+              "ms": 7.75
+            },
+            {
+              "name": "",
+              "ms": 2.75
+            },
+            {
+              "name": "(garbage collector)",
+              "ms": 2.167
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "size": 1000,
+      "phase": "warm",
+      "factorMs": {
+        "count": 3,
+        "median": 2.3595420000000047,
+        "min": 2.3163749999999936,
+        "max": 2.652165999999994
+      },
+      "solveMs": {
+        "count": 3,
+        "median": 0.8898329999999959,
+        "min": 0.8590420000000023,
+        "max": 1.1025419999999997
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 77.8125,
+        "min": 77.65625,
+        "max": 78.4375
+      },
+      "supernodalUpdates": 1231,
+      "factorNonzeros": 23088,
+      "growth": {
+        "phase": "growth-diagnostic",
+        "initialCapacity": 3010,
+        "finalCapacity": 24080,
+        "used": 12057,
+        "growth": [
+          {
+            "required": 3011,
+            "before": 3010,
+            "after": 6020
+          },
+          {
+            "required": 6021,
+            "before": 6020,
+            "after": 12040
+          },
+          {
+            "required": 12041,
+            "before": 12040,
+            "after": 24080
+          }
+        ]
+      },
+      "profiles": [
+        {
+          "prefix": "capture-resistor-mesh-op-1000-r0-warm",
+          "self": [
+            {
+              "name": "post",
+              "ms": 12.959
+            },
+            {
+              "name": "",
+              "ms": 2.166
+            }
+          ]
+        },
+        {
+          "prefix": "capture-resistor-mesh-op-1000-r1-warm",
+          "self": [
+            {
+              "name": "post",
+              "ms": 13
+            },
+            {
+              "name": "applySupernode",
+              "ms": 2
+            },
+            {
+              "name": "",
+              "ms": 0.166
+            }
+          ]
+        },
+        {
+          "prefix": "capture-resistor-mesh-op-1000-r2-warm",
+          "self": [
+            {
+              "name": "post",
+              "ms": 14.583
+            },
+            {
+              "name": "",
+              "ms": 2.417
+            },
+            {
+              "name": "solve",
+              "ms": 0.541
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "size": 10000,
+      "phase": "cold",
+      "factorMs": {
+        "count": 3,
+        "median": 73.62308399999999,
+        "min": 70.21199999999999,
+        "max": 79.34970799999999
+      },
+      "solveMs": {
+        "count": 3,
+        "median": 4.439249999999987,
+        "min": 4.315708000000001,
+        "max": 4.4952089999999885
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 101.453125,
+        "min": 101.40625,
+        "max": 101.890625
+      },
+      "supernodalUpdates": 16101,
+      "factorNonzeros": 396986,
+      "growth": {
+        "phase": "growth-diagnostic",
+        "initialCapacity": 29802,
+        "finalCapacity": 238416,
+        "used": 203494,
+        "growth": [
+          {
+            "required": 29803,
+            "before": 29802,
+            "after": 59604
+          },
+          {
+            "required": 59605,
+            "before": 59604,
+            "after": 119208
+          },
+          {
+            "required": 119209,
+            "before": 119208,
+            "after": 238416
+          }
+        ]
+      },
+      "profiles": [
+        {
+          "prefix": "capture-resistor-mesh-op-10000-r0-cold",
+          "self": [
+            {
+              "name": "factorize",
+              "ms": 46.251000000000005
+            },
+            {
+              "name": "applySupernode",
+              "ms": 16.124000000000002
+            },
+            {
+              "name": "post",
+              "ms": 11.834
+            },
+            {
+              "name": "",
+              "ms": 6.8740000000000006
+            },
+            {
+              "name": "solve",
+              "ms": 5.625
+            },
+            {
+              "name": "(garbage collector)",
+              "ms": 1.042
+            },
+            {
+              "name": "sortInt32Prefix",
+              "ms": 0.042
+            }
+          ]
+        },
+        {
+          "prefix": "capture-resistor-mesh-op-10000-r1-cold",
+          "self": [
+            {
+              "name": "factorize",
+              "ms": 30.042
+            },
+            {
+              "name": "applySupernode",
+              "ms": 20.250999999999998
+            },
+            {
+              "name": "",
+              "ms": 14.332
+            },
+            {
+              "name": "post",
+              "ms": 13.25
+            },
+            {
+              "name": "heapPopMin",
+              "ms": 5.375
+            },
+            {
+              "name": "solve",
+              "ms": 2.959
+            },
+            {
+              "name": "heapPush",
+              "ms": 2.209
+            },
+            {
+              "name": "sortInt32Prefix",
+              "ms": 2
+            },
+            {
+              "name": "compileForInternalLoader",
+              "ms": 1.125
+            },
+            {
+              "name": "extendSupernode",
+              "ms": 1.041
+            }
+          ]
+        },
+        {
+          "prefix": "capture-resistor-mesh-op-10000-r2-cold",
+          "self": [
+            {
+              "name": "factorize",
+              "ms": 37.169
+            },
+            {
+              "name": "",
+              "ms": 19.248999999999995
+            },
+            {
+              "name": "applySupernode",
+              "ms": 16.542
+            },
+            {
+              "name": "post",
+              "ms": 13.208
+            },
+            {
+              "name": "solve",
+              "ms": 5.667
+            },
+            {
+              "name": "extendSupernode",
+              "ms": 2.583
+            },
+            {
+              "name": "(garbage collector)",
+              "ms": 1.916
+            },
+            {
+              "name": "compileForInternalLoader",
+              "ms": 1.125
+            },
+            {
+              "name": "heapPush",
+              "ms": 1.042
+            },
+            {
+              "name": "sortInt32Prefix",
+              "ms": 0.041
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "size": 10000,
+      "phase": "warm",
+      "factorMs": {
+        "count": 3,
+        "median": 29.778209000000032,
+        "min": 29.750291999999945,
+        "max": 29.9255
+      },
+      "solveMs": {
+        "count": 3,
+        "median": 0.9435000000000286,
+        "min": 0.8871249999999691,
+        "max": 1.1695829999999887
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 117.390625,
+        "min": 117.21875,
+        "max": 117.765625
+      },
+      "supernodalUpdates": 16101,
+      "factorNonzeros": 396986,
+      "growth": {
+        "phase": "growth-diagnostic",
+        "initialCapacity": 29802,
+        "finalCapacity": 238416,
+        "used": 203494,
+        "growth": [
+          {
+            "required": 29803,
+            "before": 29802,
+            "after": 59604
+          },
+          {
+            "required": 59605,
+            "before": 59604,
+            "after": 119208
+          },
+          {
+            "required": 119209,
+            "before": 119208,
+            "after": 238416
+          }
+        ]
+      },
+      "profiles": [
+        {
+          "prefix": "capture-resistor-mesh-op-10000-r0-warm",
+          "self": [
+            {
+              "name": "post",
+              "ms": 17
+            },
+            {
+              "name": "applySupernode",
+              "ms": 16.792
+            },
+            {
+              "name": "",
+              "ms": 12.957
+            },
+            {
+              "name": "heapPush",
+              "ms": 1.167
+            }
+          ]
+        },
+        {
+          "prefix": "capture-resistor-mesh-op-10000-r1-warm",
+          "self": [
+            {
+              "name": "applySupernode",
+              "ms": 17.125
+            },
+            {
+              "name": "post",
+              "ms": 14.834
+            },
+            {
+              "name": "",
+              "ms": 11.333
+            },
+            {
+              "name": "heapPush",
+              "ms": 2.583
+            },
+            {
+              "name": "dispatch",
+              "ms": 0.083
+            },
+            {
+              "name": "factorize",
+              "ms": 0.042
+            }
+          ]
+        },
+        {
+          "prefix": "capture-resistor-mesh-op-10000-r2-warm",
+          "self": [
+            {
+              "name": "post",
+              "ms": 18.666
+            },
+            {
+              "name": "applySupernode",
+              "ms": 15.249
+            },
+            {
+              "name": "",
+              "ms": 14.584999999999999
+            },
+            {
+              "name": "heapPush",
+              "ms": 1.25
+            },
+            {
+              "name": "dispatch",
+              "ms": 0.083
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "size": 50000,
+      "phase": "cold",
+      "factorMs": {
+        "count": 3,
+        "median": 338.40645900000004,
+        "min": 336.01416699999993,
+        "max": 350.18070900000004
+      },
+      "solveMs": {
+        "count": 3,
+        "median": 8.53879100000006,
+        "min": 8.325541999999928,
+        "max": 8.786624999999958
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 243.34375,
+        "min": 242.84375,
+        "max": 244.5
+      },
+      "supernodalUpdates": 89122,
+      "factorNonzeros": 2988840,
+      "growth": {
+        "phase": "growth-diagnostic",
+        "initialCapacity": 150082,
+        "finalCapacity": 2401312,
+        "used": 1519509,
+        "growth": [
+          {
+            "required": 150083,
+            "before": 150082,
+            "after": 300164
+          },
+          {
+            "required": 300165,
+            "before": 300164,
+            "after": 600328
+          },
+          {
+            "required": 600329,
+            "before": 600328,
+            "after": 1200656
+          },
+          {
+            "required": 1200657,
+            "before": 1200656,
+            "after": 2401312
+          }
+        ]
+      },
+      "profiles": [
+        {
+          "prefix": "capture-resistor-mesh-op-50000-r0-cold",
+          "self": [
+            {
+              "name": "applySupernode",
+              "ms": 201.03900000000002
+            },
+            {
+              "name": "factorize",
+              "ms": 87.46000000000001
+            },
+            {
+              "name": "post",
+              "ms": 30.333
+            },
+            {
+              "name": "heapPush",
+              "ms": 19.833
+            },
+            {
+              "name": "",
+              "ms": 15.376
+            },
+            {
+              "name": "solve",
+              "ms": 7.834
+            },
+            {
+              "name": "growLFactors",
+              "ms": 4.667
+            },
+            {
+              "name": "sortInt32Prefix",
+              "ms": 4.125
+            },
+            {
+              "name": "extendSupernode",
+              "ms": 3.042
+            },
+            {
+              "name": "growUFactors",
+              "ms": 2.584
+            },
+            {
+              "name": "startSupernode",
+              "ms": 1.416
+            },
+            {
+              "name": "activateRow",
+              "ms": 1
+            },
+            {
+              "name": "recordFactoredInput",
+              "ms": 0.208
+            }
+          ]
+        },
+        {
+          "prefix": "capture-resistor-mesh-op-50000-r1-cold",
+          "self": [
+            {
+              "name": "applySupernode",
+              "ms": 201.125
+            },
+            {
+              "name": "factorize",
+              "ms": 94.12299999999999
+            },
+            {
+              "name": "post",
+              "ms": 28.583
+            },
+            {
+              "name": "",
+              "ms": 24.71
+            },
+            {
+              "name": "heapPush",
+              "ms": 10.042
+            },
+            {
+              "name": "solve",
+              "ms": 8.666
+            },
+            {
+              "name": "extendSupernode",
+              "ms": 7.542000000000001
+            },
+            {
+              "name": "sortInt32Prefix",
+              "ms": 5.958
+            },
+            {
+              "name": "growUFactors",
+              "ms": 5.709
+            },
+            {
+              "name": "reserveSupernode",
+              "ms": 1.166
+            },
+            {
+              "name": "growLFactors",
+              "ms": 1.042
+            }
+          ]
+        },
+        {
+          "prefix": "capture-resistor-mesh-op-50000-r2-cold",
+          "self": [
+            {
+              "name": "applySupernode",
+              "ms": 158.291
+            },
+            {
+              "name": "factorize",
+              "ms": 115.374
+            },
+            {
+              "name": "post",
+              "ms": 29
+            },
+            {
+              "name": "",
+              "ms": 26.125
+            },
+            {
+              "name": "heapPush",
+              "ms": 22.334
+            },
+            {
+              "name": "(garbage collector)",
+              "ms": 6.708
+            },
+            {
+              "name": "solve",
+              "ms": 6.292
+            },
+            {
+              "name": "extendSupernode",
+              "ms": 6.083
+            },
+            {
+              "name": "growLFactors",
+              "ms": 2.209
+            },
+            {
+              "name": "activateRow",
+              "ms": 1.209
+            },
+            {
+              "name": "growUFactors",
+              "ms": 1.125
+            },
+            {
+              "name": "sortInt32Prefix",
+              "ms": 0.042
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "size": 50000,
+      "phase": "warm",
+      "factorMs": {
+        "count": 3,
+        "median": 288.123791,
+        "min": 281.44779199999994,
+        "max": 312.56075
+      },
+      "solveMs": {
+        "count": 3,
+        "median": 7.610374999999976,
+        "min": 7.459874999999897,
+        "max": 10.307874999999967
+      },
+      "processPeakRssMiB": {
+        "count": 3,
+        "median": 265.015625,
+        "min": 264.84375,
+        "max": 265.5625
+      },
+      "supernodalUpdates": 89122,
+      "factorNonzeros": 2988840,
+      "growth": {
+        "phase": "growth-diagnostic",
+        "initialCapacity": 150082,
+        "finalCapacity": 2401312,
+        "used": 1519509,
+        "growth": [
+          {
+            "required": 150083,
+            "before": 150082,
+            "after": 300164
+          },
+          {
+            "required": 300165,
+            "before": 300164,
+            "after": 600328
+          },
+          {
+            "required": 600329,
+            "before": 600328,
+            "after": 1200656
+          },
+          {
+            "required": 1200657,
+            "before": 1200656,
+            "after": 2401312
+          }
+        ]
+      },
+      "profiles": [
+        {
+          "prefix": "capture-resistor-mesh-op-50000-r0-warm",
+          "self": [
+            {
+              "name": "applySupernode",
+              "ms": 150.749
+            },
+            {
+              "name": "",
+              "ms": 109.91700000000002
+            },
+            {
+              "name": "heapPush",
+              "ms": 19.75
+            },
+            {
+              "name": "post",
+              "ms": 13.917
+            },
+            {
+              "name": "growUFactors",
+              "ms": 5.041
+            },
+            {
+              "name": "solve",
+              "ms": 3.292
+            },
+            {
+              "name": "(garbage collector)",
+              "ms": 2.667
+            },
+            {
+              "name": "extendSupernode",
+              "ms": 2.083
+            },
+            {
+              "name": "growLFactors",
+              "ms": 1.459
+            }
+          ]
+        },
+        {
+          "prefix": "capture-resistor-mesh-op-50000-r1-warm",
+          "self": [
+            {
+              "name": "applySupernode",
+              "ms": 186.708
+            },
+            {
+              "name": "",
+              "ms": 75.99900000000001
+            },
+            {
+              "name": "heapPush",
+              "ms": 30.626000000000005
+            },
+            {
+              "name": "post",
+              "ms": 13.708
+            },
+            {
+              "name": "solve",
+              "ms": 10.791
+            },
+            {
+              "name": "extendSupernode",
+              "ms": 10.292
+            },
+            {
+              "name": "growLFactors",
+              "ms": 3.375
+            },
+            {
+              "name": "(garbage collector)",
+              "ms": 3.375
+            },
+            {
+              "name": "factorize",
+              "ms": 1.292
+            }
+          ]
+        },
+        {
+          "prefix": "capture-resistor-mesh-op-50000-r2-warm",
+          "self": [
+            {
+              "name": "applySupernode",
+              "ms": 156.5
+            },
+            {
+              "name": "",
+              "ms": 98.54400000000001
+            },
+            {
+              "name": "heapPush",
+              "ms": 23.957
+            },
+            {
+              "name": "post",
+              "ms": 12.458
+            },
+            {
+              "name": "solve",
+              "ms": 4.542
+            },
+            {
+              "name": "extendSupernode",
+              "ms": 2.25
+            },
+            {
+              "name": "growLFactors",
+              "ms": 1.583
+            },
+            {
+              "name": "factorize",
+              "ms": 1.041
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "jit": [
+    {
+      "size": 1000,
+      "repeat": 0,
+      "supernodeTraceLines": [
+        "[marking 0x2f2080185331 <JSFunction applySupernode (sfi = 0x2a6942bc6489)> for optimization to TURBOFAN, ConcurrencyMode::kConcurrent, reason: hot and stable]",
+        "[compiling method 0x2f2080185331 <JSFunction applySupernode (sfi = 0x2a6942bc6489)> (target TURBOFAN), mode: ConcurrencyMode::kConcurrent]",
+        "[completed compiling 0x2c840634dc99 <JSFunction applySupernode (sfi = 0x2a6942bc6489)> (target TURBOFAN) - took 0.000, 8.917, 0.042 ms]",
+        "[completed optimizing 0x2c840634dc99 <JSFunction applySupernode (sfi = 0x2a6942bc6489)> (target TURBOFAN)]",
+        "[bailout (kind: deopt-eager, reason: wrong map): begin. deoptimizing 0x2c840634dc99 <JSFunction applySupernode (sfi = 0x2a6942bc6489)>, 0x3ba03f19eb09 <Code TURBOFAN>, opt id 8, bytecode offset 0, deopt exit 2, FP to SP delta 448, caller SP 0x00016fd78b38, pc 0x00010b7338cc]",
+        "[marking 0x2c840634dc99 <JSFunction applySupernode (sfi = 0x2a6942bc6489)> for optimization to TURBOFAN, ConcurrencyMode::kConcurrent, reason: hot and stable]",
+        "[compiling method 0x2c840634dc99 <JSFunction applySupernode (sfi = 0x2a6942bc6489)> (target TURBOFAN), mode: ConcurrencyMode::kConcurrent]",
+        "[completed compiling 0x2c840634dc99 <JSFunction applySupernode (sfi = 0x2a6942bc6489)> (target TURBOFAN) - took 0.000, 8.584, 0.042 ms]",
+        "[completed optimizing 0x2c840634dc99 <JSFunction applySupernode (sfi = 0x2a6942bc6489)> (target TURBOFAN)]"
+      ]
+    },
+    {
+      "size": 1000,
+      "repeat": 1,
+      "supernodeTraceLines": [
+        "[marking 0x0ca7a4f05979 <JSFunction applySupernode (sfi = 0x216abb2064c9)> for optimization to TURBOFAN, ConcurrencyMode::kConcurrent, reason: hot and stable]",
+        "[compiling method 0x0ca7a4f05979 <JSFunction applySupernode (sfi = 0x216abb2064c9)> (target TURBOFAN), mode: ConcurrencyMode::kConcurrent]",
+        "[completed compiling 0x2f5528dfc091 <JSFunction applySupernode (sfi = 0x216abb2064c9)> (target TURBOFAN) - took 0.000, 9.417, 0.042 ms]",
+        "[completed optimizing 0x2f5528dfc091 <JSFunction applySupernode (sfi = 0x216abb2064c9)> (target TURBOFAN)]",
+        "[bailout (kind: deopt-eager, reason: wrong map): begin. deoptimizing 0x2f5528dfc091 <JSFunction applySupernode (sfi = 0x216abb2064c9)>, 0x32a4b739e449 <Code TURBOFAN>, opt id 8, bytecode offset 0, deopt exit 2, FP to SP delta 448, caller SP 0x00016f834b38, pc 0x00010bf738cc]",
+        "[marking 0x2f5528dfc091 <JSFunction applySupernode (sfi = 0x216abb2064c9)> for optimization to TURBOFAN, ConcurrencyMode::kConcurrent, reason: hot and stable]",
+        "[compiling method 0x2f5528dfc091 <JSFunction applySupernode (sfi = 0x216abb2064c9)> (target TURBOFAN), mode: ConcurrencyMode::kConcurrent]",
+        "[completed compiling 0x2f5528dfc091 <JSFunction applySupernode (sfi = 0x216abb2064c9)> (target TURBOFAN) - took 0.000, 8.375, 0.041 ms]",
+        "[completed optimizing 0x2f5528dfc091 <JSFunction applySupernode (sfi = 0x216abb2064c9)> (target TURBOFAN)]"
+      ]
+    },
+    {
+      "size": 1000,
+      "repeat": 2,
+      "supernodeTraceLines": [
+        "[marking 0x2b60ada98059 <JSFunction applySupernode (sfi = 0x1aaf15646489)> for optimization to TURBOFAN, ConcurrencyMode::kConcurrent, reason: hot and stable]",
+        "[compiling method 0x2b60ada98059 <JSFunction applySupernode (sfi = 0x1aaf15646489)> (target TURBOFAN), mode: ConcurrencyMode::kConcurrent]",
+        "[completed compiling 0x02e0b13c3d11 <JSFunction applySupernode (sfi = 0x1aaf15646489)> (target TURBOFAN) - took 0.000, 7.458, 0.000 ms]",
+        "[completed optimizing 0x02e0b13c3d11 <JSFunction applySupernode (sfi = 0x1aaf15646489)> (target TURBOFAN)]",
+        "[bailout (kind: deopt-eager, reason: wrong map): begin. deoptimizing 0x02e0b13c3d11 <JSFunction applySupernode (sfi = 0x1aaf15646489)>, 0x3c263d95e449 <Code TURBOFAN>, opt id 8, bytecode offset 0, deopt exit 2, FP to SP delta 448, caller SP 0x00016dd98b38, pc 0x00011d6738cc]",
+        "[marking 0x02e0b13c3d11 <JSFunction applySupernode (sfi = 0x1aaf15646489)> for optimization to TURBOFAN, ConcurrencyMode::kConcurrent, reason: hot and stable]",
+        "[compiling method 0x02e0b13c3d11 <JSFunction applySupernode (sfi = 0x1aaf15646489)> (target TURBOFAN), mode: ConcurrencyMode::kConcurrent]",
+        "[completed compiling 0x02e0b13c3d11 <JSFunction applySupernode (sfi = 0x1aaf15646489)> (target TURBOFAN) - took 0.000, 8.958, 0.042 ms]",
+        "[completed optimizing 0x02e0b13c3d11 <JSFunction applySupernode (sfi = 0x1aaf15646489)> (target TURBOFAN)]"
+      ]
+    },
+    {
+      "size": 10000,
+      "repeat": 0,
+      "supernodeTraceLines": [
+        "[marking 0x165fcbd6a599 <JSFunction applySupernode (sfi = 0xd2d889a6841)> for optimization to TURBOFAN, ConcurrencyMode::kConcurrent, reason: hot and stable]",
+        "[compiling method 0x165fcbd6a599 <JSFunction applySupernode (sfi = 0xd2d889a6841)> (target TURBOFAN), mode: ConcurrencyMode::kConcurrent]",
+        "[completed compiling 0x165fcbd6a599 <JSFunction applySupernode (sfi = 0xd2d889a6841)> (target TURBOFAN) - took 0.000, 6.708, 0.042 ms]",
+        "[completed optimizing 0x165fcbd6a599 <JSFunction applySupernode (sfi = 0xd2d889a6841)> (target TURBOFAN)]",
+        "[bailout (kind: deopt-eager, reason: Insufficient type feedback for generic named access): begin. deoptimizing 0x165fcbd6a599 <JSFunction applySupernode (sfi = 0xd2d889a6841)>, 0x1fd94b864ee1 <Code TURBOFAN>, opt id 19, bytecode offset 367, deopt exit 213, FP to SP delta 400, caller SP 0x00016d03c9e8, pc 0x00010e50e330]",
+        "[marking 0x165fcbd6a599 <JSFunction applySupernode (sfi = 0xd2d889a6841)> for optimization to TURBOFAN, ConcurrencyMode::kConcurrent, reason: hot and stable]",
+        "[compiling method 0x165fcbd6a599 <JSFunction applySupernode (sfi = 0xd2d889a6841)> (target TURBOFAN), mode: ConcurrencyMode::kConcurrent]",
+        "[completed compiling 0x165fcbd6a599 <JSFunction applySupernode (sfi = 0xd2d889a6841)> (target TURBOFAN) - took 0.000, 6.875, 0.000 ms]",
+        "[completed optimizing 0x165fcbd6a599 <JSFunction applySupernode (sfi = 0xd2d889a6841)> (target TURBOFAN)]",
+        "[bailout (kind: deopt-eager, reason: wrong map): begin. deoptimizing 0x165fcbd6a599 <JSFunction applySupernode (sfi = 0xd2d889a6841)>, 0x1fd94b86a981 <Code TURBOFAN>, opt id 24, bytecode offset 0, deopt exit 2, FP to SP delta 400, caller SP 0x00016d03cb38, pc 0x00010e515fbc]",
+        "[marking 0x165fcbd6a599 <JSFunction applySupernode (sfi = 0xd2d889a6841)> for optimization to TURBOFAN, ConcurrencyMode::kConcurrent, reason: hot and stable]",
+        "[compiling method 0x165fcbd6a599 <JSFunction applySupernode (sfi = 0xd2d889a6841)> (target TURBOFAN), mode: ConcurrencyMode::kConcurrent]",
+        "[completed compiling 0x165fcbd6a599 <JSFunction applySupernode (sfi = 0xd2d889a6841)> (target TURBOFAN) - took 0.000, 6.042, 0.000 ms]",
+        "[completed optimizing 0x165fcbd6a599 <JSFunction applySupernode (sfi = 0xd2d889a6841)> (target TURBOFAN)]",
+        "[bailout (kind: deopt-eager, reason: wrong call target): begin. deoptimizing 0x165fcbd6a599 <JSFunction applySupernode (sfi = 0xd2d889a6841)>, 0x1fd94b87d5f1 <Code TURBOFAN>, opt id 41, bytecode offset 380, deopt exit 209, FP to SP delta 400, caller SP 0x00016d03c9e8, pc 0x00010e533d38]",
+        "[marking 0x165fcbd6a599 <JSFunction applySupernode (sfi = 0xd2d889a6841)> for optimization to TURBOFAN, ConcurrencyMode::kConcurrent, reason: hot and stable]",
+        "[compiling method 0x165fcbd6a599 <JSFunction applySupernode (sfi = 0xd2d889a6841)> (target TURBOFAN), mode: ConcurrencyMode::kConcurrent]",
+        "[completed compiling 0x165fcbd6a599 <JSFunction applySupernode (sfi = 0xd2d889a6841)> (target TURBOFAN) - took 0.000, 7.917, 0.042 ms]",
+        "[completed optimizing 0x165fcbd6a599 <JSFunction applySupernode (sfi = 0xd2d889a6841)> (target TURBOFAN)]"
+      ]
+    },
+    {
+      "size": 10000,
+      "repeat": 1,
+      "supernodeTraceLines": [
+        "[marking 0x0f33dc1c9389 <JSFunction applySupernode (sfi = 0x2e965044cf31)> for optimization to TURBOFAN, ConcurrencyMode::kConcurrent, reason: hot and stable]",
+        "[compiling method 0x0f33dc1c9389 <JSFunction applySupernode (sfi = 0x2e965044cf31)> (target TURBOFAN), mode: ConcurrencyMode::kConcurrent]",
+        "[completed compiling 0x0f33dc1c9389 <JSFunction applySupernode (sfi = 0x2e965044cf31)> (target TURBOFAN) - took 0.000, 6.833, 0.000 ms]",
+        "[completed optimizing 0x0f33dc1c9389 <JSFunction applySupernode (sfi = 0x2e965044cf31)> (target TURBOFAN)]",
+        "[bailout (kind: deopt-eager, reason: Insufficient type feedback for generic named access): begin. deoptimizing 0x0f33dc1c9389 <JSFunction applySupernode (sfi = 0x2e965044cf31)>, 0x253e708e4a09 <Code TURBOFAN>, opt id 20, bytecode offset 367, deopt exit 213, FP to SP delta 400, caller SP 0x00016ae809e8, pc 0x0001109ce338]",
+        "[marking 0x0f33dc1c9389 <JSFunction applySupernode (sfi = 0x2e965044cf31)> for optimization to TURBOFAN, ConcurrencyMode::kConcurrent, reason: hot and stable]",
+        "[compiling method 0x0f33dc1c9389 <JSFunction applySupernode (sfi = 0x2e965044cf31)> (target TURBOFAN), mode: ConcurrencyMode::kConcurrent]",
+        "[completed compiling 0x0f33dc1c9389 <JSFunction applySupernode (sfi = 0x2e965044cf31)> (target TURBOFAN) - took 0.000, 7.500, 0.041 ms]",
+        "[completed optimizing 0x0f33dc1c9389 <JSFunction applySupernode (sfi = 0x2e965044cf31)> (target TURBOFAN)]",
+        "[bailout (kind: deopt-eager, reason: wrong map): begin. deoptimizing 0x0f33dc1c9389 <JSFunction applySupernode (sfi = 0x2e965044cf31)>, 0x253e708ea4a9 <Code TURBOFAN>, opt id 25, bytecode offset 0, deopt exit 2, FP to SP delta 400, caller SP 0x00016ae80b38, pc 0x0001109d5fd4]",
+        "[marking 0x0f33dc1c9389 <JSFunction applySupernode (sfi = 0x2e965044cf31)> for optimization to TURBOFAN, ConcurrencyMode::kConcurrent, reason: hot and stable]",
+        "[compiling method 0x0f33dc1c9389 <JSFunction applySupernode (sfi = 0x2e965044cf31)> (target TURBOFAN), mode: ConcurrencyMode::kConcurrent]",
+        "[completed compiling 0x0f33dc1c9389 <JSFunction applySupernode (sfi = 0x2e965044cf31)> (target TURBOFAN) - took 0.000, 7.583, 0.042 ms]",
+        "[completed optimizing 0x0f33dc1c9389 <JSFunction applySupernode (sfi = 0x2e965044cf31)> (target TURBOFAN)]",
+        "[bailout (kind: deopt-eager, reason: wrong call target): begin. deoptimizing 0x0f33dc1c9389 <JSFunction applySupernode (sfi = 0x2e965044cf31)>, 0x253e708fd119 <Code TURBOFAN>, opt id 42, bytecode offset 380, deopt exit 209, FP to SP delta 400, caller SP 0x00016ae809e8, pc 0x0001109f3d58]",
+        "[marking 0x0f33dc1c9389 <JSFunction applySupernode (sfi = 0x2e965044cf31)> for optimization to TURBOFAN, ConcurrencyMode::kConcurrent, reason: hot and stable]",
+        "[compiling method 0x0f33dc1c9389 <JSFunction applySupernode (sfi = 0x2e965044cf31)> (target TURBOFAN), mode: ConcurrencyMode::kConcurrent]",
+        "[completed compiling 0x0f33dc1c9389 <JSFunction applySupernode (sfi = 0x2e965044cf31)> (target TURBOFAN) - took 0.042, 7.708, 0.042 ms]",
+        "[completed optimizing 0x0f33dc1c9389 <JSFunction applySupernode (sfi = 0x2e965044cf31)> (target TURBOFAN)]"
+      ]
+    },
+    {
+      "size": 10000,
+      "repeat": 2,
+      "supernodeTraceLines": [
+        "[marking 0x33dfad94ba09 <JSFunction applySupernode (sfi = 0x1723985727a1)> for optimization to TURBOFAN, ConcurrencyMode::kConcurrent, reason: hot and stable]",
+        "[compiling method 0x33dfad94ba09 <JSFunction applySupernode (sfi = 0x1723985727a1)> (target TURBOFAN), mode: ConcurrencyMode::kConcurrent]",
+        "[completed compiling 0x33dfad94ba09 <JSFunction applySupernode (sfi = 0x1723985727a1)> (target TURBOFAN) - took 0.000, 6.750, 0.041 ms]",
+        "[completed optimizing 0x33dfad94ba09 <JSFunction applySupernode (sfi = 0x1723985727a1)> (target TURBOFAN)]",
+        "[bailout (kind: deopt-eager, reason: Insufficient type feedback for generic named access): begin. deoptimizing 0x33dfad94ba09 <JSFunction applySupernode (sfi = 0x1723985727a1)>, 0x3ea6385a4a09 <Code TURBOFAN>, opt id 20, bytecode offset 367, deopt exit 213, FP to SP delta 400, caller SP 0x00016d4d49e8, pc 0x00010e24e338]",
+        "[marking 0x33dfad94ba09 <JSFunction applySupernode (sfi = 0x1723985727a1)> for optimization to TURBOFAN, ConcurrencyMode::kConcurrent, reason: hot and stable]",
+        "[compiling method 0x33dfad94ba09 <JSFunction applySupernode (sfi = 0x1723985727a1)> (target TURBOFAN), mode: ConcurrencyMode::kConcurrent]",
+        "[completed compiling 0x33dfad94ba09 <JSFunction applySupernode (sfi = 0x1723985727a1)> (target TURBOFAN) - took 0.042, 7.542, 0.041 ms]",
+        "[completed optimizing 0x33dfad94ba09 <JSFunction applySupernode (sfi = 0x1723985727a1)> (target TURBOFAN)]",
+        "[bailout (kind: deopt-eager, reason: wrong map): begin. deoptimizing 0x33dfad94ba09 <JSFunction applySupernode (sfi = 0x1723985727a1)>, 0x3ea6385aa4a9 <Code TURBOFAN>, opt id 25, bytecode offset 0, deopt exit 2, FP to SP delta 400, caller SP 0x00016d4d4b38, pc 0x00010e255fdc]",
+        "[marking 0x33dfad94ba09 <JSFunction applySupernode (sfi = 0x1723985727a1)> for optimization to TURBOFAN, ConcurrencyMode::kConcurrent, reason: hot and stable]",
+        "[compiling method 0x33dfad94ba09 <JSFunction applySupernode (sfi = 0x1723985727a1)> (target TURBOFAN), mode: ConcurrencyMode::kConcurrent]",
+        "[completed compiling 0x33dfad94ba09 <JSFunction applySupernode (sfi = 0x1723985727a1)> (target TURBOFAN) - took 0.000, 7.541, 0.042 ms]",
+        "[completed optimizing 0x33dfad94ba09 <JSFunction applySupernode (sfi = 0x1723985727a1)> (target TURBOFAN)]",
+        "[bailout (kind: deopt-eager, reason: wrong call target): begin. deoptimizing 0x33dfad94ba09 <JSFunction applySupernode (sfi = 0x1723985727a1)>, 0x3ea6385bd119 <Code TURBOFAN>, opt id 42, bytecode offset 380, deopt exit 209, FP to SP delta 400, caller SP 0x00016d4d49e8, pc 0x00010e273d90]",
+        "[marking 0x33dfad94ba09 <JSFunction applySupernode (sfi = 0x1723985727a1)> for optimization to TURBOFAN, ConcurrencyMode::kConcurrent, reason: hot and stable]",
+        "[compiling method 0x33dfad94ba09 <JSFunction applySupernode (sfi = 0x1723985727a1)> (target TURBOFAN), mode: ConcurrencyMode::kConcurrent]",
+        "[completed compiling 0x33dfad94ba09 <JSFunction applySupernode (sfi = 0x1723985727a1)> (target TURBOFAN) - took 0.000, 7.917, 0.042 ms]",
+        "[completed optimizing 0x33dfad94ba09 <JSFunction applySupernode (sfi = 0x1723985727a1)> (target TURBOFAN)]"
+      ]
+    },
+    {
+      "size": 50000,
+      "repeat": 0,
+      "supernodeTraceLines": [
+        "[marking 0x15d54e1897d1 <JSFunction applySupernode (sfi = 0x3866b54bf511)> for optimization to TURBOFAN, ConcurrencyMode::kConcurrent, reason: hot and stable]",
+        "[compiling method 0x15d54e1897d1 <JSFunction applySupernode (sfi = 0x3866b54bf511)> (target TURBOFAN), mode: ConcurrencyMode::kConcurrent]",
+        "[completed compiling 0x15d54e1897d1 <JSFunction applySupernode (sfi = 0x3866b54bf511)> (target TURBOFAN) - took 0.000, 6.417, 0.041 ms]",
+        "[completed optimizing 0x15d54e1897d1 <JSFunction applySupernode (sfi = 0x3866b54bf511)> (target TURBOFAN)]",
+        "[bailout (kind: deopt-eager, reason: Insufficient type feedback for generic named access): begin. deoptimizing 0x15d54e1897d1 <JSFunction applySupernode (sfi = 0x3866b54bf511)>, 0x127708a29169 <Code TURBOFAN>, opt id 29, bytecode offset 367, deopt exit 203, FP to SP delta 400, caller SP 0x00016fa449e8, pc 0x00010bb16560]",
+        "[marking 0x15d54e1897d1 <JSFunction applySupernode (sfi = 0x3866b54bf511)> for optimization to TURBOFAN, ConcurrencyMode::kConcurrent, reason: hot and stable]",
+        "[compiling method 0x15d54e1897d1 <JSFunction applySupernode (sfi = 0x3866b54bf511)> (target TURBOFAN), mode: ConcurrencyMode::kConcurrent]",
+        "[completed compiling 0x15d54e1897d1 <JSFunction applySupernode (sfi = 0x3866b54bf511)> (target TURBOFAN) - took 0.042, 6.833, 0.042 ms]",
+        "[completed optimizing 0x15d54e1897d1 <JSFunction applySupernode (sfi = 0x3866b54bf511)> (target TURBOFAN)]",
+        "[bailout (kind: deopt-eager, reason: wrong map): begin. deoptimizing 0x38ddf62abea9 <JSFunction applySupernode (sfi = 0x3866b54bf511)>, 0x127708a2dd29 <Code TURBOFAN>, opt id 34, bytecode offset 0, deopt exit 2, FP to SP delta 400, caller SP 0x00016fa44b38, pc 0x00010bb1ccc4]",
+        "[marking 0x38ddf62abea9 <JSFunction applySupernode (sfi = 0x3866b54bf511)> for optimization to TURBOFAN, ConcurrencyMode::kConcurrent, reason: hot and stable]",
+        "[compiling method 0x38ddf62abea9 <JSFunction applySupernode (sfi = 0x3866b54bf511)> (target TURBOFAN), mode: ConcurrencyMode::kConcurrent]",
+        "[completed compiling 0x38ddf62abea9 <JSFunction applySupernode (sfi = 0x3866b54bf511)> (target TURBOFAN) - took 0.000, 7.458, 0.000 ms]",
+        "[completed optimizing 0x38ddf62abea9 <JSFunction applySupernode (sfi = 0x3866b54bf511)> (target TURBOFAN)]",
+        "[bailout (kind: deopt-eager, reason: wrong call target): begin. deoptimizing 0x38ddf62abea9 <JSFunction applySupernode (sfi = 0x3866b54bf511)>, 0x127708a2b491 <Code TURBOFAN>, opt id 68, bytecode offset 380, deopt exit 209, FP to SP delta 400, caller SP 0x00016fa449e8, pc 0x00010bb502d0]",
+        "[marking 0x38ddf62abea9 <JSFunction applySupernode (sfi = 0x3866b54bf511)> for optimization to TURBOFAN, ConcurrencyMode::kConcurrent, reason: hot and stable]",
+        "[compiling method 0x38ddf62abea9 <JSFunction applySupernode (sfi = 0x3866b54bf511)> (target TURBOFAN), mode: ConcurrencyMode::kConcurrent]",
+        "[completed compiling 0x38ddf62abea9 <JSFunction applySupernode (sfi = 0x3866b54bf511)> (target TURBOFAN) - took 0.000, 8.792, 0.041 ms]",
+        "[completed optimizing 0x38ddf62abea9 <JSFunction applySupernode (sfi = 0x3866b54bf511)> (target TURBOFAN)]"
+      ]
+    },
+    {
+      "size": 50000,
+      "repeat": 1,
+      "supernodeTraceLines": [
+        "[marking 0x045740b5a2f9 <JSFunction applySupernode (sfi = 0x3357d393f511)> for optimization to TURBOFAN, ConcurrencyMode::kConcurrent, reason: hot and stable]",
+        "[compiling method 0x045740b5a2f9 <JSFunction applySupernode (sfi = 0x3357d393f511)> (target TURBOFAN), mode: ConcurrencyMode::kConcurrent]",
+        "[completed compiling 0x045740b5a2f9 <JSFunction applySupernode (sfi = 0x3357d393f511)> (target TURBOFAN) - took 0.000, 6.250, 0.042 ms]",
+        "[completed optimizing 0x045740b5a2f9 <JSFunction applySupernode (sfi = 0x3357d393f511)> (target TURBOFAN)]",
+        "[bailout (kind: deopt-eager, reason: Insufficient type feedback for generic named access): begin. deoptimizing 0x045740b5a2f9 <JSFunction applySupernode (sfi = 0x3357d393f511)>, 0x2830fa3690c9 <Code TURBOFAN>, opt id 29, bytecode offset 367, deopt exit 197, FP to SP delta 400, caller SP 0x00016f6e89e8, pc 0x00010bdd6580]",
+        "[marking 0x045740b5a2f9 <JSFunction applySupernode (sfi = 0x3357d393f511)> for optimization to TURBOFAN, ConcurrencyMode::kConcurrent, reason: hot and stable]",
+        "[compiling method 0x045740b5a2f9 <JSFunction applySupernode (sfi = 0x3357d393f511)> (target TURBOFAN), mode: ConcurrencyMode::kConcurrent]",
+        "[completed compiling 0x045740b5a2f9 <JSFunction applySupernode (sfi = 0x3357d393f511)> (target TURBOFAN) - took 0.042, 6.542, 0.041 ms]",
+        "[completed optimizing 0x045740b5a2f9 <JSFunction applySupernode (sfi = 0x3357d393f511)> (target TURBOFAN)]",
+        "[bailout (kind: deopt-eager, reason: wrong map): begin. deoptimizing 0x37388df0c4b9 <JSFunction applySupernode (sfi = 0x3357d393f511)>, 0x2830fa36dc89 <Code TURBOFAN>, opt id 34, bytecode offset 0, deopt exit 2, FP to SP delta 400, caller SP 0x00016f6e8b38, pc 0x00010bddcce4]",
+        "[marking 0x37388df0c4b9 <JSFunction applySupernode (sfi = 0x3357d393f511)> for optimization to TURBOFAN, ConcurrencyMode::kConcurrent, reason: hot and stable]",
+        "[compiling method 0x37388df0c4b9 <JSFunction applySupernode (sfi = 0x3357d393f511)> (target TURBOFAN), mode: ConcurrencyMode::kConcurrent]",
+        "[completed compiling 0x37388df0c4b9 <JSFunction applySupernode (sfi = 0x3357d393f511)> (target TURBOFAN) - took 0.042, 7.333, 0.042 ms]",
+        "[completed optimizing 0x37388df0c4b9 <JSFunction applySupernode (sfi = 0x3357d393f511)> (target TURBOFAN)]",
+        "[bailout (kind: deopt-eager, reason: wrong call target): begin. deoptimizing 0x37388df0c4b9 <JSFunction applySupernode (sfi = 0x3357d393f511)>, 0x22aba9495ab1 <Code TURBOFAN>, opt id 68, bytecode offset 380, deopt exit 209, FP to SP delta 400, caller SP 0x00016f6e89e8, pc 0x00010be102d0]",
+        "[marking 0x37388df0c4b9 <JSFunction applySupernode (sfi = 0x3357d393f511)> for optimization to TURBOFAN, ConcurrencyMode::kConcurrent, reason: hot and stable]",
+        "[compiling method 0x37388df0c4b9 <JSFunction applySupernode (sfi = 0x3357d393f511)> (target TURBOFAN), mode: ConcurrencyMode::kConcurrent]",
+        "[completed compiling 0x37388df0c4b9 <JSFunction applySupernode (sfi = 0x3357d393f511)> (target TURBOFAN) - took 0.000, 8.292, 0.041 ms]",
+        "[completed optimizing 0x37388df0c4b9 <JSFunction applySupernode (sfi = 0x3357d393f511)> (target TURBOFAN)]"
+      ]
+    },
+    {
+      "size": 50000,
+      "repeat": 2,
+      "supernodeTraceLines": [
+        "[marking 0x23efda696601 <JSFunction applySupernode (sfi = 0x2e9f6fbbefb9)> for optimization to TURBOFAN, ConcurrencyMode::kConcurrent, reason: hot and stable]",
+        "[compiling method 0x23efda696601 <JSFunction applySupernode (sfi = 0x2e9f6fbbefb9)> (target TURBOFAN), mode: ConcurrencyMode::kConcurrent]",
+        "[completed compiling 0x23efda696601 <JSFunction applySupernode (sfi = 0x2e9f6fbbefb9)> (target TURBOFAN) - took 0.041, 6.292, 0.042 ms]",
+        "[completed optimizing 0x23efda696601 <JSFunction applySupernode (sfi = 0x2e9f6fbbefb9)> (target TURBOFAN)]",
+        "[bailout (kind: deopt-eager, reason: Insufficient type feedback for generic named access): begin. deoptimizing 0x23efda696601 <JSFunction applySupernode (sfi = 0x2e9f6fbbefb9)>, 0x21888af69169 <Code TURBOFAN>, opt id 29, bytecode offset 367, deopt exit 203, FP to SP delta 400, caller SP 0x00016f0c49e8, pc 0x00010c455520]",
+        "[marking 0x23efda696601 <JSFunction applySupernode (sfi = 0x2e9f6fbbefb9)> for optimization to TURBOFAN, ConcurrencyMode::kConcurrent, reason: hot and stable]",
+        "[compiling method 0x23efda696601 <JSFunction applySupernode (sfi = 0x2e9f6fbbefb9)> (target TURBOFAN), mode: ConcurrencyMode::kConcurrent]",
+        "[completed compiling 0x23efda696601 <JSFunction applySupernode (sfi = 0x2e9f6fbbefb9)> (target TURBOFAN) - took 0.000, 6.959, 0.041 ms]",
+        "[completed optimizing 0x23efda696601 <JSFunction applySupernode (sfi = 0x2e9f6fbbefb9)> (target TURBOFAN)]",
+        "[bailout (kind: deopt-eager, reason: wrong map): begin. deoptimizing 0x06cd8532c539 <JSFunction applySupernode (sfi = 0x2e9f6fbbefb9)>, 0x21888af6dd29 <Code TURBOFAN>, opt id 34, bytecode offset 0, deopt exit 2, FP to SP delta 400, caller SP 0x00016f0c4b38, pc 0x00010c45bc84]",
+        "[marking 0x06cd8532c539 <JSFunction applySupernode (sfi = 0x2e9f6fbbefb9)> for optimization to TURBOFAN, ConcurrencyMode::kConcurrent, reason: hot and stable]",
+        "[compiling method 0x06cd8532c539 <JSFunction applySupernode (sfi = 0x2e9f6fbbefb9)> (target TURBOFAN), mode: ConcurrencyMode::kConcurrent]",
+        "[completed compiling 0x06cd8532c539 <JSFunction applySupernode (sfi = 0x2e9f6fbbefb9)> (target TURBOFAN) - took 0.000, 6.791, 0.042 ms]",
+        "[completed optimizing 0x06cd8532c539 <JSFunction applySupernode (sfi = 0x2e9f6fbbefb9)> (target TURBOFAN)]",
+        "[bailout (kind: deopt-eager, reason: wrong call target): begin. deoptimizing 0x06cd8532c539 <JSFunction applySupernode (sfi = 0x2e9f6fbbefb9)>, 0x21888af6b491 <Code TURBOFAN>, opt id 68, bytecode offset 380, deopt exit 209, FP to SP delta 400, caller SP 0x00016f0c49e8, pc 0x00010c4902d0]",
+        "[marking 0x06cd8532c539 <JSFunction applySupernode (sfi = 0x2e9f6fbbefb9)> for optimization to TURBOFAN, ConcurrencyMode::kConcurrent, reason: hot and stable]",
+        "[compiling method 0x06cd8532c539 <JSFunction applySupernode (sfi = 0x2e9f6fbbefb9)> (target TURBOFAN), mode: ConcurrencyMode::kConcurrent]",
+        "[completed compiling 0x06cd8532c539 <JSFunction applySupernode (sfi = 0x2e9f6fbbefb9)> (target TURBOFAN) - took 0.000, 8.584, 0.041 ms]",
+        "[completed optimizing 0x06cd8532c539 <JSFunction applySupernode (sfi = 0x2e9f6fbbefb9)> (target TURBOFAN)]"
+      ]
+    }
+  ],
+  "phaseTaggedTraces": [
+    {
+      "size": 1000,
+      "deopts": [
+        {
+          "phase": "growth-diagnostic",
+          "line": "[bailout (kind: deopt-eager, reason: wrong map): begin. deoptimizing 0x3a3f00efa979 <JSFunction applySupernode (sfi = 0xa1803206489)>, 0x3e0329dde449 <Code TURBOFAN>, opt id 8, bytecode offset 0, deopt exit 2, FP to SP delta 448, caller SP 0x00016ae98aa8, pc 0x0001108738cc]"
+        }
+      ],
+      "bytecodeGrowthRegion": [
+        "1267340 S> 0x3e0329dda255 @  357 : 2f 02 12 63       GetNamedProperty <this>, [18], [99]",
+        "         0x3e0329dda259 @  361 : 18 b9             Star r64",
+        "1267348 E> 0x3e0329dda25b @  363 : 2f b9 13 65       GetNamedProperty r64, [19], [101]",
+        "1267331 E> 0x3e0329dda25f @  367 : 70 e4 67          TestEqualStrict r21, [103]",
+        "         0x3e0329dda262 @  370 : 9e 14             JumpIfFalse [20] (0x3e0329dda276 @ 390)",
+        "1267361 S> 0x3e0329dda264 @  372 : 2f 02 14 68       GetNamedProperty <this>, [20], [104]",
+        "         0x3e0329dda268 @  376 : 18 ba             Star r63",
+        "         0x3e0329dda26a @  378 : 0b e4             Ldar r21",
+        "1267377 E> 0x3e0329dda26c @  380 : 47 01 6a          AddSmi [1], [106]",
+        "         0x3e0329dda26f @  383 : 18 b8             Star r65",
+        "1267361 E> 0x3e0329dda271 @  385 : 61 ba 02 b8 6b    CallProperty1 r63, <this>, r65, [107]",
+        "1267394 S> 0x3e0329dda276 @  390 : 2f 02 15 6d       GetNamedProperty <this>, [21], [109]"
+      ]
+    },
+    {
+      "size": 10000,
+      "deopts": [
+        {
+          "phase": "cold",
+          "line": "[bailout (kind: deopt-eager, reason: Insufficient type feedback for generic named access): begin. deoptimizing 0x0ccfbdd4fed1 <JSFunction applySupernode (sfi = 0x30565ed3f511)>, 0x0b838fd65649 <Code TURBOFAN>, opt id 18, bytecode offset 367, deopt exit 213, FP to SP delta 400, caller SP 0x00016d928958, pc 0x00010dc4efb8]"
+        },
+        {
+          "phase": "growth-diagnostic",
+          "line": "[bailout (kind: deopt-eager, reason: wrong map): begin. deoptimizing 0x0ccfbdd4fed1 <JSFunction applySupernode (sfi = 0x30565ed3f511)>, 0x0b838fd69e49 <Code TURBOFAN>, opt id 22, bytecode offset 0, deopt exit 2, FP to SP delta 400, caller SP 0x00016d928aa8, pc 0x00010dc552b4]"
+        },
+        {
+          "phase": "growth-diagnostic",
+          "line": "[bailout (kind: deopt-eager, reason: wrong call target): begin. deoptimizing 0x0ccfbdd4fed1 <JSFunction applySupernode (sfi = 0x30565ed3f511)>, 0x0b838fd7d619 <Code TURBOFAN>, opt id 40, bytecode offset 380, deopt exit 209, FP to SP delta 400, caller SP 0x00016d928998, pc 0x00010dc74038]"
+        }
+      ],
+      "bytecodeGrowthRegion": [
+        "1267340 S> 0xb838fd5de75 @  357 : 2f 02 12 63       GetNamedProperty <this>, [18], [99]",
+        "         0xb838fd5de79 @  361 : 18 b9             Star r64",
+        "1267348 E> 0xb838fd5de7b @  363 : 2f b9 13 65       GetNamedProperty r64, [19], [101]",
+        "1267331 E> 0xb838fd5de7f @  367 : 70 e4 67          TestEqualStrict r21, [103]",
+        "         0xb838fd5de82 @  370 : 9e 14             JumpIfFalse [20] (0xb838fd5de96 @ 390)",
+        "1267361 S> 0xb838fd5de84 @  372 : 2f 02 14 68       GetNamedProperty <this>, [20], [104]",
+        "         0xb838fd5de88 @  376 : 18 ba             Star r63",
+        "         0xb838fd5de8a @  378 : 0b e4             Ldar r21",
+        "1267377 E> 0xb838fd5de8c @  380 : 47 01 6a          AddSmi [1], [106]",
+        "         0xb838fd5de8f @  383 : 18 b8             Star r65",
+        "1267361 E> 0xb838fd5de91 @  385 : 61 ba 02 b8 6b    CallProperty1 r63, <this>, r65, [107]",
+        "1267394 S> 0xb838fd5de96 @  390 : 2f 02 15 6d       GetNamedProperty <this>, [21], [109]"
+      ]
+    },
+    {
+      "size": 50000,
+      "deopts": [
+        {
+          "phase": "cold",
+          "line": "[bailout (kind: deopt-eager, reason: Insufficient type feedback for generic named access): begin. deoptimizing 0x12962e11c319 <JSFunction applySupernode (sfi = 0x29dfa91dd431)>, 0x2edef3aa90c9 <Code TURBOFAN>, opt id 29, bytecode offset 367, deopt exit 197, FP to SP delta 400, caller SP 0x00016ef3c958, pc 0x00010c516580]"
+        },
+        {
+          "phase": "growth-diagnostic",
+          "line": "[bailout (kind: deopt-eager, reason: wrong map): begin. deoptimizing 0x0835d356ebb9 <JSFunction applySupernode (sfi = 0x29dfa91dd431)>, 0x2edef3aadc89 <Code TURBOFAN>, opt id 34, bytecode offset 0, deopt exit 2, FP to SP delta 400, caller SP 0x00016ef3caa8, pc 0x00010c51cce4]"
+        },
+        {
+          "phase": "growth-diagnostic",
+          "line": "[bailout (kind: deopt-eager, reason: wrong call target): begin. deoptimizing 0x0835d356ebb9 <JSFunction applySupernode (sfi = 0x29dfa91dd431)>, 0x0dff72dd5aa9 <Code TURBOFAN>, opt id 67, bytecode offset 380, deopt exit 209, FP to SP delta 400, caller SP 0x00016ef3c958, pc 0x00010c4f0110]"
+        }
+      ],
+      "bytecodeGrowthRegion": [
+        "1267340 S> 0x2edef3aa2d9d @  357 : 2f 02 12 63       GetNamedProperty <this>, [18], [99]",
+        "         0x2edef3aa2da1 @  361 : 18 b9             Star r64",
+        "1267348 E> 0x2edef3aa2da3 @  363 : 2f b9 13 65       GetNamedProperty r64, [19], [101]",
+        "1267331 E> 0x2edef3aa2da7 @  367 : 70 e4 67          TestEqualStrict r21, [103]",
+        "         0x2edef3aa2daa @  370 : 9e 14             JumpIfFalse [20] (0x2edef3aa2dbe @ 390)",
+        "1267361 S> 0x2edef3aa2dac @  372 : 2f 02 14 68       GetNamedProperty <this>, [20], [104]",
+        "         0x2edef3aa2db0 @  376 : 18 ba             Star r63",
+        "         0x2edef3aa2db2 @  378 : 0b e4             Ldar r21",
+        "1267377 E> 0x2edef3aa2db4 @  380 : 47 01 6a          AddSmi [1], [106]",
+        "         0x2edef3aa2db7 @  383 : 18 b8             Star r65",
+        "1267361 E> 0x2edef3aa2db9 @  385 : 61 ba 02 b8 6b    CallProperty1 r63, <this>, r65, [107]",
+        "1267394 S> 0x2edef3aa2dbe @  390 : 2f 02 15 6d       GetNamedProperty <this>, [21], [109]"
+      ]
+    }
+  ],
+  "traceProcessReceipts": 3,
+  "totalProcessReceipts": 42
+}
