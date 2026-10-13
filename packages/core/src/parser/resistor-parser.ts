@@ -1,15 +1,18 @@
 import { ParseError } from '../errors.js';
+import { translatePspiceModelTemperatures } from './pspice-model-temperature.js';
 import { parseNumber } from './tokenizer.js';
 
 /**
  * ngspice-47 resistor instance keywords (res.c RESpTable) that spice-ts
  * simulates, plus the spice-ts `TNOM` instance extension. `R`/`RESISTANCE`,
  * `TC`/`TC1` and `NOISY`/`NOISE` are aliases. `BV_MAX` only drives ngspice
- * safe-operating-area warnings and does not change any result.
+ * safe-operating-area warnings and does not change any result. `TEMP` is the
+ * instance temperature and `DTEMP` its offset from the circuit temperature
+ * (restemp.c: a given TEMP ignores DTEMP).
  */
 const INSTANCE_PARAMETERS: ReadonlySet<string> = new Set([
   'R', 'RESISTANCE', 'AC', 'L', 'W', 'M', 'SCALE',
-  'TC', 'TC1', 'TC2', 'TCE', 'TNOM',
+  'TC', 'TC1', 'TC2', 'TCE', 'TNOM', 'TEMP', 'DTEMP',
   'NOISY', 'NOISE', 'BV_MAX',
 ]);
 
@@ -23,13 +26,13 @@ const MODEL_PARAMETERS: ReadonlySet<string> = new Set([
   'TC1', 'TC1R', 'TC2', 'TC2R', 'TCE',
   'DEFW', 'W', 'L', 'KF', 'AF', 'LF', 'WF', 'EF',
   'TNOM', 'R', 'RES', 'BV_MAX',
-  'RESISTANCE', 'AC', 'TC', 'SCALE', 'NOISY', 'NOISE',
+  'RESISTANCE', 'AC', 'TC', 'SCALE', 'NOISY', 'NOISE', 'TEMP', 'DTEMP',
   'M', 'LEVEL',
 ]);
 
 /**
  * Thrown for a resistor card or `.model R` parameter that spice-ts does not
- * simulate (for example the instance `TEMP`/`DTEMP` keywords, or a quoted
+ * simulate (for example PSpice `T_REL_LOCAL`, or a quoted
  * behavioral expression such as `R='res + V(x)'`). The card is rejected rather
  * than simulated without the parameter.
  */
@@ -163,7 +166,8 @@ export function assertSupportedResistorModel(tokens: string[], lineNumber: numbe
   const type = tokens[2]?.toUpperCase();
   if (type !== 'R' && type !== 'RES') return;
   const unsupported: string[] = [];
-  for (const token of tokens.slice(3)) {
+  // PSpice T_ABS/T_REL_GLOBAL/T_MEASURED: renamed (or dropped) as in parseModelCard.
+  for (const token of translatePspiceModelTemperatures(tokens.slice(3)).body) {
     if (isExpression(token)) {
       throw new UnsupportedResistorParameterError(
         tokens[1], [token], lineNumber, context,

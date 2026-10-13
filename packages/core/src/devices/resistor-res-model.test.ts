@@ -73,7 +73,7 @@ r2 2 0 1k
     expect(() => parse(`t
 v1 1 0 1
 r1 1 0 rbad 1k
-.model rbad RES(R=1 T_ABS=50)
+.model rbad RES(R=1 T_REL_LOCAL=50)
 .op
 .end
 `)).toThrow(UnsupportedResistorParameterError);
