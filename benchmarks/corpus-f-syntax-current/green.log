@@ -1,0 +1,70 @@
+TAP version 13
+# Subtest: selects all 59 historical other-syntax fixtures, including all 54 historical reference successes
+ok 1 - selects all 59 historical other-syntax fixtures, including all 54 historical reference successes
+  ---
+  duration_ms: 1.41925
+  type: 'test'
+  ...
+# Subtest: rejects missing, duplicate, or changed historical fixture identity
+ok 2 - rejects missing, duplicate, or changed historical fixture identity
+  ---
+  duration_ms: 1.007042
+  type: 'test'
+  ...
+# Subtest: validates historical-only receipts and rejects invented match/mismatch or computed metrics
+ok 3 - validates historical-only receipts and rejects invented match/mismatch or computed metrics
+  ---
+  duration_ms: 4.388666
+  type: 'test'
+  ...
+# Subtest: rejects omitted/reordered rows, changed SHA, hidden parse errors, and simulated parse failures
+ok 4 - rejects omitted/reordered rows, changed SHA, hidden parse errors, and simulated parse failures
+  ---
+  duration_ms: 3.169
+  type: 'test'
+  ...
+# Subtest: committed receipt accounts for the complete selection with honest null comparisons
+ok 5 - committed receipt accounts for the complete selection with honest null comparisons
+  ---
+  duration_ms: 0.760584
+  type: 'test'
+  ...
+# Subtest: kills only its own runaway child and publishes timeout instead of success
+ok 6 - kills only its own runaway child and publishes timeout instead of success
+  ---
+  duration_ms: 203.705917
+  type: 'test'
+  ...
+# Subtest: records child failure and never promotes missing child output to success
+ok 7 - records child failure and never promotes missing child output to success
+  ---
+  duration_ms: 49.972667
+  type: 'test'
+  ...
+# Subtest: publishes malformed child transport as a failure, not an omitted fixture
+ok 8 - publishes malformed child transport as a failure, not an omitted fixture
+  ---
+  duration_ms: 51.674167
+  type: 'test'
+  ...
+# Subtest: total budget clamps both child phases and never requests unbounded timeout zero
+ok 9 - total budget clamps both child phases and never requests unbounded timeout zero
+  ---
+  duration_ms: 0.274375
+  type: 'test'
+  ...
+# Subtest: summary ranks every fixture exactly once using only historical reference successes
+ok 10 - summary ranks every fixture exactly once using only historical reference successes
+  ---
+  duration_ms: 0.743333
+  type: 'test'
+  ...
+1..10
+# tests 10
+# suites 0
+# pass 10
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 358.609125

@@ -1,0 +1,3120 @@
+{
+  "schema": "corpus-f-syntax-current/v1",
+  "simulatorSha": "f0446a68f317b9fd558d1a14b540a0e4f1063e18",
+  "runnerHeadAtExecution": "f0446a68f317b9fd558d1a14b540a0e4f1063e18",
+  "source": {
+    "name": "ngspice examples and regression tests",
+    "repository": "https://sourceforge.net/p/ngspice/ngspice/ci/master/tree/",
+    "gitUrl": "https://git.code.sf.net/p/ngspice/ngspice",
+    "revision": "3ef069fb1f04177a153f342a32d941fc20ff047e",
+    "license": "BSD-3-Clause",
+    "licenseUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/COPYING",
+    "licenseTextSourcePath": "COPYING",
+    "licenseTextLocalPath": "benchmarks/corpus/corpus-f/LICENSE.txt",
+    "licenseTextSha256": "6d939001e899ede403277fb37124c2af6f1cf92926465cd8f4bf59859e06f579",
+    "redistributionDecision": "Allowed. Every committed deck is under examples/ or tests/, which upstream COPYING places under Modified BSD; decks with a third-party notice are excluded and not committed.",
+    "mechanicalAdaptation": "None. Every fixture is byte-identical to the pinned revision (SHA-256 pinned per file)."
+  },
+  "historicalTools": {
+    "ngspice": "ngspice-47",
+    "spiceTs": "0.3.0",
+    "node": "v22.23.1"
+  },
+  "outcomesSha256": "b5d5bb8b5d813c887310bfb662a288673fca49431e34d2b328cb7aab6f8b1138",
+  "manifestSha256": "c3b01fcf52824c949452e10a3e6e14cd3e35d31e3890dd3ac23806781ab3b05f",
+  "selectionPredicate": "fixture.gapBucket === \"parse: other unsupported syntax\"",
+  "limits": {
+    "parseMs": 8000,
+    "simulateMs": 12000,
+    "totalMs": 600000
+  },
+  "environment": {
+    "node": "v22.23.1",
+    "platform": "darwin",
+    "release": "27.0.0",
+    "arch": "arm64",
+    "cpu": "Apple M5 Pro"
+  },
+  "policy": {
+    "fixtureAdaptation": "none",
+    "freshReference": "not run",
+    "metric": "not computed; all comparisons null",
+    "tuning": false,
+    "simulation": "only after native parse succeeds; existing corpus-f packed adapter"
+  },
+  "fixtures": [
+    {
+      "id": "examples-control-structs-foreach-bjt-ft-sp",
+      "sourcePath": "examples/control_structs/foreach_bjt_ft.sp",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/control_structs/foreach_bjt_ft.sp",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/control_structs/foreach_bjt_ft.sp",
+      "sha256": "ed547206e799c218a806ec30b50b46bd77fe6691d7aab176481de1e043f86352",
+      "bytes": 1358,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [],
+          "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Unsupported BJT model parameter: 'PTF' (excess phase is not implemented)"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 282.389625,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "success"
+      },
+      "simulation": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 302.16541699999993,
+        "stderr": "",
+        "childCapMs": 12000,
+        "status": "unsupported",
+        "convergence": "not-run",
+        "firstError": "Unsupported BJT model parameter: 'PTF' (excess phase is not implemented)",
+        "analyses": []
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "BJT excess phase PTF"
+    },
+    {
+      "id": "examples-digital-auto-bridge-shared-line-cir",
+      "sourcePath": "examples/digital/auto_bridge/shared_line.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/digital/auto_bridge/shared_line.cir",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/digital/auto_bridge/shared_line.cir",
+      "sha256": "86b6140d7f4682033fc1fae2564bc6bf3a93fbad0b0e657b4787bd77298c7391",
+      "bytes": 615,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [],
+          "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 19: XSPICE code model 'd_tristate' (.model 'tristate') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 298.080834,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 19: XSPICE code model 'd_tristate' (.model 'tristate') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .model tristate d_tristate"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE code model: d_tristate"
+    },
+    {
+      "id": "examples-loops-instance-loop-cir",
+      "sourcePath": "examples/loops/instance-loop.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/loops/instance-loop.cir",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/loops/instance-loop.cir",
+      "sha256": "6b38f6f9fe6cd67bd513da66606060507c629dd1a4516ddea0b772e09c2a113d",
+      "bytes": 1475,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "op"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [],
+          "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Control script error at line 22: no such vector 'end' in plot 'unknown1' if (end < start)"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 302.009625,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "success"
+      },
+      "simulation": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 313.9870420000002,
+        "stderr": "",
+        "childCapMs": 12000,
+        "status": "unsupported",
+        "convergence": "not-run",
+        "firstError": "Control script error at line 22: no such vector 'end' in plot 'unknown1' if (end < start)",
+        "analyses": []
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "control/vector/function execution"
+    },
+    {
+      "id": "examples-loops-loop-instance-cir",
+      "sourcePath": "examples/loops/loop-instance.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/loops/loop-instance.cir",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/loops/loop-instance.cir",
+      "sha256": "7dbec4d0a85fc3ae517b3250a0521264c3700afcf46468c1118fd66eb90eda6d",
+      "bytes": 1524,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "op"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [],
+          "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Control script error at line 22: no such vector 'end' in plot 'unknown1' if (end < start)"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 296.7754160000002,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "success"
+      },
+      "simulation": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 327.87324999999987,
+        "stderr": "",
+        "childCapMs": 12000,
+        "status": "unsupported",
+        "convergence": "not-run",
+        "firstError": "Control script error at line 22: no such vector 'end' in plot 'unknown1' if (end < start)",
+        "analyses": []
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "control/vector/function execution"
+    },
+    {
+      "id": "examples-loops-loop-model-cir",
+      "sourcePath": "examples/loops/loop-model.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/loops/loop-model.cir",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/loops/loop-model.cir",
+      "sha256": "af16eb24765e9593c4f9e87033cbea2811b8de385f324d80d56c5ce0d7e39b6b",
+      "bytes": 1666,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "op"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [],
+          "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Control script error at line 23: no such vector 'end' in plot 'unknown1' if (end < start)"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 331.404,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "success"
+      },
+      "simulation": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 344.13933399999996,
+        "stderr": "",
+        "childCapMs": 12000,
+        "status": "unsupported",
+        "convergence": "not-run",
+        "firstError": "Control script error at line 23: no such vector 'end' in plot 'unknown1' if (end < start)",
+        "analyses": []
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "control/vector/function execution"
+    },
+    {
+      "id": "examples-measure-mos-meas-dc-control-sp",
+      "sourcePath": "examples/measure/mos-meas-dc-control.sp",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/measure/mos-meas-dc-control.sp",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/measure/mos-meas-dc-control.sp",
+      "sha256": "2b64ffd5e642e7f9dc85ec5f5ca348b126463dc612c7a0a0d76ff8e9106b09dc",
+      "bytes": 1636,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Error: measure vd_diff2 trig(TARG) : out of interval"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "MOSFET 'm1' references unknown model 'nch'"
+        },
+        "outcome": "both-failed",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 324.9251250000002,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "success"
+      },
+      "simulation": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 346.249875,
+        "stderr": "",
+        "childCapMs": 12000,
+        "status": "unsupported",
+        "convergence": "not-run",
+        "firstError": "MOSFET 'm1' references unknown model 'nch'",
+        "analyses": []
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "model resolution/instance forms"
+    },
+    {
+      "id": "examples-measure-mos-meas-dc-sp",
+      "sourcePath": "examples/measure/mos-meas-dc.sp",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/measure/mos-meas-dc.sp",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/measure/mos-meas-dc.sp",
+      "sha256": "acbf673415702a8fdbc42d9fb2bfe90f030644ca33306b32d17bf42e5baa20db",
+      "bytes": 848,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "dc:497"
+          ]
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "MOSFET 'm1' references unknown model 'nch'"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 322.3781250000002,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "success"
+      },
+      "simulation": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 354.48720799999955,
+        "stderr": "",
+        "childCapMs": 12000,
+        "status": "unsupported",
+        "convergence": "not-run",
+        "firstError": "MOSFET 'm1' references unknown model 'nch'",
+        "analyses": []
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "model resolution/instance forms"
+    },
+    {
+      "id": "examples-memristor-memristor-x-sp",
+      "sourcePath": "examples/memristor/memristor_x.sp",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/memristor/memristor_x.sp",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/memristor/memristor_x.sp",
+      "sha256": "69810517621bad1d6b4a4b43585b05c965d0778ada244e5f57d3bf4e44721363",
+      "bytes": 3031,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "op",
+        "ac",
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [],
+          "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 31: XSPICE code model 'memristor' (.model 'memr') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inve"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 332.35491600000023,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 31: XSPICE code model 'memristor' (.model 'memr') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .model memr memristor (rmin=1k rmax=10k rinit=7k alpha=0 beta=2000000000000 vt=1.6)"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE code model: memristor"
+    },
+    {
+      "id": "examples-mos-nmos-out-bsim330-plainwrite-sp",
+      "sourcePath": "examples/mos/nmos_out_BSIM330_plainwrite.sp",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/mos/nmos_out_BSIM330_plainwrite.sp",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/mos/nmos_out_BSIM330_plainwrite.sp",
+      "sha256": "7513aface9d8cdc33dd0c16123db106158cb040a481f91afe46b44f7eda6f340",
+      "bytes": 1100,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [],
+          "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Control script error at line 26: invalid vector name 'v(/22)' let v(/22) = V(22)"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 333.50791599999957,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "success"
+      },
+      "simulation": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 360.78412500000013,
+        "stderr": "",
+        "childCapMs": 12000,
+        "status": "unsupported",
+        "convergence": "not-run",
+        "firstError": "Control script error at line 26: invalid vector name 'v(/22)' let v(/22) = V(22)",
+        "analyses": []
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "control/vector/function execution"
+    },
+    {
+      "id": "examples-numparam-strings-cir",
+      "sourcePath": "examples/numparam/strings.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/numparam/strings.cir",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/numparam/strings.cir",
+      "sha256": "9deb2f65c32c95ef3e3d6cdb3cbf07dacddaa8a325dbc605b5ee02a7a92288d7",
+      "bytes": 939,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [],
+          "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 3: String-valued .param 'OR' is not supported: spice-ts parameters are numbers (ngspice string and vector parameters are not implemented) .param and=\"0001\" or=\"0111\""
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 323.07295799999974,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 3: String-valued .param 'OR' is not supported: spice-ts parameters are numbers (ngspice string and vector parameters are not implemented)\n  .param and=\"0001\" or=\"0111\""
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "string/vector numparam"
+    },
+    {
+      "id": "examples-numparam-vector-param-cir",
+      "sourcePath": "examples/numparam/vector_param.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/numparam/vector_param.cir",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/numparam/vector_param.cir",
+      "sha256": "530d53ee7dc4e9629e53e6b929f48649f3eaa890289bd51861888c4742ef6d82",
+      "bytes": 821,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [],
+          "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 21: String-valued .param 'ACTUAL_VEC' is not supported: spice-ts parameters are numbers (ngspice string and vector parameters are not implemented) .param actual_vec=\"[1.3e-3 2e-3]\""
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 336.17270799999915,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 21: String-valued .param 'ACTUAL_VEC' is not supported: spice-ts parameters are numbers (ngspice string and vector parameters are not implemented)\n  .param actual_vec=\"[1.3e-3 2e-3]\""
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "string/vector numparam"
+    },
+    {
+      "id": "examples-osdi-hicuml0-dff-y-ecl-vbic-sp",
+      "sourcePath": "examples/osdi/hicuml0/DFF_Y_ECL_VBIC.sp",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/osdi/hicuml0/DFF_Y_ECL_VBIC.sp",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/osdi/hicuml0/DFF_Y_ECL_VBIC.sp",
+      "sha256": "edcaf3b0016818459de959135cfe7694b2f1f3542c284a8efd7126963f88429f",
+      "bytes": 2576,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [],
+          "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Unsupported bounded VBIC DC model parameter: 'NF'"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 327.8679579999998,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "success"
+      },
+      "simulation": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 355.208584,
+        "stderr": "",
+        "childCapMs": 12000,
+        "status": "unsupported",
+        "convergence": "not-run",
+        "firstError": "Unsupported bounded VBIC DC model parameter: 'NF'",
+        "analyses": []
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "VBIC model/instance form"
+    },
+    {
+      "id": "examples-osdi-hicuml0-vbic-out-sp",
+      "sourcePath": "examples/osdi/hicuml0/vbic_out.sp",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/osdi/hicuml0/vbic_out.sp",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/osdi/hicuml0/vbic_out.sp",
+      "sha256": "7e088f28a8faa0a36c61eea751fea07efc750592572b812f75c0f498fff400b0",
+      "bytes": 1667,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [],
+          "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Unsupported bounded VBIC DC model parameter: 'NF'"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 332.48029099999985,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "success"
+      },
+      "simulation": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 342.4230000000007,
+        "stderr": "",
+        "childCapMs": 12000,
+        "status": "unsupported",
+        "convergence": "not-run",
+        "firstError": "Unsupported bounded VBIC DC model parameter: 'NF'",
+        "analyses": []
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "VBIC model/instance form"
+    },
+    {
+      "id": "examples-p-to-n-examples-switch-oscillators-cir",
+      "sourcePath": "examples/p-to-n-examples/switch-oscillators.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/p-to-n-examples/switch-oscillators.cir",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/p-to-n-examples/switch-oscillators.cir",
+      "sha256": "dc3029fbeeb8f83b79c1e73d013c556229424e9b95a91f8be975b9d16f0dd65d",
+      "bytes": 1469,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "tran:7488"
+          ]
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 14: Unsupported .options maxord=3 with method=gear (spice-ts implements Gear order 2 only) .option method=gear maxord=3"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 324.5474999999997,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 14: Unsupported .options maxord=3 with method=gear (spice-ts implements Gear order 2 only)\n  .option method=gear maxord=3"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "Gear integration order 3"
+    },
+    {
+      "id": "examples-probe-cntrl-sources-cir",
+      "sourcePath": "examples/probe/cntrl-sources.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/probe/cntrl-sources.cir",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/probe/cntrl-sources.cir",
+      "sha256": "0f2697647c972a2d070a7f80b32a1e8bacf819b3b197843c1bed3adef5d9c45f",
+      "bytes": 566,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "tran:2514"
+          ]
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "CCCS 'F1' references unknown or branchless source 'vf'"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 330.14608299999963,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "success"
+      },
+      "simulation": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 388.720875,
+        "stderr": "",
+        "childCapMs": 12000,
+        "status": "success",
+        "convergence": "converged",
+        "firstError": null,
+        "analyses": [
+          {
+            "type": "tran",
+            "points": 2514,
+            "signals": 12
+          }
+        ]
+      },
+      "currentOutcome": "not-compared",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "native success, parity not computed"
+    },
+    {
+      "id": "examples-soa-diode-soa-sh-cir",
+      "sourcePath": "examples/soa/diode-soa-sh.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/soa/diode-soa-sh.cir",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/soa/diode-soa-sh.cir",
+      "sha256": "24c5c8568ebe8c15d8d8b603e84db3d98e8914767e1de1f4f266f242828f066f",
+      "bytes": 2490,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [],
+          "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 11: Unsupported diode thermal node 'tj' (model 'dmod'): diode self-heating is not implemented D1 1 0 tj dmod thermal"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 335.77900000000045,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 11: Unsupported diode thermal node 'tj' (model 'dmod'): diode self-heating is not implemented\n  D1 1 0 tj dmod thermal"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "thermal/self-heating"
+    },
+    {
+      "id": "examples-various-bjt-ac-par-sp",
+      "sourcePath": "examples/various/bjt_ac_par.sp",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/various/bjt_ac_par.sp",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/various/bjt_ac_par.sp",
+      "sha256": "a3aef35758b0c9763d5a7911d65cd23ff91b91fd9168d637933d307e5a74bdc4",
+      "bytes": 698,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [],
+          "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Unsupported BJT model parameter: 'PTF' (excess phase is not implemented)"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 328.2368340000012,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "success"
+      },
+      "simulation": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 350.07008399999904,
+        "stderr": "",
+        "childCapMs": 12000,
+        "status": "unsupported",
+        "convergence": "not-run",
+        "firstError": "Unsupported BJT model parameter: 'PTF' (excess phase is not implemented)",
+        "analyses": []
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "BJT excess phase PTF"
+    },
+    {
+      "id": "examples-vbic-dff-y-ecl-sp",
+      "sourcePath": "examples/vbic/DFF_Y_ECL.sp",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/vbic/DFF_Y_ECL.sp",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/vbic/DFF_Y_ECL.sp",
+      "sha256": "d811ecfa0f370d281fb35729ca3177e738fe034621d9b2909765d9d70f527cc6",
+      "bytes": 2529,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [],
+          "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Unsupported bounded VBIC DC model parameter: 'NF'"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 334.22962499999994,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "success"
+      },
+      "simulation": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 348.930875,
+        "stderr": "",
+        "childCapMs": 12000,
+        "status": "unsupported",
+        "convergence": "not-run",
+        "firstError": "Unsupported bounded VBIC DC model parameter: 'NF'",
+        "analyses": []
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "VBIC model/instance form"
+    },
+    {
+      "id": "examples-vdmos-self-heating-sp",
+      "sourcePath": "examples/vdmos/self-heating.sp",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/vdmos/self-heating.sp",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/vdmos/self-heating.sp",
+      "sha256": "3badebdb57602407a7dafac930182dc8dd1606b2ce0005531ff4fbafd0a10787",
+      "bytes": 552,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [],
+          "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "MOSFET 'M1' references unknown model 'tc'"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 337.67766699999993,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "success"
+      },
+      "simulation": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 344.87183300000106,
+        "stderr": "",
+        "childCapMs": 12000,
+        "status": "unsupported",
+        "convergence": "not-run",
+        "firstError": "MOSFET 'M1' references unknown model 'tc'",
+        "analyses": []
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "model resolution/instance forms"
+    },
+    {
+      "id": "examples-xspice-delay-analog-delay1-cir",
+      "sourcePath": "examples/xspice/delay/analog-delay1.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/delay/analog-delay1.cir",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/delay/analog-delay1.cir",
+      "sha256": "b71dc9d39ed2645f57444f7998403bb828e5d2e239cf64bd48d61e0cb8cde994",
+      "bytes": 1555,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [],
+          "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 7: XSPICE code model 'delay' (.model 'newdelay') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inver"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 335.75075000000106,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 7: XSPICE code model 'delay' (.model 'newdelay') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .model newdelay delay(delay=400u)"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE code model: delay"
+    },
+    {
+      "id": "examples-xspice-ghdl-mc-cir",
+      "sourcePath": "examples/xspice/ghdl/mc.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/ghdl/mc.cir",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/ghdl/mc.cir",
+      "sha256": "d776f473e720e15588c8f5cb42b19446d466786c3bad12c2b07fecdd11660c3c",
+      "bytes": 2534,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [],
+          "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 27: XSPICE code model 'd_cosim' (.model 'controller') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 330.77100000000064,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 27: XSPICE code model 'd_cosim' (.model 'controller') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .model controller d_cosim simulation=\"./mc\" sim_args=[\"./mc.so\" \"-gTarget=4500\"]"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE code model: d_cosim"
+    },
+    {
+      "id": "examples-xspice-ghdl-pwm-cir",
+      "sourcePath": "examples/xspice/ghdl/pwm.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/ghdl/pwm.cir",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/ghdl/pwm.cir",
+      "sha256": "e55e0badeb3f10035f04954c21808759f5787f5932ac095dd5cf57f0ea0d9a1e",
+      "bytes": 213,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [],
+          "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 4: XSPICE code model 'd_cosim' (.model 'pwm_sin') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inve"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 331.00358400000005,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 4: XSPICE code model 'd_cosim' (.model 'pwm_sin') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .model pwm_sin d_cosim simulation=\"./pwm\" sim_args = [ \"pwm\" ]"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE code model: d_cosim"
+    },
+    {
+      "id": "examples-xspice-icarus-verilog-delay-cir",
+      "sourcePath": "examples/xspice/icarus_verilog/delay.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/icarus_verilog/delay.cir",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/icarus_verilog/delay.cir",
+      "sha256": "4a5de34aac40ffa71dfb57f4e0e4453177375958b1ee1958e409afcc505958ee",
+      "bytes": 200,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "failed",
+          "analyses": [],
+          "firstErrorLine": "ngspice exited SIGABRT"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 4: XSPICE code model 'd_cosim' (.model 'ring') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inverte"
+        },
+        "outcome": "both-failed",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 331.86966700000085,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 4: XSPICE code model 'd_cosim' (.model 'ring') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .model ring d_cosim simulation=\"ivlng\" sim_args = [ \"delay\" ]"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE code model: d_cosim"
+    },
+    {
+      "id": "examples-xspice-icarus-verilog-pwm-cir",
+      "sourcePath": "examples/xspice/icarus_verilog/pwm.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/icarus_verilog/pwm.cir",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/icarus_verilog/pwm.cir",
+      "sha256": "a93c823b4d48c4b4e0c3d8a06a2b2a829b8189dfa0a366968f54e529ecd92b46",
+      "bytes": 215,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "failed",
+          "analyses": [],
+          "firstErrorLine": "ngspice exited SIGABRT"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 4: XSPICE code model 'd_cosim' (.model 'pwm_sin') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inve"
+        },
+        "outcome": "both-failed",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 325.48404200000004,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 4: XSPICE code model 'd_cosim' (.model 'pwm_sin') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .model pwm_sin d_cosim simulation=\"ivlng\" sim_args = [ \"pwm\" ]"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE code model: d_cosim"
+    },
+    {
+      "id": "examples-xspice-noise-ota-noise-test1-cir",
+      "sourcePath": "examples/xspice/noise/ota_noise_test1.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/noise/ota_noise_test1.cir",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/noise/ota_noise_test1.cir",
+      "sha256": "438412575684d5080ca0d98b5c0b05813c7f668cbfc415653cecdb9f5a13a68c",
+      "bytes": 788,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "noise"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [],
+          "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 7: XSPICE code model 'ota' (.model 'newota') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inverter,"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 347.579334,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 7: XSPICE code model 'ota' (.model 'newota') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .model newota ota (gm=1m rout=1e12 rin=1Meg en=31n enk=100 in_noise=20p ink=2k incm=0 incmk=2k noise_programmatic=TRUE)"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE code model: ota"
+    },
+    {
+      "id": "examples-xspice-original-examples-analog-models2-ac-deck",
+      "sourcePath": "examples/xspice/original-examples/analog_models2_ac.deck",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/original-examples/analog_models2_ac.deck",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/original-examples/analog_models2_ac.deck",
+      "sha256": "1da7eb3c93f30cac5aec4f6be9dd1ade2ef4c9b4336988a6fbd8b6a5bec33189",
+      "bytes": 1376,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "ac:21"
+          ]
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 27: XSPICE code model 's_xfer' (.model 'filter1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inve"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 332.1567500000001,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 27: XSPICE code model 's_xfer' (.model 'filter1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .model filter1 s_xfer (in_offset=0.0 gain=1.0 num_coeff=[1.0] den_coeff=[1.0 1.414214 1.0] int_ic=[0.0 0.0] denormalized_freq=628.0)"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE code model: s_xfer"
+    },
+    {
+      "id": "examples-xspice-original-examples-analog-models2-dc-deck",
+      "sourcePath": "examples/xspice/original-examples/analog_models2_dc.deck",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/original-examples/analog_models2_dc.deck",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/original-examples/analog_models2_dc.deck",
+      "sha256": "18c89dadf95c13213e5b840467b021578352c09513cf6928a3e4a37e42592a74",
+      "bytes": 1280,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "op"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "op:1"
+          ]
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 27: XSPICE code model 's_xfer' (.model 'filter1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inve"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 331.77387499999895,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 27: XSPICE code model 's_xfer' (.model 'filter1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .model filter1 s_xfer (in_offset=0.0 gain=1.0 num_coeff=[1.0] den_coeff=[1.0 1.425625 1.516203] int_ic=[0.0 0.0] denormalized_freq=6283.2)"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE code model: s_xfer"
+    },
+    {
+      "id": "examples-xspice-original-examples-analog-models2-swept-dc-deck",
+      "sourcePath": "examples/xspice/original-examples/analog_models2_swept_dc.deck",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/original-examples/analog_models2_swept_dc.deck",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/original-examples/analog_models2_swept_dc.deck",
+      "sha256": "4ea7fcb4878b0d68bbd7dfa4b9647aeecdbb6399fb624d2a80067d09659abf2f",
+      "bytes": 1358,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "dc:20"
+          ]
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 25: XSPICE code model 's_xfer' (.model 'filter1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inve"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 329.2362499999999,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 25: XSPICE code model 's_xfer' (.model 'filter1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .model filter1 s_xfer (in_offset=0.0 gain=1.0 num_coeff=[1.0] den_coeff=[1.0 1.414214 1.0] int_ic=[0.0 0.0] denormalized_freq=1.0)"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE code model: s_xfer"
+    },
+    {
+      "id": "examples-xspice-original-examples-analog-models2-transient-deck",
+      "sourcePath": "examples/xspice/original-examples/analog_models2_transient.deck",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/original-examples/analog_models2_transient.deck",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/original-examples/analog_models2_transient.deck",
+      "sha256": "fe76d6d563e41bb4b7055ff91fb253c770ad1a406c8eb3995869e65d490f6eb0",
+      "bytes": 1407,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "tran:145"
+          ]
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 29: XSPICE code model 's_xfer' (.model 'filter1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inve"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 324.3163749999985,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 29: XSPICE code model 's_xfer' (.model 'filter1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .model filter1 s_xfer (in_offset=0.0 gain=1.0 num_coeff=[1.0] den_coeff=[1.0 1.414214 1.0] int_ic=[0.0 0.0] denormalized_freq=1.0)"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE code model: s_xfer"
+    },
+    {
+      "id": "examples-xspice-original-examples-analog-models4-ac-deck",
+      "sourcePath": "examples/xspice/original-examples/analog_models4_ac.deck",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/original-examples/analog_models4_ac.deck",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/original-examples/analog_models4_ac.deck",
+      "sha256": "f7008d0ac656966f4f2817d36dcf3218198dc64251d61d8b7f0b05cc7d403120",
+      "bytes": 1538,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "ac:21"
+          ]
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 28: XSPICE code model 'triangle' (.model 'triangle1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 332.1031670000011,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 28: XSPICE code model 'triangle' (.model 'triangle1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .model triangle1 triangle (cntl_array=[-1.0 0.0 1.0 2.0] freq_array=[1.0 1.0 100.0 100.0] out_low=-1.0 out_high=1.0 duty_cycle=0.8)"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE code model: triangle"
+    },
+    {
+      "id": "examples-xspice-original-examples-analog-models4-dc-deck",
+      "sourcePath": "examples/xspice/original-examples/analog_models4_dc.deck",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/original-examples/analog_models4_dc.deck",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/original-examples/analog_models4_dc.deck",
+      "sha256": "6c9a322704be922bb8eb48853ccc204a986edd5a026e6d66691990d1ec4de813",
+      "bytes": 1503,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "op"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "op:1"
+          ]
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 24: XSPICE code model 'triangle' (.model 'triangle1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 324.5500830000001,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 24: XSPICE code model 'triangle' (.model 'triangle1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .model triangle1 triangle (cntl_array=[-1.0 0.0 1.0 2.0] freq_array=[1.0 1.0 100.0 100.0] out_low=-1.0 out_high=1.0 duty_cycle=0.8)"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE code model: triangle"
+    },
+    {
+      "id": "examples-xspice-original-examples-analog-models4-swept-dc-deck",
+      "sourcePath": "examples/xspice/original-examples/analog_models4_swept_dc.deck",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/original-examples/analog_models4_swept_dc.deck",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/original-examples/analog_models4_swept_dc.deck",
+      "sha256": "d298f940bb53f85c458f6ee152b75da4473065ef192741bdeb65a82cd96ed053",
+      "bytes": 1522,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "dc:30"
+          ]
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 24: XSPICE code model 'triangle' (.model 'triangle1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 333.43395899999996,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 24: XSPICE code model 'triangle' (.model 'triangle1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .model triangle1 triangle (cntl_array=[-1.0 0.0 1.0 2.0] freq_array=[1.0 1.0 100.0 100.0] out_low=-1.0 out_high=1.0 duty_cycle=0.8)"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE code model: triangle"
+    },
+    {
+      "id": "examples-xspice-original-examples-analog-models4-transient-deck",
+      "sourcePath": "examples/xspice/original-examples/analog_models4_transient.deck",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/original-examples/analog_models4_transient.deck",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/original-examples/analog_models4_transient.deck",
+      "sha256": "1a4497ef16bd49a15fc74890afa4b40d085260806575b49b7ac9fcd13c4c4461",
+      "bytes": 1916,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "tran:292"
+          ]
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 27: XSPICE code model 'triangle' (.model 'triangle1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 349.40766599999915,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 27: XSPICE code model 'triangle' (.model 'triangle1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .model triangle1 triangle (cntl_array=[-1.0 0.0 10.0 20.0] freq_array=[500 500 10000 10000] out_low=-1.0 out_high=1.0 duty_cycle=0.5)"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE code model: triangle"
+    },
+    {
+      "id": "examples-xspice-original-examples-bad-io-type-deck",
+      "sourcePath": "examples/xspice/original-examples/bad_io_type.deck",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/original-examples/bad_io_type.deck",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/original-examples/bad_io_type.deck",
+      "sha256": "ef6b5efbeea4568a0e918c543637a8d7e44a09cefa7d2cc4489f0ab205b28ee8",
+      "bytes": 526,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "failed",
+          "analyses": [],
+          "firstErrorLine": "Error on line 15 or its substitute:"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "XSPICE instance 'a1': Port type d is invalid"
+        },
+        "outcome": "both-failed",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 341.87995799999953,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "success"
+      },
+      "simulation": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 345.7455829999999,
+        "stderr": "",
+        "childCapMs": 12000,
+        "status": "unsupported",
+        "convergence": "not-run",
+        "firstError": "XSPICE instance 'a1': Port type d is invalid",
+        "analyses": []
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE invalid-input validation"
+    },
+    {
+      "id": "examples-xspice-original-examples-bad-param-type-deck",
+      "sourcePath": "examples/xspice/original-examples/bad_param_type.deck",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/original-examples/bad_param_type.deck",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/original-examples/bad_param_type.deck",
+      "sha256": "aa07644441fe725291680e8ee48c9b4380be24c4b572181a0df649ef87331773",
+      "bytes": 285,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "failed",
+          "analyses": [],
+          "firstErrorLine": "Error on line 12 or its substitute:"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 13: MIF-ERROR - model: gain_block - Bad real value .model gain_block gain (gain=false)"
+        },
+        "outcome": "both-failed",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 329.84108299999934,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 13: MIF-ERROR - model: gain_block - Bad real value\n  .model gain_block gain (gain=false)"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE invalid-input validation"
+    },
+    {
+      "id": "examples-xspice-original-examples-digital-models2-deck",
+      "sourcePath": "examples/xspice/original-examples/digital_models2.deck",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/original-examples/digital_models2.deck",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/original-examples/digital_models2.deck",
+      "sha256": "973b7016181689d18a2f7b16635b61a7b6e1bd33f1423eae0b4d005e0edfb0f7",
+      "bytes": 2526,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "tran:722"
+          ]
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 40: XSPICE code model 'd_dff' (.model 'd_dff1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_invert"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 345.37358400000085,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 40: XSPICE code model 'd_dff' (.model 'd_dff1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .model d_dff1 d_dff (clk_delay=1.0e-6 set_delay=2.0e-6 reset_delay=3.0e-6 ic=0 rise_delay=4.0e-6 fall_delay=5.0e-6 data_load=1.0e-12 clk_load=1.0e-12 set_load=1.0e-12 reset_load=1.0e-12)"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE code model: d_dff"
+    },
+    {
+      "id": "examples-xspice-original-examples-digital-models3-deck",
+      "sourcePath": "examples/xspice/original-examples/digital_models3.deck",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/original-examples/digital_models3.deck",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/original-examples/digital_models3.deck",
+      "sha256": "f9b2004e9704cff4e50142d648a1c179337fcfd468e28da0b3eb033e75c58d22",
+      "bytes": 2689,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "tran:1418"
+          ]
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 48: XSPICE code model 'd_dlatch' (.model 'd_dlatch1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 354.9606249999997,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 48: XSPICE code model 'd_dlatch' (.model 'd_dlatch1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .model d_dlatch1 d_dlatch (data_delay=1.0e-6 enable_delay=2.0e-6 set_delay=3.0e-6 reset_delay=4.0e-6 ic=0 rise_delay=5.0e-6 fall_delay=6.0e-6 data_load=1.0e-12 enable_load=1.0e-12 set_load=1.0e-12 reset_load=1.0e-12)"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE code model: d_dlatch"
+    },
+    {
+      "id": "examples-xspice-original-examples-digital-models4-deck",
+      "sourcePath": "examples/xspice/original-examples/digital_models4.deck",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/original-examples/digital_models4.deck",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/original-examples/digital_models4.deck",
+      "sha256": "995353e667e6cfcb6c46d2efb76515da66e59fbdb54b8a742874e091dcc8abcd",
+      "bytes": 2494,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "tran:1535"
+          ]
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 66: XSPICE code model 'd_ram' (.model 'd_ram1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_invert"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 340.299332999999,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 66: XSPICE code model 'd_ram' (.model 'd_ram1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .model d_ram1 d_ram (select_value=1 ic=0 read_delay=1.0e-6 data_load=1.0e-12 address_load=1.0e-12 select_load=1.0e-12 enable_load=1.0e-12)"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE code model: d_ram"
+    },
+    {
+      "id": "examples-xspice-original-examples-io-types-deck",
+      "sourcePath": "examples/xspice/original-examples/io_types.deck",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/original-examples/io_types.deck",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/original-examples/io_types.deck",
+      "sha256": "0189e07265ae019f9865827c2d8cc339051adf1c0f65cb546053fd3f82662476",
+      "bytes": 727,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "tran:114"
+          ]
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 19: XSPICE code model 'd_to_real' (.model 'node_bridge2') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 339.6603749999995,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 19: XSPICE code model 'd_to_real' (.model 'node_bridge2') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .model node_bridge2 d_to_real (zero=-1 one=1)"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE code model: d_to_real"
+    },
+    {
+      "id": "examples-xspice-original-examples-mixed-mode-deck",
+      "sourcePath": "examples/xspice/original-examples/mixed_mode.deck",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/original-examples/mixed_mode.deck",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/original-examples/mixed_mode.deck",
+      "sha256": "56bfc9e39bf4c2fe8df65a76cff52bab2e3924edd9199017c1abc3a9a14eb721",
+      "bytes": 2188,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "tran:195"
+          ]
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 28: XSPICE code model 'd_dff' (.model 'dff') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inverter,"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 346.1264579999988,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 28: XSPICE code model 'd_dff' (.model 'dff') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .model dff d_dff"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE code model: d_dff"
+    },
+    {
+      "id": "examples-xspice-original-examples-supply-ramping-deck",
+      "sourcePath": "examples/xspice/original-examples/supply_ramping.deck",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/original-examples/supply_ramping.deck",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/original-examples/supply_ramping.deck",
+      "sha256": "b0a81344b27dcadf23466a8742e0fb2fc8824f2507f6c43fb289f06f6987d4b8",
+      "bytes": 498,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "tran:67"
+          ]
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 14: XSPICE code model 'capacitoric' (.model 'cap') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inv"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 379.44645899999887,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 14: XSPICE code model 'capacitoric' (.model 'cap') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .model cap capacitoric (c=1000uf ic=1)"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE code model: capacitoric"
+    },
+    {
+      "id": "examples-xspice-original-examples-user-defined-nodes-deck",
+      "sourcePath": "examples/xspice/original-examples/user_defined_nodes.deck",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/original-examples/user_defined_nodes.deck",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/original-examples/user_defined_nodes.deck",
+      "sha256": "8ba69ecec48433a4a4f238a5dae05e3b9c643c562b2a117a3b602eaa1536660a",
+      "bytes": 641,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "tran:114"
+          ]
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 19: XSPICE code model 'd_to_real' (.model 'node_bridge2') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 395.93904100000145,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 19: XSPICE code model 'd_to_real' (.model 'node_bridge2') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .model node_bridge2 d_to_real (zero=-1 one=1)"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE code model: d_to_real"
+    },
+    {
+      "id": "examples-xspice-pwm-osc-pwm-sin-cir",
+      "sourcePath": "examples/xspice/pwm-osc/pwm-sin.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/pwm-osc/pwm-sin.cir",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/pwm-osc/pwm-sin.cir",
+      "sha256": "337645cecf1f123e1437ec759db59ab5724cc061bcd955f94abf11a7407e9db8",
+      "bytes": 1246,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [],
+          "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 6: XSPICE code model 'd_pwm' (.model 'pwm') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inverter, "
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 430.0709999999999,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 6: XSPICE code model 'd_pwm' (.model 'pwm') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .model pwm d_pwm( frequency = 1.2Meg cntl_array = [-1 -0.99 0.99 1] dc_array = [0.01 0.01 0.99 0.99] init_phase = 90)"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE code model: d_pwm"
+    },
+    {
+      "id": "examples-xspice-see-repeat-loop-seegen-net",
+      "sourcePath": "examples/xspice/see/repeat_loop_seegen.net",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/see/repeat_loop_seegen.net",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/see/repeat_loop_seegen.net",
+      "sha256": "b24dea090db3819d812a8eab0bcd723b0a82aa9c2e9ff4e4f25c5a636b2169d6",
+      "bytes": 886,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "tran:1243"
+          ]
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 15: XSPICE code model 'seegen' (.model 'seemod1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inve"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 371.320291,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 15: XSPICE code model 'seegen' (.model 'seemod1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .model seemod1 seegen (tdelay = 11n tperiod=25n let=10.5 cdepth=1.2 trise=2e-11 tfall=5e-10)"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE code model: seegen"
+    },
+    {
+      "id": "examples-xspice-see-seegen-cm1-cir",
+      "sourcePath": "examples/xspice/see/seegen_cm1.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/see/seegen_cm1.cir",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/see/seegen_cm1.cir",
+      "sha256": "de698bd32257cf889e32c31b3ec2d41514dcc15e00f2b65f765750f6ba1e1ea1",
+      "bytes": 353,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [],
+          "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 4: XSPICE code model 'seegen' (.model 'seemod1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inver"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 357.62104199999885,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 4: XSPICE code model 'seegen' (.model 'seemod1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .model seemod1 seegen (tdelay = 5n tperiod=4.5n)"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE code model: seegen"
+    },
+    {
+      "id": "examples-xspice-transmission-lines-cpline-ac-cir",
+      "sourcePath": "examples/xspice/transmission_lines/cpline_ac.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/transmission_lines/cpline_ac.cir",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/transmission_lines/cpline_ac.cir",
+      "sha256": "534d96329d92e6257cf63f3f03831aeb1442f5a8df80f7058a9eee7ad928b7e6",
+      "bytes": 433,
+      "licence": "BSD-3-Clause",
+      "analyses": [],
+      "unmappedAnalyses": [
+        "sp"
+      ],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [],
+          "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 9: XSPICE code model 'cpline' (.model 'CPLINE1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inver"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 347.3296249999985,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 9: XSPICE code model 'cpline' (.model 'CPLINE1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .MODEL CPLINE1 CPLINE(ze=84.48 zo=53.99 l=25e-3 ere=3.34 ero=2.829 ao=0 ae=0)"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE code model: cpline"
+    },
+    {
+      "id": "examples-xspice-transmission-lines-cpline-tran-cir",
+      "sourcePath": "examples/xspice/transmission_lines/cpline_tran.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/transmission_lines/cpline_tran.cir",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/transmission_lines/cpline_tran.cir",
+      "sha256": "24f580bfdf4cd84b2a9b59ed3444785c19815077047243158e05469c52dcbde5",
+      "bytes": 358,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [],
+          "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 12: XSPICE code model 'cpline' (.model 'CPLINE1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inve"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 340.0450000000019,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 12: XSPICE code model 'cpline' (.model 'CPLINE1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .MODEL CPLINE1 CPLINE(ze=100 zo=50 l=100e-3 ere=1 ero=1 ao=0 ae=0)"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE code model: cpline"
+    },
+    {
+      "id": "examples-xspice-transmission-lines-cpmline-ac-cir",
+      "sourcePath": "examples/xspice/transmission_lines/cpmline_ac.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/transmission_lines/cpmline_ac.cir",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/transmission_lines/cpmline_ac.cir",
+      "sha256": "684c6d1a2bb24b27e1a7dc81f8b3b453aa9b84f57b45225834ed4eeddca1795b",
+      "bytes": 472,
+      "licence": "BSD-3-Clause",
+      "analyses": [],
+      "unmappedAnalyses": [
+        "sp"
+      ],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [],
+          "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 9: XSPICE code model 'cpmlin' (.model 'CPMLIN1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inver"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 336.2425000000003,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 9: XSPICE code model 'cpmlin' (.model 'CPMLIN1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .MODEL CPMLIN1 CPMLIN(w=1e-3 l=20e-3 s=0.3e-3 er=9.8 h=1e-3 t=35e-6 tand=1e-3 rho=0.022e-6 d=0.15e-6 model=0 disp=0)"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE code model: cpmlin"
+    },
+    {
+      "id": "examples-xspice-transmission-lines-mlin-tran-cir",
+      "sourcePath": "examples/xspice/transmission_lines/mlin_tran.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/transmission_lines/mlin_tran.cir",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/transmission_lines/mlin_tran.cir",
+      "sha256": "a7c913e1dce881e49ebf46bc57403ff7e0a316beb6938f460c4b55eeb67c5e21",
+      "bytes": 472,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [],
+          "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 11: XSPICE code model 'mlin' (.model 'MLIN1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inverter"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 351.6647920000032,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 11: XSPICE code model 'mlin' (.model 'MLIN1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .MODEL MLIN1 MLIN(w=1e-3 l=50e-3 er=9.8 h=1e-3 t=35e-6 tand=1e-3 rho=0.022e-6 d=0.15e-6 model=0 disp=0 tranmodel=1)"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE code model: mlin"
+    },
+    {
+      "id": "examples-xspice-transmission-lines-mlin-cir",
+      "sourcePath": "examples/xspice/transmission_lines/mlin.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/transmission_lines/mlin.cir",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/transmission_lines/mlin.cir",
+      "sha256": "ec539c7b6dc4c3da7a9b368ceb44c7760fceb0f68d4444a6d2d3e3ef3dee1089",
+      "bytes": 346,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "op",
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [],
+          "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 7: XSPICE code model 'mlin' (.model 'MLIN1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inverter,"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 341.6899999999987,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 7: XSPICE code model 'mlin' (.model 'MLIN1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .MODEL MLIN1 MLIN(w=1e-3 l=10e-3 er=9.8 h=1e-3 t=35e-6 tand=1e-3 rho=0.022e-6 d=0.15e-6 model=0 disp=0)"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE code model: mlin"
+    },
+    {
+      "id": "examples-xspice-various-astate-pulse-cir",
+      "sourcePath": "examples/xspice/various/astate_pulse.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/various/astate_pulse.cir",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/various/astate_pulse.cir",
+      "sha256": "bf794d27c4d6069777bf2199e0bdcdc9383b5ba3d0b2dfe391dff52e5ff5b5c1",
+      "bytes": 390,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [],
+          "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 11: XSPICE code model 'astate' (.model 'newstate3') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_in"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 325.1620410000032,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 11: XSPICE code model 'astate' (.model 'newstate3') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .model newstate3 astate(astate_no=3)"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE code model: astate"
+    },
+    {
+      "id": "examples-xspice-various-astate-cir",
+      "sourcePath": "examples/xspice/various/astate.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/various/astate.cir",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/various/astate.cir",
+      "sha256": "f9659c35d66436b16c08d880452239cae563349c0e40b6d4dc97293339cb1421",
+      "bytes": 446,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [],
+          "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 11: XSPICE code model 'astate' (.model 'newstate') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inv"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 323.4544999999998,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 11: XSPICE code model 'astate' (.model 'newstate') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .model newstate astate(astate_no=2)"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE code model: astate"
+    },
+    {
+      "id": "examples-xspice-various-pwlts1-cir",
+      "sourcePath": "examples/xspice/various/pwlts1.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/various/pwlts1.cir",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/various/pwlts1.cir",
+      "sha256": "3fe8cf88d7106c4029262ddf158d5e917fa2c82a63bc14303581b636beb07619",
+      "bytes": 498,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [],
+          "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 11: XSPICE code model 'pwlts' (.model 'pwlts1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_invert"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 331.0200420000001,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 11: XSPICE code model 'pwlts' (.model 'pwlts1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .model pwlts1 pwlts(x_array=[0 0.1 0.2 0.8 0.9 1 1.1] y_array=[0.1 0.1 1 1 0 0 0.2] input_domain=0.01 fraction=FALSE)"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE code model: pwlts"
+    },
+    {
+      "id": "examples-xspice-various-x-fer-cir",
+      "sourcePath": "examples/xspice/various/x_fer.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/various/x_fer.cir",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/various/x_fer.cir",
+      "sha256": "deba88972ca3fa36754a85cb2a859fd34c30794b9647c3155450b6d0de59b913",
+      "bytes": 1525,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "ac",
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [],
+          "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 7: XSPICE code model 's_xfer' (.model 'cheby1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_invert"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 326.7644160000018,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 7: XSPICE code model 's_xfer' (.model 'cheby1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .model cheby1 s_xfer(num_coeff=[1] den_coeff=[1 1.09773 1.10251] int_ic=[0 0] denormalized_freq=1500)"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE code model: s_xfer"
+    },
+    {
+      "id": "examples-xspice-various-xspice-c3-cir",
+      "sourcePath": "examples/xspice/various/xspice_c3.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/various/xspice_c3.cir",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/various/xspice_c3.cir",
+      "sha256": "481bf6b74dabefdb7f38863482892e4e19860db9d5fd5c1bd6e46a4a0f0f43f2",
+      "bytes": 2357,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "tran:205"
+          ]
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 28: XSPICE code model 'd_dff' (.model 'dff') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inverter,"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 330.4226250000029,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 28: XSPICE code model 'd_dff' (.model 'dff') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .model dff d_dff"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE code model: d_dff"
+    },
+    {
+      "id": "examples-xspice-verilator-delay-cir",
+      "sourcePath": "examples/xspice/verilator/delay.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/verilator/delay.cir",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/verilator/delay.cir",
+      "sha256": "c3bc9a39a1e7a71f46464a3a3f71a2dea6e6c936e1fd5c97eb57f46a8d8e283c",
+      "bytes": 181,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [],
+          "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 5: XSPICE code model 'd_cosim' (.model 'ring') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inverte"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 327.85208299999795,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 5: XSPICE code model 'd_cosim' (.model 'ring') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .model ring d_cosim simulation=\"./delay\""
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE code model: d_cosim"
+    },
+    {
+      "id": "examples-xspice-verilator-pwm-cir",
+      "sourcePath": "examples/xspice/verilator/pwm.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/verilator/pwm.cir",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/xspice/verilator/pwm.cir",
+      "sha256": "eee59e33e041742cd0855bc4a89f8b4100aa3d78b13f0eaff47211b073d093c5",
+      "bytes": 194,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [],
+          "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 4: XSPICE code model 'd_cosim' (.model 'pwm_sin') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inve"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 333.52012500000274,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 4: XSPICE code model 'd_cosim' (.model 'pwm_sin') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, pswitch, aswitch, adc_bridge, dac_bridge, d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor, d_xnor)\n  .model pwm_sin d_cosim simulation=\"./pwm\""
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "XSPICE code model: d_cosim"
+    },
+    {
+      "id": "tests-regression-func-func-1-cir",
+      "sourcePath": "tests/regression/func/func-1.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/regression/func/func-1.cir",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/tests/regression/func/func-1.cir",
+      "sha256": "7d305a97378a6903ba084fb854b0ef81424f49c86b043301261c049bc845cbb3",
+      "bytes": 2414,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "op"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [],
+          "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 36: v() takes one or two node names b1004_t n1004_t 0 v = ((v((17.0))+(17.0)))"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 350.7218749999993,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "unsupported",
+        "firstError": "Parse error at line 36: v() takes one or two node names\n  b1004_t  n1004_t 0  v = ((v((17.0))+(17.0)))"
+      },
+      "simulation": {
+        "status": "not-run",
+        "reason": "parse did not succeed"
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "numparam function/node substitution"
+    },
+    {
+      "id": "tests-vbic-noise-scale-test-cir",
+      "sourcePath": "tests/vbic/noise_scale_test.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/vbic/noise_scale_test.cir",
+      "localPath": "benchmarks/corpus/corpus-f/fixtures/tests/vbic/noise_scale_test.cir",
+      "sha256": "2877ccad8bcb440258e65a8a817edfd8536029ae192b3049cb62f248a8a81286",
+      "bytes": 627,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "noise"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "historical": {
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "noise:1",
+            "noise:126"
+          ]
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Unsupported bounded VBIC DC model parameter: 'KFN'"
+        },
+        "outcome": "spice-ts-loss",
+        "gapBucket": "parse: other unsupported syntax"
+      },
+      "parse": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 342.49116700000013,
+        "stderr": "",
+        "childCapMs": 8000,
+        "status": "success"
+      },
+      "simulation": {
+        "exitCode": 0,
+        "signal": null,
+        "elapsedMs": 359.87516700000197,
+        "stderr": "",
+        "childCapMs": 12000,
+        "status": "unsupported",
+        "convergence": "not-run",
+        "firstError": "Unsupported bounded VBIC DC model parameter: 'KFN'",
+        "analyses": []
+      },
+      "currentOutcome": "spice-ts-loss",
+      "reference": {
+        "provenance": "historical-only",
+        "freshStatus": "not-run"
+      },
+      "comparedAnalyses": null,
+      "comparedSignals": null,
+      "worstNormalizedError": null,
+      "currentBucket": "VBIC model/instance form"
+    }
+  ],
+  "elapsedMs": 25045.125
+}

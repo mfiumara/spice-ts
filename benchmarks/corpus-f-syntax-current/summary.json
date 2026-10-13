@@ -1,0 +1,558 @@
+{
+  "simulatorSha": "f0446a68f317b9fd558d1a14b540a0e4f1063e18",
+  "selected": 59,
+  "historical": {
+    "unsupported": 59,
+    "ngspiceSuccess": 54
+  },
+  "current": {
+    "parse": {
+      "success": 15,
+      "unsupported": 44
+    },
+    "simulation": {
+      "unsupported": 14,
+      "not-run": 44,
+      "success": 1
+    },
+    "outcomes": {
+      "spice-ts-loss": 58,
+      "not-compared": 1
+    },
+    "buckets": {
+      "BJT excess phase PTF": 2,
+      "XSPICE code model: d_tristate": 1,
+      "control/vector/function execution": 4,
+      "model resolution/instance forms": 3,
+      "XSPICE code model: memristor": 1,
+      "string/vector numparam": 2,
+      "VBIC model/instance form": 4,
+      "Gear integration order 3": 1,
+      "native success, parity not computed": 1,
+      "thermal/self-heating": 1,
+      "XSPICE code model: delay": 1,
+      "XSPICE code model: d_cosim": 6,
+      "XSPICE code model: ota": 1,
+      "XSPICE code model: s_xfer": 5,
+      "XSPICE code model: triangle": 4,
+      "XSPICE invalid-input validation": 2,
+      "XSPICE code model: d_dff": 3,
+      "XSPICE code model: d_dlatch": 1,
+      "XSPICE code model: d_ram": 1,
+      "XSPICE code model: d_to_real": 2,
+      "XSPICE code model: capacitoric": 1,
+      "XSPICE code model: d_pwm": 1,
+      "XSPICE code model: seegen": 2,
+      "XSPICE code model: cpline": 2,
+      "XSPICE code model: cpmlin": 1,
+      "XSPICE code model: mlin": 2,
+      "XSPICE code model: astate": 2,
+      "XSPICE code model: pwlts": 1,
+      "numparam function/node substitution": 1
+    }
+  },
+  "freshReferenceRuns": 0,
+  "freshMatches": 0,
+  "freshMismatches": 0,
+  "uncomputedMetrics": "null in every row",
+  "elapsedMs": 25045.125,
+  "issueInventoryCount": 470,
+  "mergedPrInventoryCount": 443,
+  "ranked": [
+    {
+      "bucket": "XSPICE code-model coverage",
+      "fixtures": 38,
+      "historicalNgspiceSuccess": 36,
+      "ids": [
+        "examples-digital-auto-bridge-shared-line-cir",
+        "examples-memristor-memristor-x-sp",
+        "examples-xspice-delay-analog-delay1-cir",
+        "examples-xspice-ghdl-mc-cir",
+        "examples-xspice-ghdl-pwm-cir",
+        "examples-xspice-icarus-verilog-delay-cir",
+        "examples-xspice-icarus-verilog-pwm-cir",
+        "examples-xspice-noise-ota-noise-test1-cir",
+        "examples-xspice-original-examples-analog-models2-ac-deck",
+        "examples-xspice-original-examples-analog-models2-dc-deck",
+        "examples-xspice-original-examples-analog-models2-swept-dc-deck",
+        "examples-xspice-original-examples-analog-models2-transient-deck",
+        "examples-xspice-original-examples-analog-models4-ac-deck",
+        "examples-xspice-original-examples-analog-models4-dc-deck",
+        "examples-xspice-original-examples-analog-models4-swept-dc-deck",
+        "examples-xspice-original-examples-analog-models4-transient-deck",
+        "examples-xspice-original-examples-digital-models2-deck",
+        "examples-xspice-original-examples-digital-models3-deck",
+        "examples-xspice-original-examples-digital-models4-deck",
+        "examples-xspice-original-examples-io-types-deck",
+        "examples-xspice-original-examples-mixed-mode-deck",
+        "examples-xspice-original-examples-supply-ramping-deck",
+        "examples-xspice-original-examples-user-defined-nodes-deck",
+        "examples-xspice-pwm-osc-pwm-sin-cir",
+        "examples-xspice-see-repeat-loop-seegen-net",
+        "examples-xspice-see-seegen-cm1-cir",
+        "examples-xspice-transmission-lines-cpline-ac-cir",
+        "examples-xspice-transmission-lines-cpline-tran-cir",
+        "examples-xspice-transmission-lines-cpmline-ac-cir",
+        "examples-xspice-transmission-lines-mlin-tran-cir",
+        "examples-xspice-transmission-lines-mlin-cir",
+        "examples-xspice-various-astate-pulse-cir",
+        "examples-xspice-various-astate-cir",
+        "examples-xspice-various-pwlts1-cir",
+        "examples-xspice-various-x-fer-cir",
+        "examples-xspice-various-xspice-c3-cir",
+        "examples-xspice-verilator-delay-cir",
+        "examples-xspice-verilator-pwm-cir"
+      ],
+      "links": [
+        {
+          "number": 553,
+          "state": "OPEN",
+          "title": "feat(core): remaining XSPICE code models after #487 slice 1 (analog groups, event-driven bridges/digital)",
+          "url": "https://github.com/mfiumara/spice-ts/issues/553",
+          "kind": "issue"
+        },
+        {
+          "number": 487,
+          "state": "CLOSED",
+          "title": "feat(core): XSPICE A-element code models (65 corpus-f decks, ngspice runs 53)",
+          "url": "https://github.com/mfiumara/spice-ts/issues/487",
+          "kind": "issue"
+        },
+        {
+          "mergeCommit": {
+            "oid": "0e1aeb4ba035482fdc8c0f3fb12521e993b7e115"
+          },
+          "number": 554,
+          "title": "feat(core): XSPICE A elements with gain, summer, mult, divide, pwl, limit, int and d_dt code models (#487)",
+          "url": "https://github.com/mfiumara/spice-ts/pull/554",
+          "kind": "merged-pr"
+        },
+        {
+          "mergeCommit": {
+            "oid": "1ef0780e77fb12edc9a2127b47abc009c386d947"
+          },
+          "number": 670,
+          "title": "feat(core): XSPICE climit, ilimit (%g ports), hyst, slew, sine, cmeter and lmeter code models (#553 slice 2)",
+          "url": "https://github.com/mfiumara/spice-ts/pull/670",
+          "kind": "merged-pr"
+        },
+        {
+          "mergeCommit": {
+            "oid": "42ab67bcfc3a1ce00f56643b6182efb653a192b2"
+          },
+          "number": 778,
+          "title": "feat(core): XSPICE event-driven digital gates and adc/dac bridges (#553 slice 3)",
+          "url": "https://github.com/mfiumara/spice-ts/pull/778",
+          "kind": "merged-pr"
+        },
+        {
+          "mergeCommit": {
+            "oid": "fe32a3a46bb47c1e98657838c4b22ef31ad9cdf5"
+          },
+          "number": 865,
+          "title": "feat(core): .ac with XSPICE event-driven digital instances like ngspice-47 acan.c (#838)",
+          "url": "https://github.com/mfiumara/spice-ts/pull/865",
+          "kind": "merged-pr"
+        }
+      ],
+      "recommendation": "Continue existing #553. Split by model family, not a generic parser rewrite. Counts are first blockers only, not guaranteed wins; d_cosim additionally needs external HDL executables."
+    },
+    {
+      "bucket": "control/vector/function execution",
+      "fixtures": 4,
+      "historicalNgspiceSuccess": 4,
+      "ids": [
+        "examples-loops-instance-loop-cir",
+        "examples-loops-loop-instance-cir",
+        "examples-loops-loop-model-cir",
+        "examples-mos-nmos-out-bsim330-plainwrite-sp"
+      ],
+      "links": [
+        {
+          "number": 488,
+          "state": "CLOSED",
+          "title": "feat(parser): ngspice control-language scripting in .control blocks (47 corpus-f decks, ngspice runs 45)",
+          "url": "https://github.com/mfiumara/spice-ts/issues/488",
+          "kind": "issue"
+        },
+        {
+          "number": 870,
+          "state": "CLOSED",
+          "title": "feat(parser): .param/.func-style function definitions with arguments and 3-arg limit(x,lo,hi) like ngspice-47 numparam (ngspice-bugs #871, #505)",
+          "url": "https://github.com/mfiumara/spice-ts/issues/870",
+          "kind": "issue"
+        },
+        {
+          "number": 496,
+          "state": "CLOSED",
+          "title": "feat(parser): numparam extensions .func, .csparam, .if/.elseif and string/vector .param (10 corpus-f decks, ngspice runs 10)",
+          "url": "https://github.com/mfiumara/spice-ts/issues/496",
+          "kind": "issue"
+        },
+        {
+          "mergeCommit": {
+            "oid": "0f255516978fe874896cba7d087fc6e03c1cf0b5"
+          },
+          "number": 616,
+          "title": "feat(parser): numparam .func, .csparam and .if/.elseif/.else/.endif (#496)",
+          "url": "https://github.com/mfiumara/spice-ts/pull/616",
+          "kind": "merged-pr"
+        }
+      ],
+      "recommendation": "Diagnose control-loop scalar resolution (3) and vector naming (1). Do not reopen closed #488 as if no control support landed. Propose a narrow control follow-up only after minimal identical-deck reproduction."
+    },
+    {
+      "bucket": "VBIC model/instance form",
+      "fixtures": 4,
+      "historicalNgspiceSuccess": 4,
+      "ids": [
+        "examples-osdi-hicuml0-dff-y-ecl-vbic-sp",
+        "examples-osdi-hicuml0-vbic-out-sp",
+        "examples-vbic-dff-y-ecl-sp",
+        "tests-vbic-noise-scale-test-cir"
+      ],
+      "links": [
+        {
+          "number": 526,
+          "state": "OPEN",
+          "title": "corpus-f Q/D bucket: remaining blockers after #490 (CIDER models, self-heating, .temp, VBIC noise/PNP)",
+          "url": "https://github.com/mfiumara/spice-ts/issues/526",
+          "kind": "issue"
+        },
+        {
+          "number": 446,
+          "state": "CLOSED",
+          "title": "feat(core): VBIC small-signal .ac/.pz so ngspice/vbic-common-emitter-ac returns to success",
+          "url": "https://github.com/mfiumara/spice-ts/issues/446",
+          "kind": "issue"
+        },
+        {
+          "number": 352,
+          "state": "CLOSED",
+          "title": "feat(core): add benchmark-bounded VBIC FO DC parity",
+          "url": "https://github.com/mfiumara/spice-ts/issues/352",
+          "kind": "issue"
+        },
+        {
+          "mergeCommit": {
+            "oid": "3b200b07b19105c629333cf20e95ed64cd23f65d"
+          },
+          "number": 361,
+          "title": "feat(core): add bounded VBIC FO DC parity",
+          "url": "https://github.com/mfiumara/spice-ts/pull/361",
+          "kind": "merged-pr"
+        },
+        {
+          "mergeCommit": {
+            "oid": "4c0b9517a9e2bd8b35e1e11e94eab3a64174a927"
+          },
+          "number": 457,
+          "title": "feat(core): bounded VBIC small-signal .ac/.pz linearization (#446)",
+          "url": "https://github.com/mfiumara/spice-ts/pull/457",
+          "kind": "merged-pr"
+        }
+      ],
+      "recommendation": "Extend the existing bounded VBIC parameter coverage via #526; NF and KFN remain explicit unsupported errors. No solver fix inferred."
+    },
+    {
+      "bucket": "model resolution/instance forms",
+      "fixtures": 3,
+      "historicalNgspiceSuccess": 2,
+      "ids": [
+        "examples-measure-mos-meas-dc-control-sp",
+        "examples-measure-mos-meas-dc-sp",
+        "examples-vdmos-self-heating-sp"
+      ],
+      "links": [
+        {
+          "number": 559,
+          "state": "OPEN",
+          "title": "feat(core): VDMOS self-heating (thermal Tj/Tc) and body-diode soft reverse recovery (VP)",
+          "url": "https://github.com/mfiumara/spice-ts/issues/559",
+          "kind": "issue"
+        },
+        {
+          "number": 503,
+          "state": "CLOSED",
+          "title": "fix(parser): BSIM model cards with dotted VERSION= values (4 corpus-f decks, ngspice runs 4)",
+          "url": "https://github.com/mfiumara/spice-ts/issues/503",
+          "kind": "issue"
+        },
+        {
+          "number": 854,
+          "state": "CLOSED",
+          "title": "fix(parser): .model inside .subckt is global (last wins); ngspice-47 scopes it to the subcircuit (ngspice bug #745 i(V1) 2% off)",
+          "url": "https://github.com/mfiumara/spice-ts/issues/854",
+          "kind": "issue"
+        },
+        {
+          "number": 837,
+          "state": "CLOSED",
+          "title": "fix(parser): bare .param names as R/C/L values (R1 a b rval) fail with 'references unknown model' (corpus-i spice_subckt.cir, ngspice runs it)",
+          "url": "https://github.com/mfiumara/spice-ts/issues/837",
+          "kind": "issue"
+        },
+        {
+          "mergeCommit": {
+            "oid": "a32f7555299d357670ea614e32b631d6ca4b10cc"
+          },
+          "number": 562,
+          "title": "feat(core): VDMOS power MOSFET model (nchan/pchan, body diode, DevCapVDMOS) (#506)",
+          "url": "https://github.com/mfiumara/spice-ts/pull/562",
+          "kind": "merged-pr"
+        },
+        {
+          "mergeCommit": {
+            "oid": "cda916dd5d4ec595f9e2b9450b9553e4f8499a65"
+          },
+          "number": 599,
+          "title": "fix(core): handle dotted BSIM model versions (#503)",
+          "url": "https://github.com/mfiumara/spice-ts/pull/599",
+          "kind": "merged-pr"
+        }
+      ],
+      "recommendation": "Investigate nch model resolution (2) separately from VDMOS thermal-node Tc mistaken for model (1). #559 already owns self-heating; do not create a duplicate thermal issue."
+    },
+    {
+      "bucket": "BJT excess phase PTF",
+      "fixtures": 2,
+      "historicalNgspiceSuccess": 2,
+      "ids": [
+        "examples-control-structs-foreach-bjt-ft-sp",
+        "examples-various-bjt-ac-par-sp"
+      ],
+      "links": [
+        {
+          "number": 5,
+          "state": "OPEN",
+          "title": "Gummel-Poon BJT model",
+          "url": "https://github.com/mfiumara/spice-ts/issues/5",
+          "kind": "issue"
+        },
+        {
+          "number": 633,
+          "state": "CLOSED",
+          "title": "fix(core): BJT cards without VAF/IKF/ISE/NE silently ignore unsupported Gummel-Poon parameters (VAR, IKR, ISC, NC, IRB, RBM...)",
+          "url": "https://github.com/mfiumara/spice-ts/issues/633",
+          "kind": "issue"
+        }
+      ],
+      "recommendation": "Route excess-phase implementation to existing #5. PTF unsupported is explicit, not an undiagnosed parsing failure."
+    },
+    {
+      "bucket": "string/vector numparam",
+      "fixtures": 2,
+      "historicalNgspiceSuccess": 2,
+      "ids": [
+        "examples-numparam-strings-cir",
+        "examples-numparam-vector-param-cir"
+      ],
+      "links": [
+        {
+          "number": 496,
+          "state": "CLOSED",
+          "title": "feat(parser): numparam extensions .func, .csparam, .if/.elseif and string/vector .param (10 corpus-f decks, ngspice runs 10)",
+          "url": "https://github.com/mfiumara/spice-ts/issues/496",
+          "kind": "issue"
+        },
+        {
+          "number": 870,
+          "state": "CLOSED",
+          "title": "feat(parser): .param/.func-style function definitions with arguments and 3-arg limit(x,lo,hi) like ngspice-47 numparam (ngspice-bugs #871, #505)",
+          "url": "https://github.com/mfiumara/spice-ts/issues/870",
+          "kind": "issue"
+        },
+        {
+          "mergeCommit": {
+            "oid": "0f255516978fe874896cba7d087fc6e03c1cf0b5"
+          },
+          "number": 616,
+          "title": "feat(parser): numparam .func, .csparam and .if/.elseif/.else/.endif (#496)",
+          "url": "https://github.com/mfiumara/spice-ts/pull/616",
+          "kind": "merged-pr"
+        }
+      ],
+      "recommendation": "Closed #496 delivered a bounded numeric slice, not string/vector parameters. Propose a dedicated remaining string/vector follow-up; keep the active #871 parser lane independent."
+    },
+    {
+      "bucket": "Gear integration order 3",
+      "fixtures": 1,
+      "historicalNgspiceSuccess": 1,
+      "ids": [
+        "examples-p-to-n-examples-switch-oscillators-cir"
+      ],
+      "links": [
+        {
+          "number": 494,
+          "state": "CLOSED",
+          "title": "fix(parser): .options fields noinit, bypass, warn, ramptime, seedinfo (12 corpus-f decks, ngspice runs 12)",
+          "url": "https://github.com/mfiumara/spice-ts/issues/494",
+          "kind": "issue"
+        },
+        {
+          "mergeCommit": {
+            "oid": "1ba9f8208508eb55fe47092995e6096ca86ec990"
+          },
+          "number": 47,
+          "title": "feat(core): Gear-2 (BDF2) integration method",
+          "url": "https://github.com/mfiumara/spice-ts/pull/47",
+          "kind": "merged-pr"
+        },
+        {
+          "mergeCommit": {
+            "oid": "b5e475845ef1199a17d595d635cb254efa3054b1"
+          },
+          "number": 819,
+          "title": "fix(parser): accept bare .probe, unrecognised .options, .four, 27°C and (n+ n-) node pairs like ngspice-47 (#790)",
+          "url": "https://github.com/mfiumara/spice-ts/pull/819",
+          "kind": "merged-pr"
+        }
+      ],
+      "recommendation": "Gear-2-only rejection is intentional current coverage. Recommend higher-order Gear only with a bounded ngspice parity reproduction, not ignoring maxord=3."
+    },
+    {
+      "bucket": "native success, parity not computed",
+      "fixtures": 1,
+      "historicalNgspiceSuccess": 1,
+      "ids": [
+        "examples-probe-cntrl-sources-cir"
+      ],
+      "links": [
+        {
+          "number": 860,
+          "state": "CLOSED",
+          "title": "fix(core): linear F/H naming a voltage source defined later on the card list fails (\"references unknown or branchless source\")",
+          "url": "https://github.com/mfiumara/spice-ts/issues/860",
+          "kind": "issue"
+        },
+        {
+          "number": 790,
+          "state": "CLOSED",
+          "title": "fix(parser): small corpus-h parse gaps: bare .probe, .options INTERP/ysep, .four, 27°C suffix, (n+ n-) node pairs (7 decks, ngspice runs 7)",
+          "url": "https://github.com/mfiumara/spice-ts/issues/790",
+          "kind": "issue"
+        },
+        {
+          "mergeCommit": {
+            "oid": "b5e475845ef1199a17d595d635cb254efa3054b1"
+          },
+          "number": 819,
+          "title": "fix(parser): accept bare .probe, unrecognised .options, .four, 27°C and (n+ n-) node pairs like ngspice-47 (#790)",
+          "url": "https://github.com/mfiumara/spice-ts/pull/819",
+          "kind": "merged-pr"
+        }
+      ],
+      "recommendation": "cntrl-sources now runs a 2514-point/12-signal transient. Fresh identical-deck reference comparison belongs to a bounded follow-up/nightly #855; no match claimed here."
+    },
+    {
+      "bucket": "numparam function/node substitution",
+      "fixtures": 1,
+      "historicalNgspiceSuccess": 1,
+      "ids": [
+        "tests-regression-func-func-1-cir"
+      ],
+      "links": [
+        {
+          "number": 870,
+          "state": "CLOSED",
+          "title": "feat(parser): .param/.func-style function definitions with arguments and 3-arg limit(x,lo,hi) like ngspice-47 numparam (ngspice-bugs #871, #505)",
+          "url": "https://github.com/mfiumara/spice-ts/issues/870",
+          "kind": "issue"
+        },
+        {
+          "number": 493,
+          "state": "CLOSED",
+          "title": "fix(parser): quoted and brace expressions in element/model values, TEMPER and v() (13 corpus-f decks, ngspice runs 12)",
+          "url": "https://github.com/mfiumara/spice-ts/issues/493",
+          "kind": "issue"
+        },
+        {
+          "number": 782,
+          "state": "OPEN",
+          "title": "parser: numparam {...} values are not read like ngspice-47 (strtod*scale, '% 23.15e', INPevaluate)",
+          "url": "https://github.com/mfiumara/spice-ts/issues/782",
+          "kind": "issue"
+        },
+        {
+          "mergeCommit": {
+            "oid": "0f255516978fe874896cba7d087fc6e03c1cf0b5"
+          },
+          "number": 616,
+          "title": "feat(parser): numparam .func, .csparam and .if/.elseif/.else/.endif (#496)",
+          "url": "https://github.com/mfiumara/spice-ts/pull/616",
+          "kind": "merged-pr"
+        }
+      ],
+      "recommendation": "Investigate node-valued function arguments being expanded to v((17.0)); numeric parameter/function support does not imply correct node substitution. Keep follow-up separate from #871 temperature work."
+    },
+    {
+      "bucket": "thermal/self-heating",
+      "fixtures": 1,
+      "historicalNgspiceSuccess": 1,
+      "ids": [
+        "examples-soa-diode-soa-sh-cir"
+      ],
+      "links": [
+        {
+          "number": 526,
+          "state": "OPEN",
+          "title": "corpus-f Q/D bucket: remaining blockers after #490 (CIDER models, self-heating, .temp, VBIC noise/PNP)",
+          "url": "https://github.com/mfiumara/spice-ts/issues/526",
+          "kind": "issue"
+        },
+        {
+          "number": 490,
+          "state": "CLOSED",
+          "title": "fix(parser): BJT/diode instance forms AREA=, M=, thermal node and VBIC PNP (22 corpus-f decks, ngspice runs 20)",
+          "url": "https://github.com/mfiumara/spice-ts/issues/490",
+          "kind": "issue"
+        },
+        {
+          "number": 559,
+          "state": "OPEN",
+          "title": "feat(core): VDMOS self-heating (thermal Tj/Tc) and body-diode soft reverse recovery (VP)",
+          "url": "https://github.com/mfiumara/spice-ts/issues/559",
+          "kind": "issue"
+        },
+        {
+          "mergeCommit": {
+            "oid": "7a0a486bcc26824657d31a5288849f4cce831397"
+          },
+          "number": 527,
+          "title": "fix(parser): BJT AREA=/M=/positional area instance scaling and typed diode thermal-node error (#490)",
+          "url": "https://github.com/mfiumara/spice-ts/pull/527",
+          "kind": "merged-pr"
+        }
+      ],
+      "recommendation": "Use #526 for diode thermal-node coverage. #559 is related VDMOS work, not proof that the diode is implemented."
+    },
+    {
+      "bucket": "XSPICE invalid-input validation",
+      "fixtures": 2,
+      "historicalNgspiceSuccess": 0,
+      "ids": [
+        "examples-xspice-original-examples-bad-io-type-deck",
+        "examples-xspice-original-examples-bad-param-type-deck"
+      ],
+      "links": [
+        {
+          "number": 553,
+          "state": "OPEN",
+          "title": "feat(core): remaining XSPICE code models after #487 slice 1 (analog groups, event-driven bridges/digital)",
+          "url": "https://github.com/mfiumara/spice-ts/issues/553",
+          "kind": "issue"
+        },
+        {
+          "mergeCommit": {
+            "oid": "0e1aeb4ba035482fdc8c0f3fb12521e993b7e115"
+          },
+          "number": 554,
+          "title": "feat(core): XSPICE A elements with gain, summer, mult, divide, pwl, limit, int and d_dt code models (#487)",
+          "url": "https://github.com/mfiumara/spice-ts/pull/554",
+          "kind": "merged-pr"
+        }
+      ],
+      "recommendation": "Both fixtures historically fail ngspice; preserve negative-input failures. Do not count them as parity opportunities."
+    }
+  ]
+}
