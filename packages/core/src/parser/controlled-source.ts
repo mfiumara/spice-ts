@@ -46,7 +46,8 @@ export function withoutNodePairParentheses(tokens: readonly string[]): string[] 
  *   Fxxx n+ n- POLY(n) v1 ... p0 p1 ...         ->  bFxxx n+ n- i = poly(i(v1), ...)
  *   Hxxx n+ n- POLY(n) v1 ... p0 p1 ...         ->  bHxxx n+ n- v = poly(i(v1), ...)
  *
- * with the coefficient order of {@link polyExpression}. As in MIFgettok, `(`,
+ * with the coefficient order of {@link polyExpression} and the spice-ts
+ * `spice2poly=1` marker, which applies the XSPICE trtol rule of cktdojob.c. As in MIFgettok, `(`,
  * `)` and `,` only separate tokens, so `POLY(2) (1,0) (2,0)` reads like
  * `POLY 2 1 0 2 0`. Every token after the controls is a coefficient; terms
  * without one are zero. An `m=` multiplier scales G and F sources and is
@@ -83,7 +84,9 @@ export function translatePolySource(tokens: readonly string[], lineNumber: numbe
   }
   const output = type === 'E' || type === 'H' ? 'v' : 'i';
   const scale = type === 'G' || type === 'F' ? multiplier : undefined;
-  return `b${name} ${fields[1]} ${fields[2]} ${output} = ${polyExpression(inputs, coefficients, scale)}`;
+  // spice2poly=1 marks it as the XSPICE 'A' device ngspice-47 makes of it,
+  // which lowers the circuit trtol (cktdojob.c, #862).
+  return `b${name} ${fields[1]} ${fields[2]} ${output} = ${polyExpression(inputs, coefficients, scale)} spice2poly=1`;
 }
 
 /**
