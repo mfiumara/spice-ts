@@ -1,0 +1,1083 @@
+{
+  "baseSha": "d4b1ce04b70f98986d825d1daee64fabcfc7ae61",
+  "temp924AtKickoff": "OPEN; not imported",
+  "historicalSourceCommit": "5014ae0bcfd6484a2ad4d5b25ed14672851b3ca2",
+  "node": "v22.23.1",
+  "platform": "macOS-27.0.1-arm64-arm-64bit",
+  "machine": "arm64",
+  "cpu": "Apple M5 Pro",
+  "spiceTsPackageVersion": "0.3.0",
+  "limits": {
+    "perChildSeconds": 12,
+    "totalSeconds": 600,
+    "heapMiB": 256,
+    "outputBytesPerStream": 65536,
+    "concurrency": 1
+  },
+  "elapsedSeconds": 17.672620916,
+  "freshNgspiceVersion": null,
+  "totals": {
+    "parse": {
+      "unsupported": 19,
+      "success": 3
+    },
+    "native": {
+      "unsupported": 22
+    }
+  },
+  "fixtures": [
+    {
+      "id": "examples-cider-bjt-astable-cir",
+      "sha256": "0ec56d4521411c4d1dcb1d209fec1ba7db5ecfb13b4743b9d5f6f9ba6aba4434",
+      "historicalReference": {
+        "status": "success",
+        "analyses": [
+          "tran:1455"
+        ]
+      },
+      "freshReference": null,
+      "freshComparison": null,
+      "maxAbsoluteError": null,
+      "rmsRelativeError": null,
+      "parse": {
+        "status": "unsupported",
+        "name": "UnsupportedModelTypeError",
+        "error": "Parse error at line 18: .model 'qmod' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW)\n  .model qmod nbjt level=1 x.mesh node=1  loc=0.0 x.mesh node=61 loc=3.0 region num=1 material=1 material num=1 silicon nbgnn=1e17 nbgnp=1e17 mobility material=1 concmod=sg fieldmod=sg mobility material=1 elec major mobility material=1 elec minor mobility material=1 hole major mobility material=1 hole minor doping unif n.type conc=1e17 x.l=0.0 x.h=1.0 doping unif p.type conc=1e16 x.l=0.0 x.h=1.5 doping unif n.type conc=1e15 x.l=0.0 x.h=3.0 models bgnw srh conctau auger concmob fieldmob options base.length=1.0 base.depth=1.25",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "parse",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/examples/cider/bjt/astable.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.783221583,
+        "stderr": ""
+      },
+      "native": {
+        "status": "unsupported",
+        "name": "UnsupportedModelTypeError",
+        "error": "Parse error at line 18: .model 'qmod' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW)\n  .model qmod nbjt level=1 x.mesh node=1  loc=0.0 x.mesh node=61 loc=3.0 region num=1 material=1 material num=1 silicon nbgnn=1e17 nbgnp=1e17 mobility material=1 concmod=sg fieldmod=sg mobility material=1 elec major mobility material=1 elec minor mobility material=1 hole major mobility material=1 hole minor doping unif n.type conc=1e17 x.l=0.0 x.h=1.0 doping unif p.type conc=1e16 x.l=0.0 x.h=1.5 doping unif n.type conc=1e15 x.l=0.0 x.h=3.0 models bgnw srh conctau auger concmob fieldmob options base.length=1.0 base.depth=1.25",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "native",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/examples/cider/bjt/astable.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.447975166,
+        "stderr": ""
+      }
+    },
+    {
+      "id": "examples-cider-bjt-colposc-cir",
+      "sha256": "13ef66b7b2404373ad1f28c18819f4668f882d5f4f8b1df77cada61e9304fbff",
+      "historicalReference": {
+        "status": "success",
+        "analyses": [
+          "tran:3106"
+        ]
+      },
+      "freshReference": null,
+      "freshComparison": null,
+      "maxAbsoluteError": null,
+      "rmsRelativeError": null,
+      "parse": {
+        "status": "unsupported",
+        "name": "UnsupportedModelTypeError",
+        "error": "Parse error at line 16: .model 'qmod' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW)\n  .model qmod nbjt level=1 x.mesh node=1  loc=0.0 x.mesh node=61 loc=3.0 region num=1 material=1 material num=1 silicon nbgnn=1e17 nbgnp=1e17 mobility material=1 concmod=sg fieldmod=sg mobility material=1 elec major mobility material=1 elec minor mobility material=1 hole major mobility material=1 hole minor doping unif n.type conc=1e17 x.l=0.0 x.h=1.0 doping unif p.type conc=1e16 x.l=0.0 x.h=1.5 doping unif n.type conc=1e15 x.l=0.0 x.h=3.0 models bgnw srh conctau auger concmob fieldmob options base.length=1.0 base.depth=1.25",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "parse",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/examples/cider/bjt/colposc.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.4104924999999999,
+        "stderr": ""
+      },
+      "native": {
+        "status": "unsupported",
+        "name": "UnsupportedModelTypeError",
+        "error": "Parse error at line 16: .model 'qmod' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW)\n  .model qmod nbjt level=1 x.mesh node=1  loc=0.0 x.mesh node=61 loc=3.0 region num=1 material=1 material num=1 silicon nbgnn=1e17 nbgnp=1e17 mobility material=1 concmod=sg fieldmod=sg mobility material=1 elec major mobility material=1 elec minor mobility material=1 hole major mobility material=1 hole minor doping unif n.type conc=1e17 x.l=0.0 x.h=1.0 doping unif p.type conc=1e16 x.l=0.0 x.h=1.5 doping unif n.type conc=1e15 x.l=0.0 x.h=3.0 models bgnw srh conctau auger concmob fieldmob options base.length=1.0 base.depth=1.25",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "native",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/examples/cider/bjt/colposc.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.4154721670000001,
+        "stderr": ""
+      }
+    },
+    {
+      "id": "examples-cider-bjt-ecp-cir",
+      "sha256": "c3a89fc0dfee501189a37ffecb55286f5645cbf406dc17288ee8ac1b8f03e989",
+      "historicalReference": {
+        "status": "success",
+        "analyses": [
+          "dc:51"
+        ]
+      },
+      "freshReference": null,
+      "freshComparison": null,
+      "maxAbsoluteError": null,
+      "rmsRelativeError": null,
+      "parse": {
+        "status": "unsupported",
+        "name": "UnsupportedModelTypeError",
+        "error": "Parse error at line 14: .model 'M_NPN' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW)\n  .MODEL M_NPN nbjt level=2 title TWO-DIMENSIONAL NUMERICAL POLYSILICON EMITTER BIPOLAR TRANSISTOR * Since, we are only simulating half of a device, we double the unit width * 1.0 um emitter length options defw=2.0u  *x.mesh w=2.5 n=5 x.mesh w=2.0  h.e=0.05 h.m=0.2 r=1.5 x.mesh w=0.5  h.s=0.05 h.m=0.1 r=1.5  y.mesh l=-0.2 n=1 y.mesh l= 0.0 n=5 y.mesh w=0.10 h.e=0.002 h.m=0.01  r=1.5 y.mesh w=0.15 h.s=0.002 h.m=0.01  r=1.5 y.mesh w=0.35 h.s=0.01  h.m=0.2   r=1.5 y.mesh w=0.40 h.e=0.05  h.m=0.2   r=1.5 y.mesh w=0.30 h.s=0.05  h.m=0.1   r=1.5  domain num=1 material=1 x.l=2.0 y.h=0.0 domain num=2 material=2 x.h=2.0 y.h=0.0 domain num=3 material=3 y.l=0.0 material num=1 polysilicon material num=2 oxide material num=3 silicon  elec num=1 x.l=0.0  x.h=0.0  y.l=1.1  y.h=1.3 elec num=2 x.l=0.0  x.h=0.5  y.l=0.0  y.h=0.0 elec num=3 x.l=2.0  x.h=3.0  y.l=-0.2 y.h=-0.2  doping gauss n.type conc=3e20 x.l=2.0 x.h=3.0 y.l=-0.2 y.h=0.0 + char.l=0.047 lat.rotate doping gauss p.type conc=1e19 x.l=0.0 x.h=5.0 y.l=-0.2 y.h=0.0 + char.l=0.094 lat.rotate doping unif  n.type conc=1e16 x.l=0.0 x.h=5.0 y.l=0.0 y.h=1.3 doping gauss n.type conc=5e19 x.l=0.0 x.h=5.0 y.l=1.3 y.h=1.3 + char.l=0.100 lat.rotate  method ac=direct itlim=10 models bgn srh auger conctau concmob fieldmob",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "parse",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/examples/cider/bjt/ecp.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.3974534999999997,
+        "stderr": ""
+      },
+      "native": {
+        "status": "unsupported",
+        "name": "UnsupportedModelTypeError",
+        "error": "Parse error at line 14: .model 'M_NPN' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW)\n  .MODEL M_NPN nbjt level=2 title TWO-DIMENSIONAL NUMERICAL POLYSILICON EMITTER BIPOLAR TRANSISTOR * Since, we are only simulating half of a device, we double the unit width * 1.0 um emitter length options defw=2.0u  *x.mesh w=2.5 n=5 x.mesh w=2.0  h.e=0.05 h.m=0.2 r=1.5 x.mesh w=0.5  h.s=0.05 h.m=0.1 r=1.5  y.mesh l=-0.2 n=1 y.mesh l= 0.0 n=5 y.mesh w=0.10 h.e=0.002 h.m=0.01  r=1.5 y.mesh w=0.15 h.s=0.002 h.m=0.01  r=1.5 y.mesh w=0.35 h.s=0.01  h.m=0.2   r=1.5 y.mesh w=0.40 h.e=0.05  h.m=0.2   r=1.5 y.mesh w=0.30 h.s=0.05  h.m=0.1   r=1.5  domain num=1 material=1 x.l=2.0 y.h=0.0 domain num=2 material=2 x.h=2.0 y.h=0.0 domain num=3 material=3 y.l=0.0 material num=1 polysilicon material num=2 oxide material num=3 silicon  elec num=1 x.l=0.0  x.h=0.0  y.l=1.1  y.h=1.3 elec num=2 x.l=0.0  x.h=0.5  y.l=0.0  y.h=0.0 elec num=3 x.l=2.0  x.h=3.0  y.l=-0.2 y.h=-0.2  doping gauss n.type conc=3e20 x.l=2.0 x.h=3.0 y.l=-0.2 y.h=0.0 + char.l=0.047 lat.rotate doping gauss p.type conc=1e19 x.l=0.0 x.h=5.0 y.l=-0.2 y.h=0.0 + char.l=0.094 lat.rotate doping unif  n.type conc=1e16 x.l=0.0 x.h=5.0 y.l=0.0 y.h=1.3 doping gauss n.type conc=5e19 x.l=0.0 x.h=5.0 y.l=1.3 y.h=1.3 + char.l=0.100 lat.rotate  method ac=direct itlim=10 models bgn srh auger conctau concmob fieldmob",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "native",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/examples/cider/bjt/ecp.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.38819808300000025,
+        "stderr": ""
+      }
+    },
+    {
+      "id": "examples-cider-bjt-invchain-cir",
+      "sha256": "9b3ffb86040d53fcbf24500924a4cd9e21c89e1cb5a5b2c5eae953b52db63e28",
+      "historicalReference": {
+        "status": "success",
+        "analyses": [
+          "tran:316"
+        ]
+      },
+      "freshReference": null,
+      "freshComparison": null,
+      "maxAbsoluteError": null,
+      "rmsRelativeError": null,
+      "parse": {
+        "status": "unsupported",
+        "name": "UnsupportedModelTypeError",
+        "error": "Parse error at line 21: .model 'qmod' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW)\n  .model qmod nbjt level=1 x.mesh node=1  loc=0.0 x.mesh node=61 loc=3.0 region num=1 material=1 material num=1 silicon nbgnn=1e17 nbgnp=1e17 mobility material=1 concmod=sg fieldmod=sg mobility material=1 elec major mobility material=1 elec minor mobility material=1 hole major mobility material=1 hole minor doping unif n.type conc=1e17 x.l=0.0 x.h=1.0 doping unif p.type conc=1e16 x.l=0.0 x.h=1.5 doping unif n.type conc=1e15 x.l=0.0 x.h=3.0 models bgnw srh conctau auger concmob fieldmob options base.length=1.0 base.depth=1.25",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "parse",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/examples/cider/bjt/invchain.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.392201,
+        "stderr": ""
+      },
+      "native": {
+        "status": "unsupported",
+        "name": "UnsupportedModelTypeError",
+        "error": "Parse error at line 21: .model 'qmod' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW)\n  .model qmod nbjt level=1 x.mesh node=1  loc=0.0 x.mesh node=61 loc=3.0 region num=1 material=1 material num=1 silicon nbgnn=1e17 nbgnp=1e17 mobility material=1 concmod=sg fieldmod=sg mobility material=1 elec major mobility material=1 elec minor mobility material=1 hole major mobility material=1 hole minor doping unif n.type conc=1e17 x.l=0.0 x.h=1.0 doping unif p.type conc=1e16 x.l=0.0 x.h=1.5 doping unif n.type conc=1e15 x.l=0.0 x.h=3.0 models bgnw srh conctau auger concmob fieldmob options base.length=1.0 base.depth=1.25",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "native",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/examples/cider/bjt/invchain.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.3771971249999999,
+        "stderr": ""
+      }
+    },
+    {
+      "id": "examples-cider-bjt-meclgate-cir",
+      "sha256": "4c03caeac8e27847bfbbff541c6c71f63e2b07d82180815d714c4531d279ff10",
+      "historicalReference": {
+        "status": "success",
+        "analyses": [
+          "tran:389"
+        ]
+      },
+      "freshReference": null,
+      "freshComparison": null,
+      "maxAbsoluteError": null,
+      "rmsRelativeError": null,
+      "parse": {
+        "status": "unsupported",
+        "name": "UnsupportedModelTypeError",
+        "error": "Parse error at line 52: .model 'qmod' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW)\n  .model qmod nbjt level=1 x.mesh node=1  loc=0.0 x.mesh node=10 loc=0.9 x.mesh node=20 loc=1.1 x.mesh node=30 loc=1.4 x.mesh node=40 loc=1.6 x.mesh node=61 loc=3.0 region num=1 material=1 material num=1 silicon nbgnn=1e17 nbgnp=1e17 mobility material=1 concmod=sg fieldmod=sg mobility material=1 elec major mobility material=1 elec minor mobility material=1 hole major mobility material=1 hole minor doping unif n.type conc=1e17 x.l=0.0 x.h=1.0 doping unif p.type conc=1e16 x.l=0.0 x.h=1.5 doping unif n.type conc=1e15 x.l=0.0 x.h=3.0 models bgnw srh conctau auger concmob fieldmob options base.length=1.0 base.depth=1.25",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "parse",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/examples/cider/bjt/meclgate.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.36824470799999975,
+        "stderr": ""
+      },
+      "native": {
+        "status": "unsupported",
+        "name": "UnsupportedModelTypeError",
+        "error": "Parse error at line 52: .model 'qmod' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW)\n  .model qmod nbjt level=1 x.mesh node=1  loc=0.0 x.mesh node=10 loc=0.9 x.mesh node=20 loc=1.1 x.mesh node=30 loc=1.4 x.mesh node=40 loc=1.6 x.mesh node=61 loc=3.0 region num=1 material=1 material num=1 silicon nbgnn=1e17 nbgnp=1e17 mobility material=1 concmod=sg fieldmod=sg mobility material=1 elec major mobility material=1 elec minor mobility material=1 hole major mobility material=1 hole minor doping unif n.type conc=1e17 x.l=0.0 x.h=1.0 doping unif p.type conc=1e16 x.l=0.0 x.h=1.5 doping unif n.type conc=1e15 x.l=0.0 x.h=3.0 models bgnw srh conctau auger concmob fieldmob options base.length=1.0 base.depth=1.25",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "native",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/examples/cider/bjt/meclgate.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.38814795800000024,
+        "stderr": ""
+      }
+    },
+    {
+      "id": "examples-cider-bjt-rtlinv-cir",
+      "sha256": "843f8831a63af8e2a3a51f3726ba9aa826a1ab2b8c245a2f45c7eb7e7e4f4483",
+      "historicalReference": {
+        "status": "success",
+        "analyses": [
+          "tran:177"
+        ]
+      },
+      "freshReference": null,
+      "freshComparison": null,
+      "maxAbsoluteError": null,
+      "rmsRelativeError": null,
+      "parse": {
+        "status": "unsupported",
+        "name": "UnsupportedModelTypeError",
+        "error": "Parse error at line 13: .model 'qmod' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW)\n  .model qmod nbjt level=1 x.mesh node=1  loc=0.0 x.mesh node=61 loc=3.0 region num=1 material=1 material num=1 silicon nbgnn=1e17 nbgnp=1e17 mobility material=1 concmod=sg fieldmod=sg mobility material=1 elec major mobility material=1 elec minor mobility material=1 hole major mobility material=1 hole minor doping unif n.type conc=1e17 x.l=0.0 x.h=1.0 doping unif p.type conc=1e16 x.l=0.0 x.h=1.5 doping unif n.type conc=1e15 x.l=0.0 x.h=3.0 models bgnw srh conctau auger concmob fieldmob options base.length=1.0 base.depth=1.25",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "parse",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/examples/cider/bjt/rtlinv.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.3837543339999998,
+        "stderr": ""
+      },
+      "native": {
+        "status": "unsupported",
+        "name": "UnsupportedModelTypeError",
+        "error": "Parse error at line 13: .model 'qmod' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW)\n  .model qmod nbjt level=1 x.mesh node=1  loc=0.0 x.mesh node=61 loc=3.0 region num=1 material=1 material num=1 silicon nbgnn=1e17 nbgnp=1e17 mobility material=1 concmod=sg fieldmod=sg mobility material=1 elec major mobility material=1 elec minor mobility material=1 hole major mobility material=1 hole minor doping unif n.type conc=1e17 x.l=0.0 x.h=1.0 doping unif p.type conc=1e16 x.l=0.0 x.h=1.5 doping unif n.type conc=1e15 x.l=0.0 x.h=3.0 models bgnw srh conctau auger concmob fieldmob options base.length=1.0 base.depth=1.25",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "native",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/examples/cider/bjt/rtlinv.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.3834525409999996,
+        "stderr": ""
+      }
+    },
+    {
+      "id": "examples-cider-bjt-vco-cir",
+      "sha256": "35ca1e3443289f2638edbd992901b33eafaecbfd9aa9666143a013f76ee3eff3",
+      "historicalReference": {
+        "status": "success",
+        "analyses": [
+          "tran:1140"
+        ]
+      },
+      "freshReference": null,
+      "freshComparison": null,
+      "maxAbsoluteError": null,
+      "rmsRelativeError": null,
+      "parse": {
+        "status": "unsupported",
+        "name": "UnsupportedModelTypeError",
+        "error": "Parse error at line 26: .model 'qmod' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW)\n  .model qmod nbjt level=1 x.mesh node=1  loc=0.0 x.mesh node=61 loc=3.0 region num=1 material=1 material num=1 silicon nbgnn=1e17 nbgnp=1e17 mobility material=1 concmod=sg fieldmod=sg mobility material=1 elec major mobility material=1 elec minor mobility material=1 hole major mobility material=1 hole minor doping unif n.type conc=1e17 x.l=0.0 x.h=1.0 doping unif p.type conc=1e16 x.l=0.0 x.h=1.5 doping unif n.type conc=1e15 x.l=0.0 x.h=3.0 models bgnw srh conctau auger concmob fieldmob options base.length=1.0 base.depth=1.25",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "parse",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/examples/cider/bjt/vco.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.3780524999999999,
+        "stderr": ""
+      },
+      "native": {
+        "status": "unsupported",
+        "name": "UnsupportedModelTypeError",
+        "error": "Parse error at line 26: .model 'qmod' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW)\n  .model qmod nbjt level=1 x.mesh node=1  loc=0.0 x.mesh node=61 loc=3.0 region num=1 material=1 material num=1 silicon nbgnn=1e17 nbgnp=1e17 mobility material=1 concmod=sg fieldmod=sg mobility material=1 elec major mobility material=1 elec minor mobility material=1 hole major mobility material=1 hole minor doping unif n.type conc=1e17 x.l=0.0 x.h=1.0 doping unif p.type conc=1e16 x.l=0.0 x.h=1.5 doping unif n.type conc=1e15 x.l=0.0 x.h=3.0 models bgnw srh conctau auger concmob fieldmob options base.length=1.0 base.depth=1.25",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "native",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/examples/cider/bjt/vco.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.42129858299999956,
+        "stderr": ""
+      }
+    },
+    {
+      "id": "examples-cider-jfet-jfet-cir",
+      "sha256": "9dfbd6b1fcb65d4d3079b58895f10affedc6389bc28cdd40dc8b2d832b67b160",
+      "historicalReference": {
+        "status": "success",
+        "analyses": [
+          "dc:21"
+        ]
+      },
+      "freshReference": null,
+      "freshComparison": null,
+      "maxAbsoluteError": null,
+      "rmsRelativeError": null,
+      "parse": {
+        "status": "unsupported",
+        "name": "UnsupportedModelTypeError",
+        "error": "Parse error at line 8: .model 'M_NJF' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW)\n  .MODEL M_NJF NBJT LEVEL=2 options jfet defw=10.0um output dc.debug phin phip equ.psi vac.psi x.mesh w=0.2 h.e=0.001 r=1.8 x.mesh w=0.8 h.s=0.001 h.m=0.1 r=2.0 x.mesh w=0.8 h.e=0.001 h.m=0.1 r=2.0 x.mesh w=0.2 h.s=0.001 r=1.8 y.mesh w=0.2 h.e=0.01  r=1.8 y.mesh w=0.8 h.s=0.01  h.m=0.1  r=1.8  domain num=1 mat=1 material num=1 silicon  elec num=1 x.l=0.0 x.h=0.0 y.l=0.0 y.h=1.0 elec num=2 x.l=0.5 x.h=1.5 y.l=0.0 y.h=0.0 elec num=3 x.l=2.0 x.h=2.0 y.l=0.0 y.h=1.0  doping unif n.type conc=3.0e15 doping unif p.type conc=2.0e17 x.l=0.2 x.h=1.8 y.h=0.2  models bgn srh auger conctau concmob fieldmob ^aval",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "parse",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/examples/cider/jfet/jfet.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.4407384590000003,
+        "stderr": ""
+      },
+      "native": {
+        "status": "unsupported",
+        "name": "UnsupportedModelTypeError",
+        "error": "Parse error at line 8: .model 'M_NJF' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW)\n  .MODEL M_NJF NBJT LEVEL=2 options jfet defw=10.0um output dc.debug phin phip equ.psi vac.psi x.mesh w=0.2 h.e=0.001 r=1.8 x.mesh w=0.8 h.s=0.001 h.m=0.1 r=2.0 x.mesh w=0.8 h.e=0.001 h.m=0.1 r=2.0 x.mesh w=0.2 h.s=0.001 r=1.8 y.mesh w=0.2 h.e=0.01  r=1.8 y.mesh w=0.8 h.s=0.01  h.m=0.1  r=1.8  domain num=1 mat=1 material num=1 silicon  elec num=1 x.l=0.0 x.h=0.0 y.l=0.0 y.h=1.0 elec num=2 x.l=0.5 x.h=1.5 y.l=0.0 y.h=0.0 elec num=3 x.l=2.0 x.h=2.0 y.l=0.0 y.h=1.0  doping unif n.type conc=3.0e15 doping unif p.type conc=2.0e17 x.l=0.2 x.h=1.8 y.h=0.2  models bgn srh auger conctau concmob fieldmob ^aval",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "native",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/examples/cider/jfet/jfet.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.3866977500000006,
+        "stderr": ""
+      }
+    },
+    {
+      "id": "examples-cider-serial-astable-cir",
+      "sha256": "8620812db6d63caa325136e1a84488528088528fe212b7a0738673068545184f",
+      "historicalReference": {
+        "status": "success",
+        "analyses": [
+          "tran:1455"
+        ]
+      },
+      "freshReference": null,
+      "freshComparison": null,
+      "maxAbsoluteError": null,
+      "rmsRelativeError": null,
+      "parse": {
+        "status": "unsupported",
+        "name": "UnsupportedModelTypeError",
+        "error": "Parse error at line 18: .model 'QMOD' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW)\n  .MODEL QMOD NBJT LEVEL=1 X.MESH NODE=1  LOC=0.0 X.MESH NODE=61 LOC=3.0 REGION NUM=1 MATERIAL=1 MATERIAL NUM=1 SILICON NBGNN=1E17 NBGNP=1E17 MOBILITY MATERIAL=1 CONCMOD=SG FIELDMOD=SG DOPING UNIF N.TYPE CONC=1E17 X.L=0.0 X.H=1.0 DOPING UNIF P.TYPE CONC=1E16 X.L=0.0 X.H=1.5 DOPING UNIF N.TYPE CONC=1E15 X.L=0.0 X.H=3.0 MODELS BGNW SRH CONCTAU AUGER CONCMOB FIELDMOB OPTIONS BASE.LENGTH=1.0 BASE.DEPTH=1.25",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "parse",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/examples/cider/serial/astable.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.3707161249999995,
+        "stderr": ""
+      },
+      "native": {
+        "status": "unsupported",
+        "name": "UnsupportedModelTypeError",
+        "error": "Parse error at line 18: .model 'QMOD' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW)\n  .MODEL QMOD NBJT LEVEL=1 X.MESH NODE=1  LOC=0.0 X.MESH NODE=61 LOC=3.0 REGION NUM=1 MATERIAL=1 MATERIAL NUM=1 SILICON NBGNN=1E17 NBGNP=1E17 MOBILITY MATERIAL=1 CONCMOD=SG FIELDMOD=SG DOPING UNIF N.TYPE CONC=1E17 X.L=0.0 X.H=1.0 DOPING UNIF P.TYPE CONC=1E16 X.L=0.0 X.H=1.5 DOPING UNIF N.TYPE CONC=1E15 X.L=0.0 X.H=3.0 MODELS BGNW SRH CONCTAU AUGER CONCMOB FIELDMOB OPTIONS BASE.LENGTH=1.0 BASE.DEPTH=1.25",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "native",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/examples/cider/serial/astable.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.44518708299999954,
+        "stderr": ""
+      }
+    },
+    {
+      "id": "examples-cider-serial-colposc-cir",
+      "sha256": "e86cec17c9f6472a3928a5a866815e34c3342181798655763ae5d68f434c3fb6",
+      "historicalReference": {
+        "status": "success",
+        "analyses": [
+          "tran:3106"
+        ]
+      },
+      "freshReference": null,
+      "freshComparison": null,
+      "maxAbsoluteError": null,
+      "rmsRelativeError": null,
+      "parse": {
+        "status": "unsupported",
+        "name": "UnsupportedModelTypeError",
+        "error": "Parse error at line 16: .model 'QMOD' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW)\n  .MODEL QMOD NBJT LEVEL=1 X.MESH NODE=1  LOC=0.0 X.MESH NODE=61 LOC=3.0 REGION NUM=1 MATERIAL=1 MATERIAL NUM=1 SILICON NBGNN=1E17 NBGNP=1E17 MOBILITY MATERIAL=1 CONCMOD=SG FIELDMOD=SG DOPING UNIF N.TYPE CONC=1E17 X.L=0.0 X.H=1.0 DOPING UNIF P.TYPE CONC=1E16 X.L=0.0 X.H=1.5 DOPING UNIF N.TYPE CONC=1E15 X.L=0.0 X.H=3.0 MODELS BGNW SRH CONCTAU AUGER CONCMOB FIELDMOB OPTIONS BASE.LENGTH=1.0 BASE.DEPTH=1.25",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "parse",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/examples/cider/serial/colposc.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.35597441600000046,
+        "stderr": ""
+      },
+      "native": {
+        "status": "unsupported",
+        "name": "UnsupportedModelTypeError",
+        "error": "Parse error at line 16: .model 'QMOD' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW)\n  .MODEL QMOD NBJT LEVEL=1 X.MESH NODE=1  LOC=0.0 X.MESH NODE=61 LOC=3.0 REGION NUM=1 MATERIAL=1 MATERIAL NUM=1 SILICON NBGNN=1E17 NBGNP=1E17 MOBILITY MATERIAL=1 CONCMOD=SG FIELDMOD=SG DOPING UNIF N.TYPE CONC=1E17 X.L=0.0 X.H=1.0 DOPING UNIF P.TYPE CONC=1E16 X.L=0.0 X.H=1.5 DOPING UNIF N.TYPE CONC=1E15 X.L=0.0 X.H=3.0 MODELS BGNW SRH CONCTAU AUGER CONCMOB FIELDMOB OPTIONS BASE.LENGTH=1.0 BASE.DEPTH=1.25",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "native",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/examples/cider/serial/colposc.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.3863965839999999,
+        "stderr": ""
+      }
+    },
+    {
+      "id": "examples-cider-serial-invchain-cir",
+      "sha256": "3f33e73f5317d89dfc6eed8db2f55f589e05c809d39e9a6934a062126fe1ed08",
+      "historicalReference": {
+        "status": "success",
+        "analyses": [
+          "tran:316"
+        ]
+      },
+      "freshReference": null,
+      "freshComparison": null,
+      "maxAbsoluteError": null,
+      "rmsRelativeError": null,
+      "parse": {
+        "status": "unsupported",
+        "name": "UnsupportedModelTypeError",
+        "error": "Parse error at line 21: .model 'QMOD' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW)\n  .MODEL QMOD NBJT LEVEL=1 X.MESH NODE=1  LOC=0.0 X.MESH NODE=61 LOC=3.0 REGION NUM=1 MATERIAL=1 MATERIAL NUM=1 SILICON NBGNN=1E17 NBGNP=1E17 MOBILITY MATERIAL=1 CONCMOD=SG FIELDMOD=SG DOPING UNIF N.TYPE CONC=1E17 X.L=0.0 X.H=1.0 DOPING UNIF P.TYPE CONC=1E16 X.L=0.0 X.H=1.5 DOPING UNIF N.TYPE CONC=1E15 X.L=0.0 X.H=3.0 MODELS BGNW SRH CONCTAU AUGER CONCMOB FIELDMOB OPTIONS BASE.LENGTH=1.0 BASE.DEPTH=1.25",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "parse",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/examples/cider/serial/invchain.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.4306922910000015,
+        "stderr": ""
+      },
+      "native": {
+        "status": "unsupported",
+        "name": "UnsupportedModelTypeError",
+        "error": "Parse error at line 21: .model 'QMOD' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW)\n  .MODEL QMOD NBJT LEVEL=1 X.MESH NODE=1  LOC=0.0 X.MESH NODE=61 LOC=3.0 REGION NUM=1 MATERIAL=1 MATERIAL NUM=1 SILICON NBGNN=1E17 NBGNP=1E17 MOBILITY MATERIAL=1 CONCMOD=SG FIELDMOD=SG DOPING UNIF N.TYPE CONC=1E17 X.L=0.0 X.H=1.0 DOPING UNIF P.TYPE CONC=1E16 X.L=0.0 X.H=1.5 DOPING UNIF N.TYPE CONC=1E15 X.L=0.0 X.H=3.0 MODELS BGNW SRH CONCTAU AUGER CONCMOB FIELDMOB OPTIONS BASE.LENGTH=1.0 BASE.DEPTH=1.25",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "native",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/examples/cider/serial/invchain.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.3884792079999997,
+        "stderr": ""
+      }
+    },
+    {
+      "id": "examples-cider-serial-meclgate-cir",
+      "sha256": "c4e620e14fc3e68d6d7efdd87888e5bb0beb5bcfc33ff15d9dd5d425e577abc7",
+      "historicalReference": {
+        "status": "success",
+        "analyses": [
+          "tran:389"
+        ]
+      },
+      "freshReference": null,
+      "freshComparison": null,
+      "maxAbsoluteError": null,
+      "rmsRelativeError": null,
+      "parse": {
+        "status": "unsupported",
+        "name": "UnsupportedModelTypeError",
+        "error": "Parse error at line 52: .model 'QMOD' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW)\n  .MODEL QMOD NBJT LEVEL=1 X.MESH NODE=1  LOC=0.0 X.MESH NODE=10 LOC=0.9 X.MESH NODE=20 LOC=1.1 X.MESH NODE=30 LOC=1.4 X.MESH NODE=40 LOC=1.6 X.MESH NODE=61 LOC=3.0 REGION NUM=1 MATERIAL=1 MATERIAL NUM=1 SILICON NBGNN=1E17 NBGNP=1E17 MOBILITY MATERIAL=1 CONCMOD=SG FIELDMOD=SG DOPING UNIF N.TYPE CONC=1E17 X.L=0.0 X.H=1.0 DOPING UNIF P.TYPE CONC=1E16 X.L=0.0 X.H=1.5 DOPING UNIF N.TYPE CONC=1E15 X.L=0.0 X.H=3.0 MODELS BGNW SRH CONCTAU AUGER CONCMOB FIELDMOB OPTIONS BASE.LENGTH=1.0 BASE.DEPTH=1.25",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "parse",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/examples/cider/serial/meclgate.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.3660587919999987,
+        "stderr": ""
+      },
+      "native": {
+        "status": "unsupported",
+        "name": "UnsupportedModelTypeError",
+        "error": "Parse error at line 52: .model 'QMOD' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW)\n  .MODEL QMOD NBJT LEVEL=1 X.MESH NODE=1  LOC=0.0 X.MESH NODE=10 LOC=0.9 X.MESH NODE=20 LOC=1.1 X.MESH NODE=30 LOC=1.4 X.MESH NODE=40 LOC=1.6 X.MESH NODE=61 LOC=3.0 REGION NUM=1 MATERIAL=1 MATERIAL NUM=1 SILICON NBGNN=1E17 NBGNP=1E17 MOBILITY MATERIAL=1 CONCMOD=SG FIELDMOD=SG DOPING UNIF N.TYPE CONC=1E17 X.L=0.0 X.H=1.0 DOPING UNIF P.TYPE CONC=1E16 X.L=0.0 X.H=1.5 DOPING UNIF N.TYPE CONC=1E15 X.L=0.0 X.H=3.0 MODELS BGNW SRH CONCTAU AUGER CONCMOB FIELDMOB OPTIONS BASE.LENGTH=1.0 BASE.DEPTH=1.25",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "native",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/examples/cider/serial/meclgate.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.39790833300000017,
+        "stderr": ""
+      }
+    },
+    {
+      "id": "examples-cider-serial-pullup-cir",
+      "sha256": "c19c59a0afefd7a790ea7a05089001c4fef5d6449618229358bfdfd1d469f2af",
+      "historicalReference": {
+        "status": "success",
+        "analyses": [
+          "tran:127"
+        ]
+      },
+      "freshReference": null,
+      "freshComparison": null,
+      "maxAbsoluteError": null,
+      "rmsRelativeError": null,
+      "parse": {
+        "status": "unsupported",
+        "name": "UnsupportedModelTypeError",
+        "error": "Parse error at line 23: .model 'M_NPN' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW)\n  .MODEL M_NPN NBJT LEVEL=2 TITLE TWO-DIMENSIONAL NUMERICAL POLYSILICON EMITTER BIPOLAR TRANSISTOR   OPTIONS DEFW=2.0U OUTPUT STATISTICS  X.MESH W=2.0 H.E=0.02 H.M=0.5 R=2.0 X.MESH W=0.5 H.S=0.02 H.M=0.2 R=2.0  Y.MESH L=-0.2 N=1 Y.MESH L= 0.0 N=5 Y.MESH W=0.10 H.E=0.004 H.M=0.05  R=2.5 Y.MESH W=0.15 H.S=0.004 H.M=0.02  R=2.5 Y.MESH W=1.05 H.S=0.02  H.M=0.1   R=2.5  DOMAIN NUM=1 MATERIAL=1 X.L=2.0 Y.H=0.0 DOMAIN NUM=2 MATERIAL=2 X.H=2.0 Y.H=0.0 DOMAIN NUM=3 MATERIAL=3 Y.L=0.0 MATERIAL NUM=1 POLYSILICON MATERIAL NUM=2 OXIDE MATERIAL NUM=3 SILICON  ELEC NUM=1 X.L=0.0  X.H=0.0  Y.L=1.1  Y.H=1.3 ELEC NUM=2 X.L=0.0  X.H=0.5  Y.L=0.0  Y.H=0.0 ELEC NUM=3 X.L=2.0  X.H=3.0  Y.L=-0.2 Y.H=-0.2  DOPING GAUSS N.TYPE CONC=3E20 X.L=2.0 X.H=3.0 Y.L=-0.2 Y.H=0.0 + CHAR.L=0.047 LAT.ROTATE DOPING GAUSS P.TYPE CONC=5E18 X.L=0.0 X.H=5.0 Y.L=-0.2 Y.H=0.0 + CHAR.L=0.100 LAT.ROTATE DOPING GAUSS P.TYPE CONC=1E20 X.L=0.0 X.H=0.5 Y.L=-0.2 Y.H=0.0 + CHAR.L=0.100 LAT.ROTATE RATIO=0.7 DOPING UNIF  N.TYPE CONC=1E16 X.L=0.0 X.H=5.0 Y.L=0.0 Y.H=1.3 DOPING GAUSS N.TYPE CONC=5E19 X.L=0.0 X.H=5.0 Y.L=1.3 Y.H=1.3 + CHAR.L=0.100 LAT.ROTATE  METHOD AC=DIRECT ITLIM=10 MODELS BGN SRH AUGER CONCTAU CONCMOB FIELDMOB",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "parse",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/examples/cider/serial/pullup.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.38856920799999983,
+        "stderr": ""
+      },
+      "native": {
+        "status": "unsupported",
+        "name": "UnsupportedModelTypeError",
+        "error": "Parse error at line 23: .model 'M_NPN' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW)\n  .MODEL M_NPN NBJT LEVEL=2 TITLE TWO-DIMENSIONAL NUMERICAL POLYSILICON EMITTER BIPOLAR TRANSISTOR   OPTIONS DEFW=2.0U OUTPUT STATISTICS  X.MESH W=2.0 H.E=0.02 H.M=0.5 R=2.0 X.MESH W=0.5 H.S=0.02 H.M=0.2 R=2.0  Y.MESH L=-0.2 N=1 Y.MESH L= 0.0 N=5 Y.MESH W=0.10 H.E=0.004 H.M=0.05  R=2.5 Y.MESH W=0.15 H.S=0.004 H.M=0.02  R=2.5 Y.MESH W=1.05 H.S=0.02  H.M=0.1   R=2.5  DOMAIN NUM=1 MATERIAL=1 X.L=2.0 Y.H=0.0 DOMAIN NUM=2 MATERIAL=2 X.H=2.0 Y.H=0.0 DOMAIN NUM=3 MATERIAL=3 Y.L=0.0 MATERIAL NUM=1 POLYSILICON MATERIAL NUM=2 OXIDE MATERIAL NUM=3 SILICON  ELEC NUM=1 X.L=0.0  X.H=0.0  Y.L=1.1  Y.H=1.3 ELEC NUM=2 X.L=0.0  X.H=0.5  Y.L=0.0  Y.H=0.0 ELEC NUM=3 X.L=2.0  X.H=3.0  Y.L=-0.2 Y.H=-0.2  DOPING GAUSS N.TYPE CONC=3E20 X.L=2.0 X.H=3.0 Y.L=-0.2 Y.H=0.0 + CHAR.L=0.047 LAT.ROTATE DOPING GAUSS P.TYPE CONC=5E18 X.L=0.0 X.H=5.0 Y.L=-0.2 Y.H=0.0 + CHAR.L=0.100 LAT.ROTATE DOPING GAUSS P.TYPE CONC=1E20 X.L=0.0 X.H=0.5 Y.L=-0.2 Y.H=0.0 + CHAR.L=0.100 LAT.ROTATE RATIO=0.7 DOPING UNIF  N.TYPE CONC=1E16 X.L=0.0 X.H=5.0 Y.L=0.0 Y.H=1.3 DOPING GAUSS N.TYPE CONC=5E19 X.L=0.0 X.H=5.0 Y.L=1.3 Y.H=1.3 + CHAR.L=0.100 LAT.ROTATE  METHOD AC=DIRECT ITLIM=10 MODELS BGN SRH AUGER CONCTAU CONCMOB FIELDMOB",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "native",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/examples/cider/serial/pullup.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.3799571660000005,
+        "stderr": ""
+      }
+    },
+    {
+      "id": "examples-cider-serial-rtlinv-cir",
+      "sha256": "ca518510a6d46de2da9b40040ebbc115c8a19c4270eb5d8cae9088fc785cd260",
+      "historicalReference": {
+        "status": "success",
+        "analyses": [
+          "tran:177"
+        ]
+      },
+      "freshReference": null,
+      "freshComparison": null,
+      "maxAbsoluteError": null,
+      "rmsRelativeError": null,
+      "parse": {
+        "status": "unsupported",
+        "name": "UnsupportedModelTypeError",
+        "error": "Parse error at line 13: .model 'QMOD' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW)\n  .MODEL QMOD NBJT LEVEL=1 X.MESH NODE=1  LOC=0.0 X.MESH NODE=61 LOC=3.0 REGION NUM=1 MATERIAL=1 MATERIAL NUM=1 SILICON NBGNN=1E17 NBGNP=1E17 MOBILITY MATERIAL=1 CONCMOD=SG FIELDMOD=SG DOPING UNIF N.TYPE CONC=1E17 X.L=0.0 X.H=1.0 DOPING UNIF P.TYPE CONC=1E16 X.L=0.0 X.H=1.5 DOPING UNIF N.TYPE CONC=1E15 X.L=0.0 X.H=3.0 MODELS BGNW SRH CONCTAU AUGER CONCMOB FIELDMOB OPTIONS BASE.LENGTH=1.0 BASE.DEPTH=1.25",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "parse",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/examples/cider/serial/rtlinv.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.36029345799999923,
+        "stderr": ""
+      },
+      "native": {
+        "status": "unsupported",
+        "name": "UnsupportedModelTypeError",
+        "error": "Parse error at line 13: .model 'QMOD' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW)\n  .MODEL QMOD NBJT LEVEL=1 X.MESH NODE=1  LOC=0.0 X.MESH NODE=61 LOC=3.0 REGION NUM=1 MATERIAL=1 MATERIAL NUM=1 SILICON NBGNN=1E17 NBGNP=1E17 MOBILITY MATERIAL=1 CONCMOD=SG FIELDMOD=SG DOPING UNIF N.TYPE CONC=1E17 X.L=0.0 X.H=1.0 DOPING UNIF P.TYPE CONC=1E16 X.L=0.0 X.H=1.5 DOPING UNIF N.TYPE CONC=1E15 X.L=0.0 X.H=3.0 MODELS BGNW SRH CONCTAU AUGER CONCMOB FIELDMOB OPTIONS BASE.LENGTH=1.0 BASE.DEPTH=1.25",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "native",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/examples/cider/serial/rtlinv.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.4396554169999991,
+        "stderr": ""
+      }
+    },
+    {
+      "id": "examples-cider-serial-vco-cir",
+      "sha256": "52dd69f0a35bf1a06568253b904f496e1b8d1967a1f7de695f87af0093eae5ac",
+      "historicalReference": {
+        "status": "success",
+        "analyses": [
+          "tran:1140"
+        ]
+      },
+      "freshReference": null,
+      "freshComparison": null,
+      "maxAbsoluteError": null,
+      "rmsRelativeError": null,
+      "parse": {
+        "status": "unsupported",
+        "name": "UnsupportedModelTypeError",
+        "error": "Parse error at line 26: .model 'QMOD' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW)\n  .MODEL QMOD NBJT LEVEL=1 X.MESH NODE=1  LOC=0.0 X.MESH NODE=61 LOC=3.0 REGION NUM=1 MATERIAL=1 MATERIAL NUM=1 SILICON NBGNN=1E17 NBGNP=1E17 MOBILITY MATERIAL=1 CONCMOD=SG FIELDMOD=SG DOPING UNIF N.TYPE CONC=1E17 X.L=0.0 X.H=1.0 DOPING UNIF P.TYPE CONC=1E16 X.L=0.0 X.H=1.5 DOPING UNIF N.TYPE CONC=1E15 X.L=0.0 X.H=3.0 MODELS BGNW SRH CONCTAU AUGER CONCMOB FIELDMOB OPTIONS BASE.LENGTH=1.0 BASE.DEPTH=1.25",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "parse",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/examples/cider/serial/vco.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.3879407500000003,
+        "stderr": ""
+      },
+      "native": {
+        "status": "unsupported",
+        "name": "UnsupportedModelTypeError",
+        "error": "Parse error at line 26: .model 'QMOD' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW)\n  .MODEL QMOD NBJT LEVEL=1 X.MESH NODE=1  LOC=0.0 X.MESH NODE=61 LOC=3.0 REGION NUM=1 MATERIAL=1 MATERIAL NUM=1 SILICON NBGNN=1E17 NBGNP=1E17 MOBILITY MATERIAL=1 CONCMOD=SG FIELDMOD=SG DOPING UNIF N.TYPE CONC=1E17 X.L=0.0 X.H=1.0 DOPING UNIF P.TYPE CONC=1E16 X.L=0.0 X.H=1.5 DOPING UNIF N.TYPE CONC=1E15 X.L=0.0 X.H=3.0 MODELS BGNW SRH CONCTAU AUGER CONCMOB FIELDMOB OPTIONS BASE.LENGTH=1.0 BASE.DEPTH=1.25",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "native",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/examples/cider/serial/vco.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.3446189999999998,
+        "stderr": ""
+      }
+    },
+    {
+      "id": "examples-cider-surfmob-tbicmpu1-cir",
+      "sha256": "f49308dd792907c7ed96bf0b54978b7b061f3071224ffa095b5bf5461ae5ad1d",
+      "historicalReference": {
+        "status": "success",
+        "analyses": [
+          "tran:120"
+        ]
+      },
+      "freshReference": null,
+      "freshComparison": null,
+      "maxAbsoluteError": null,
+      "rmsRelativeError": null,
+      "parse": {
+        "status": "unsupported",
+        "name": "UnsupportedModelTypeError",
+        "error": "Parse error at line 18: .model 'M_NPNS' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW)\n  .MODEL M_NPNS nbjt level=2 title TWO-DIMENSIONAL NUMERICAL POLYSILICON EMITTER BIPOLAR TRANSISTOR * Since half the device is simulated, double the unit width to get * 1.0 um emitter.  Use a small mesh for this model. options defw=2.0u  x.mesh w=2.0 h.e=0.02 h.m=0.5 r=2.0 x.mesh w=0.5 h.s=0.02 h.m=0.2 r=2.0  y.mesh l=-0.2 n=1 y.mesh l= 0.0 n=5 y.mesh w=0.10 h.e=0.004 h.m=0.05  r=2.5 y.mesh w=0.15 h.s=0.004 h.m=0.02  r=2.5 y.mesh w=1.05 h.s=0.02  h.m=0.1   r=2.5  domain num=1 material=1 x.l=2.0 y.h=0.0 domain num=2 material=2 x.h=2.0 y.h=0.0 domain num=3 material=3 y.l=0.0 material num=1 polysilicon material num=2 oxide material num=3 silicon  elec num=1 x.l=0.0  x.h=0.0  y.l=1.1  y.h=1.3 elec num=2 x.l=0.0  x.h=0.5  y.l=0.0  y.h=0.0 elec num=3 x.l=2.0  x.h=3.0  y.l=-0.2 y.h=-0.2  doping gauss n.type conc=3e20 x.l=2.0 x.h=3.0 y.l=-0.2 y.h=0.0 + char.l=0.047 lat.rotate doping gauss p.type conc=5e18 x.l=0.0 x.h=5.0 y.l=-0.2 y.h=0.0 + char.l=0.100 lat.rotate doping gauss p.type conc=1e20 x.l=0.0 x.h=0.5 y.l=-0.2 y.h=0.0 + char.l=0.100 lat.rotate ratio=0.7 doping unif  n.type conc=1e16 x.l=0.0 x.h=5.0 y.l=0.0 y.h=1.3 doping gauss n.type conc=5e19 x.l=0.0 x.h=5.0 y.l=1.3 y.h=1.3 + char.l=0.100 lat.rotate  method ac=direct itlim=10 models bgn srh auger conctau concmob fieldmob",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "parse",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/examples/cider/surfmob/Tbicmpu1.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.35824670799999936,
+        "stderr": ""
+      },
+      "native": {
+        "status": "unsupported",
+        "name": "UnsupportedModelTypeError",
+        "error": "Parse error at line 18: .model 'M_NPNS' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW)\n  .MODEL M_NPNS nbjt level=2 title TWO-DIMENSIONAL NUMERICAL POLYSILICON EMITTER BIPOLAR TRANSISTOR * Since half the device is simulated, double the unit width to get * 1.0 um emitter.  Use a small mesh for this model. options defw=2.0u  x.mesh w=2.0 h.e=0.02 h.m=0.5 r=2.0 x.mesh w=0.5 h.s=0.02 h.m=0.2 r=2.0  y.mesh l=-0.2 n=1 y.mesh l= 0.0 n=5 y.mesh w=0.10 h.e=0.004 h.m=0.05  r=2.5 y.mesh w=0.15 h.s=0.004 h.m=0.02  r=2.5 y.mesh w=1.05 h.s=0.02  h.m=0.1   r=2.5  domain num=1 material=1 x.l=2.0 y.h=0.0 domain num=2 material=2 x.h=2.0 y.h=0.0 domain num=3 material=3 y.l=0.0 material num=1 polysilicon material num=2 oxide material num=3 silicon  elec num=1 x.l=0.0  x.h=0.0  y.l=1.1  y.h=1.3 elec num=2 x.l=0.0  x.h=0.5  y.l=0.0  y.h=0.0 elec num=3 x.l=2.0  x.h=3.0  y.l=-0.2 y.h=-0.2  doping gauss n.type conc=3e20 x.l=2.0 x.h=3.0 y.l=-0.2 y.h=0.0 + char.l=0.047 lat.rotate doping gauss p.type conc=5e18 x.l=0.0 x.h=5.0 y.l=-0.2 y.h=0.0 + char.l=0.100 lat.rotate doping gauss p.type conc=1e20 x.l=0.0 x.h=0.5 y.l=-0.2 y.h=0.0 + char.l=0.100 lat.rotate ratio=0.7 doping unif  n.type conc=1e16 x.l=0.0 x.h=5.0 y.l=0.0 y.h=1.3 doping gauss n.type conc=5e19 x.l=0.0 x.h=5.0 y.l=1.3 y.h=1.3 + char.l=0.100 lat.rotate  method ac=direct itlim=10 models bgn srh auger conctau concmob fieldmob",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "native",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/examples/cider/surfmob/Tbicmpu1.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.4115610830000005,
+        "stderr": ""
+      }
+    },
+    {
+      "id": "examples-cider-surfmob-tbicmpu1xy-cir",
+      "sha256": "48323d53b93bef187a2244e4072899df136f16a909365bff2acfe6d2c1e4be89",
+      "historicalReference": {
+        "status": "success",
+        "analyses": [
+          "tran:121"
+        ]
+      },
+      "freshReference": null,
+      "freshComparison": null,
+      "maxAbsoluteError": null,
+      "rmsRelativeError": null,
+      "parse": {
+        "status": "unsupported",
+        "name": "UnsupportedModelTypeError",
+        "error": "Parse error at line 18: .model 'M_NPNS' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW)\n  .MODEL M_NPNS nbjt level=2 title TWO-DIMENSIONAL NUMERICAL POLYSILICON EMITTER BIPOLAR TRANSISTOR * Since half the device is simulated, double the unit width to get * 1.0 um emitter.  Use a small mesh for this model. options defw=2.0u  x.mesh w=2.0 h.e=0.02 h.m=0.5 r=2.0 x.mesh w=0.5 h.s=0.02 h.m=0.2 r=2.0  y.mesh l=-0.2 n=1 y.mesh l= 0.0 n=5 y.mesh w=0.10 h.e=0.004 h.m=0.05  r=2.5 y.mesh w=0.15 h.s=0.004 h.m=0.02  r=2.5 y.mesh w=1.05 h.s=0.02  h.m=0.1   r=2.5  domain num=1 material=1 x.l=2.0 y.h=0.0 domain num=2 material=2 x.h=2.0 y.h=0.0 domain num=3 material=3 y.l=0.0 material num=1 polysilicon material num=2 oxide material num=3 silicon  elec num=1 x.l=0.0  x.h=0.0  y.l=1.1  y.h=1.3 elec num=2 x.l=0.0  x.h=0.5  y.l=0.0  y.h=0.0 elec num=3 x.l=2.0  x.h=3.0  y.l=-0.2 y.h=-0.2  doping gauss n.type conc=3e20 x.l=2.0 x.h=3.0 y.l=-0.2 y.h=0.0 + char.l=0.047 lat.rotate doping gauss p.type conc=5e18 x.l=0.0 x.h=5.0 y.l=-0.2 y.h=0.0 + char.l=0.100 lat.rotate doping gauss p.type conc=1e20 x.l=0.0 x.h=0.5 y.l=-0.2 y.h=0.0 + char.l=0.100 lat.rotate ratio=0.7 doping unif  n.type conc=1e16 x.l=0.0 x.h=5.0 y.l=0.0 y.h=1.3 doping gauss n.type conc=5e19 x.l=0.0 x.h=5.0 y.l=1.3 y.h=1.3 + char.l=0.100 lat.rotate  method ac=direct itlim=10 models bgn srh auger conctau concmob fieldmob",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "parse",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/examples/cider/surfmob/Tbicmpu1xy.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.385585292,
+        "stderr": ""
+      },
+      "native": {
+        "status": "unsupported",
+        "name": "UnsupportedModelTypeError",
+        "error": "Parse error at line 18: .model 'M_NPNS' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW)\n  .MODEL M_NPNS nbjt level=2 title TWO-DIMENSIONAL NUMERICAL POLYSILICON EMITTER BIPOLAR TRANSISTOR * Since half the device is simulated, double the unit width to get * 1.0 um emitter.  Use a small mesh for this model. options defw=2.0u  x.mesh w=2.0 h.e=0.02 h.m=0.5 r=2.0 x.mesh w=0.5 h.s=0.02 h.m=0.2 r=2.0  y.mesh l=-0.2 n=1 y.mesh l= 0.0 n=5 y.mesh w=0.10 h.e=0.004 h.m=0.05  r=2.5 y.mesh w=0.15 h.s=0.004 h.m=0.02  r=2.5 y.mesh w=1.05 h.s=0.02  h.m=0.1   r=2.5  domain num=1 material=1 x.l=2.0 y.h=0.0 domain num=2 material=2 x.h=2.0 y.h=0.0 domain num=3 material=3 y.l=0.0 material num=1 polysilicon material num=2 oxide material num=3 silicon  elec num=1 x.l=0.0  x.h=0.0  y.l=1.1  y.h=1.3 elec num=2 x.l=0.0  x.h=0.5  y.l=0.0  y.h=0.0 elec num=3 x.l=2.0  x.h=3.0  y.l=-0.2 y.h=-0.2  doping gauss n.type conc=3e20 x.l=2.0 x.h=3.0 y.l=-0.2 y.h=0.0 + char.l=0.047 lat.rotate doping gauss p.type conc=5e18 x.l=0.0 x.h=5.0 y.l=-0.2 y.h=0.0 + char.l=0.100 lat.rotate doping gauss p.type conc=1e20 x.l=0.0 x.h=0.5 y.l=-0.2 y.h=0.0 + char.l=0.100 lat.rotate ratio=0.7 doping unif  n.type conc=1e16 x.l=0.0 x.h=5.0 y.l=0.0 y.h=1.3 doping gauss n.type conc=5e19 x.l=0.0 x.h=5.0 y.l=1.3 y.h=1.3 + char.l=0.100 lat.rotate  method ac=direct itlim=10 models bgn srh auger conctau concmob fieldmob",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "native",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/examples/cider/surfmob/Tbicmpu1xy.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.3785303750000004,
+        "stderr": ""
+      }
+    },
+    {
+      "id": "examples-soa-diode-soa-sh-cir",
+      "sha256": "24c5c8568ebe8c15d8d8b603e84db3d98e8914767e1de1f4f266f242828f066f",
+      "historicalReference": {
+        "status": "success",
+        "analyses": [],
+        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+      },
+      "freshReference": null,
+      "freshComparison": null,
+      "maxAbsoluteError": null,
+      "rmsRelativeError": null,
+      "parse": {
+        "status": "unsupported",
+        "name": "ParseError",
+        "error": "Parse error at line 11: Unsupported diode thermal node 'tj' (model 'dmod'): diode self-heating is not implemented\n  D1 1 0 tj dmod thermal",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "parse",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/examples/soa/diode-soa-sh.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.3836522500000008,
+        "stderr": ""
+      },
+      "native": {
+        "status": "unsupported",
+        "name": "ParseError",
+        "error": "Parse error at line 11: Unsupported diode thermal node 'tj' (model 'dmod'): diode self-heating is not implemented\n  D1 1 0 tj dmod thermal",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "native",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/examples/soa/diode-soa-sh.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.3922445830000001,
+        "stderr": ""
+      }
+    },
+    {
+      "id": "examples-vbic-vbic99-dc-sp",
+      "sha256": "8ba2c99e6946ac9033a8e5b8abf41812291839efa2c9536026a22ba546ca7018",
+      "historicalReference": {
+        "status": "success",
+        "analyses": [],
+        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+      },
+      "freshReference": null,
+      "freshComparison": null,
+      "maxAbsoluteError": null,
+      "rmsRelativeError": null,
+      "parse": {
+        "status": "unsupported",
+        "name": "ParseError",
+        "error": "Parse error at line 40: Unsupported dot command: '.temp'\n  .temp 27",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "parse",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/examples/vbic/vbic99_dc.sp"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.38612475000000046,
+        "stderr": ""
+      },
+      "native": {
+        "status": "unsupported",
+        "name": "ParseError",
+        "error": "Parse error at line 40: Unsupported dot command: '.temp'\n  .temp 27",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "native",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/examples/vbic/vbic99_dc.sp"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.374278833,
+        "stderr": ""
+      }
+    },
+    {
+      "id": "tests-vbic-diffamp-cir",
+      "sha256": "95e5b1ca2fad85b57d7712b0f15d44ac2949f47eb3d25101a533ed5861cc1731",
+      "historicalReference": {
+        "status": "failed",
+        "analyses": [],
+        "firstErrorLine": "Error: Transient op failed, timestep too small"
+      },
+      "freshReference": null,
+      "freshComparison": null,
+      "maxAbsoluteError": null,
+      "rmsRelativeError": null,
+      "parse": {
+        "status": "success",
+        "error": null,
+        "analyses": null,
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "parse",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/tests/vbic/diffamp.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.35003195800000064,
+        "stderr": ""
+      },
+      "native": {
+        "status": "unsupported",
+        "name": "InvalidCircuitError",
+        "error": "Unsupported bounded VBIC polarity: only NPN LEVEL=4 is supported",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "native",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/tests/vbic/diffamp.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.38272887499999797,
+        "stderr": ""
+      }
+    },
+    {
+      "id": "tests-vbic-fg-cir",
+      "sha256": "014827564faba608d4b3ff6f7a6224a5a11a7b31229ad264a91389f07f33a552",
+      "historicalReference": {
+        "status": "failed",
+        "analyses": [],
+        "firstErrorLine": "ngspice exceeded the 120000 ms bound"
+      },
+      "freshReference": null,
+      "freshComparison": null,
+      "maxAbsoluteError": null,
+      "rmsRelativeError": null,
+      "parse": {
+        "status": "success",
+        "error": null,
+        "analyses": null,
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "parse",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/tests/vbic/FG.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.3947176670000019,
+        "stderr": ""
+      },
+      "native": {
+        "status": "unsupported",
+        "name": "InvalidCircuitError",
+        "error": "Unsupported bounded VBIC polarity: only NPN LEVEL=4 is supported",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "native",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/tests/vbic/FG.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.3880622499999973,
+        "stderr": ""
+      }
+    },
+    {
+      "id": "tests-vbic-noise-scale-test-cir",
+      "sha256": "2877ccad8bcb440258e65a8a817edfd8536029ae192b3049cb62f248a8a81286",
+      "historicalReference": {
+        "status": "success",
+        "analyses": [
+          "noise:1",
+          "noise:126"
+        ]
+      },
+      "freshReference": null,
+      "freshComparison": null,
+      "maxAbsoluteError": null,
+      "rmsRelativeError": null,
+      "parse": {
+        "status": "success",
+        "error": null,
+        "analyses": null,
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "parse",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/tests/vbic/noise_scale_test.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.41846258400000025,
+        "stderr": ""
+      },
+      "native": {
+        "status": "unsupported",
+        "name": "InvalidCircuitError",
+        "error": "Unsupported bounded VBIC DC model parameter: 'KFN'",
+        "command": [
+          "node",
+          "--max-old-space-size=256",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/child.mts",
+          "native",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_caf38d8c/benchmarks/corpus-f-qd-current/fixtures/tests/vbic/noise_scale_test.cir"
+        ],
+        "exit": 0,
+        "elapsedSeconds": 0.3984507089999987,
+        "stderr": ""
+      }
+    }
+  ]
+}

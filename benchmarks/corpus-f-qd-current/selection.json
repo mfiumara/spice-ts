@@ -1,0 +1,935 @@
+{
+  "sourceCommit": "5014ae0bcfd6484a2ad4d5b25ed14672851b3ca2",
+  "source": {
+    "name": "ngspice examples and regression tests",
+    "repository": "https://sourceforge.net/p/ngspice/ngspice/ci/master/tree/",
+    "gitUrl": "https://git.code.sf.net/p/ngspice/ngspice",
+    "revision": "3ef069fb1f04177a153f342a32d941fc20ff047e",
+    "license": "BSD-3-Clause",
+    "licenseUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/COPYING",
+    "licenseTextSourcePath": "COPYING",
+    "licenseTextLocalPath": "benchmarks/corpus/corpus-f/LICENSE.txt",
+    "licenseTextSha256": "6d939001e899ede403277fb37124c2af6f1cf92926465cd8f4bf59859e06f579",
+    "redistributionDecision": "Allowed. Every committed deck is under examples/ or tests/, which upstream COPYING places under Modified BSD; decks with a third-party notice are excluded and not committed.",
+    "mechanicalAdaptation": "None. Every fixture is byte-identical to the pinned revision (SHA-256 pinned per file)."
+  },
+  "historicalTools": {
+    "ngspice": "ngspice-47",
+    "spiceTs": "0.3.0",
+    "node": "v22.23.1"
+  },
+  "historicalReceiptSha256": "871902bc8766d6c6e7aa3542931119b9d6fe2659bb18daaa6b6deab8b346942e",
+  "selection": {
+    "bucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)",
+    "fixtures": 22,
+    "ngspiceSuccess": 20,
+    "ids": [
+      "examples-cider-bjt-astable-cir",
+      "examples-cider-bjt-colposc-cir",
+      "examples-cider-bjt-ecp-cir",
+      "examples-cider-bjt-invchain-cir",
+      "examples-cider-bjt-meclgate-cir",
+      "examples-cider-bjt-rtlinv-cir",
+      "examples-cider-bjt-vco-cir",
+      "examples-cider-jfet-jfet-cir",
+      "examples-cider-serial-astable-cir",
+      "examples-cider-serial-colposc-cir",
+      "examples-cider-serial-invchain-cir",
+      "examples-cider-serial-meclgate-cir",
+      "examples-cider-serial-pullup-cir",
+      "examples-cider-serial-rtlinv-cir",
+      "examples-cider-serial-vco-cir",
+      "examples-cider-surfmob-tbicmpu1-cir",
+      "examples-cider-surfmob-tbicmpu1xy-cir",
+      "examples-soa-diode-soa-sh-cir",
+      "examples-vbic-vbic99-dc-sp",
+      "tests-vbic-diffamp-cir",
+      "tests-vbic-fg-cir",
+      "tests-vbic-noise-scale-test-cir"
+    ],
+    "issue": null
+  },
+  "fixtures": [
+    {
+      "id": "examples-cider-bjt-astable-cir",
+      "sourcePath": "examples/cider/bjt/astable.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/cider/bjt/astable.cir",
+      "localPath": "fixtures/examples/cider/bjt/astable.cir",
+      "sha256": "0ec56d4521411c4d1dcb1d209fec1ba7db5ecfb13b4743b9d5f6f9ba6aba4434",
+      "bytes": 852,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "includes": [],
+      "historical": {
+        "id": "examples-cider-bjt-astable-cir",
+        "sourcePath": "examples/cider/bjt/astable.cir",
+        "sha256": "0ec56d4521411c4d1dcb1d209fec1ba7db5ecfb13b4743b9d5f6f9ba6aba4434",
+        "analyses": [
+          "tran"
+        ],
+        "unmappedAnalyses": [],
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "tran:1455"
+          ]
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 11: Unsupported BJT Q-card form: 'q1 1 3 0 qmod area=100p' q1 1 3 0 qmod area=100p"
+        },
+        "comparedAnalyses": 0,
+        "comparedSignals": 0,
+        "worstNormalizedError": null,
+        "worstSignal": null,
+        "outcome": "spice-ts-loss",
+        "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      }
+    },
+    {
+      "id": "examples-cider-bjt-colposc-cir",
+      "sourcePath": "examples/cider/bjt/colposc.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/cider/bjt/colposc.cir",
+      "localPath": "fixtures/examples/cider/bjt/colposc.cir",
+      "sha256": "13ef66b7b2404373ad1f28c18819f4668f882d5f4f8b1df77cada61e9304fbff",
+      "bytes": 790,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "includes": [],
+      "historical": {
+        "id": "examples-cider-bjt-colposc-cir",
+        "sourcePath": "examples/cider/bjt/colposc.cir",
+        "sha256": "13ef66b7b2404373ad1f28c18819f4668f882d5f4f8b1df77cada61e9304fbff",
+        "analyses": [
+          "tran"
+        ],
+        "unmappedAnalyses": [],
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "tran:3106"
+          ]
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 4: Unsupported BJT Q-card form: 'q1 2 1 3 qmod area=100p' q1 2 1 3 qmod area=100p"
+        },
+        "comparedAnalyses": 0,
+        "comparedSignals": 0,
+        "worstNormalizedError": null,
+        "worstSignal": null,
+        "outcome": "spice-ts-loss",
+        "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      }
+    },
+    {
+      "id": "examples-cider-bjt-ecp-cir",
+      "sourcePath": "examples/cider/bjt/ecp.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/cider/bjt/ecp.cir",
+      "localPath": "fixtures/examples/cider/bjt/ecp.cir",
+      "sha256": "c3a89fc0dfee501189a37ffecb55286f5645cbf406dc17288ee8ac1b8f03e989",
+      "bytes": 1599,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "includes": [],
+      "historical": {
+        "id": "examples-cider-bjt-ecp-cir",
+        "sourcePath": "examples/cider/bjt/ecp.cir",
+        "sha256": "c3a89fc0dfee501189a37ffecb55286f5645cbf406dc17288ee8ac1b8f03e989",
+        "analyses": [
+          "dc"
+        ],
+        "unmappedAnalyses": [],
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "dc:51"
+          ]
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 10: Unsupported BJT Q-card form: 'Q1 11 12 13 M_NPN AREA=8' Q1 11 12 13 M_NPN AREA=8"
+        },
+        "comparedAnalyses": 0,
+        "comparedSignals": 0,
+        "worstNormalizedError": null,
+        "worstSignal": null,
+        "outcome": "spice-ts-loss",
+        "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      }
+    },
+    {
+      "id": "examples-cider-bjt-invchain-cir",
+      "sourcePath": "examples/cider/bjt/invchain.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/cider/bjt/invchain.cir",
+      "localPath": "fixtures/examples/cider/bjt/invchain.cir",
+      "sha256": "9b3ffb86040d53fcbf24500924a4cd9e21c89e1cb5a5b2c5eae953b52db63e28",
+      "bytes": 912,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "includes": [],
+      "historical": {
+        "id": "examples-cider-bjt-invchain-cir",
+        "sourcePath": "examples/cider/bjt/invchain.cir",
+        "sha256": "9b3ffb86040d53fcbf24500924a4cd9e21c89e1cb5a5b2c5eae953b52db63e28",
+        "analyses": [
+          "tran"
+        ],
+        "unmappedAnalyses": [],
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "tran:316"
+          ]
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 7: Unsupported BJT Q-card form: 'q1 3 2 0 qmod area=100p' q1 3 2 0 qmod area=100p"
+        },
+        "comparedAnalyses": 0,
+        "comparedSignals": 0,
+        "worstNormalizedError": null,
+        "worstSignal": null,
+        "outcome": "spice-ts-loss",
+        "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      }
+    },
+    {
+      "id": "examples-cider-bjt-meclgate-cir",
+      "sourcePath": "examples/cider/bjt/meclgate.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/cider/bjt/meclgate.cir",
+      "localPath": "fixtures/examples/cider/bjt/meclgate.cir",
+      "sha256": "4c03caeac8e27847bfbbff541c6c71f63e2b07d82180815d714c4531d279ff10",
+      "bytes": 1510,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "includes": [],
+      "historical": {
+        "id": "examples-cider-bjt-meclgate-cir",
+        "sourcePath": "examples/cider/bjt/meclgate.cir",
+        "sha256": "4c03caeac8e27847bfbbff541c6c71f63e2b07d82180815d714c4531d279ff10",
+        "analyses": [
+          "tran"
+        ],
+        "unmappedAnalyses": [],
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "tran:389"
+          ]
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 7: Unsupported BJT Q-card form: 'q1 4 2 6 qmod area=100p' q1 4 2 6 qmod area=100p"
+        },
+        "comparedAnalyses": 0,
+        "comparedSignals": 0,
+        "worstNormalizedError": null,
+        "worstSignal": null,
+        "outcome": "spice-ts-loss",
+        "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      }
+    },
+    {
+      "id": "examples-cider-bjt-rtlinv-cir",
+      "sourcePath": "examples/cider/bjt/rtlinv.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/cider/bjt/rtlinv.cir",
+      "localPath": "fixtures/examples/cider/bjt/rtlinv.cir",
+      "sha256": "843f8831a63af8e2a3a51f3726ba9aa826a1ab2b8c245a2f45c7eb7e7e4f4483",
+      "bytes": 731,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "includes": [],
+      "historical": {
+        "id": "examples-cider-bjt-rtlinv-cir",
+        "sourcePath": "examples/cider/bjt/rtlinv.cir",
+        "sha256": "843f8831a63af8e2a3a51f3726ba9aa826a1ab2b8c245a2f45c7eb7e7e4f4483",
+        "analyses": [
+          "tran"
+        ],
+        "unmappedAnalyses": [],
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "tran:177"
+          ]
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 7: Unsupported BJT Q-card form: 'q1 3 2 0 qmod area=100p' q1 3 2 0 qmod area=100p"
+        },
+        "comparedAnalyses": 0,
+        "comparedSignals": 0,
+        "worstNormalizedError": null,
+        "worstSignal": null,
+        "outcome": "spice-ts-loss",
+        "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      }
+    },
+    {
+      "id": "examples-cider-bjt-vco-cir",
+      "sourcePath": "examples/cider/bjt/vco.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/cider/bjt/vco.cir",
+      "localPath": "fixtures/examples/cider/bjt/vco.cir",
+      "sha256": "35ca1e3443289f2638edbd992901b33eafaecbfd9aa9666143a013f76ee3eff3",
+      "bytes": 977,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "includes": [],
+      "historical": {
+        "id": "examples-cider-bjt-vco-cir",
+        "sourcePath": "examples/cider/bjt/vco.cir",
+        "sha256": "35ca1e3443289f2638edbd992901b33eafaecbfd9aa9666143a013f76ee3eff3",
+        "analyses": [
+          "tran"
+        ],
+        "unmappedAnalyses": [],
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "tran:1140"
+          ]
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 6: Unsupported BJT Q-card form: 'q5 7 7 5 qmod area=100p' q5 7 7 5 qmod area=100p"
+        },
+        "comparedAnalyses": 0,
+        "comparedSignals": 0,
+        "worstNormalizedError": null,
+        "worstSignal": null,
+        "outcome": "spice-ts-loss",
+        "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      }
+    },
+    {
+      "id": "examples-cider-jfet-jfet-cir",
+      "sourcePath": "examples/cider/jfet/jfet.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/cider/jfet/jfet.cir",
+      "localPath": "fixtures/examples/cider/jfet/jfet.cir",
+      "sha256": "9dfbd6b1fcb65d4d3079b58895f10affedc6389bc28cdd40dc8b2d832b67b160",
+      "bytes": 876,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "includes": [],
+      "historical": {
+        "id": "examples-cider-jfet-jfet-cir",
+        "sourcePath": "examples/cider/jfet/jfet.cir",
+        "sha256": "9dfbd6b1fcb65d4d3079b58895f10affedc6389bc28cdd40dc8b2d832b67b160",
+        "analyses": [
+          "dc"
+        ],
+        "unmappedAnalyses": [],
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "dc:21"
+          ]
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 6: Unsupported BJT Q-card form: 'QJ1 1 2 3 M_NJF AREA=1' QJ1 1 2 3 M_NJF AREA=1"
+        },
+        "comparedAnalyses": 0,
+        "comparedSignals": 0,
+        "worstNormalizedError": null,
+        "worstSignal": null,
+        "outcome": "spice-ts-loss",
+        "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      }
+    },
+    {
+      "id": "examples-cider-serial-astable-cir",
+      "sourcePath": "examples/cider/serial/astable.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/cider/serial/astable.cir",
+      "localPath": "fixtures/examples/cider/serial/astable.cir",
+      "sha256": "8620812db6d63caa325136e1a84488528088528fe212b7a0738673068545184f",
+      "bytes": 720,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "includes": [],
+      "historical": {
+        "id": "examples-cider-serial-astable-cir",
+        "sourcePath": "examples/cider/serial/astable.cir",
+        "sha256": "8620812db6d63caa325136e1a84488528088528fe212b7a0738673068545184f",
+        "analyses": [
+          "tran"
+        ],
+        "unmappedAnalyses": [],
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "tran:1455"
+          ]
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 11: Unsupported BJT Q-card form: 'Q1 1 3 0 QMOD AREA=100P' Q1 1 3 0 QMOD AREA=100P"
+        },
+        "comparedAnalyses": 0,
+        "comparedSignals": 0,
+        "worstNormalizedError": null,
+        "worstSignal": null,
+        "outcome": "spice-ts-loss",
+        "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      }
+    },
+    {
+      "id": "examples-cider-serial-colposc-cir",
+      "sourcePath": "examples/cider/serial/colposc.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/cider/serial/colposc.cir",
+      "localPath": "fixtures/examples/cider/serial/colposc.cir",
+      "sha256": "e86cec17c9f6472a3928a5a866815e34c3342181798655763ae5d68f434c3fb6",
+      "bytes": 658,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "includes": [],
+      "historical": {
+        "id": "examples-cider-serial-colposc-cir",
+        "sourcePath": "examples/cider/serial/colposc.cir",
+        "sha256": "e86cec17c9f6472a3928a5a866815e34c3342181798655763ae5d68f434c3fb6",
+        "analyses": [
+          "tran"
+        ],
+        "unmappedAnalyses": [],
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "tran:3106"
+          ]
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 4: Unsupported BJT Q-card form: 'Q1 2 1 3 QMOD AREA=100P' Q1 2 1 3 QMOD AREA=100P"
+        },
+        "comparedAnalyses": 0,
+        "comparedSignals": 0,
+        "worstNormalizedError": null,
+        "worstSignal": null,
+        "outcome": "spice-ts-loss",
+        "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      }
+    },
+    {
+      "id": "examples-cider-serial-invchain-cir",
+      "sourcePath": "examples/cider/serial/invchain.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/cider/serial/invchain.cir",
+      "localPath": "fixtures/examples/cider/serial/invchain.cir",
+      "sha256": "3f33e73f5317d89dfc6eed8db2f55f589e05c809d39e9a6934a062126fe1ed08",
+      "bytes": 780,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "includes": [],
+      "historical": {
+        "id": "examples-cider-serial-invchain-cir",
+        "sourcePath": "examples/cider/serial/invchain.cir",
+        "sha256": "3f33e73f5317d89dfc6eed8db2f55f589e05c809d39e9a6934a062126fe1ed08",
+        "analyses": [
+          "tran"
+        ],
+        "unmappedAnalyses": [],
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "tran:316"
+          ]
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 7: Unsupported BJT Q-card form: 'Q1 3 2 0 QMOD AREA=100P' Q1 3 2 0 QMOD AREA=100P"
+        },
+        "comparedAnalyses": 0,
+        "comparedSignals": 0,
+        "worstNormalizedError": null,
+        "worstSignal": null,
+        "outcome": "spice-ts-loss",
+        "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      }
+    },
+    {
+      "id": "examples-cider-serial-meclgate-cir",
+      "sourcePath": "examples/cider/serial/meclgate.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/cider/serial/meclgate.cir",
+      "localPath": "fixtures/examples/cider/serial/meclgate.cir",
+      "sha256": "c4e620e14fc3e68d6d7efdd87888e5bb0beb5bcfc33ff15d9dd5d425e577abc7",
+      "bytes": 1378,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "includes": [],
+      "historical": {
+        "id": "examples-cider-serial-meclgate-cir",
+        "sourcePath": "examples/cider/serial/meclgate.cir",
+        "sha256": "c4e620e14fc3e68d6d7efdd87888e5bb0beb5bcfc33ff15d9dd5d425e577abc7",
+        "analyses": [
+          "tran"
+        ],
+        "unmappedAnalyses": [],
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "tran:389"
+          ]
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 7: Unsupported BJT Q-card form: 'Q1 4 2 6 QMOD AREA=100P' Q1 4 2 6 QMOD AREA=100P"
+        },
+        "comparedAnalyses": 0,
+        "comparedSignals": 0,
+        "worstNormalizedError": null,
+        "worstSignal": null,
+        "outcome": "spice-ts-loss",
+        "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      }
+    },
+    {
+      "id": "examples-cider-serial-pullup-cir",
+      "sourcePath": "examples/cider/serial/pullup.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/cider/serial/pullup.cir",
+      "localPath": "fixtures/examples/cider/serial/pullup.cir",
+      "sha256": "c19c59a0afefd7a790ea7a05089001c4fef5d6449618229358bfdfd1d469f2af",
+      "bytes": 1819,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "includes": [],
+      "historical": {
+        "id": "examples-cider-serial-pullup-cir",
+        "sourcePath": "examples/cider/serial/pullup.cir",
+        "sha256": "c19c59a0afefd7a790ea7a05089001c4fef5d6449618229358bfdfd1d469f2af",
+        "analyses": [
+          "tran"
+        ],
+        "unmappedAnalyses": [],
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "tran:127"
+          ]
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 11: Unsupported BJT Q-card form: 'Q1 11 15 4 M_NPN AREA=4' Q1 11 15 4 M_NPN AREA=4"
+        },
+        "comparedAnalyses": 0,
+        "comparedSignals": 0,
+        "worstNormalizedError": null,
+        "worstSignal": null,
+        "outcome": "spice-ts-loss",
+        "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      }
+    },
+    {
+      "id": "examples-cider-serial-rtlinv-cir",
+      "sourcePath": "examples/cider/serial/rtlinv.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/cider/serial/rtlinv.cir",
+      "localPath": "fixtures/examples/cider/serial/rtlinv.cir",
+      "sha256": "ca518510a6d46de2da9b40040ebbc115c8a19c4270eb5d8cae9088fc785cd260",
+      "bytes": 599,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "includes": [],
+      "historical": {
+        "id": "examples-cider-serial-rtlinv-cir",
+        "sourcePath": "examples/cider/serial/rtlinv.cir",
+        "sha256": "ca518510a6d46de2da9b40040ebbc115c8a19c4270eb5d8cae9088fc785cd260",
+        "analyses": [
+          "tran"
+        ],
+        "unmappedAnalyses": [],
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "tran:177"
+          ]
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 7: Unsupported BJT Q-card form: 'Q1 3 2 0 QMOD AREA=100P' Q1 3 2 0 QMOD AREA=100P"
+        },
+        "comparedAnalyses": 0,
+        "comparedSignals": 0,
+        "worstNormalizedError": null,
+        "worstSignal": null,
+        "outcome": "spice-ts-loss",
+        "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      }
+    },
+    {
+      "id": "examples-cider-serial-vco-cir",
+      "sourcePath": "examples/cider/serial/vco.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/cider/serial/vco.cir",
+      "localPath": "fixtures/examples/cider/serial/vco.cir",
+      "sha256": "52dd69f0a35bf1a06568253b904f496e1b8d1967a1f7de695f87af0093eae5ac",
+      "bytes": 845,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "includes": [],
+      "historical": {
+        "id": "examples-cider-serial-vco-cir",
+        "sourcePath": "examples/cider/serial/vco.cir",
+        "sha256": "52dd69f0a35bf1a06568253b904f496e1b8d1967a1f7de695f87af0093eae5ac",
+        "analyses": [
+          "tran"
+        ],
+        "unmappedAnalyses": [],
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "tran:1140"
+          ]
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 6: Unsupported BJT Q-card form: 'Q5 7 7 5 QMOD AREA=100P' Q5 7 7 5 QMOD AREA=100P"
+        },
+        "comparedAnalyses": 0,
+        "comparedSignals": 0,
+        "worstNormalizedError": null,
+        "worstSignal": null,
+        "outcome": "spice-ts-loss",
+        "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      }
+    },
+    {
+      "id": "examples-cider-surfmob-tbicmpu1-cir",
+      "sourcePath": "examples/cider/surfmob/Tbicmpu1.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/cider/surfmob/Tbicmpu1.cir",
+      "localPath": "fixtures/examples/cider/surfmob/Tbicmpu1.cir",
+      "sha256": "f49308dd792907c7ed96bf0b54978b7b061f3071224ffa095b5bf5461ae5ad1d",
+      "bytes": 3128,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "includes": [],
+      "historical": {
+        "id": "examples-cider-surfmob-tbicmpu1-cir",
+        "sourcePath": "examples/cider/surfmob/Tbicmpu1.cir",
+        "sha256": "f49308dd792907c7ed96bf0b54978b7b061f3071224ffa095b5bf5461ae5ad1d",
+        "analyses": [
+          "tran"
+        ],
+        "unmappedAnalyses": [],
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "tran:120"
+          ]
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 11: Unsupported BJT Q-card form: 'Q1 11 15 4 M_NPNS AREA=8' Q1 11 15 4 M_NPNS AREA=8"
+        },
+        "comparedAnalyses": 0,
+        "comparedSignals": 0,
+        "worstNormalizedError": null,
+        "worstSignal": null,
+        "outcome": "spice-ts-loss",
+        "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      }
+    },
+    {
+      "id": "examples-cider-surfmob-tbicmpu1xy-cir",
+      "sourcePath": "examples/cider/surfmob/Tbicmpu1xy.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/cider/surfmob/Tbicmpu1xy.cir",
+      "localPath": "fixtures/examples/cider/surfmob/Tbicmpu1xy.cir",
+      "sha256": "48323d53b93bef187a2244e4072899df136f16a909365bff2acfe6d2c1e4be89",
+      "bytes": 3136,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "includes": [],
+      "historical": {
+        "id": "examples-cider-surfmob-tbicmpu1xy-cir",
+        "sourcePath": "examples/cider/surfmob/Tbicmpu1xy.cir",
+        "sha256": "48323d53b93bef187a2244e4072899df136f16a909365bff2acfe6d2c1e4be89",
+        "analyses": [
+          "tran"
+        ],
+        "unmappedAnalyses": [],
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "tran:121"
+          ]
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 11: Unsupported BJT Q-card form: 'Q1 11 15 4 M_NPNS AREA=8' Q1 11 15 4 M_NPNS AREA=8"
+        },
+        "comparedAnalyses": 0,
+        "comparedSignals": 0,
+        "worstNormalizedError": null,
+        "worstSignal": null,
+        "outcome": "spice-ts-loss",
+        "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      }
+    },
+    {
+      "id": "examples-soa-diode-soa-sh-cir",
+      "sourcePath": "examples/soa/diode-soa-sh.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/soa/diode-soa-sh.cir",
+      "localPath": "fixtures/examples/soa/diode-soa-sh.cir",
+      "sha256": "24c5c8568ebe8c15d8d8b603e84db3d98e8914767e1de1f4f266f242828f066f",
+      "bytes": 2490,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "includes": [],
+      "historical": {
+        "id": "examples-soa-diode-soa-sh-cir",
+        "sourcePath": "examples/soa/diode-soa-sh.cir",
+        "sha256": "24c5c8568ebe8c15d8d8b603e84db3d98e8914767e1de1f4f266f242828f066f",
+        "analyses": [
+          "dc"
+        ],
+        "unmappedAnalyses": [],
+        "ngspice": {
+          "status": "success",
+          "analyses": [],
+          "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 11: Unsupported diode parameter: 'dmod' D1 1 0 tj dmod thermal"
+        },
+        "comparedAnalyses": 0,
+        "comparedSignals": 0,
+        "worstNormalizedError": null,
+        "worstSignal": null,
+        "outcome": "spice-ts-loss",
+        "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      }
+    },
+    {
+      "id": "examples-vbic-vbic99-dc-sp",
+      "sourcePath": "examples/vbic/vbic99_dc.sp",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/vbic/vbic99_dc.sp",
+      "localPath": "fixtures/examples/vbic/vbic99_dc.sp",
+      "sha256": "8ba2c99e6946ac9033a8e5b8abf41812291839efa2c9536026a22ba546ca7018",
+      "bytes": 1473,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "includes": [],
+      "historical": {
+        "id": "examples-vbic-vbic99-dc-sp",
+        "sourcePath": "examples/vbic/vbic99_dc.sp",
+        "sha256": "8ba2c99e6946ac9033a8e5b8abf41812291839efa2c9536026a22ba546ca7018",
+        "analyses": [
+          "dc"
+        ],
+        "unmappedAnalyses": [],
+        "ngspice": {
+          "status": "success",
+          "analyses": [],
+          "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 11: Unsupported BJT Q-card form: 'q1 c b e s dt vbic99 area=1 m=1' q1 c b e s dt vbic99 area=1 m=1"
+        },
+        "comparedAnalyses": 0,
+        "comparedSignals": 0,
+        "worstNormalizedError": null,
+        "worstSignal": null,
+        "outcome": "spice-ts-loss",
+        "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      }
+    },
+    {
+      "id": "tests-vbic-diffamp-cir",
+      "sourcePath": "tests/vbic/diffamp.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/vbic/diffamp.cir",
+      "localPath": "fixtures/tests/vbic/diffamp.cir",
+      "sha256": "95e5b1ca2fad85b57d7712b0f15d44ac2949f47eb3d25101a533ed5861cc1731",
+      "bytes": 1258,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "op",
+        "tran",
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "includes": [],
+      "historical": {
+        "id": "tests-vbic-diffamp-cir",
+        "sourcePath": "tests/vbic/diffamp.cir",
+        "sha256": "95e5b1ca2fad85b57d7712b0f15d44ac2949f47eb3d25101a533ed5861cc1731",
+        "analyses": [
+          "op",
+          "tran",
+          "ac"
+        ],
+        "unmappedAnalyses": [],
+        "ngspice": {
+          "status": "failed",
+          "analyses": [],
+          "firstErrorLine": "Error: Transient op failed, timestep too small"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 11: Unsupported BJT Q-card form: 'Q12 Q9_B I1_N 0 0 N1 M=2' Q12 Q9_B I1_N 0 0 N1 M=2"
+        },
+        "comparedAnalyses": 0,
+        "comparedSignals": 0,
+        "worstNormalizedError": null,
+        "worstSignal": null,
+        "outcome": "both-failed",
+        "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      }
+    },
+    {
+      "id": "tests-vbic-fg-cir",
+      "sourcePath": "tests/vbic/FG.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/vbic/FG.cir",
+      "localPath": "fixtures/tests/vbic/FG.cir",
+      "sha256": "014827564faba608d4b3ff6f7a6224a5a11a7b31229ad264a91389f07f33a552",
+      "bytes": 492,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "includes": [],
+      "historical": {
+        "id": "tests-vbic-fg-cir",
+        "sourcePath": "tests/vbic/FG.cir",
+        "sha256": "014827564faba608d4b3ff6f7a6224a5a11a7b31229ad264a91389f07f33a552",
+        "analyses": [
+          "dc"
+        ],
+        "unmappedAnalyses": [],
+        "ngspice": {
+          "status": "failed",
+          "analyses": [],
+          "firstErrorLine": "ngspice exceeded the 120000 ms bound"
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Unsupported bounded VBIC polarity: only NPN LEVEL=4 is supported"
+        },
+        "comparedAnalyses": 0,
+        "comparedSignals": 0,
+        "worstNormalizedError": null,
+        "worstSignal": null,
+        "outcome": "both-failed",
+        "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      }
+    },
+    {
+      "id": "tests-vbic-noise-scale-test-cir",
+      "sourcePath": "tests/vbic/noise_scale_test.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/vbic/noise_scale_test.cir",
+      "localPath": "fixtures/tests/vbic/noise_scale_test.cir",
+      "sha256": "2877ccad8bcb440258e65a8a817edfd8536029ae192b3049cb62f248a8a81286",
+      "bytes": 627,
+      "licence": "BSD-3-Clause",
+      "analyses": [
+        "noise"
+      ],
+      "unmappedAnalyses": [],
+      "includes": [],
+      "historical": {
+        "id": "tests-vbic-noise-scale-test-cir",
+        "sourcePath": "tests/vbic/noise_scale_test.cir",
+        "sha256": "2877ccad8bcb440258e65a8a817edfd8536029ae192b3049cb62f248a8a81286",
+        "analyses": [
+          "noise"
+        ],
+        "unmappedAnalyses": [],
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "noise:1",
+            "noise:126"
+          ]
+        },
+        "spiceTs": {
+          "status": "unsupported",
+          "analyses": [],
+          "firstErrorLine": "Parse error at line 7: Unsupported BJT Q-card form: 'Q1 VOUT R3_N Q1_E N1 M=2' Q1 VOUT R3_N Q1_E N1 M=2"
+        },
+        "comparedAnalyses": 0,
+        "comparedSignals": 0,
+        "worstNormalizedError": null,
+        "worstSignal": null,
+        "outcome": "spice-ts-loss",
+        "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      }
+    }
+  ]
+}
