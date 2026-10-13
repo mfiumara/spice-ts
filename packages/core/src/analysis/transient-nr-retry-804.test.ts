@@ -39,7 +39,7 @@ async function runWithForcedFailure(): Promise<{ stamps: Stamp[]; failed: number
   const begin = diode.beginTransientNewton!.bind(diode);
   const stampCharge = diode.stampTransientCharge!.bind(diode);
   Object.assign(diode, {
-    beginTransientNewton: () => { attempt++; begin(); },
+    beginTransientNewton: (dt: number, accepted: Float64Array) => { attempt++; begin(dt, accepted); },
     stampTransientCharge: (ctx: Parameters<typeof stampCharge>[0], integration: ChargeIntegration) => {
       if (failed < 0 && attempt > 3 && integration.method === 'trapezoidal') failed = attempt;
       stamps.push({ attempt, integration: { ...integration } });

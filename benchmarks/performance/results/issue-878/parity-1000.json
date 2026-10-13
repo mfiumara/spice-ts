@@ -1,0 +1,23 @@
+{
+  "nodes": 1000,
+  "probes": 40,
+  "points": 214,
+  "base": {
+    "iterations": 599,
+    "vsNgspice47": {
+      "maxAbsDiff": 0.0006279990977740013,
+      "at": "s19 t=1.9449999999999973e-9"
+    }
+  },
+  "branch": {
+    "iterations": 466,
+    "vsNgspice47": {
+      "maxAbsDiff": 0.0006279975969478713,
+      "at": "s19 t=1.9449999999999973e-9"
+    }
+  },
+  "base-vs-branch": {
+    "maxAbsDiff": 5.05703168229843e-9,
+    "at": "s13 t=1.3349999999999976e-9"
+  }
+}

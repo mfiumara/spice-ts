@@ -10,6 +10,7 @@ import { Resistor } from '../devices/resistor.js';
 import { Capacitor } from '../devices/capacitor.js';
 import { VoltageSource } from '../devices/voltage-source.js';
 import { CurrentSource } from '../devices/current-source.js';
+import { MOSFET } from '../devices/mosfet.js';
 
 /**
  * When sign-flip oscillation is detected on any node, the per-iteration
@@ -100,7 +101,10 @@ export function attemptStep(ctx: StepContext, attempt: StepAttempt): StepResult 
   const selfLimiting = selfLimitingDevices(compiled);
 
   assembler.setTime(time, dt);
-  for (const device of selfLimiting) device.beginTransientNewton?.();
+  // ngspice dctran.c starts every timepoint, retries included, in MODEINITPRED.
+  const predicting = predictingDevices(compiled);
+  MOSFET.batchBeginTransientNewton(predicting.mosfets, dt, prevSolution);
+  for (const device of predicting.others) device.beginTransientNewton!(dt, prevSolution);
 
   let prevIterSolution = new Float64Array(assembler.solution);
   let prevDelta: Float64Array | undefined;
@@ -257,6 +261,37 @@ function selfLimitingDevices(compiled: CompiledCircuit): readonly DeviceModel[] 
   if (devices === undefined) {
     devices = compiled.devices.filter(device => device.limitsOwnJunctions === true);
     selfLimitingCache.set(compiled, devices);
+  }
+  return devices;
+}
+
+/**
+ * Devices with a first-iterate (MODEINITPRED) hook, self-limiting or not:
+ * plain level-1 MOSFETs, started together by
+ * {@link MOSFET.batchBeginTransientNewton}, and every other one.
+ */
+interface PredictingDevices {
+  readonly mosfets: readonly MOSFET[];
+  readonly others: readonly DeviceModel[];
+}
+
+const predictingCache = new WeakMap<CompiledCircuit, PredictingDevices>();
+
+function predictingDevices(compiled: CompiledCircuit): PredictingDevices {
+  let devices = predictingCache.get(compiled);
+  if (devices === undefined) {
+    const mosfets: MOSFET[] = [];
+    const others: DeviceModel[] = [];
+    for (const device of compiled.devices) {
+      if (device.beginTransientNewton === undefined) continue;
+      if (Object.getPrototypeOf(device) === MOSFET.prototype && !Object.hasOwn(device, 'beginTransientNewton')) {
+        mosfets.push(device as MOSFET);
+      } else {
+        others.push(device);
+      }
+    }
+    devices = { mosfets, others };
+    predictingCache.set(compiled, devices);
   }
   return devices;
 }
