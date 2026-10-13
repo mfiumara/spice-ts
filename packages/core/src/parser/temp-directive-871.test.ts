@@ -42,6 +42,38 @@ describe('.temp single circuit temperature (#871)', () => {
     expect(parse(deck('.temp abc')).parseWarnings.join('\n')).toContain('27 C');
   });
 
+  it.each(['.temp 27 77', '.temp -300', '.temp abc', '.temp {missing}', '.temp {temper+1}'])(
+    'ignores overwritten temperature cards before validation: %s', async obsolete => {
+      const cards = `${obsolete}\n.temp 77`;
+      for (const circuit of [parse(deck(cards)), await parseAsync(deck(cards))]) {
+        expect(circuit.temperature).toBe(77);
+        expect(circuit.parseWarnings).toEqual([]);
+      }
+      const netlist = deck(cards, '.tran 1u 5u');
+      const batch = await simulate(netlist);
+      const streamed = [];
+      for await (const point of simulateStream(netlist)) {
+        if ('time' in point) streamed.push(point);
+      }
+      expect(streamed.length).toBeGreaterThan(0);
+      expect(Array.from(batch.transient!.voltage('b'))).toEqual(streamed.map(point => point.voltages.get('b')));
+      expect(Array.from(batch.transient!.voltage('b')).every(value => value === 77)).toBe(true);
+      expect(Array.from(batch.transient!.current('V1'))).toEqual(streamed.map(point => point.currents.get('V1')));
+    },
+  );
+
+  it.each(['.temp 27 77', '.temp -300', '.temp {temper+1}'])(
+    'retains limitations of the final effective card: %s', async final => {
+      const netlist = deck(`.temp 77\n${final}`);
+      expect(() => parse(netlist)).toThrow();
+      await expect(parseAsync(netlist)).rejects.toThrow();
+      await expect(simulate(netlist)).rejects.toThrow();
+      await expect(async () => {
+        for await (const point of simulateStream(netlist)) void point;
+      }).rejects.toThrow();
+    },
+  );
+
   it('diagnoses a temperature-dependent parameter instead of freezing a circular temperature', () => {
     expect(() => parse(deck('.param t=temper+1\n.temp {t}'))).toThrow(/\.temp expressions depending on TEMPER are not supported/);
   });
