@@ -1,0 +1,37 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e7a61100/packages/core
+
+ ❯ src/parser/control/csparam-loop-930.test.ts (2 tests | 1 failed) 17ms
+     × makes deck constants visible after selecting a new plot, like ngspice-47 9ms
+     ✓ already preserves let constants across new plots without .csparam 7ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/parser/control/csparam-loop-930.test.ts > .csparam control constants (#930) > makes deck constants visible after selecting a new plot, like ngspice-47
+ControlScriptError: Control script error at line 9: no such vector 'end' in plot 'unknown1'
+  if (end < start)
+ ❯ ControlInterpreter.wrap src/parser/control/interpreter.ts:1029:50
+    1027|       return new UnsupportedControlCommandError(commandWord(line.text)…
+    1028|     }
+    1029|     if (error instanceof ExpressionError) return new ControlScriptErro…
+       |                                                  ^
+    1030|     return error as Error;
+    1031|   }
+ ❯ ControlInterpreter.evaluate src/parser/control/interpreter.ts:1013:18
+ ❯ ControlInterpreter.condition src/parser/control/interpreter.ts:243:24
+ ❯ ControlInterpreter.statement src/parser/control/interpreter.ts:197:32
+ ❯ ControlInterpreter.block src/parser/control/interpreter.ts:182:25
+ ❯ ControlInterpreter.run src/parser/control/interpreter.ts:168:12
+ ❯ runControlScript src/parser/control/interpreter.ts:141:39
+ ❯ simulateControlScript src/simulate.ts:393:15
+ ❯ simulate src/simulate.ts:130:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed (2)
+   Start at  17:45:26
+   Duration  805ms (transform 581ms, setup 0ms, import 708ms, tests 17ms, environment 0ms)
+
+JUNIT report written to /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e7a61100/packages/core/test-results.xml

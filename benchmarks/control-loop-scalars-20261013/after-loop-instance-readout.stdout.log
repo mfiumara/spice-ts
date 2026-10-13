@@ -1,0 +1,132 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: readout wrapper
+
+
+Note: No compatibility mode selected!
+
+
+Circuit: * dc loop with element (instance) parameter
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+                                   outputdata
+                                   unknown  Tue Oct 13 18:01:37  2026
+--------------------------------------------------------------------------------
+Index   vnode2          r2val           
+--------------------------------------------------------------------------------
+0	5.00000000000000000e-01	1.00000000000000000e+03	
+1	5.12820512820512775e-01	9.50000000000000000e+02	
+2	5.26315789473684181e-01	9.00000000000000000e+02	
+3	5.40540540540540571e-01	8.50000000000000000e+02	
+4	5.55555555555555469e-01	8.00000000000000000e+02	
+5	5.71428571428571508e-01	7.50000000000000000e+02	
+6	5.88235294117647078e-01	7.00000000000000000e+02	
+7	6.06060606060606077e-01	6.50000000000000000e+02	
+8	6.25000000000000000e-01	6.00000000000000000e+02	
+9	6.45161290322580627e-01	5.50000000000000000e+02	
+10	6.66666666666666630e-01	5.00000000000000000e+02	
+11	6.89655172413793149e-01	4.50000000000000000e+02	
+12	7.14285714285714302e-01	4.00000000000000000e+02	
+13	7.40740740740740700e-01	3.50000000000000000e+02	
+14	7.69230769230769273e-01	3.00000000000000000e+02	
+15	8.00000000000000044e-01	2.50000000000000000e+02	
+16	8.33333333333333259e-01	2.00000000000000000e+02	
+17	8.69565217391304435e-01	1.50000000000000000e+02	
+18	9.09090909090909172e-01	1.00000000000000000e+02	
+ngspice-47 done

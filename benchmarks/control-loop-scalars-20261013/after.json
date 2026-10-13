@@ -1,0 +1,396 @@
+{
+  "baseSha": "ee4db49680dd84a258897687745c184e26b215e6",
+  "candidatePatchSha256": "7750408a1fdafe463d01143ad4b4df635e4f7c40bc00171cd68f17d831f09b0e",
+  "ngspiceVersion": "******\n** ngspice-47 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2026, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n******\n",
+  "nodeVersion": "v22.23.1",
+  "host": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+  "childCapSeconds": 12,
+  "totalChildCapSeconds": 600,
+  "metric": "abs(native-reference)/abs(reference), matched by loop index and r2val; voltage n1",
+  "fixtures": [
+    {
+      "path": "benchmarks/control-loop-scalars-20261013/minimal.cir",
+      "sha256": "a4b9ff73e1ec2fc2ed68d81017b2c3f9adfda3560ed12662fcce5379ed390b47",
+      "maxRelativeError": null,
+      "rmsRelativeError": null,
+      "matchedPoints": 0,
+      "ngspice": {
+        "status": "completed",
+        "exitCode": 0,
+        "wallSeconds": 0.02958224999747472,
+        "command": [
+          "ngspice",
+          "-b",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e7a61100/benchmarks/control-loop-scalars-20261013/minimal.cir"
+        ]
+      },
+      "referenceOpRows": 1,
+      "spiceTs": {
+        "status": "completed",
+        "exitCode": 0,
+        "wallSeconds": 0.4529233339999337,
+        "command": [
+          "node",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e7a61100/benchmarks/control-loop-scalars-20261013/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e7a61100/benchmarks/control-loop-scalars-20261013/minimal.cir"
+        ]
+      },
+      "nativeResult": {
+        "status": "success",
+        "output": [
+          "bounds 1000 100 -50"
+        ],
+        "runs": 1,
+        "n1": [
+          1
+        ]
+      },
+      "outcome": "not-compared"
+    },
+    {
+      "path": "benchmarks/control-loop-scalars-20261013/namespace.cir",
+      "sha256": "8822fdba10968e6b16059b223bcca5ac658f08ddb36e02f50607447f5e75c48e",
+      "maxRelativeError": null,
+      "rmsRelativeError": null,
+      "matchedPoints": 0,
+      "ngspice": {
+        "status": "completed",
+        "exitCode": 0,
+        "wallSeconds": 0.02190116699784994,
+        "command": [
+          "ngspice",
+          "-b",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e7a61100/benchmarks/control-loop-scalars-20261013/namespace.cir"
+        ]
+      },
+      "referenceOpRows": 0,
+      "spiceTs": {
+        "status": "completed",
+        "exitCode": 0,
+        "wallSeconds": 0.405403083001147,
+        "command": [
+          "node",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e7a61100/benchmarks/control-loop-scalars-20261013/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e7a61100/benchmarks/control-loop-scalars-20261013/namespace.cir"
+        ]
+      },
+      "nativeResult": {
+        "status": "success",
+        "output": [
+          "9 9",
+          "9"
+        ],
+        "runs": 0,
+        "n1": []
+      },
+      "outcome": "not-compared"
+    },
+    {
+      "path": "benchmarks/corpus/corpus-f/fixtures/examples/loops/instance-loop.cir",
+      "sha256": "6b38f6f9fe6cd67bd513da66606060507c629dd1a4516ddea0b772e09c2a113d",
+      "maxRelativeError": 2.0539125955565395e-16,
+      "rmsRelativeError": 6.334367866879865e-17,
+      "matchedPoints": 19,
+      "ngspice": {
+        "status": "completed",
+        "exitCode": 0,
+        "wallSeconds": 0.01996316699660383,
+        "command": [
+          "ngspice",
+          "-b",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e7a61100/benchmarks/corpus/corpus-f/fixtures/examples/loops/instance-loop.cir"
+        ]
+      },
+      "referenceOpRows": 19,
+      "spiceTs": {
+        "status": "completed",
+        "exitCode": 0,
+        "wallSeconds": 0.41571666699746856,
+        "command": [
+          "node",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e7a61100/benchmarks/control-loop-scalars-20261013/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e7a61100/benchmarks/corpus/corpus-f/fixtures/examples/loops/instance-loop.cir"
+        ]
+      },
+      "nativeResult": {
+        "status": "success",
+        "output": [],
+        "runs": 19,
+        "n1": [
+          0.5,
+          0.5128205128205128,
+          0.5263157894736842,
+          0.5405405405405405,
+          0.5555555555555555,
+          0.5714285714285715,
+          0.5882352941176471,
+          0.6060606060606061,
+          0.625,
+          0.6451612903225806,
+          0.6666666666666666,
+          0.6896551724137931,
+          0.7142857142857143,
+          0.7407407407407407,
+          0.7692307692307693,
+          0.8,
+          0.8333333333333334,
+          0.8695652173913043,
+          0.9090909090909092
+        ]
+      },
+      "outcome": "compared",
+      "readout": {
+        "status": "completed",
+        "exitCode": 0,
+        "wallSeconds": 0.01976829199702479,
+        "command": [
+          "ngspice",
+          "-b"
+        ]
+      },
+      "referenceN1": [
+        0.5,
+        0.5128205128205128,
+        0.5263157894736842,
+        0.5405405405405406,
+        0.5555555555555555,
+        0.5714285714285715,
+        0.5882352941176471,
+        0.6060606060606061,
+        0.625,
+        0.6451612903225806,
+        0.6666666666666666,
+        0.6896551724137931,
+        0.7142857142857143,
+        0.7407407407407407,
+        0.7692307692307693,
+        0.8,
+        0.8333333333333333,
+        0.8695652173913044,
+        0.9090909090909092
+      ],
+      "referenceR2": [
+        1000.0,
+        950.0,
+        900.0,
+        850.0,
+        800.0,
+        750.0,
+        700.0,
+        650.0,
+        600.0,
+        550.0,
+        500.0,
+        450.0,
+        400.0,
+        350.0,
+        300.0,
+        250.0,
+        200.0,
+        150.0,
+        100.0
+      ]
+    },
+    {
+      "path": "benchmarks/corpus/corpus-f/fixtures/examples/loops/loop-instance.cir",
+      "sha256": "7dbec4d0a85fc3ae517b3250a0521264c3700afcf46468c1118fd66eb90eda6d",
+      "maxRelativeError": 2.0539125955565395e-16,
+      "rmsRelativeError": 6.334367866879865e-17,
+      "matchedPoints": 19,
+      "ngspice": {
+        "status": "completed",
+        "exitCode": 0,
+        "wallSeconds": 0.020091833001060877,
+        "command": [
+          "ngspice",
+          "-b",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e7a61100/benchmarks/corpus/corpus-f/fixtures/examples/loops/loop-instance.cir"
+        ]
+      },
+      "referenceOpRows": 19,
+      "spiceTs": {
+        "status": "completed",
+        "exitCode": 0,
+        "wallSeconds": 0.38682404100109125,
+        "command": [
+          "node",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e7a61100/benchmarks/control-loop-scalars-20261013/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e7a61100/benchmarks/corpus/corpus-f/fixtures/examples/loops/loop-instance.cir"
+        ]
+      },
+      "nativeResult": {
+        "status": "success",
+        "output": [],
+        "runs": 19,
+        "n1": [
+          0.5,
+          0.5128205128205128,
+          0.5263157894736842,
+          0.5405405405405405,
+          0.5555555555555555,
+          0.5714285714285715,
+          0.5882352941176471,
+          0.6060606060606061,
+          0.625,
+          0.6451612903225806,
+          0.6666666666666666,
+          0.6896551724137931,
+          0.7142857142857143,
+          0.7407407407407407,
+          0.7692307692307693,
+          0.8,
+          0.8333333333333334,
+          0.8695652173913043,
+          0.9090909090909092
+        ]
+      },
+      "outcome": "compared",
+      "readout": {
+        "status": "completed",
+        "exitCode": 0,
+        "wallSeconds": 0.02175379200343741,
+        "command": [
+          "ngspice",
+          "-b"
+        ]
+      },
+      "referenceN1": [
+        0.5,
+        0.5128205128205128,
+        0.5263157894736842,
+        0.5405405405405406,
+        0.5555555555555555,
+        0.5714285714285715,
+        0.5882352941176471,
+        0.6060606060606061,
+        0.625,
+        0.6451612903225806,
+        0.6666666666666666,
+        0.6896551724137931,
+        0.7142857142857143,
+        0.7407407407407407,
+        0.7692307692307693,
+        0.8,
+        0.8333333333333333,
+        0.8695652173913044,
+        0.9090909090909092
+      ],
+      "referenceR2": [
+        1000.0,
+        950.0,
+        900.0,
+        850.0,
+        800.0,
+        750.0,
+        700.0,
+        650.0,
+        600.0,
+        550.0,
+        500.0,
+        450.0,
+        400.0,
+        350.0,
+        300.0,
+        250.0,
+        200.0,
+        150.0,
+        100.0
+      ]
+    },
+    {
+      "path": "benchmarks/corpus/corpus-f/fixtures/examples/loops/loop-model.cir",
+      "sha256": "af16eb24765e9593c4f9e87033cbea2811b8de385f324d80d56c5ce0d7e39b6b",
+      "maxRelativeError": null,
+      "rmsRelativeError": null,
+      "matchedPoints": 0,
+      "ngspice": {
+        "status": "completed",
+        "exitCode": 0,
+        "wallSeconds": 0.020866999999270774,
+        "command": [
+          "ngspice",
+          "-b",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e7a61100/benchmarks/corpus/corpus-f/fixtures/examples/loops/loop-model.cir"
+        ]
+      },
+      "referenceOpRows": 19,
+      "spiceTs": {
+        "status": "failed",
+        "exitCode": 1,
+        "wallSeconds": 0.34685829099908005,
+        "command": [
+          "node",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e7a61100/benchmarks/control-loop-scalars-20261013/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e7a61100/benchmarks/corpus/corpus-f/fixtures/examples/loops/loop-model.cir"
+        ]
+      },
+      "nativeResult": {
+        "status": "failed",
+        "error": "Parse error at line 37: Unsupported .control command 'altermod': no top-level .model named 'R2'\n  altermod R2 r = $&rcur"
+      },
+      "outcome": "spice-ts-loss",
+      "readout": {
+        "status": "completed",
+        "exitCode": 0,
+        "wallSeconds": 0.02173370899981819,
+        "command": [
+          "ngspice",
+          "-b"
+        ]
+      },
+      "referenceN1": [
+        0.5,
+        0.5128205128205128,
+        0.5263157894736842,
+        0.5405405405405406,
+        0.5555555555555555,
+        0.5714285714285715,
+        0.5882352941176471,
+        0.6060606060606061,
+        0.625,
+        0.6451612903225806,
+        0.6666666666666666,
+        0.6896551724137931,
+        0.7142857142857143,
+        0.7407407407407407,
+        0.7692307692307693,
+        0.8,
+        0.8333333333333333,
+        0.8695652173913044,
+        0.9090909090909092
+      ],
+      "referenceR2": [
+        1000.0,
+        950.0,
+        900.0,
+        850.0,
+        800.0,
+        750.0,
+        700.0,
+        650.0,
+        600.0,
+        550.0,
+        500.0,
+        450.0,
+        400.0,
+        350.0,
+        300.0,
+        250.0,
+        200.0,
+        150.0,
+        100.0
+      ]
+    }
+  ],
+  "totalActualChildWallSeconds": 2.183386625991261
+}

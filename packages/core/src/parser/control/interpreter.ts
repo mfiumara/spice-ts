@@ -164,6 +164,9 @@ class ControlInterpreter {
   constructor(private readonly host: ControlHost) {}
 
   run(script: ControlScript): ControlScriptOutcome {
+    for (const [name, value] of Object.entries(script.constants ?? {})) {
+      this.plots[0].vectors.set(name, scalar(value, name));
+    }
     try {
       this.block(script.statements);
     } catch (signal) {

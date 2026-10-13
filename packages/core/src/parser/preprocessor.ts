@@ -61,6 +61,8 @@ export interface PreprocessedDeck {
    * referencing one from a subcircuit reports it as undefined.
    */
   parameters: Record<string, number>;
+  /** Evaluated `.csparam` scalars (lower-case names) for the control const plot. */
+  controlConstants: Record<string, number>;
   /** Non-fatal preprocessing diagnostics, surfaced as circuit parse warnings. */
   warnings: { message: string; line: number }[];
 }
@@ -129,11 +131,12 @@ function* preprocessSteps(
     circuitTemperature(statements, definitions, state.functionScopes[0].functions, state.warnings),
     state.functionScopes[0].functions,
   );
-  // `.csparam` only feeds ngspice's control language; evaluate it so a bad
-  // expression is still reported at its card.
-  for (const { definition, guard } of state.csparams) {
+  // Keep the numparam evaluation, including its source diagnostics, for the
+  // control const plot. Circuit parameters remain a separate namespace.
+  const controlConstants: Record<string, number> = Object.create(null);
+  for (const { name, definition, guard } of state.csparams) {
     if (guardSelected(guard, selected)) {
-      evaluateParamExpression(definition, scopes.numparam, state.functionScopes[0].functions);
+      controlConstants[name] = evaluateParamExpression(definition, scopes.numparam, state.functionScopes[0].functions);
     }
   }
   const measureNames = new Set(statements.flatMap(statement => measureName(statement.text)));
@@ -148,7 +151,7 @@ function* preprocessSteps(
       // Unused by the top level, or reported there; see PreprocessedDeck.
     }
   }
-  return { text, parameters, warnings: state.warnings };
+  return { text, parameters, controlConstants, warnings: state.warnings };
 }
 
 /** One `.if`/`.elseif`/`.else` branch; `condition` is absent for `.else`. */
@@ -182,7 +185,7 @@ interface FunctionScopeFrame {
 interface CollectState {
   definitions: Map<string, ParamDefinition>;
   statements: PendingStatement[];
-  csparams: { definition: ParamDefinition; guard?: BranchGuard[] }[];
+  csparams: { name: string; definition: ParamDefinition; guard?: BranchGuard[] }[];
   blocks: ConditionalBlock[];
   /** Indices into `blocks` of the open `.if` blocks, outermost first. */
   openBlocks: number[];
@@ -932,7 +935,7 @@ function* collectStatements(
       }
       for (const assignment of assignments) {
         const definition = paramDefinition(assignment[2], lineNumber, trimmed);
-        if (!definition.stringValue) state.csparams.push({ definition, ...guarded });
+        if (!definition.stringValue) state.csparams.push({ name: assignment[1].toLowerCase(), definition, ...guarded });
       }
       blank();
       continue;

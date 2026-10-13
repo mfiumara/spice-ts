@@ -1,0 +1,23 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e7a61100/packages/core
+
+ ✓ src/parser/preprocessor.test.ts (48 tests) 26ms
+ ✓ src/parser/control/misplaced-endc-666.test.ts (6 tests) 40ms
+ ✓ src/parser/parse-preprocess-parity.test.ts (14 tests) 46ms
+ ✓ src/parser/control/setplot-errors-798.test.ts (7 tests) 193ms
+ ✓ src/parser/control/edit-comments-787.test.ts (8 tests) 125ms
+ ✓ src/parser/numparam-extensions.test.ts (34 tests) 150ms
+ ✓ src/parser/control/csparam-loop-930.test.ts (9 tests) 224ms
+ ✓ src/parser/control/savecurrents-686.test.ts (7 tests) 228ms
+ ✓ src/parser/temp-directive-871.test.ts (33 tests) 409ms
+ ✓ src/parser/control-analysis.test.ts (20 tests) 484ms
+ ✓ src/parser/control/control-script.test.ts (38 tests) 485ms
+ ✓ src/parser/control/sp-sens-750.test.ts (20 tests) 726ms
+ ✓ src/parser/control/spectrum-752.test.ts (33 tests) 924ms
+
+ Test Files  13 passed (13)
+      Tests  277 passed (277)
+   Start at  17:56:21
+   Duration  6.92s (transform 54.73s, setup 0ms, import 65.28s, tests 4.06s, environment 1ms)
+
+JUNIT report written to /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e7a61100/packages/core/test-results.xml

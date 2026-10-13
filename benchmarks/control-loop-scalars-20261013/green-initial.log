@@ -1,0 +1,11 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e7a61100/packages/core
+
+ ✓ src/parser/control/csparam-loop-930.test.ts (2 tests) 16ms
+
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+   Start at  17:47:01
+   Duration  771ms (transform 574ms, setup 0ms, import 688ms, tests 16ms, environment 0ms)
+
+JUNIT report written to /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e7a61100/packages/core/test-results.xml
