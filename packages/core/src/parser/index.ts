@@ -84,7 +84,8 @@ export function parse(netlist: string): Circuit {
   const { title, control } = splitTitledDeck(netlist);
   const preprocessed = preprocessDeckSync(control.netlist, undefined, 1);
   return parseNetlist(
-    `${title}\n${preprocessed.text}`, true, undefined, control.blocks, preprocessed.parameters, control.warnings,
+    `${title}\n${preprocessed.text}`, true, undefined, control.blocks, preprocessed.parameters,
+    [...control.warnings, ...preprocessed.warnings],
   );
 }
 
@@ -98,7 +99,8 @@ export function parse(netlist: string): Circuit {
 export function parseTitleless(netlist: string): Circuit {
   const control = extractControlBlocks(translateMicroSign(netlist), false);
   const preprocessed = preprocessDeckSync(control.netlist, undefined, 0);
-  return parseNetlist(preprocessed.text, false, undefined, control.blocks, preprocessed.parameters, control.warnings);
+  return parseNetlist(preprocessed.text, false, undefined, control.blocks, preprocessed.parameters,
+    [...control.warnings, ...preprocessed.warnings]);
 }
 
 /**
@@ -373,7 +375,8 @@ export async function parseAsync(
   const { title, control } = splitTitledDeck(netlist);
   const preprocessed = await preprocessDeck(control.netlist, resolver, undefined, 1);
   return parseNetlist(
-    `${title}\n${preprocessed.text}`, true, undefined, control.blocks, preprocessed.parameters, control.warnings,
+    `${title}\n${preprocessed.text}`, true, undefined, control.blocks, preprocessed.parameters,
+    [...control.warnings, ...preprocessed.warnings],
   );
 }
 
@@ -385,7 +388,8 @@ export async function parseTitlelessAsync(
 ): Promise<Circuit> {
   const control = extractControlBlocks(translateMicroSign(netlist), false);
   const preprocessed = await preprocessDeck(control.netlist, resolver, guard, 0);
-  return parseNetlist(preprocessed.text, false, guard, control.blocks, preprocessed.parameters, control.warnings);
+  return parseNetlist(preprocessed.text, false, guard, control.blocks, preprocessed.parameters,
+    [...control.warnings, ...preprocessed.warnings]);
 }
 
 const OUTPUT_ONLY_OPTION_FLAGS = new Set([

@@ -128,14 +128,15 @@ describe('ngspice-bugs spice-ts verdicts', () => {
     });
   }
 
-  // Fetch-only decks (vendor libraries are not committed): run `fetch.ts 740 763` first.
+  // Fetch-only decks (vendor libraries are not committed): run `fetch.ts 685 740 763` first.
   // The manifest's edit is applied in memory: absolute .include paths become the attachment basename.
-  for (const [ticket, decks] of [
-    [740, [['circuit.cir', 1e-8, -1.959222e-8], ['split.cir', 1e-7, -1.973652e-8]]],
-    [763, [['netlistwithR5.cir', 1e-7, -5.649621e-7], ['ResistorSplitR5.cir', 1e-7, -5.649621e-7]]],
+  for (const [ticket, libraries, tolerance, decks] of [
+    [685, 'TestVT/Model', 1e-5, [['TestVT/TestDI_DMG6968UDM.cir', 1e-7, -1.35033248753e-8]]],
+    [740, '.', 1e-6, [['circuit.cir', 1e-8, -1.959222e-8], ['split.cir', 1e-7, -1.973652e-8]]],
+    [763, '.', 1e-6, [['netlistwithR5.cir', 1e-7, -5.649621e-7], ['ResistorSplitR5.cir', 1e-7, -5.649621e-7]]],
   ] as const) {
     const dir = resolve(HERE, 'fetched', String(ticket));
-    it(`#${ticket}: both .options rshunt variants complete and hold ngspice-47's operating point`, {
+    it(`#${ticket}: the DC-source decks complete and hold ngspice-47's operating point`, {
       skip: existsSync(dir) ? false : `run fetch.ts ${ticket} first`,
     }, async () => {
       const manifest = await loadManifest();
@@ -146,12 +147,12 @@ describe('ngspice-bugs spice-ts verdicts', () => {
           .replace(/\r\n/g, '\n')
           .replace(/(\.include\s+)"[^"]*\/([^"/]+)"/gi, '$1$2');
         const result = await (simulate as (netlist: string, options: object) => Promise<any>)(text, {
-          resolveInclude: (include: string) => readFile(resolve(dir, include), 'utf8'),
+          resolveInclude: (include: string) => readFile(resolve(dir, libraries, include), 'utf8'),
         });
         const time = result.transient.time as number[];
         const current = result.transient.current('V1') as number[];
         assert.ok(Math.abs(time[time.length - 1] - stop) <= 1e-9 * stop, `${name} stops at ${time[time.length - 1]}`);
-        assert.ok(Math.abs(current[0] - operatingPoint) <= 1e-6 * Math.abs(operatingPoint), `${name} i(V1)(0) = ${current[0]}`);
+        assert.ok(Math.abs(current[0] - operatingPoint) <= tolerance * Math.abs(operatingPoint), `${name} i(V1)(0) = ${current[0]}`);
         // DC source: after 1 ns the current holds the operating point (round-off only).
         for (let i = 0; i < time.length; i++) {
           if (time[i] < 1e-9) continue;
