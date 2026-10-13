@@ -19,6 +19,8 @@ Both lines are matched (Z0 = 50 ohm into 50 ohm, LTRA `l=1.25m c=500n` gives Z0 
 
 ngspice-47 writes v(/z0_out) = 0.954032 at 76.05 us and -0.002381 at 77.05 us. It has no point at the 77 us corner where the delayed falling edge ends. spice-ts has a point there with value 0 (exact). Interpolating ngspice linearly to 77 us gives 0.0454, which is the published error. The lossless T model and the delayed-edge breakpoints in spice-ts are correct. This is the reference-grid artefact from #592: the metric scores ngspice's coarse default output step as a spice-ts error.
 
+> **Update (#791, see TRIAGE-791.md).** spice-ts's 77 us point came from stepping that is not ngspice-47's: a breakpoint at TD and node-voltage truncation on the T-line ports. With the lossless T ported from ngspice-47 tra/ (traload.c quadratic interpolation, TRAaccept/TRAtrunc), spice-ts writes ngspice's 1126 points. tlines.spice is now matched at 1.08e-13. The analytic error at spice-ts's own points is now ngspice's 0.00403 on both lines, and the receipt in `triage-809.test.ts` pins that.
+
 The LTRA error of 2.9e-3 against the analytic answer is spice-ts's own. It is below the threshold and below ngspice's own 4.0e-3 at its points.
 
 ## legacy_sources.spice: worst 2.94, `tran v(/itrrandom)`
