@@ -1,0 +1,61 @@
+diff --git a/packages/core/src/analysis/newton-raphson.ts b/packages/core/src/analysis/newton-raphson.ts
+index f1c22fbe..6f369408 100644
+--- a/packages/core/src/analysis/newton-raphson.ts
++++ b/packages/core/src/analysis/newton-raphson.ts
+@@ -142,6 +142,7 @@ export function newtonRaphson(
+         telemetry.newtonIterations += iter + 1;
+         telemetry.acceptedSolves++;
+       }
++      acceptLinearisationPoint(assembler.solution, assembler.prevSolution, iter);
+       return iter + 1;
+     }
+   }
+@@ -164,6 +165,23 @@ export function newtonRaphson(
+   );
+ }
+ 
++/**
++ * ngspice-47 reports the iterate the converging solve was linearised at, not
++ * that solve (#847): NIiter (maths/ni/niiter.c) returns on convergence before
++ * its trailing `SWAP(CKTrhs, CKTrhsOld)`, and CKTdump (cktdump.c), the
++ * operating point handed to AC/noise (dcop.c, dctran.c `CKTrhsOp`), and the
++ * next sweep point or timestep all read `CKTrhsOld`. The device state of the
++ * accepted point (CKTstate0) was evaluated at that same iterate. NIiter never
++ * converges on its first iteration (`iterno != 1`); when spice-ts accepts the
++ * first solve, ngspice would iterate once more and its CKTrhsOld would be that
++ * same first solve, so it is kept.
++ */
++export function acceptLinearisationPoint(
++  solution: Float64Array, linearisationPoint: Float64Array, iter: number,
++): void {
++  if (iter > 0) solution.set(linearisationPoint);
++}
++
+ function isConverged(
+   current: Float64Array, previous: Float64Array,
+   numNodes: number, options: ResolvedOptions,
+diff --git a/packages/core/src/analysis/transient-step.ts b/packages/core/src/analysis/transient-step.ts
+index 77feb11a..c2a111b7 100644
+--- a/packages/core/src/analysis/transient-step.ts
++++ b/packages/core/src/analysis/transient-step.ts
+@@ -11,6 +11,7 @@ import { Capacitor } from '../devices/capacitor.js';
+ import { VoltageSource } from '../devices/voltage-source.js';
+ import { CurrentSource } from '../devices/current-source.js';
+ import { MOSFET } from '../devices/mosfet.js';
++import { acceptLinearisationPoint } from './newton-raphson.js';
+ 
+ /**
+  * When sign-flip oscillation is detected on any node, the per-iteration
+@@ -189,9 +190,11 @@ export function attemptStep(ctx: StepContext, attempt: StepAttempt): StepResult
+       && isConvergedTransient(x, prev, nodeCount, options)
+       && convergenceTestedDevices(compiled).every(device => device.convergenceTest!(x, options))
+     ) {
++      // ngspice-47 accepts the iterate this solve was linearised at (#847).
++      acceptLinearisationPoint(assembler.solution, prev, iter);
+       return {
+         ok: true,
+-        solution: new Float64Array(x),
++        solution: new Float64Array(assembler.solution),
+         iterations: iter + 1,
+         oscillated,
+       };

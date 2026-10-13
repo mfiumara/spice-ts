@@ -49,7 +49,9 @@ S2 out2 0 c 0 SMOD2
     // exact 9.914147e-01 / 4.257032e-02 that its .op at Vc = -0.25 (and its sweep with
     // reltol=1e-5) gives: the step from -0.5 is limited (conv_limit) and niiter.c
     // returns, and cktdump.c prints, the iterate before the converging solve (CKTrhsOld).
-    // spice-ts reports the converged solve, within RELTOL of ngspice there.
+    // spice-ts reports the converged solve, within RELTOL of ngspice there. Reporting
+    // CKTrhsOld instead matches this deck exactly but moves 53 of 71 aggregate rows,
+    // 33 of them away from ngspice (#847, benchmarks/results/issue-847/README.md).
     ngspice.forEach(([v1, v2], index) => {
       const tolerance = index === 7 ? 1e-3 : 1e-6;
       expect(relativeError(out[index], v1)).toBeLessThan(tolerance);
