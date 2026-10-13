@@ -132,14 +132,16 @@ The compressed receipts retain all waveforms, output, warning and timing data.
 The new receipt records the unchanged base commit plus dirty-worktree status
 and production-file hashes, rather than pretending an uncommitted experiment
 ran at the future PR head. The final PR identifies its exact head separately.
-`red.log`, `green.log`, offline and final build/lint/full-suite logs retain real
+`red.log.gz`, `green.log.gz`, offline and final build/lint/full-suite logs retain real
 execution. The initial guarded full-suite attempt found three stale
 supportedLevels assertions; they were updated to include 260 before rerunning.
 
 Final local gates exited 0: `pnpm build`, `pnpm lint`, guarded root
 `spice-heavy pnpm test`, 39 targeted tests across three files, and all offline
 reference/evidence checks. The full core run passed 279 files / 3603 tests
-(2 skipped). `full-tests-final.log` retains the remaining package and benchmark
+(2 skipped). `full-tests-final.log.gz` retains the remaining package and benchmark
 test results too. The new live receipts' three production-file hashes match
 the files committed in this slice. Required GitHub CI on the exact PR head and
 independent spice-ts-review remain separate publication gates.
+All console logs are gzip-compressed without altering their bytes, including
+tool-emitted trailing whitespace. Use `gzip -dc <receipt>.log.gz` to read them.
