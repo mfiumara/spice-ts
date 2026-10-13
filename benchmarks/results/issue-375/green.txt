@@ -1,2 +1,0 @@
- ✓ src/devices/pulse-source.test.ts (8 tests) 70ms
-      Tests  8 passed (8)
