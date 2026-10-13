@@ -77,7 +77,27 @@ const FUNCTIONS: Record<string, (...args: number[]) => number> = {
   floor: Math.floor,
   ceil: Math.ceil,
   ternary_fcn: (condition, whenTrue, whenFalse) => (condition !== 0 ? whenTrue : whenFalse),
+  limit,
 };
+
+/**
+ * `limit(x, lo, hi)`: x clamped between the two bounds, in either order, as
+ * ngspice-47's compatibility `.func limit(x, a, b) { ternary_fcn(a > b,
+ * max(min(x, a), b), max(min(x, b), a)) }` (inpcompat.c). Native ngspice-47
+ * numparam `limit(nominal, variation)` is a random Monte-Carlo draw that also
+ * silently drops a third argument (ngspice-bugs #505); spice-ts has no random
+ * parameter functions, so any arity but three is reported (#870).
+ */
+function limit(...args: number[]): number {
+  if (args.length !== 3) {
+    throw new Error(
+      `limit() takes 3 arguments (x, lo, hi), got ${args.length}: the random ngspice `
+      + 'limit(nominal, variation) Monte-Carlo function is not supported',
+    );
+  }
+  const [x, a, b] = args;
+  return a > b ? Math.max(Math.min(x, a), b) : Math.max(Math.min(x, b), a);
+}
 
 export function evaluateExpression(input: string, vars: Record<string, number>): number {
   const parser = new ExprParser(input.trim(), vars);

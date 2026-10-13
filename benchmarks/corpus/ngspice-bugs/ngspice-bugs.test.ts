@@ -162,4 +162,23 @@ describe('ngspice-bugs spice-ts verdicts', () => {
       }
     });
   }
+
+  // Fetch-only: run `fetch.ts 505` first. dot.cir is Vsetpoint.cir without its `.control version .endc` block.
+  const potentiometer = resolve(HERE, 'fetched', '505');
+  it('#505: three-argument limit() clamps the wiper and the transient completes deterministically', {
+    skip: existsSync(potentiometer) ? false : 'run fetch.ts 505 first',
+  }, async () => {
+    const manifest = await loadManifest();
+    assert.equal(outcome(entry(manifest, 505)), 'spice-ts-correct');
+    const { simulate } = await core();
+    const text = (await readFile(resolve(potentiometer, 'Vsetpoint.cir'), 'utf8')).replace('.control\nversion\n.endc\n', '');
+    const result = await (simulate as (netlist: string, options: object) => Promise<any>)(text, {
+      resolveInclude: (include: string) => readFile(resolve(potentiometer, include), 'utf8'),
+    });
+    const time = result.transient.time as number[];
+    assert.ok(Math.abs(time[time.length - 1] - 0.3) <= 1e-12, `stops at ${time[time.length - 1]}`);
+    // ngspice-47 with `set ngbehavior=ps` (compatibility clamp limit): V(vset)(0.3 s) = 4.807534111921781e-3.
+    const vset = result.transient.voltage('vset') as number[];
+    assert.ok(Math.abs(vset[vset.length - 1] - 4.807534111921781e-3) <= 1e-9, `V(vset) = ${vset[vset.length - 1]}`);
+  });
 });

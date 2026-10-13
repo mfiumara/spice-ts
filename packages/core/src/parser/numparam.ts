@@ -54,6 +54,21 @@ export function parseFuncCard(card: string): UserFunction {
   return { name, params: lowered, body };
 }
 
+/**
+ * ngspice-47 inpcom.c `inp_fix_macro_param_func_paren_io`: a `.param` card
+ * whose first token (up to whitespace or `=`) holds `(` defines a function,
+ * `.param f(a, b) = 'expr'` being `.func f(a, b) 'expr'`. Returns the
+ * equivalent `.func` card text, or undefined for an ordinary `.param` card.
+ */
+export function paramCardAsFunc(card: string): string | undefined {
+  const match = /^\s*\.para\w*\s+/i.exec(card);
+  if (!match) return undefined;
+  const rest = card.slice(match[0].length);
+  const first = /^[^\s=]*/.exec(rest)![0];
+  if (!first.includes('(')) return undefined;
+  return `.func ${rest.replace('=', ' ')}`;
+}
+
 /** Expand every call of a function in `functions` inside `text`. */
 export function expandUserFunctions(text: string, functions: FunctionScope): string {
   if (functions.size === 0) return text;
