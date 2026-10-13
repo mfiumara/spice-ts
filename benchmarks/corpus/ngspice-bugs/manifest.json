@@ -53,6 +53,10 @@
     {
       "issue": "https://github.com/mfiumara/spice-ts/issues/860",
       "summary": "linear F/H naming a voltage source defined later (AD620.mod F1 -> V4), the next blocker after #843 of ngspice tickets 791, 794, 795"
+    },
+    {
+      "issue": "https://github.com/mfiumara/spice-ts/issues/871",
+      "summary": ".temp card, the next blocker after .param functions (#870) of ngspice ticket 871's temper_capture deck"
     }
   ],
   "tickets": [
@@ -1555,8 +1559,8 @@
         "evidence": "dot.cir completed in 6/6 master runs (ngspice-47 aborted with \"Timestep too small ... cause unrecorded\" in 1 of 6 runs and in the first side-by-side run). Non-determinism means 6 clean runs are evidence, not proof, of a fix. [ngspice pre-master-48 HEAD 3ef069fb (2026-10-09), built in scratch]"
       },
       "spiceTs": {
-        "verdict": "unsupported",
-        "evidence": "Cannot parse number: 'limit ( wiper 0 1 )' during subcircuit parameter evaluation."
+        "verdict": "right",
+        "evidence": "Since #870 spice-ts reads three-argument limit(x, lo, hi) as the clamp (ngspice-47 inpcompat.c compatibility .func limit, bounds in either order) in every mode and reports the random two-argument limit(nominal, variation) instead of drawing a value; it does not diagnose the three-argument form. dot.cir with the attached Potentiometer.lib: w=0.01 (R0=9900, R1=100 ohm), 349 rows to 0.3 s, deterministic. Against ngspice-47 with `set ngbehavior=ps` (compat clamp applied to the included library; 3/3 runs complete with 349 rows, while 3/3 default-mode runs abort with timestep too small at .00821441/.00827441 s) at the ngspice timepoints: max |dV| 3.3e-15 V(vset), 2.6e-15 V(vdrain), 7.9e-14 V(vpot), 2.3e-14 V(vref); final V(vset)=4.807534111921768e-3 vs 4.807534111921781e-3. Before #870: Cannot parse number: 'limit ( wiper 0 1 )' during subcircuit parameter evaluation."
       },
       "reproducesOnNgspice47": "yes",
       "reproCheck": "Repeat dot.cir without changing library; same deck alternates between351-row completion and timestep-too-small near8.2ms.",
@@ -6502,11 +6506,11 @@
       },
       "spiceTs": {
         "verdict": "unsupported",
-        "evidence": "ParseError Unknown function 'choose_res' / Unknown function 'twice'; function-style .param declaration unsupported."
+        "evidence": "Since #870 `.param f(args) = expr` defines a function (ngspice-47 inpcom.c .param -> .func) whose formal arguments lexically shadow globals: arg_capture_cards.cir runs, R1=choose_res(1e-7,2e-7)=1 ohm, i(V1)=-1 A (deterministic; the agauss global is never read). temper_capture_cards.cir still stops at `Unsupported dot command: '.temp'` (https://github.com/mfiumara/spice-ts/issues/871); the same cards without `.temp 27` (27 C is the default) give -i(V1)=1/6 A, the expected answer, where ngspice-47 gives 1/56 (pinned in packages/core/src/parser/param-functions-870.test.ts). Before #870: ParseError Unknown function 'choose_res' / Unknown function 'twice'."
       },
       "reproducesOnNgspice47": "yes",
       "reproCheck": "temper_capture.cir prints -i(v1)=0.01785714A rather than 1/6A.",
-      "spiceTsIssue": null,
+      "spiceTsIssue": "https://github.com/mfiumara/spice-ts/issues/871",
       "upstreamCandidate": "Global random/temper parameter rewrites must respect function-formal lexical bindings.",
       "notes": "Random deck happened to produce 1 ohm on this trial; deterministic temperature deck conclusively reproduces capture."
     },

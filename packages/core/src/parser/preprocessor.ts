@@ -1,6 +1,7 @@
 import { evaluateExpression } from './expression.js';
 import {
-  braceBareParameters, conditionExpression, expandUserFunctions, parseFuncCard, type FunctionScope, type UserFunction,
+  braceBareParameters, conditionExpression, expandUserFunctions, paramCardAsFunc, parseFuncCard, type FunctionScope,
+  type UserFunction,
 } from './numparam.js';
 import { NODE_DEPENDENT_EXPRESSION, substituteBehavioralParameters } from './behavioral-expression.js';
 import { parseNumber } from './tokenizer.js';
@@ -644,6 +645,7 @@ function compactSubcircuitExpressions(line: string): string {
   const trimmed = line.trim();
   if (trimmed === '' || trimmed.startsWith('*') || /^b/i.test(trimmed)) return line;
   if (trimmed.startsWith('.') && !/^\.(?:param|model)\b/i.test(trimmed)) return line;
+  line = bracedSingleParamValue(line);
   if (!line.includes("'") && !line.includes('{')) return line;
   const end = commentStart(line);
   const compact = (expression: string) => `{${expression.replace(/\s+/g, '')}}`;
@@ -651,6 +653,25 @@ function compactSubcircuitExpressions(line: string): string {
     .replace(/'([^']*)'/g, (_match, expression: string) => compact(expression))
     .replace(/\{([^{}]*)\}/g, (_match, expression: string) => compact(expression))
     + line.slice(end);
+}
+
+/**
+ * A subcircuit `.param` card with one assignment whose value is an undelimited
+ * expression (`.param w=limit(wiper, 0, 1)`, ngspice-bugs #505) gets that
+ * value braced: ngspice-47 reads the whole rest of the card as the
+ * expression, as at the top level (`singleParamValue`), while the subcircuit
+ * tokenizer would split it at whitespace and commas (#870).
+ */
+function bracedSingleParamValue(line: string): string {
+  const head = /^(\s*\.param\s+)/i.exec(line);
+  if (!head) return line;
+  const end = commentStart(line);
+  const body = line.slice(head[0].length, end).trim();
+  const assignments = [...body.matchAll(PARAM_ASSIGNMENT)];
+  if (assignments.length !== 1) return line;
+  const value = singleParamValue(`.param ${body}`, assignments[0]);
+  if (/^[{'"]/.test(value) || !/[\s,()]/.test(value)) return line;
+  return `${head[0]}${assignments[0][1]}={${value}}${line.slice(end)}`;
 }
 
 const BEHAVIORAL_RESISTOR = /^\s*(r\S*)\s+(\S+)\s+(\S+)\s+(?:r\s*=\s*)?(?:\{([^{}]*)\}|'([^']*)')\s*(.*)$/i;
@@ -813,9 +834,11 @@ function* collectStatements(
       continue;
     }
 
-    if (!inControl && FUNC_DIRECTIVE.test(trimmed)) {
+    // `.func`, and a `.param` card defining a function (`.param f(x) = ...`, #870).
+    const funcCard = inControl ? undefined : FUNC_DIRECTIVE.test(trimmed) ? trimmed : paramCardAsFunc(trimmed);
+    if (funcCard !== undefined) {
       try {
-        const fn = parseFuncCard(trimmed.slice(0, commentStart(trimmed)));
+        const fn = parseFuncCard(funcCard.slice(0, commentStart(funcCard)));
         state.functionScopes[scope].functions.set(fn.name.toLowerCase(), fn);
       } catch (error) {
         throw toParseError(error, lineNumber, trimmed);
