@@ -378,7 +378,7 @@ describe('BJT Ebers-Moll', () => {
 
   it.each([
     ['PTF=30', "Unsupported BJT model parameter: 'PTF'"],
-    ['XCJC=0.5', "Unsupported BJT model parameter: 'XCJC' < 1 together with RB > 0"],
+    ['XCJC=1.5', 'expected BJT XCJC in [0, 1]'],
     ['CJE=-1p', 'expected finite BJT CJE >= 0'],
     ['VJC=0', 'expected finite BJT VJC > 0'],
   ])('rejects unsupported or invalid charge-storage parameter %s explicitly', (parameter, message) => {
