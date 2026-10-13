@@ -133,8 +133,9 @@ E1 (o 0) (i 0) 4
     expect(dc.voltage('sout')).toBeCloseTo(1, 12);
   });
 
-  it('keeps the POLY rejection for a POLY card written with parentheses', () => {
-    expect(() => parse('t\nV1 1 0 1\nR1 1 0 1k\nE1 (2 0) POLY(1) 1 0 0 1\nR2 2 0 1k\n.op\n.end'))
-      .toThrow(/POLY/);
+  it('reads a POLY card written with node-pair parentheses (#845)', async () => {
+    // spice2poly reads its tokens with MIFgettok, which skips '(' and ')'.
+    const result = await simulate('t\nV1 1 0 1\nR1 1 0 1k\nE1 (2 0) POLY(1) 1 0 0 1\nR2 2 0 1k\n.op\n.end');
+    expect(result.dc!.voltage('2')).toBeCloseTo(1, 12);
   });
 });

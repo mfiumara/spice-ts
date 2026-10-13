@@ -1,5 +1,7 @@
 import { evaluateExpression } from './expression.js';
-import { conditionExpression, expandUserFunctions, parseFuncCard, type FunctionScope, type UserFunction } from './numparam.js';
+import {
+  braceBareParameters, conditionExpression, expandUserFunctions, parseFuncCard, type FunctionScope, type UserFunction,
+} from './numparam.js';
 import { NODE_DEPENDENT_EXPRESSION, substituteBehavioralParameters } from './behavioral-expression.js';
 import { parseNumber } from './tokenizer.js';
 import { translateMicroSign } from './micro-sign.js';
@@ -112,6 +114,9 @@ function* preprocessSteps(
     statement.control = false;
   }
   expandFunctionCalls(state);
+  // inpcom.c inp_quote_params: brace bare parameter names on R/C/L cards (#837).
+  const numericParams = new Set([...definitions].filter(([, definition]) => !definition.stringValue).map(([name]) => name));
+  braceBareParameters(statements, numericParams).forEach((text, index) => { statements[index].text = text; });
   // ngspice collects every top-level `.param` before substituting, so a
   // parameter may be used before its definition and the last definition wins.
   const temperatureSweep = statements.find(isTemperatureSweep);
