@@ -1,0 +1,15 @@
+
+  ../../benchmarks/performance/results/issue-938/baseline.mjs  1.5mb ⚠️
+
+⚡ Done in 18ms
+
+  ../../benchmarks/performance/results/issue-938/control.mjs  1.5mb ⚠️
+
+⚡ Done in 17ms
+Traceback (most recent call last):
+  File "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_7429c498/benchmarks/performance/results/issue-938/prepare.py", line 61, in <module>
+    main()
+    ~~~~^^
+  File "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_7429c498/benchmarks/performance/results/issue-938/prepare.py", line 53, in main
+    position = baseline.index(anchor, start, end)
+ValueError: substring not found
