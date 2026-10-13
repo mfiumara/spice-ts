@@ -15,10 +15,10 @@ import { spawnSync } from 'node:child_process';
 import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { basename, resolve } from 'node:path';
-import { alignAndMeasure, type ComparisonMetrics } from './comparison-harness.js';
+import { alignAndMeasure, type ComparisonMetrics, type ComplexValue } from './comparison-harness.js';
 import { analysisType, type EngineAnalysis, type EngineExecution, findMatchingAnalysis } from './corpus/classic/report.js';
 import { firstNgspiceErrorLine, normalizedSignalErrors, pairedReferenceSeries, scrub, sig3 } from './corpus/corpus-f/lib.js';
-import { readNgspiceRawFile } from './corpus/corpus-f/raw-stream.js';
+import { type PackedColumn, readNgspiceRawFilePacked } from './corpus/corpus-f/raw-stream.js';
 
 /** The fine TMAX is the ngspice-47 default step ceiling of the card divided by this. */
 export const FINE_REFERENCE_DIVISOR = 10;
@@ -133,8 +133,25 @@ export function fineReferenceDeck(deck: string): FineReferencePlan {
 }
 
 /**
+ * Read-only view of packed raw columns: a signal's `{ re, im }` samples are built only when that
+ * signal is read (a fresh array per read). A 1e6-point fine run of many signals then stays in
+ * Float64Arrays instead of one heap object per sample (#839).
+ */
+function lazyTransient(plotName: string, grid: number[], columns: Record<string, PackedColumn>): EngineAnalysis {
+  const signals: Record<string, ComplexValue[]> = {};
+  for (const [name, column] of Object.entries(columns)) {
+    Object.defineProperty(signals, name, {
+      enumerable: true,
+      get: () => Array.from(column.re, (re, index) => ({ re, im: column.im[index] })),
+    });
+  }
+  return { type: 'tran', plotName, series: { grid, signals } };
+}
+
+/**
  * Runs ngspice-47 in batch mode on a deck and keeps only the transient vectors in `signals`
- * (streaming raw reader, so a long fine run is never held as one string).
+ * (streaming raw reader into packed columns, so a long fine run is held neither as one string nor
+ * as one object per sample; values are the object reader's, bit for bit).
  */
 export async function runFineNgspice(
   deck: string,
@@ -167,13 +184,13 @@ export async function runFineNgspice(
     }
     let plots;
     try {
-      plots = await readNgspiceRawFile(rawPath, (plotName, signal) => analysisType(plotName) === 'tran' && signals.has(signal));
+      plots = await readNgspiceRawFilePacked(rawPath, (plotName, signal) => analysisType(plotName) === 'tran' && signals.has(signal));
     } catch {
       return failed('fine ngspice run produced no raw file');
     }
     const analyses = plots
       .filter(plot => analysisType(plot.plotName) === 'tran')
-      .map((plot): EngineAnalysis => ({ type: 'tran', plotName: plot.plotName, series: { grid: plot.grid, signals: plot.signals } }));
+      .map(plot => lazyTransient(plot.plotName, plot.grid, plot.signals));
     if (analyses.length === 0) return failed(firstNgspiceErrorLine(output, directory) ?? 'fine ngspice run produced no transient plot');
     return { status: 'success', convergence: 'converged', analyses };
   } finally {
@@ -200,41 +217,60 @@ export function nearSharedPoints(candidate: readonly number[], reference: readon
  * Scores `candidate` against the fine `reference` on the reference's points: each transient plot of
  * the reference is paired with the candidate's plot (as the headline pairs plots), the candidate is
  * interpolated, and breakpoints are the near-shared points (see FINE_REFERENCE_RULE).
+ *
+ * `budget` bounds the samples (reference plus candidate points per signal) read per metric call: a
+ * plot's sorted signals are measured in contiguous batches and the per-signal metrics merged in
+ * that order. The metric is per signal and its grid summary does not depend on the signal list, so
+ * the batch size changes no value and no key order (#839). Signals are listed without being read,
+ * so a lazy execution (corpus-f's packed views) materialises one batch at a time.
  */
 export function compareWithReference(
   reference: EngineExecution,
   candidate: EngineExecution,
   tolerance: number,
+  budget = Number.POSITIVE_INFINITY,
 ): Array<{ analysis: string; metrics: ComparisonMetrics }> {
   const comparisons: Array<{ analysis: string; metrics: ComparisonMetrics }> = [];
   for (const analysis of reference.analyses) {
     const paired = findMatchingAnalysis(candidate.analyses, analysis);
     if (!paired) continue;
-    const signals = Object.keys(analysis.series.signals).filter(signal => paired.series.signals[signal] !== undefined).sort();
+    const signals = Object.keys(analysis.series.signals).filter(signal => Object.hasOwn(paired.series.signals, signal)).sort();
     if (signals.length === 0) continue;
-    comparisons.push({
-      analysis: analysis.type,
-      metrics: alignAndMeasure(analysis.series, paired.series, signals, {
-        breakpoints: nearSharedPoints(paired.series.grid, analysis.series.grid, tolerance),
-      }),
-    });
+    const referenceGrid = analysis.series.grid;
+    const candidateGrid = paired.series.grid;
+    const breakpoints = nearSharedPoints(candidateGrid, referenceGrid, tolerance);
+    const perBatch = Math.max(1, Math.floor(budget / Math.max(1, referenceGrid.length + candidateGrid.length)));
+    let merged: ComparisonMetrics | undefined;
+    for (let start = 0; start < signals.length; start += perBatch) {
+      const batch = signals.slice(start, start + perBatch);
+      const pick = (source: Record<string, ComplexValue[]>) => Object.fromEntries(batch.map(signal => [signal, source[signal]]));
+      const metrics = alignAndMeasure(
+        { grid: referenceGrid, signals: pick(analysis.series.signals) },
+        { grid: candidateGrid, signals: pick(paired.series.signals) },
+        batch,
+        { breakpoints },
+      );
+      merged = merged === undefined ? metrics : { grid: merged.grid, signals: { ...merged.signals, ...metrics.signals } };
+    }
+    if (merged) comparisons.push({ analysis: analysis.type, metrics: merged });
   }
   return comparisons;
 }
 
-/** The transient analyses of an execution, each restricted to `signals`. */
+/** The transient analyses of an execution, each restricted to `signals`. Values are forwarded, not read, so a lazy series (#839) stays lazy. */
 function transientOnly(execution: EngineExecution, signals: ReadonlySet<string>): EngineExecution {
   return {
     ...execution,
     analyses: execution.analyses
       .filter(analysis => analysis.type === 'tran')
-      .map(analysis => ({
-        ...analysis,
-        series: {
-          grid: analysis.series.grid,
-          signals: Object.fromEntries(Object.entries(analysis.series.signals).filter(([name]) => signals.has(name))),
-        },
-      })),
+      .map(analysis => {
+        const source = analysis.series.signals;
+        const kept: Record<string, ComplexValue[]> = {};
+        for (const name of Object.keys(source).filter(name => signals.has(name))) {
+          Object.defineProperty(kept, name, { enumerable: true, get: () => source[name] });
+        }
+        return { ...analysis, series: { grid: analysis.series.grid, signals: kept } };
+      }),
   };
 }
 
@@ -268,6 +304,8 @@ export async function fineReferenceColumn(input: {
   ngspice: EngineExecution;
   headline: ReadonlyArray<{ analysis: string; signals?: readonly string[]; metrics: ComparisonMetrics }>;
   run?: (deck: string, fileName: string, signals: ReadonlySet<string>) => Promise<EngineExecution>;
+  /** Samples read per metric call (see compareWithReference); changes no result. */
+  budget?: number;
 }): Promise<FineReference> {
   const signals = headlineTransientSignals(input.headline);
   const headline = worstOf(input.headline.filter(comparison => comparison.analysis === 'tran'), input.spiceTs, input.ngspice).worst;
@@ -282,8 +320,8 @@ export async function fineReferenceColumn(input: {
   const ngspice = transientOnly(input.ngspice, signals);
   // Both default runs are interpolated onto the reference's points: the same procedure for each.
   const tolerance = FINE_REFERENCE_BREAK_FRACTION * Math.min(...plan.tmax.map(Number));
-  const spiceTsVsFine = worstOf(compareWithReference(fine, spiceTs, tolerance), fine, fine);
-  const ngspiceVsFine = worstOf(compareWithReference(fine, ngspice, tolerance), fine, fine);
+  const spiceTsVsFine = worstOf(compareWithReference(fine, spiceTs, tolerance, input.budget), fine, fine);
+  const ngspiceVsFine = worstOf(compareWithReference(fine, ngspice, tolerance, input.budget), fine, fine);
   if (spiceTsVsFine.worst === null || ngspiceVsFine.worst === null) {
     return unavailable(plan.tmax, 'the fine reference has none of the headline transient signals');
   }

@@ -19,18 +19,28 @@ import { arch, cpus, platform, release, tmpdir } from 'node:os';
 import { basename, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { deserialize, serialize } from 'node:v8';
-import { compareExecutions, SPICE_TS_TIMEOUT_MS } from '../../aggregate-report.js';
-import { parseNgspiceRaw } from '../../comparison-harness.js';
+import { SPICE_TS_TIMEOUT_MS } from '../../aggregate-report.js';
 import { type FineReference, FINE_REFERENCE_RULE, FINE_REFERENCE_TIMEOUT_MS, fineReferenceColumn, fineReferenceSection } from '../../fine-reference.js';
 import {
   analysisType,
   type ClassicAnalysisType,
   type ClassicCircuit,
-  type EngineAnalysis,
   type EngineExecution,
 } from '../classic/report.js';
 import type { CorpusFCircuit, CorpusFManifest } from './ingest.js';
+import {
+  asPacked,
+  compareInBatches,
+  defaultBatchSamples,
+  lazyExecution,
+  PACKED_SAMPLES,
+  type PackedAnalysis,
+  packEncoded,
+  type PackedExecution,
+  unpackExecution,
+} from './packed.js';
 import { runCorpusFSpiceTs } from './plot-adapter.js';
+import { readNgspiceRawFilePacked } from './raw-stream.js';
 import {
   classifyNgspiceFailure,
   CONTROL_SECTION,
@@ -201,8 +211,29 @@ function asClassic(circuit: CorpusFCircuit): ClassicCircuit {
   };
 }
 
-/** ngspice-47 batch run on the identical bytes; keeps its own output for the first error line. */
-export async function runNgspice(input: Buffer, circuit: CorpusFCircuit): Promise<{ execution: EngineExecution; firstErrorLine?: string; note?: string; status: EngineStatus }> {
+export { packExecution, unpackExecution } from './packed.js';
+
+/** A reference run: ngspice's execution (either sample form) with its status and first error line. */
+export interface ReferenceRun<E = EngineExecution> {
+  execution: E;
+  firstErrorLine?: string;
+  note?: string;
+  status: EngineStatus;
+}
+
+/** ngspice-47 batch run on the identical bytes, with per-sample objects (see {@link runNgspicePacked}). */
+export async function runNgspice(input: Buffer, circuit: CorpusFCircuit): Promise<ReferenceRun> {
+  const run = await runNgspicePacked(input, circuit);
+  return { ...run, execution: unpackExecution(run.execution) };
+}
+
+/**
+ * ngspice-47 batch run on the identical bytes; keeps its own output for the first error line. The
+ * raw file is streamed into packed columns (#839), keeping only the signals `select` accepts
+ * (every signal without it): the metric scores common signals only, so dropping the others
+ * changes no outcome.
+ */
+export async function runNgspicePacked(input: Buffer, circuit: CorpusFCircuit, select?: ReferenceSelection): Promise<ReferenceRun<PackedExecution>> {
   const directory = await mkdtemp(resolve(tmpdir(), 'spice-ts-corpus-f-'));
   const netlistPath = resolve(directory, basename(circuit.localPath));
   const rawPath = resolve(directory, 'output.raw');
@@ -231,14 +262,16 @@ export async function runNgspice(input: Buffer, circuit: CorpusFCircuit): Promis
     if (completed.status !== 0) {
       return failed(classifyNgspiceFailure(output), errorLine ?? `ngspice exited ${completed.status ?? completed.signal}`);
     }
-    let raw = '';
-    try { raw = await readFile(rawPath, 'utf8'); } catch { raw = ''; }
-    const analyses = parseNgspiceRaw(raw)
-      .map(plot => {
-        const type = analysisType(plot.plotName);
-        return type ? { type, plotName: plot.plotName, series: { grid: plot.grid, signals: plot.signals } } : null;
-      })
-      .filter((analysis): analysis is EngineAnalysis => analysis !== null);
+    const keep = select && ((plotName: string, signal: string) => {
+      const type = analysisType(plotName);
+      return type !== null && select(type, signal);
+    });
+    let plots: Awaited<ReturnType<typeof readNgspiceRawFilePacked>> = [];
+    try { plots = await readNgspiceRawFilePacked(rawPath, keep); } catch { plots = []; }
+    const analyses = plots.flatMap((plot): PackedAnalysis[] => {
+      const type = analysisType(plot.plotName);
+      return type ? [{ type, plotName: plot.plotName, grid: Float64Array.from(plot.grid), signals: plot.signals }] : [];
+    });
     if (analyses.length === 0 && !errorLine && /^\s*\.control\b/im.test(input.toString('utf8'))) {
       return { execution: { status: 'success', convergence: 'converged', analyses: [] }, status: 'success', note: CONTROL_ONLY_NOTE };
     }
@@ -251,55 +284,20 @@ export async function runNgspice(input: Buffer, circuit: CorpusFCircuit): Promis
   }
 }
 
-interface PackedAnalysis {
-  type: EngineAnalysis['type'];
-  plotName: string;
-  grid: Float64Array;
-  signals: Array<[name: string, re: Float64Array, im: Float64Array]>;
-}
-
-/**
- * Typed-array transport for the spice-ts child's result. v8-serialising one object per sample
- * exhausts the parent's default heap on long transients (adder_bip: 106k points x 450 signals);
- * packed Float64Arrays carry the same values bit-for-bit at a fraction of the cost.
- */
-export function packExecution(execution: EngineExecution): Omit<EngineExecution, 'analyses'> & { analyses: PackedAnalysis[] } {
-  return {
-    ...execution,
-    analyses: execution.analyses.map(analysis => ({
-      type: analysis.type,
-      plotName: analysis.plotName,
-      grid: Float64Array.from(analysis.series.grid),
-      signals: Object.entries(analysis.series.signals).map(([name, samples]) => [
-        name,
-        Float64Array.from(samples, sample => sample.re),
-        Float64Array.from(samples, sample => sample.im),
-      ]),
-    })),
-  };
-}
-
-export function unpackExecution(packed: ReturnType<typeof packExecution>): EngineExecution {
-  return {
-    ...packed,
-    analyses: packed.analyses.map(analysis => ({
-      type: analysis.type,
-      plotName: analysis.plotName,
-      series: {
-        grid: Array.from(analysis.grid),
-        signals: Object.fromEntries(analysis.signals.map(([name, re, im]) =>
-          [name, Array.from(re, (value, index) => ({ re: value, im: im[index] }))])),
-      },
-    })),
-  };
-}
-
 /**
  * spice-ts on the identical bytes in a bounded child process (same 120 s bound as the aggregate
  * report). Calls `simulate()` only: unlike the aggregate adapter it skips the `parse()` pre-check,
  * which rejects `.param` decks that `simulate()` accepts, so the published error is simulate()'s.
  */
 export async function runBoundedSimulate(input: Buffer, circuit: ClassicCircuit): Promise<EngineExecution> {
+  return unpackExecution(await runBoundedSimulatePacked(input, circuit));
+}
+
+/**
+ * {@link runBoundedSimulate} without per-sample objects: the child packs every signal into
+ * Float64Arrays as it maps the simulate() result, and they stay packed (#839).
+ */
+export async function runBoundedSimulatePacked(input: Buffer, circuit: ClassicCircuit): Promise<PackedExecution> {
   const directory = await mkdtemp(resolve(tmpdir(), 'spice-ts-corpus-f-ts-'));
   const inputPath = resolve(directory, 'fixture.cir');
   const circuitPath = resolve(directory, 'circuit.json');
@@ -320,14 +318,14 @@ export async function runBoundedSimulate(input: Buffer, circuit: ClassicCircuit)
           || `spice-ts child exited ${completed.status}`;
       return { status: 'failed', convergence: timedOut ? 'failed' : 'not-run', analyses: [], error: detail.slice(0, 1000) };
     }
-    return unpackExecution(deserialize(await readFile(outputPath)) as ReturnType<typeof packExecution>);
+    return deserialize(await readFile(outputPath)) as PackedExecution;
   } finally {
     await rm(directory, { recursive: true, force: true });
   }
 }
 
-function producedAnalyses(execution: EngineExecution): string[] {
-  return execution.analyses.map(analysis => `${analysis.type}:${analysis.series.grid.length}`).sort();
+function producedAnalyses(execution: PackedExecution): string[] {
+  return execution.analyses.map(analysis => `${analysis.type}:${analysis.grid.length}`).sort();
 }
 
 /** Which ngspice reference signals can be scored: exactly those spice-ts produced, per plot type. */
@@ -354,20 +352,23 @@ export function referenceSelection(execution: Pick<EngineExecution, 'analyses'>)
  */
 export async function runFixture(
   circuit: CorpusFCircuit,
-  reference: (input: Buffer, circuit: CorpusFCircuit, select: ReferenceSelection) => ReturnType<typeof runNgspice> = runNgspice,
+  reference: (input: Buffer, circuit: CorpusFCircuit, select: ReferenceSelection) => Promise<ReferenceRun<EngineExecution | PackedExecution>> = runNgspicePacked,
   options: { fineReference?: boolean } = {},
 ): Promise<FixtureOutcome> {
   const input = await readFile(resolve(circuit.localPath));
   if (sha256(input) !== circuit.sha256) throw new Error(`${circuit.id}: fixture SHA-256 mismatch`);
   // spice-ts runs first so a reference reader may keep only the signals that can be compared
   // (#694): compareExecutions scores common signals only, so the outcome is the same either way.
-  const spiceTs = { execution: await runBoundedSimulate(input, asClassic(circuit)) };
-  const ngspice = await reference(input, circuit, referenceSelection(spiceTs.execution));
+  // Both engines stay packed; the metric sees per-sample objects one bounded batch at a time (#839).
+  const spiceTs = { execution: await runBoundedSimulatePacked(input, asClassic(circuit)) };
+  const spiceTsView = lazyExecution(spiceTs.execution);
+  const ngspice = await reference(input, circuit, referenceSelection(spiceTsView));
+  const ngspiceExecution = asPacked(ngspice.execution);
   const spiceTsStatus: EngineStatus = spiceTs.execution.status;
   const comparisons = ngspice.status === 'success' && spiceTsStatus === 'success'
-    ? compareExecutions(spiceTs.execution, ngspice.execution)
+    ? compareInBatches(spiceTs.execution, ngspiceExecution)
     : [];
-  const { errors, missing } = normalizedSignalErrors(comparisons, pairedReferenceSeries(spiceTs.execution, ngspice.execution));
+  const { errors, missing } = normalizedSignalErrors(comparisons, pairedReferenceSeries(spiceTsView, lazyExecution(ngspiceExecution)));
   const worst = errors.reduce<typeof errors[number] | null>((current, error) =>
     current === null || error.normalized > current.normalized ? error : current, null);
   const spiceTsError = firstSpiceTsErrorLine(spiceTs.execution.error);
@@ -378,7 +379,7 @@ export async function runFixture(
     analyses: circuit.analyses,
     unmappedAnalyses: circuit.unmappedAnalyses,
     sameNameAs: circuit.sameNameAs,
-    ngspice: { status: ngspice.status, analyses: producedAnalyses(ngspice.execution) },
+    ngspice: { status: ngspice.status, analyses: producedAnalyses(ngspiceExecution) },
     spiceTs: { status: spiceTsStatus, analyses: producedAnalyses(spiceTs.execution) },
     comparedAnalyses: comparisons.length,
     comparedSignals: errors.length,
@@ -397,13 +398,16 @@ export async function runFixture(
   if (ngspice.firstErrorLine) result.ngspice.firstErrorLine = ngspice.firstErrorLine;
   if (ngspice.note) result.ngspice.note = ngspice.note;
   if (spiceTsError) result.spiceTs.firstErrorLine = spiceTsError;
-  if ((options.fineReference ?? reference === runNgspice) && comparisons.some(comparison => comparison.analysis === 'tran')) {
+  const defaultReference = reference === runNgspicePacked || reference === runNgspice;
+  if ((options.fineReference ?? defaultReference) && comparisons.some(comparison => comparison.analysis === 'tran')) {
+    // Lazy views: the fine column reads the default runs signal by signal, like the headline (#839).
     result.fineReference = await fineReferenceColumn({
       deck: input.toString('utf8'),
       fileName: basename(circuit.localPath),
-      spiceTs: spiceTs.execution,
-      ngspice: ngspice.execution,
+      spiceTs: spiceTsView,
+      ngspice: lazyExecution(ngspiceExecution),
       headline: comparisons,
+      budget: defaultBatchSamples(),
     });
   }
   return result;
@@ -745,7 +749,7 @@ if (process.argv[2] === SPICE_TS_CHILD_FLAG) {
   (async () => {
     const [inputPath, circuitPath, outputPath] = process.argv.slice(3);
     const circuit = JSON.parse(await readFile(circuitPath, 'utf8')) as ClassicCircuit;
-    await writeFile(outputPath, serialize(packExecution(await runCorpusFSpiceTs(await readFile(inputPath), circuit))));
+    await writeFile(outputPath, serialize(packEncoded(await runCorpusFSpiceTs(await readFile(inputPath), circuit, PACKED_SAMPLES))));
   })().catch(error => {
     console.error(error);
     process.exitCode = 1;

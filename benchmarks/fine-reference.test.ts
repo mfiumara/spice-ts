@@ -3,6 +3,7 @@ import { describe, it } from 'node:test';
 import { compareExecutions } from './aggregate-report.js';
 import type { EngineExecution } from './corpus/classic/report.js';
 import {
+  compareWithReference,
   FINE_REFERENCE_MAX_STEPS,
   fineReferenceColumn,
   fineReferenceDeck,
@@ -137,6 +138,31 @@ describe('fineReferenceColumn', () => {
     const [a, b] = [await score(shared), await score(offByUlp)];
     assert.ok(a < 1e-9, `shared-breakpoint candidate ${a}`);
     assert.ok(Math.abs(a - b) < 1e-9, `${a} vs ${b}`);
+  });
+
+  it('scores the same in any signal batch size, from a lazy (getter-backed) reference too (#839)', () => {
+    const reference = transient(range(0.001, 1), { 'v(40)': exact, 'v(2)': () => 2, 'v(3)': t => t * t, 'i(v1)': t => -t });
+    const candidate = transient(range(0.005, 1), { 'v(40)': exact, 'v(2)': () => 2.001, 'v(3)': t => t * t + 1e-4, 'i(v1)': t => -t });
+    const expected = compareWithReference(reference, candidate, 1e-9);
+    let reads = 0;
+    const lazy: EngineExecution = {
+      ...reference,
+      analyses: reference.analyses.map(analysis => {
+        const signals = {};
+        for (const [name, values] of Object.entries(analysis.series.signals)) {
+          Object.defineProperty(signals, name, { enumerable: true, get: () => { reads += 1; return values; } });
+        }
+        return { ...analysis, series: { grid: analysis.series.grid, signals } };
+      }),
+    };
+    // 1001 + 201 points per signal: budget 1 and 1300 measure one signal per batch, 2500 two.
+    for (const budget of [1, 1300, 2500, Number.POSITIVE_INFINITY]) {
+      reads = 0;
+      const actual = compareWithReference(lazy, candidate, 1e-9, budget);
+      assert.deepEqual(actual, expected, `budget ${budget}`);
+      assert.equal(JSON.stringify(actual), JSON.stringify(expected), `key order, budget ${budget}`);
+      assert.equal(reads, 4, `each reference signal is read once, budget ${budget}`);
+    }
   });
 
   it('records a failed fine run as unavailable and keeps the headline column', async () => {

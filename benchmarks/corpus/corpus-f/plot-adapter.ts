@@ -6,7 +6,16 @@
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import type { ComplexValue, SampleSeries } from '../../comparison-harness.js';
-import { type ClassicCircuit, type EngineAnalysis, type EngineExecution, runNativeSpiceTs } from '../classic/report.js';
+import {
+  type ClassicCircuit,
+  type EncodedExecution,
+  type EngineAnalysis,
+  type EngineExecution,
+  encodeAnalysis,
+  OBJECT_SAMPLES,
+  runNativeSpiceTsEncoded,
+  type SampleEncoding,
+} from '../classic/report.js';
 import { type ControlPlotType, isControlPlotType } from './lib.js';
 
 interface CoreComplex { real: number; imaginary: number }
@@ -94,7 +103,7 @@ export function controlPlotAnalyses(result: CoreResult, types: readonly ControlP
 }
 
 /** Same classification as the shared adapter's catch block (classic/report.ts runNativeSpiceTs). */
-function failedExecution(error: unknown): EngineExecution {
+function failedExecution(error: unknown): Omit<EngineExecution, 'analyses'> & { analyses: [] } {
   const message = error instanceof Error ? error.message : String(error);
   return {
     status: /unsupported|unknown|parse|expected|invalid/i.test(message) ? 'unsupported' : 'failed',
@@ -108,12 +117,19 @@ function failedExecution(error: unknown): EngineExecution {
  * corpus-f's spice-ts adapter: the shared adapter for op/dc/ac/tran/pz/noise/disto, plus `sp` and
  * `sens` plots. A deck declaring both kinds is simulated by the shared adapter first; only if that
  * succeeds is it simulated once more for the extra plots (same bytes, same `simulate()` call).
+ * `encoding` stores the samples (default: one ComplexValue each; the bounded child packs them, #839).
  */
-export async function runCorpusFSpiceTs(input: Buffer, circuit: ClassicCircuit): Promise<EngineExecution> {
+export async function runCorpusFSpiceTs(input: Buffer, circuit: ClassicCircuit): Promise<EngineExecution>;
+export async function runCorpusFSpiceTs<S>(input: Buffer, circuit: ClassicCircuit, encoding: SampleEncoding<S>): Promise<EncodedExecution<S>>;
+export async function runCorpusFSpiceTs<S>(
+  input: Buffer,
+  circuit: ClassicCircuit,
+  encoding = OBJECT_SAMPLES as unknown as SampleEncoding<S>,
+): Promise<EncodedExecution<S>> {
   const extra = (circuit.analyses as readonly string[]).filter(isControlPlotType);
-  if (extra.length === 0) return runNativeSpiceTs(input, circuit, { parseFirst: false });
+  if (extra.length === 0) return runNativeSpiceTsEncoded(input, circuit, encoding, { parseFirst: false });
   const classic = circuit.analyses.filter(type => !isControlPlotType(type));
-  const base = classic.length > 0 ? await runNativeSpiceTs(input, { ...circuit, analyses: classic }, { parseFirst: false }) : undefined;
+  const base = classic.length > 0 ? await runNativeSpiceTsEncoded(input, { ...circuit, analyses: classic }, encoding, { parseFirst: false }) : undefined;
   if (base && base.status !== 'success') return base;
   const text = input.toString('utf8');
   if (!Buffer.from(text, 'utf8').equals(input)) {
@@ -126,7 +142,7 @@ export async function runCorpusFSpiceTs(input: Buffer, circuit: ClassicCircuit):
   } catch (error) {
     return failedExecution(error);
   }
-  const analyses = [...base?.analyses ?? [], ...controlPlotAnalyses(result, extra)];
+  const analyses = [...base?.analyses ?? [], ...controlPlotAnalyses(result, extra).map(analysis => encodeAnalysis(analysis, encoding))];
   const missing = circuit.analyses.filter(type => !analyses.some(analysis => analysis.type === type));
   if (missing.length > 0) {
     return { status: 'unsupported', convergence: analyses.length > 0 ? 'converged' : 'not-run', analyses, error: `no spice-ts result for analyses: ${missing.join(', ')}` };
