@@ -155,7 +155,7 @@ export function validateSubcircuitCallCommas(raw: string, formals: Record<string
  * of every `name=value` on an X card in braces unless it is a number, so
  * numparam evaluates `R=R1` (or `R=RB*2`) as `R={R1}` against the visible
  * `.param` and subcircuit parameters (#788). Applied to the comment-free part
- * of an X card or one of its `+` continuation lines; numbers are left as-is.
+ * of a logical X card after continuation folding; numbers are left as-is.
  */
 export function bracedSubcircuitCallValues(line: string, commentStart: number): string {
   const card = line.slice(0, commentStart);

@@ -1,0 +1,16 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/packages/core
+
+ ✓ src/subcircuit-port-parens-864.test.ts (4 tests) 26ms
+ ✓ src/parser/x-call-continuation-797.test.ts (10 tests) 37ms
+ ✓ src/parser/subckt-param-order-857.test.ts (12 tests) 41ms
+ ✓ src/subcircuit-dynamic-params-888.test.ts (16 tests) 51ms
+ ✓ src/parser/comma-numparam-797.test.ts (23 tests) 68ms
+ ✓ src/subcircuit-params.test.ts (10 tests) 62ms
+
+ Test Files  6 passed (6)
+      Tests  75 passed (75)
+   Start at  00:11:09
+   Duration  1.26s (transform 4.74s, setup 0ms, import 6.07s, tests 286ms, environment 0ms)
+
+JUNIT report written to /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/packages/core/test-results.xml
