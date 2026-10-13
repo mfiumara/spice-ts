@@ -185,8 +185,10 @@ describe('initial-state semantics', () => {
       .tran 1u 2u UIC
     `);
 
-    expect(result.transient?.time[0]).toBe(0);
-    expect(result.transient?.voltage('out')[0]).toBeCloseTo(3, 9);
+    // ngspice-47 writes no t=0 row under UIC (#856); the first accepted step
+    // starts from the .ic value (RC = 1 ms, first step 1 ns).
+    expect(result.transient?.time[0]).toBeGreaterThan(0);
+    expect(result.transient?.voltage('out')[0]).toBeCloseTo(3, 4);
     expect(result.transient?.voltage('out').at(-1)).toBeLessThan(3);
   });
 
@@ -198,7 +200,7 @@ describe('initial-state semantics', () => {
       .tran 1u 2u UIC
     `);
 
-    expect(result.transient?.voltage('OUT')[0]).toBeCloseTo(3, 9);
+    expect(result.transient?.voltage('OUT')[0]).toBeCloseTo(3, 4);
   });
 
   it('resolves mixed-case .nodeset node names as Newton guesses', async () => {

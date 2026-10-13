@@ -80,14 +80,17 @@ describe('uic start from a non-solution seed (#560)', () => {
     const transient = (await simulate(DECK)).transient!;
     const time = Array.from(transient.time);
     const gib = transient.voltage('gib');
-    expect(gib[0]).toBe(-1);
+    // Like ngspice-47, no t=0 row under UIC (#856): the first row is the
+    // first accepted step from the seed.
+    expect(time[0]).toBeGreaterThan(0);
     let points = 0;
-    for (let index = 1; index < time.length && time[index]! <= 1e-8 * (1 + 1e-9); index++) {
+    for (let index = 0; index < time.length && time[index]! <= 1e-8 * (1 + 1e-9); index++) {
       points++;
       expect(Math.abs(gib[index]! - exact(time[index]!))).toBeLessThan(NGSPICE_FIRST_STEPS_ERROR);
       // The seed's 1 V jump on gib1 read as a slope by the LTE predictor cut
       // the second step from 1e-10 to 1.9e-12 s (14 points to 10 ns).
-      expect(time[index]! - time[index - 1]!).toBeGreaterThanOrEqual(1e-10 * (1 - 1e-9));
+      const previous = index === 0 ? 0 : time[index - 1]!;
+      expect(time[index]! - previous).toBeGreaterThanOrEqual(1e-10 * (1 - 1e-9));
     }
     expect(points).toBeLessThanOrEqual(NGSPICE_FIRST_STEPS.length);
   });
