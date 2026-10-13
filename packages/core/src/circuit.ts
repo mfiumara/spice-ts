@@ -66,6 +66,7 @@ import { evaluateExpression } from './parser/expression.js';
 import { parseNumber, tokenizeLine, tokenizeNetlist } from './parser/tokenizer.js';
 import { formatNumber } from './netlist-number.js';
 import { evaluateSubcircuitParams } from './subcircuit-params.js';
+import { substituteExpressions } from './parser/preprocessor.js';
 import { isPspiceSwitchModel, translatePspiceSwitchModel } from './parser/pspice-switch.js';
 import { parseModelCard } from './parser/model-parser.js';
 import { assertDeviceModelType, normalizeModelType } from './parser/model-type.js';
@@ -75,7 +76,7 @@ import {
 } from './parser/waveform-parser.js';
 import { invalidPassiveInstanceLine, parsePassiveElement } from './parser/passive-parser.js';
 import { locateSubcircuitCall, splitNestedSubcircuits } from './parser/subcircuit-syntax.js';
-import { parseResistorElement } from './parser/resistor-parser.js';
+import { assertSupportedResistorModel, parseResistorElement } from './parser/resistor-parser.js';
 import { parseZInstance } from './parser/z-device-parser.js';
 import { parseSwitchInstance } from './parser/switch-parser.js';
 import { DEVICE_GMIN } from './devices/device.js';
@@ -3260,13 +3261,22 @@ export class Circuit {
   private registerSubcircuitModels(
     instanceName: string,
     lines: readonly { tokens: string[]; lineNumber: number; raw: string }[],
+    params: Record<string, number>,
   ): Map<string, string> {
     const local = new Map<string, string>();
     for (const { tokens, lineNumber, raw } of lines) {
       if (tokens[0]?.toUpperCase() !== '.MODEL') continue;
-      let modelTokens = tokens;
-      if (isPspiceSwitchModel(tokens)) {
-        const translated = translatePspiceSwitchModel(raw, lineNumber);
+      // Substitute the complete card before tokenization/compatibility translation:
+      // braces can occur in name=value, name value, parentheses and continuations.
+      let evaluated: string;
+      try {
+        evaluated = substituteExpressions(raw, params);
+      } catch (error) {
+        throw new ParseError((error as Error).message, lineNumber, raw);
+      }
+      let modelTokens = tokenizeLine(evaluated);
+      if (isPspiceSwitchModel(modelTokens)) {
+        const translated = translatePspiceSwitchModel(evaluated, lineNumber);
         if (translated.kind === 'xspice') {
           const scoped = `${instanceName}:${translated.card.name}`;
           this._xspiceModels.set(scoped.toUpperCase(), { ...translated.card, name: scoped });
@@ -3276,8 +3286,9 @@ export class Circuit {
         }
         modelTokens = tokenizeLine(translated.raw);
       }
-      const modelParams = parseTransmissionLineModelCard(modelTokens, 0)
-        ?? parseModelCard(modelTokens, 0, message => this.addParseWarning(message));
+      assertSupportedResistorModel(modelTokens, lineNumber, raw);
+      const modelParams = parseTransmissionLineModelCard(modelTokens, lineNumber)
+        ?? parseModelCard(modelTokens, lineNumber, message => this.addParseWarning(message));
       const scoped = `${instanceName}:${modelParams.name}`;
       // Validate under the name written on the card, so errors name it (#544).
       const type = normalizeModelType(modelParams.name, modelParams.type);
@@ -3408,11 +3419,19 @@ export class Circuit {
     }));
     const { lines: parsedLines, definitions } = splitNestedSubcircuits(bodyLines);
 
+    // Model expressions read the same dependency-ordered instance scope as
+    // element expressions, including .params written below the .model (#882).
+    evaluateSubcircuitParams(
+      parsedLines.filter(({ tokens }) => tokens[0]?.toUpperCase() === '.PARAM')
+        .map(({ tokens, lineNumber, raw }) => ({ content: tokens.slice(1).join(' '), line: lineNumber, raw })),
+      localParams,
+    );
+
     // ngspice-47 subckt.c modtranslate: a .model card in the body becomes a
     // per-instance model `<instance>:<name>`, and the body's device cards (and
     // those of definitions nested in it) are rewritten to it. Lookup is
     // lexical: own body, then enclosing definition bodies, then top level (#854).
-    const localModels = this.registerSubcircuitModels(instanceName, parsedLines);
+    const localModels = this.registerSubcircuitModels(instanceName, parsedLines, localParams);
     const modelScopes = [localModels, ...definitionScopes.map(scope => scope.models)];
     const scopeModel = (name: string): string => {
       const upper = name.toUpperCase();
@@ -3425,14 +3444,6 @@ export class Circuit {
     const bodyScopes = definitions.size > 0
       ? [{ definitions, models: localModels, params: localParams }, ...definitionScopes]
       : definitionScopes;
-
-    // ngspice-47 inp_reorder_params_subckt/inp_sort_params: the body's .param
-    // cards are evaluated before its elements, in dependency order (#857).
-    evaluateSubcircuitParams(
-      parsedLines.filter(({ tokens }) => tokens[0]?.toUpperCase() === '.PARAM')
-        .map(({ tokens, lineNumber, raw }) => ({ content: tokens.slice(1).join(' '), line: lineNumber, raw })),
-      localParams,
-    );
 
     for (const { tokens, lineNumber, raw } of parsedLines) {
       guard?.checkpoint('compile:device');

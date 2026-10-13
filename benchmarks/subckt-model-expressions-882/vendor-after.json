@@ -1,0 +1,39 @@
+{
+  "engine": "packages/core/src/index.ts",
+  "root": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2c5a0698",
+  "receipts": [
+    {
+      "ticket": 784,
+      "name": "base_159.cir",
+      "sourceHash": "72f59a88a9ddb4a8dabf4905e7590fdf9d5a51b8c427c60cc5d9e4dd5a722da4",
+      "localHash": "7c7c5daec2efaf9feda3011fa14d8371fc996efe2e137b2a421e0fd436833d45",
+      "status": "unsupported",
+      "milliseconds": 21.543667000000028,
+      "error": "Parse error at line 545: Expected ')' in behavioral expression\n  bGSW+ COM SW+ i = (IF((V(OLN,COM)>10E-3 | V(OLP,COM)>10E-3),1,0))",
+      "maxError": null,
+      "rmsError": null
+    },
+    {
+      "ticket": 784,
+      "name": "variant_159.cir",
+      "sourceHash": "119bec477c8d001d63198fce478ac7f2dc08c4f3c86321d9a5efa9cf54f58723",
+      "localHash": "86451185ad7e104c0934544d56af22f52dd1c369b7a5d5c73651dba44c0c9c2f",
+      "status": "unsupported",
+      "milliseconds": 7.46795800000001,
+      "error": "Parse error at line 545: Expected ')' in behavioral expression\n  bGSW+ COM SW+ i = (IF((V(OLN,COM)>10E-3 | V(OLP,COM)>10E-3),1,0))",
+      "maxError": null,
+      "rmsError": null
+    },
+    {
+      "ticket": 738,
+      "name": "OP1177ARM_OPA818.cir",
+      "sourceHash": "a07c2f51f847e351c3668b4e8f6544ba82a42043b952e877b5abcfc264d748c8",
+      "localHash": "16943bbbc0837832b0001bf3f5774a245c67ae4e64903fd62831e129f27c2cea",
+      "status": "unsupported",
+      "milliseconds": 29.007708999999977,
+      "error": "Undefined variable 'TEMP'",
+      "maxError": null,
+      "rmsError": null
+    }
+  ]
+}
