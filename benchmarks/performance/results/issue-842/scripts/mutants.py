@@ -29,6 +29,13 @@ mutants = [
     ('cached gds read from gm', '        gds = loads[c + LOAD_GDS];\n', '        gds = loads[c + LOAD_GM];\n'),
     # Key records the limited instead of the previous junction voltages.
     ('key stores limited vbs/vbd', '        loads[c + LOAD_LAST_VBS] = inVbs;\n        loads[c + LOAD_LAST_VBD] = inVbd;\n', '        loads[c + LOAD_LAST_VBS] = lastVbs;\n        loads[c + LOAD_LAST_VBD] = lastVbd;\n'),
+    # A cache hit does not restore one fold-affected state value, so the next
+    # junction charge fold stacks on the previous one (PR #859 review).
+    ('hit keeps folded CD', '        state[r + STATE_CD] = loads[c + LOAD_CD];\n', ''),
+    ('hit keeps folded CBS', '        state[r + STATE_CBS] = loads[c + LOAD_CBS];\n', ''),
+    ('hit keeps folded CBD', '        state[r + STATE_CBD] = loads[c + LOAD_CBD];\n', ''),
+    ('hit keeps folded GBS', '        state[r + STATE_GBS] = gbs;\n', ''),
+    ('hit keeps folded GBD', '        state[r + STATE_GBD] = gbd;\n', ''),
 ]
 try:
     for label, old, new in mutants:

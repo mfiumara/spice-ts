@@ -145,10 +145,31 @@ folds starting from the previous fold's output. On `712611c1` (the reviewed code
 fail: `pass 2 M1 state[13]: 0.0004000000013866242 !== 0.00020000000138662412` and 31 stacked folds. With the fix
 both pass, together with all of `src/devices` (82 files, 989 tests) and `transient-iteration-invariant-710`.
 
-A 25-stage junction-cap chain (the test's deck, `.tran 0.2n 30n`, 213 points) gives the same waveform digest
+A 25-stage junction-cap chain (the inverter chain of the test's deck without its source followers,
+`.tran 0.2n 30n`, 213 points) gives the same waveform digest
 (`scripts/jcap-digest.mjs`: sha256 of the time points and all 29 voltage/current series, `59139967cfee9e83`) on
 base `c14f5ad0`, on the reviewed code and with the fix. The stacked values only reached the convergence test, and on this deck they did not change a
 Newton decision. That is luck, not a property, so the fix stands.
+
+### Test fix after the review of `ff07fc7c`
+
+The review of `ff07fc7c` found that deleting any one of the three STATE_CD/CBS/CBD restores on a hit passed the
+whole test file. The probe's charge history was never accepted, so every junction fold current was exactly 0 and
+a stacked CD/CBS/CBD fold changed nothing. The transient test only looked at GBS/GBD, and only counted a stack
+when both were stale. The simulator code is unchanged; the tests now:
+
+- accept the probe's charge history at a seed solution no pass uses, so its folds carry nonzero currents, and
+  assert that passes repeating a solution (cache hits) fold a nonzero current on both B-D (index 3) and B-S
+  (index 4);
+- track each folded value (state[7]/[8]/[9]/[13]/[14]) separately in the transient. A value counts as stacked
+  when the previous fold moved it, the load in between had the same inputs (the rest of the row is unchanged),
+  and the fold starts from exactly the previous fold's output. The rest-of-row condition excludes 2 coincidences
+  on the uncached base, where a one-ulp CD fold landed on the next load's new CD. Each stage of the test's chain
+  also drives a source follower whose source is not its bulk. Before that, every vbs was constant and STATE_CBS
+  never folded. Each value now folds at least 5,864 times in the run, with 0 stacks.
+
+Each of the five restore deletions is now caught by both tests. In the transient they leave 20 (CD), 5 (CBS),
+20 (CBD), 50 (GBS) and 50 (GBD) stacked folds. `mosfet.ts` from before the fix (`1fa757e0^`) still fails both.
 
 ### A/B re-measure after the fix
 
@@ -182,7 +203,8 @@ kept as measured on `eb173b51`.
   `Object.is`. It covers repeated solutions (hits), partial changes, signed zeros flipped on an otherwise
   identical solution, a gmin change and a temperature change on a repeated solution, sublists sharing one
   store, and per-device stamps at a different gate voltage between two batched loads.
-- `scripts/mutants.py` (`mutants.txt`): 8 of 9 mutants of the new code fail the test. The survivor drops the
+- `scripts/mutants.py` (`mutants.txt`): 13 of 14 mutants of the new code fail the test, including all five
+  deletions of a fold restore on a hit (CD, CBS, CBD, GBS, GBD). The survivor drops the
   constants-epoch flush; it is masked because `applyTemperature` also writes `lastVon`, which invalidates
   the row. The flush stays as the explicit guard.
 - `pnpm build`, `pnpm lint`, and targeted vitest (`src/devices`, 965 tests; MOS convergence, transient

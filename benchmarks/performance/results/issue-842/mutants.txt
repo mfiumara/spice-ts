@@ -7,3 +7,8 @@ KILLED   signed zeros compare equal
 KILLED   cached Ieq stores ID
 KILLED   cached gds read from gm
 KILLED   key stores limited vbs/vbd
+KILLED   hit keeps folded CD
+KILLED   hit keeps folded CBS
+KILLED   hit keeps folded CBD
+KILLED   hit keeps folded GBS
+KILLED   hit keeps folded GBD

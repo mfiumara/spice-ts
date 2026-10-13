@@ -46,12 +46,17 @@ R1 o3 0 10k
 .tran 0.1n 10n
 `;
 
-/** A `stages`-inverter CMOS chain with bulk junction capacitance on every device. */
+/**
+ * A `stages`-inverter CMOS chain with bulk junction capacitance on every
+ * device. Each stage also drives a source follower whose source is not tied
+ * to its bulk, so its B-S junction charge (and its STATE_CBS fold) moves too.
+ */
 function junctionCapChain(stages: number): string {
   const lines = ['* MOS1 chain with junction caps', 'VDD vdd 0 3.3', 'VIN n0 0 PULSE(0 3.3 1n 0.2n 0.2n 4n 10n)'];
   for (let i = 0; i < stages; i++) {
     lines.push(`MN${i} n${i + 1} n${i} 0 0 NM W=2u L=1u AD=4p AS=4p`);
     lines.push(`MP${i} n${i + 1} n${i} vdd vdd PM W=4u L=1u AD=8p AS=8p PD=12u PS=12u`);
+    lines.push(`MF${i} vdd n${i + 1} f${i} 0 NM W=1u L=1u AD=2p AS=2p`, `RF${i} f${i} 0 20k`);
   }
   lines.push(
     '.model NM NMOS(VTO=0.7 KP=110u CBD=100f CBS=100f)',
@@ -181,13 +186,19 @@ describe('MOS1 batched load cache (#842)', () => {
     // PR #859 review: stampTransientCharge folds the bulk junction charge
     // currents into STATE_CD/CBD/GBD/CBS/GBS after every load (mos1load.c).
     // A cache hit must restore the pre-fold load first, or the folds stack.
+    // The charge history is accepted at a seed solution none of the passes
+    // uses, so every junction fold below carries a nonzero charge current
+    // (with no accepted history the currents would all be 0 and a stacked
+    // STATE_CD/CBS/CBD fold would change nothing).
     const side = (): Side => {
       const compiled = parse(JUNCTION_CAP_NETLIST).compile();
       const assembler = new MNAAssembler(compiled.nodeCount, compiled.branchCount);
+      assembler.solution.set(Float64Array.from({ length: assembler.systemSize }, (_, i) => 0.2 + 0.45 * i));
       assembler.clear();
       const ctx = assembler.getStampContext();
       for (const device of compiled.devices) device.stamp(ctx);
       for (const device of compiled.devices) device.stampTransientCharge?.(ctx, { method: 'euler', dt: 1e-10 });
+      for (const device of compiled.devices) device.acceptTransientStep?.(ctx);
       assembler.lockTopology();
       const mosfets = compiled.devices.filter((device): device is MOSFET => device instanceof MOSFET);
       return { assembler, mosfets, gateOnly: compiled.nodeNames.indexOf('in') };
@@ -196,59 +207,94 @@ describe('MOS1 batched load cache (#842)', () => {
     const reference = side();
     const size = cached.assembler.systemSize;
     const tolerances = { reltol: 1e-3, abstol: 1e-12, vntol: 1e-6 };
-    let solution = Float64Array.from({ length: size }, (_, i) => 0.3 + 0.7 * i);
-    for (let pass = 0; pass < 24; pass++) {
-      // Repeat each solution a few times (cache hits), then move it.
-      if (pass % 4 === 0 && pass > 0) {
-        solution = Float64Array.from({ length: size }, (_, i) => 1.6 * Math.sin(0.9 * i + 0.7 * pass) + 1.2);
-      }
-      const integration = pass < 12
-        ? { method: 'euler' as const, dt: 1e-10 }
-        : { method: 'trapezoidal' as const, dt: 5e-11 };
-      for (const s of [cached, reference]) {
-        s.assembler.solution.set(solution);
-        s.assembler.clear();
-      }
-      const { assembler } = cached;
-      MOSFET.batchStamp(cached.mosfets, assembler.gValues, assembler.b, assembler.solution, assembler.stampIndex);
-      const cachedCtx = assembler.getStampContext();
-      for (const mosfet of cached.mosfets) mosfet.stampTransientCharge(cachedCtx, integration);
-      const referenceCtx = reference.assembler.getStampContext();
-      for (const mosfet of reference.mosfets) mosfet.stamp(referenceCtx);
-      for (const mosfet of reference.mosfets) mosfet.stampTransientCharge(referenceCtx, integration);
 
-      expectSameBits(assembler.gValues, reference.assembler.gValues, `pass ${pass} G`);
-      expectSameBits(assembler.b, reference.assembler.b, `pass ${pass} b`);
-      const moved = Float64Array.from(solution, value => value + 0.01);
-      for (let m = 0; m < cached.mosfets.length; m++) {
-        expectSameBits(stateRow(cached.mosfets[m]), stateRow(reference.mosfets[m]), `pass ${pass} M${m + 1} state`);
-        expect(cached.mosfets[m].convergenceTest(moved, tolerances))
-          .toBe(reference.mosfets[m].convergenceTest(moved, tolerances));
+    // Nonzero device-domain junction fold currents (index 3: B-D, 4: B-S)
+    // seen on the cached side in passes that repeat the previous solution.
+    const proto = MOSFET.prototype as unknown as {
+      foldJunctionChargeCurrent(this: MOSFET, index: number, current: number, conductance: number): void;
+    };
+    const fold = proto.foldJunctionChargeCurrent;
+    const cachedSet = new Set(cached.mosfets);
+    let repeatPass = false;
+    const nonzeroHitFolds = [0, 0, 0, 0, 0];
+    proto.foldJunctionChargeCurrent = function (this: MOSFET, index, current, conductance): void {
+      if (repeatPass && cachedSet.has(this) && current !== 0) nonzeroHitFolds[index]++;
+      fold.call(this, index, current, conductance);
+    };
+
+    let solution = Float64Array.from({ length: size }, (_, i) => 0.3 + 0.7 * i);
+    try {
+      for (let pass = 0; pass < 24; pass++) {
+        // Repeat each solution a few times (cache hits), then move it.
+        repeatPass = pass % 4 !== 0;
+        if (pass % 4 === 0 && pass > 0) {
+          solution = Float64Array.from({ length: size }, (_, i) => 1.6 * Math.sin(0.9 * i + 0.7 * pass) + 1.2);
+        }
+        const integration = pass < 12
+          ? { method: 'euler' as const, dt: 1e-10 }
+          : { method: 'trapezoidal' as const, dt: 5e-11 };
+        for (const s of [cached, reference]) {
+          s.assembler.solution.set(solution);
+          s.assembler.clear();
+        }
+        const { assembler } = cached;
+        MOSFET.batchStamp(cached.mosfets, assembler.gValues, assembler.b, assembler.solution, assembler.stampIndex);
+        const cachedCtx = assembler.getStampContext();
+        for (const mosfet of cached.mosfets) mosfet.stampTransientCharge(cachedCtx, integration);
+        const referenceCtx = reference.assembler.getStampContext();
+        for (const mosfet of reference.mosfets) mosfet.stamp(referenceCtx);
+        for (const mosfet of reference.mosfets) mosfet.stampTransientCharge(referenceCtx, integration);
+
+        expectSameBits(assembler.gValues, reference.assembler.gValues, `pass ${pass} G`);
+        expectSameBits(assembler.b, reference.assembler.b, `pass ${pass} b`);
+        const moved = Float64Array.from(solution, value => value + 0.01);
+        for (let m = 0; m < cached.mosfets.length; m++) {
+          expectSameBits(stateRow(cached.mosfets[m]), stateRow(reference.mosfets[m]), `pass ${pass} M${m + 1} state`);
+          expect(cached.mosfets[m].convergenceTest(moved, tolerances))
+            .toBe(reference.mosfets[m].convergenceTest(moved, tolerances));
+        }
       }
+    } finally {
+      proto.foldJunctionChargeCurrent = fold;
     }
+    expect(nonzeroHitFolds[3]).toBeGreaterThan(0);
+    expect(nonzeroHitFolds[4]).toBeGreaterThan(0);
   });
 
   it('never stacks a junction charge fold on the previous fold in a transient', async () => {
-    // A fold that starts from the state row the previous fold left behind (no
+    // A fold that starts from the state the previous fold left behind (no
     // load in between rewrote it) stacks: 13,250 of them in the PR #859
-    // review's 25-stage chain at 8b561cbb, 0 on the uncached base.
+    // review's 25-stage chain at 8b561cbb, 0 on the uncached base. Checked
+    // per folded value, STATE_CD/CBS/CBD (7/8/9) and STATE_GBS/GBD (13/14),
+    // so a cache hit that restores some of them but not all still counts.
     const proto = MOSFET.prototype as unknown as {
       stampTransientCharge(this: MOSFET, ...args: unknown[]): void;
     };
     const original = proto.stampTransientCharge;
-    const lastPostFold = new Map<MOSFET, number[]>();
-    let folds = 0;
-    let stacked = 0;
+    const FOLDED = [7, 8, 9, 13, 14] as const;
+    // The rest of the row (VBS, VBD, VON, VGS, VDS, MODE, GM, GDS, GMBS, ...):
+    // equal to the previous fold's row only when the load in between had the
+    // same inputs (a cache hit), which is the only place a fold can stack. On
+    // any other load a one-ulp fold can coincide with the new value.
+    const LOADED = [0, 1, 2, 3, 4, 5, 6, 10, 11, 12] as const;
+    const lastFold = new Map<MOSFET, { before: number[]; after: number[] }>();
+    const folds = new Map<number, number>(FOLDED.map(i => [i, 0]));
+    const stacked = new Map<number, number>(FOLDED.map(i => [i, 0]));
     proto.stampTransientCharge = function (this: MOSFET, ...args: unknown[]): void {
       const before = stateRow(this);
       original.apply(this, args);
       const after = stateRow(this);
-      if (after[13] !== before[13] || after[14] !== before[14]) {
-        folds++;
-        const previous = lastPostFold.get(this);
-        if (previous !== undefined && previous[13] === before[13] && previous[14] === before[14]) stacked++;
+      const previous = lastFold.get(this);
+      const sameLoad = previous !== undefined && LOADED.every(i => Object.is(before[i], previous.before[i]));
+      for (const i of FOLDED) {
+        if (after[i] === before[i]) continue;
+        folds.set(i, folds.get(i)! + 1);
+        // The previous fold moved this value and the same load left it there.
+        if (sameLoad && previous.after[i] !== previous.before[i] && before[i] === previous.after[i]) {
+          stacked.set(i, stacked.get(i)! + 1);
+        }
       }
-      lastPostFold.set(this, after);
+      lastFold.set(this, { before, after });
     };
     try {
       const result = await simulate(junctionCapChain(8));
@@ -256,8 +302,10 @@ describe('MOS1 batched load cache (#842)', () => {
     } finally {
       proto.stampTransientCharge = original;
     }
-    expect(folds).toBeGreaterThan(1000);
-    expect(stacked).toBe(0);
+    for (const i of FOLDED) {
+      expect(folds.get(i), `folds of state[${i}]`).toBeGreaterThan(1000);
+      expect(stacked.get(i), `stacked folds of state[${i}]`).toBe(0);
+    }
   });
 
   it('keeps an empty list a no-op', () => {
