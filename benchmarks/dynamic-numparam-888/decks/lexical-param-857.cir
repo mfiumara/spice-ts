@@ -1,0 +1,13 @@
+lexical-param-857
+.subckt outer in out gnd
+.subckt inner a b
+R1 a b {rp}
+.ends inner
+X1 in out inner
+R2 out gnd 1k
+.param rp=3k
+.ends outer
+V1 in 0 1
+X1 in o 0 outer
+.op
+.end

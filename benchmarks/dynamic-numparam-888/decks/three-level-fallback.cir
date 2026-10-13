@@ -1,0 +1,16 @@
+three-level-fallback
+.subckt leaf a b
+R1 a b {pp}
+.ends leaf
+.subckt middle a b
+X1 a b leaf
+.ends middle
+.subckt rc in out gnd
+.param pp=3k
+X1 in out middle
+R2 out gnd 1k
+.ends rc
+V1 in 0 1
+X1 in o 0 rc
+.op
+.end
