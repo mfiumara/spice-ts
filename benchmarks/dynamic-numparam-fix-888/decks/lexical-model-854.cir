@@ -1,0 +1,15 @@
+lexical-model-854
+.subckt A 1 2
+D1 1 2 DX
+.model DX D (IS=1e-14)
+.ends
+.subckt B 1 2
+D1 1 2 DX
+.model DX D (IS=1e-10 RS=10)
+.ends
+V1 a 0 0.6
+X1 a 0 A
+V2 b 0 0.6
+X2 b 0 B
+.op
+.end
