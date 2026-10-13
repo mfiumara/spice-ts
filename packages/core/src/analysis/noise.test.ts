@@ -527,8 +527,8 @@ describe('.noise analysis', () => {
       / 4.050963523633458e-10).toBeLessThan(2e-6);
   });
 
-  it('rejects a BJT noise temperature card with a stable parse error', () => {
-    expect(() => parse(`${bjtFixture}\n.temp 50`)).toThrow("Unsupported dot command: '.temp'");
+  it('retains the unsupported non-nominal BJT noise temperature diagnostic for .temp', async () => {
+    await expect(simulate(`${bjtFixture}\n.temp 50`)).rejects.toThrow(".options TEMP=50 is unsupported for '.noise'");
   });
 
   it('rejects .step combined with .noise instead of returning empty step results', () => {

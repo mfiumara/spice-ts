@@ -5,6 +5,7 @@ import {
 } from './numparam.js';
 import { NODE_DEPENDENT_EXPRESSION, substituteBehavioralParameters } from './behavioral-expression.js';
 import { parseNumber } from './tokenizer.js';
+import { tempDirective } from './temp-directive.js';
 import { translateMicroSign } from './micro-sign.js';
 import { bracedSubcircuitCallValues } from './subcircuit-syntax.js';
 import { CycleError, ParseError } from '../errors.js';
@@ -124,7 +125,9 @@ function* preprocessSteps(
   // parameter may be used before its definition and the last definition wins.
   const temperatureSweep = statements.find(isTemperatureSweep);
   const scopes = createParamScopes(
-    definitions, temperatureSweep, circuitTemperature(statements), state.functionScopes[0].functions,
+    definitions, temperatureSweep,
+    circuitTemperature(statements, definitions, state.functionScopes[0].functions, state.warnings),
+    state.functionScopes[0].functions,
   );
   // `.csparam` only feeds ngspice's control language; evaluate it so a bad
   // expression is still reported at its card.
@@ -304,9 +307,9 @@ function recordConditional(state: CollectState, keyword: string, trimmed: string
 function selectBranches(state: CollectState): number[] {
   if (state.blocks.length === 0) return [];
   const functions = state.functionScopes[0].functions;
-  // TEMPER in a condition reads the `.options TEMP` cards outside any `.if`.
+  // TEMPER in a condition reads temperature cards outside any `.if`.
   const unconditional = state.statements.filter(statement => statement.guard === undefined);
-  const scopes = createParamScopes(state.definitions, undefined, circuitTemperature(unconditional), functions);
+  const scopes = createParamScopes(state.definitions, undefined, circuitTemperature(unconditional, state.definitions, functions), functions);
   return state.blocks.map(block => {
     let selected = -1;
     for (const [index, branch] of block.branches.entries()) {
@@ -390,12 +393,16 @@ const OPTIONS_CARD = /^\s*\.opt(?:ion|ions)?(?:\s|$)/i;
 const OPTIONS_TEMP_FIELD = /(?:^|\s)temp\s*=\s*([^\s=]+)/gi;
 
 /**
- * Circuit temperature that TEMPER reads: the last `TEMP=` field of the
- * top-level `.options` cards (as the parser applies them), else 27 C. `.temp`
- * cards are rejected by the parser. An unparsable value is left to the
- * `.options` parser to report.
+ * ngspice-47 inp.c applies the last .temp after all .options TEMP fields.
+ * Resolve its independent numparam expressions before TEMPER substitution;
+ * normalize selected cards so the parser sees the same value and warnings.
  */
-function circuitTemperature(statements: PendingStatement[]): number {
+function circuitTemperature(
+  statements: PendingStatement[],
+  definitions: Map<string, ParamDefinition>,
+  functions: FunctionScope,
+  warnings?: { message: string; line: number }[],
+): number {
   let temperature = DEFAULT_CIRCUIT_TEMPERATURE_CELSIUS;
   for (const statement of statements) {
     if (statement.control || !OPTIONS_CARD.test(statement.text)) continue;
@@ -406,6 +413,34 @@ function circuitTemperature(statements: PendingStatement[]): number {
       } catch {
         // reported by the .options parser
       }
+    }
+  }
+  // ngspice selects the last card before interpreting its value. Earlier
+  // cards must not produce errors/warnings or reach the downstream parser.
+  let effective: PendingStatement | undefined;
+  for (const statement of statements) {
+    if (statement.control || !/^\s*\.temp(?=\s|=|$)/i.test(statement.text)) continue;
+    if (warnings !== undefined && effective !== undefined) {
+      effective.text = '';
+      effective.substitute = false;
+    }
+    effective = statement;
+  }
+  if (effective !== undefined) {
+    const statement = effective;
+    try {
+      const scopes = createParamScopes(definitions, undefined, temperature, functions, false);
+      const text = statement.text.slice(0, commentStart(statement.text));
+      const expanded = substituteExpressions(quotedExpressionsAsBraces(expandUserFunctions(text, functions)), scopes.params);
+      const card = tempDirective(expanded, statement.line)!;
+      temperature = card.value;
+      if (warnings !== undefined) {
+        statement.text = `.temp ${card.value}`;
+        if (card.warning) warnings.push({ message: card.warning, line: statement.line });
+      }
+    } catch (error) {
+      if (error instanceof ParseError) throw error;
+      throw toParseError(error, statement.line, statement.text);
     }
   }
   return temperature;
@@ -428,6 +463,7 @@ function createParamScopes(
   temperatureSweep: PendingStatement | undefined,
   temperature: number,
   functions: FunctionScope = new Map(),
+  allowTemper = true,
 ): ParamScopes {
   const values = new Map<string, number>();
   const resolving: string[] = [];
@@ -446,6 +482,7 @@ function createParamScopes(
   });
 
   function temper(): number {
+    if (!allowTemper) throw new Error('.temp expressions depending on TEMPER are not supported');
     if (temperatureSweep !== undefined) {
       throw new Error(
         'TEMPER-dependent expressions are not supported with a temperature sweep '

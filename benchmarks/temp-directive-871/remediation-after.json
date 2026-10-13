@@ -1,0 +1,455 @@
+{
+  "baseline": "986a3b5a2ddaedf1343f2ff4a7582edf51de937d",
+  "environment": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "release": "27.0.0",
+    "node": "v22.23.1"
+  },
+  "ngspiceVersion": "******\n** ngspice-47 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2026, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n******\n",
+  "timingPolicy": "Single-run wall times; ngspice includes process startup, spice-ts in-process. Not a speed claim.",
+  "rows": [
+    {
+      "name": "single",
+      "path": "benchmarks/temp-directive-871/controls/single.cir",
+      "sha256": "e49e173763485f750cfa5c19a572da587651e0af94bbbc34dbded698cb7e0f96",
+      "ngspice": {
+        "exit": 0,
+        "current": -0.0009285051067780873,
+        "temperature": 77,
+        "instanceVoltage": null,
+        "ms": 24.445708999999965
+      },
+      "spiceTs": {
+        "values": {
+          "current": -0.0009285051067780873,
+          "temperature": 77,
+          "instanceVoltage": null
+        },
+        "error": null,
+        "ms": 12.221750000000043
+      },
+      "comparedSignals": 2,
+      "maxRelativeError": 0,
+      "rmsRelativeError": 0,
+      "note": "OP scalar metric; full-precision ASCII raw reference."
+    },
+    {
+      "name": "before-options",
+      "path": "benchmarks/temp-directive-871/controls/before-options.cir",
+      "sha256": "41f6967d76188baf6427821fc9192024e13851d86f12f0e06481bfb05c8ff151",
+      "ngspice": {
+        "exit": 0,
+        "current": -0.0009285051067780873,
+        "temperature": 77,
+        "instanceVoltage": null,
+        "ms": 18.615790999999945
+      },
+      "spiceTs": {
+        "values": {
+          "current": -0.0009285051067780873,
+          "temperature": 77,
+          "instanceVoltage": null
+        },
+        "error": null,
+        "ms": 3.979832999999985
+      },
+      "comparedSignals": 2,
+      "maxRelativeError": 0,
+      "rmsRelativeError": 0,
+      "note": "OP scalar metric; full-precision ASCII raw reference."
+    },
+    {
+      "name": "after-options",
+      "path": "benchmarks/temp-directive-871/controls/after-options.cir",
+      "sha256": "0e913eb271c8dd9ad8db22c9ee87baff0b907b6c6d07381cf4eadc265c4d13a7",
+      "ngspice": {
+        "exit": 0,
+        "current": -0.0009285051067780873,
+        "temperature": 77,
+        "instanceVoltage": null,
+        "ms": 20.376833000000033
+      },
+      "spiceTs": {
+        "values": {
+          "current": -0.0009285051067780873,
+          "temperature": 77,
+          "instanceVoltage": null
+        },
+        "error": null,
+        "ms": 3.2742090000000417
+      },
+      "comparedSignals": 2,
+      "maxRelativeError": 0,
+      "rmsRelativeError": 0,
+      "note": "OP scalar metric; full-precision ASCII raw reference."
+    },
+    {
+      "name": "repeated",
+      "path": "benchmarks/temp-directive-871/controls/repeated.cir",
+      "sha256": "1100d1a3df08e9ebbfe9490d044516f58e1ca05885757eb31cb5481e8a7992d1",
+      "ngspice": {
+        "exit": 0,
+        "current": -0.0008873114463176575,
+        "temperature": 127,
+        "instanceVoltage": null,
+        "ms": 28.203209000000015
+      },
+      "spiceTs": {
+        "values": {
+          "current": -0.0008873114463176575,
+          "temperature": 127,
+          "instanceVoltage": null
+        },
+        "error": null,
+        "ms": 1.400209000000018
+      },
+      "comparedSignals": 2,
+      "maxRelativeError": 0,
+      "rmsRelativeError": 0,
+      "note": "OP scalar metric; full-precision ASCII raw reference."
+    },
+    {
+      "name": "multiple",
+      "path": "benchmarks/temp-directive-871/controls/multiple.cir",
+      "sha256": "8f4b837cdad08ef4984f33910adb4bb514e16e7c31418c0c3bbae8fe0e282bc5",
+      "ngspice": {
+        "exit": 0,
+        "current": -0.0009737098344693282,
+        "temperature": 27,
+        "instanceVoltage": null,
+        "ms": 17.298291000000063
+      },
+      "spiceTs": {
+        "values": null,
+        "error": "ParseError: Parse error at line 6: Unsupported multi-temperature .temp card: supply one temperature; ngspice-47 warns and falls back to 27 C for multiple values\n  .temp 77 127",
+        "ms": 0.4264579999999114
+      },
+      "comparedSignals": 0,
+      "maxRelativeError": null,
+      "rmsRelativeError": null,
+      "note": "Native ngspice warns/falls back27; spice-ts explicitly rejects unsupported multi-temperature cards."
+    },
+    {
+      "name": "empty",
+      "path": "benchmarks/temp-directive-871/controls/empty.cir",
+      "sha256": "9d2a886175ddf798df340f9d5d2a5a27dad05bc528306f7f1e6db450bf726bf8",
+      "ngspice": {
+        "exit": 0,
+        "current": -0.001,
+        "temperature": 0,
+        "instanceVoltage": null,
+        "ms": 17.67700000000002
+      },
+      "spiceTs": {
+        "values": {
+          "current": -0.001,
+          "temperature": 0,
+          "instanceVoltage": null
+        },
+        "error": null,
+        "ms": 1.299792000000025
+      },
+      "comparedSignals": 2,
+      "maxRelativeError": 0,
+      "rmsRelativeError": 0,
+      "note": "OP scalar metric; full-precision ASCII raw reference."
+    },
+    {
+      "name": "invalid",
+      "path": "benchmarks/temp-directive-871/controls/invalid.cir",
+      "sha256": "9622c36e4814083487706f2cd5135413aa3e5ce1578a93e512a5ab94c71217ec",
+      "ngspice": {
+        "exit": 0,
+        "current": -0.0009737098344693282,
+        "temperature": 27,
+        "instanceVoltage": null,
+        "ms": 16.61791699999992
+      },
+      "spiceTs": {
+        "values": {
+          "current": -0.0009737098344693282,
+          "temperature": 27,
+          "instanceVoltage": null
+        },
+        "error": null,
+        "ms": 0.8333330000000387
+      },
+      "comparedSignals": 2,
+      "maxRelativeError": 0,
+      "rmsRelativeError": 0,
+      "note": "OP scalar metric; full-precision ASCII raw reference."
+    },
+    {
+      "name": "suffix",
+      "path": "benchmarks/temp-directive-871/controls/suffix.cir",
+      "sha256": "dbc1f43b971a06259ecf94b18c89ea8dfabc520fc178c87fe53a1e355a7fbd1e",
+      "ngspice": {
+        "exit": 0,
+        "current": -0.0009737098344693282,
+        "temperature": 27,
+        "instanceVoltage": null,
+        "ms": 24.003541999999925
+      },
+      "spiceTs": {
+        "values": {
+          "current": -0.0009737098344693282,
+          "temperature": 27,
+          "instanceVoltage": null
+        },
+        "error": null,
+        "ms": 1.7582499999999754
+      },
+      "comparedSignals": 2,
+      "maxRelativeError": 0,
+      "rmsRelativeError": 0,
+      "note": "OP scalar metric; full-precision ASCII raw reference."
+    },
+    {
+      "name": "equals",
+      "path": "benchmarks/temp-directive-871/controls/equals.cir",
+      "sha256": "b4066c3f31a99f7c9778e0a96b27a2846516a3809d8a81f7b3ddfbaef57d3b43",
+      "ngspice": {
+        "exit": 0,
+        "current": -0.0009285051067780873,
+        "temperature": 77,
+        "instanceVoltage": null,
+        "ms": 22.956249999999955
+      },
+      "spiceTs": {
+        "values": {
+          "current": -0.0009285051067780873,
+          "temperature": 77,
+          "instanceVoltage": null
+        },
+        "error": null,
+        "ms": 1.4214170000000195
+      },
+      "comparedSignals": 2,
+      "maxRelativeError": 0,
+      "rmsRelativeError": 0,
+      "note": "OP scalar metric; full-precision ASCII raw reference."
+    },
+    {
+      "name": "spaced-equals",
+      "path": "benchmarks/temp-directive-871/controls/spaced-equals.cir",
+      "sha256": "aeb7ab374cfa5adc89377d24f39b9c2f4a7d9cd822f75f7ff7009ddd9328b2e2",
+      "ngspice": {
+        "exit": 0,
+        "current": -0.0009285051067780873,
+        "temperature": 77,
+        "instanceVoltage": null,
+        "ms": 23.10854100000006
+      },
+      "spiceTs": {
+        "values": {
+          "current": -0.0009285051067780873,
+          "temperature": 77,
+          "instanceVoltage": null
+        },
+        "error": null,
+        "ms": 3.0421250000000555
+      },
+      "comparedSignals": 2,
+      "maxRelativeError": 0,
+      "rmsRelativeError": 0,
+      "note": "OP scalar metric; full-precision ASCII raw reference."
+    },
+    {
+      "name": "expression",
+      "path": "benchmarks/temp-directive-871/controls/expression.cir",
+      "sha256": "c5e6375b9ad0b4a720c554411fe8c46e18cd99a685a4f14fc4282ef6fdee809a",
+      "ngspice": {
+        "exit": 0,
+        "current": -0.0009285051067780873,
+        "temperature": 77,
+        "instanceVoltage": null,
+        "ms": 23.181042000000048
+      },
+      "spiceTs": {
+        "values": {
+          "current": -0.0009285051067780873,
+          "temperature": 77,
+          "instanceVoltage": null
+        },
+        "error": null,
+        "ms": 1.0649999999999409
+      },
+      "comparedSignals": 2,
+      "maxRelativeError": 0,
+      "rmsRelativeError": 0,
+      "note": "OP scalar metric; full-precision ASCII raw reference."
+    },
+    {
+      "name": "quote",
+      "path": "benchmarks/temp-directive-871/controls/quote.cir",
+      "sha256": "ecd450876b73e1dce06b9666bc69b8663bf4647aea92a5a4cdb1b8e5606b0d05",
+      "ngspice": {
+        "exit": 0,
+        "current": -0.0009285051067780873,
+        "temperature": 77,
+        "instanceVoltage": null,
+        "ms": 18.174291999999923
+      },
+      "spiceTs": {
+        "values": {
+          "current": -0.0009285051067780873,
+          "temperature": 77,
+          "instanceVoltage": null
+        },
+        "error": null,
+        "ms": 1.0347499999999172
+      },
+      "comparedSignals": 2,
+      "maxRelativeError": 0,
+      "rmsRelativeError": 0,
+      "note": "OP scalar metric; full-precision ASCII raw reference."
+    },
+    {
+      "name": "device",
+      "path": "benchmarks/temp-directive-871/controls/device.cir",
+      "sha256": "422b59fd2bc29ef24a9d20efbfcb1e53351cedd2f7b5e4ae99e8000710e30b9f",
+      "ngspice": {
+        "exit": 0,
+        "current": -0.0009090909090909091,
+        "temperature": 127,
+        "instanceVoltage": 1,
+        "ms": 16.536000000000058
+      },
+      "spiceTs": {
+        "values": {
+          "current": -0.0009090909090909091,
+          "temperature": 127,
+          "instanceVoltage": 1
+        },
+        "error": null,
+        "ms": 1.0090000000000146
+      },
+      "comparedSignals": 3,
+      "maxRelativeError": 0,
+      "rmsRelativeError": 0,
+      "note": "OP scalar metric; full-precision ASCII raw reference."
+    },
+    {
+      "name": "overridden-multiple",
+      "path": "benchmarks/temp-directive-871/controls/overridden-multiple.cir",
+      "sha256": "03d1f93667ad71b1bafd87e272585820e02f89e251107062d04ec6562365f7a0",
+      "ngspice": {
+        "exit": 0,
+        "current": -0.0009285051067780873,
+        "temperature": 77,
+        "instanceVoltage": null,
+        "ms": 29.754583000000025
+      },
+      "spiceTs": {
+        "values": {
+          "current": -0.0009285051067780873,
+          "temperature": 77,
+          "instanceVoltage": null
+        },
+        "error": null,
+        "ms": 0.8867910000000165
+      },
+      "comparedSignals": 2,
+      "maxRelativeError": 0,
+      "rmsRelativeError": 0,
+      "note": "OP scalar metric; full-precision ASCII raw reference."
+    },
+    {
+      "name": "overridden-nonphysical",
+      "path": "benchmarks/temp-directive-871/controls/overridden-nonphysical.cir",
+      "sha256": "efcccb5f3f59a0bc9057d50508d66abb9358f8da66b9618bbe48fdfeb51fda12",
+      "ngspice": {
+        "exit": 0,
+        "current": -0.0009285051067780873,
+        "temperature": 77,
+        "instanceVoltage": null,
+        "ms": 25.417042000000038
+      },
+      "spiceTs": {
+        "values": {
+          "current": -0.0009285051067780873,
+          "temperature": 77,
+          "instanceVoltage": null
+        },
+        "error": null,
+        "ms": 0.8696670000000495
+      },
+      "comparedSignals": 2,
+      "maxRelativeError": 0,
+      "rmsRelativeError": 0,
+      "note": "OP scalar metric; full-precision ASCII raw reference."
+    },
+    {
+      "name": "temper_capture_cards",
+      "path": "benchmarks/corpus/ngspice-bugs/tickets/871/temper_capture_cards.cir",
+      "sha256": "3854db1e2370c499745ac56e1ee1971b4ca2b98f85cd9c0c28506969f1b438f4",
+      "ngspice": {
+        "exit": 0,
+        "current": -0.01785714285714286,
+        "temperature": null,
+        "instanceVoltage": null,
+        "ms": 32.12991699999998
+      },
+      "spiceTs": {
+        "values": {
+          "current": -0.16666666666666666,
+          "temperature": null,
+          "instanceVoltage": null
+        },
+        "error": null,
+        "ms": 1.384916999999973
+      },
+      "comparedSignals": 1,
+      "maxRelativeError": 8.333333333333332,
+      "rmsRelativeError": 8.333333333333332,
+      "note": "Formal-k shadowing differs deliberately: spice-ts 1/6 A vs ngspice47 1/56 A; not fixed by .temp."
+    },
+    {
+      "name": "temper_capture_original",
+      "path": "benchmarks/corpus/ngspice-bugs/fetched/871/temper_capture.cir",
+      "sha256": "adc2a088a75c677e2d932b28a3b5c6252dc0fa883d757ed75ce37637a565c7f9",
+      "ngspice": {
+        "exit": 0,
+        "current": -0.01785714,
+        "temperature": null,
+        "instanceVoltage": null,
+        "ms": 16.40874999999994
+      },
+      "spiceTs": {
+        "values": {
+          "current": -0.16666666666666666,
+          "temperature": null,
+          "instanceVoltage": null
+        },
+        "error": null,
+        "ms": 1.5114159999999401
+      },
+      "comparedSignals": 1,
+      "maxRelativeError": 8.333334826666905,
+      "rmsRelativeError": 8.333334826666905,
+      "note": "Formal-k shadowing differs deliberately: spice-ts 1/6 A vs ngspice47 1/56 A; not fixed by .temp."
+    },
+    {
+      "name": "vbic99_dc",
+      "path": "benchmarks/corpus/corpus-f/fixtures/examples/vbic/vbic99_dc.sp",
+      "sha256": "8ba2c99e6946ac9033a8e5b8abf41812291839efa2c9536026a22ba546ca7018",
+      "ngspice": {
+        "exit": 0,
+        "current": null,
+        "temperature": null,
+        "instanceVoltage": null,
+        "ms": 17.842917000000057
+      },
+      "spiceTs": {
+        "values": null,
+        "error": "InvalidCircuitError: BJT 'q1' has a thermal node, but only VBIC (LEVEL=4) instances accept a fifth terminal",
+        "ms": 1.617917000000034
+      },
+      "comparedSignals": 0,
+      "maxRelativeError": null,
+      "rmsRelativeError": null,
+      "note": "Unchanged control-block deck: ngspice exports no aligned vectors; plot errors retained in log, metrics null."
+    }
+  ]
+}

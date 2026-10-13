@@ -247,7 +247,7 @@ R2 2 0 1k
   });
 
   it.each([
-    '.temp 27\n.op',
+    '.temp 27 77\n.op',
     '.control\nspec 10 1000 10 v(1)\n.endc',
   ])('rejects unsupported semantic/control directives: %s', netlist => {
     expect(() => parse(netlist)).toThrow();

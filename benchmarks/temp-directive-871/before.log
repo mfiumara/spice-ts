@@ -1,0 +1,98 @@
+[
+  {
+    name: 'single',
+    error: "ParseError: Parse error at line 6: Unsupported dot command: '.temp'\n" +
+      '  .temp 77',
+    relative: null
+  },
+  {
+    name: 'before-options',
+    error: "ParseError: Parse error at line 6: Unsupported dot command: '.temp'\n" +
+      '  .temp 77',
+    relative: null
+  },
+  {
+    name: 'after-options',
+    error: "ParseError: Parse error at line 7: Unsupported dot command: '.temp'\n" +
+      '  .temp 77',
+    relative: null
+  },
+  {
+    name: 'repeated',
+    error: "ParseError: Parse error at line 6: Unsupported dot command: '.temp'\n" +
+      '  .temp 77',
+    relative: null
+  },
+  {
+    name: 'multiple',
+    error: "ParseError: Parse error at line 6: Unsupported dot command: '.temp'\n" +
+      '  .temp 77 127',
+    relative: null
+  },
+  {
+    name: 'empty',
+    error: "ParseError: Parse error at line 6: Unsupported dot command: '.temp'\n" +
+      '  .temp',
+    relative: null
+  },
+  {
+    name: 'invalid',
+    error: "ParseError: Parse error at line 6: Unsupported dot command: '.temp'\n" +
+      '  .temp abc',
+    relative: null
+  },
+  {
+    name: 'suffix',
+    error: "ParseError: Parse error at line 6: Unsupported dot command: '.temp'\n" +
+      '  .temp 77C',
+    relative: null
+  },
+  {
+    name: 'equals',
+    error: "ParseError: Parse error at line 6: Unsupported dot command: '.temp=77'\n" +
+      '  .temp=77',
+    relative: null
+  },
+  {
+    name: 'spaced-equals',
+    error: "ParseError: Parse error at line 6: Unsupported dot command: '.temp=77'\n" +
+      '  .temp=77',
+    relative: null
+  },
+  {
+    name: 'expression',
+    error: "ParseError: Parse error at line 7: Unsupported dot command: '.temp'\n" +
+      '  .temp 77',
+    relative: null
+  },
+  {
+    name: 'quote',
+    error: "ParseError: Parse error at line 6: Unsupported dot command: '.temp'\n" +
+      '  .temp 77',
+    relative: null
+  },
+  {
+    name: 'device',
+    error: "ParseError: Parse error at line 8: Unsupported dot command: '.temp'\n" +
+      '  .temp 127',
+    relative: null
+  },
+  {
+    name: 'temper_capture_cards',
+    error: "ParseError: Parse error at line 3: Unsupported dot command: '.temp'\n" +
+      '  .temp 27',
+    relative: null
+  },
+  {
+    name: 'temper_capture_original',
+    error: "ParseError: Parse error at line 3: Unsupported dot command: '.temp'\n" +
+      '  .temp 27',
+    relative: null
+  },
+  {
+    name: 'vbic99_dc',
+    error: "ParseError: Parse error at line 40: Unsupported dot command: '.temp'\n" +
+      '  .temp 27',
+    relative: null
+  }
+]
