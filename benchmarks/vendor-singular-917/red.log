@@ -1,0 +1,50 @@
+TAP version 13
+# Subtest: MIT floating RC reduction preserves DC-before-AC loss (RED mode expects success)
+not ok 1 - MIT floating RC reduction preserves DC-before-AC loss (RED mode expects success)
+  ---
+  duration_ms: 10.464167
+  type: 'test'
+  location: '/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8ceea56e/benchmarks/vendor-singular-917/diagnosis.test.mts:1:487'
+  failureType: 'testCodeFailure'
+  error: 'Singular matrix: zero pivot at matrix column 1 (nodes: b)'
+  code: 'ERR_TEST_FAILURE'
+  name: 'SingularMatrixError'
+  stack: |-
+    Function.atPivot (/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8ceea56e/packages/core/src/errors.ts:78:12)
+    GilbertPeierlsSolver.factorize (/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8ceea56e/packages/core/src/solver/gilbert-peierls.ts:476:35)
+    newtonRaphson (/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8ceea56e/packages/core/src/analysis/newton-raphson.ts:135:12)
+    solveOperatingPoint (/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8ceea56e/packages/core/src/analysis/dc.ts:54:7)
+    solveDCOperatingPoint (/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8ceea56e/packages/core/src/analysis/dc.ts:94:5)
+    solveCompiledAnalyses (/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8ceea56e/packages/core/src/simulate.ts:236:38)
+    simulate (/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8ceea56e/packages/core/src/simulate.ts:166:18)
+    async TestContext.<anonymous> (/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8ceea56e/benchmarks/vendor-singular-917/diagnosis.test.mts:15:20)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: self-written floating resistor matrix has null vector and correctly fails factorization
+ok 2 - self-written floating resistor matrix has null vector and correctly fails factorization
+  ---
+  duration_ms: 0.42175
+  type: 'test'
+  ...
+# Subtest: archived original rows prove same floating component, not merely same error label
+ok 3 - archived original rows prove same floating component, not merely same error label
+  ---
+  duration_ms: 0.596958
+  type: 'test'
+  ...
+# Subtest: references use same native input and include hashes; preserve recovery warnings
+ok 4 - references use same native input and include hashes; preserve recovery warnings
+  ---
+  duration_ms: 0.37975
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 3
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 200.281333

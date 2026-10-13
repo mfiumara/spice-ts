@@ -1,0 +1,8 @@
+Self-written MIT floating passive DC component, issue 917
+* SPDX-License-Identifier: MIT
+Vdrive in 0 DC 1 AC 1
+Cleft in a 1u
+Rlink a b 200
+Cright b 0 2u
+.ac dec 10 1 1k
+.end

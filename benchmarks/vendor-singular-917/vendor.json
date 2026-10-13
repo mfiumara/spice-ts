@@ -1,0 +1,39 @@
+{
+  "engine": "packages/core/src/index.ts",
+  "root": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8ceea56e",
+  "receipts": [
+    {
+      "ticket": 784,
+      "name": "base_159.cir",
+      "sourceHash": "72f59a88a9ddb4a8dabf4905e7590fdf9d5a51b8c427c60cc5d9e4dd5a722da4",
+      "localHash": "7c4a2e2a4587c98404c9fdbf2ef5a124ea25b9403417c7bd679fe7692133b21a",
+      "status": "unsupported",
+      "milliseconds": 175.58616699999993,
+      "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)",
+      "maxError": null,
+      "rmsError": null
+    },
+    {
+      "ticket": 784,
+      "name": "variant_159.cir",
+      "sourceHash": "119bec477c8d001d63198fce478ac7f2dc08c4f3c86321d9a5efa9cf54f58723",
+      "localHash": "7c6212a8c15c56e652d742789c498ceeb4e875149fbc95d9a7eb2f78d3b836b2",
+      "status": "unsupported",
+      "milliseconds": 132.950333,
+      "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)",
+      "maxError": null,
+      "rmsError": null
+    },
+    {
+      "ticket": 738,
+      "name": "OP1177ARM_OPA818.cir",
+      "sourceHash": "a07c2f51f847e351c3668b4e8f6544ba82a42043b952e877b5abcfc264d748c8",
+      "localHash": "788c2b870a0a4770be0bcf8481f082980776fee02be9d5ac381134a6f8f34139",
+      "status": "unsupported",
+      "milliseconds": 64.62608299999988,
+      "error": "Undefined variable 'TEMP'",
+      "maxError": null,
+      "rmsError": null
+    }
+  ]
+}

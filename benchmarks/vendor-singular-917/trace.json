@@ -1,0 +1,2774 @@
+[
+  {
+    "name": "base_159.cir",
+    "localHash": "7c4a2e2a4587c98404c9fdbf2ef5a124ea25b9403417c7bd679fe7692133b21a",
+    "sourceHash": "72f59a88a9ddb4a8dabf4905e7590fdf9d5a51b8c427c60cc5d9e4dd5a722da4",
+    "includes": {
+      "AD620.mod": "99c3a83c8e4a44fc1c2e5b878a061e03f959e223fa646bb849589e68f603f395",
+      "lmx58_lm2904.lib": "467a3e573420d1f5a21fab57b76be0e13073e854f609a73459a191958e314726",
+      "UA555.mod": "e4b70989b2ca1cd9e3177bc4d35224098360461a2b6901a688542e2d1af6d7bf"
+    },
+    "nodeCount": 254,
+    "branchCount": 57,
+    "deviceTypes": {
+      "Resistor": 213,
+      "Inductor": 7,
+      "Capacitor": 44,
+      "VoltageSource": 29,
+      "CurrentSource": 13,
+      "BJT": 28,
+      "Diode": 22,
+      "VCVS": 13,
+      "BehavioralVoltageSource": 5,
+      "VCCS": 28,
+      "BehavioralCurrentSource": 19,
+      "CCCS": 2,
+      "XspiceDevice": 5,
+      "CCVS": 3
+    },
+    "pivotIdentity": "Net-_C1215-Pad1_",
+    "attached": [
+      {
+        "name": "C1215",
+        "type": "Capacitor",
+        "nodes": [
+          "Net-_C1215-Pad1_",
+          "Net-_C1215-Pad2_"
+        ],
+        "branches": []
+      },
+      {
+        "name": "R1292",
+        "type": "Resistor",
+        "nodes": [
+          "Net-_C1214-Pad2_",
+          "Net-_C1215-Pad1_"
+        ],
+        "branches": []
+      },
+      {
+        "name": "C1214",
+        "type": "Capacitor",
+        "nodes": [
+          "Net-_C1214-Pad1_",
+          "Net-_C1214-Pad2_"
+        ],
+        "branches": []
+      }
+    ],
+    "milliseconds": 39.172083999999984,
+    "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)",
+    "stack": "SingularMatrixError: Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)\n    at Function.atPivot (/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8ceea56e/packages/core/src/errors.ts:78:12)\n    at GilbertPeierlsSolver.factorize (/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8ceea56e/packages/core/src/solver/gilbert-peierls.ts:476:35)\n    at GilbertPeierlsSolver.GilbertPeierlsSolver.factorize (/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8ceea56e/benchmarks/vendor-singular-917/trace.mts:43:31)\n    at newtonRaphson (/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8ceea56e/packages/core/src/analysis/newton-raphson.ts:135:12)\n    at solveOperatingPoint (/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8ceea56e/packages/core/src/analysis/dc.ts:54:7)\n    at solveDCOperatingPoint (/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8ceea56e/packages/core/src/analysis/dc.ts:94:5)\n    at solveCompiledAnalyses (/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8ceea56e/packages/core/src/simulate.ts:236:38)\n    at simulate (/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8ceea56e/packages/core/src/simulate.ts:166:18)\n    at async <anonymous> (/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8ceea56e/benchmarks/vendor-singular-917/trace.mts:65:11)",
+    "factorAttempts": 33,
+    "factors": [
+      {
+        "size": 311,
+        "nnz": 1160,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 311,
+        "nnz": 1160,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.006050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.006050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.006050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 229 (nodes: <expanded behavioral node redacted>)"
+      },
+      {
+        "size": 311,
+        "nnz": 1160,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.010673918302408542
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.010673918302408542
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.010673918302408542
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 229 (nodes: <expanded behavioral node redacted>)"
+      },
+      {
+        "size": 311,
+        "nnz": 1160,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.013710148284105703
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.013710148284105703
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.013710148284105703
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 229 (nodes: <expanded behavioral node redacted>)"
+      },
+      {
+        "size": 311,
+        "nnz": 1160,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.014697121249617043
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.014697121249617043
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.014697121249617043
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 229 (nodes: <expanded behavioral node redacted>)"
+      },
+      {
+        "size": 311,
+        "nnz": 1160,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.01496096361299366
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.01496096361299366
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.01496096361299366
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 229 (nodes: <expanded behavioral node redacted>)"
+      },
+      {
+        "size": 311,
+        "nnz": 1160,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.015028044130437786
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.015028044130437786
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.015028044130437786
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 229 (nodes: <expanded behavioral node redacted>)"
+      },
+      {
+        "size": 311,
+        "nnz": 1160,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.015044885084660582
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.015044885084660582
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.015044885084660582
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 229 (nodes: <expanded behavioral node redacted>)"
+      },
+      {
+        "size": 311,
+        "nnz": 1160,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.015049099762846675
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.015049099762846675
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.015049099762846675
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 229 (nodes: <expanded behavioral node redacted>)"
+      },
+      {
+        "size": 311,
+        "nnz": 1160,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.015050153710074874
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.015050153710074874
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.015050153710074874
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 229 (nodes: <expanded behavioral node redacted>)"
+      },
+      {
+        "size": 311,
+        "nnz": 1160,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 0.001,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 311,
+        "nnz": 1160,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 0.005623413251903491,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 311,
+        "nnz": 1160,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 0.008659643233600653,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 311,
+        "nnz": 1160,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 0.009646616199111991,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 311,
+        "nnz": 1160,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 0.009910458562488608,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 311,
+        "nnz": 1160,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 0.009977539079932736,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 311,
+        "nnz": 1160,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 0.009994380034155531,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 311,
+        "nnz": 1160,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 0.009998594712341624,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 311,
+        "nnz": 1160,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 0.009999648659569824,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 311,
+        "nnz": 1160,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 1.8,
+        "sourceScale": 0.01,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 311,
+        "nnz": 1160,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 3.6,
+        "sourceScale": 0.02,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 311,
+        "nnz": 1160,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 9,
+        "sourceScale": 0.05,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 311,
+        "nnz": 1160,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 18,
+        "sourceScale": 0.1,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 311,
+        "nnz": 1160,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 36,
+        "sourceScale": 0.2,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 311,
+        "nnz": 1160,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 54,
+        "sourceScale": 0.3,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 311,
+        "nnz": 1160,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 72,
+        "sourceScale": 0.4,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 311,
+        "nnz": 1160,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 90,
+        "sourceScale": 0.5,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 311,
+        "nnz": 1160,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 108,
+        "sourceScale": 0.6,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 311,
+        "nnz": 1160,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 125.99999999999999,
+        "sourceScale": 0.7,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 311,
+        "nnz": 1160,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 144,
+        "sourceScale": 0.8,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 311,
+        "nnz": 1160,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 162,
+        "sourceScale": 0.9,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 311,
+        "nnz": 1160,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 311,
+        "nnz": 1160,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      }
+    ],
+    "maxError": null,
+    "rmsError": null
+  },
+  {
+    "name": "variant_159.cir",
+    "localHash": "7c6212a8c15c56e652d742789c498ceeb4e875149fbc95d9a7eb2f78d3b836b2",
+    "sourceHash": "119bec477c8d001d63198fce478ac7f2dc08c4f3c86321d9a5efa9cf54f58723",
+    "includes": {
+      "AD620.mod": "99c3a83c8e4a44fc1c2e5b878a061e03f959e223fa646bb849589e68f603f395",
+      "lmx58_lm2904.lib": "467a3e573420d1f5a21fab57b76be0e13073e854f609a73459a191958e314726",
+      "UA555.mod": "e4b70989b2ca1cd9e3177bc4d35224098360461a2b6901a688542e2d1af6d7bf"
+    },
+    "nodeCount": 257,
+    "branchCount": 60,
+    "deviceTypes": {
+      "Resistor": 213,
+      "VoltageSource": 32,
+      "Inductor": 7,
+      "CurrentSource": 13,
+      "Capacitor": 47,
+      "BJT": 28,
+      "Diode": 22,
+      "VCVS": 13,
+      "BehavioralVoltageSource": 5,
+      "VCCS": 28,
+      "BehavioralCurrentSource": 19,
+      "CCCS": 2,
+      "XspiceDevice": 5,
+      "CCVS": 3
+    },
+    "pivotIdentity": "Net-_C1215-Pad1_",
+    "attached": [
+      {
+        "name": "R1292",
+        "type": "Resistor",
+        "nodes": [
+          "Net-_C1214-Pad2_",
+          "Net-_C1215-Pad1_"
+        ],
+        "branches": []
+      },
+      {
+        "name": "C1215",
+        "type": "Capacitor",
+        "nodes": [
+          "Net-_C1215-Pad1_",
+          "Net-_C1215-Pad2_"
+        ],
+        "branches": []
+      },
+      {
+        "name": "C1214",
+        "type": "Capacitor",
+        "nodes": [
+          "Net-_C1214-Pad1_",
+          "Net-_C1214-Pad2_"
+        ],
+        "branches": []
+      }
+    ],
+    "milliseconds": 21.301541999999984,
+    "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)",
+    "stack": "SingularMatrixError: Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)\n    at Function.atPivot (/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8ceea56e/packages/core/src/errors.ts:78:12)\n    at GilbertPeierlsSolver.factorize (/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8ceea56e/packages/core/src/solver/gilbert-peierls.ts:476:35)\n    at GilbertPeierlsSolver.GilbertPeierlsSolver.factorize (/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8ceea56e/benchmarks/vendor-singular-917/trace.mts:43:31)\n    at newtonRaphson (/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8ceea56e/packages/core/src/analysis/newton-raphson.ts:135:12)\n    at solveOperatingPoint (/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8ceea56e/packages/core/src/analysis/dc.ts:54:7)\n    at solveDCOperatingPoint (/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8ceea56e/packages/core/src/analysis/dc.ts:94:5)\n    at solveCompiledAnalyses (/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8ceea56e/packages/core/src/simulate.ts:236:38)\n    at simulate (/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8ceea56e/packages/core/src/simulate.ts:166:18)\n    at async <anonymous> (/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8ceea56e/benchmarks/vendor-singular-917/trace.mts:65:11)",
+    "factorAttempts": 33,
+    "factors": [
+      {
+        "size": 317,
+        "nnz": 1166,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 317,
+        "nnz": 1166,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.006050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.006050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.006050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 232 (nodes: <expanded behavioral node redacted>)"
+      },
+      {
+        "size": 317,
+        "nnz": 1166,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.010673918302408542
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.010673918302408542
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.010673918302408542
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 232 (nodes: <expanded behavioral node redacted>)"
+      },
+      {
+        "size": 317,
+        "nnz": 1166,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.013710148284105703
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.013710148284105703
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.013710148284105703
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 232 (nodes: <expanded behavioral node redacted>)"
+      },
+      {
+        "size": 317,
+        "nnz": 1166,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.014697121249617043
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.014697121249617043
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.014697121249617043
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 232 (nodes: <expanded behavioral node redacted>)"
+      },
+      {
+        "size": 317,
+        "nnz": 1166,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.01496096361299366
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.01496096361299366
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.01496096361299366
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 232 (nodes: <expanded behavioral node redacted>)"
+      },
+      {
+        "size": 317,
+        "nnz": 1166,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.015028044130437786
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.015028044130437786
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.015028044130437786
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 232 (nodes: <expanded behavioral node redacted>)"
+      },
+      {
+        "size": 317,
+        "nnz": 1166,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.015044885084660582
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.015044885084660582
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.015044885084660582
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 232 (nodes: <expanded behavioral node redacted>)"
+      },
+      {
+        "size": 317,
+        "nnz": 1166,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.015049099762846675
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.015049099762846675
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.015049099762846675
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 232 (nodes: <expanded behavioral node redacted>)"
+      },
+      {
+        "size": 317,
+        "nnz": 1166,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.015050153710074874
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.015050153710074874
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.015050153710074874
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 232 (nodes: <expanded behavioral node redacted>)"
+      },
+      {
+        "size": 317,
+        "nnz": 1166,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 0.001,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 317,
+        "nnz": 1166,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 0.005623413251903491,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 317,
+        "nnz": 1166,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 0.008659643233600653,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 317,
+        "nnz": 1166,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 0.009646616199111991,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 317,
+        "nnz": 1166,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 0.009910458562488608,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 317,
+        "nnz": 1166,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 0.009977539079932736,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 317,
+        "nnz": 1166,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 0.009994380034155531,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 317,
+        "nnz": 1166,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 0.009998594712341624,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 317,
+        "nnz": 1166,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 0.009999648659569824,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 317,
+        "nnz": 1166,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 1.8,
+        "sourceScale": 0.01,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 317,
+        "nnz": 1166,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 3.6,
+        "sourceScale": 0.02,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 317,
+        "nnz": 1166,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 9,
+        "sourceScale": 0.05,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 317,
+        "nnz": 1166,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 18,
+        "sourceScale": 0.1,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 317,
+        "nnz": 1166,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 36,
+        "sourceScale": 0.2,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 317,
+        "nnz": 1166,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 54,
+        "sourceScale": 0.3,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 317,
+        "nnz": 1166,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 72,
+        "sourceScale": 0.4,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 317,
+        "nnz": 1166,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 90,
+        "sourceScale": 0.5,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 317,
+        "nnz": 1166,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 108,
+        "sourceScale": 0.6,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 317,
+        "nnz": 1166,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 125.99999999999999,
+        "sourceScale": 0.7,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 317,
+        "nnz": 1166,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 144,
+        "sourceScale": 0.8,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 317,
+        "nnz": 1166,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 162,
+        "sourceScale": 0.9,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 317,
+        "nnz": 1166,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      },
+      {
+        "size": 317,
+        "nnz": 1166,
+        "nonfinite": 0,
+        "initialMax": 0,
+        "rhsMax": 180,
+        "sourceScale": 1,
+        "deviceGmin": 1e-12,
+        "row1": [
+          [
+            1,
+            0.005050505050505051
+          ],
+          [
+            2,
+            -0.005050505050505051
+          ]
+        ],
+        "row2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "column2": [
+          [
+            1,
+            -0.005050505050505051
+          ],
+          [
+            2,
+            0.005050505050505051
+          ]
+        ],
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: Net-_C1215-Pad1_)"
+      }
+    ],
+    "maxError": null,
+    "rmsError": null
+  }
+]
