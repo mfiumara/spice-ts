@@ -7,9 +7,15 @@ export class CCCS implements DeviceModel {
   constructor(
     readonly name: string,
     readonly nodes: number[],
-    readonly controlBranchIndex: number,
+    /** Controlling source's branch; see {@link bindControlBranch}. */
+    public controlBranchIndex: number,
     readonly gain: number,
   ) {}
+
+  /** Bind the controlling source's MNA branch (ngspice CCCSsetup), which may follow this card. */
+  bindControlBranch(branch: number): void {
+    this.controlBranchIndex = branch;
+  }
 
   stamp(ctx: StampContext): void {
     const [nOutP, nOutN] = this.nodes;

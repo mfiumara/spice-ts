@@ -2214,6 +2214,7 @@ export class Circuit {
     const noiseContext = new TransientNoiseContext(this._simulationOptions.seed);
     const pendingCurrentSwitches: { device: CurrentSwitch; controlSource: string }[] = [];
     const pendingBehavioralSources: BehavioralSource[] = [];
+    const pendingCurrentControlled: { device: CCCS | CCVS; kind: 'CCCS' | 'CCVS'; controlSource: string }[] = [];
     const ltraStates = new Map<string, LtraModelState>();
     // BSIM3 instances per ngspice model, in netlist order (b3v32temp.c pParam reuse, #700).
     const bsim3ModelInstances = new Map<string, BSIM3v3[]>();
@@ -2512,27 +2513,18 @@ export class Circuit {
           break;
         }
         case 'F': {
-          const ctrlName = desc.controlSource!;
-          const ctrlDev = deviceMap.get(ctrlName);
-          if (!ctrlDev || ctrlDev.branches.length === 0) {
-            throw new Error(
-              `CCCS '${desc.name}' references unknown or branchless source '${ctrlName}'`,
-            );
-          }
-          devices.push(new CCCS(desc.name, nodeIndices, ctrlDev.branches[0], desc.value!));
+          // The controlling source may follow this card (#860); bind its branch below.
+          const device = new CCCS(desc.name, nodeIndices, -1, desc.value!);
+          pendingCurrentControlled.push({ device, kind: 'CCCS', controlSource: desc.controlSource! });
+          devices.push(device);
           break;
         }
         case 'H': {
-          const ctrlName = desc.controlSource!;
-          const ctrlDev = deviceMap.get(ctrlName);
-          if (!ctrlDev || ctrlDev.branches.length === 0) {
-            throw new Error(
-              `CCVS '${desc.name}' references unknown or branchless source '${ctrlName}'`,
-            );
-          }
           const bi = branchIndex++;
           branchNames.push(desc.name);
-          devices.push(new CCVS(desc.name, nodeIndices, ctrlDev.branches[0], bi, desc.value!));
+          const device = new CCVS(desc.name, nodeIndices, -1, bi, desc.value!);
+          pendingCurrentControlled.push({ device, kind: 'CCVS', controlSource: desc.controlSource! });
+          devices.push(device);
           break;
         }
         case 'S':
@@ -2616,6 +2608,17 @@ export class Circuit {
       if (!control || !(control instanceof VoltageSource)) {
         throw new InvalidCircuitError(
           `W-element '${device.name}' references unknown or non-voltage-source control '${controlSource}'`,
+        );
+      }
+      device.bindControlBranch(control.branches[0]);
+    }
+    // ngspice-47 CCCSsetup/CCVSsetup look the controlling source up after every
+    // instance exists, so it may be declared after the F/H card (#860).
+    for (const { device, kind, controlSource } of pendingCurrentControlled) {
+      const control = deviceMap.get(controlSource);
+      if (!control || control.branches.length === 0) {
+        throw new InvalidCircuitError(
+          `${kind} '${device.name}' references unknown or branchless source '${controlSource}'`,
         );
       }
       device.bindControlBranch(control.branches[0]);
