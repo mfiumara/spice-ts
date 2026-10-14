@@ -12,6 +12,15 @@ from controls import Budget, ClockSample
 
 
 class RunnerTests(unittest.TestCase):
+    def test_comparison_plan(self):
+        cells = runner.plan(True)
+        self.assertEqual(len(cells), 180)
+        self.assertEqual(len({tuple(c.values()) for c in cells}), 180)
+        for size in (1000, 10000, 50000):
+            for circuit in ('rc-ladder-tran', 'resistor-mesh-op'):
+                for mode in ('control', 'candidate', 'ngspice'):
+                    self.assertEqual(sum(c['size'] == size and c['circuit'] == circuit and c['mode'] == mode for c in cells), 10)
+
     def test_fixed_rotating_plan(self):
         cells = runner.plan()
         self.assertEqual(len(cells), 60)
