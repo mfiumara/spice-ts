@@ -9,6 +9,7 @@ import { MATCH_RULE, type ReferenceRun } from '../corpus/corpus-f/outcomes.js';
 import type { PackedExecution } from '../corpus/corpus-f/packed.js';
 import { reduceRow, type Circuit, type Manifest } from '../corpus/corpus-j/parity.js';
 import { hash } from '../corpus/corpus-n/survey.js';
+import { pairPlots } from '../plot-pairing.js';
 
 const root = 'benchmarks/vdmos-1106';
 async function main() {
@@ -47,7 +48,15 @@ async function main() {
     if (hash(input) !== circuit.sha256) throw new Error(`input hash mismatch: ${circuit.id}`);
     const ng = await run(circuit, 'ngspice');
     const ts = await run(circuit, 'spiceTs');
-    const row = { ...reduceRow(circuit, ng.run, ts.run.execution), runtime: { ngspiceChildWallMs: ng.wallMs, spiceTsChildWallMs: ts.wallMs } };
+    // The existing corpus metric scores common vectors. Publish all noncommon
+    // vectors separately, including saved-device vectors, not a full-coverage claim.
+    const coverage = pairPlots(ts.run.execution.analyses, ng.run.execution.analyses).map(({ left, right }) => ({
+      spiceTs: left?.plotId ?? left?.plotName,
+      ngspice: right?.plotId ?? right?.plotName,
+      missingFromSpiceTs: Object.keys(right?.signals ?? {}).filter(name => left?.signals[name] === undefined),
+      missingFromNgspice: Object.keys(left?.signals ?? {}).filter(name => right?.signals[name] === undefined),
+    }));
+    const row = { ...reduceRow(circuit, ng.run, ts.run.execution), coverage, runtime: { ngspiceChildWallMs: ng.wallMs, spiceTsChildWallMs: ts.wallMs } };
     fixtures.push(row);
     console.log(`${circuit.id} ${row.outcome}: signals=${row.comparedSignals} error=${row.worstNormalizedError}`);
   }

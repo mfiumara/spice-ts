@@ -3,7 +3,8 @@ import { test } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { gunzipSync } from 'node:zlib';
 import { reduceRow, type Circuit, type Manifest } from '../corpus/corpus-j/parity.js';
-import { type PackedExecution } from '../corpus/corpus-f/packed.js';
+import { compareInBatches, unpackExecution, type PackedExecution } from '../corpus/corpus-f/packed.js';
+import { compareExecutions } from '../aggregate-report.js';
 import { type ReferenceRun } from '../corpus/corpus-f/outcomes.js';
 import { declaredSecondaryGrid } from '../sweep-coordinates.js';
 import { pairPlots } from '../plot-pairing.js';
@@ -37,6 +38,7 @@ for (const [id, count] of [['n-8', 10], ['n-9', 10], ['n-10', 8], ['n-11', 8], [
     const row = reduceRow(circuit, ng, own.execution);
     assert.equal(row.comparedSignals, count);
     assert.notEqual(row.worstNormalizedError, null);
+    assert.deepEqual(compareInBatches(own.execution, ng.execution, 1), compareExecutions(unpackExecution(own.execution), unpackExecution(ng.execution)));
     if (id === 'n-12') {
       assert.equal(row.comparisons.length, 2);
       assert.equal(row.comparisons[1].unmatched, 'ngspice');
@@ -49,4 +51,18 @@ test('explicit control identities never pair with different explicit IDs', () =>
   const left = [{ type: 'dc' as const, plotName: 'DC transfer characteristic', plotId: 'dc6' }];
   const right = [{ type: 'dc' as const, plotName: 'DC transfer characteristic', plotId: 'dc1' }];
   assert.equal(pairPlots(left, right).filter(p => p.left && p.right).length, 0);
+});
+test('multiple descriptive raw plots and later control IDs are ambiguous', () => {
+  const raw = { type: 'dc' as const, plotName: 'DC transfer characteristic' };
+  for (const [left, right] of [
+    [[{ ...raw, plotId: 'dc1' }], [raw, { ...raw }]],
+    [[{ ...raw, plotId: 'dc2' }], [raw]],
+  ]) assert.equal(pairPlots(left, right).filter(p => p.left && p.right).length, 0);
+});
+test('batch provenance retains default control-only behavior and dynamic guards', () => {
+  const command = 'dc V1 0 1 1 V2 0 1 1';
+  assert.deepEqual(declaredSecondaryGrid(`title\n.control\n${command}\n.endc`, 'dc1', [0, 1, 0, 1], 'batch-dot'), [0, 0, 1, 1]);
+  for (const dynamic of ['repeat 2', 'source other.cir', 'reset', 'if 1']) {
+    assert.equal(declaredSecondaryGrid(`title\n.${command}\n.control\n${dynamic}\n.endc`, 'DC transfer characteristic', [0, 1, 0, 1], 'batch-dot'), undefined);
+  }
 });
