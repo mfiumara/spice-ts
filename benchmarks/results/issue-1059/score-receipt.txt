@@ -1,0 +1,292 @@
+[
+  {
+    file: 'gm1-default.waveforms.json.gz',
+    worst: {
+      signal: 'i(vrd1)',
+      peak: 0.001065901609735386,
+      absoluteMax: 0.000009581426954704706,
+      absoluteRms: 8.418892975824194e-7,
+      normalized: 0.008989035073399815
+    }
+  },
+  {
+    file: 'gm1-fine.waveforms.json.gz',
+    worst: {
+      signal: 'i(vwr)',
+      peak: 0.001043186144674746,
+      absoluteMax: 9.12853228635796e-7,
+      absoluteRms: 1.896468632339238e-8,
+      normalized: 0.0008750626465810795
+    }
+  },
+  {
+    file: 'gm1-op.waveforms.json.gz',
+    worst: {
+      signal: 'v(x10.73)',
+      peak: 0.0001,
+      absoluteMax: 4.931445118197284e-22,
+      absoluteRms: 4.931445118197284e-22,
+      normalized: 4.931445118197284e-18
+    }
+  },
+  {
+    file: 'gm17-bypass-off.waveforms.json.gz',
+    worst: {
+      signal: 'i(vdi)',
+      peak: 1e-10,
+      absoluteMax: 7.367900254433165e-12,
+      absoluteRms: 1.5907267877410508e-12,
+      normalized: 0.07367900254433166
+    }
+  },
+  {
+    file: 'gm17-default.waveforms.json.gz',
+    worst: {
+      signal: 'i(vdi)',
+      peak: 1e-10,
+      absoluteMax: 7.367900254433165e-12,
+      absoluteRms: 1.5907267877410508e-12,
+      normalized: 0.07367900254433166
+    }
+  },
+  {
+    file: 'gm17-fine.waveforms.json.gz',
+    worst: {
+      signal: 'i(vdi)',
+      peak: 1e-10,
+      absoluteMax: 7.807116078044488e-12,
+      absoluteRms: 6.719733812449078e-13,
+      normalized: 0.07807116078044488
+    }
+  },
+  {
+    file: 'gm17-moderate.waveforms.json.gz',
+    worst: {
+      signal: 'i(vdi)',
+      peak: 1e-10,
+      absoluteMax: 7.367861825639427e-12,
+      absoluteRms: 7.697696885866794e-13,
+      normalized: 0.07367861825639427
+    }
+  },
+  {
+    file: 'gm17-op.waveforms.json.gz',
+    worst: {
+      signal: 'v(7)',
+      peak: 1.999976986689034,
+      absoluteMax: 0.0000051240055927159744,
+      absoluteRms: 0.0000051240055927159744,
+      normalized: 0.0000025620322767807323
+    }
+  },
+  {
+    file: 'gm19-default.waveforms.json.gz',
+    worst: {
+      signal: 'i(vin)',
+      peak: 0.00005016706884296918,
+      absoluteMax: 0.000008610973818829524,
+      absoluteRms: 0.0000021140037146509102,
+      normalized: 0.17164594259599314
+    }
+  },
+  {
+    file: 'gm19-fine.waveforms.json.gz',
+    worst: {
+      signal: 'i(vin)',
+      peak: 0.00004496887453488934,
+      absoluteMax: 2.1427528141637706e-8,
+      absoluteRms: 1.2490516527809616e-9,
+      normalized: 0.00047649687396585934
+    }
+  },
+  {
+    file: 'gm19-op.waveforms.json.gz',
+    worst: {
+      signal: 'i(vix11)',
+      peak: 1e-10,
+      absoluteMax: 1.0221728355974857e-14,
+      absoluteRms: 1.0221728355974857e-14,
+      normalized: 0.00010221728355974857
+    }
+  },
+  {
+    file: 'gm2-default.waveforms.json.gz',
+    worst: {
+      signal: 'i(vdd)',
+      peak: 0.009829353583058099,
+      absoluteMax: 0.001265176532030601,
+      absoluteRms: 0.00007728146137783929,
+      normalized: 0.12871411342972366
+    }
+  },
+  {
+    file: 'gm2-fine.waveforms.json.gz',
+    worst: {
+      signal: 'i(vp)',
+      peak: 0.009669884998284889,
+      absoluteMax: 0.0000016189923697819408,
+      absoluteRms: 3.4555117550401064e-8,
+      normalized: 0.00016742622793022827
+    }
+  },
+  {
+    file: 'gm2-op.waveforms.json.gz',
+    worst: {
+      signal: 'i(vdd)',
+      peak: 1e-10,
+      absoluteMax: 1.3322676295469567e-15,
+      absoluteRms: 1.3322676295469567e-15,
+      normalized: 0.000013322676295469566
+    }
+  },
+  {
+    file: 'gm3-default.waveforms.json.gz',
+    worst: {
+      signal: 'i(vin)',
+      peak: 0.004562229685063052,
+      absoluteMax: 0.0000012721901738029992,
+      absoluteRms: 1.6089219904157065e-7,
+      normalized: 0.0002788527236952159
+    }
+  },
+  {
+    file: 'gm3-fine.waveforms.json.gz',
+    worst: {
+      signal: 'i(vin)',
+      peak: 0.004509268135569999,
+      absoluteMax: 0.000002847461841949065,
+      absoluteRms: 6.440527707501582e-8,
+      normalized: 0.0006314687342470772
+    }
+  },
+  {
+    file: 'gm3-op.waveforms.json.gz',
+    worst: {
+      signal: 'i(vcc)',
+      peak: 0.0006348857260813552,
+      absoluteMax: 1.2568071583451967e-15,
+      absoluteRms: 1.2568071583451967e-15,
+      normalized: 1.979580114523078e-12
+    }
+  },
+  {
+    file: 'mike2-default.waveforms.json.gz',
+    worst: {
+      signal: 'i(vtest1)',
+      peak: 0.009182984438535723,
+      absoluteMax: 0.00018783038826868277,
+      absoluteRms: 0.000014262064961581758,
+      normalized: 0.02045417691011936
+    }
+  },
+  {
+    file: 'mike2-fine.waveforms.json.gz',
+    worst: {
+      signal: 'i(vtest1)',
+      peak: 0.009178355149178195,
+      absoluteMax: 0.000002490701954470202,
+      absoluteRms: 5.492149947607147e-8,
+      normalized: 0.0002713669185805272
+    }
+  },
+  {
+    file: 'mike2-op.waveforms.json.gz',
+    worst: {
+      signal: 'i(vdd)',
+      peak: 4.20060396163506e-7,
+      absoluteMax: 2.0065045479574986e-14,
+      absoluteRms: 2.0065045479574986e-14,
+      normalized: 4.776704888828602e-8
+    }
+  },
+  {
+    file: 'reduced-inverter-fine.waveforms.json.gz',
+    worst: {
+      signal: 'i(vp)',
+      peak: 0.002370450285915016,
+      absoluteMax: 0.0000019499129103634112,
+      absoluteRms: 5.590215018368825e-8,
+      normalized: 0.0008225917758957457
+    }
+  },
+  {
+    file: 'reduced-inverter-op.waveforms.json.gz',
+    worst: {
+      signal: 'i(vdd)',
+      peak: 1e-10,
+      absoluteMax: 1.5679547104078574e-17,
+      absoluteRms: 1.5679547104078574e-17,
+      normalized: 1.5679547104078573e-7
+    }
+  },
+  {
+    file: 'reduced-inverter.waveforms.json.gz',
+    worst: {
+      signal: 'i(vp)',
+      peak: 0.002599751062713873,
+      absoluteMax: 0.000005563442519512232,
+      absoluteRms: 4.331820201779906e-7,
+      normalized: 0.0021399904780516057
+    }
+  },
+  {
+    file: 'reduced-pair-fine.waveforms.json.gz',
+    worst: {
+      signal: 'i(vp)',
+      peak: 0.002150640791951199,
+      absoluteMax: 4.6849232978457556e-7,
+      absoluteRms: 2.316569848501098e-8,
+      normalized: 0.00021783848401737477
+    }
+  },
+  {
+    file: 'reduced-pair-op.waveforms.json.gz',
+    worst: {
+      signal: 'v(3)',
+      peak: 9.999999991900097,
+      absoluteMax: 3.730349362740526e-14,
+      absoluteRms: 3.730349362740526e-14,
+      normalized: 3.7303493657620724e-15
+    }
+  },
+  {
+    file: 'reduced-pair.waveforms.json.gz',
+    worst: {
+      signal: 'i(vp)',
+      peak: 0.002281858882292133,
+      absoluteMax: 0.0001325215358073304,
+      absoluteRms: 0.000008297612372633432,
+      normalized: 0.058076131190992926
+    }
+  },
+  {
+    file: 'todd3-default.waveforms.json.gz',
+    worst: {
+      signal: 'i(vnd)',
+      peak: 1e-10,
+      absoluteMax: 2.3791944509776953e-13,
+      absoluteRms: 2.2380880972515976e-14,
+      normalized: 0.002379194450977695
+    }
+  },
+  {
+    file: 'todd3-fine.waveforms.json.gz',
+    worst: {
+      signal: 'i(vnd)',
+      peak: 1e-10,
+      absoluteMax: 3.3258051581541777e-13,
+      absoluteRms: 8.851699243277187e-15,
+      normalized: 0.0033258051581541775
+    }
+  },
+  {
+    file: 'todd3-op.waveforms.json.gz',
+    worst: {
+      signal: 'v(6)',
+      peak: 0.9499155549283161,
+      absoluteMax: 0.000008543235947455763,
+      absoluteRms: 0.000008543235947455763,
+      normalized: 0.000008993679388796265
+    }
+  }
+]

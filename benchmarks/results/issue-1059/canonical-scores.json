@@ -1,0 +1,2451 @@
+[
+  {
+    "file": "gm1-default.waveforms.json.gz",
+    "sha256": "417d4fe8629398295bb317ad236781f36b34eebb58e74c7b63757263f55c338c",
+    "errors": [
+      {
+        "signal": "i(vrd1)",
+        "peak": 0.001065901609735386,
+        "absoluteMax": 0.000009581426954704706,
+        "absoluteRms": 8.418892975824194e-7,
+        "normalized": 0.008989035073399815
+      },
+      {
+        "signal": "i(vrd2)",
+        "peak": 0.001065901609735386,
+        "absoluteMax": 0.000009581426954697117,
+        "absoluteRms": 8.41889297580688e-7,
+        "normalized": 0.008989035073392694
+      },
+      {
+        "signal": "i(vwr)",
+        "peak": 0.00106756620090694,
+        "absoluteMax": 0.000008188413124889001,
+        "absoluteRms": 5.11913717571382e-7,
+        "normalized": 0.00767016894871027
+      },
+      {
+        "signal": "v(x11.75)",
+        "peak": 5.034990623565852,
+        "absoluteMax": 0.02116237103262808,
+        "absoluteRms": 0.0016854015802922504,
+        "normalized": 0.004203060663823161
+      },
+      {
+        "signal": "v(x10.75)",
+        "peak": 5.034990623565851,
+        "absoluteMax": 0.021162371031578253,
+        "absoluteRms": 0.001685401580179794,
+        "normalized": 0.004203060663614655
+      },
+      {
+        "signal": "v(17)",
+        "peak": 5.276343506149778,
+        "absoluteMax": 0.021307788398060135,
+        "absoluteRms": 0.0013901134199969909,
+        "normalized": 0.004038362622377618
+      },
+      {
+        "signal": "v(x9.2)",
+        "peak": 5.061707641578936,
+        "absoluteMax": 0.01639845775987414,
+        "absoluteRms": 0.0013863419371005939,
+        "normalized": 0.003239708596595051
+      },
+      {
+        "signal": "v(x8.2)",
+        "peak": 5.06170764157904,
+        "absoluteMax": 0.01639845775731441,
+        "absoluteRms": 0.0013863419370899153,
+        "normalized": 0.00323970859608928
+      },
+      {
+        "signal": "i(vdd)",
+        "peak": 0.006236775581245725,
+        "absoluteMax": 0.000019755810347612542,
+        "absoluteRms": 0.0000021082252419363606,
+        "normalized": 0.003167632070491551
+      },
+      {
+        "signal": "v(13)",
+        "peak": 5.089862877730508,
+        "absoluteMax": 0.014327072752320369,
+        "absoluteRms": 0.0012435664997134056,
+        "normalized": 0.002814824897347449
+      },
+      {
+        "signal": "i(vdi)",
+        "peak": 0.001288308207992429,
+        "absoluteMax": 5.804785562487239e-7,
+        "absoluteRms": 1.0622137467945021e-7,
+        "normalized": 0.0004505742901019654
+      },
+      {
+        "signal": "v(3)",
+        "peak": 5,
+        "absoluteMax": 9.903189379656396e-14,
+        "absoluteRms": 1.4330626611123902e-14,
+        "normalized": 1.9806378759312793e-14
+      },
+      {
+        "signal": "v(4)",
+        "peak": 5,
+        "absoluteMax": 9.903189379656396e-14,
+        "absoluteRms": 1.4330626611123902e-14,
+        "normalized": 1.9806378759312793e-14
+      },
+      {
+        "signal": "v(2)",
+        "peak": 5,
+        "absoluteMax": 9.614531393253856e-14,
+        "absoluteRms": 1.2513226840807049e-14,
+        "normalized": 1.922906278650771e-14
+      }
+    ]
+  },
+  {
+    "file": "gm1-fine.waveforms.json.gz",
+    "sha256": "858506f70d86bdee5c7db19478f2893eebbbb92758a4aab7d3040e9f3144a2c7",
+    "errors": [
+      {
+        "signal": "i(vwr)",
+        "peak": 0.001043186144674746,
+        "absoluteMax": 9.12853228635796e-7,
+        "absoluteRms": 1.896468632339238e-8,
+        "normalized": 0.0008750626465810795
+      },
+      {
+        "signal": "i(vrd1)",
+        "peak": 0.00106151547616215,
+        "absoluteMax": 9.130893536313288e-7,
+        "absoluteRms": 2.402844002839649e-8,
+        "normalized": 0.0008601752627597597
+      },
+      {
+        "signal": "i(vrd2)",
+        "peak": 0.001061515476162105,
+        "absoluteMax": 9.130893534942857e-7,
+        "absoluteRms": 2.4028440027589633e-8,
+        "normalized": 0.0008601752626306947
+      },
+      {
+        "signal": "i(vclk)",
+        "peak": 0.001263692706367802,
+        "absoluteMax": 4.747219409383281e-7,
+        "absoluteRms": 1.0082332494404663e-8,
+        "normalized": 0.0003756624838825007
+      },
+      {
+        "signal": "v(13)",
+        "peak": 5.08998302272292,
+        "absoluteMax": 0.000704491983651856,
+        "absoluteRms": 0.00007301362394734786,
+        "normalized": 0.00013840753112669192
+      },
+      {
+        "signal": "v(16)",
+        "peak": 5.158447291924502,
+        "absoluteMax": 0.0007014323121987687,
+        "absoluteRms": 0.00009636258861015649,
+        "normalized": 0.00013597741190393743
+      },
+      {
+        "signal": "v(23)",
+        "peak": 5.198785862213168,
+        "absoluteMax": 0.0006451948065790969,
+        "absoluteRms": 0.00004794511102098832,
+        "normalized": 0.00012410490135179983
+      },
+      {
+        "signal": "v(25)",
+        "peak": 5.198754196448976,
+        "absoluteMax": 0.0006085108926590088,
+        "absoluteRms": 0.00005773288260155884,
+        "normalized": 0.00011704936791869365
+      },
+      {
+        "signal": "i(vdd)",
+        "peak": 0.006234495309989473,
+        "absoluteMax": 3.425785666955473e-7,
+        "absoluteRms": 2.7021579169910223e-8,
+        "normalized": 0.000054948885140171156
+      },
+      {
+        "signal": "i(vdi)",
+        "peak": 0.001285146726432458,
+        "absoluteMax": 2.0601901438903965e-8,
+        "absoluteRms": 3.1727818254960772e-9,
+        "normalized": 0.00001603077766543781
+      },
+      {
+        "signal": "v(2)",
+        "peak": 5,
+        "absoluteMax": 1.3233858453531866e-13,
+        "absoluteRms": 1.0779026164506899e-14,
+        "normalized": 2.6467716907063733e-14
+      },
+      {
+        "signal": "v(3)",
+        "peak": 5,
+        "absoluteMax": 1.3233858453531866e-13,
+        "absoluteRms": 1.0801700414982968e-14,
+        "normalized": 2.6467716907063733e-14
+      },
+      {
+        "signal": "v(4)",
+        "peak": 5,
+        "absoluteMax": 1.3233858453531866e-13,
+        "absoluteRms": 1.0801700414982968e-14,
+        "normalized": 2.6467716907063733e-14
+      }
+    ]
+  },
+  {
+    "file": "gm1-op.waveforms.json.gz",
+    "sha256": "b3c524e5dfdcdfe3b8b2fe66a617bc8d63bfb9a78efe34bc0c8054f4e494ba36",
+    "errors": [
+      {
+        "signal": "v(x10.73)",
+        "peak": 0.0001,
+        "absoluteMax": 4.931445118197284e-22,
+        "absoluteRms": 4.931445118197284e-22,
+        "normalized": 4.931445118197284e-18
+      },
+      {
+        "signal": "v(19)",
+        "peak": 0.0001,
+        "absoluteMax": 4.931445118197241e-22,
+        "absoluteRms": 4.931445118197241e-22,
+        "normalized": 4.9314451181972406e-18
+      },
+      {
+        "signal": "v(7)",
+        "peak": 0.0001,
+        "absoluteMax": 4.931445118197222e-22,
+        "absoluteRms": 4.931445118197222e-22,
+        "normalized": 4.931445118197222e-18
+      },
+      {
+        "signal": "v(x11.77)",
+        "peak": 0.0001,
+        "absoluteMax": 2.587821637422472e-22,
+        "absoluteRms": 2.587821637422472e-22,
+        "normalized": 2.587821637422472e-18
+      },
+      {
+        "signal": "v(22)",
+        "peak": 0.0001,
+        "absoluteMax": 2.58782153377126e-22,
+        "absoluteRms": 2.58782153377126e-22,
+        "normalized": 2.58782153377126e-18
+      },
+      {
+        "signal": "v(x10.77)",
+        "peak": 0.0001,
+        "absoluteMax": 2.168421973734831e-22,
+        "absoluteRms": 2.168421973734831e-22,
+        "normalized": 2.1684219737348307e-18
+      },
+      {
+        "signal": "v(21)",
+        "peak": 0.0001,
+        "absoluteMax": 2.168421886907305e-22,
+        "absoluteRms": 2.168421886907305e-22,
+        "normalized": 2.1684218869073048e-18
+      },
+      {
+        "signal": "v(20)",
+        "peak": 0.0001,
+        "absoluteMax": 1.66301153646712e-22,
+        "absoluteRms": 1.66301153646712e-22,
+        "normalized": 1.66301153646712e-18
+      },
+      {
+        "signal": "i(vdd)",
+        "peak": 1e-10,
+        "absoluteMax": 4.221800729257293e-33,
+        "absoluteRms": 4.221800729257293e-33,
+        "normalized": 4.221800729257293e-23
+      },
+      {
+        "signal": "v(13)",
+        "peak": 0.0001,
+        "absoluteMax": 9.367875683889786e-62,
+        "absoluteRms": 9.367875683889786e-62,
+        "normalized": 9.367875683889786e-58
+      },
+      {
+        "signal": "i(vdi)",
+        "peak": 1e-10,
+        "absoluteMax": 4.257565799975674e-145,
+        "absoluteRms": 4.257565799975674e-145,
+        "normalized": 4.2575657999756737e-135
+      },
+      {
+        "signal": "v(2)",
+        "peak": 0.0001,
+        "absoluteMax": 0,
+        "absoluteRms": 0,
+        "normalized": 0
+      },
+      {
+        "signal": "v(3)",
+        "peak": 0.0001,
+        "absoluteMax": 0,
+        "absoluteRms": 0,
+        "normalized": 0
+      },
+      {
+        "signal": "v(4)",
+        "peak": 0.0001,
+        "absoluteMax": 0,
+        "absoluteRms": 0,
+        "normalized": 0
+      },
+      {
+        "signal": "i(vwr)",
+        "peak": 1e-10,
+        "absoluteMax": 0,
+        "absoluteRms": 0,
+        "normalized": 0
+      }
+    ]
+  },
+  {
+    "file": "gm17-bypass-off.waveforms.json.gz",
+    "sha256": "383fd21179389cdd51b9a120d86ad4ff89484f9b3682e08c0e829e43a25e4854",
+    "errors": [
+      {
+        "signal": "i(vdi)",
+        "peak": 1e-10,
+        "absoluteMax": 7.367900254433165e-12,
+        "absoluteRms": 1.5907267877410508e-12,
+        "normalized": 0.07367900254433166
+      },
+      {
+        "signal": "i(vwr)",
+        "peak": 1e-10,
+        "absoluteMax": 5.598096316725128e-12,
+        "absoluteRms": 1.037237536686549e-12,
+        "normalized": 0.055980963167251284
+      },
+      {
+        "signal": "i(vad)",
+        "peak": 0.0008293001770481647,
+        "absoluteMax": 8.742579257249323e-8,
+        "absoluteRms": 1.1303951652984776e-8,
+        "normalized": 0.0001054211671383927
+      },
+      {
+        "signal": "i(vdd)",
+        "peak": 0.001631808676055469,
+        "absoluteMax": 8.511278371838276e-8,
+        "absoluteRms": 1.1250735653055375e-8,
+        "normalized": 0.00005215855569791662
+      },
+      {
+        "signal": "v(73)",
+        "peak": 0.06644778843627618,
+        "absoluteMax": 0.0000013704600824865354,
+        "absoluteRms": 1.7830310538275978e-7,
+        "normalized": 0.0000206246154272059
+      },
+      {
+        "signal": "v(6)",
+        "peak": 0.09852303609314755,
+        "absoluteMax": 0.0000016633245537855945,
+        "absoluteRms": 2.336027296637804e-7,
+        "normalized": 0.00001688259537813088
+      },
+      {
+        "signal": "v(16)",
+        "peak": 0.05202296497593909,
+        "absoluteMax": 8.493137763181113e-7,
+        "absoluteRms": 1.4400711654100905e-7,
+        "normalized": 0.000016325747229342343
+      },
+      {
+        "signal": "v(47)",
+        "peak": 5.129867262643741,
+        "absoluteMax": 0.00007211443755839042,
+        "absoluteRms": 0.00001553609277413899,
+        "normalized": 0.000014057758976247923
+      },
+      {
+        "signal": "v(2)",
+        "peak": 2.561862378484011,
+        "absoluteMax": 0.00002380215246833295,
+        "absoluteRms": 0.000005848008674770006,
+        "normalized": 0.00000929095671501993
+      },
+      {
+        "signal": "v(5)",
+        "peak": 0.1669365981335664,
+        "absoluteMax": 0.000001501329451120137,
+        "absoluteRms": 3.2381685064458705e-7,
+        "normalized": 0.000008993411078851142
+      },
+      {
+        "signal": "v(x15.4)",
+        "peak": 2.593566952296092,
+        "absoluteMax": 0.000002310524235049627,
+        "absoluteRms": 0.0000016509481540077623,
+        "normalized": 8.90867395192599e-7
+      },
+      {
+        "signal": "v(4)",
+        "peak": 5.000096204315771,
+        "absoluteMax": 0.000003689294092446005,
+        "absoluteRms": 6.625783969756118e-7,
+        "normalized": 7.378446217218054e-7
+      },
+      {
+        "signal": "v(13)",
+        "peak": 4.999999986090828,
+        "absoluteMax": 2.7568384908249755e-8,
+        "absoluteRms": 2.4969250597151647e-8,
+        "normalized": 5.513676996988087e-9
+      },
+      {
+        "signal": "v(11)",
+        "peak": 4.999999993172768,
+        "absoluteMax": 2.3984709329738507e-8,
+        "absoluteRms": 2.2523737498766642e-8,
+        "normalized": 4.796941872497669e-9
+      },
+      {
+        "signal": "v(12)",
+        "peak": 4.999999996586458,
+        "absoluteMax": 1.365895840876874e-8,
+        "absoluteRms": 1.2713807253923898e-8,
+        "normalized": 2.7317916836187652e-9
+      },
+      {
+        "signal": "v(3)",
+        "peak": 0.0001,
+        "absoluteMax": 0,
+        "absoluteRms": 0,
+        "normalized": 0
+      }
+    ]
+  },
+  {
+    "file": "gm17-default.waveforms.json.gz",
+    "sha256": "43fc842bd3c7bfbbe285a5d83b4eb08fa6acc1a3c8a5da9ae62c605bd32324a9",
+    "errors": [
+      {
+        "signal": "i(vdi)",
+        "peak": 1e-10,
+        "absoluteMax": 7.367900254433165e-12,
+        "absoluteRms": 1.5907267877410508e-12,
+        "normalized": 0.07367900254433166
+      },
+      {
+        "signal": "i(vwr)",
+        "peak": 1e-10,
+        "absoluteMax": 5.598096316725128e-12,
+        "absoluteRms": 1.037237536686549e-12,
+        "normalized": 0.055980963167251284
+      },
+      {
+        "signal": "i(vad)",
+        "peak": 0.0008293001770481647,
+        "absoluteMax": 8.742579257249323e-8,
+        "absoluteRms": 1.1303951652984776e-8,
+        "normalized": 0.0001054211671383927
+      },
+      {
+        "signal": "i(vdd)",
+        "peak": 0.001631808676055469,
+        "absoluteMax": 8.511278371838276e-8,
+        "absoluteRms": 1.1250735653055375e-8,
+        "normalized": 0.00005215855569791662
+      },
+      {
+        "signal": "v(73)",
+        "peak": 0.06644778843627618,
+        "absoluteMax": 0.0000013704600824865354,
+        "absoluteRms": 1.7830310538275978e-7,
+        "normalized": 0.0000206246154272059
+      },
+      {
+        "signal": "v(6)",
+        "peak": 0.09852303609314755,
+        "absoluteMax": 0.0000016633245537855945,
+        "absoluteRms": 2.336027296637804e-7,
+        "normalized": 0.00001688259537813088
+      },
+      {
+        "signal": "v(16)",
+        "peak": 0.05202296497593909,
+        "absoluteMax": 8.493137763181113e-7,
+        "absoluteRms": 1.4400711654100905e-7,
+        "normalized": 0.000016325747229342343
+      },
+      {
+        "signal": "v(47)",
+        "peak": 5.129867262643741,
+        "absoluteMax": 0.00007211443755839042,
+        "absoluteRms": 0.00001553609277413899,
+        "normalized": 0.000014057758976247923
+      },
+      {
+        "signal": "v(2)",
+        "peak": 2.561862378484011,
+        "absoluteMax": 0.00002380215246833295,
+        "absoluteRms": 0.000005848008674770006,
+        "normalized": 0.00000929095671501993
+      },
+      {
+        "signal": "v(5)",
+        "peak": 0.1669365981335664,
+        "absoluteMax": 0.000001501329451120137,
+        "absoluteRms": 3.2381685064458705e-7,
+        "normalized": 0.000008993411078851142
+      },
+      {
+        "signal": "v(x15.4)",
+        "peak": 2.593566952296092,
+        "absoluteMax": 0.000002310524235049627,
+        "absoluteRms": 0.0000016509481540077623,
+        "normalized": 8.90867395192599e-7
+      },
+      {
+        "signal": "v(4)",
+        "peak": 5.000096204315771,
+        "absoluteMax": 0.000003689294092446005,
+        "absoluteRms": 6.625783969756118e-7,
+        "normalized": 7.378446217218054e-7
+      },
+      {
+        "signal": "v(13)",
+        "peak": 4.999999986090828,
+        "absoluteMax": 2.7568384908249755e-8,
+        "absoluteRms": 2.4969250597151647e-8,
+        "normalized": 5.513676996988087e-9
+      },
+      {
+        "signal": "v(11)",
+        "peak": 4.999999993172768,
+        "absoluteMax": 2.3984709329738507e-8,
+        "absoluteRms": 2.2523737498766642e-8,
+        "normalized": 4.796941872497669e-9
+      },
+      {
+        "signal": "v(12)",
+        "peak": 4.999999996586458,
+        "absoluteMax": 1.365895840876874e-8,
+        "absoluteRms": 1.2713807253923898e-8,
+        "normalized": 2.7317916836187652e-9
+      },
+      {
+        "signal": "v(3)",
+        "peak": 0.0001,
+        "absoluteMax": 0,
+        "absoluteRms": 0,
+        "normalized": 0
+      }
+    ]
+  },
+  {
+    "file": "gm17-fine.waveforms.json.gz",
+    "sha256": "e6a9d68abefa9a27bdfc7d1034742adf7605b2f1b437b948cc502aac120d3f27",
+    "errors": [
+      {
+        "signal": "i(vdi)",
+        "peak": 1e-10,
+        "absoluteMax": 7.807116078044488e-12,
+        "absoluteRms": 6.719733812449078e-13,
+        "normalized": 0.07807116078044488
+      },
+      {
+        "signal": "i(vwr)",
+        "peak": 1e-10,
+        "absoluteMax": 6.148134937295432e-12,
+        "absoluteRms": 5.039153417447554e-13,
+        "normalized": 0.06148134937295432
+      },
+      {
+        "signal": "i(vad)",
+        "peak": 0.0008565858181104704,
+        "absoluteMax": 1.842933486579431e-7,
+        "absoluteRms": 6.424034087535732e-9,
+        "normalized": 0.00021514872737967222
+      },
+      {
+        "signal": "i(vdd)",
+        "peak": 0.001618523447907687,
+        "absoluteMax": 2.3302868954605538e-7,
+        "absoluteRms": 2.1724631983481315e-8,
+        "normalized": 0.0001439760973789403
+      },
+      {
+        "signal": "v(73)",
+        "peak": 0.0666215016144774,
+        "absoluteMax": 0.00000833655756739271,
+        "absoluteRms": 0.0000011688299627511018,
+        "normalized": 0.00012513313818163937
+      },
+      {
+        "signal": "v(6)",
+        "peak": 0.09909912254421353,
+        "absoluteMax": 0.00001120917809556421,
+        "absoluteRms": 0.0000016854737858043458,
+        "normalized": 0.00011311077038611702
+      },
+      {
+        "signal": "v(16)",
+        "peak": 0.05325226018841837,
+        "absoluteMax": 0.000005426533727807825,
+        "absoluteRms": 0.0000011048106282386437,
+        "normalized": 0.00010190241143958095
+      },
+      {
+        "signal": "v(5)",
+        "peak": 0.1686767223530758,
+        "absoluteMax": 0.000014437630837083049,
+        "absoluteRms": 0.0000026093206353101167,
+        "normalized": 0.00008559349882826189
+      },
+      {
+        "signal": "v(2)",
+        "peak": 2.572768999202666,
+        "absoluteMax": 0.00010371017079191525,
+        "absoluteRms": 0.00003143718290393127,
+        "normalized": 0.00004031072001569373
+      },
+      {
+        "signal": "v(4)",
+        "peak": 5.000207784952471,
+        "absoluteMax": 0.00002687386643707157,
+        "absoluteRms": 0.000004730245908272491,
+        "normalized": 0.00000537454993729366
+      },
+      {
+        "signal": "v(x15.4)",
+        "peak": 2.593566952296092,
+        "absoluteMax": 0.000002310526918680722,
+        "absoluteRms": 0.0000017262279912382251,
+        "normalized": 8.908684299185746e-7
+      },
+      {
+        "signal": "v(13)",
+        "peak": 4.999999986090828,
+        "absoluteMax": 2.756774364343073e-8,
+        "absoluteRms": 2.595147936216949e-8,
+        "normalized": 5.513548744023925e-9
+      },
+      {
+        "signal": "v(11)",
+        "peak": 4.999999993172768,
+        "absoluteMax": 2.398360088307072e-8,
+        "absoluteRms": 2.350422700789594e-8,
+        "normalized": 4.796720183163809e-9
+      },
+      {
+        "signal": "v(12)",
+        "peak": 4.999999996586458,
+        "absoluteMax": 1.3658583597475626e-8,
+        "absoluteRms": 1.3251795580655832e-8,
+        "normalized": 2.7317167213600913e-9
+      },
+      {
+        "signal": "v(3)",
+        "peak": 0.0001,
+        "absoluteMax": 0,
+        "absoluteRms": 0,
+        "normalized": 0
+      }
+    ]
+  },
+  {
+    "file": "gm17-moderate.waveforms.json.gz",
+    "sha256": "bf5e0f348946882d15b5c4926cff389056818740620c32b10b2e41b0f0effe3f",
+    "errors": [
+      {
+        "signal": "i(vdi)",
+        "peak": 1e-10,
+        "absoluteMax": 7.367861825639427e-12,
+        "absoluteRms": 7.697696885866794e-13,
+        "normalized": 0.07367861825639427
+      },
+      {
+        "signal": "i(vwr)",
+        "peak": 1e-10,
+        "absoluteMax": 5.59799026090672e-12,
+        "absoluteRms": 5.020459376813591e-13,
+        "normalized": 0.0559799026090672
+      },
+      {
+        "signal": "i(vad)",
+        "peak": 0.0008252414226200739,
+        "absoluteMax": 3.685912888177611e-8,
+        "absoluteRms": 2.150899335496716e-9,
+        "normalized": 0.00004466466160260278
+      },
+      {
+        "signal": "i(vdd)",
+        "peak": 0.001620846269046105,
+        "absoluteMax": 3.420932911921723e-8,
+        "absoluteRms": 2.9688825339863282e-9,
+        "normalized": 0.000021105844380509935
+      },
+      {
+        "signal": "v(73)",
+        "peak": 0.06670630855505343,
+        "absoluteMax": 4.0923685218352546e-7,
+        "absoluteRms": 4.6303900852963736e-8,
+        "normalized": 0.000006134904794585926
+      },
+      {
+        "signal": "v(44)",
+        "peak": 5.194553055909572,
+        "absoluteMax": 0.000030294072442593745,
+        "absoluteRms": 0.0000039226332717012,
+        "normalized": 0.0000058318920062101896
+      },
+      {
+        "signal": "v(6)",
+        "peak": 0.09919138530678523,
+        "absoluteMax": 5.136970600977397e-7,
+        "absoluteRms": 6.284427274685554e-8,
+        "normalized": 0.000005178847522987463
+      },
+      {
+        "signal": "v(x23.4)",
+        "peak": 2.5935759431104,
+        "absoluteMax": 0.000010637802195123669,
+        "absoluteRms": 0.0000018733325626521403,
+        "normalized": 0.000004101596571090208
+      },
+      {
+        "signal": "v(5)",
+        "peak": 0.1687330412734561,
+        "absoluteMax": 5.355703674714274e-7,
+        "absoluteRms": 8.833891901101256e-8,
+        "normalized": 0.000003174069307525008
+      },
+      {
+        "signal": "v(2)",
+        "peak": 2.573195426168189,
+        "absoluteMax": 0.000003113761586570618,
+        "absoluteRms": 9.06536281652305e-7,
+        "normalized": 0.0000012100758282504023
+      },
+      {
+        "signal": "v(x15.4)",
+        "peak": 2.593566952232136,
+        "absoluteMax": 0.0000023132859015007057,
+        "absoluteRms": 0.000001797878333467881,
+        "normalized": 8.919322092340018e-7
+      },
+      {
+        "signal": "v(4)",
+        "peak": 5.00019895746499,
+        "absoluteMax": 0.0000010082948218581578,
+        "absoluteRms": 1.6745508840280336e-7,
+        "normalized": 2.0165094037964938e-7
+      },
+      {
+        "signal": "v(13)",
+        "peak": 4.999999986090699,
+        "absoluteMax": 2.756869488251823e-8,
+        "absoluteRms": 2.6890821350398282e-8,
+        "normalized": 5.513738991842098e-9
+      },
+      {
+        "signal": "v(11)",
+        "peak": 4.999999993172914,
+        "absoluteMax": 2.3984886077244028e-8,
+        "absoluteRms": 2.3637482605434653e-8,
+        "normalized": 4.796977221998681e-9
+      },
+      {
+        "signal": "v(12)",
+        "peak": 4.999999996586412,
+        "absoluteMax": 1.3658880249067806e-8,
+        "absoluteRms": 1.3443164351224967e-8,
+        "normalized": 2.7317760516785925e-9
+      },
+      {
+        "signal": "v(3)",
+        "peak": 0.0001,
+        "absoluteMax": 0,
+        "absoluteRms": 0,
+        "normalized": 0
+      }
+    ]
+  },
+  {
+    "file": "gm17-op.waveforms.json.gz",
+    "sha256": "eb59b456b62bcbf6589222706283b1810bf26aa0a970c0f8d9838689e01c2882",
+    "errors": [
+      {
+        "signal": "v(7)",
+        "peak": 1.999976986689034,
+        "absoluteMax": 0.0000051240055927159744,
+        "absoluteRms": 0.0000051240055927159744,
+        "normalized": 0.0000025620322767807323
+      },
+      {
+        "signal": "v(x23.4)",
+        "peak": 2.593566427918718,
+        "absoluteMax": 0.000001591549271484638,
+        "absoluteRms": 0.000001591549271484638,
+        "normalized": 6.13652788820922e-7
+      },
+      {
+        "signal": "v(x15.4)",
+        "peak": 2.593566424826852,
+        "absoluteMax": 0.000001589513671795828,
+        "absoluteRms": 0.000001589513671795828,
+        "normalized": 6.128679244843112e-7
+      },
+      {
+        "signal": "v(x25.4)",
+        "peak": 2.593566431297518,
+        "absoluteMax": 0.0000013417702819928934,
+        "absoluteRms": 0.0000013417702819928934,
+        "normalized": 5.173456387317706e-7
+      },
+      {
+        "signal": "i(vdd)",
+        "peak": 0.0005079556431451333,
+        "absoluteMax": 5.514902770564767e-15,
+        "absoluteRms": 5.514902770564767e-15,
+        "normalized": 1.0857055817744003e-11
+      },
+      {
+        "signal": "v(77)",
+        "peak": 4.999999886352199,
+        "absoluteMax": 5.3796966881236585e-12,
+        "absoluteRms": 5.3796966881236585e-12,
+        "normalized": 1.0759393620803603e-12
+      },
+      {
+        "signal": "v(17)",
+        "peak": 2.454274633603339,
+        "absoluteMax": 1.27631238910908e-12,
+        "absoluteRms": 1.27631238910908e-12,
+        "normalized": 5.200364994341371e-13
+      },
+      {
+        "signal": "v(4)",
+        "peak": 2.454274633603339,
+        "absoluteMax": 1.2736478538499796e-12,
+        "absoluteRms": 1.2736478538499796e-12,
+        "normalized": 5.189508282453393e-13
+      },
+      {
+        "signal": "v(5)",
+        "peak": 2.454274633603356,
+        "absoluteMax": 1.2585488207150775e-12,
+        "absoluteRms": 1.2585488207150775e-12,
+        "normalized": 5.127986915088151e-13
+      },
+      {
+        "signal": "v(11)",
+        "peak": 4.999999993172847,
+        "absoluteMax": 3.5793590313915047e-13,
+        "absoluteRms": 3.5793590313915047e-13,
+        "normalized": 7.158718072557743e-14
+      },
+      {
+        "signal": "v(13)",
+        "peak": 4.999999986090504,
+        "absoluteMax": 2.602362769721367e-13,
+        "absoluteRms": 2.602362769721367e-13,
+        "normalized": 5.204725553921755e-14
+      },
+      {
+        "signal": "v(12)",
+        "peak": 4.999999996586363,
+        "absoluteMax": 1.723066134218243e-13,
+        "absoluteRms": 1.723066134218243e-13,
+        "normalized": 3.446132270789255e-14
+      },
+      {
+        "signal": "v(2)",
+        "peak": 0.0001,
+        "absoluteMax": 4.607396011920364e-22,
+        "absoluteRms": 4.607396011920364e-22,
+        "normalized": 4.607396011920364e-18
+      },
+      {
+        "signal": "v(3)",
+        "peak": 0.0001,
+        "absoluteMax": 0,
+        "absoluteRms": 0,
+        "normalized": 0
+      },
+      {
+        "signal": "i(vwr)",
+        "peak": 1e-10,
+        "absoluteMax": 0,
+        "absoluteRms": 0,
+        "normalized": 0
+      },
+      {
+        "signal": "i(vdi)",
+        "peak": 1e-10,
+        "absoluteMax": 0,
+        "absoluteRms": 0,
+        "normalized": 0
+      }
+    ]
+  },
+  {
+    "file": "gm19-default.waveforms.json.gz",
+    "sha256": "0b94a01a96dd0ae19e93fe78b5fc7397411815d350ee13ee118c49548bb62c08",
+    "errors": [
+      {
+        "signal": "i(vin)",
+        "peak": 0.00005016706884296918,
+        "absoluteMax": 0.000008610973818829524,
+        "absoluteRms": 0.0000021140037146509102,
+        "normalized": 0.17164594259599314
+      },
+      {
+        "signal": "i(vix3)",
+        "peak": 0.006435752056607544,
+        "absoluteMax": 0.0009422649430488447,
+        "absoluteRms": 0.0002834913413093713,
+        "normalized": 0.14641100756537498
+      },
+      {
+        "signal": "v(x3.10)",
+        "peak": 10.02115635639182,
+        "absoluteMax": 1.3646139297579438,
+        "absoluteRms": 0.10094179834002197,
+        "normalized": 0.13617329988944324
+      },
+      {
+        "signal": "v(x14.5)",
+        "peak": 6.514452966307386,
+        "absoluteMax": 0.8233123030858833,
+        "absoluteRms": 0.059866737619471366,
+        "normalized": 0.12638241573682968
+      },
+      {
+        "signal": "v(x5.10)",
+        "peak": 10.1090235592975,
+        "absoluteMax": 1.1789621087446918,
+        "absoluteRms": 0.06863936376738712,
+        "normalized": 0.11662472659492157
+      },
+      {
+        "signal": "v(x4.7)",
+        "peak": 6.694408231398379,
+        "absoluteMax": 0.7211307119035135,
+        "absoluteRms": 0.05228507207011377,
+        "normalized": 0.10772135295263854
+      },
+      {
+        "signal": "v(x10.10)",
+        "peak": 10.11271934636098,
+        "absoluteMax": 1.0424594952350241,
+        "absoluteRms": 0.049697217852516296,
+        "normalized": 0.10308399348689024
+      },
+      {
+        "signal": "v(x13.3)",
+        "peak": 6.740287014051571,
+        "absoluteMax": 0.6673707463707519,
+        "absoluteRms": 0.03629376965906283,
+        "normalized": 0.09901221490709146
+      },
+      {
+        "signal": "i(vix5)",
+        "peak": 0.006175716496381141,
+        "absoluteMax": 0.0004618677152137523,
+        "absoluteRms": 0.00008424688334284365,
+        "normalized": 0.07478771337453693
+      },
+      {
+        "signal": "v(5)",
+        "peak": 10.01484965169229,
+        "absoluteMax": 0.5254604239755487,
+        "absoluteRms": 0.043301971336916205,
+        "normalized": 0.05246812905341594
+      },
+      {
+        "signal": "v(x3.11)",
+        "peak": 6.689578941671142,
+        "absoluteMax": 0.34231264985869414,
+        "absoluteRms": 0.02820943075088762,
+        "normalized": 0.05117103076941642
+      },
+      {
+        "signal": "i(vid2)",
+        "peak": 0.003564223129505634,
+        "absoluteMax": 0.00010642940688703351,
+        "absoluteRms": 0.000026812429828521893,
+        "normalized": 0.029860478151881448
+      },
+      {
+        "signal": "i(vdd)",
+        "peak": 0.03772016067512281,
+        "absoluteMax": 0.001093686755989089,
+        "absoluteRms": 0.0003139704046667794,
+        "normalized": 0.02899475337363547
+      },
+      {
+        "signal": "v(11)",
+        "peak": 10.08723267572974,
+        "absoluteMax": 0.2583825409137299,
+        "absoluteRms": 0.045840586652167586,
+        "normalized": 0.02561480925639873
+      },
+      {
+        "signal": "v(12)",
+        "peak": 10.00910485245633,
+        "absoluteMax": 0.19712084009192488,
+        "absoluteRms": 0.03576856677032527,
+        "normalized": 0.01969415277366682
+      },
+      {
+        "signal": "v(4)",
+        "peak": 10.08066523511379,
+        "absoluteMax": 0.16121585931454074,
+        "absoluteRms": 0.020100882554009526,
+        "normalized": 0.015992581397602672
+      },
+      {
+        "signal": "v(3)",
+        "peak": 8.241975265558226,
+        "absoluteMax": 0.032040716147694326,
+        "absoluteRms": 0.007084353288432998,
+        "normalized": 0.0038875045259583437
+      },
+      {
+        "signal": "v(2)",
+        "peak": 5.907407779184965,
+        "absoluteMax": 0.006567978766080174,
+        "absoluteRms": 0.000999216653307734,
+        "normalized": 0.0011118207869825344
+      }
+    ]
+  },
+  {
+    "file": "gm19-fine.waveforms.json.gz",
+    "sha256": "76f20eb0313f07e6b7b7f46fb190f6b8d9cea08c248c862250b11359560144e8",
+    "errors": [
+      {
+        "signal": "i(vin)",
+        "peak": 0.00004496887453488934,
+        "absoluteMax": 2.1427528141637706e-8,
+        "absoluteRms": 1.2490516527809616e-9,
+        "normalized": 0.00047649687396585934
+      },
+      {
+        "signal": "i(vix3)",
+        "peak": 0.006349624306359838,
+        "absoluteMax": 0.0000010786629207606632,
+        "absoluteRms": 3.2774998126815866e-7,
+        "normalized": 0.00016987822723310813
+      },
+      {
+        "signal": "v(x3.10)",
+        "peak": 10.00969278014222,
+        "absoluteMax": 0.001647424282428922,
+        "absoluteRms": 0.00008252655815001583,
+        "normalized": 0.00016458290165480134
+      },
+      {
+        "signal": "v(x5.10)",
+        "peak": 10.10943888947928,
+        "absoluteMax": 0.001458617452891442,
+        "absoluteRms": 0.00005698701248296614,
+        "normalized": 0.00014428273110285084
+      },
+      {
+        "signal": "v(x4.7)",
+        "peak": 6.69587975045892,
+        "absoluteMax": 0.0007032103088724373,
+        "absoluteRms": 0.00003489304789798634,
+        "normalized": 0.00010502134672060695
+      },
+      {
+        "signal": "i(vix10)",
+        "peak": 0.005912211611233035,
+        "absoluteMax": 6.11088063864982e-7,
+        "absoluteRms": 1.0180300608024681e-7,
+        "normalized": 0.00010336031658676288
+      },
+      {
+        "signal": "i(vix5)",
+        "peak": 0.006147677119056405,
+        "absoluteMax": 6.055449590681994e-7,
+        "absoluteRms": 9.616654984345592e-8,
+        "normalized": 0.00009849979875994907
+      },
+      {
+        "signal": "v(x14.5)",
+        "peak": 6.514696841677677,
+        "absoluteMax": 0.0005763733487074152,
+        "absoluteRms": 0.00001657386604060051,
+        "normalized": 0.00008847278126897252
+      },
+      {
+        "signal": "i(vdd)",
+        "peak": 0.03777111272230364,
+        "absoluteMax": 0.0000018715218525131028,
+        "absoluteRms": 4.7106782278117453e-7,
+        "normalized": 0.000049549026163795776
+      },
+      {
+        "signal": "v(5)",
+        "peak": 10.0159260288614,
+        "absoluteMax": 0.00016679681117492962,
+        "absoluteRms": 0.00003216187128712105,
+        "normalized": 0.00001665315924801123
+      },
+      {
+        "signal": "v(11)",
+        "peak": 10.08428689246071,
+        "absoluteMax": 0.00016060056128264222,
+        "absoluteRms": 0.000033606274731082966,
+        "normalized": 0.000015925822320932936
+      },
+      {
+        "signal": "v(12)",
+        "peak": 10.01156121252938,
+        "absoluteMax": 0.00013062457603796318,
+        "absoluteRms": 0.000030179644577065002,
+        "normalized": 0.00001304737325827741
+      },
+      {
+        "signal": "v(4)",
+        "peak": 10.10225018121588,
+        "absoluteMax": 0.00009568990159714019,
+        "absoluteRms": 0.000016485084758565223,
+        "normalized": 0.000009472137383319407
+      },
+      {
+        "signal": "v(3)",
+        "peak": 8.240688846402556,
+        "absoluteMax": 0.000044173643473754964,
+        "absoluteRms": 0.0000059464545294277705,
+        "normalized": 0.000005360430941769973
+      },
+      {
+        "signal": "v(2)",
+        "peak": 5.906841327047624,
+        "absoluteMax": 5.634574247181945e-7,
+        "absoluteRms": 2.8892192428482363e-7,
+        "normalized": 9.539064849060768e-8
+      }
+    ]
+  },
+  {
+    "file": "gm19-op.waveforms.json.gz",
+    "sha256": "4b327608ed7407e483a81cdc83741af2ae4fb3d8056a6943bc8d991d5ab33927",
+    "errors": [
+      {
+        "signal": "i(vix11)",
+        "peak": 1e-10,
+        "absoluteMax": 1.0221728355974857e-14,
+        "absoluteRms": 1.0221728355974857e-14,
+        "normalized": 0.00010221728355974857
+      },
+      {
+        "signal": "i(vix6)",
+        "peak": 1e-10,
+        "absoluteMax": 7.827032108128073e-15,
+        "absoluteRms": 7.827032108128073e-15,
+        "normalized": 0.00007827032108128073
+      },
+      {
+        "signal": "i(vix16)",
+        "peak": 1.299985776926423e-10,
+        "absoluteMax": 3.431465050242815e-15,
+        "absoluteRms": 3.431465050242815e-15,
+        "normalized": 0.000026396173797807867
+      },
+      {
+        "signal": "i(vix4)",
+        "peak": 1e-10,
+        "absoluteMax": 2.3047343846209293e-15,
+        "absoluteRms": 2.3047343846209293e-15,
+        "normalized": 0.000023047343846209292
+      },
+      {
+        "signal": "i(vix5)",
+        "peak": 1.299990151886972e-10,
+        "absoluteMax": 1.883745970741977e-15,
+        "absoluteRms": 1.883745970741977e-15,
+        "normalized": 0.000014490463393185459
+      },
+      {
+        "signal": "i(vix3)",
+        "peak": 1.299984073172135e-10,
+        "absoluteMax": 1.0610962243811746e-15,
+        "absoluteRms": 1.0610962243811746e-15,
+        "normalized": 0.00000816237864970113
+      },
+      {
+        "signal": "i(vix10)",
+        "peak": 1.299999033470451e-10,
+        "absoluteMax": 9.955876228379095e-16,
+        "absoluteRms": 9.955876228379095e-16,
+        "normalized": 0.000007658372023401502
+      },
+      {
+        "signal": "i(vid4)",
+        "peak": 1e-10,
+        "absoluteMax": 4.631453430094828e-16,
+        "absoluteRms": 4.631453430094828e-16,
+        "normalized": 0.000004631453430094827
+      },
+      {
+        "signal": "i(vdd)",
+        "peak": 0.003738183008133115,
+        "absoluteMax": 1.6824215631761064e-14,
+        "absoluteRms": 1.6824215631761064e-14,
+        "normalized": 4.500639908521558e-12
+      },
+      {
+        "signal": "v(11)",
+        "peak": 9.999999989877939,
+        "absoluteMax": 1.1297629498585593e-12,
+        "absoluteRms": 1.1297629498585593e-12,
+        "normalized": 1.1297629510021123e-13
+      },
+      {
+        "signal": "v(4)",
+        "peak": 9.999999988877239,
+        "absoluteMax": 1.0462741784067475e-12,
+        "absoluteRms": 1.0462741784067475e-12,
+        "normalized": 1.0462741795704933e-13
+      },
+      {
+        "signal": "v(3)",
+        "peak": 4.914956607559711,
+        "absoluteMax": 1.545430450278218e-13,
+        "absoluteRms": 1.545430450278218e-13,
+        "normalized": 3.1443420027374937e-14
+      },
+      {
+        "signal": "v(2)",
+        "peak": 4.914956607559711,
+        "absoluteMax": 1.687538997430238e-14,
+        "absoluteRms": 1.687538997430238e-14,
+        "normalized": 3.433476899540941e-15
+      },
+      {
+        "signal": "v(12)",
+        "peak": 0.0001,
+        "absoluteMax": 5.525566491854225e-22,
+        "absoluteRms": 5.525566491854225e-22,
+        "normalized": 5.525566491854225e-18
+      },
+      {
+        "signal": "v(5)",
+        "peak": 0.0001,
+        "absoluteMax": 1.3090133193651663e-22,
+        "absoluteRms": 1.3090133193651663e-22,
+        "normalized": 1.3090133193651663e-18
+      },
+      {
+        "signal": "i(vin)",
+        "peak": 1e-10,
+        "absoluteMax": 0,
+        "absoluteRms": 0,
+        "normalized": 0
+      }
+    ]
+  },
+  {
+    "file": "gm2-default.waveforms.json.gz",
+    "sha256": "ad4261e8c85a1f0376b24c0bad6f42fa4046a0fa669b84853236ef558fa417fc",
+    "errors": [
+      {
+        "signal": "i(vdd)",
+        "peak": 0.009829353583058099,
+        "absoluteMax": 0.001265176532030601,
+        "absoluteRms": 0.00007728146137783929,
+        "normalized": 0.12871411342972366
+      },
+      {
+        "signal": "v(4)",
+        "peak": 10.20399252881288,
+        "absoluteMax": 0.6384743236060371,
+        "absoluteRms": 0.05728645639298513,
+        "normalized": 0.06257103009466006
+      },
+      {
+        "signal": "i(vp)",
+        "peak": 0.009906385432748709,
+        "absoluteMax": 0.0005582711142480892,
+        "absoluteRms": 0.000037639483525208584,
+        "normalized": 0.05635467325978923
+      },
+      {
+        "signal": "v(x1.3)",
+        "peak": 2.234364364172371,
+        "absoluteMax": 0.06893597132225704,
+        "absoluteRms": 0.007118088159359548,
+        "normalized": 0.030852609550900866
+      },
+      {
+        "signal": "v(3)",
+        "peak": 10.34944151649161,
+        "absoluteMax": 0.23266718347581872,
+        "absoluteRms": 0.04303825856353899,
+        "normalized": 0.022481134185363398
+      },
+      {
+        "signal": "v(2)",
+        "peak": 10,
+        "absoluteMax": 4.04121180963557e-13,
+        "absoluteRms": 5.991573575760655e-14,
+        "normalized": 4.04121180963557e-14
+      },
+      {
+        "signal": "v(1)",
+        "peak": 10,
+        "absoluteMax": 0,
+        "absoluteRms": 0,
+        "normalized": 0
+      }
+    ]
+  },
+  {
+    "file": "gm2-fine.waveforms.json.gz",
+    "sha256": "8ea86226cad31f832eb63c984858f3582b890533b374011b3bed20fc4f5771ef",
+    "errors": [
+      {
+        "signal": "i(vp)",
+        "peak": 0.009669884998284889,
+        "absoluteMax": 0.0000016189923697819408,
+        "absoluteRms": 3.4555117550401064e-8,
+        "normalized": 0.00016742622793022827
+      },
+      {
+        "signal": "v(4)",
+        "peak": 10.22442538302796,
+        "absoluteMax": 0.0008180864704812052,
+        "absoluteRms": 0.00005336199210468924,
+        "normalized": 0.00008001295327942715
+      },
+      {
+        "signal": "i(vdd)",
+        "peak": 0.00963854038814533,
+        "absoluteMax": 4.915780521569553e-7,
+        "absoluteRms": 1.5344808486061734e-7,
+        "normalized": 0.00005100129608436967
+      },
+      {
+        "signal": "v(x1.3)",
+        "peak": 2.23809104785164,
+        "absoluteMax": 0.00006941350486777687,
+        "absoluteRms": 0.000007912977526558683,
+        "normalized": 0.000031014602794827046
+      },
+      {
+        "signal": "v(3)",
+        "peak": 10.35076761531842,
+        "absoluteMax": 0.00016018945316464972,
+        "absoluteRms": 0.000015988783158935956,
+        "normalized": 0.00001547609405582446
+      },
+      {
+        "signal": "v(2)",
+        "peak": 10,
+        "absoluteMax": 5.294653604437372e-13,
+        "absoluteRms": 3.715983404065636e-14,
+        "normalized": 5.294653604437371e-14
+      },
+      {
+        "signal": "v(1)",
+        "peak": 10,
+        "absoluteMax": 0,
+        "absoluteRms": 0,
+        "normalized": 0
+      }
+    ]
+  },
+  {
+    "file": "gm2-op.waveforms.json.gz",
+    "sha256": "7b79a322dc10ddd73977718c918447d4973dda3e6032062a095b8aa430654f1a",
+    "errors": [
+      {
+        "signal": "i(vdd)",
+        "peak": 1e-10,
+        "absoluteMax": 1.3322676295469567e-15,
+        "absoluteRms": 1.3322676295469567e-15,
+        "normalized": 0.000013322676295469566
+      },
+      {
+        "signal": "v(3)",
+        "peak": 9.999999995950116,
+        "absoluteMax": 2.3092638912203256e-14,
+        "absoluteRms": 2.3092638912203256e-14,
+        "normalized": 2.3092638921555507e-15
+      },
+      {
+        "signal": "v(4)",
+        "peak": 0.0001,
+        "absoluteMax": 9.347140921849213e-23,
+        "absoluteRms": 9.347140921849213e-23,
+        "normalized": 9.347140921849213e-19
+      },
+      {
+        "signal": "v(x1.3)",
+        "peak": 0.0001,
+        "absoluteMax": 1.724475413846956e-37,
+        "absoluteRms": 1.724475413846956e-37,
+        "normalized": 1.724475413846956e-33
+      },
+      {
+        "signal": "v(1)",
+        "peak": 10,
+        "absoluteMax": 0,
+        "absoluteRms": 0,
+        "normalized": 0
+      },
+      {
+        "signal": "v(2)",
+        "peak": 0.0001,
+        "absoluteMax": 0,
+        "absoluteRms": 0,
+        "normalized": 0
+      },
+      {
+        "signal": "i(vp)",
+        "peak": 1e-10,
+        "absoluteMax": 0,
+        "absoluteRms": 0,
+        "normalized": 0
+      }
+    ]
+  },
+  {
+    "file": "gm3-default.waveforms.json.gz",
+    "sha256": "90ee65bd24818d09d008de93e92f5a398f3422ae2a4a663e5889834e2c1fe071",
+    "errors": [
+      {
+        "signal": "i(vin)",
+        "peak": 0.004562229685063052,
+        "absoluteMax": 0.0000012721901738029992,
+        "absoluteRms": 1.6089219904157065e-7,
+        "normalized": 0.0002788527236952159
+      },
+      {
+        "signal": "i(vcc)",
+        "peak": 0.005305759139634153,
+        "absoluteMax": 7.84433475783464e-7,
+        "absoluteRms": 1.390783403003532e-7,
+        "normalized": 0.00014784566263547968
+      },
+      {
+        "signal": "v(x2.6)",
+        "peak": 0.3628315904384519,
+        "absoluteMax": 0.00003490842834174071,
+        "absoluteRms": 0.0000065391204815340296,
+        "normalized": 0.00009621110526665213
+      },
+      {
+        "signal": "v(40)",
+        "peak": 5.266748947503661,
+        "absoluteMax": 0.0004361362228504362,
+        "absoluteRms": 0.00008472548009303423,
+        "normalized": 0.00008280938149845864
+      },
+      {
+        "signal": "v(60)",
+        "peak": 5.355297322272913,
+        "absoluteMax": 0.0003655704358178635,
+        "absoluteRms": 0.00006051430799869709,
+        "normalized": 0.00006826333139290703
+      },
+      {
+        "signal": "v(x2.8)",
+        "peak": 1.667774713425829,
+        "absoluteMax": 0.000107097850275642,
+        "absoluteRms": 0.000021669649915206252,
+        "normalized": 0.00006421601755530212
+      },
+      {
+        "signal": "v(x1.4)",
+        "peak": 0.853365278883392,
+        "absoluteMax": 0.000048469769148185016,
+        "absoluteRms": 0.000008733218787423604,
+        "normalized": 0.00005679838440533525
+      },
+      {
+        "signal": "v(x4.8)",
+        "peak": 1.405382421339307,
+        "absoluteMax": 0.00007354705739692768,
+        "absoluteRms": 0.000011629274363899565,
+        "normalized": 0.00005233241591768205
+      },
+      {
+        "signal": "v(2)",
+        "peak": 5.133702803548002,
+        "absoluteMax": 0.00022001312814223795,
+        "absoluteRms": 0.000045677385303028574,
+        "normalized": 0.00004285661569465661
+      }
+    ]
+  },
+  {
+    "file": "gm3-fine.waveforms.json.gz",
+    "sha256": "3239c551ff21a3434ef3cfef2c21084029311c7c2c1362d2b8b20b1633c76f0e",
+    "errors": [
+      {
+        "signal": "i(vin)",
+        "peak": 0.004509268135569999,
+        "absoluteMax": 0.000002847461841949065,
+        "absoluteRms": 6.440527707501582e-8,
+        "normalized": 0.0006314687342470772
+      },
+      {
+        "signal": "i(vcc)",
+        "peak": 0.005250261027272725,
+        "absoluteMax": 2.2451923699156814e-7,
+        "absoluteRms": 1.8070699982679676e-8,
+        "normalized": 0.00004276344277461492
+      },
+      {
+        "signal": "v(60)",
+        "peak": 5.358478396265359,
+        "absoluteMax": 0.0001391045415597425,
+        "absoluteRms": 0.000016235352679521024,
+        "normalized": 0.000025959709319103105
+      },
+      {
+        "signal": "v(x1.4)",
+        "peak": 0.8514859155045109,
+        "absoluteMax": 0.00002053969610760209,
+        "absoluteRms": 0.000003165067149003329,
+        "normalized": 0.000024122179514187485
+      },
+      {
+        "signal": "v(x2.6)",
+        "peak": 0.3623340795126538,
+        "absoluteMax": 0.000007467545622960592,
+        "absoluteRms": 8.317689785341607e-7,
+        "normalized": 0.00002060955909254957
+      },
+      {
+        "signal": "v(x2.8)",
+        "peak": 1.668017368422594,
+        "absoluteMax": 0.00002836639839128713,
+        "absoluteRms": 0.0000040797177368059765,
+        "normalized": 0.000017006056968167294
+      },
+      {
+        "signal": "v(50)",
+        "peak": 5.276657587392642,
+        "absoluteMax": 0.00007271136505382358,
+        "absoluteRms": 0.000008722114078788947,
+        "normalized": 0.000013779814939584226
+      },
+      {
+        "signal": "v(x5.8)",
+        "peak": 1.597310137167897,
+        "absoluteMax": 0.000021748822169431747,
+        "absoluteRms": 0.0000034673904910075263,
+        "normalized": 0.000013615904427923678
+      },
+      {
+        "signal": "v(2)",
+        "peak": 5.144755796629934,
+        "absoluteMax": 0.000043494083660888805,
+        "absoluteRms": 0.000013994671392050122,
+        "normalized": 0.00000845406184087096
+      }
+    ]
+  },
+  {
+    "file": "gm3-op.waveforms.json.gz",
+    "sha256": "7bf6a2b932671d96b7bd0788509ab957643366b65089a239ad86f8a1aaa6ba37",
+    "errors": [
+      {
+        "signal": "i(vcc)",
+        "peak": 0.0006348857260813552,
+        "absoluteMax": 1.2568071583451967e-15,
+        "absoluteRms": 1.2568071583451967e-15,
+        "normalized": 1.979580114523078e-12
+      },
+      {
+        "signal": "v(x2.7)",
+        "peak": 0.01130727662964833,
+        "absoluteMax": 2.1012705464507064e-14,
+        "absoluteRms": 2.1012705464507064e-14,
+        "normalized": 1.8583347832324667e-12
+      },
+      {
+        "signal": "v(x2.8)",
+        "peak": 0.01621819420307735,
+        "absoluteMax": 3.000724668744681e-14,
+        "absoluteRms": 3.000724668744681e-14,
+        "normalized": 1.85022119674415e-12
+      },
+      {
+        "signal": "v(60)",
+        "peak": 0.02113692993119021,
+        "absoluteMax": 3.869474185513866e-14,
+        "absoluteRms": 3.869474185513866e-14,
+        "normalized": 1.8306699213701645e-12
+      },
+      {
+        "signal": "v(x2.6)",
+        "peak": 0.004892998442018895,
+        "absoluteMax": 8.772496618014713e-15,
+        "absoluteRms": 8.772496618014713e-15,
+        "normalized": 1.7928672412156138e-12
+      },
+      {
+        "signal": "v(2)",
+        "peak": 4.999999991931848,
+        "absoluteMax": 5.861977570020827e-13,
+        "absoluteRms": 5.861977570020827e-13,
+        "normalized": 1.1723955158959785e-13
+      },
+      {
+        "signal": "v(30)",
+        "peak": 3.813395249932047,
+        "absoluteMax": 3.5083047578154947e-13,
+        "absoluteRms": 3.5083047578154947e-13,
+        "normalized": 9.199950510973158e-14
+      },
+      {
+        "signal": "v(40)",
+        "peak": 4.999999997322317,
+        "absoluteMax": 2.9309887850104133e-13,
+        "absoluteRms": 2.9309887850104133e-13,
+        "normalized": 5.86197757316013e-14
+      },
+      {
+        "signal": "i(vin)",
+        "peak": 1e-10,
+        "absoluteMax": 0,
+        "absoluteRms": 0,
+        "normalized": 0
+      }
+    ]
+  },
+  {
+    "file": "mike2-default.waveforms.json.gz",
+    "sha256": "99cf3671f37b401548a991f679ceaeb6ab502c97ac7c98de81b5adbddb4df013",
+    "errors": [
+      {
+        "signal": "i(vtest1)",
+        "peak": 0.009182984438535723,
+        "absoluteMax": 0.00018783038826868277,
+        "absoluteRms": 0.000014262064961581758,
+        "normalized": 0.02045417691011936
+      },
+      {
+        "signal": "i(vpulse)",
+        "peak": 0.002315289623552924,
+        "absoluteMax": 0.00002820296416367182,
+        "absoluteRms": 0.000001619629891045405,
+        "normalized": 0.0121811819466426
+      },
+      {
+        "signal": "i(vtest2)",
+        "peak": 0.02308452590675643,
+        "absoluteMax": 0.0002632065967659615,
+        "absoluteRms": 0.000021471091042918127,
+        "normalized": 0.011401862781549506
+      },
+      {
+        "signal": "i(vtest3)",
+        "peak": 0.0751180286445755,
+        "absoluteMax": 0.0007100652954836889,
+        "absoluteRms": 0.00006558594501723049,
+        "normalized": 0.009452661475494737
+      },
+      {
+        "signal": "i(vdd)",
+        "peak": 0.27212256479821,
+        "absoluteMax": 0.001456475257054335,
+        "absoluteRms": 0.00013150285405885386,
+        "normalized": 0.005352276677732957
+      },
+      {
+        "signal": "v(100)",
+        "peak": 5.646668429666434,
+        "absoluteMax": 0.011721398636316716,
+        "absoluteRms": 0.0012414200359943377,
+        "normalized": 0.0020758078471076677
+      },
+      {
+        "signal": "v(9)",
+        "peak": 5.646668429666434,
+        "absoluteMax": 0.011721398636316716,
+        "absoluteRms": 0.0012414200359943377,
+        "normalized": 0.0020758078471076677
+      },
+      {
+        "signal": "v(14)",
+        "peak": 5.599398796792539,
+        "absoluteMax": 0.011596214570192664,
+        "absoluteRms": 0.0015460759584116426,
+        "normalized": 0.0020709749369584524
+      },
+      {
+        "signal": "v(12)",
+        "peak": 5.566793045354785,
+        "absoluteMax": 0.008981521747976728,
+        "absoluteRms": 0.0013149376609817788,
+        "normalized": 0.0016134103917283876
+      },
+      {
+        "signal": "v(3)",
+        "peak": 5.593706863910199,
+        "absoluteMax": 0.004423942814350212,
+        "absoluteRms": 0.0005735785615264018,
+        "normalized": 0.000790878557275295
+      },
+      {
+        "signal": "v(13)",
+        "peak": 5.581977153976172,
+        "absoluteMax": 0.004301700096237759,
+        "absoluteRms": 0.0006155554270125743,
+        "normalized": 0.0007706409355641233
+      },
+      {
+        "signal": "v(2)",
+        "peak": 5.5,
+        "absoluteMax": 2.761679773755077e-14,
+        "absoluteRms": 3.9467259367802785e-15,
+        "normalized": 5.021235952281958e-15
+      }
+    ]
+  },
+  {
+    "file": "mike2-fine.waveforms.json.gz",
+    "sha256": "0d8b671285eac85d700add2e08238e9e64a4a2325c2f5c47393b7bb0ce554000",
+    "errors": [
+      {
+        "signal": "i(vtest1)",
+        "peak": 0.009178355149178195,
+        "absoluteMax": 0.000002490701954470202,
+        "absoluteRms": 5.492149947607147e-8,
+        "normalized": 0.0002713669185805272
+      },
+      {
+        "signal": "i(vtest3)",
+        "peak": 0.07508839903467798,
+        "absoluteMax": 0.000019343718232839313,
+        "absoluteRms": 7.24981565646133e-7,
+        "normalized": 0.00025761260702742946
+      },
+      {
+        "signal": "i(vtest2)",
+        "peak": 0.02302556324852168,
+        "absoluteMax": 0.000004405282973740654,
+        "absoluteRms": 1.7808876359669992e-7,
+        "normalized": 0.00019132139901174787
+      },
+      {
+        "signal": "i(vpulse)",
+        "peak": 0.002271494647538438,
+        "absoluteMax": 3.532327810804644e-7,
+        "absoluteRms": 8.374699716306103e-9,
+        "normalized": 0.00015550676355907504
+      },
+      {
+        "signal": "i(vdd)",
+        "peak": 0.2725407254260743,
+        "absoluteMax": 0.000037261389423781655,
+        "absoluteRms": 0.000002603963537097748,
+        "normalized": 0.0001367186110095266
+      },
+      {
+        "signal": "v(14)",
+        "peak": 5.601488952127399,
+        "absoluteMax": 0.00027561975412426776,
+        "absoluteRms": 0.000042327358805916554,
+        "normalized": 0.00004920473047074201
+      },
+      {
+        "signal": "v(300)",
+        "peak": 5.584865498086656,
+        "absoluteMax": 0.00016295890524764545,
+        "absoluteRms": 0.000022517556590767302,
+        "normalized": 0.000029178662459010744
+      },
+      {
+        "signal": "v(13)",
+        "peak": 5.584865498086656,
+        "absoluteMax": 0.00016295890524675727,
+        "absoluteRms": 0.000022517556590787895,
+        "normalized": 0.00002917866245885171
+      },
+      {
+        "signal": "v(12)",
+        "peak": 5.567619682319543,
+        "absoluteMax": 0.000055603470506371266,
+        "absoluteRms": 0.000011662398394238893,
+        "normalized": 0.000009986937628470726
+      },
+      {
+        "signal": "v(3)",
+        "peak": 5.594708771426866,
+        "absoluteMax": 0.0000207267961060964,
+        "absoluteRms": 0.000003669677176476942,
+        "normalized": 0.000003704714034795107
+      },
+      {
+        "signal": "v(2)",
+        "peak": 5.5,
+        "absoluteMax": 2.842170943040401e-14,
+        "absoluteRms": 3.657671582252311e-15,
+        "normalized": 5.167583532800729e-15
+      }
+    ]
+  },
+  {
+    "file": "mike2-op.waveforms.json.gz",
+    "sha256": "4697b1b94e1c752eb53589a424a041d84cdc25c6563e3fc4d56b641378531905",
+    "errors": [
+      {
+        "signal": "i(vdd)",
+        "peak": 4.20060396163506e-7,
+        "absoluteMax": 2.0065045479574986e-14,
+        "absoluteRms": 2.0065045479574986e-14,
+        "normalized": 4.776704888828602e-8
+      },
+      {
+        "signal": "v(14)",
+        "peak": 5.499999620878957,
+        "absoluteMax": 2.220446049250313e-14,
+        "absoluteRms": 2.220446049250313e-14,
+        "normalized": 4.037174913287472e-15
+      },
+      {
+        "signal": "v(100)",
+        "peak": 0.0001,
+        "absoluteMax": 3.6676526616111205e-19,
+        "absoluteRms": 3.6676526616111205e-19,
+        "normalized": 3.6676526616111205e-15
+      },
+      {
+        "signal": "v(9)",
+        "peak": 0.0001,
+        "absoluteMax": 3.6676526616111205e-19,
+        "absoluteRms": 3.6676526616111205e-19,
+        "normalized": 3.6676526616111205e-15
+      },
+      {
+        "signal": "v(13)",
+        "peak": 0.0001,
+        "absoluteMax": 2.1980504981249094e-19,
+        "absoluteRms": 2.1980504981249094e-19,
+        "normalized": 2.1980504981249094e-15
+      },
+      {
+        "signal": "v(300)",
+        "peak": 0.0001,
+        "absoluteMax": 2.1980504981249094e-19,
+        "absoluteRms": 2.1980504981249094e-19,
+        "normalized": 2.1980504981249094e-15
+      },
+      {
+        "signal": "v(7)",
+        "peak": 0.0001,
+        "absoluteMax": 1.7914746834428452e-19,
+        "absoluteRms": 1.7914746834428452e-19,
+        "normalized": 1.7914746834428452e-15
+      },
+      {
+        "signal": "v(12)",
+        "peak": 5.499999644289564,
+        "absoluteMax": 7.105427357601002e-15,
+        "absoluteRms": 7.105427357601002e-15,
+        "normalized": 1.2918959667530691e-15
+      },
+      {
+        "signal": "v(3)",
+        "peak": 5.499999643393009,
+        "absoluteMax": 3.552713678800501e-15,
+        "absoluteRms": 3.552713678800501e-15,
+        "normalized": 6.459479834818305e-16
+      },
+      {
+        "signal": "v(2)",
+        "peak": 0.0001,
+        "absoluteMax": 0,
+        "absoluteRms": 0,
+        "normalized": 0
+      },
+      {
+        "signal": "i(vpulse)",
+        "peak": 1e-10,
+        "absoluteMax": 0,
+        "absoluteRms": 0,
+        "normalized": 0
+      },
+      {
+        "signal": "i(vtest1)",
+        "peak": 1e-10,
+        "absoluteMax": 0,
+        "absoluteRms": 0,
+        "normalized": 0
+      }
+    ]
+  },
+  {
+    "file": "reduced-inverter-fine.waveforms.json.gz",
+    "sha256": "6b0bf1f043243ad1f7227f1f55112bb19c9eec8fe76538b24376aea93f6f09b6",
+    "errors": [
+      {
+        "signal": "i(vp)",
+        "peak": 0.002370450285915016,
+        "absoluteMax": 0.0000019499129103634112,
+        "absoluteRms": 5.590215018368825e-8,
+        "normalized": 0.0008225917758957457
+      },
+      {
+        "signal": "v(3)",
+        "peak": 10.28499704579546,
+        "absoluteMax": 0.0006801171770187686,
+        "absoluteRms": 0.000031572382679180027,
+        "normalized": 0.00006612711447465148
+      },
+      {
+        "signal": "i(vdd)",
+        "peak": 0.003983304027638717,
+        "absoluteMax": 1.8109873507234087e-7,
+        "absoluteRms": 1.2772059926074099e-8,
+        "normalized": 0.00004546445207690946
+      },
+      {
+        "signal": "v(2)",
+        "peak": 10,
+        "absoluteMax": 5.302425165609748e-13,
+        "absoluteRms": 3.7451374913404485e-14,
+        "normalized": 5.302425165609748e-14
+      },
+      {
+        "signal": "v(1)",
+        "peak": 10,
+        "absoluteMax": 0,
+        "absoluteRms": 0,
+        "normalized": 0
+      }
+    ]
+  },
+  {
+    "file": "reduced-inverter-op.waveforms.json.gz",
+    "sha256": "3d4d95e14099d5010e20f6b3183ad62e901b7be64a01edd7913e96d15dbcf39f",
+    "errors": [
+      {
+        "signal": "i(vdd)",
+        "peak": 1e-10,
+        "absoluteMax": 1.5679547104078574e-17,
+        "absoluteRms": 1.5679547104078574e-17,
+        "normalized": 1.5679547104078573e-7
+      },
+      {
+        "signal": "v(3)",
+        "peak": 9.999999991900193,
+        "absoluteMax": 8.348877145181177e-14,
+        "absoluteRms": 8.348877145181177e-14,
+        "normalized": 8.348877151943607e-15
+      },
+      {
+        "signal": "v(1)",
+        "peak": 10,
+        "absoluteMax": 0,
+        "absoluteRms": 0,
+        "normalized": 0
+      },
+      {
+        "signal": "v(2)",
+        "peak": 0.0001,
+        "absoluteMax": 0,
+        "absoluteRms": 0,
+        "normalized": 0
+      },
+      {
+        "signal": "i(vp)",
+        "peak": 1e-10,
+        "absoluteMax": 0,
+        "absoluteRms": 0,
+        "normalized": 0
+      }
+    ]
+  },
+  {
+    "file": "reduced-inverter.waveforms.json.gz",
+    "sha256": "20fc47a711fce962bb5e766140c9ef7aed0d36648d1f5881e1b702182be0864c",
+    "errors": [
+      {
+        "signal": "i(vp)",
+        "peak": 0.002599751062713873,
+        "absoluteMax": 0.000005563442519512232,
+        "absoluteRms": 4.331820201779906e-7,
+        "normalized": 0.0021399904780516057
+      },
+      {
+        "signal": "i(vdd)",
+        "peak": 0.003832045486031362,
+        "absoluteMax": 0.000003990929041575706,
+        "absoluteRms": 4.3221643983639023e-7,
+        "normalized": 0.0010414618135728057
+      },
+      {
+        "signal": "v(3)",
+        "peak": 10.28588006007774,
+        "absoluteMax": 0.010215083244785816,
+        "absoluteRms": 0.0008457864942021575,
+        "normalized": 0.0009931170872226377
+      },
+      {
+        "signal": "v(2)",
+        "peak": 10,
+        "absoluteMax": 5.293543381412746e-13,
+        "absoluteRms": 8.08452221430245e-14,
+        "normalized": 5.2935433814127465e-14
+      },
+      {
+        "signal": "v(1)",
+        "peak": 10,
+        "absoluteMax": 0,
+        "absoluteRms": 0,
+        "normalized": 0
+      }
+    ]
+  },
+  {
+    "file": "reduced-pair-fine.waveforms.json.gz",
+    "sha256": "2497669dd976c868ca607917efa267d68b7213cbdf916eb93c2a4bd4921d385b",
+    "errors": [
+      {
+        "signal": "i(vp)",
+        "peak": 0.002150640791951199,
+        "absoluteMax": 4.6849232978457556e-7,
+        "absoluteRms": 2.316569848501098e-8,
+        "normalized": 0.00021783848401737477
+      },
+      {
+        "signal": "i(vdd)",
+        "peak": 0.004670424716512946,
+        "absoluteMax": 8.572643354493037e-7,
+        "absoluteRms": 6.678044716512772e-8,
+        "normalized": 0.00018355168694151618
+      },
+      {
+        "signal": "v(4)",
+        "peak": 10.2444115290768,
+        "absoluteMax": 0.0008440880123563588,
+        "absoluteRms": 0.000043235523548061656,
+        "normalized": 0.00008239497309929191
+      },
+      {
+        "signal": "v(3)",
+        "peak": 10.21016048838975,
+        "absoluteMax": 0.00024933268180848955,
+        "absoluteRms": 0.000017705563956450984,
+        "normalized": 0.000024420055110006595
+      },
+      {
+        "signal": "v(2)",
+        "peak": 10,
+        "absoluteMax": 5.294653604437372e-13,
+        "absoluteRms": 3.322473896337136e-14,
+        "normalized": 5.294653604437371e-14
+      },
+      {
+        "signal": "v(1)",
+        "peak": 10,
+        "absoluteMax": 0,
+        "absoluteRms": 0,
+        "normalized": 0
+      }
+    ]
+  },
+  {
+    "file": "reduced-pair-op.waveforms.json.gz",
+    "sha256": "2c69b5476b6c2d01f2ecce5a91b79aaa639888bbb73cf7d0014fd8b4fd23ef98",
+    "errors": [
+      {
+        "signal": "v(3)",
+        "peak": 9.999999991900097,
+        "absoluteMax": 3.730349362740526e-14,
+        "absoluteRms": 3.730349362740526e-14,
+        "normalized": 3.7303493657620724e-15
+      },
+      {
+        "signal": "v(4)",
+        "peak": 0.0001,
+        "absoluteMax": 1.1001502146955268e-22,
+        "absoluteRms": 1.1001502146955268e-22,
+        "normalized": 1.1001502146955268e-18
+      },
+      {
+        "signal": "v(1)",
+        "peak": 10,
+        "absoluteMax": 0,
+        "absoluteRms": 0,
+        "normalized": 0
+      },
+      {
+        "signal": "v(2)",
+        "peak": 0.0001,
+        "absoluteMax": 0,
+        "absoluteRms": 0,
+        "normalized": 0
+      },
+      {
+        "signal": "i(vdd)",
+        "peak": 1e-10,
+        "absoluteMax": 0,
+        "absoluteRms": 0,
+        "normalized": 0
+      },
+      {
+        "signal": "i(vp)",
+        "peak": 1e-10,
+        "absoluteMax": 0,
+        "absoluteRms": 0,
+        "normalized": 0
+      }
+    ]
+  },
+  {
+    "file": "reduced-pair.waveforms.json.gz",
+    "sha256": "2cf07960550f2227736d6f8d361a0207f5f3737fc85e1683dbaf4f07bdac82ba",
+    "errors": [
+      {
+        "signal": "i(vp)",
+        "peak": 0.002281858882292133,
+        "absoluteMax": 0.0001325215358073304,
+        "absoluteRms": 0.000008297612372633432,
+        "normalized": 0.058076131190992926
+      },
+      {
+        "signal": "i(vdd)",
+        "peak": 0.004769040657204058,
+        "absoluteMax": 0.00017184032401728775,
+        "absoluteRms": 0.000011291439799665062,
+        "normalized": 0.03603247201461949
+      },
+      {
+        "signal": "v(4)",
+        "peak": 10.21171085564362,
+        "absoluteMax": 0.0714496000551037,
+        "absoluteRms": 0.007684522334101515,
+        "normalized": 0.006996829528875296
+      },
+      {
+        "signal": "v(3)",
+        "peak": 10.20922806401285,
+        "absoluteMax": 0.022681549667352918,
+        "absoluteRms": 0.0026292099335893143,
+        "normalized": 0.0022216713668396283
+      },
+      {
+        "signal": "v(2)",
+        "peak": 10,
+        "absoluteMax": 5.273559366969494e-13,
+        "absoluteRms": 8.937873184993907e-14,
+        "normalized": 5.2735593669694936e-14
+      },
+      {
+        "signal": "v(1)",
+        "peak": 10,
+        "absoluteMax": 0,
+        "absoluteRms": 0,
+        "normalized": 0
+      }
+    ]
+  },
+  {
+    "file": "todd3-default.waveforms.json.gz",
+    "sha256": "adecd1aec7ea465065ee828bea3db6a4f675a9e8abf0e8931137593bb338b57f",
+    "errors": [
+      {
+        "signal": "i(vnd)",
+        "peak": 1e-10,
+        "absoluteMax": 2.3791944509776953e-13,
+        "absoluteRms": 2.2380880972515976e-14,
+        "normalized": 0.002379194450977695
+      },
+      {
+        "signal": "i(vc)",
+        "peak": 0.000003902132693839404,
+        "absoluteMax": 1.947085300151791e-9,
+        "absoluteRms": 2.859550303190907e-10,
+        "normalized": 0.0004989797766810451
+      },
+      {
+        "signal": "i(vamp)",
+        "peak": 0.001707506494114215,
+        "absoluteMax": 8.003122396094044e-7,
+        "absoluteRms": 1.1541699108654914e-7,
+        "normalized": 0.00046870231086563097
+      },
+      {
+        "signal": "v(7)",
+        "peak": 0.05550531783480643,
+        "absoluteMax": 0.000006032559094825557,
+        "absoluteRms": 0.0000013024255816251414,
+        "normalized": 0.00010868434467449609
+      },
+      {
+        "signal": "v(3)",
+        "peak": 0.1190456470029553,
+        "absoluteMax": 0.000012441973944413154,
+        "absoluteRms": 0.0000030707948037175498,
+        "normalized": 0.00010451431243096426
+      },
+      {
+        "signal": "i(vseu)",
+        "peak": 0.007928147681385682,
+        "absoluteMax": 8.059598733860598e-7,
+        "absoluteRms": 1.2005034623421647e-7,
+        "normalized": 0.00010165802981676978
+      },
+      {
+        "signal": "i(vdd)",
+        "peak": 0.009709062661008723,
+        "absoluteMax": 8.310845319176724e-7,
+        "absoluteRms": 1.225887843695118e-7,
+        "normalized": 0.00008559884315663968
+      },
+      {
+        "signal": "i(vpulse)",
+        "peak": 0.01337724280440306,
+        "absoluteMax": 4.906600024612295e-7,
+        "absoluteRms": 1.3103364727322802e-7,
+        "normalized": 0.000036678709479634395
+      },
+      {
+        "signal": "v(4)",
+        "peak": 5.922436577019265,
+        "absoluteMax": 0.00020571306991001848,
+        "absoluteRms": 0.000036593653150535745,
+        "normalized": 0.000034734533200109495
+      },
+      {
+        "signal": "v(12)",
+        "peak": 5.922436577013341,
+        "absoluteMax": 0.00020571306489713947,
+        "absoluteRms": 0.000036593653175603,
+        "normalized": 0.0000347345323537225
+      },
+      {
+        "signal": "v(5)",
+        "peak": 5.024529342842301,
+        "absoluteMax": 0.000004497578081519293,
+        "absoluteRms": 0.0000020073878105745633,
+        "normalized": 8.951242543595299e-7
+      },
+      {
+        "signal": "v(2)",
+        "peak": 0.0001,
+        "absoluteMax": 1.9622800393858785e-11,
+        "absoluteRms": 3.927851939680441e-12,
+        "normalized": 1.9622800393858785e-7
+      },
+      {
+        "signal": "v(11)",
+        "peak": 5,
+        "absoluteMax": 4.999556324492005e-12,
+        "absoluteRms": 4.1267700625085834e-12,
+        "normalized": 9.99911264898401e-13
+      }
+    ]
+  },
+  {
+    "file": "todd3-fine.waveforms.json.gz",
+    "sha256": "7444ab32f54d4f1752960936a426180741c37c64999a6b165ad277611e14787f",
+    "errors": [
+      {
+        "signal": "i(vnd)",
+        "peak": 1e-10,
+        "absoluteMax": 3.3258051581541777e-13,
+        "absoluteRms": 8.851699243277187e-15,
+        "normalized": 0.0033258051581541775
+      },
+      {
+        "signal": "i(vc)",
+        "peak": 0.000004016400452586016,
+        "absoluteMax": 3.796715907036248e-9,
+        "absoluteRms": 1.1846577595244174e-10,
+        "normalized": 0.000945303126980697
+      },
+      {
+        "signal": "i(vamp)",
+        "peak": 0.001553209124845743,
+        "absoluteMax": 0.0000014557785415010484,
+        "absoluteRms": 9.806444305695147e-8,
+        "normalized": 0.0009372714325546016
+      },
+      {
+        "signal": "i(vseu)",
+        "peak": 0.007929806334134279,
+        "absoluteMax": 0.000005549118643683945,
+        "absoluteRms": 1.52578302390634e-7,
+        "normalized": 0.00069977984453384
+      },
+      {
+        "signal": "i(vpulse)",
+        "peak": 0.0119794663261028,
+        "absoluteMax": 0.000004926667671632107,
+        "absoluteRms": 1.8099653044151956e-7,
+        "normalized": 0.0004112593614372525
+      },
+      {
+        "signal": "i(vdd)",
+        "peak": 0.01049204926837346,
+        "absoluteMax": 0.0000033120730493002223,
+        "absoluteRms": 1.215847596212188e-7,
+        "normalized": 0.00031567456123980626
+      },
+      {
+        "signal": "v(3)",
+        "peak": 0.1188357447566337,
+        "absoluteMax": 0.00002589394914281895,
+        "absoluteRms": 0.0000015738217185254985,
+        "normalized": 0.00021789697364078234
+      },
+      {
+        "signal": "v(7)",
+        "peak": 0.05599217168928852,
+        "absoluteMax": 0.00000790479454311488,
+        "absoluteRms": 7.294194504417505e-7,
+        "normalized": 0.00014117678069320343
+      },
+      {
+        "signal": "v(4)",
+        "peak": 5.909317713206411,
+        "absoluteMax": 0.00030387813690913035,
+        "absoluteRms": 0.000020731646804998157,
+        "normalized": 0.000051423557110495125
+      },
+      {
+        "signal": "v(12)",
+        "peak": 5.909317713200501,
+        "absoluteMax": 0.0003038781329518514,
+        "absoluteRms": 0.000020731646279030985,
+        "normalized": 0.0000514235564408789
+      },
+      {
+        "signal": "v(5)",
+        "peak": 5.024514868579455,
+        "absoluteMax": 0.000004557541472216542,
+        "absoluteRms": 0.000001930973712620563,
+        "normalized": 9.07060998210373e-7
+      },
+      {
+        "signal": "v(2)",
+        "peak": 0.0001,
+        "absoluteMax": 2.977869845174441e-11,
+        "absoluteRms": 3.0510858816585977e-12,
+        "normalized": 2.977869845174441e-7
+      },
+      {
+        "signal": "v(11)",
+        "peak": 5,
+        "absoluteMax": 5.0039972165905056e-12,
+        "absoluteRms": 4.329970399446052e-12,
+        "normalized": 1.000799443318101e-12
+      }
+    ]
+  },
+  {
+    "file": "todd3-op.waveforms.json.gz",
+    "sha256": "5e052d27fde831ce2506af2193948ac678a3cf8577df7470de33a9bce4988bae",
+    "errors": [
+      {
+        "signal": "v(6)",
+        "peak": 0.9499155549283161,
+        "absoluteMax": 0.000008543235947455763,
+        "absoluteRms": 0.000008543235947455763,
+        "normalized": 0.000008993679388796265
+      },
+      {
+        "signal": "i(vdd)",
+        "peak": 9.87931914189734e-9,
+        "absoluteMax": 3.053284740147784e-14,
+        "absoluteRms": 3.053284740147784e-14,
+        "normalized": 0.0000030905821507466718
+      },
+      {
+        "signal": "v(3)",
+        "peak": 0.0001,
+        "absoluteMax": 5.755621689294095e-11,
+        "absoluteRms": 5.755621689294095e-11,
+        "normalized": 5.755621689294095e-7
+      },
+      {
+        "signal": "v(7)",
+        "peak": 0.0001,
+        "absoluteMax": 2.8761219318045283e-11,
+        "absoluteRms": 2.8761219318045283e-11,
+        "normalized": 2.8761219318045283e-7
+      },
+      {
+        "signal": "i(vseu)",
+        "peak": 1e-10,
+        "absoluteMax": 6.816534255103608e-18,
+        "absoluteRms": 6.816534255103608e-18,
+        "normalized": 6.816534255103608e-8
+      },
+      {
+        "signal": "i(vamp)",
+        "peak": 1e-10,
+        "absoluteMax": 2.3104620536842405e-18,
+        "absoluteRms": 2.3104620536842405e-18,
+        "normalized": 2.3104620536842403e-8
+      },
+      {
+        "signal": "v(2)",
+        "peak": 0.0001,
+        "absoluteMax": 1.775277163771835e-12,
+        "absoluteRms": 1.775277163771835e-12,
+        "normalized": 1.775277163771835e-8
+      },
+      {
+        "signal": "v(9)",
+        "peak": 4.999999597349412,
+        "absoluteMax": 9.237055564881302e-14,
+        "absoluteRms": 9.237055564881302e-14,
+        "normalized": 1.8474112617485068e-14
+      },
+      {
+        "signal": "v(12)",
+        "peak": 4.999999497731689,
+        "absoluteMax": 7.37188088351104e-14,
+        "absoluteRms": 7.37188088351104e-14,
+        "normalized": 1.4743763248087093e-14
+      },
+      {
+        "signal": "v(4)",
+        "peak": 4.999999497731689,
+        "absoluteMax": 7.37188088351104e-14,
+        "absoluteRms": 7.37188088351104e-14,
+        "normalized": 1.4743763248087093e-14
+      },
+      {
+        "signal": "v(5)",
+        "peak": 4.99999949773169,
+        "absoluteMax": 7.105427357601002e-14,
+        "absoluteRms": 7.105427357601002e-14,
+        "normalized": 1.4210856142734543e-14
+      },
+      {
+        "signal": "v(11)",
+        "peak": 5,
+        "absoluteMax": 0,
+        "absoluteRms": 0,
+        "normalized": 0
+      },
+      {
+        "signal": "i(vpulse)",
+        "peak": 1e-10,
+        "absoluteMax": 0,
+        "absoluteRms": 0,
+        "normalized": 0
+      }
+    ]
+  }
+]
