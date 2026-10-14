@@ -1,0 +1,121 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: colpitt's oscillator circuit
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+1                                 -2.22502e-05
+2                                            5
+3                                    -0.791392
+4                                            5
+6                                          -10
+l1#branch                            0.0019581
+vee#branch                          0.00198035
+vcc#branch                          -0.0019581
+
+
+No. of Data Rows : 33334
+FFT: Time span: 0.000100002 s, input length: 33334
+FFT: Frequency resolution: 9999.8 Hz, output length: 16668
+fosc                =  3.33993e+06 with=  -1.23663e+01
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+Periodic Steady State Analysis Started
+
+PSS Guessed Frequency 1e+06
+PSS Points 256
+PSS Harmonics number 10
+PSS Steady Coefficient 0.005
+PSS sc_iter 50
+PSS Stabilization Time 0.0001
+Exiting from stabilization
+Time of first shooting evaluation will be 0.000101
+In shooting...
+Updated guessed frequency: 1.343926637e6 Hz.
+Next shooting evaluation time is 0.0001017440882 and current time is 0.000101.
+----------------
+
+Updated guessed frequency: 1.668853368e6 Hz.
+Next shooting evaluation time is 0.0001023433021 and current time is 0.0001017440882.
+----------------
+
+Updated guessed frequency: 1.672716606e6 Hz.
+Next shooting evaluation time is 0.000102941132 and current time is 0.0001023433021.
+----------------
+
+Updated guessed frequency: 3.343171654e6 Hz.
+Next shooting evaluation time is 0.0001032402491 and current time is 0.000102941132.
+----------------
+
+Updated guessed frequency: 3.343472075e6 Hz.
+Next shooting evaluation time is 0.0001035393394 and current time is 0.0001032402491.
+----------------
+
+Updated guessed frequency: 3.343767113e6 Hz.
+Next shooting evaluation time is 0.0001038384033 and current time is 0.0001035393394.
+----------------
+
+Updated guessed frequency: 3.250884693e6 Hz.
+Next shooting evaluation time is 0.0001041460119 and current time is 0.0001038384033.
+----------------
+
+Updated guessed frequency: 3.343618982e6 Hz.
+Next shooting evaluation time is 0.000104445089 and current time is 0.0001041460119.
+----------------
+
+Updated guessed frequency: 2.925666609e6 Hz.
+Next shooting evaluation time is 0.0001047868914 and current time is 0.000104445089.
+----------------
+
+0   -> FE: 1343926.637     || RR:     11.67026438 || predsum/dynamic_test: 9.711761574e-07 || minimum: 9.711761574e-07
+1   -> FE: 1668853.368     || RR:     3.762375221 || predsum/dynamic_test: 3.543277311e-08 || minimum: 3.543277311e-08
+2   -> FE: 1672716.606     || RR:   0.04476661635 || predsum/dynamic_test: 1.712039483e-08 || minimum: 1.712039483e-08
+3   -> FE: 3343171.654     || RR:   0.01387109646 || predsum/dynamic_test: 9.489363482e-09 || minimum: 9.489363482e-09
+4   -> FE: 3343472.075     || RR: 0.0008622597883 || predsum/dynamic_test: 4.273102241e-08 || minimum: 9.489363482e-09
+5   -> FE: 3343767.113     || RR:  0.000844598513 || predsum/dynamic_test:  8.54543658e-09 || minimum:  8.54543658e-09
+6   -> FE: 3250884.693     || RR: 5.652309127e-05 || predsum/dynamic_test: 8.544682571e-09 || minimum: 8.544682571e-09
+7   -> FE: 3343618.982     || RR:    0.2351835994 || predsum/dynamic_test: 8.788816359e-09 || minimum: 8.544682571e-09
+8   -> FE: 2925666.609     || RR: 0.0001185891241 || predsum/dynamic_test: 4.272530561e-08 || minimum: 8.544682571e-09
+ Reference value :  1.04445e-04
+Convergence reached. Final circuit time is 0.000104445089 seconds (iteration n° 8) and predicted fundamental frequency is 2.925666609e6 Hz
+
+No. of Data Rows : 257
+
+No. of Data Rows : 10
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Total analysis time (seconds) = 0.428596
+
+Total elapsed time (seconds) = 0.434 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13914.312 MB.
+Maximum ngspice program size =   16.156 MB.
+Current ngspice program size =   16.156 MB.
+
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+

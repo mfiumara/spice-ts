@@ -1,0 +1,111 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: * mosmem - mos memory cell
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+9                                            5
+7                                            2
+1                                            0
+2                                            2
+3                                      2.66862
+4                                     0.177782
+5                                      2.66851
+6                                     0.135199
+8                                      2.66891
+vwb#branch                                   0
+vw#branch                                    0
+vs#branch                                    0
+vdd#branch                        -2.72229e-05
+
+
+No. of Data Rows : 150
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 14  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+9                                            5
+7                                            2
+1                                            0
+2                                            2
+3                                      2.66862
+4                                     0.177782
+5                                      2.66851
+6                                     0.135199
+8                                      2.66891
+vwb#branch                                   0
+vw#branch                                    0
+vs#branch                                    0
+vdd#branch                        -2.72229e-05
+
+
+No. of Data Rows : 150
+.print line ignored since rawfile was produced.
+.plot line ignored since rawfile was produced.
+.plot line ignored since rawfile was produced.
+Total elapsed time (seconds) = 0.007 
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13004.984 MB.
+Maximum ngspice program size =   10.219 MB.
+Current ngspice program size =   10.219 MB.
+24 page faults, 0 vol + 9 invol = 9 context switches.
+
+Number of lines in the deck = 20
+Netlist loading time = 0.000212
+Subckt and Param expansion time = 0.00025
+Netlist parsing time = 0.000229
+
+Nominal temperature = 27
+Operating temperature = 27
+Total iterations = 676
+Transient iterations = 650
+Circuit Equations = 14
+Circuit original non-zeroes = 47
+Circuit fill-in non-zeroes = 0
+Circuit total non-zeroes = 0
+Transient timepoints = 318
+Accepted timepoints = 300
+Rejected timepoints = 18
+Total analysis time (seconds) = 0.002575
+Matrix load time = 0.000605
+Matrix synchronize time = 0
+Matrix reorder time = 7.99999E-06
+Matrix factor time = 5.6E-05
+Matrix solve time = 5.1E-05
+Transient analysis time = 0.001926
+Transient load time = 0.000576
+Transient sync time = 0
+Transient factor time = 5.4E-05
+Transient solve time = 5E-05
+Transient trunc time = 0.000181
+Transient iterations for the last time point = 0
+AC analysis time = 0
+AC load time = 0
+AC sync time = 0
+AC factor time = 0
+AC solve time = 0
+
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+Warning: `edit' is disabled because 'interactive' has not been set.
+  perhaps you want to 'set interactive'
+.options: no listing, rawfile was generated.

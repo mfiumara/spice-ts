@@ -1,0 +1,25 @@
+*************************************************************
+* Test fatal error messages from missing L values on the
+* instance line.  Test both without and with a model card.
+*
+*
+*
+* See SON Bug 860.
+*************************************************************
+
+* L value missing from instance line
+I1 1 0 PULSE(0 5V 0 1MS 1MS 10MS 25MS) 
+L1 1a 0 
+R1 1 1a 0.001
+
+*L value missing from instance line, and device also has a model card
+I2 2 0 PULSE(0 5V 0 1MS 1MS 10MS 25MS) 
+L2 2a 0 LMOD
+R2 2 2a 0.001
+.MODEL LMOD L(TC1=0.1)
+
+.options timeint newbpstepping=0 reltol=1.0e-4
+.TRAN 0.1MS 20MS 
+.PRINT TRAN V(1) V(2)
+
+.END

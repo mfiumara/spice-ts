@@ -1,0 +1,16 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: regression test temper-res-1.cir, tc1 tc2 and tce
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 10
+Note: err1 = 2.22045E-16
+Note: err2 = 2.22045E-16
+Note: err3 = 2.22045E-16
+INFO: success
+ngspice-47 done

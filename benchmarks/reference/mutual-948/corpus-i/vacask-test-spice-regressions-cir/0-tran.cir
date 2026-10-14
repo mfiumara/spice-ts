@@ -1,0 +1,20 @@
+* Expression quoting, per-definition aliases, and capacitor model binding.
+.param vdd=1 rval=1k cval=1p lval=1n
+
+.subckt left in out
+RA in out {rval}
+.ends left
+
+.subckt right in out
+RB in out {rval}
+.ends right
+
+.model cmod c
+V1 supply 0 DC {vdd} PULSE(0 {vdd} 1u 1n 1n 4u 10u)
+XA supply mid left
+XB mid out right
+C1 out 0 cmod w=1u l=1u
+C2 mid 0 {cval}
+L1 out 0 {lval}
+.tran 10n 20u
+.end

@@ -1,0 +1,67 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: ring oscillator with various current and voltage measurements
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+xro.n2                                0.745609
+xro.n1                                0.745609
+ss                                           0
+dd                                         1.5
+xro.n3                                0.745609
+xro.n4                                0.745609
+xro.n5                                0.745609
+xro.xinv5.mea                                0
+xro.outi                              0.745609
+ssb                                          0
+out                                   0.758408
+xro.xinv7.mea                                0
+vssb#branch                        0.000616571
+vss#branch                          0.00072756
+vdd#branch                         -0.00134413
+v.xro.xinv7.vmeas#branch           0.000471059
+v.xro.xinv5.vmeas#branch           0.000145512
+
+
+No. of Data Rows : 1508
+ASCII raw file "id.raw"
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Total analysis time (seconds) = 0.050244
+
+Total elapsed time (seconds) = 0.057 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13839.328 MB.
+Maximum ngspice program size =   11.125 MB.
+Current ngspice program size =   11.125 MB.
+
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+

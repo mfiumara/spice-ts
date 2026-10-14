@@ -1,0 +1,183 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: *** ndinv * 4
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+11                                           5
+100                                          5
+1                                            0
+xndinv1.12                             3.61293
+xndinv1.13                             3.61293
+xndinv1.14                             3.61293
+xndinv1.23                                   5
+xndinv1.22                             1.59002
+12                                 1.43643e-08
+13                                           5
+xndinv1.32                        7.91919e-262
+2                                  6.07304e-09
+21                                           5
+xndinv2.12                             3.61293
+xndinv2.13                             3.61293
+xndinv2.14                             3.61293
+xndinv2.23                                   5
+xndinv2.22                             1.59002
+22                                 1.43643e-08
+23                                           5
+xndinv2.32                         1.5321e-263
+3                                  6.07304e-09
+31                                           5
+xndinv3.12                             3.61293
+xndinv3.13                             3.61293
+xndinv3.14                             3.61293
+xndinv3.23                                   5
+xndinv3.22                             1.59002
+32                                 1.43643e-08
+33                                           5
+xndinv3.32                       -1.10314e-171
+4                                  6.07304e-09
+41                                           5
+xndinv4.12                             3.61293
+xndinv4.13                             3.61293
+xndinv4.14                             3.61293
+xndinv4.23                                   5
+xndinv4.22                             1.59002
+42                                 1.43643e-08
+43                                           5
+xndinv4.32                       -9.47821e-144
+5                                  6.07304e-09
+vin#branch                                   0
+vdd#branch                         -1.9447e-10
+
+
+No. of Data Rows : 315
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 45  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+11                                           5
+100                                          5
+1                                            0
+xndinv1.12                             3.61293
+xndinv1.13                             3.61293
+xndinv1.14                             3.61293
+xndinv1.23                                   5
+xndinv1.22                             1.59002
+12                                 1.43643e-08
+13                                           5
+xndinv1.32                        7.91919e-262
+2                                  6.07304e-09
+21                                           5
+xndinv2.12                             3.61293
+xndinv2.13                             3.61293
+xndinv2.14                             3.61293
+xndinv2.23                                   5
+xndinv2.22                             1.59002
+22                                 1.43643e-08
+23                                           5
+xndinv2.32                         1.5321e-263
+3                                  6.07304e-09
+31                                           5
+xndinv3.12                             3.61293
+xndinv3.13                             3.61293
+xndinv3.14                             3.61293
+xndinv3.23                                   5
+xndinv3.22                             1.59002
+32                                 1.43643e-08
+33                                           5
+xndinv3.32                       -1.10314e-171
+4                                  6.07304e-09
+41                                           5
+xndinv4.12                             3.61293
+xndinv4.13                             3.61293
+xndinv4.14                             3.61293
+xndinv4.23                                   5
+xndinv4.22                             1.59002
+42                                 1.43643e-08
+43                                           5
+xndinv4.32                       -9.47821e-144
+5                                  6.07304e-09
+vin#branch                                   0
+vdd#branch                         -1.9447e-10
+
+
+No. of Data Rows : 315
+.print line ignored since rawfile was produced.
+.print line ignored since rawfile was produced.
+Total elapsed time (seconds) = 0.025 
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 12917.547 MB.
+Maximum ngspice program size =   10.719 MB.
+Current ngspice program size =   10.719 MB.
+24 page faults, 0 vol + 10 invol = 10 context switches.
+
+Number of lines in the deck = 121
+Netlist loading time = 0.00029
+Subckt and Param expansion time = 0.000582
+Netlist parsing time = 0.000461
+
+Nominal temperature = 27
+Operating temperature = 27
+Total iterations = 1882
+Transient iterations = 1816
+Circuit Equations = 45
+Circuit original non-zeroes = 240
+Circuit fill-in non-zeroes = 14
+Circuit total non-zeroes = 0
+Transient timepoints = 632
+Accepted timepoints = 630
+Rejected timepoints = 2
+Total analysis time (seconds) = 0.020889
+Matrix load time = 0.010397
+Matrix synchronize time = 0
+Matrix reorder time = 3.8E-05
+Matrix factor time = 0.001038
+Matrix solve time = 0.000668
+Transient analysis time = 0.019798
+Transient load time = 0.010065
+Transient sync time = 0
+Transient factor time = 0.001001
+Transient solve time = 0.000644
+Transient trunc time = 0.001929
+Transient iterations for the last time point = 0
+AC analysis time = 0
+AC load time = 0
+AC sync time = 0
+AC factor time = 0
+AC solve time = 0
+
+
+Warning: Model issue on line 87 :
+  .model n10l5 nmos level=6 tpg=1 kc=3.8921e-05 nc=1.1739 kv=0.91602 nv=0. ...
+unrecognized parameter (xj) - ignored
+
+Warning: Model issue on line 97 :
+  .model p12l5 pmos level=6 tpg=-1 kc=6.42696e-06 nc=1.6536 kv=0.92145 nv= ...
+unrecognized parameter (xj) - ignored
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+Warning: `edit' is disabled because 'interactive' has not been set.
+  perhaps you want to 'set interactive'

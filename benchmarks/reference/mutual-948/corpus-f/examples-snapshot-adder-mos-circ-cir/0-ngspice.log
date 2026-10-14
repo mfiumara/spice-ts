@@ -1,0 +1,129 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: *  adder - 4 bit all-nand-gate binary adder
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 91  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+99                                         3.3
+1                                            0
+2                                            0
+3                                            0
+4                                            0
+5                                            0
+6                                            0
+7                                            0
+8                                            0
+x1.x1.x1.7                                 3.3
+x1.x1.x1.x1.net.1                  1.19527e-15
+x1.x1.x1.8                                 3.3
+x1.x1.x1.x2.net.1                  1.84822e-23
+x1.x1.x1.9                                 3.3
+x1.x1.x1.x3.net.1                  1.84822e-23
+x1.x1.x1.10                        7.38339e-08
+x1.x1.x1.x4.net.1                   3.6917e-08
+x1.x1.x1.11                                3.3
+x1.x1.x1.x5.net.1                  1.19527e-15
+x1.x1.x1.12                                3.3
+x1.x1.x1.x6.net.1                  1.84822e-23
+x1.x1.x1.13                                3.3
+x1.x1.x1.x7.net.1                  1.84822e-23
+9                                  7.38339e-08
+x1.x1.x1.x8.net.1                   3.6917e-08
+x1.x1.10                           7.38339e-08
+x1.x1.x1.x9.net.1                   3.6917e-08
+x1.x1.x2.7                                 3.3
+x1.x1.x2.x1.net.1                  1.19527e-15
+x1.x1.x2.8                                 3.3
+x1.x1.x2.x2.net.1                  1.84822e-23
+x1.x1.x2.9                                 3.3
+x1.x1.x2.x3.net.1                  1.84822e-23
+x1.x1.x2.10                        7.38339e-08
+x1.x1.x2.x4.net.1                   3.6917e-08
+x1.x1.x2.11                                3.3
+x1.x1.x2.x5.net.1                  1.19527e-15
+x1.x1.x2.12                                3.3
+x1.x1.x2.x6.net.1                  1.84822e-23
+x1.x1.x2.13                                3.3
+x1.x1.x2.x7.net.1                  1.84822e-23
+10                                 7.38339e-08
+x1.x1.x2.x8.net.1                   3.6917e-08
+x1.16                              7.38339e-08
+x1.x1.x2.x9.net.1                   3.6917e-08
+x1.x2.x1.7                                 3.3
+x1.x2.x1.x1.net.1                  1.19527e-15
+x1.x2.x1.8                                 3.3
+x1.x2.x1.x2.net.1                  1.84822e-23
+x1.x2.x1.9                                 3.3
+x1.x2.x1.x3.net.1                  1.84822e-23
+x1.x2.x1.10                        7.38339e-08
+x1.x2.x1.x4.net.1                   3.6917e-08
+x1.x2.x1.11                                3.3
+x1.x2.x1.x5.net.1                  1.19496e-15
+x1.x2.x1.12                                3.3
+x1.x2.x1.x6.net.1                  1.84822e-23
+x1.x2.x1.13                                3.3
+x1.x2.x1.x7.net.1                  1.84822e-23
+11                                 7.38339e-08
+x1.x2.x1.x8.net.1                   3.6917e-08
+x1.x2.10                           7.38339e-08
+x1.x2.x1.x9.net.1                   3.6917e-08
+x1.x2.x2.7                                 3.3
+x1.x2.x2.x1.net.1                  1.19527e-15
+x1.x2.x2.8                                 3.3
+x1.x2.x2.x2.net.1                  1.84822e-23
+x1.x2.x2.9                                 3.3
+x1.x2.x2.x3.net.1                  1.84822e-23
+x1.x2.x2.10                        7.38339e-08
+x1.x2.x2.x4.net.1                   3.6917e-08
+x1.x2.x2.11                                3.3
+x1.x2.x2.x5.net.1                  1.19483e-15
+x1.x2.x2.12                                3.3
+x1.x2.x2.x6.net.1                  1.84822e-23
+x1.x2.x2.13                                3.3
+x1.x2.x2.x7.net.1                  1.84822e-23
+12                                 7.38339e-08
+x1.x2.x2.x8.net.1                   3.6917e-08
+13                                 7.38339e-08
+x1.x2.x2.x9.net.1                   3.6917e-08
+vin4b#branch                                 0
+vin4a#branch                                 0
+vin3b#branch                                 0
+vin3a#branch                                 0
+vin2b#branch                                 0
+vin2a#branch                                 0
+vin1b#branch                                 0
+vin1a#branch                                 0
+vcc#branch                         -1.5888e-10
+
+ Reference value :  6.41127e-07
+No. of Data Rows : 1533
+
+Total analysis time (seconds) = 0.3861
+
+Total elapsed time (seconds) = 0.391 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 14065.375 MB.
+Maximum ngspice program size =   10.844 MB.
+Current ngspice program size =   10.844 MB.
+
+
+
+Checking parameters for BSIM 3.3 model n1
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+
+Checking parameters for BSIM 3.3 model p1
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.

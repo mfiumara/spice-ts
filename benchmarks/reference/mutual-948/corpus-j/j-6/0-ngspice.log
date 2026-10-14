@@ -1,0 +1,24 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: ltspice a-device ota current-limiter example
+
+
+
+Total elapsed time (seconds) = 0.003 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 12655.438 MB.
+Maximum ngspice program size =    9.812 MB.
+Current ngspice program size =    9.812 MB.
+
+
+Error on line 9 or its substitute:
+  aota in1n in1p mulp muln 0 0 out 0 ota g=1 iout=100u vhigh=5 vlow=-5
+MIF-ERROR - unable to find definition of model -5
+    Simulation interrupted due to error!
+
+Error: circuit not parsed.
+Note: no resource usage information for 'time',
+	or no active circuit available

@@ -1,0 +1,9 @@
+A simple resistor with a voltage source
+
+R1 1 0 10k
+V1 1 0 DC 1
+
+.TRAN 1ns 6ns
+
+.print TRAN format=csv file=output.csv precision=17 I(v1) V(1)
+.END

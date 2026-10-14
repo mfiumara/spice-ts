@@ -1,0 +1,12 @@
+* SPICE subckt E2E test
+* RC divider block instantiated via X call with param override
+* X1 overrides rval=2k (default 1k); cval stays at default 1u
+.subckt rcblock in out gnd rval=1k cval=1u
+R1 in out rval
+C1 out gnd cval
+.ends rcblock
+
+Vin in 0 PULSE(0 5 0 1u 1u 4m 10m)
+X1 in out1 0 rcblock rval=2k
+.tran 1u 10m
+.end

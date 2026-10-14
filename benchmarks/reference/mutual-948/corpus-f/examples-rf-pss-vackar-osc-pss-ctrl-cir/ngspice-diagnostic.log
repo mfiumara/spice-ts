@@ -1,0 +1,337 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: vackar's oscillator circuit
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+1                                           10
+2                                           10
+3                                     0.018161
+4                                           10
+l1#branch                                    0
+lrfc#branch                           0.090916
+vcc#branch                           -0.090916
+
+
+No. of Data Rows : 2020
+FFT: Time span: 2.001e-05 s, input length: 2001
+FFT: Frequency resolution: 49975 Hz, output length: 1001
+fosc                =  1.94903e+06 with=  4.27328e+00
+Reset re-loads circuit vackar's oscillator circuit
+
+Circuit: vackar's oscillator circuit
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+Periodic Steady State Analysis Started
+
+PSS Guessed Frequency 1.8e+06
+PSS Points 1024
+PSS Harmonics number 10
+PSS Steady Coefficient 0.005
+PSS sc_iter 50
+PSS Stabilization Time 2e-05
+Exiting from stabilization
+Time of first shooting evaluation will be 2.055555556e-05
+In shooting...
+Updated guessed frequency: 3.300614820e6 Hz.
+Next shooting evaluation time is 2.085852941e-05 and current time is 2.055555556e-05.
+----------------
+
+Updated guessed frequency: 3.155020263e6 Hz.
+Next shooting evaluation time is 2.117548459e-05 and current time is 2.085852941e-05.
+----------------
+
+Updated guessed frequency: 1.477762287e6 Hz.
+Next shooting evaluation time is 2.185218341e-05 and current time is 2.117548459e-05.
+----------------
+
+Updated guessed frequency: 1.927047818e6 Hz.
+Next shooting evaluation time is 2.237111189e-05 and current time is 2.185218341e-05.
+----------------
+
+Updated guessed frequency: 1.860597893e6 Hz.
+Next shooting evaluation time is 2.290857354e-05 and current time is 2.237111189e-05.
+----------------
+
+Updated guessed frequency: 1.926812229e6 Hz.
+Next shooting evaluation time is 2.342756547e-05 and current time is 2.290857354e-05.
+----------------
+
+Updated guessed frequency: 1.927623248e6 Hz.
+Next shooting evaluation time is 2.394633904e-05 and current time is 2.342756547e-05.
+----------------
+
+Updated guessed frequency: 1.882794800e6 Hz.
+Next shooting evaluation time is 2.447746436e-05 and current time is 2.394633904e-05.
+----------------
+
+Updated guessed frequency: 1.927611193e6 Hz.
+Next shooting evaluation time is 2.499624118e-05 and current time is 2.447746436e-05.
+----------------
+
+Updated guessed frequency: 1.893793453e6 Hz.
+Next shooting evaluation time is 2.552428187e-05 and current time is 2.499624118e-05.
+----------------
+
+Updated guessed frequency: 1.927418401e6 Hz.
+Next shooting evaluation time is 2.604311058e-05 and current time is 2.552428187e-05.
+----------------
+
+Updated guessed frequency: 1.893604043e6 Hz.
+Next shooting evaluation time is 2.657120409e-05 and current time is 2.604311058e-05.
+----------------
+
+Updated guessed frequency: 1.927293127e6 Hz.
+Next shooting evaluation time is 2.709006652e-05 and current time is 2.657120409e-05.
+----------------
+
+Updated guessed frequency: 1.927297095e6 Hz.
+Next shooting evaluation time is 2.760892788e-05 and current time is 2.709006652e-05.
+----------------
+
+Updated guessed frequency: 1.882476232e6 Hz.
+Next shooting evaluation time is 2.814014309e-05 and current time is 2.760892788e-05.
+----------------
+
+Updated guessed frequency: 1.927285043e6 Hz.
+Next shooting evaluation time is 2.86590077e-05 and current time is 2.814014309e-05.
+----------------
+
+Updated guessed frequency: 1.893473024e6 Hz.
+Next shooting evaluation time is 2.918713775e-05 and current time is 2.86590077e-05.
+----------------
+
+Updated guessed frequency: 1.927272279e6 Hz.
+Next shooting evaluation time is 2.970600579e-05 and current time is 2.918713775e-05.
+----------------
+
+Updated guessed frequency: 1.893460484e6 Hz.
+Next shooting evaluation time is 3.023413934e-05 and current time is 2.970600579e-05.
+----------------
+
+Updated guessed frequency: 1.927259514e6 Hz.
+Next shooting evaluation time is 3.075301082e-05 and current time is 3.023413934e-05.
+----------------
+
+Updated guessed frequency: 1.893447944e6 Hz.
+Next shooting evaluation time is 3.128114786e-05 and current time is 3.075301082e-05.
+----------------
+
+Updated guessed frequency: 1.927246750e6 Hz.
+Next shooting evaluation time is 3.180002278e-05 and current time is 3.128114786e-05.
+----------------
+
+Updated guessed frequency: 1.893435404e6 Hz.
+Next shooting evaluation time is 3.232816332e-05 and current time is 3.180002278e-05.
+----------------
+
+Updated guessed frequency: 1.927233987e6 Hz.
+Next shooting evaluation time is 3.284704168e-05 and current time is 3.232816332e-05.
+----------------
+
+Updated guessed frequency: 1.893422864e6 Hz.
+Next shooting evaluation time is 3.337518572e-05 and current time is 3.284704168e-05.
+----------------
+
+Updated guessed frequency: 1.927221223e6 Hz.
+Next shooting evaluation time is 3.389406751e-05 and current time is 3.337518572e-05.
+----------------
+
+Updated guessed frequency: 1.927224057e6 Hz.
+Next shooting evaluation time is 3.441294854e-05 and current time is 3.389406751e-05.
+----------------
+
+Updated guessed frequency: 1.882404893e6 Hz.
+Next shooting evaluation time is 3.494418388e-05 and current time is 3.441294854e-05.
+----------------
+
+Updated guessed frequency: 1.927212005e6 Hz.
+Next shooting evaluation time is 3.546306815e-05 and current time is 3.494418388e-05.
+----------------
+
+Updated guessed frequency: 1.927216540e6 Hz.
+Next shooting evaluation time is 3.59819512e-05 and current time is 3.546306815e-05.
+----------------
+
+Updated guessed frequency: 1.893405723e6 Hz.
+Next shooting evaluation time is 3.651010002e-05 and current time is 3.59819512e-05.
+----------------
+
+Updated guessed frequency: 1.927203776e6 Hz.
+Next shooting evaluation time is 3.702898651e-05 and current time is 3.651010002e-05.
+----------------
+
+Updated guessed frequency: 1.927211428e6 Hz.
+Next shooting evaluation time is 3.754787094e-05 and current time is 3.702898651e-05.
+----------------
+
+Updated guessed frequency: 1.893400701e6 Hz.
+Next shooting evaluation time is 3.807602116e-05 and current time is 3.754787094e-05.
+----------------
+
+Updated guessed frequency: 1.927198665e6 Hz.
+Next shooting evaluation time is 3.859490902e-05 and current time is 3.807602116e-05.
+----------------
+
+Updated guessed frequency: 1.927204900e6 Hz.
+Next shooting evaluation time is 3.911379521e-05 and current time is 3.859490902e-05.
+----------------
+
+Updated guessed frequency: 1.860749558e6 Hz.
+Next shooting evaluation time is 3.965121305e-05 and current time is 3.911379521e-05.
+----------------
+
+Updated guessed frequency: 1.927244011e6 Hz.
+Next shooting evaluation time is 4.01700887e-05 and current time is 3.965121305e-05.
+----------------
+
+Updated guessed frequency: 1.798761077e6 Hz.
+Next shooting evaluation time is 4.07260269e-05 and current time is 4.01700887e-05.
+----------------
+
+Updated guessed frequency: 1.927147654e6 Hz.
+Next shooting evaluation time is 4.12449285e-05 and current time is 4.07260269e-05.
+----------------
+
+Updated guessed frequency: 1.927166926e6 Hz.
+Next shooting evaluation time is 4.176382491e-05 and current time is 4.12449285e-05.
+----------------
+
+Updated guessed frequency: 1.860712894e6 Hz.
+Next shooting evaluation time is 4.230125334e-05 and current time is 4.176382491e-05.
+----------------
+
+Updated guessed frequency: 1.927206037e6 Hz.
+Next shooting evaluation time is 4.282013922e-05 and current time is 4.230125334e-05.
+----------------
+
+Updated guessed frequency: 1.798725634e6 Hz.
+Next shooting evaluation time is 4.337608838e-05 and current time is 4.282013922e-05.
+----------------
+
+Updated guessed frequency: 1.927109681e6 Hz.
+Next shooting evaluation time is 4.38950002e-05 and current time is 4.337608838e-05.
+----------------
+
+Updated guessed frequency: 1.798635702e6 Hz.
+Next shooting evaluation time is 4.445097715e-05 and current time is 4.38950002e-05.
+----------------
+
+Updated guessed frequency: 1.926989649e6 Hz.
+Next shooting evaluation time is 4.49699213e-05 and current time is 4.445097715e-05.
+----------------
+
+Updated guessed frequency: 1.927422469e6 Hz.
+Next shooting evaluation time is 4.548874892e-05 and current time is 4.49699213e-05.
+----------------
+
+Updated guessed frequency: 1.882598691e6 Hz.
+Next shooting evaluation time is 4.601992957e-05 and current time is 4.548874892e-05.
+----------------
+
+Updated guessed frequency: 1.927410416e6 Hz.
+Next shooting evaluation time is 4.653876043e-05 and current time is 4.601992957e-05.
+----------------
+
+Updated guessed frequency: 1.893596198e6 Hz.
+Next shooting evaluation time is 4.706685612e-05 and current time is 4.653876043e-05.
+----------------
+
+0   -> FE: 3300614.82      || RR:     12.22802691 || predsum/dynamic_test: 3.639301718e-08 || minimum: 3.639301718e-08
+1   -> FE: 3155020.263     || RR:     9.468511056 || predsum/dynamic_test: 1.398131896e-08 || minimum: 1.398131896e-08
+2   -> FE: 1477762.287     || RR:     6.710790569 || predsum/dynamic_test: 3.597436477e-07 || minimum: 1.398131896e-08
+3   -> FE: 1927047.818     || RR:     7.108307446 || predsum/dynamic_test: 2.256843861e-08 || minimum: 1.398131896e-08
+4   -> FE: 1860597.893     || RR: 0.0004840971426 || predsum/dynamic_test: 1.853316009e-08 || minimum: 1.398131896e-08
+5   -> FE: 1926812.229     || RR:   0.02098877387 || predsum/dynamic_test: 1.919505867e-08 || minimum: 1.398131896e-08
+6   -> FE: 1927623.248     || RR:   0.00148567702 || predsum/dynamic_test: 1.853542612e-08 || minimum: 1.398131896e-08
+7   -> FE: 1882794.8       || RR: 0.0001289455133 || predsum/dynamic_test: 1.235175174e-08 || minimum: 1.235175174e-08
+8   -> FE: 1927611.193     || RR:    0.1368853912 || predsum/dynamic_test: 1.264584107e-08 || minimum: 1.235175174e-08
+9   -> FE: 1893793.453     || RR:  0.000940493545 || predsum/dynamic_test: 9.263871738e-09 || minimum: 9.263871738e-09
+10  -> FE: 1927418.401     || RR:     0.170530112 || predsum/dynamic_test: 1.257239736e-08 || minimum: 9.263871738e-09
+11  -> FE: 1893604.043     || RR: 0.0005247891972 || predsum/dynamic_test: 9.264798369e-09 || minimum: 9.263871738e-09
+12  -> FE: 1927293.127     || RR:    0.2282119545 || predsum/dynamic_test: 1.257365493e-08 || minimum: 9.263871738e-09
+13  -> FE: 1927297.095     || RR: 4.266181988e-05 || predsum/dynamic_test: 1.235386744e-08 || minimum: 9.263871738e-09
+14  -> FE: 1882476.232     || RR: 3.158841941e-05 || predsum/dynamic_test: 1.235384201e-08 || minimum: 9.263871738e-09
+15  -> FE: 1927285.043     || RR:    0.3895485542 || predsum/dynamic_test:  1.26479811e-08 || minimum: 9.263871738e-09
+16  -> FE: 1893473.024     || RR: 0.0001364328522 || predsum/dynamic_test: 9.265439446e-09 || minimum: 9.263871738e-09
+17  -> FE: 1927272.279     || RR:    0.3509298314 || predsum/dynamic_test: 1.257452496e-08 || minimum: 9.263871738e-09
+18  -> FE: 1893460.484     || RR: 0.0001627807292 || predsum/dynamic_test:  9.26550081e-09 || minimum: 9.263871738e-09
+19  -> FE: 1927259.514     || RR:    0.3965506299 || predsum/dynamic_test: 1.257460824e-08 || minimum: 9.263871738e-09
+20  -> FE: 1893447.944     || RR:   0.00015385608 || predsum/dynamic_test: 9.265562174e-09 || minimum: 9.263871738e-09
+21  -> FE: 1927246.75      || RR:    0.4372662561 || predsum/dynamic_test: 1.257469152e-08 || minimum: 9.263871738e-09
+22  -> FE: 1893435.404     || RR: 0.0001133065499 || predsum/dynamic_test: 9.265623539e-09 || minimum: 9.263871738e-09
+23  -> FE: 1927233.987     || RR:    0.4725543337 || predsum/dynamic_test:  1.25747748e-08 || minimum: 9.263871738e-09
+24  -> FE: 1893422.864     || RR: 4.666914136e-05 || predsum/dynamic_test: 9.265684904e-09 || minimum: 9.263871738e-09
+25  -> FE: 1927221.223     || RR:    0.5019586605 || predsum/dynamic_test: 1.257485808e-08 || minimum: 9.263871738e-09
+26  -> FE: 1927224.057     || RR: 4.936276584e-05 || predsum/dynamic_test: 1.235432836e-08 || minimum: 9.263871738e-09
+27  -> FE: 1882404.893     || RR: 1.629625508e-05 || predsum/dynamic_test: 1.235431019e-08 || minimum: 9.263871738e-09
+28  -> FE: 1927212.005     || RR:    0.7039699445 || predsum/dynamic_test: 1.264846043e-08 || minimum: 9.263871738e-09
+29  -> FE: 1927216.54      || RR: 7.124276557e-05 || predsum/dynamic_test: 1.235438745e-08 || minimum: 9.263871738e-09
+30  -> FE: 1893405.723     || RR: 1.501746644e-05 || predsum/dynamic_test: 9.265768785e-09 || minimum: 9.263871738e-09
+31  -> FE: 1927203.776     || RR:    0.5453533486 || predsum/dynamic_test: 1.257497192e-08 || minimum: 9.263871738e-09
+32  -> FE: 1927211.428     || RR: 0.0001148307459 || predsum/dynamic_test:  1.85316603e-08 || minimum: 9.263871738e-09
+33  -> FE: 1893400.701     || RR: 1.690101959e-05 || predsum/dynamic_test: 9.265793361e-09 || minimum: 9.263871738e-09
+34  -> FE: 1927198.665     || RR:    0.5526077605 || predsum/dynamic_test: 1.257500528e-08 || minimum: 9.263871738e-09
+35  -> FE: 1927204.9       || RR: 0.0001109901868 || predsum/dynamic_test: 3.706341891e-08 || minimum: 9.263871738e-09
+36  -> FE: 1860749.558     || RR: 1.744234187e-05 || predsum/dynamic_test:  1.85316495e-08 || minimum: 9.263871738e-09
+37  -> FE: 1927244.011     || RR:     1.099489768 || predsum/dynamic_test: 1.279566275e-08 || minimum: 9.263871738e-09
+38  -> FE: 1798761.077     || RR: 0.0007770118687 || predsum/dynamic_test: 3.706254683e-08 || minimum: 9.263871738e-09
+39  -> FE: 1927147.654     || RR:     1.986788865 || predsum/dynamic_test: 1.323662387e-08 || minimum: 9.263871738e-09
+40  -> FE: 1927166.926     || RR: 0.0002535081571 || predsum/dynamic_test: 1.235479999e-08 || minimum: 9.263871738e-09
+41  -> FE: 1860712.894     || RR: 2.030774862e-05 || predsum/dynamic_test: 1.853201466e-08 || minimum: 9.263871738e-09
+42  -> FE: 1927206.037     || RR:    0.7881571595 || predsum/dynamic_test: 1.279591488e-08 || minimum: 9.263871738e-09
+43  -> FE: 1798725.634     || RR:  0.000607789993 || predsum/dynamic_test: 3.706327713e-08 || minimum: 9.263871738e-09
+44  -> FE: 1927109.681     || RR:    0.9700335951 || predsum/dynamic_test: 1.323688469e-08 || minimum: 9.263871738e-09
+45  -> FE: 1798635.702     || RR: 0.0003961401359 || predsum/dynamic_test:  3.70651303e-08 || minimum: 9.263871738e-09
+46  -> FE: 1926989.649     || RR:   0.04514793617 || predsum/dynamic_test:  1.98563198e-08 || minimum: 9.263871738e-09
+47  -> FE: 1927422.469     || RR:  0.001496284349 || predsum/dynamic_test: 1.235581303e-08 || minimum: 9.263871738e-09
+48  -> FE: 1882598.691     || RR: 6.743120726e-05 || predsum/dynamic_test: 1.235303842e-08 || minimum: 9.263871738e-09
+49  -> FE: 1927410.416     || RR:    0.2109965811 || predsum/dynamic_test: 1.264715838e-08 || minimum: 9.263871738e-09
+50  -> FE: 1893596.198     || RR: 0.0004611946184 || predsum/dynamic_test: 9.264836752e-09 || minimum: 9.263871738e-09
+ Reference value :  4.65388e-05
+Convergence not reached. However the most near convergence iteration has predicted (iteration 9) a fundamental frequency of 1.893793453e6 Hz
+
+No. of Data Rows : 1025
+
+No. of Data Rows : 10
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Total analysis time (seconds) = 1.92011
+
+Total elapsed time (seconds) = 1.930 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 14072.125 MB.
+Maximum ngspice program size =   11.922 MB.
+Current ngspice program size =   11.922 MB.
+
+
+Note: vcc: dc value used for op instead of transient time=0 value.
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+Note: vcc: dc value used for op instead of transient time=0 value.
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+Note: vcc: dc value used for op instead of transient time=0 value.

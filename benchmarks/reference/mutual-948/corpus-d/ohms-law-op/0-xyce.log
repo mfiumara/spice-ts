@@ -1,0 +1,138 @@
+
+*****
+***** Welcome to the Xyce(TM) Parallel Electronic Simulator
+*****
+***** This is version XyceNF Release 7.10.0
+***** Date: Wed Oct 14 01:40:33 CEST 2026
+
+
+***** Executing netlist input.cir
+
+***** Reading and parsing netlist...
+***** Setting up topology...
+
+***** Device Count Summary ...
+       R level 1 (Resistor)                   2
+       V level 1 (Independent Voltage Source) 1
+       ----------------------------------------
+       Total Devices                          3
+***** Setting up matrix structure...
+***** Number of Unknowns = 2
+***** Initializing...
+
+------------------------------------------------------------
+Operating point information:
+Number of Independent Voltage Source models: 1
+          name V level 1 (Independent Voltage Source)
+          type                
+         level               1
+
+Number of Independent Voltage Source instances: 1
+          name              V1
+         model V level 1 (Independent Voltage Source)
+           PORT              0
+            NUM              0
+   DCSOURCETYPE              6
+TRANSIENTSOURCETYPE              6
+        TSAMPLE              0
+            VLO              0
+              R              0
+   ACSOURCETYPE              7
+          ACMAG              0
+            VHI              0
+           TAU1              0
+        ACPHASE              0
+             PW              0
+           TAU2              0
+            TD1              0
+          PHASE              0
+           FREQ              0
+             Z0             50
+             V0              0
+             VA              0
+             TF              0
+            PER              0
+             V2              0
+            TD2              0
+             FC              0
+             RB              1
+             TR              0
+          THETA              0
+           DCV0              5
+             TD              0
+           DATA               
+            MDI              0
+              T              0
+             FS              0
+              V              0
+             V1              0
+
+
+Number of Resistor models: 1
+          name R level 1 (Resistor)
+          type                
+         level               1
+           TNOM             27
+           DEFW          1e-05
+         NARROW              0
+              R              1
+            RSH              0
+            TC2              0
+            TCE              0
+
+            TC1              0
+
+Number of Resistor instances: 2
+          name              RA             RB
+         model R level 1 (Resistor)R level 1 (Resistor)
+            TCE              0              0
+            TC2              0              0
+            TC1              0              0
+           TEMP             27             27
+          DTEMP              0              0
+              L              0              0
+              W          1e-05          1e-05
+              M              1              1
+              R            100           1000
+
+------------------------------------------------------------
+
+***** Solution Summary *****
+	Number Successful Steps Taken:		1
+	Number Failed Steps Attempted:		0
+	Number Jacobians Evaluated:		2
+	Number Linear Solves:			2
+	Number Failed Linear Solves:		0
+	Number Residual Evaluations:		4
+	Number Nonlinear Convergence Failures:	0
+	Total Residual Load Time:		9.05991e-06 seconds
+	Total Jacobian Load Time:		5.00679e-06 seconds
+	Total Linear Solution Time:		3.21865e-05 seconds
+
+
+***** Total Simulation Solvers Run Time: 0.00071311 seconds
+***** Total Elapsed Run Time:            0.00219703 seconds
+*****
+***** End of Xyce(TM) Simulation
+*****
+
+Timing summary of 1 processor
+                 Stats                   Count       CPU Time              Wall Time
+---------------------------------------- ----- --------------------- ---------------------
+Xyce                                         1        0.001 (100.0%)        0.003 (100.0%)
+  Analysis                                   1        0.000 (17.66%)        0.001 (23.55%)
+    DC Sweep                                 1        0.000 (17.34%)        0.001 (23.40%)
+      Solve                                  1        0.000 ( 9.77%)        0.000 ( 8.35%)
+        Residual                             4        0.000 ( 0.78%)        0.000 ( 0.38%)
+        Jacobian                             2        0.000 ( 0.31%)        0.000 ( 0.20%)
+        Linear Solve                         2        0.000 ( 1.64%)        0.000 ( 1.14%)
+      Successful Step                        1        0.000 ( 6.41%)        0.000 (12.75%)
+  Netlist Import                             1        0.000 (26.02%)        0.001 (21.65%)
+    Parse Context                            1        0.000 ( 3.75%)        0.000 ( 3.23%)
+    Distribute Devices                       1        0.000 ( 6.25%)        0.000 ( 3.74%)
+    Verify Devices                           1        0.000 ( 0.23%)        0.000 ( 0.28%)
+    Instantiate                              1        0.000 ( 2.27%)        0.000 ( 1.17%)
+  Late Initialization                        1        0.000 (16.17%)        0.000 (11.31%)
+    Global Indices                           1        0.000 ( 1.02%)        0.000 ( 0.55%)
+  Setup Matrix Structure                     1        0.000 ( 3.44%)        0.000 ( 3.54%)
+

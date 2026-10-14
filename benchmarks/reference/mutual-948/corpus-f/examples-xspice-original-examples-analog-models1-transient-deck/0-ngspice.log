@@ -1,0 +1,46 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: code model test - transient: gain, summer, mult, divide, pwl
+
+ASCII raw file "output.raw"
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 16  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+1                                            0
+2                                            2
+10                                           0
+20                                           2
+30                                           0
+40                                          20
+50                                      0.0025
+3                                            0
+v2#branch                               -0.002
+v1#branch                                    0
+a4#branch_2_0                            -0.02
+a1#branch_1_0                                0
+a3#branch_1_0                                0
+a5#branch_1_0                         -2.5e-06
+a2#branch_1_0                           -0.002
+
+
+No. of Data Rows : 108
+
+Total analysis time (seconds) = 0.001045
+
+Total elapsed time (seconds) = 0.004 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 12358.188 MB.
+Maximum ngspice program size =   10.234 MB.
+Current ngspice program size =   10.234 MB.
+

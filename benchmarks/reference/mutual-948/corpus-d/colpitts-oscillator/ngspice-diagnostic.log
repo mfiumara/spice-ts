@@ -1,0 +1,41 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: mos colpitts oscillator
+
+
+warning, can't find model 'nmos' from line
+    m1 nd1 bias ns ns nmos w=200u l=1u
+Error in netlist line no. 3, new internal line no. 3:
+
+Undefined parameter [vdc]
+Error in netlist line no. 3, new internal line no. 3:
+
+Cannot compute substitute
+Error in netlist line no. 11, new internal line no. 14:
+
+Undefined parameter [vdc]
+Error in netlist line no. 11, new internal line no. 14:
+
+Cannot compute substitute
+Error in netlist line no. 13, new internal line no. 17:
+
+Undefined parameter [vdc]
+Error in netlist line no. 13, new internal line no. 17:
+
+Cannot compute substitute
+Error in netlist line no. 14, new internal line no. 18:
+
+Undefined parameter [idc]
+Error in netlist line no. 14, new internal line no. 18:
+
+Cannot compute substitute
+Error in netlist line no. 17, new internal line no. 23:
+
+Undefined parameter [trap]
+Error in netlist line no. 17, new internal line no. 23:
+
+Cannot compute substitute
+
+ERROR: fatal error in ngspice, exit(1)

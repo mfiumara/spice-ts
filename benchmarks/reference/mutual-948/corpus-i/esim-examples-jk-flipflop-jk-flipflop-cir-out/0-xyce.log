@@ -1,0 +1,30 @@
+
+*****
+***** Welcome to the Xyce(TM) Parallel Electronic Simulator
+*****
+***** This is version XyceNF Release 7.10.0
+***** Date: Wed Oct 14 02:03:28 CEST 2026
+
+
+***** Executing netlist input.cir
+
+***** Reading and parsing netlist...
+Netlist error in file input.cir at or near line 20
+ Invalid device type for device A1
+Netlist error in file input.cir at or near line 21
+ Invalid device type for device A2
+Netlist error in file input.cir at or near line 22
+ Invalid device type for device A3
+Netlist error in file input.cir at or near line 23
+ Invalid device type for device A4
+Netlist error in file input.cir at or near line 24
+ Invalid device type for device A5
+Simulation aborted due to error.  There are 0 MSG_FATAL errors and 5 MSG_ERROR
+ errors
+*** Xyce Abort ***
+
+Simulation aborted due to error.  There are 0 MSG_FATAL errors and 5 MSG_ERROR
+ errors
+
+
+*** Xyce Abort ***

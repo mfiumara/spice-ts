@@ -1,0 +1,63 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: * /home/fossee/updatedexamples/4_bit_jk_ff/4_bit_jk_ff.cir
+
+ASCII raw file "output.raw"
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 33  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+net-_u1-pad1_                                5
+net-_u1-pad3_                                5
+net-_u4-pad2_                                0
+in                                           0
+net-_u4-pad3_                                0
+net-_u4-pad4_                                0
+net-_u4-pad1_                                0
+net-_u2-pad2_                                0
+net-_u2-pad3_                                0
+net-_u2-pad4_                                0
+net-_u2-pad1_                                0
+d1                                           0
+d2                                           0
+d3                                           0
+d4                                           0
+gnd                                          5
+v5#branch                                    0
+v7#branch                                    0
+v6#branch                                    0
+v8#branch                                    0
+v9#branch                                    0
+v11#branch                                   0
+v10#branch                                   0
+v2#branch                                    0
+v4#branch                                    0
+v3#branch                                    0
+v1#branch                                    0
+a11#branch_1_0                               0
+a10#branch_1_0                               0
+a10#branch_1_1                               0
+a10#branch_1_2                               0
+a10#branch_1_3                               0
+
+
+No. of Data Rows : 156
+
+Total analysis time (seconds) = 0.001835
+
+Total elapsed time (seconds) = 0.006 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13004.984 MB.
+Maximum ngspice program size =   10.391 MB.
+Current ngspice program size =   10.391 MB.
+

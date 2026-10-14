@@ -1,0 +1,78 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit:   adder - 4 bit all-nand-gate binary adder
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+ Reference value :  4.67613e-07 Reference value :  9.75145e-07 Reference value :  1.49378e-06 Reference value :  2.02448e-06 Reference value :  2.54240e-06 Reference value :  3.06925e-06 Reference value :  3.57438e-06 Reference value :  4.08910e-06 Reference value :  4.62276e-06 Reference value :  5.13817e-06 Reference value :  5.66609e-06 Reference value :  6.20163e-06
+No. of Data Rows : 13690
+
+Total analysis time (seconds) = 3.08796
+
+Total elapsed time (seconds) = 3.093 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13915.609 MB.
+Maximum ngspice program size =   13.281 MB.
+Current ngspice program size =   13.281 MB.
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 14  
+ Reference value :  4.23310e-07 Reference value :  8.59419e-07 Reference value :  1.30212e-06 Reference value :  1.75003e-06 Reference value :  2.18674e-06 Reference value :  2.62918e-06 Reference value :  3.07781e-06 Reference value :  3.50923e-06 Reference value :  3.96187e-06 Reference value :  4.40351e-06 Reference value :  4.86192e-06 Reference value :  5.29107e-06 Reference value :  5.73493e-06 Reference value :  6.20008e-06
+No. of Data Rows : 13690
+Total elapsed time (seconds) = 6.714 
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13989.359 MB.
+Maximum ngspice program size =   13.344 MB.
+Current ngspice program size =   13.344 MB.
+24 page faults, 0 vol + 835 invol = 835 context switches.
+
+Number of lines in the deck = 595
+Netlist loading time = 0.000299
+Subckt and Param expansion time = 0.001002
+Netlist parsing time = 0.000638
+
+Nominal temperature = 27
+Operating temperature = 27
+Total iterations = 152182
+Transient iterations = 152072
+Circuit Equations = 451
+Circuit original non-zeroes = 2323
+Circuit fill-in non-zeroes = 520
+Circuit total non-zeroes = 0
+Transient timepoints = 35648
+Accepted timepoints = 27380
+Rejected timepoints = 8268
+Total analysis time (seconds) = 6.70808
+Matrix load time = 3.02801
+Matrix synchronize time = 0
+Matrix reorder time = 0.000976
+Matrix factor time = 1.92916
+Matrix solve time = 0.887339
+Transient analysis time = 6.70232
+Transient load time = 3.02636
+Transient sync time = 0
+Transient factor time = 1.92779
+Transient solve time = 0.886684
+Transient trunc time = 0.377208
+Transient iterations for the last time point = 0
+AC analysis time = 0
+AC load time = 0
+AC sync time = 0
+AC factor time = 0
+AC solve time = 0
+
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+

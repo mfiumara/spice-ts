@@ -1,0 +1,35 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: full-wave rectifier with smoothing and load
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 6  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+inp                               -3.34119e-22
+inn                               -3.34119e-22
+outp                               3.42619e-22
+outn                               3.34119e-22
+vs#branch                          -1.6706e-28
+
+ Reference value :  5.84343e-02 Reference value :  1.17001e-01 Reference value :  1.74124e-01 Reference value :  2.31777e-01 Reference value :  2.92206e-01 Reference value :  3.51240e-01 Reference value :  4.09732e-01 Reference value :  4.68506e-01 Reference value :  5.26871e-01 Reference value :  5.85182e-01 Reference value :  6.43323e-01 Reference value :  7.01706e-01 Reference value :  7.60198e-01 Reference value :  8.20413e-01 Reference value :  8.80763e-01 Reference value :  9.40739e-01
+No. of Data Rows : 1000008
+
+Total analysis time (seconds) = 4.25609
+
+Total elapsed time (seconds) = 4.260 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13460.281 MB.
+Maximum ngspice program size =   10.141 MB.
+Current ngspice program size =   10.141 MB.
+

@@ -1,0 +1,20 @@
+
+*****
+***** Welcome to the Xyce(TM) Parallel Electronic Simulator
+*****
+***** This is version XyceNF Release 7.10.0
+***** Date: Wed Oct 14 01:49:23 CEST 2026
+
+
+***** Executing netlist input.cir
+
+***** Reading and parsing netlist...
+In .func line for function: border, expression must be enclosed by curly
+ braces
+*** Xyce Abort ***
+
+In .func line for function: border, expression must be enclosed by curly
+ braces
+
+
+*** Xyce Abort ***

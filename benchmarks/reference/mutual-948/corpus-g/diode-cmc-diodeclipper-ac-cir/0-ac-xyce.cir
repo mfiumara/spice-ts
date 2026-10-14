@@ -1,0 +1,23 @@
+Diode clipper circuit with AC analysis statement
+* This is from Figure 3.5 of the Users Guide
+*
+* Voltage Sources
+VCC 1 0 10V
+VIN 3 0 SIN(0V 10V 1kHz) AC 1
+* Analysis Command
+.ac DEC 5 100 100MEG
+* Output
+* Diodes
+D1 2 1 D1mod
+D2 0 2 D1mod
+* Resistors
+R1 2 3 1K
+R2 1 2 3.3K
+R3 2 0 3.3K
+R4 4 0 5.6K
+* Capacitor
+C1 2 4 0.47u
+.MODEL D1mod D(level=2002)
+
+.print AC format=csv file=output.csv precision=17 IR(vcc) II(vcc) IR(vin) II(vin) VR(1) VI(1) VR(2) VI(2) VR(3) VI(3) VR(4) VI(4)
+.END

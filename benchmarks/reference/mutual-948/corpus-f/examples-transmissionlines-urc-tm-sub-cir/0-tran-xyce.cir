@@ -1,0 +1,14 @@
+URC transmission line
+
+.subckt UTM in out gnd1
+U1 in out gnd1 URCMOD L =20m
+.model URCMOD URC CPERL=100p RPERL=100k FMAX=10G
+.ends
+
+XUTM 1 2 0 UTM
+
+VS 1  0 dc 0 PULSE (0 5 15.9NS 0.2NS 0.2NS 15.8NS 32NS )
+.TRAN 0.2N 47N 0 0.1N
+
+.print TRAN format=csv file=output.csv precision=17 I(vs) V(1) V(2) V(u.xutm.u1#hi1) V(u.xutm.u1#hi2) V(u.xutm.u1#hi3) V(u.xutm.u1#hi4) V(u.xutm.u1#hi5) V(u.xutm.u1#hi6) V(u.xutm.u1#hi7) V(u.xutm.u1#hi8) V(u.xutm.u1#lo1) V(u.xutm.u1#lo2) V(u.xutm.u1#lo3) V(u.xutm.u1#lo4) V(u.xutm.u1#lo5) V(u.xutm.u1#lo6) V(u.xutm.u1#lo7)
+.end

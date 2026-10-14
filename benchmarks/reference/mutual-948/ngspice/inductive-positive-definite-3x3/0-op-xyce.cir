@@ -1,0 +1,28 @@
+* indentify non-viable inductive systems (3xx case)
+
+* (compile (concat "../../../w32/src/ngspice " buffer-file-name) t)
+* (compile (concat "valgrind --track-origins=yes --leak-check=full --show-reachable=yes ../../../w32/src/ngspice " buffer-file-name) t)
+
+.subckt ind3 a b c L11=10u L22=11u L33=10u K12=0 K13=0 K23=0
+R1 a n1 1k
+R2 b n2 1k
+R4 c n3 1k
+L1 n1 0 {L11}
+L2 n2 0 {L22}
+L3 n3 0 {L33}
+K12 L1 L2 {K12}
+K13 L1 L3 {K13}
+K23 L2 L3 {K23}
+.ends
+
+Xgood1 a b c ind3
+Xgood2 a b c ind3 K12=0.96 K23=0.99 K13=0.98
+Xgood3 a b c ind3 K12=0.96 K23=0.99 K13=0.9898988607
+Xbad4  a b c ind3 K12=0.96 K23=0.99 K13=0.9898988608
+Xborder5  a b c ind3 K12=1 K23=1 K13=1
+Xbad6  a b c ind3 K12=1.01 K23=1 K13=1
+
+.op
+
+.print DC format=csv file=output.csv precision=17 I(l.xbad4.l1) I(l.xbad4.l2) I(l.xbad4.l3) I(l.xbad6.l1) I(l.xbad6.l2) I(l.xbad6.l3) I(l.xborder5.l1) I(l.xborder5.l2) I(l.xborder5.l3) I(l.xgood1.l1) I(l.xgood1.l2) I(l.xgood1.l3) I(l.xgood2.l1) I(l.xgood2.l2) I(l.xgood2.l3) I(l.xgood3.l1) I(l.xgood3.l2) I(l.xgood3.l3) V(a) V(b) V(c) V(xbad4.n1) V(xbad4.n2) V(xbad4.n3) V(xbad6.n1) V(xbad6.n2) V(xbad6.n3) V(xborder5.n1) V(xborder5.n2) V(xborder5.n3) V(xgood1.n1) V(xgood1.n2) V(xgood1.n3) V(xgood2.n1) V(xgood2.n2) V(xgood2.n3) V(xgood3.n1) V(xgood3.n2) V(xgood3.n3)
+.end

@@ -1,0 +1,24 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: * /home/fossee/esim-workspace/zener_characteristic/zener_characteristic.cir
+
+ASCII raw file "output.raw"
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 6  
+
+No. of Data Rows : 161
+
+Total analysis time (seconds) = 0.001072
+
+Total elapsed time (seconds) = 0.005 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13004.984 MB.
+Maximum ngspice program size =   10.219 MB.
+Current ngspice program size =   10.219 MB.
+

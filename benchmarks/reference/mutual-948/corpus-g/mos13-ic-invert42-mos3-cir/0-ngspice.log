@@ -1,0 +1,80 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: test of mos3 initial conditions
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 48  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+vdd                                          5
+in                                           5
+1                                            5
+vout                                    4.7825
+out2                               1.41729e-09
+out3                                         5
+out4                               1.41729e-09
+out5                                         5
+out6                               1.41729e-09
+out7                                         5
+out8                               1.41729e-09
+out9                                         5
+out10                              1.41729e-09
+out11                                        5
+out12                              1.41729e-09
+out13                                        5
+out14                              1.41729e-09
+out15                                        5
+out16                              1.41729e-09
+out17                                        5
+out18                              1.41729e-09
+out19                                        5
+out20                              1.41729e-09
+out21                                        5
+out22                              1.41729e-09
+out23                                        5
+out24                              1.41729e-09
+out25                                        5
+out26                              1.41729e-09
+out27                                        5
+out28                              1.41729e-09
+out29                                        5
+out30                              1.41729e-09
+out31                                        5
+out32                              1.41729e-09
+out33                                        5
+out34                              1.41729e-09
+out35                                        5
+out36                              1.41729e-09
+out37                                        5
+out38                              1.41729e-09
+out39                                        5
+out40                              1.41729e-09
+out41                                        5
+out42                              1.41729e-09
+vin1#branch                                  0
+vdddev#branch                      -0.00047825
+
+ Reference value :  9.05515e-06 Reference value :  1.80764e-05 Reference value :  2.73088e-05
+No. of Data Rows : 5803
+
+Total analysis time (seconds) = 0.782821
+
+Total elapsed time (seconds) = 0.788 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13990.547 MB.
+Maximum ngspice program size =   10.578 MB.
+Current ngspice program size =   10.578 MB.
+
+
+Note: Starting dynamic gmin stepping
+Note: Dynamic gmin stepping completed

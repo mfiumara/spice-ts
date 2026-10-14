@@ -1,5 +1,19 @@
 # Reference simulators
 
+## Mutually accepted reference subset and disagreements (#948)
+
+The separate [mutual reference report](reference/mutual-948/README.md) starts
+with the original 100 aggregate fixtures, then exhausts original F..J manifests
+in deterministic order to grow toward 100 mutually accepted inputs. Its
+`subset-manifest.json` records selected ids, original/canonical SHA-256 and
+analysis types, plus every exclusion. `report.json` retains all reference
+outcomes, warning logs and per-analysis metrics. The Markdown report includes
+every fixture and per-signal max/RMS absolute/relative errors with uniform
+descriptive disagreement buckets. Selection is reference-only, not spice-ts
+outcome selection; canonical projections are identical apart from native export.
+Observed reference disagreement is not proof of model equivalence or inequivalence.
+No aggregate ledger or simulator implementation changes are part of this report.
+
 ## Xyce 7.10.0 bootstrap (#948)
 
 This is a reference-bootstrap slice, not completed EKV support or a claim of
