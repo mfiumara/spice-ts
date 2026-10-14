@@ -1,0 +1,11 @@
+--- a/src/devices/mos2.ts
++++ b/src/devices/mos2.ts
+@@ -1005,7 +1005,7 @@
+     const vbdRaw = vbsRaw - vds;
+     // DC uses ngspice's previous-load fetlim/limvds, not a scaled global
+     // solution. Leave the existing transient step-limiting path unchanged.
+-    if (this.operatingPointLoad && !initializing) {
++    if ((this.operatingPointLoad || ctx.dt > 0) && !initializing) {
+       const vgdRaw = vgs - vds;
+       if (this.lastLoad.vds >= 0) {
+         vgs = fetlim(vgs, this.lastLoad.vgs, this.lastVon);
