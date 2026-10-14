@@ -247,7 +247,7 @@ describe('aggregate report artifact verification', () => {
 
     assert.deepEqual(report.provenance, {
       fixtureTreeSha256: '23aaa91cfde358550eec443e8b5aaec134d7a7f930b1810f6e7f7db2532d6307',
-      sourcesSha256: '39a927d7fe2dd6fae7b44eaef34c5e438ef053534761b5b6af45d442e436a8b3',
+      sourcesSha256: '7785fe7a3bd52b0d2c8e63ac99ad34168c538e7a9b1965d0d6a5407cb20c969a',
     });
   });
 

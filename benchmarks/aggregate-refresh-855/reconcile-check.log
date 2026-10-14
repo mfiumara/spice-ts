@@ -1,0 +1,2 @@
+aggregate --check: pid 80106; to stop only this run: kill 80106
+aggregate: 100 fixtures; outcome 94d6a7d3432ff8bf2f73c61273da6ec3c95d2dac69d7478ae5d0b51d887a1e5d; compared 71 analyses

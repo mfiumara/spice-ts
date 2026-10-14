@@ -45,7 +45,7 @@ const TOTAL_FIXTURES = CORPORA.length * FIXTURES_PER_CORPUS;
 const JSON_PATH = resolve('benchmarks/aggregate-report.json');
 const MARKDOWN_PATH = resolve('benchmarks/AGGREGATE_PARITY.md');
 const FIXTURE_TREE_SHA256 = '23aaa91cfde358550eec443e8b5aaec134d7a7f930b1810f6e7f7db2532d6307';
-const SOURCES_SHA256 = '39a927d7fe2dd6fae7b44eaef34c5e438ef053534761b5b6af45d442e436a8b3';
+const SOURCES_SHA256 = '7785fe7a3bd52b0d2c8e63ac99ad34168c538e7a9b1965d0d6a5407cb20c969a';
 
 type CorpusId = typeof CORPORA[number];
 type Status = 'success' | 'failed' | 'unsupported';

@@ -8,9 +8,9 @@ This report publishes all outcomes, including failures and unsupported cases. It
 - Verify committed outcomes: `pnpm exec tsx benchmarks/aggregate-report.ts --check`
 - Machine: Apple M5 Pro; darwin 27.0.0 arm64; Node v22.23.1
 - Tools: spice-ts 0.3.0; ngspice-47; pnpm 10.28.1
-- Deterministic outcome SHA-256 (host, timings, and error text excluded): `c2730d089c82c845f2d3717abb553751227772143eaeb4d41f0983332814aead`
+- Deterministic outcome SHA-256 (host, timings, and error text excluded): `94d6a7d3432ff8bf2f73c61273da6ec3c95d2dac69d7478ae5d0b51d887a1e5d`
 - Aggregate fixture-tree SHA-256: `23aaa91cfde358550eec443e8b5aaec134d7a7f930b1810f6e7f7db2532d6307`.
-- Source catalogue SHA-256: `39a927d7fe2dd6fae7b44eaef34c5e438ef053534761b5b6af45d442e436a8b3`.
+- Source catalogue SHA-256: `7785fe7a3bd52b0d2c8e63ac99ad34168c538e7a9b1965d0d6a5407cb20c969a`.
 - Runtime is one wall-clock sample per engine/fixture. Treat it as diagnostic data, not a performance comparison.
 
 ## Policy and totals
@@ -26,7 +26,7 @@ This report publishes all outcomes, including failures and unsupported cases. It
 - Matched-point errors: 71 analyses across 52 fixtures. Full per-signal max/RMS absolute and relative errors are in `benchmarks/aggregate-report.json`.
 - Matched signals: 975 absolute (3669358 samples); 939 relative (3658412 samples, 10946 zero references excluded).
 - Matched-point envelope (worst per signal): absolute max 7018.333251953125, absolute RMS 7018.333251953125, relative max 436128.09132992564, relative RMS 243438.5559477603.
-- Descriptive single-run runtime sums: ngspice 6536.420 ms; spice-ts 35292.357 ms.
+- Descriptive single-run runtime sums: ngspice 7831.268 ms; spice-ts 43216.837 ms.
 
 ## Transition from the previous accepted report
 
@@ -125,106 +125,106 @@ This report publishes all outcomes, including failures and unsupported cases. It
 
 | Fixture | Analyses | ngspice | spice-ts | Runtime ms (ng/spice-ts) | Compared analyses | Gap issues |
 |---|---|---|---|---:|---:|---|
-| ngspice/vbic-fo | dc | success/converged | success/converged | 36.349/533.258 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| ngspice/vbic-temperature | dc | success/converged | success/converged | 23.555/309.934 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| ngspice/mos6-inverter-transient | tran | success/converged | success/converged | 41.425/417.502 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#461](https://github.com/mfiumara/spice-ts/issues/461) |
-| ngspice/jfet-vds-vgs | op, dc | success/converged | success/converged | 20.825/246.169 | 2 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| ngspice/rc-lowpass-ac | op, ac | success/converged | success/converged | 18.5/239.704 | 2 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| ngspice/ac-zero-frequency | ac | failed/not-run | success/converged | 17.45/246.517 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| ngspice/vbic-common-emitter-ac | ac, pz | success/converged | success/converged | 25.82/268.753 | 2 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#75](https://github.com/mfiumara/spice-ts/issues/75), [#451](https://github.com/mfiumara/spice-ts/issues/451) |
-| ngspice/probe-ac | ac | success/converged | success/converged | 18.49/247.987 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| ngspice/rc-transient | tran | success/converged | success/converged | 19.157/247.808 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| ngspice/mos-amplifier-transient | tran | success/converged | success/converged | 391.093/3647.995 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| ngspice/mos6-simple-inverter-transient | tran | success/converged | success/converged | 21.845/242.595 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#461](https://github.com/mfiumara/spice-ts/issues/461) |
-| ngspice/ltra-line-transient | tran | success/converged | success/converged | 25.918/285.905 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#7](https://github.com/mfiumara/spice-ts/issues/7) |
-| ngspice/hfet-inverter | tran | success/converged | success/converged | 22.133/288.199 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| ngspice/mesa-oscillator | tran | success/converged | success/converged | 35.95/314.148 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#432](https://github.com/mfiumara/spice-ts/issues/432) |
-| ngspice/jimi-fuzz | op, tran | success/converged | success/converged | 3389.696/2406.025 | 2 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#123](https://github.com/mfiumara/spice-ts/issues/123) |
-| ngspice/schmitt-trigger | tran | success/converged | success/converged | 21.391/301.813 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| ngspice/inductive-positive-definite-2x2 | op | failed/not-run | unsupported/not-run | 16.474/271.811 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| ngspice/inductive-positive-definite-3x3 | op | failed/not-run | unsupported/not-run | 21.565/264.029 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| ngspice/inductive-positive-definite-4x4 | op | failed/not-run | unsupported/not-run | 18.112/250.595 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| ngspice/inductive-positive-definite-ac | op, ac | failed/not-run | unsupported/not-run | 20.278/242.809 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| classic/bjt-noise | noise | success/converged | success/converged | 19.066/251.857 | 2 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#75](https://github.com/mfiumara/spice-ts/issues/75) |
-| classic/bsim1-device-sweep | dc | success/converged | success/converged | 28.271/295.046 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| classic/bsim2-device-sweep | dc | success/converged | success/converged | 32.313/304.429 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| classic/bjt-differential-pair | tran | success/converged | success/converged | 22.664/285.728 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| classic/diode-distortion | disto | success/converged | success/converged | 20.687/263.517 | 3 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#75](https://github.com/mfiumara/spice-ts/issues/75) |
-| classic/lossy-line-24-inch | tran | success/converged | success/converged | 42.068/426.88 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#7](https://github.com/mfiumara/spice-ts/issues/7) |
-| classic/lossy-line-aluminium | tran | success/converged | success/converged | 354.519/460.611 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#7](https://github.com/mfiumara/spice-ts/issues/7) |
-| classic/coupled-lossy-lines | tran | success/converged | success/converged | 103.004/493.09 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#7](https://github.com/mfiumara/spice-ts/issues/7) |
-| classic/bjt-mixer-distortion | none | failed/not-run | failed/not-run | 19.326/246.837 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#75](https://github.com/mfiumara/spice-ts/issues/75) |
-| classic/mos6-inverter-chain | tran | success/converged | success/converged | 39.959/414.576 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#461](https://github.com/mfiumara/spice-ts/issues/461), [#280](https://github.com/mfiumara/spice-ts/issues/280) |
-| classic/mos-amplifier | tran | success/converged | success/converged | 414.884/4089.798 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#280](https://github.com/mfiumara/spice-ts/issues/280) |
-| classic/mos-memory-cell | tran | success/converged | success/converged | 23.034/292.57 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#280](https://github.com/mfiumara/spice-ts/issues/280) |
-| classic/pole-zero-four-stage | pz | success/converged | success/converged | 18.744/250.309 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#75](https://github.com/mfiumara/spice-ts/issues/75) |
-| classic/pole-zero-three-stage | pz | success/converged | success/converged | 18.122/248.37 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#75](https://github.com/mfiumara/spice-ts/issues/75) |
-| classic/rc-transient | tran | success/converged | success/converged | 19.078/260.087 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| classic/rca3040-wideband-amplifier | ac, dc, tran | success/converged | success/converged | 25.245/293.699 | 3 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#280](https://github.com/mfiumara/spice-ts/issues/280) |
-| classic/resistor-noise | noise | success/converged | success/converged | 17.851/226.824 | 2 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#75](https://github.com/mfiumara/spice-ts/issues/75) |
-| classic/rtl-inverter-chain | dc, tran | success/converged | success/converged | 19.617/259.604 | 2 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| classic/ecl-schmitt-trigger | tran | success/converged | success/converged | 18.861/273.291 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| classic/high-pass-pole-zero | pz | success/converged | success/converged | 16.832/225.173 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#75](https://github.com/mfiumara/spice-ts/issues/75) |
-| xyce/capacitor-rc-transient | tran | unsupported/failed | success/converged | 17.351/236.005 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| xyce/capacitor-rc-transient-newlte | tran | unsupported/failed | success/converged | 15.738/226.245 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| xyce/capacitor-rc-oscillator | tran | unsupported/failed | success/converged | 16.223/238.157 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| xyce/diode-level2-temperature-breakdown | tran | unsupported/failed | unsupported/not-run | 16.317/225.689 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| xyce/diode-zener-5229 | dc | unsupported/failed | success/converged | 16.327/241.703 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| xyce/diode-transient | tran | unsupported/failed | success/converged | 16.565/239.67 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| xyce/diode-sidewall-dc | dc | success/converged | success/converged | 18.002/230.744 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| xyce/inductor-transient | tran | success/converged | success/converged | 18.326/244.381 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#366](https://github.com/mfiumara/spice-ts/issues/366) |
-| xyce/njfet-2109-dc | dc | success/converged | success/converged | 17.758/239.052 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| xyce/njfet-stepped-dc | dc | unsupported/failed | unsupported/not-run | 17.051/231.572 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| xyce/nmos-level1-dc | dc | success/converged | success/converged | 18.651/240.624 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#3](https://github.com/mfiumara/spice-ts/issues/3) |
-| xyce/npn-dc | dc | success/converged | success/converged | 15.849/234.715 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#5](https://github.com/mfiumara/spice-ts/issues/5) |
-| xyce/pmos-level1-dc | dc | success/converged | success/converged | 17.028/224.463 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#3](https://github.com/mfiumara/spice-ts/issues/3) |
-| xyce/pnp-dc | dc | success/converged | success/converged | 17.732/236.37 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#5](https://github.com/mfiumara/spice-ts/issues/5) |
-| xyce/resistor-dc | dc | success/converged | success/converged | 17.004/214.229 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| xyce/resistor-level3-zero | dc | success/converged | success/converged | 16.893/229.1 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| xyce/resistor-negative | dc | success/converged | success/converged | 17.67/226.855 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| xyce/rlc-transient | tran | success/converged | success/converged | 23.433/250.353 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| xyce/vccs-dc | dc | success/converged | success/converged | 17.631/221.549 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| xyce/vcvs-dc | dc | success/converged | success/converged | 17.29/229.366 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| corpus-d/ohms-law-op | op | unsupported/failed | unsupported/not-run | 16.864/223.683 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| corpus-d/diode-operating-point | op | unsupported/failed | unsupported/not-run | 16.417/216.36 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| corpus-d/ekv-bias-sweep | op, dc | unsupported/failed | unsupported/not-run | 16.141/217.784 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| corpus-d/downscaling-current-mirror | op, dc | unsupported/failed | unsupported/not-run | 15.801/219.223 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| corpus-d/transresistance-ac | op, ac | unsupported/failed | unsupported/not-run | 16.124/224.757 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| corpus-d/passive-pole-zero-ac | op, pz, ac | unsupported/failed | unsupported/not-run | 17.983/216.309 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#75](https://github.com/mfiumara/spice-ts/issues/75) |
-| corpus-d/resistor-voltage-ac | op, ac | unsupported/failed | unsupported/not-run | 16.05/210.849 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| corpus-d/series-resonance-ac | op, ac | unsupported/failed | unsupported/not-run | 16.487/231.395 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| corpus-d/am-source-transient | tran | unsupported/failed | unsupported/not-run | 18.49/263.669 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| corpus-d/fft-source-transient | tran | unsupported/failed | unsupported/not-run | 19.522/266.114 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| corpus-d/coupled-transformer-transient | tran, pss | unsupported/failed | unsupported/not-run | 20.232/267.053 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| corpus-d/rlc-trapezoidal-transient | op, tran | unsupported/failed | unsupported/not-run | 19.95/269.39 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| corpus-d/diode-voltage-doubler | op, tran | unsupported/failed | unsupported/not-run | 18.557/255.935 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| corpus-d/ekv-ring-oscillator | op, tran | unsupported/failed | unsupported/not-run | 19.974/270.69 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| corpus-d/cockcroft-walton-x8 | op, tran | unsupported/failed | unsupported/not-run | 22.946/267.336 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| corpus-d/pwm-switch | op, tran | unsupported/failed | unsupported/not-run | 19.48/266.187 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| corpus-d/rlc-gear3 | op, tran | unsupported/failed | unsupported/not-run | 19.429/261.198 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| corpus-d/rlc-gear5 | op, tran | unsupported/failed | unsupported/not-run | 19.021/255.243 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| corpus-d/rlc-gear6 | op, tran | unsupported/failed | unsupported/not-run | 20.126/253.392 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| corpus-d/colpitts-oscillator | op, tran | unsupported/failed | unsupported/not-run | 18.615/257.625 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| corpus-e/cccs-mixed-analysis | op, tran, ac | unsupported/failed | success/converged | 18.401/271.24 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| corpus-e/vcvs-operating-point | op, ac | failed/failed | unsupported/not-run | 18.148/243.8 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| corpus-e/diode-bias-sweep | op, dc | success/converged | success/converged | 20.106/262.513 | 2 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| corpus-e/mos1-inverter-sweep | op, dc, tran | success/converged | success/converged | 18.109/241.25 | 3 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#427](https://github.com/mfiumara/spice-ts/issues/427) |
-| corpus-e/transmission-line-ac | ac | unsupported/failed | unsupported/not-run | 17.784/216.829 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| corpus-e/mutual-inductance-ac | ac, tran | unsupported/failed | success/converged | 17.199/250.339 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| corpus-e/bjt-diffpair-ac | dc, tran, op, ac | unsupported/failed | success/converged | 16.985/259.142 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| corpus-e/opamp-open-loop-ac | op, ac, dc | failed/failed | unsupported/not-run | 17.538/216.397 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| corpus-e/capacitor-step-transient | tran | unsupported/failed | success/converged | 16.02/230.929 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| corpus-e/capacitor-initial-condition | tran | unsupported/failed | success/converged | 16.367/221.396 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| corpus-e/lc-oscillator-transient | tran | unsupported/failed | success/converged | 15.949/214.137 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| corpus-e/bjt-diffpair-transient | op, tran | success/converged | success/converged | 18.488/222.502 | 2 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| corpus-e/bjt-schmitt-trigger | op, tran | unsupported/failed | success/converged | 16.033/221.901 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| corpus-e/diode-temperature-sweep | op, dc | unsupported/failed | success/converged | 13.268/212.709 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| corpus-e/mos1-nand-transient | op, tran | unsupported/failed | success/converged | 16.454/223.632 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| corpus-e/bjt-rtl-inverter-chain | op, dc, tran | success/converged | success/converged | 18.09/225.156 | 3 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| corpus-e/dual-lc-uic-rejection | tran | unsupported/failed | success/converged | 16.095/227.235 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| corpus-e/opamp-voltage-follower | op, ac, dc, tran | unsupported/failed | unsupported/not-run | 15.786/195.995 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| corpus-e/mos7-nand-no-bypass | op, tran | failed/failed | unsupported/not-run | 15.501/197.075 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
-| corpus-e/bjt-diffpair-current-source | op, tran, ac | success/converged | success/converged | 16.88/227.294 | 3 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| ngspice/vbic-fo | dc | success/converged | success/converged | 26.924/618.619 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| ngspice/vbic-temperature | dc | success/converged | success/converged | 21.296/360.164 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| ngspice/mos6-inverter-transient | tran | success/converged | success/converged | 43.105/427.006 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#461](https://github.com/mfiumara/spice-ts/issues/461) |
+| ngspice/jfet-vds-vgs | op, dc | success/converged | success/converged | 21.364/307.343 | 2 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| ngspice/rc-lowpass-ac | op, ac | success/converged | success/converged | 26.907/328.05 | 2 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| ngspice/ac-zero-frequency | ac | failed/not-run | success/converged | 24.967/352.159 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| ngspice/vbic-common-emitter-ac | ac, pz | success/converged | success/converged | 38.158/352.998 | 2 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#75](https://github.com/mfiumara/spice-ts/issues/75), [#451](https://github.com/mfiumara/spice-ts/issues/451) |
+| ngspice/probe-ac | ac | success/converged | success/converged | 22.701/324.964 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| ngspice/rc-transient | tran | success/converged | success/converged | 25.15/335.69 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| ngspice/mos-amplifier-transient | tran | success/converged | success/converged | 581.563/4643.324 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| ngspice/mos6-simple-inverter-transient | tran | success/converged | success/converged | 28.85/476.527 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#461](https://github.com/mfiumara/spice-ts/issues/461) |
+| ngspice/ltra-line-transient | tran | success/converged | success/converged | 72.405/627.679 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#7](https://github.com/mfiumara/spice-ts/issues/7) |
+| ngspice/hfet-inverter | tran | success/converged | success/converged | 32.739/362.964 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| ngspice/mesa-oscillator | tran | success/converged | success/converged | 40.782/380.502 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#432](https://github.com/mfiumara/spice-ts/issues/432) |
+| ngspice/jimi-fuzz | op, tran | success/converged | success/converged | 3937.121/2592.729 | 2 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#123](https://github.com/mfiumara/spice-ts/issues/123) |
+| ngspice/schmitt-trigger | tran | success/converged | success/converged | 90.768/865.111 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| ngspice/inductive-positive-definite-2x2 | op | failed/not-run | unsupported/not-run | 31.413/597.504 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| ngspice/inductive-positive-definite-3x3 | op | failed/not-run | unsupported/not-run | 25.737/506.08 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| ngspice/inductive-positive-definite-4x4 | op | failed/not-run | unsupported/not-run | 39.554/572.876 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| ngspice/inductive-positive-definite-ac | op, ac | failed/not-run | unsupported/not-run | 41.894/554.499 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| classic/bjt-noise | noise | success/converged | success/converged | 25.483/656.492 | 2 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#75](https://github.com/mfiumara/spice-ts/issues/75) |
+| classic/bsim1-device-sweep | dc | success/converged | success/converged | 51.921/716.981 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| classic/bsim2-device-sweep | dc | success/converged | success/converged | 49.969/592.68 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| classic/bjt-differential-pair | tran | success/converged | success/converged | 43.13/690.762 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| classic/diode-distortion | disto | success/converged | success/converged | 33.417/491.237 | 3 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#75](https://github.com/mfiumara/spice-ts/issues/75) |
+| classic/lossy-line-24-inch | tran | success/converged | success/converged | 101.291/654.798 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#7](https://github.com/mfiumara/spice-ts/issues/7) |
+| classic/lossy-line-aluminium | tran | success/converged | success/converged | 403.26/525.371 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#7](https://github.com/mfiumara/spice-ts/issues/7) |
+| classic/coupled-lossy-lines | tran | success/converged | success/converged | 91.487/413.16 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#7](https://github.com/mfiumara/spice-ts/issues/7) |
+| classic/bjt-mixer-distortion | none | failed/not-run | failed/not-run | 15.576/200.324 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#75](https://github.com/mfiumara/spice-ts/issues/75) |
+| classic/mos6-inverter-chain | tran | success/converged | success/converged | 33.114/349.286 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#461](https://github.com/mfiumara/spice-ts/issues/461), [#280](https://github.com/mfiumara/spice-ts/issues/280) |
+| classic/mos-amplifier | tran | success/converged | success/converged | 344.442/3348.902 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#280](https://github.com/mfiumara/spice-ts/issues/280) |
+| classic/mos-memory-cell | tran | success/converged | success/converged | 18.682/257.269 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#280](https://github.com/mfiumara/spice-ts/issues/280) |
+| classic/pole-zero-four-stage | pz | success/converged | success/converged | 17.83/218.318 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#75](https://github.com/mfiumara/spice-ts/issues/75) |
+| classic/pole-zero-three-stage | pz | success/converged | success/converged | 16.13/221.83 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#75](https://github.com/mfiumara/spice-ts/issues/75) |
+| classic/rc-transient | tran | success/converged | success/converged | 17.179/232.054 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| classic/rca3040-wideband-amplifier | ac, dc, tran | success/converged | success/converged | 21.24/283.687 | 3 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#280](https://github.com/mfiumara/spice-ts/issues/280) |
+| classic/resistor-noise | noise | success/converged | success/converged | 17.928/240.286 | 2 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#75](https://github.com/mfiumara/spice-ts/issues/75) |
+| classic/rtl-inverter-chain | dc, tran | success/converged | success/converged | 18.507/258.241 | 2 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| classic/ecl-schmitt-trigger | tran | success/converged | success/converged | 18.353/270.292 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| classic/high-pass-pole-zero | pz | success/converged | success/converged | 19.679/212.992 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#75](https://github.com/mfiumara/spice-ts/issues/75) |
+| xyce/capacitor-rc-transient | tran | unsupported/failed | success/converged | 15.967/227.172 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| xyce/capacitor-rc-transient-newlte | tran | unsupported/failed | success/converged | 16.617/224.199 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| xyce/capacitor-rc-oscillator | tran | unsupported/failed | success/converged | 16.891/257.891 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| xyce/diode-level2-temperature-breakdown | tran | unsupported/failed | unsupported/not-run | 28.32/250.994 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| xyce/diode-zener-5229 | dc | unsupported/failed | success/converged | 18.524/223.428 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| xyce/diode-transient | tran | unsupported/failed | success/converged | 15.896/216.994 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| xyce/diode-sidewall-dc | dc | success/converged | success/converged | 15.335/206.613 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| xyce/inductor-transient | tran | success/converged | success/converged | 74.639/208.51 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#366](https://github.com/mfiumara/spice-ts/issues/366) |
+| xyce/njfet-2109-dc | dc | success/converged | success/converged | 21.041/222.211 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| xyce/njfet-stepped-dc | dc | unsupported/failed | unsupported/not-run | 16.07/214.404 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| xyce/nmos-level1-dc | dc | success/converged | success/converged | 16.036/210.625 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#3](https://github.com/mfiumara/spice-ts/issues/3) |
+| xyce/npn-dc | dc | success/converged | success/converged | 15.179/200.98 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#5](https://github.com/mfiumara/spice-ts/issues/5) |
+| xyce/pmos-level1-dc | dc | success/converged | success/converged | 15.201/193.093 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#3](https://github.com/mfiumara/spice-ts/issues/3) |
+| xyce/pnp-dc | dc | success/converged | success/converged | 15.011/187.724 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#5](https://github.com/mfiumara/spice-ts/issues/5) |
+| xyce/resistor-dc | dc | success/converged | success/converged | 14.292/183.855 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| xyce/resistor-level3-zero | dc | success/converged | success/converged | 14.868/230.669 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| xyce/resistor-negative | dc | success/converged | success/converged | 29.157/221.657 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| xyce/rlc-transient | tran | success/converged | success/converged | 21.417/238.265 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| xyce/vccs-dc | dc | success/converged | success/converged | 18.988/251.064 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| xyce/vcvs-dc | dc | success/converged | success/converged | 21.731/291.237 | 1 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| corpus-d/ohms-law-op | op | unsupported/failed | unsupported/not-run | 18.143/227.583 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| corpus-d/diode-operating-point | op | unsupported/failed | unsupported/not-run | 16.5/228.365 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| corpus-d/ekv-bias-sweep | op, dc | unsupported/failed | unsupported/not-run | 16.18/232.133 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| corpus-d/downscaling-current-mirror | op, dc | unsupported/failed | unsupported/not-run | 17.503/219.593 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| corpus-d/transresistance-ac | op, ac | unsupported/failed | unsupported/not-run | 14.344/247.308 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| corpus-d/passive-pole-zero-ac | op, pz, ac | unsupported/failed | unsupported/not-run | 34.517/279.659 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#75](https://github.com/mfiumara/spice-ts/issues/75) |
+| corpus-d/resistor-voltage-ac | op, ac | unsupported/failed | unsupported/not-run | 15.15/244.787 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| corpus-d/series-resonance-ac | op, ac | unsupported/failed | unsupported/not-run | 39.302/343.457 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| corpus-d/am-source-transient | tran | unsupported/failed | unsupported/not-run | 23.179/370.08 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| corpus-d/fft-source-transient | tran | unsupported/failed | unsupported/not-run | 29.544/370.166 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| corpus-d/coupled-transformer-transient | tran, pss | unsupported/failed | unsupported/not-run | 23.13/386.107 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| corpus-d/rlc-trapezoidal-transient | op, tran | unsupported/failed | unsupported/not-run | 25.359/308.1 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| corpus-d/diode-voltage-doubler | op, tran | unsupported/failed | unsupported/not-run | 23.237/293.268 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| corpus-d/ekv-ring-oscillator | op, tran | unsupported/failed | unsupported/not-run | 17.209/371.542 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| corpus-d/cockcroft-walton-x8 | op, tran | unsupported/failed | unsupported/not-run | 22.3/282.86 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| corpus-d/pwm-switch | op, tran | unsupported/failed | unsupported/not-run | 21.077/260.629 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| corpus-d/rlc-gear3 | op, tran | unsupported/failed | unsupported/not-run | 19.393/270.466 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| corpus-d/rlc-gear5 | op, tran | unsupported/failed | unsupported/not-run | 17.469/321.68 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| corpus-d/rlc-gear6 | op, tran | unsupported/failed | unsupported/not-run | 28.811/303.139 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| corpus-d/colpitts-oscillator | op, tran | unsupported/failed | unsupported/not-run | 23.069/277.173 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| corpus-e/cccs-mixed-analysis | op, tran, ac | unsupported/failed | success/converged | 20.546/300.269 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| corpus-e/vcvs-operating-point | op, ac | failed/failed | unsupported/not-run | 21.685/272.612 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| corpus-e/diode-bias-sweep | op, dc | success/converged | success/converged | 20.205/278.4 | 2 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| corpus-e/mos1-inverter-sweep | op, dc, tran | success/converged | success/converged | 19.772/324.789 | 3 | [#76](https://github.com/mfiumara/spice-ts/issues/76), [#427](https://github.com/mfiumara/spice-ts/issues/427) |
+| corpus-e/transmission-line-ac | ac | unsupported/failed | unsupported/not-run | 30.969/780.419 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| corpus-e/mutual-inductance-ac | ac, tran | unsupported/failed | success/converged | 37.372/532.557 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| corpus-e/bjt-diffpair-ac | dc, tran, op, ac | unsupported/failed | success/converged | 25.142/393.122 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| corpus-e/opamp-open-loop-ac | op, ac, dc | failed/failed | unsupported/not-run | 22.532/361.635 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| corpus-e/capacitor-step-transient | tran | unsupported/failed | success/converged | 23.563/319.707 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| corpus-e/capacitor-initial-condition | tran | unsupported/failed | success/converged | 23.748/325.71 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| corpus-e/lc-oscillator-transient | tran | unsupported/failed | success/converged | 22.286/305.846 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| corpus-e/bjt-diffpair-transient | op, tran | success/converged | success/converged | 26.476/336.031 | 2 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| corpus-e/bjt-schmitt-trigger | op, tran | unsupported/failed | success/converged | 20.845/329.512 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| corpus-e/diode-temperature-sweep | op, dc | unsupported/failed | success/converged | 20.483/281.125 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| corpus-e/mos1-nand-transient | op, tran | unsupported/failed | success/converged | 18.459/250.298 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| corpus-e/bjt-rtl-inverter-chain | op, dc, tran | success/converged | success/converged | 17.166/244.056 | 3 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| corpus-e/dual-lc-uic-rejection | tran | unsupported/failed | success/converged | 15.5/241.281 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| corpus-e/opamp-voltage-follower | op, ac, dc, tran | unsupported/failed | unsupported/not-run | 14.397/197.918 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| corpus-e/mos7-nand-no-bypass | op, tran | failed/failed | unsupported/not-run | 14.799/192.535 | 0 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
+| corpus-e/bjt-diffpair-current-source | op, tran, ac | success/converged | success/converged | 16.711/227.585 | 3 | [#76](https://github.com/mfiumara/spice-ts/issues/76) |
 
 Every unsupported or failed spice-ts row is a published loss. Engine error strings, input hashes, commands, signal lists, point counts, and matched-point metrics are retained in the JSON report.
 
