@@ -1,0 +1,793 @@
+{
+  "grid": {
+    "start": 0,
+    "end": 100,
+    "step": 0.005,
+    "points": 20001
+  },
+  "results": [
+    {
+      "maxstep": null,
+      "sha256": "59183b63dbfac31926743af5f11400f8cdad60be4b85878f0bf6e7dd99102ffd",
+      "receipts": {
+        "ngspice": {
+          "nativePoints": 219,
+          "maxDt": 0.5000000000000071,
+          "positiveCrossings": [
+            6.452564841889003,
+            12.864214233704352,
+            19.273502677218424,
+            25.68478718219007,
+            32.097933378293426,
+            38.51161521238134,
+            44.92453910136528,
+            51.335365426099756,
+            57.74482756623233,
+            64.1568573066337,
+            70.57031603766177,
+            76.98389668903961,
+            83.39629956748666,
+            89.8061700110392,
+            96.21644023247197
+          ],
+          "analyticNativeGrid": {
+            "grid": {
+              "spiceTsPoints": 219,
+              "ngspicePoints": 20001,
+              "alignedPoints": 219,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "v(1)": {
+                "status": "compared",
+                "sampleCount": 219,
+                "absoluteError": {
+                  "max": 8.25969860941755,
+                  "rms": 3.5153225063830593
+                },
+                "relativeError": {
+                  "max": 252.89834082396592,
+                  "rms": 21.89377493482456,
+                  "sampleCount": 218,
+                  "excludedZeroReferences": 1
+                }
+              }
+            }
+          },
+          "analyticUniformGrid": {
+            "grid": {
+              "spiceTsPoints": 20001,
+              "ngspicePoints": 20001,
+              "alignedPoints": 20001,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "v(1)": {
+                "status": "compared",
+                "sampleCount": 20001,
+                "absoluteError": {
+                  "max": 8.25967689118271,
+                  "rms": 3.6391647799874978
+                },
+                "relativeError": {
+                  "max": 24925.90009266256,
+                  "rms": 184.82367689195326,
+                  "sampleCount": 20000,
+                  "excludedZeroReferences": 1
+                }
+              }
+            }
+          }
+        },
+        "xyce": {
+          "nativePoints": 2185,
+          "maxDt": 0.04608000000000345,
+          "positiveCrossings": [
+            6.334277131459931,
+            12.618571450479447,
+            18.902870238060792,
+            25.18716715697543,
+            31.471461920680785,
+            37.75576196501013,
+            44.040056911999244,
+            50.324353446438295,
+            56.608652565092456,
+            62.89294686625875,
+            69.17724603629945,
+            75.46154250829191,
+            81.74583748954188,
+            88.0301375288657,
+            94.31443226439362
+          ],
+          "analyticNativeGrid": {
+            "grid": {
+              "spiceTsPoints": 2185,
+              "ngspicePoints": 20001,
+              "alignedPoints": 2185,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "v(1)": {
+                "status": "compared",
+                "sampleCount": 2185,
+                "absoluteError": {
+                  "max": 0.08600279896652079,
+                  "rms": 0.03564676755633746
+                },
+                "relativeError": {
+                  "max": 14.353724301753443,
+                  "rms": 0.39399414262807825,
+                  "sampleCount": 2184,
+                  "excludedZeroReferences": 1
+                }
+              }
+            }
+          },
+          "analyticUniformGrid": {
+            "grid": {
+              "spiceTsPoints": 20001,
+              "ngspicePoints": 20001,
+              "alignedPoints": 20001,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "v(1)": {
+                "status": "compared",
+                "sampleCount": 20001,
+                "absoluteError": {
+                  "max": 0.08601980317411291,
+                  "rms": 0.0357536002097591
+                },
+                "relativeError": {
+                  "max": 317.89332237176467,
+                  "rms": 2.3727561204148238,
+                  "sampleCount": 20000,
+                  "excludedZeroReferences": 1
+                }
+              }
+            }
+          }
+        },
+        "spiceTs": {
+          "nativePoints": 219,
+          "maxDt": 0.5,
+          "positiveCrossings": [
+            6.452564841868937,
+            12.864214233762398,
+            19.273502677292228,
+            25.684787182178702,
+            32.097933378242516,
+            38.5116152123341,
+            44.92453910136515,
+            51.33536542619305,
+            57.74482756627367,
+            64.15685730660488,
+            70.57031603760737,
+            76.98389668900263,
+            83.39629956751118,
+            89.80617001115579,
+            96.2164402324858
+          ],
+          "analyticNativeGrid": {
+            "grid": {
+              "spiceTsPoints": 219,
+              "ngspicePoints": 20001,
+              "alignedPoints": 219,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "v(1)": {
+                "status": "compared",
+                "sampleCount": 219,
+                "absoluteError": {
+                  "max": 8.259698606659862,
+                  "rms": 3.515322506392311
+                },
+                "relativeError": {
+                  "max": 252.8981171307651,
+                  "rms": 21.89376675460311,
+                  "sampleCount": 218,
+                  "excludedZeroReferences": 1
+                }
+              }
+            }
+          },
+          "analyticUniformGrid": {
+            "grid": {
+              "spiceTsPoints": 20001,
+              "ngspicePoints": 20001,
+              "alignedPoints": 20001,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "v(1)": {
+                "status": "compared",
+                "sampleCount": 20001,
+                "absoluteError": {
+                  "max": 8.25967688843214,
+                  "rms": 3.6391647800002054
+                },
+                "relativeError": {
+                  "max": 24925.900099984046,
+                  "rms": 184.82367694263306,
+                  "sampleCount": 20000,
+                  "excludedZeroReferences": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "uniformNgspiceVsXyce": {
+        "grid": {
+          "spiceTsPoints": 20001,
+          "ngspicePoints": 20001,
+          "alignedPoints": 20001,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "v(1)": {
+            "status": "compared",
+            "sampleCount": 20001,
+            "absoluteError": {
+              "max": 8.2032396823184,
+              "rms": 3.613357187558196
+            },
+            "relativeError": {
+              "max": 20491.395058963335,
+              "rms": 193.7745998549336,
+              "sampleCount": 20000,
+              "excludedZeroReferences": 1
+            }
+          }
+        }
+      },
+      "uniformSpiceTsVsNgspice": {
+        "grid": {
+          "spiceTsPoints": 20001,
+          "ngspicePoints": 20001,
+          "alignedPoints": 20001,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "v(1)": {
+            "status": "compared",
+            "sampleCount": 20001,
+            "absoluteError": {
+              "max": 3.46623085789588e-9,
+              "rms": 1.4293679953937622e-9
+            },
+            "relativeError": {
+              "max": 2.578022284034389e-7,
+              "rms": 4.403941434645959e-9,
+              "sampleCount": 20000,
+              "excludedZeroReferences": 1
+            }
+          }
+        }
+      }
+    },
+    {
+      "maxstep": 0.01,
+      "sha256": "16ece966fcc1cced864948840f8a56fe7cf594443c8e691e312ecfeb252826a4",
+      "receipts": {
+        "ngspice": {
+          "nativePoints": 10011,
+          "maxDt": 0.010000000000012221,
+          "positiveCrossings": [
+            6.333232490610816,
+            12.616470187752135,
+            18.899707842132013,
+            25.182945490387468,
+            31.466183186395867,
+            37.74942084459236,
+            44.03265849064679,
+            50.31589618440493,
+            56.59913384695264,
+            62.882371491341644,
+            69.16560918174142,
+            75.44884684917838,
+            81.73208449243977,
+            88.01532217836429,
+            94.29855985121941
+          ],
+          "analyticNativeGrid": {
+            "grid": {
+              "spiceTsPoints": 10011,
+              "ngspicePoints": 20001,
+              "alignedPoints": 10011,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "v(1)": {
+                "status": "compared",
+                "sampleCount": 10011,
+                "absoluteError": {
+                  "max": 0.004031126839262947,
+                  "rms": 0.0016711786087817368
+                },
+                "relativeError": {
+                  "max": 14.872319244131095,
+                  "rms": 0.15113158567753493,
+                  "sampleCount": 10010,
+                  "excludedZeroReferences": 1
+                }
+              }
+            }
+          },
+          "analyticUniformGrid": {
+            "grid": {
+              "spiceTsPoints": 20001,
+              "ngspicePoints": 20001,
+              "alignedPoints": 20001,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "v(1)": {
+                "status": "compared",
+                "sampleCount": 20001,
+                "absoluteError": {
+                  "max": 0.0040328600636131695,
+                  "rms": 0.0016724305771111498
+                },
+                "relativeError": {
+                  "max": 14.87231983336573,
+                  "rms": 0.11101294034993335,
+                  "sampleCount": 20000,
+                  "excludedZeroReferences": 1
+                }
+              }
+            }
+          }
+        },
+        "xyce": {
+          "nativePoints": 10009,
+          "maxDt": 0.010000000000005116,
+          "positiveCrossings": [
+            6.333231267917462,
+            12.616468956266926,
+            18.899706626281652,
+            25.18294426918165,
+            31.4661819525119,
+            37.74941962820393,
+            44.03265727076357,
+            50.315894948067594,
+            56.59913262986122,
+            62.88237027261608,
+            69.1656079441021,
+            75.44884563121902,
+            81.73208327470691,
+            88.01532094090544,
+            94.29855863222717
+          ],
+          "analyticNativeGrid": {
+            "grid": {
+              "spiceTsPoints": 10009,
+              "ngspicePoints": 20001,
+              "alignedPoints": 10009,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "v(1)": {
+                "status": "compared",
+                "sampleCount": 10009,
+                "absoluteError": {
+                  "max": 0.004024894924434558,
+                  "rms": 0.001667585908599591
+                },
+                "relativeError": {
+                  "max": 4.026684267472333,
+                  "rms": 0.05707367689229838,
+                  "sampleCount": 10008,
+                  "excludedZeroReferences": 1
+                }
+              }
+            }
+          },
+          "analyticUniformGrid": {
+            "grid": {
+              "spiceTsPoints": 20001,
+              "ngspicePoints": 20001,
+              "alignedPoints": 20001,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "v(1)": {
+                "status": "compared",
+                "sampleCount": 20001,
+                "absoluteError": {
+                  "max": 0.004026795287715934,
+                  "rms": 0.0016688673682385172
+                },
+                "relativeError": {
+                  "max": 14.840049158269649,
+                  "rms": 0.11078079101994387,
+                  "sampleCount": 20000,
+                  "excludedZeroReferences": 1
+                }
+              }
+            }
+          }
+        },
+        "spiceTs": {
+          "nativePoints": 10011,
+          "maxDt": 0.010000000000005116,
+          "positiveCrossings": [
+            6.3332324906108175,
+            12.616470187752135,
+            18.899707842132013,
+            25.18294549038747,
+            31.466183186395874,
+            37.749420844592365,
+            44.032658490646796,
+            50.315896184404934,
+            56.59913384695265,
+            62.88237149134165,
+            69.16560918174143,
+            75.4488468491784,
+            81.73208449243978,
+            88.0153221783643,
+            94.29855985121942
+          ],
+          "analyticNativeGrid": {
+            "grid": {
+              "spiceTsPoints": 10011,
+              "ngspicePoints": 20001,
+              "alignedPoints": 10011,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "v(1)": {
+                "status": "compared",
+                "sampleCount": 10011,
+                "absoluteError": {
+                  "max": 0.00403112683937841,
+                  "rms": 0.0016711786088182915
+                },
+                "relativeError": {
+                  "max": 14.872319244352468,
+                  "rms": 0.1511315856797676,
+                  "sampleCount": 10010,
+                  "excludedZeroReferences": 1
+                }
+              }
+            }
+          },
+          "analyticUniformGrid": {
+            "grid": {
+              "spiceTsPoints": 20001,
+              "ngspicePoints": 20001,
+              "alignedPoints": 20001,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "v(1)": {
+                "status": "compared",
+                "sampleCount": 20001,
+                "absoluteError": {
+                  "max": 0.004032860063777011,
+                  "rms": 0.0016724305771637553
+                },
+                "relativeError": {
+                  "max": 14.8723198335871,
+                  "rms": 0.11101294035156307,
+                  "sampleCount": 20000,
+                  "excludedZeroReferences": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "uniformNgspiceVsXyce": {
+        "grid": {
+          "spiceTsPoints": 20001,
+          "ngspicePoints": 20001,
+          "alignedPoints": 20001,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "v(1)": {
+            "status": "compared",
+            "sampleCount": 20001,
+            "absoluteError": {
+              "max": 0.00045554881656289896,
+              "rms": 0.00001719971878303999
+            },
+            "relativeError": {
+              "max": 0.07922798271126888,
+              "rms": 0.000959095471005253,
+              "sampleCount": 20000,
+              "excludedZeroReferences": 1
+            }
+          }
+        }
+      },
+      "uniformSpiceTsVsNgspice": {
+        "grid": {
+          "spiceTsPoints": 20001,
+          "ngspicePoints": 20001,
+          "alignedPoints": 20001,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "v(1)": {
+            "status": "compared",
+            "sampleCount": 20001,
+            "absoluteError": {
+              "max": 3.270272941335861e-12,
+              "rms": 1.3682759203010084e-12
+            },
+            "relativeError": {
+              "max": 3.906853309478275e-11,
+              "rms": 6.159956472042319e-13,
+              "sampleCount": 20000,
+              "excludedZeroReferences": 1
+            }
+          }
+        }
+      }
+    },
+    {
+      "maxstep": 0.005,
+      "sha256": "0670bd90749fabd330ee9ab45a3323f7097d2448d7682e65e007c8d9acb9b45f",
+      "receipts": {
+        "ngspice": {
+          "nativePoints": 20011,
+          "maxDt": 0.005000000000016769,
+          "positiveCrossings": [
+            6.333197124996424,
+            12.616395518320203,
+            18.89959391827242,
+            25.182792315587335,
+            31.465990709960717,
+            37.74918911034217,
+            44.032387505523374,
+            50.31558590193772,
+            56.59878430215548,
+            62.88198269581949,
+            69.1651810940998,
+            75.44837949355409,
+            81.73157788674024,
+            88.01477628630177,
+            94.29797468441106
+          ],
+          "analyticNativeGrid": {
+            "grid": {
+              "spiceTsPoints": 20011,
+              "ngspicePoints": 20001,
+              "alignedPoints": 20011,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "v(1)": {
+                "status": "compared",
+                "sampleCount": 20011,
+                "absoluteError": {
+                  "max": 0.0010076894442627871,
+                  "rms": 0.00041792207298423794
+                },
+                "relativeError": {
+                  "max": 3.6853863632441266,
+                  "rms": 0.030298640451528972,
+                  "sampleCount": 20010,
+                  "excludedZeroReferences": 1
+                }
+              }
+            }
+          },
+          "analyticUniformGrid": {
+            "grid": {
+              "spiceTsPoints": 20001,
+              "ngspicePoints": 20001,
+              "alignedPoints": 20001,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "v(1)": {
+                "status": "compared",
+                "sampleCount": 20001,
+                "absoluteError": {
+                  "max": 0.001008345353523843,
+                  "rms": 0.00041832532859934195
+                },
+                "relativeError": {
+                  "max": 3.7185507677833654,
+                  "rms": 0.027761266112345303,
+                  "sampleCount": 20000,
+                  "excludedZeroReferences": 1
+                }
+              }
+            }
+          }
+        },
+        "xyce": {
+          "nativePoints": 20008,
+          "maxDt": 0.005000000000002558,
+          "positiveCrossings": [
+            6.333192135946244,
+            12.616390530743598,
+            18.89958893113655,
+            25.182787325840206,
+            31.465985722768664,
+            37.74918412285429,
+            44.032382516304644,
+            50.315580914964734,
+            56.59877931415008,
+            62.88197770739091,
+            69.16517610718036,
+            75.44837450486565,
+            81.73157289893626,
+            88.01477129927038,
+            94.2979696948787
+          ],
+          "analyticNativeGrid": {
+            "grid": {
+              "spiceTsPoints": 20008,
+              "ngspicePoints": 20001,
+              "alignedPoints": 20008,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "v(1)": {
+                "status": "compared",
+                "sampleCount": 20008,
+                "absoluteError": {
+                  "max": 0.0009827853464911412,
+                  "rms": 0.000402874022754874
+                },
+                "relativeError": {
+                  "max": 103.56042641426964,
+                  "rms": 0.7322595384605061,
+                  "sampleCount": 20007,
+                  "excludedZeroReferences": 1
+                }
+              }
+            }
+          },
+          "analyticUniformGrid": {
+            "grid": {
+              "spiceTsPoints": 20001,
+              "ngspicePoints": 20001,
+              "alignedPoints": 20001,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "v(1)": {
+                "status": "compared",
+                "sampleCount": 20001,
+                "absoluteError": {
+                  "max": 0.0009834840190347804,
+                  "rms": 0.000403326413039607
+                },
+                "relativeError": {
+                  "max": 3.5886107251213,
+                  "rms": 0.026830426683698103,
+                  "sampleCount": 20000,
+                  "excludedZeroReferences": 1
+                }
+              }
+            }
+          }
+        },
+        "spiceTs": {
+          "nativePoints": 20011,
+          "maxDt": 0.005000000000002558,
+          "positiveCrossings": [
+            6.333197124996427,
+            12.616395518320209,
+            18.89959391827242,
+            25.182792315587328,
+            31.46599070996071,
+            37.74918911034217,
+            44.03238750552337,
+            50.31558590193772,
+            56.59878430215548,
+            62.881982695819495,
+            69.1651810940998,
+            75.44837949355409,
+            81.73157788674023,
+            88.01477628630177,
+            94.29797468441106
+          ],
+          "analyticNativeGrid": {
+            "grid": {
+              "spiceTsPoints": 20011,
+              "ngspicePoints": 20001,
+              "alignedPoints": 20011,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "v(1)": {
+                "status": "compared",
+                "sampleCount": 20011,
+                "absoluteError": {
+                  "max": 0.0010076894442844486,
+                  "rms": 0.0004179220729143834
+                },
+                "relativeError": {
+                  "max": 3.685386361379352,
+                  "rms": 0.03029864044013653,
+                  "sampleCount": 20010,
+                  "excludedZeroReferences": 1
+                }
+              }
+            }
+          },
+          "analyticUniformGrid": {
+            "grid": {
+              "spiceTsPoints": 20001,
+              "ngspicePoints": 20001,
+              "alignedPoints": 20001,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "v(1)": {
+                "status": "compared",
+                "sampleCount": 20001,
+                "absoluteError": {
+                  "max": 0.0010083453538929366,
+                  "rms": 0.0004183253287355141
+                },
+                "relativeError": {
+                  "max": 3.718550767772888,
+                  "rms": 0.027761266112239953,
+                  "sampleCount": 20000,
+                  "excludedZeroReferences": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "uniformNgspiceVsXyce": {
+        "grid": {
+          "spiceTsPoints": 20001,
+          "ngspicePoints": 20001,
+          "alignedPoints": 20001,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "v(1)": {
+            "status": "compared",
+            "sampleCount": 20001,
+            "absoluteError": {
+              "max": 0.00013713686892766197,
+              "rms": 0.000017839246283828644
+            },
+            "relativeError": {
+              "max": 0.18964104613576188,
+              "rms": 0.001610450457479678,
+              "sampleCount": 20000,
+              "excludedZeroReferences": 1
+            }
+          }
+        }
+      },
+      "uniformSpiceTsVsNgspice": {
+        "grid": {
+          "spiceTsPoints": 20001,
+          "ngspicePoints": 20001,
+          "alignedPoints": 20001,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "v(1)": {
+            "status": "compared",
+            "sampleCount": 20001,
+            "absoluteError": {
+              "max": 1.0835776720341528e-11,
+              "rms": 4.4923660274852556e-12
+            },
+            "relativeError": {
+              "max": 1.608426693162991e-10,
+              "rms": 1.7436321573054858e-12,
+              "sampleCount": 20000,
+              "excludedZeroReferences": 1
+            }
+          }
+        }
+      }
+    }
+  ]
+}

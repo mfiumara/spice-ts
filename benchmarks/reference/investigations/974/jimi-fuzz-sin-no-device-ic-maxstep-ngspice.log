@@ -1,0 +1,43 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: * jimi hendrix fuzz face - by j. dunlop
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 14  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+10                                           0
+9                                            0
+3                                            0
+6                                     0.816708
+5                                    0.0408354
+1                                            9
+8                                       1.5863
+4                                      8.74144
+11                                    0.906263
+7                                     0.722975
+2                                     0.722975
+v_v1#branch                       -0.000955929
+v_v2#branch                                  0
+
+ Reference value :  1.60459e-01 Reference value :  3.20835e-01 Reference value :  4.81994e-01 Reference value :  6.43113e-01 Reference value :  8.04126e-01 Reference value :  9.68563e-01 Reference value :  1.13321e+00 Reference value :  1.29647e+00 Reference value :  1.46067e+00 Reference value :  1.62455e+00 Reference value :  1.79332e+00 Reference value :  1.96662e+00 Reference value :  2.14911e+00 Reference value :  2.33336e+00 Reference value :  2.51419e+00 Reference value :  2.69711e+00 Reference value :  2.88005e+00 Reference value :  3.06144e+00 Reference value :  3.24270e+00 Reference value :  3.43453e+00 Reference value :  3.61590e+00 Reference value :  3.79956e+00 Reference value :  3.99320e+00 Reference value :  4.18668e+00 Reference value :  4.37896e+00 Reference value :  4.57432e+00 Reference value :  4.77911e+00 Reference value :  4.98716e+00
+No. of Data Rows : 1003204
+
+Total analysis time (seconds) = 7.06244
+
+Total elapsed time (seconds) = 7.067 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 15089.312 MB.
+Maximum ngspice program size =   10.172 MB.
+Current ngspice program size =   10.172 MB.
+
