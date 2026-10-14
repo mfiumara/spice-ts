@@ -1,8 +1,8 @@
 // Evidence only. Centering AFTER assembly cannot recover stamp cancellation.
-import { createTransientSim } from '../../packages/core/src/analysis/transient-driver.js';
-import { BJT } from '../../packages/core/src/devices/bjt.js';
-import type { CompiledCircuit } from '../../packages/core/src/circuit.js';
-import type { MNAAssembler } from '../../packages/core/src/mna/assembler.js';
+import { createTransientSim } from './transient-driver.js';
+import { BJT } from '../devices/bjt.js';
+import type { CompiledCircuit } from '../circuit.js';
+import type { MNAAssembler } from '../mna/assembler.js';
 
 // Self-written rest reduction, rounded parameters; MIT, same as spice-ts.
 export const REST = `Reverse-biased BJT centered-solve reduction (#1037)
@@ -10,6 +10,7 @@ V1 c 0 46.5
 Q1 c 0 0 N
 .model N NPN(IS=1e-14 BF=200 BR=6 VAF=75 CJC=7p CJE=22p TR=50n TF=400p RB=10 RC=1)
 .options rshunt=1G
+.save all @q1[vbe] @q1[vbc]
 .tran 100f 10p
 .end
 `;
@@ -44,19 +45,19 @@ export async function probe(text: string, centered: boolean) {
     installed = true;
     const solve = solver.solve.bind(solver);
     solver.solve = rhs => {
-    const matrix = assembler.getCscMatrix();
-    const anchor = new Float64Array(assembler.solution);
-    const residual = new Float64Array(rhs);
-    for (let col = 0; col < matrix.size; col++) {
-      for (let k = matrix.colPtr[col]; k < matrix.colPtr[col + 1]; k++) {
-        residual[matrix.rowIdx[k]] -= matrix.values[k] * anchor[col];
+      const matrix = assembler.getCscMatrix();
+      const anchor = new Float64Array(assembler.solution);
+      const residual = new Float64Array(rhs);
+      for (let col = 0; col < matrix.size; col++) {
+        for (let k = matrix.colPtr[col]; k < matrix.colPtr[col + 1]; k++) {
+          residual[matrix.rowIdx[k]] -= matrix.values[k] * anchor[col];
+        }
       }
-    }
-    const direct = solve(new Float64Array(rhs));
-    const shifted = solve(new Float64Array(residual));
-    for (let i = 0; i < shifted.length; i++) shifted[i] += anchor[i];
-    solves.push({ time: assembler.time, dt: assembler.dt, anchor: Array.from(anchor), rhs: Array.from(rhs), residual: Array.from(residual), direct: Array.from(direct), centered: Array.from(shifted), matrix: { colPtr: Array.from(matrix.colPtr), rowIdx: Array.from(matrix.rowIdx), values: Array.from(matrix.values) } });
-    return centered ? shifted : direct;
+      const direct = solve(new Float64Array(rhs));
+      const shifted = solve(new Float64Array(residual));
+      for (let i = 0; i < shifted.length; i++) shifted[i] += anchor[i];
+      solves.push({ time: assembler.time, dt: assembler.dt, anchor: Array.from(anchor), rhs: Array.from(rhs), residual: Array.from(residual), direct: Array.from(direct), centered: Array.from(shifted), matrix: { colPtr: Array.from(matrix.colPtr), rowIdx: Array.from(matrix.rowIdx), values: Array.from(matrix.values) } });
+      return centered ? shifted : direct;
     };
     return solver;
   };
