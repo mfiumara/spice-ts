@@ -23,7 +23,7 @@ are published as well. No speed or superiority claim.
 
 The four original files are named in TABLES.md. All were freshly executed in
 both engines from identical bytes and checked against their committed SHA256.
-Native log receipts are native/0..3/original.log. Native exits are all 0;
+Native log receipts are native/0..3/original.log.gz. Native exits are all 0;
 G nevertheless logs `Error: no function as { with that arity.` for its original
 .print expression. That is an output failure, not full native success.
 

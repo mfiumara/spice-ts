@@ -12,6 +12,6 @@ packages/mcp lint$ tsc --noEmit
 packages/ui lint$ tsc --noEmit
 packages/wasm lint$ tsc --noEmit
 packages/circuit-json lint: Done
+packages/ui lint: Done
 packages/mcp lint: Done
 packages/wasm lint: Done
-packages/ui lint: Done

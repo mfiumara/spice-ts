@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceHead": "e9e5dc605bc63656f78b821ccb2a16b2422ae83e",
+  "sourceHead": "0a6633309e9d775434bea5f76d35ef18d49271b2",
   "baselineHead": "760833b948280918f6abcfaa0d051a4f4d865ae9",
   "command": "pnpm exec tsx benchmarks/bsim4-validation-3/compare.ts",
   "policy": {
@@ -229,7 +229,7 @@
       "command": "ngspice -n -b input.cir",
       "exitCode": 0,
       "diagnostics": [],
-      "log": "native/0/original.log",
+      "log": "native/0/original.log.gz",
       "before": {
         "corpus": "f",
         "id": "examples-mos-nmos-pmos-bsim482-sp",
@@ -1058,7 +1058,7 @@
       "command": "ngspice -n -b input.cir",
       "exitCode": 0,
       "diagnostics": [],
-      "log": "native/1/original.log",
+      "log": "native/1/original.log.gz",
       "before": {
         "corpus": "f",
         "id": "examples-various-gain-stage-cir",
@@ -1089,7 +1089,7 @@
       "command": "ngspice -n -b input.cir",
       "exitCode": 0,
       "diagnostics": [],
-      "log": "native/2/original.log",
+      "log": "native/2/original.log.gz",
       "before": {
         "corpus": "f",
         "id": "tests-regression-model-binning-1-cir",
@@ -1143,7 +1143,7 @@
       "diagnostics": [
         "Error: no function as { with that arity."
       ],
-      "log": "native/3/original.log",
+      "log": "native/3/original.log.gz",
       "before": {
         "corpus": "g",
         "id": "sens-bsim4-issue694-fd-cir",

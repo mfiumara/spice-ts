@@ -1,5 +1,5 @@
 spice-heavy: all 2 heavy slots busy, waiting...
-spice-heavy: got slot 0
+spice-heavy: got slot 1
 Generated 756 bias points in 7 cases; binning OP {'v(1)': 0.8693589670633045, 'v(2)': 0.8693589670633045, 'v(3)': 1.071660594471147, 'v(4)': 1.071660594471147}
 [
   {
@@ -8,7 +8,7 @@ Generated 756 bias points in 7 cases; binning OP {'v(1)': 0.8693589670633045, 'v
     "command": "ngspice -n -b input.cir",
     "exitCode": 0,
     "diagnostics": [],
-    "log": "native/0/original.log"
+    "log": "native/0/original.log.gz"
   },
   {
     "path": "benchmarks/corpus/corpus-f/fixtures/examples/various/gain_stage.cir",
@@ -16,7 +16,7 @@ Generated 756 bias points in 7 cases; binning OP {'v(1)': 0.8693589670633045, 'v
     "command": "ngspice -n -b input.cir",
     "exitCode": 0,
     "diagnostics": [],
-    "log": "native/1/original.log"
+    "log": "native/1/original.log.gz"
   },
   {
     "path": "benchmarks/corpus/corpus-f/fixtures/tests/regression/model/binning-1.cir",
@@ -24,7 +24,7 @@ Generated 756 bias points in 7 cases; binning OP {'v(1)': 0.8693589670633045, 'v
     "command": "ngspice -n -b input.cir",
     "exitCode": 0,
     "diagnostics": [],
-    "log": "native/2/original.log"
+    "log": "native/2/original.log.gz"
   },
   {
     "path": "benchmarks/corpus/corpus-g/fixtures/SENS/bsim4_issue694_FD.cir",
@@ -34,6 +34,6 @@ Generated 756 bias points in 7 cases; binning OP {'v(1)': 0.8693589670633045, 'v
     "diagnostics": [
       "Error: no function as { with that arity."
     ],
-    "log": "native/3/original.log"
+    "log": "native/3/original.log.gz"
   }
 ]
