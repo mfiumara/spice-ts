@@ -1,0 +1,29 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_4234ce2b/packages/core
+
+ ❯ src/devices/mos3-transient-1059.test.ts (3 tests | 1 failed) 246ms
+     × RED: the reduced pair supply matches ngspice-47 at default steps 91ms
+     ✓ the identical reduced pair agrees at uniform TSTEP/20 in both engines 153ms
+     ✓ CKTterr agrees with traced ngspice-47 mn1 qgb on the first rejected edge trial 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/devices/mos3-transient-1059.test.ts > MOS3 adaptive transient residual #1059 > RED: the reduced pair supply matches ngspice-47 at default steps
+AssertionError: expected 0.03603247201461949 to be less than or equal to 0.01
+ ❯ src/devices/mos3-transient-1059.test.ts:36:47
+     34|   // Evidence-only: enable explicitly to reproduce RED; do not claim a…
+     35|   it.skipIf(process.env.ISSUE1059_RED !== '1')('RED: the reduced pair …
+     36|     expect(await supplyError('reduced-pair')).toBeLessThanOrEqual(0.01…
+       |                                               ^
+     37|   });
+     38|   it('the identical reduced pair agrees at uniform TSTEP/20 in both en…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 passed (3)
+   Start at  15:56:55
+   Duration  2.01s (transform 1.37s, setup 0ms, import 1.62s, tests 246ms, environment 0ms)
+
+JUNIT report written to /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_4234ce2b/packages/core/test-results.xml
