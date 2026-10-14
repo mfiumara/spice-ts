@@ -1,0 +1,91 @@
+{
+  "schema": "spice-ts-1002-closure/v1",
+  "beforeSource": "a521e9e221f4445639d899265589e5893a07e165",
+  "afterSource": "169d683d89b77c8ccb5a9459bc3888c4ec0aba62",
+  "productionFix": "1e4bd5f1afd62967c0371f50dc6258b6e26dabdc (#1021)",
+  "metric": "Identical original decks; #996 linear interpolation and peak floors; no phase alignment or tuning",
+  "rows": {
+    "closure-before": {
+      "worstNormalized": {
+        "k-10": 0.015832540193349596,
+        "k-15": 0.32446133275386674
+      },
+      "mosamp2ErrorV": 2.981138859325938e-06,
+      "mosamp2Points": 2455,
+      "fallbacks": [
+        {
+          "from": "trapezoidal",
+          "to": "euler",
+          "lastAcceptedTime": 4.372800000000037e-07,
+          "failedTrialTime": 4.3828000000000374e-07,
+          "retryTime": 4.3828000000000374e-07,
+          "nrRetries": 1
+        }
+      ],
+      "mosrect482ns": {
+        "time": 4.822800000000044e-07,
+        "dt": 9.999999999999692e-10,
+        "iterations": 3,
+        "method": "euler",
+        "order": 1,
+        "configuredMethod": "euler"
+      }
+    },
+    "closure-after": {
+      "worstNormalized": {
+        "k-10": 0.00014821670590837676,
+        "k-15": 0.00011575725676808068
+      },
+      "mosamp2ErrorV": 2.705943744629735e-06,
+      "mosamp2Points": 2429,
+      "fallbacks": [],
+      "mosrect482ns": {
+        "time": 4.822800000000044e-07,
+        "dt": 9.999999999999692e-10,
+        "iterations": 3,
+        "method": "trapezoidal",
+        "order": 2,
+        "configuredMethod": "trapezoidal"
+      }
+    }
+  },
+  "rejectedCandidateMosamp2ErrorV": 1.0294490303763837e-05,
+  "nativeVerification": {
+    "version": "******\n** ngspice-47 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2026, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n******\n",
+    "rows": [
+      {
+        "id": "k-10",
+        "deckSha256": "edad518d693e1771f5a70bedaa4a23ad88e1cca0a21b9bf37f978da7c91ce801",
+        "points": 1008,
+        "signals": 10,
+        "maxAbs": 0,
+        "maxTimeDelta": 0
+      },
+      {
+        "id": "k-15",
+        "deckSha256": "42c2b03804914eeadade29b6bbaea94d9bae575a2eba165e3a8d4a806ae23475",
+        "points": 1010,
+        "signals": 19,
+        "maxAbs": 0,
+        "maxTimeDelta": 0
+      }
+    ],
+    "mosamp2": {
+      "deckSha256": "d8b0e627f7742490ac6e841ffb176c9b02ffe6de1246bb57d1db793f58027469",
+      "points": 2429,
+      "lastTime": 9.999999999999999e-06,
+      "v5": 9.463975209059157,
+      "retainedGuardReference": 9.46397521,
+      "referenceRoundingDelta": 9.408420709178245e-10
+    }
+  },
+  "hashes": {
+    "closure-after-trace.json.gz": "d23537b0ee7459d8055f98c2b6594e4df06c59b2a828e08ab821082aca74dca8",
+    "closure-after.json": "712755052e00af0779545834e73a73f31dee5a04eaaaa60eb4b0095333779b8f",
+    "closure-before-trace.json.gz": "2aed9e9cd433c15c5b64afeee9dffea218b750fb820ebdf5e8aa134b59d2f8d1",
+    "closure-before.json": "36f42cad0e03d06455396e6c51cdf3ef017d3e1ee1c39af5d2eb95d38e4a08b2",
+    "closure-native.json": "4e6df770b243ff296f28023b61dc9869caf76b233f534503fa95b3c298cc2081",
+    "mosamp-closure-after.json": "0c7106d7415f6aa05ee280f664c38f2a2757873edbba3afdc7a384f91482a5c5",
+    "mosamp-closure-before.json": "6ceb98074ac736589a023a7e5354b27db7e01182a11d7f8ca295dc36e1d64953"
+  }
+}

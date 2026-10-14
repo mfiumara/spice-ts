@@ -1,5 +1,12 @@
 # MOS2 last-load transient history localization (#1002)
 
+Post-#1021 update: the historical rejection below is preserved, but production
+now includes the complete predictor/load-history correction. Fresh original-deck
+replays pass mosrect, ring and the unchanged mosamp2 5 uV guard together.
+See [CLOSURE.md](CLOSURE.md) and `closure-receipt.json`; no new production change
+is needed. The statements below describe the earlier #1014 evidence snapshot,
+not current main.
+
 Evidence only. The candidate retains MOS2's last Newton-load charge, voltage and
 capacitance when a step is accepted. It does not reload them at the final linear solution. No
 Newton tolerances, integration settings, maximum steps, benchmark decks or
