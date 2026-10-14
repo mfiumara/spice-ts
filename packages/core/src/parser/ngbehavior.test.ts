@@ -30,7 +30,7 @@ describe('ngbehavior option (#812 / 695)', () => {
     expect(parse(deck(`.options ngbehavior=${mode}`)).simulationOptions.ngbehavior?.flags).toMatchObject(flags);
   });
 
-  it.each(['unknown', 'psgarbage', '42', '', 'ps,lt'])('rejects noncanonical mode %s with context', mode => {
+  it.each(['unknown', 'psgarbage', '42', '', 'psx'])('rejects noncanonical mode %s with context', mode => {
     const card = `.options ngbehavior=${mode}`;
     expect(() => parse(deck(card))).toThrow(ParseError);
     try { parse(deck(card)); } catch (error) {
@@ -55,6 +55,6 @@ describe('ngbehavior option (#812 / 695)', () => {
 describe('ngspice-47 negative sqrt (#828)', () => {
   it.each(['', 'ps', 'lt', 'pslt'])('rejects in mode %s without vendor extensions', async mode => {
     const text = `sqrt domain\n${mode ? `.options ngbehavior=${mode}` : ''}\nVa a 0 0\nB1 y 0 v=3+sqrt(v(a)-4)\n.op\n.end`;
-    await expect(simulate(text)).rejects.toThrow();
+    await expect(simulate(text)).rejects.toThrow('-4 out of range for sqrt');
   });
 });
