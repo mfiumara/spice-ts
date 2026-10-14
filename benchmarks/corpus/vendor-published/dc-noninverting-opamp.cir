@@ -1,0 +1,8 @@
+* Reconstructed published case: dc-noninverting-opamp
+V1 2 0 DC 5
+RBOGUS 2 0 10k
+E 3 0 2 1 999k
+R1 3 1 20k
+R2 1 0 10k
+.op
+.end

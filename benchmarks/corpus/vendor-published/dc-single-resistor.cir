@@ -1,0 +1,5 @@
+* Reconstructed published case: dc-single-resistor
+V 1 0 DC 10
+R 1 0 5
+.op
+.end

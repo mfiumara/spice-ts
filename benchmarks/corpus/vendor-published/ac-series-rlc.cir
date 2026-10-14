@@ -1,0 +1,7 @@
+* Reconstructed published case: ac-series-rlc
+V1 1 0 AC 120
+R1 1 2 250
+L1 2 3 650m
+C1 3 0 1.5u
+.ac lin 1 60 60
+.end

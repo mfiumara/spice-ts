@@ -180,6 +180,7 @@ jobs:
             benchmarks/translate/gnucap-to-spice3.test.ts \
             benchmarks/translate/xyce-to-spice3.test.ts \
             benchmarks/corpus/classic/report.test.ts \
+            benchmarks/corpus/vendor-published/report.test.ts \
             benchmarks/corpus/classic-b-audit/audit.test.ts \
             benchmarks/corpus/corpus-d/validate.test.mjs \
             benchmarks/corpus/corpus-g/corpus-g.test.ts \
