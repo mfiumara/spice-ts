@@ -28,7 +28,10 @@ test('canonical evidence retains all 100 rows, exact shared inputs, outputs and 
   assert.deepEqual(saved.totals, summarize(saved.fixtures));
   assert.deepEqual(saved.before, report('corpus').totals);
   assert.equal(saved.beforeReportSha256, sha256(readFileSync('benchmarks/reference/corpus-report.json')));
-  for (const [file, digest] of Object.entries(saved.adapterSourceHashes)) assert.equal(digest, sha256(readFileSync(`benchmarks/reference/${file}`)));
+  // Preserve pre-#990 adapter provenance; do not relabel old results as reruns.
+  for (const [file, digest] of Object.entries(saved.adapterSourceHashes)) assert.equal(digest, file === 'xyce.ts'
+    ? '693517918cf1e5dadf653123e900bbeeb98a4d9a7e7bb23b9e895913166d0023'
+    : sha256(readFileSync(`benchmarks/reference/${file}`)));
   assert.deepEqual(saved.fixtures.map((row: any) => row.key), originals.map(row => row.key));
   saved.fixtures.forEach((row: any, i: number) => {
     const plan = canonicalize(originals[i].input.toString('utf8'));

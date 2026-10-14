@@ -1,5 +1,6 @@
 import type { SubcktDefinition } from '../types.js';
 import { parseNumber, tokenizeLine, type ParsedLine } from './tokenizer.js';
+import { evaluateExpression } from './expression.js';
 
 /**
  * ngspice's `params:` keyword, which may separate the ports from the
@@ -75,7 +76,8 @@ function defaultValue(value: string): number | string {
     || (value.length >= 2 && value.startsWith("'") && value.endsWith("'"));
   const expression = delimited ? value.slice(1, -1).trim() : value;
   try {
-    return parseNumber(expression);
+    // Defaults are numparam bindings: strtod times scale, not INPevaluate.
+    return evaluateExpression(expression, {});
   } catch {
     return expression;
   }
@@ -152,10 +154,11 @@ export function validateSubcircuitCallCommas(raw: string, formals: Record<string
 
 /**
  * ngspice-47 inpcom.c (`inp_fix_param_values`) wraps the bare right-hand side
- * of every `name=value` on an X card in braces unless it is a number, so
+ * of every expression `name=value` on an X card in braces, so
  * numparam evaluates `R=R1` (or `R=RB*2`) as `R={R1}` against the visible
  * `.param` and subcircuit parameters (#788). Applied to the comment-free part
- * of a logical X card after continuation folding; numbers are left as-is.
+ * of a logical X card after continuation folding. Numeric actuals also need
+ * numparam literal evaluation before the lossless binding serialization (#782).
  */
 export function bracedSubcircuitCallValues(line: string, commentStart: number): string {
   const card = line.slice(0, commentStart);
@@ -171,12 +174,7 @@ export function bracedSubcircuitCallValues(line: string, commentStart: number): 
       values.push(`${name}=${value}`);
       continue;
     }
-    try {
-      parseNumber(value);
-      values.push(`${name}=${value}`);
-    } catch {
-      values.push(`${name}={${value}}`);
-    }
+    values.push(`${name}={${value}}`);
   }
   return card.slice(0, assignments[0].start) + values.join(' ') + ' ' + line.slice(commentStart);
 }

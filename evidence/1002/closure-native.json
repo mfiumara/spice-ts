@@ -1,0 +1,29 @@
+{
+  "version": "******\n** ngspice-47 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2026, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n******\n",
+  "rows": [
+    {
+      "id": "k-10",
+      "deckSha256": "edad518d693e1771f5a70bedaa4a23ad88e1cca0a21b9bf37f978da7c91ce801",
+      "points": 1008,
+      "signals": 10,
+      "maxAbs": 0,
+      "maxTimeDelta": 0
+    },
+    {
+      "id": "k-15",
+      "deckSha256": "42c2b03804914eeadade29b6bbaea94d9bae575a2eba165e3a8d4a806ae23475",
+      "points": 1010,
+      "signals": 19,
+      "maxAbs": 0,
+      "maxTimeDelta": 0
+    }
+  ],
+  "mosamp2": {
+    "deckSha256": "d8b0e627f7742490ac6e841ffb176c9b02ffe6de1246bb57d1db793f58027469",
+    "points": 2429,
+    "lastTime": 0.000009999999999999999,
+    "v5": 9.463975209059157,
+    "retainedGuardReference": 9.46397521,
+    "referenceRoundingDelta": 9.408420709178245e-10
+  }
+}

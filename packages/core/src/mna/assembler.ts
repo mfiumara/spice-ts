@@ -72,11 +72,15 @@ export class MNAAssembler {
   public sourceScale = 1;
   /** Device junction gmin (ngspice CKTgmin) handed to devices through the stamp context. */
   public deviceGmin = DEVICE_GMIN;
+  /** Device-local DC startup mode; undefined for ordinary/transient loads. */
+  public operatingPointPhase: StampContext['operatingPointPhase'];
   /**
    * Node rows the Newton loop forces after every device load: the `.ic`
    * holds of the transient operating point (ngspice MODETRANOP without UIC).
    */
   public nodeHolds: readonly NodeHold[] = [];
+  /** Temporary JCT/FIX rows, released independently of transient .ic holds. */
+  public nodeSetHolds: readonly NodeHold[] = [];
   private _heldRowSlots: Map<number, HeldRowSlots> | null = null;
 
   // Fast-path typed-array stamping infrastructure
@@ -388,6 +392,7 @@ export class MNAAssembler {
       this._cachedFastCtx.dt = this.dt;
       this._cachedFastCtx.sourceScale = this.sourceScale;
       this._cachedFastCtx.gmin = this.deviceGmin;
+      this._cachedFastCtx.operatingPointPhase = this.operatingPointPhase;
       return this._cachedFastCtx;
     }
 
@@ -410,6 +415,7 @@ export class MNAAssembler {
       sourceScale: this.sourceScale,
       useDcSourceValue: this.options.useDcSourceValue ?? false,
       gmin: this.deviceGmin,
+      operatingPointPhase: this.operatingPointPhase,
     };
   }
 
@@ -459,17 +465,20 @@ export class MNAAssembler {
    * - without: diag = 1 and rhs = ic * srcFact, pinning v = ic exactly.
    * The node's own KCL conductances and currents are discarded either way.
    * Call before the diagonal gmin, which ngspice adds at factorisation.
+   * `additive=false` uses cktload.c's nodeset assignment of the diagonal;
+   * `.ic` uses addition when both holds apply to a branch-current row.
    */
-  applyNodeHolds(): void {
-    if (this.nodeHolds.length === 0) return;
+  applyNodeHolds(holds: readonly NodeHold[] = this.nodeHolds, additive = true): void {
+    if (holds.length === 0) return;
     const scale = this.sourceScale;
     if (this._fastPath) {
       const values = this._gValues!;
-      for (const hold of this.nodeHolds) {
+      for (const hold of holds) {
         const row = this.heldRowSlots(hold.node);
         for (let k = 0; k < row.voltage.length; k++) values[row.voltage[k]] = 0;
         if (row.hasCurrent) {
-          values[row.diagonal] += NODE_HOLD_CONDUCTANCE;
+          if (additive) values[row.diagonal] += NODE_HOLD_CONDUCTANCE;
+          else values[row.diagonal] = NODE_HOLD_CONDUCTANCE;
           this.b[hold.node] = NODE_HOLD_CONDUCTANCE * hold.value * scale;
         } else {
           values[row.diagonal] = 1;
@@ -478,7 +487,7 @@ export class MNAAssembler {
       }
       return;
     }
-    for (const hold of this.nodeHolds) {
+    for (const hold of holds) {
       const node = hold.node;
       let hasCurrent = false;
       // Zero the stored row map in place so the positions stay structural.
@@ -492,7 +501,8 @@ export class MNAAssembler {
       }
       if (hasCurrent) {
         this.G.touch(node, node);
-        this.G.add(node, node, NODE_HOLD_CONDUCTANCE);
+        if (additive) this.G.add(node, node, NODE_HOLD_CONDUCTANCE);
+        else this.G.set(node, node, NODE_HOLD_CONDUCTANCE);
         this.b[node] = NODE_HOLD_CONDUCTANCE * hold.value * scale;
       } else {
         this.G.set(node, node, 1);

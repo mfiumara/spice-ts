@@ -1,0 +1,37 @@
+{
+  "baseline": "43aefef1a1105696cdce74acbfd3144e5cff3b7d",
+  "red": {
+    "command": "pnpm -C packages/core exec vitest run src/analysis/latch-op-selection-1001.test.ts",
+    "exit": 1,
+    "failed": 1,
+    "v12": 1.8426336725256554,
+    "referenceV12": 4.999999946096958,
+    "absoluteDifferenceV": 3.1573662735713026
+  },
+  "startupOnlyRejectedProbe": {
+    "exit": 1,
+    "v12": 1.8426327068691892,
+    "reason": "MODEINITJCT alone does not reproduce the reduced latch branch"
+  },
+  "final": {
+    "build": { "command": "pnpm build", "exit": 0 },
+    "lint": { "command": "pnpm lint", "exit": 0 },
+    "focused": {
+      "command": "pnpm -C packages/core exec vitest run src/analysis/latch-op-selection-1001.test.ts src/initial-state.test.ts",
+      "exit": 0,
+      "passed": 16
+    },
+    "suite": {
+      "command": "spice-heavy pnpm test",
+      "exit": 0,
+      "core": { "passed": 3732, "skipped": 2, "failed": 0 },
+      "finalBenchmarkTests": { "passed": 144, "skipped": 4, "failed": 0 }
+    },
+    "controls": { "command": "spice-heavy pnpm exec tsx evidence/1001/run.ts", "exit": 0, "count": 21 },
+    "offline": { "command": "python3 evidence/1001/check.py", "exit": 0 }
+  },
+  "issue1001Resolved": false,
+  "noToleranceChanges": true,
+  "noAggregateRefresh": true,
+  "ciAndReview": "Exact PR head required; recorded in Kanban handoff, not claimed by local receipts"
+}

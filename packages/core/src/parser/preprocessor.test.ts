@@ -8,7 +8,7 @@ describe('preprocessor', () => {
     it('substitutes a simple param into a device value', async () => {
       const input = `.param rval = 1000\nR1 1 0 {rval}\n.op`;
       const result = await preprocess(input);
-      expect(result).toContain('R1 1 0 1000');
+      expect(result).toContain('R1 1 0 1.000000000000000e+3');
       expect(result).not.toContain('.param');
       expect(result).not.toContain('{');
     });
@@ -16,13 +16,13 @@ describe('preprocessor', () => {
     it('substitutes param with SI suffix', async () => {
       const input = `.param cap = 100n\nC1 1 0 {cap}\n.op`;
       const result = await preprocess(input);
-      expect(result).toContain('C1 1 0 1e-7');
+      expect(result).toContain('C1 1 0 1.000000000000000e-7');
     });
 
     it('substitutes param expression', async () => {
       const input = `.param w = 1e-6\n.param w2 = {w*2}\nM1 d g s NMOD W={w2}\n.op`;
       const result = await preprocess(input);
-      expect(result).toContain('W=0.000002');
+      expect(result).toContain('W=2.000000000000000e-6');
     });
 
     it('handles multiple params', async () => {
@@ -69,23 +69,23 @@ describe('preprocessor', () => {
 
     it('resolves a device reference to a .param defined later (ngspice global .param scope)', async () => {
       const result = await preprocess('T\nR1 a 0 {r}\nV1 a 0 1\n.param r=1k\n.op\n.end');
-      expect(result).toContain('R1 a 0 1000');
+      expect(result).toContain('R1 a 0 1.000000000000000e+3');
     });
 
     it('resolves a .param expression that references a later .param', async () => {
       const result = await preprocess('R1 a 0 {r}\n.param r={2*k}\n.param k=1k\n.op');
-      expect(result).toContain('R1 a 0 2000');
+      expect(result).toContain('R1 a 0 2.000000000000000e+3');
     });
 
     it('uses the last definition of a redefined .param everywhere, like ngspice', async () => {
       const result = await preprocess('.param r=1k\nR1 a 0 {r}\n.param r=2k\n.op');
-      expect(result).toContain('R1 a 0 2000');
+      expect(result).toContain('R1 a 0 2.000000000000000e+3');
     });
 
     it('resolves a forward reference to a .param defined in an included file', async () => {
       const resolver: IncludeResolver = async () => '.param r=3k';
       const result = await preprocess('R1 a 0 {r}\n.include params.inc\n.op', resolver);
-      expect(result).toContain('R1 a 0 3000');
+      expect(result).toContain('R1 a 0 3.000000000000000e+3');
     });
 
     it('throws a ParseError with the line for an undefined parameter', async () => {
@@ -125,8 +125,8 @@ describe('preprocessor', () => {
 
     it('evaluates single-quoted function calls (xpressn-2.cir, log-functions-1.cir)', async () => {
       const result = await preprocess("v0 n0 0 'sin(1.0e-9)'\nvn1 n1 0 'ln(2.7)'\n.op");
-      expect(result).toContain(`v0 n0 0 ${Math.sin(1e-9)}`);
-      expect(result).toContain(`vn1 n1 0 ${Math.log(2.7)}`);
+      expect(result).toContain('v0 n0 0 1.000000000000000e-9');
+      expect(result).toContain('vn1 n1 0 9.932517730102834e-1');
     });
 
     it('evaluates a single-quoted .param value with spaces (alterparam.sp)', async () => {
@@ -142,10 +142,10 @@ describe('preprocessor', () => {
         ".model rtest r r='1000 + temper'",
         '.op',
       ].join('\n'));
-      expect(result).toContain('R1 r2 0 r = 6350');
-      expect(result).toContain('.model dplain d is=1027');
-      expect(result).toContain('.model dt d is=1e-10');
-      expect(result).toContain('.model rtest r r=1027');
+      expect(result).toContain('R1 r2 0 r = 6.350000000000000e+3');
+      expect(result).toContain('.model dplain d is=1.027000000000000e+3');
+      expect(result).toContain('.model dt d is=1.000000000000000e-10');
+      expect(result).toContain('.model rtest r r=1.027000000000000e+3');
     });
 
     it('evaluates TEMPER at the .options TEMP circuit temperature; the last TEMP wins', async () => {
@@ -156,13 +156,13 @@ describe('preprocessor', () => {
         '.option TEMP = 50',
         '.op',
       ].join('\n'));
-      expect(result).toContain('R1 1 0 r = 1050');
-      expect(result).toContain('.model rtest r r=1050');
+      expect(result).toContain('R1 1 0 r = 1.050000000000000e+3');
+      expect(result).toContain('.model rtest r r=1.050000000000000e+3');
     });
 
     it('ignores TEMP fields outside .options when choosing TEMPER', async () => {
       const result = await preprocess(".model q1 npn temp=80\nR1 1 0 {TEMPER}\n.op");
-      expect(result).toContain('R1 1 0 27');
+      expect(result).toContain('R1 1 0 2.700000000000000e+1');
     });
 
     it('rejects TEMPER under a .step TEMP sweep instead of freezing it at 27 C', async () => {

@@ -144,7 +144,7 @@ describe('evaluateExpression', () => {
     });
 
     it('evaluates 100n as 1e-7', () => {
-      expect(evaluateExpression('100n', {})).toBe(1e-7);
+      expect(evaluateExpression('100n', {})).toBe(100 * 1e-9);
     });
 
     it('evaluates 1u as 1e-6', () => {
