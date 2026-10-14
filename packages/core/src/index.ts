@@ -35,6 +35,7 @@ export type {
 } from './results.js';
 export type {
   SimulationOptions,
+  Ngbehavior,
   IntegrationMethod,
   TransientStep,
   ACPoint,
