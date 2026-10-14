@@ -58,6 +58,32 @@ R1 in 0
     expect(result.dc!.current('V1')).toBeCloseTo(-0.002, 12);
   });
 
+  for (const titled of [false, true]) {
+    for (const nested of [false, true]) {
+      for (const [name, assignment] of [
+        ['numeric', 'r=\n.title metadata\n+ 2k'],
+        ['bare', 'r=\n.TiTlE metadata {missing}\n+ seed*2'],
+        ['braced', 'r={seed\n.title metadata\n+ *2}'],
+        ['quoted', "r='seed\n.title metadata\n+ *2'"],
+      ] as const) {
+        it(`folds ${name} X RHS across .title (${titled ? 'physical title' : 'titleless'}, ${nested ? 'nested' : 'top-level'})`, async () => {
+          const call = `X1 in load ${assignment}`;
+          const body = `.param seed=1k
+.subckt load a params: r=1k
+R1 a 0 {r}
+.ends
+V1 in 0 1
+${nested ? `.subckt caller in params: seed=1k\n${call}\n.ends\nXouter in caller` : call}
+.op
+.end`;
+          const circuit = titled ? parse(`Original\n${body}`) : parseTitleless(body);
+          const result = await simulate(circuit);
+          expect(result.dc!.current('V1')).toBeCloseTo(-0.0005, 12);
+        });
+      }
+    }
+  }
+
   it('does not hide undefined parameters on a continuation after .title', () => {
     expect(() => parse(`Original
 .title replacement

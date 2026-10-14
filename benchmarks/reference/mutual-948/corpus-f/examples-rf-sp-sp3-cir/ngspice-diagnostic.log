@@ -1,0 +1,68 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: example of vsrc as voltage ports
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 601
+Here are the vectors currently active:
+
+Title: example of vsrc as voltage ports
+Name: sp1 (SP Analysis)
+Date: Wed Oct 14 01:50:14  2026
+
+    S_1_1               : s-param, complex, 601 long
+    S_1_2               : s-param, complex, 601 long
+    S_2_1               : s-param, complex, 601 long
+    S_2_2               : s-param, complex, 601 long
+    Y_1_1               : admittance, complex, 601 long
+    Y_1_2               : admittance, complex, 601 long
+    Y_2_1               : admittance, complex, 601 long
+    Y_2_2               : admittance, complex, 601 long
+    Z_1_1               : impedance, complex, 601 long
+    Z_1_2               : impedance, complex, 601 long
+    Z_2_1               : impedance, complex, 601 long
+    Z_2_2               : impedance, complex, 601 long
+    frequency           : frequency, complex, 601 long, grid = xlog [default scale]
+    in                  : voltage, complex, 601 long
+    l1#branch           : current, complex, 601 long
+    out                 : voltage, complex, 601 long
+    v1#branch           : current, complex, 601 long
+    v1#res              : voltage, complex, 601 long
+    v2#branch           : current, complex, 601 long
+    v2#res              : voltage, complex, 601 long
+
+The file "plot_1.svg" has the Scalable Vector Graphics format.
+
+The file "plot_2.svg" has the Scalable Vector Graphics format.
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Total analysis time (seconds) = 0.002079
+
+Total elapsed time (seconds) = 0.006 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 14065.375 MB.
+Maximum ngspice program size =   10.531 MB.
+Current ngspice program size =   10.531 MB.
+
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+

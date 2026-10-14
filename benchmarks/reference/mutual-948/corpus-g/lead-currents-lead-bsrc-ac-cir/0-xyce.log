@@ -1,0 +1,199 @@
+
+*****
+***** Welcome to the Xyce(TM) Parallel Electronic Simulator
+*****
+***** This is version XyceNF Release 7.10.0
+***** Date: Wed Oct 14 02:02:18 CEST 2026
+
+
+***** Executing netlist input.cir
+
+***** Reading and parsing netlist...
+***** Setting up topology...
+
+***** Device Count Summary ...
+       B level 1 (Expression Based Voltage or Current Source)  2
+       C level 1 (Capacitor)                                   1
+       E level 1 (Linear Voltage Controlled Voltage Source)    1
+       R level 1 (Resistor)                                    5
+       V level 1 (Independent Voltage Source)                  1
+       ---------------------------------------------------------
+       Total Devices                                          10
+***** Setting up matrix structure...
+***** Number of Unknowns = 10
+***** Initializing...
+
+------------------------------------------------------------
+Operating point information:
+Number of Capacitor models: 1
+          name C level 1 (Capacitor)
+          type                
+         level               1
+           TNOM             27
+            TC2              0
+            TC1              0
+           CJSW              0
+         NARROW              0
+           DEFW          1e-06
+             CJ              0
+
+              C              1
+
+Number of Capacitor instances: 1
+          name            CLP1
+         model C level 1 (Capacitor)
+            TC2              0
+             IC              0
+            TC1              0
+              D         0.0233
+            AGE              0
+              C       1.59e-09
+              W          1e-06
+          DTEMP              0
+              L              1
+           TEMP             27
+              Q              0
+              M              1
+
+
+Number of Expression Based Voltage or Current Source models: 1
+          name B level 1 (Expression Based Voltage or Current Source)
+          type                
+         level               1
+
+Number of Expression Based Voltage or Current Source instances: 2
+          name              B6             H5
+         model B level 1 (Expression Based Voltage or Current Source)B level 1 (Expression Based Voltage or Current Source)
+              M              1              1
+     SMOOTHBSRC              0              0
+        RCCONST          1e-09          1e-09
+           TEMP        -273.15        -273.15
+              V              0              0
+              I              0              0
+
+
+Number of Independent Voltage Source models: 1
+          name V level 1 (Independent Voltage Source)
+          type                
+         level               1
+
+Number of Independent Voltage Source instances: 1
+          name              V1
+         model V level 1 (Independent Voltage Source)
+           PORT              0
+            NUM              0
+   DCSOURCETYPE              6
+TRANSIENTSOURCETYPE              6
+        TSAMPLE              0
+            VLO              0
+              R              0
+   ACSOURCETYPE              7
+          ACMAG              1
+            VHI              0
+           TAU1              0
+        ACPHASE              0
+             PW              0
+           TAU2              0
+            TD1              0
+          PHASE              0
+           FREQ              0
+             Z0             50
+             V0              0
+             VA              0
+             TF              0
+            PER              0
+             V2              0
+            TD2              0
+             FC              0
+             RB              1
+             TR              0
+          THETA              0
+           DCV0              5
+             TD              0
+           DATA               
+            MDI              0
+              T              0
+             FS              0
+              V              0
+             V1              0
+
+
+Number of Linear Voltage Controlled Voltage Source models: 1
+          name E level 1 (Linear Voltage Controlled Voltage Source)
+          type                
+         level               1
+
+Number of Linear Voltage Controlled Voltage Source instances: 1
+          name            EAMP
+         model E level 1 (Linear Voltage Controlled Voltage Source)
+              G              1
+
+
+Number of Resistor models: 1
+          name R level 1 (Resistor)
+          type                
+         level               1
+           TNOM             27
+           DEFW          1e-05
+         NARROW              0
+              R              1
+            RSH              0
+            TC2              0
+            TCE              0
+
+            TC1              0
+
+Number of Resistor instances: 5
+          name              R1             R2             R5             R6           RLP1
+         model R level 1 (Resistor)R level 1 (Resistor)R level 1 (Resistor)R level 1 (Resistor)R level 1 (Resistor)
+            TCE              0              0              0              0              0
+            TC2              0              0              0              0              0
+            TC1              0              0              0              0              0
+           TEMP             27             27             27             27             27
+          DTEMP              0              0              0              0              0
+              L              0              0              0              0              0
+              W          1e-05          1e-05          1e-05          1e-05          1e-05
+              M              1              1              1              1              1
+              R              1              1              1              1            100
+
+------------------------------------------------------------
+
+***** Solution Summary *****
+	Number Successful Steps Taken:		1
+	Number Failed Steps Attempted:		0
+	Number Jacobians Evaluated:		2
+	Number Linear Solves:			2
+	Number Failed Linear Solves:		0
+	Number Residual Evaluations:		4
+	Number Nonlinear Convergence Failures:	0
+	Total Residual Load Time:		1.28746e-05 seconds
+	Total Jacobian Load Time:		4.05312e-06 seconds
+	Total Linear Solution Time:		2.81334e-05 seconds
+
+
+***** Total Simulation Solvers Run Time: 0.000566006 seconds
+***** Total Elapsed Run Time:            0.00164795 seconds
+*****
+***** End of Xyce(TM) Simulation
+*****
+
+Timing summary of 1 processor
+                 Stats                   Count       CPU Time              Wall Time
+---------------------------------------- ----- --------------------- ---------------------
+Xyce                                         1        0.001 (100.0%)        0.002 (100.0%)
+  Analysis                                   1        0.000 (20.38%)        0.001 (25.47%)
+    DC Sweep                                 1        0.000 (20.19%)        0.001 (25.38%)
+      Solve                                  1        0.000 ( 9.86%)        0.000 ( 8.80%)
+        Residual                             4        0.000 ( 1.24%)        0.000 ( 0.80%)
+        Jacobian                             2        0.000 ( 0.38%)        0.000 ( 0.28%)
+        Linear Solve                         2        0.000 ( 2.01%)        0.000 ( 1.35%)
+      Successful Step                        1        0.000 ( 9.09%)        0.000 (14.73%)
+  Netlist Import                             1        0.000 (30.72%)        0.000 (22.84%)
+    Parse Context                            1        0.000 ( 3.44%)        0.000 ( 2.87%)
+    Distribute Devices                       1        0.000 (11.10%)        0.000 ( 6.61%)
+    Verify Devices                           1        0.000 ( 0.19%)        0.000 ( 0.23%)
+    Instantiate                              1        0.000 ( 4.21%)        0.000 ( 2.31%)
+  Late Initialization                        1        0.000 (19.81%)        0.000 (13.80%)
+    Global Indices                           1        0.000 ( 2.01%)        0.000 ( 1.10%)
+  Setup Matrix Structure                     1        0.000 ( 3.83%)        0.000 ( 3.89%)
+

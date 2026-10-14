@@ -1,0 +1,5 @@
+﻿ArbitraryBehavioral source
+B1 1 0 v = {10 * 10}
+R1 1 0 10
+.OP
+.END

@@ -18,7 +18,7 @@ import { Diode, canonicalDiodeModelParams, diodeZeroBiasCapacitance } from './de
 import { BJT, hasBiasDependentBaseResistance } from './devices/bjt.js';
 import { VBIC, resolveVBICParams, vbicNodeCount } from './devices/vbic.js';
 import { MOSFET } from './devices/mosfet.js';
-import { MOS2, resolveMOS2Model } from './devices/mos2.js';
+import { MOS2, mos2SeriesResistances, resolveMOS2Model } from './devices/mos2.js';
 import { MOS3, mos3SeriesResistances, resolveMOS3Model } from './devices/mos3.js';
 import { MOS6, resolveMOS6Model } from './devices/mos6.js';
 import { createBSIM1, resolveBSIM1Model } from './devices/bsim1.js';
@@ -75,7 +75,7 @@ import {
   transientNoiseWaveform, transientRandomWaveform, VOLTAGE_SOURCE_MULTIPLIER_ERROR,
 } from './parser/waveform-parser.js';
 import { invalidPassiveInstanceLine, parsePassiveElement } from './parser/passive-parser.js';
-import { locateSubcircuitCall, splitNestedSubcircuits } from './parser/subcircuit-syntax.js';
+import { locateSubcircuitCall, parseSubcircuitCallParams, splitNestedSubcircuits, validateSubcircuitCallCommas } from './parser/subcircuit-syntax.js';
 import { assertSupportedResistorModel, parseResistorElement } from './parser/resistor-parser.js';
 import { parseZInstance } from './parser/z-device-parser.js';
 import { parseSwitchInstance } from './parser/switch-parser.js';
@@ -824,6 +824,8 @@ export class Circuit {
   /** XSPICE code model cards, keyed by upper-case model name like {@link ModelTable}. */
   private _xspiceModels = new Map<string, XspiceModelCard>();
   private _subcircuits = new Map<string, SubcktDefinition>();
+  /** Parser-only X cards retained until formal definitions are resolved. */
+  private readonly _subcircuitCallCards = new WeakMap<DeviceDescriptor, string>();
   /** `.global` node names, keyed upper-case, valued with their first spelling. */
   private _globalNodes = new Map<string, string>();
   /** Top-level `.param` values (upper-case names) visible inside subcircuits. */
@@ -1652,11 +1654,14 @@ export class Circuit {
     ports: string[],
     subcktName: string,
     params?: Record<string, number>,
+    rawCard?: string,
   ): void {
     for (const p of ports) this.nodeSet.add(p);
-    this.descriptors.push({
+    const descriptor: DeviceDescriptor = {
       type: 'X', name, nodes: ports, modelName: subcktName, params,
-    });
+    };
+    this.descriptors.push(descriptor);
+    if (rawCard !== undefined) this._subcircuitCallCards.set(descriptor, rawCard);
   }
 
   /**
@@ -2688,14 +2693,14 @@ export class Circuit {
       visited.add(name);
       const def = this._subcircuits.get(name);
       if (!def) continue; // Expansion reports the undefined-subcircuit error.
-      for (const { tokens } of tokenizeNetlist(def.body.join('\n'))) {
+      for (const { tokens, raw } of tokenizeNetlist(def.body.join('\n'))) {
         if (tokens[0]?.toUpperCase() === '.GLOBAL') {
           for (const node of tokens.slice(1)) {
             const key = node.toUpperCase();
             if (node !== GROUND_NODE && !globals.has(key)) globals.set(key, node);
           }
         } else if (tokens[0]?.[0].toUpperCase() === 'X') {
-          pending.push(tokens[locateSubcircuitCall(tokens).nameIndex]);
+          pending.push(tokens[locateSubcircuitCall(tokens, raw).nameIndex]);
         }
       }
     }
@@ -2717,6 +2722,10 @@ export class Circuit {
           globalNodes,
           guard,
           1,
+          [],
+          1,
+          this.parameterScope(),
+          this._subcircuitCallCards.get(desc),
         );
         result.push(...expanded);
       } else {
@@ -3030,11 +3039,13 @@ export class Circuit {
           result.push({ ...desc, nodes: [drain, gate, source, bulk] });
           continue;
         }
-        if (model && (level === undefined || level === 1)) {
-          // MOS1 (mos1set.c/mos1temp.c): RD/RS in front of the drain/source prime nodes, or
+        if (model && (level === undefined || level === 1 || level === 2)) {
+          // MOS1/MOS2 (mos1set.c/mos2set.c and temperature preprocessing): RD/RS in front of prime nodes, or
           // RSH*NRD / RSH*NRS (one square by default) when RD/RS are not given (#719). An open
           // terminal (#757) keeps its prime node but gets no resistor.
-          const series = mos1SeriesResistances(model.params, desc.params);
+          const series = level === 2
+            ? mos2SeriesResistances(model.params, desc.params)
+            : mos1SeriesResistances(model.params, desc.params);
           let [drain, gate, source] = desc.nodes;
           const bulk = desc.nodes[3] ?? source;
           if (series.drain === 0 && series.source === 0) {
@@ -3316,6 +3327,7 @@ export class Circuit {
     scopes: readonly SubcircuitScope[] = [],
     inheritedMultiplicity = 1,
     callerParams: Record<string, number> = this.parameterScope(),
+    rawCall?: string,
   ): DeviceDescriptor[] {
     guard?.maximum('maxSubcircuitDepth', depth, 'compile');
     const key = subcktName.toUpperCase();
@@ -3333,6 +3345,7 @@ export class Circuit {
     if (!def) {
       throw new Error(`Undefined subcircuit '${subcktName}'`);
     }
+    if (rawCall !== undefined) validateSubcircuitCallCommas(rawCall, def.params);
 
     if (connectedPorts.length !== def.ports.length) {
       throw new Error(
@@ -3734,11 +3747,10 @@ export class Circuit {
         }
         case 'X': {
           // Nested subcircuit instance — recursively expand
-          const call = locateSubcircuitCall(tokens);
+          const call = locateSubcircuitCall(tokens, raw);
           const nestedSubcktName = tokens[call.nameIndex];
           const nestedPorts = call.ports.map(mapNode);
-          const evaluatedTokens = tokens.map(t => evalToken(t));
-          const nestedParams = parseInstanceParams(evaluatedTokens, call.paramStart);
+          const nestedParams = parseSubcircuitCallParams(raw, evalToken);
 
           const newVisited = new Set(visited);
           newVisited.add(key);
@@ -3755,6 +3767,7 @@ export class Circuit {
             bodyScopes,
             multiplicity,
             localParams,
+            raw,
           );
           result.push(...nested);
           break;

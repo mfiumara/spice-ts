@@ -1,0 +1,14 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_d2157b6a/packages/core
+
+ ✓ src/analysis/transient-columns.test.ts (33 tests) 13ms
+ ✓ src/analysis/transient-reactive-truncation-equivalence.test.ts (5 tests) 200ms
+ ✓ src/analysis/transient-step.test.ts (9 tests) 30ms
+ ✓ src/analysis/transient-record.test.ts (2 tests) 90ms
+
+ Test Files  4 passed (4)
+      Tests  49 passed (49)
+   Start at  01:31:13
+   Duration  1.24s (transform 1.76s, setup 0ms, import 2.14s, tests 334ms, environment 0ms)
+
+JUNIT report written to /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_d2157b6a/packages/core/test-results.xml

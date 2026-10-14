@@ -1,0 +1,33 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: *testing gummel-poon bjt model
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 3  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+1                                            0
+v1#branch                                    0
+
+ Reference value :  7.18523e-02 Reference value :  1.48187e-01 Reference value :  2.27413e-01 Reference value :  3.08132e-01 Reference value :  3.94392e-01 Reference value :  4.83098e-01 Reference value :  5.71091e-01 Reference value :  6.59748e-01 Reference value :  7.48538e-01
+No. of Data Rows : 800008
+.print line ignored since rawfile was produced.
+
+Total analysis time (seconds) = 2.40911
+
+Total elapsed time (seconds) = 2.414 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 12675.234 MB.
+Maximum ngspice program size =   10.156 MB.
+Current ngspice program size =   10.156 MB.
+

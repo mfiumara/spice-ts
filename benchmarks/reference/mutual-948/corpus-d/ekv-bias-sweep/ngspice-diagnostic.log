@@ -1,0 +1,35 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: ekv test
+
+
+warning, can't find model 'nch' from line
+    m1 nd ng ns 0 nch w=1u l=1u
+Error in netlist line no. 4, new internal line no. 3:
+
+Undefined parameter [vdc]
+Error in netlist line no. 4, new internal line no. 3:
+
+Cannot compute substitute
+Error in netlist line no. 5, new internal line no. 4:
+
+Undefined parameter [vdc]
+Error in netlist line no. 5, new internal line no. 4:
+
+Cannot compute substitute
+Error in netlist line no. 6, new internal line no. 5:
+
+Undefined parameter [vdc]
+Error in netlist line no. 6, new internal line no. 5:
+
+Cannot compute substitute
+Error in netlist line no. 9, new internal line no. 9:
+
+Undefined parameter [vbias]
+Error in netlist line no. 9, new internal line no. 9:
+
+Cannot compute substitute
+
+ERROR: fatal error in ngspice, exit(1)

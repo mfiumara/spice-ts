@@ -1,0 +1,227 @@
+Title: rca3040 ckt - rca 3040 wideband amplifier
+Date: Wed Oct 14 03:26:37  2026
+Command: ngspice-47, Build 
+Plotname: Operating Point
+Flags: real
+No. Variables: 109
+No. Points: 1       
+Variables:
+	0	v(1)	voltage
+	1	v(2)	voltage
+	2	v(3)	voltage
+	3	v(30)	voltage
+	4	v(31)	voltage
+	5	v(5)	voltage
+	6	v(6)	voltage
+	7	v(9)	voltage
+	8	v(8)	voltage
+	9	v(14)	voltage
+	10	v(12)	voltage
+	11	v(15)	voltage
+	12	v(16)	voltage
+	13	v(17)	voltage
+	14	v(10)	voltage
+	15	v(7)	voltage
+	16	v(11)	voltage
+	17	v(13)	voltage
+	18	i(vee)	current
+	19	i(vcc)	current
+	20	i(vin)	current
+	21	i(@q1[ic])	current
+	22	v(@q1[vbe])	voltage
+	23	v(@q1[vbc])	voltage
+	24	@q1[gm]	admittance
+	25	@q1[gpi]	admittance
+	26	@q1[go]	admittance
+	27	@q1[cpi]	capacitance
+	28	@q1[cmu]	capacitance
+	29	i(@q2[ic])	current
+	30	v(@q2[vbe])	voltage
+	31	v(@q2[vbc])	voltage
+	32	@q2[gm]	admittance
+	33	@q2[gpi]	admittance
+	34	@q2[go]	admittance
+	35	@q2[cpi]	capacitance
+	36	@q2[cmu]	capacitance
+	37	i(@q3[ic])	current
+	38	v(@q3[vbe])	voltage
+	39	v(@q3[vbc])	voltage
+	40	@q3[gm]	admittance
+	41	@q3[gpi]	admittance
+	42	@q3[go]	admittance
+	43	@q3[cpi]	capacitance
+	44	@q3[cmu]	capacitance
+	45	i(@q4[ic])	current
+	46	v(@q4[vbe])	voltage
+	47	v(@q4[vbc])	voltage
+	48	@q4[gm]	admittance
+	49	@q4[gpi]	admittance
+	50	@q4[go]	admittance
+	51	@q4[cpi]	capacitance
+	52	@q4[cmu]	capacitance
+	53	i(@q5[ic])	current
+	54	v(@q5[vbe])	voltage
+	55	v(@q5[vbc])	voltage
+	56	@q5[gm]	admittance
+	57	@q5[gpi]	admittance
+	58	@q5[go]	admittance
+	59	@q5[cpi]	capacitance
+	60	@q5[cmu]	capacitance
+	61	i(@q6[ic])	current
+	62	v(@q6[vbe])	voltage
+	63	v(@q6[vbc])	voltage
+	64	@q6[gm]	admittance
+	65	@q6[gpi]	admittance
+	66	@q6[go]	admittance
+	67	@q6[cpi]	capacitance
+	68	@q6[cmu]	capacitance
+	69	i(@q7[ic])	current
+	70	v(@q7[vbe])	voltage
+	71	v(@q7[vbc])	voltage
+	72	@q7[gm]	admittance
+	73	@q7[gpi]	admittance
+	74	@q7[go]	admittance
+	75	@q7[cpi]	capacitance
+	76	@q7[cmu]	capacitance
+	77	i(@q8[ic])	current
+	78	v(@q8[vbe])	voltage
+	79	v(@q8[vbc])	voltage
+	80	@q8[gm]	admittance
+	81	@q8[gpi]	admittance
+	82	@q8[go]	admittance
+	83	@q8[cpi]	capacitance
+	84	@q8[cmu]	capacitance
+	85	i(@q9[ic])	current
+	86	v(@q9[vbe])	voltage
+	87	v(@q9[vbc])	voltage
+	88	@q9[gm]	admittance
+	89	@q9[gpi]	admittance
+	90	@q9[go]	admittance
+	91	@q9[cpi]	capacitance
+	92	@q9[cmu]	capacitance
+	93	i(@q10[ic])	current
+	94	v(@q10[vbe])	voltage
+	95	v(@q10[vbc])	voltage
+	96	@q10[gm]	admittance
+	97	@q10[gpi]	admittance
+	98	@q10[go]	admittance
+	99	@q10[cpi]	capacitance
+	100	@q10[cmu]	capacitance
+	101	i(@q11[ic])	current
+	102	v(@q11[vbe])	voltage
+	103	v(@q11[vbc])	voltage
+	104	@q11[gm]	admittance
+	105	@q11[gpi]	admittance
+	106	@q11[go]	admittance
+	107	@q11[cpi]	capacitance
+	108	@q11[cmu]	capacitance
+Values:
+0		0.000000000000000e+00
+	1.500000000000000e+01
+	-1.500000000000000e+01
+	-2.879674429301748e-02
+	-2.879674429301642e-02
+	-8.274918164867808e-01
+	-8.274918164867798e-01
+	-5.051393076770232e+00
+	-4.199502827904888e+00
+	7.165346039416353e+00
+	1.608875110936085e+00
+	7.165346039416161e+00
+	6.388780752148397e+00
+	6.388780752148589e+00
+	7.847051020416489e-01
+	-1.654444962347942e+00
+	7.847051020416490e-01
+	8.044375554638867e-01
+	2.314948559857309e-02
+	-2.324693970710346e-02
+	-2.879674429301748e-05
+	2.996322387154326e-03
+	7.958153977644616e-01
+	-1.503167641872232e+01
+	1.157989662237320e-01
+	1.113352057037681e-03
+	4.607481364666038e-05
+	3.992103477441294e-11
+	7.318291061937883e-13
+	2.996322387154336e-03
+	7.958153977644618e-01
+	-1.503167641872232e+01
+	1.157989662237324e-01
+	1.113352057037684e-03
+	4.607481364666055e-05
+	3.992103477441307e-11
+	7.318291061937883e-13
+	5.988951210990761e-03
+	8.197018198748023e-01
+	-1.619448244514789e+00
+	2.314312599017576e-01
+	2.803537342463930e-03
+	1.160212170614903e-04
+	7.471097425628922e-11
+	1.368253688899888e-12
+	5.988951210990846e-03
+	8.197018198748026e-01
+	-1.619448244514789e+00
+	2.314312599017609e-01
+	2.803537342463970e-03
+	1.160212170614919e-04
+	7.471097425629022e-11
+	1.368253688899888e-12
+	5.922334044342107e-03
+	8.175082921510977e-01
+	-5.563132645223607e+00
+	2.288651133476794e-01
+	2.575580358000995e-03
+	1.065874754865532e-04
+	7.393102091226202e-11
+	9.901919489204656e-13
+	5.922334044342168e-03
+	8.175082921510980e-01
+	-5.563132645223414e+00
+	2.288651133476818e-01
+	2.575580358001032e-03
+	1.065874754865547e-04
+	7.393102091226273e-11
+	9.901919489204755e-13
+	2.807480154468293e-03
+	8.009284514755961e-01
+	-3.509103996602647e-03
+	1.084878003197538e-01
+	1.356704109464154e-03
+	5.614566267328607e-05
+	3.774767400494228e-11
+	1.996921561780396e-12
+	2.807480153673815e-03
+	8.009284514682772e-01
+	-3.509103995609553e-03
+	1.084878002890532e-01
+	1.356704109080252e-03
+	5.614566265739872e-05
+	3.774767399570306e-11
+	1.996921561781264e-12
+	1.212292894336345e-02
+	8.374745213484509e-01
+	-2.559473593073839e+00
+	4.684709853059414e-01
+	5.573467600030657e-03
+	2.306516430256146e-04
+	1.459162599872515e-10
+	1.225405341130799e-12
+	1.203900781658191e-03
+	7.752643014652003e-01
+	-7.835954946386403e+00
+	4.652488832463351e-02
+	5.029927344158864e-04
+	2.081578448800829e-05
+	1.906303456825538e-11
+	8.946434215600786e-13
+	1.203900781658187e-03
+	7.752643014652003e-01
+	-7.835954946386210e+00
+	4.652488832463336e-02
+	5.029927344158864e-04
+	2.081578448800829e-05
+	1.906303456825534e-11
+	8.946434215600853e-13

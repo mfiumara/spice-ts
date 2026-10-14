@@ -1,0 +1,39 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: this circuit tests the mos level=1 model as a chain of inverters in series
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 9  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+vdd                                          5
+in                                           5
+1                                            5
+vout                               1.39285e-09
+out1                               1.43268e-09
+out2                                         5
+vin1#branch                                  0
+vdddev#branch                       -1.503e-11
+
+
+No. of Data Rows : 1705
+.print line ignored since rawfile was produced.
+
+Total analysis time (seconds) = 0.016922
+
+Total elapsed time (seconds) = 0.021 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13178.625 MB.
+Maximum ngspice program size =   10.250 MB.
+Current ngspice program size =   10.250 MB.
+

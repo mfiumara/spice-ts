@@ -1,0 +1,19 @@
+{
+  "baseSha": "d3901ec1355519e582dc068b4dec5cc033e22de8",
+  "commands": [
+    { "command": "pnpm install --frozen-lockfile", "exitCode": 0 },
+    { "command": "pnpm build", "exitCode": 0 },
+    { "command": "pnpm lint", "exitCode": 0 },
+    { "command": "spice-heavy python3 benchmarks/performance/rc1k-attribution.py benchmarks/performance/results/rc1k-cold-attribution-2026-10-14 --rounds 1", "exitCode": 1, "note": "Stopped after first retained controller-epoch error; simulator succeeded and output hash matched baseline. Initial slot-wait command timed out without workload children, then the background invocation acquired a slot." },
+    { "command": "spice-heavy python3 benchmarks/performance/rc1k-attribution.py benchmarks/performance/results/rc1k-cold-attribution-2026-10-14 --rounds 15", "exitCode": 1, "note": "Resumed without replacing first child; completed 60 workload children. Exit 1 retains the first invalid receipt, no simulator failures." },
+    { "command": "node benchmarks/performance/rc1k-attribution-report.mjs benchmarks/performance/results/rc1k-cold-attribution-2026-10-14", "exitCode": 0 },
+    { "command": "pnpm -C packages/core exec vitest run --root ../.. --config benchmarks/performance/rc1k-attribution.vitest.mjs", "exitCode": 0, "passed": 10 },
+    { "command": "spice-heavy pnpm test", "exitCode": 0, "passed": 4143, "skipped": 6, "log": "full-test.log.gz" },
+    { "command": "node --check (all rc1k-attribution*.mjs); python3 -m py_compile benchmarks/performance/rc1k-attribution.py", "exitCode": 0 }
+  ],
+  "workloads": { "control": 15, "instrumented": 15, "ngspiceWrappers": 15, "nativeNgspice": 15, "total": 60 },
+  "originalCertification": { "certifiedTopLevel": 44, "retainedInvalidTopLevel": 1, "rederivedButStillFlagged": "01-control" },
+  "coreSourceChanges": 0,
+  "oldScalingMatrixChanges": 0,
+  "newSourceAdded": false
+}

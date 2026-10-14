@@ -1,0 +1,23 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: Low Pass RC Filter
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 4  
+
+No. of Data Rows : 5
+
+Total analysis time (seconds) = 0.000555
+
+Total elapsed time (seconds) = 0.004 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13617.438 MB.
+Maximum ngspice program size =   10.031 MB.
+Current ngspice program size =   10.031 MB.
+

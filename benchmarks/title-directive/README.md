@@ -99,3 +99,23 @@ new public-corpus circuits.
 
 The original j-16 before-loss receipt is retained. `after.json` is refreshed on
 the corrected core. No benchmark input or tolerance changes, no speed claim.
+
+## PR955 merge interaction
+
+Main `e1d8c9c1145a516977091efbd98da914fca1bf37` introduces raw X-call
+continuation lookahead. It initially stopped at `.title` before the later
+metadata blanking, leaving an empty RHS or an unmatched brace/quote. The
+bounded fix skips title metadata in that lookahead, like blank/comment lines;
+it does not alter assignment parsing or source-line accounting.
+
+RED: all 16 new tests failed, covering numeric/bare/braced/quoted RHS values,
+top-level/nested calls and titleless/physical-title parsing. GREEN: all 58
+tests in the #957/#797 focused suites pass. Eight identical-byte native
+ngspice-47 probes succeed before and after with resistance 2000 ohms and
+i(v1)=-0.0005 A; spice-ts fails all eight before and succeeds after.
+
+    spice-heavy pnpm exec tsx benchmarks/title-directive/x-continuations.ts after
+
+The before phase was run on the uncommitted main merge before the scanner
+fix; both receipts identify that state explicitly rather than claiming HEAD
+alone reproduces it. Original MIT project probes, not novel corpus fixtures.

@@ -1,0 +1,262 @@
+
+*****
+***** Welcome to the Xyce(TM) Parallel Electronic Simulator
+*****
+***** This is version XyceNF Release 7.10.0
+***** Date: Wed Oct 14 02:03:28 CEST 2026
+
+
+***** Executing netlist input.cir
+
+***** Reading and parsing netlist...
+***** Setting up topology...
+
+Netlist warning: Voltage Node (GND) does not have a DC path to ground
+Netlist warning: Voltage Node (IN) does not have a DC path to ground
+Netlist warning: Voltage Node (OUT) does not have a DC path to ground
+***** Device Count Summary ...
+       C level 1 (Capacitor)                  1
+       R level 1 (Resistor)                   1
+       V level 1 (Independent Voltage Source) 1
+       ----------------------------------------
+       Total Devices                          3
+***** Setting up matrix structure...
+***** Number of Unknowns = 4
+***** Initializing...
+
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Maximum warning count has been exceeded and will no longer be displayed
+
+***** Solution Summary *****
+	Number Successful Steps Taken:		0
+	Number Failed Steps Attempted:		101
+	Number Jacobians Evaluated:		1
+	Number Linear Solves:			1
+	Number Failed Linear Solves:		0
+	Number Residual Evaluations:		3
+	Number Nonlinear Convergence Failures:	0
+	Total Residual Load Time:		6.91414e-06 seconds
+	Total Jacobian Load Time:		2.86102e-06 seconds
+	Total Linear Solution Time:		2.69413e-05 seconds
+
+
+***** Total Simulation Solvers Run Time: 0.000864983 seconds
+***** Total Elapsed Run Time:            0.00188398 seconds
+*****
+***** End of Xyce(TM) Simulation
+*****
+
+Timing summary of 1 processor
+                 Stats                   Count       CPU Time              Wall Time
+---------------------------------------- ----- --------------------- ---------------------
+Xyce                                         1        0.001 (100.0%)        0.002 (100.0%)
+  Analysis                                   1        0.001 (40.21%)        0.001 (35.46%)
+    AC                                       1        0.001 (40.14%)        0.001 (35.38%)
+      DC Nonlinear Solve                     1        0.000 ( 7.21%)        0.000 ( 7.16%)
+        Residual                             3        0.000 ( 0.61%)        0.000 ( 0.33%)
+        Jacobian                             1        0.000 ( 0.15%)        0.000 ( 0.17%)
+        Linear Solve                         1        0.000 ( 1.52%)        0.000 ( 1.17%)
+      AC Linear Solve                      101        0.000 (24.13%)        0.001 (21.91%)
+        Linear Solve                       101        0.000 (22.31%)        0.000 (18.33%)
+  Netlist Import                             1        0.000 (19.73%)        0.000 (17.58%)
+    Parse Context                            1        0.000 ( 3.26%)        0.000 ( 3.06%)
+    Distribute Devices                       1        0.000 ( 4.78%)        0.000 ( 3.22%)
+    Verify Devices                           1        0.000 ( 0.15%)        0.000 ( 0.21%)
+    Instantiate                              1        0.000 ( 1.75%)        0.000 ( 1.05%)
+  Late Initialization                        1        0.000 (13.51%)        0.000 (10.92%)
+    Global Indices                           1        0.000 ( 1.29%)        0.000 ( 0.88%)
+  Setup Matrix Structure                     1        0.000 ( 2.58%)        0.000 ( 3.02%)
+

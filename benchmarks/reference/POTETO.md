@@ -46,3 +46,22 @@ closed. Export/parse failures and ignored-statement losses remain separate from
 convergence claims. The reproducible 100-row receipt and hash verifier live in
 `adapter-948/` and the existing offline CI reference gate. No parallel worker edits,
 SOURCES.md hotspot edits, core changes, or aggregate regeneration in this slice.
+
+## Linux source-build verification slice
+
+Task t_e1f8094c owns the serial Linux build and Mac-vs-Linux cross-check only.
+Use local headless Colima (Linux arm64), a digest-pinned Ubuntu base, explicitly
+pinned GCC/CMake/build prerequisites, and the existing source-SHA recipe. Prefer
+this working local venue over adding a workflow_dispatch fallback. Build with
+two jobs/CPUs through spice-heavy. Do not modify the adapter or simulator.
+
+Prepare the three EKV decks plus exactly the 19 historically compared corpus
+decks using the unchanged translation. Require translated-input hashes and Mac
+series hashes to match the bootstrap receipts before measuring Linux-vs-Mac
+max/RMS errors per signal. Retain raw outputs and failures; separate A from V.
+The table reports the largest per-signal max/RMS in each unit, not mixed-unit
+aggregates. No claim of ngspice parity, EKV implementation, or speed improvement.
+
+Actual first execution, rather than a shell-only check, exposed the SuiteSparse
+7 include/suitesparse path and missing libfl-dev prerequisite. Retain RED logs;
+verify the corrected Dockerfile and recipe from a fresh build root for GREEN.

@@ -1,0 +1,21 @@
+
+Note: No compatibility mode selected!
+
+Preparing expression for numparam
+What is this?
+~(~v(9)&v(8)) + 0.5
+Preparing expression for numparam
+What is this?
+~v(9)&v(8)) + 0.5
+
+Circuit: logic test, pspice
+
+
+
+YYparse error, syntax error, in expression: parsing stopped at line 7
+    v(9) & v(8) ) +   5.0000000000e-01 in  & v(8) ) +   5.0000000000e-01
+
+from file    input.cir
+
+
+ERROR: fatal error in ngspice, exit(1)

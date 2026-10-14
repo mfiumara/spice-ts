@@ -1,0 +1,24 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: ltspice a-device divide-by-four clock example
+
+
+
+Total elapsed time (seconds) = 0.004 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 12655.438 MB.
+Maximum ngspice program size =    9.812 MB.
+Current ngspice program size =    9.812 MB.
+
+
+Error on line 6 or its substitute:
+  acount clock reset 0 0 0 divided_b divided 0 counter cycles=4 duty=0.5 vhigh=5 vlow=0 rout=10
+MIF-ERROR - unable to find definition of model 10
+    Simulation interrupted due to error!
+
+Error: circuit not parsed.
+Note: no resource usage information for 'time',
+	or no active circuit available

@@ -1,0 +1,26 @@
+
+*****
+***** Welcome to the Xyce(TM) Parallel Electronic Simulator
+*****
+***** This is version XyceNF Release 7.10.0
+***** Date: Wed Oct 14 01:49:37 CEST 2026
+
+
+***** Executing netlist input.cir
+
+***** Reading and parsing netlist...
+Netlist error: VD_DIFF1 has invalid MEASURE line
+Netlist error: VD_DIFF2 has invalid MEASURE line
+Netlist warning in file input.cir at or near line 14
+ Device model NCH.2: Given pbswgs is less than 0.1. Pbswgs is set to 0.1
+Netlist warning in file input.cir at or near line 14
+ Device model NCH.2: Given pbswgd is less than 0.1. Pbswgd is set to 0.1
+Simulation aborted due to error.  There are 0 MSG_FATAL errors and 2 MSG_ERROR
+ errors
+*** Xyce Abort ***
+
+Simulation aborted due to error.  There are 0 MSG_FATAL errors and 2 MSG_ERROR
+ errors
+
+
+*** Xyce Abort ***

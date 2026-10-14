@@ -1,0 +1,197 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: file: buggy-meas-tran.sp
+
+
+**** buggy .measure lines
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+1                                            0
+2                                            0
+pa_00                                        0
+bpa_00#branch                                0
+vac2#branch                                  0
+vac1#branch                                  0
+
+
+No. of Data Rows : 508
+
+**** good meas lines
+tdiff               =  1.00000e-03 targ=  1.08334e-03 trig=  8.33429e-05
+tdiff               =  2.00000e-03 targ=  2.08334e-03 trig=  8.33429e-05
+tdiff               =  3.33281e-04 targ=  4.16624e-04 trig=  8.33429e-05
+tdiff               =  2.77778e-04 targ=  2.77778e-03 trig=  2.50000e-03
+tdiff               =  8.22135e-05 targ=  6.84638e-04 trig=  6.02425e-04
+tdiff               =  7.95764e-04 targ=  1.79576e-03 trig=  1.00000e-03
+teval               =  4.88982e-03
+teval               =  3.94211e-03
+teval               =  4.47113e-03
+yeval               =  1.08166e+00
+yeval               =  -1.14090e+00
+ymax                =  1.19985e+00 at=  2.50280e-03
+tymax               =  2.50280e-03 with=  1.19985e+00
+ypp                 =  1.99969e+00 from=  2.00000e-03 to=  4.00000e-03
+yrms                =  7.07118e-01 from=  2.00000e-03 to=  3.50000e-03
+yavg                =  6.94259e-05 from=  2.00000e-03 to=  4.00280e-03
+yint                =  1.31162e-04 from=  2.00000e-03 to=  3.00000e-03
+ymax                =  1.19985e+00 at=  2.50280e-03
+
+**** out of intervall examples
+tdiff               =  -1.00000e-03 targ=  1.08334e-03 trig=  2.08334e-03
+
+**** buggy input lines
+tdiff               =  1.00000e-03 targ=  1.08334e-03 trig=  8.33429e-05
+
+**** more buggy lines
+tdiff               =  1.00000e-03 targ=  1.08334e-03 trig=  8.33429e-05
+	measure 'trig'  failed
+Error: measure  trig  :
+	no such function as 'v(1)'
+	measure 'tdiff'  failed
+Error: measure  tdiff  :
+	no such function as 'v(1)'
+tdiff               =  8.33435e-05 targ=  1.08334e-03 trig=  9.99999e-04
+tdiff               =  1.91666e-03 targ=  2.00000e-03 trig=  8.33429e-05
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 7  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+1                                            0
+2                                            0
+pa_00                                        0
+bpa_00#branch                                0
+vac2#branch                                  0
+vac1#branch                                  0
+
+
+No. of Data Rows : 508
+
+Total analysis time (seconds) = 0.002988
+
+Total elapsed time (seconds) = 0.007 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 14101.578 MB.
+Maximum ngspice program size =   10.281 MB.
+Current ngspice program size =   10.281 MB.
+
+
+
+No .measure possible in batch mode (-b) with -r rawfile set!
+Remove rawfile and use .print or .plot or
+select interactive mode (optionally with .control section) instead.
+
+
+Error: measure  tmax  when(WHEN) : out of interval
+ meas tran tmax when v(2)=1.199850e+00 from=1m to=2m failed!
+
+
+Error: measure  tdiff  trig(TARG) : out of interval
+ meas tran tdiff trig v(1) val=0.5 rise=1 targ v(1) val=0.5 rise=25 failed!
+
+
+Error: measure  teval  when(WHEN) : out of interval
+ meas tran teval when v(2)=70 cross=last failed!
+
+
+Error: measure  yeval  find(AT) : out of interval
+ meas tran yeval find v(2) at=2 failed!
+
+
+Error: measure  tdiff  trig(TARG) : at, rise, fall or cross must be given
+ meas tran tdiff trig v(1) val=0.5 rise=1 targ v(1) val=0.5 failed!
+
+
+Error: measure  tdiff  trig(TARG) : at, rise, fall or cross must be given
+ meas tran tdiff trig v(1) val=0.5 rise=1 targ v(1) failed!
+
+
+Error: measure  tdiff  trig(TARG) : bad syntax of 'targ'
+ meas tran tdiff trig v(1) val=0.5 rise=1 targ failed!
+
+
+Error: measure  tdiff  trig(TARG) : bad syntax of 'targ'
+ meas tran tdiff trig v(1) val=0.5 rise=1 failed!
+
+
+Error: measure  tdiff  trig(TRIG) : at, rise, fall or cross must be given
+ meas tran tdiff trig v(1) val=0.5 failed!
+
+
+Error: measure  tdiff  trig(TRIG) : at, rise, fall or cross must be given
+ meas tran tdiff trig v(1) failed!
+
+
+Error: measure  tdiff  trig(TRIG) : bad syntax of 'trig'
+ meas tran tdiff trig failed!
+
+	measure 'tdiff'  failed
+Error: measure  tdiff  :
+	invalid num params
+ meas tran tdiff failed!
+
+ meas tran failed!
+   unspecified output var name
+
+meas: too few args.
+ meas tran trig v(1) val=0.5 rise=1 targ v(1) val=0.5 rise=2 failed!
+
+ meas tran tdiff v(1) val=0.5 rise=1 targ v(1) val=0.5 rise=2 failed!
+
+
+Error: measure  tdiff  trig(TRIG) : no such vector as 'val=0.5'
+ meas tran tdiff trig val=0.5 rise=1 targ v(1) val=0.5 rise=2 failed!
+
+
+Error: measure  tdiff  trig(TRIG) : at, rise, fall or cross must be given
+ meas tran tdiff trig v(1) val=0.5 targ v(1) val=0.5 rise=2 failed!
+
+
+Error: measure  tdiff  trig(TRIG) : bad syntax. equal sign missing ?
+ meas tran tdiff trig v(1) val=0.5 rise=1 v(1) val=0.5 rise=2 failed!
+
+
+Error: measure  tdiff  trig(TARG) : no such vector as 'val=0.5'
+ meas tran tdiff trig v(1) val=0.5 rise=1 targ val=0.5 rise=2 failed!
+
+
+Error: measure  tdiff  trig(TRIG) : bad syntax, cannot evaluate right hand side of val=rise
+ meas tran tdiff trig v(1) val=rise=1 targ v(1) val=0.5 rise=2 failed!
+
+
+Error: measure  tdiff  trig(TRIG) : bad syntax, cannot evaluate right hand side of rise=targ
+ meas tran tdiff trig v(1) val=0.5 rise=targ v(1) val=0.5 rise=2 failed!
+
+Error: meas sp ...
+ no such scale vector as frequency.
+
+Error: measure  tmax  max(TRIG) : out of interval
+ meas sp tmax max v(2) from=2m to=3m failed!
+
+Error: meas dc ...
+ no such scale vector as v-sweep, i-sweep, temp-sweep, or res-sweep.
+
+Error: measure  ymax  max(TRIG) : out of interval
+ meas dc ymax max v(2) from=2m to=3m failed!
+
+
+No .measure possible in batch mode (-b) with -r rawfile set!
+Remove rawfile and use .print or .plot or
+select interactive mode (optionally with .control section) instead.
+

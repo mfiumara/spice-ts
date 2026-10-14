@@ -1,0 +1,23 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: mutual inductance test circuit
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 25  
+
+No. of Data Rows : 9
+
+Total analysis time (seconds) = 0.00099
+
+Total elapsed time (seconds) = 0.006 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 14635.969 MB.
+Maximum ngspice program size =   10.078 MB.
+Current ngspice program size =   10.078 MB.
+

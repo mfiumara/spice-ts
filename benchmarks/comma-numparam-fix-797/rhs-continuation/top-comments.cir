@@ -1,0 +1,13 @@
+X-call continuation
+.param seed=2.5
+.subckt cell o params: alpha=1
+I1 0 o {alpha}
+R1 o 0 1
+.ends
+Xchild o cell alpha= ; pending RHS
+* between lines
+
++{seed
++*2}
+.op
+.end

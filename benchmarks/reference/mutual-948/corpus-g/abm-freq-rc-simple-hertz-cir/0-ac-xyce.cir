@@ -1,0 +1,13 @@
+Simple RC circuit
+**********************************************************************
+* this test establishes that using "FREQ" in an ABM (ish) expression 
+* works correctly
+**********************************************************************
+Isrc 1 0 AC 1 0 sin(0 1 1e+5 0 0)
+R1 1 0 {hertz}
+C1 1 0 2e-6
+
+
+.AC DEC 1 1 1e5 
+.print AC format=csv file=output.csv precision=17 VR(1) VI(1)
+.END

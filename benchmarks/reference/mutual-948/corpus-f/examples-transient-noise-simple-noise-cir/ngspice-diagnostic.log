@@ -1,0 +1,82 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: test of isrc trnoise and trrandom isrc, vsrc
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+1                                       -0.002
+2                                       -0.001
+3                                        -0.01
+4                                         0.01
+v4#branch                                    0
+
+
+No. of Data Rows : 125008
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+1                                       -0.004
+2                                       -0.002
+3                                        -0.02
+4                                         0.02
+v4#branch                                    0
+
+ Reference value :  1.22993e-08
+No. of Data Rows : 125008
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 6  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+1                                       -0.004
+2                                       -0.002
+3                                  -0.00338373
+4                                    -0.338219
+v4#branch                                    0
+
+ Reference value :  1.09073e-07
+No. of Data Rows : 125008
+
+Total analysis time (seconds) = 0.90637
+
+Total elapsed time (seconds) = 0.911 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13552.141 MB.
+Maximum ngspice program size =   23.062 MB.
+Current ngspice program size =   23.062 MB.
+
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+

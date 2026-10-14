@@ -1,0 +1,45 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: testing ill-formed .four lines
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 6  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+2                                      4.26777
+1                                          2.5
+3                                            5
+vin#branch                                   0
+vdd#branch                        -0.000258986
+
+
+No. of Data Rows : 110
+.fourier line ignored since rawfile was produced.
+.fourier line ignored since rawfile was produced.
+.fourier line ignored since rawfile was produced.
+.fourier line ignored since rawfile was produced.
+.fourier line ignored since rawfile was produced.
+.fourier line ignored since rawfile was produced.
+.fourier line ignored since rawfile was produced.
+.fourier line ignored since rawfile was produced.
+.fourier line ignored since rawfile was produced.
+.fourier line ignored since rawfile was produced.
+
+Total analysis time (seconds) = 0.001386
+
+Total elapsed time (seconds) = 0.005 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13300.609 MB.
+Maximum ngspice program size =   10.141 MB.
+Current ngspice program size =   10.141 MB.
+

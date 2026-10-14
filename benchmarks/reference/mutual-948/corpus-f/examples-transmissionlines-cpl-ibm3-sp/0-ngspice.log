@@ -1,0 +1,72 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: mixed single and coupled transmission lines
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 43  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+1                                 -3.72013e-29
+1a                                -3.72013e-29
+7                                  -4.0609e-29
+in                                           0
+6                                  -4.0609e-29
+2                                 -3.71921e-29
+8                                 -4.06548e-29
+3                                 -5.84153e-29
+4                                 -5.84153e-29
+9                                 -4.06548e-29
+10                                -4.06819e-29
+11                                -4.06819e-29
+12                                -5.93242e-29
+13                                -5.93242e-29
+16                                -5.93246e-29
+17                                -5.93246e-29
+5                                 -5.84747e-29
+14                                -3.71753e-29
+15                                -5.93763e-29
+18                                -5.93768e-29
+p1#branch1_0                       8.48926e-31
+p1#branch1_1                      -2.41391e-31
+p1#branch1_2                       7.45692e-31
+p1#branch1_3                       7.45708e-31
+p1#branch2_0                      -8.48926e-31
+p1#branch2_1                       2.41391e-31
+p1#branch2_2                      -7.45692e-31
+p1#branch2_3                      -7.45708e-31
+p2#branch1_0                      -1.36308e-31
+p2#branch1_1                       6.77762e-31
+p2#branch2_0                       1.36308e-31
+p2#branch2_1                      -6.77762e-31
+l1617#branch                       7.45708e-31
+l1213#branch                       7.45692e-31
+l1011#branch                       6.77762e-31
+l89#branch                         6.77762e-31
+l34#branch                         8.48926e-31
+l67#branch                         5.41454e-31
+l11a#branch                        1.36308e-31
+y1#branch1                         6.77762e-31
+y1#branch2                        -6.77762e-31
+ves#branch                        -5.41454e-31
+
+
+No. of Data Rows : 124
+
+Total analysis time (seconds) = 0.005201
+
+Total elapsed time (seconds) = 0.009 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13573.094 MB.
+Maximum ngspice program size =   10.547 MB.
+Current ngspice program size =   10.547 MB.
+

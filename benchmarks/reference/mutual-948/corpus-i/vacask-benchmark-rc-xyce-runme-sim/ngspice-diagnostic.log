@@ -1,0 +1,33 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: rc circuit excited by a pulse train 
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 4  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+1                                            0
+2                                            0
+vs#branch                                    0
+
+ Reference value :  9.08311e-02 Reference value :  1.81830e-01 Reference value :  2.73335e-01 Reference value :  3.61126e-01 Reference value :  4.54050e-01 Reference value :  5.45753e-01 Reference value :  6.38717e-01 Reference value :  7.31919e-01 Reference value :  8.24311e-01 Reference value :  9.14770e-01
+No. of Data Rows : 1006014
+
+Total analysis time (seconds) = 2.73685
+
+Total elapsed time (seconds) = 2.745 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13902.453 MB.
+Maximum ngspice program size =   10.094 MB.
+Current ngspice program size =   10.094 MB.
+

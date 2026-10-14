@@ -1,0 +1,23 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: rca3040 ckt - rca 3040 wideband amplifier
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 22  
+
+No. of Data Rows : 101
+
+Total analysis time (seconds) = 0.00296
+
+Total elapsed time (seconds) = 0.008 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 14495.938 MB.
+Maximum ngspice program size =   10.172 MB.
+Current ngspice program size =   10.172 MB.
+

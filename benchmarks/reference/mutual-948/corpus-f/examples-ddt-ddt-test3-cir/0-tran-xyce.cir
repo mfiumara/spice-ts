@@ -1,0 +1,14 @@
+ddt test 3 with RC
+
+V1 1 0 dc 0 pulse 0 2 1u 1n 1n 100u 200u
+R1 1 2 1k
+C1 2 0 1u
+
+B2 22 0 v = ddt(V(2))/1000
+
+.tran 100n 3m
+
+*print v(22)
+
+.print TRAN format=csv file=output.csv precision=17 I(b2) I(v1) V(1) V(2) V(22)
+.end

@@ -1,0 +1,48 @@
+
+*****
+***** Welcome to the Xyce(TM) Parallel Electronic Simulator
+*****
+***** This is version XyceNF Release 7.10.0
+***** Date: Wed Oct 14 01:51:55 CEST 2026
+
+
+***** Executing netlist input.cir
+
+***** Reading and parsing netlist...
+Netlist error in file input.cir at or near line 15
+ Model is required for device QVLGNPN16 and no valid model card found.
+Netlist error in file input.cir at or near line 16
+ Model is required for device QVLGNPN15 and no valid model card found.
+Netlist error in file input.cir at or near line 17
+ Model is required for device QVLGNPN14 and no valid model card found.
+Netlist error in file input.cir at or near line 18
+ Model is required for device QVLGNPN13 and no valid model card found.
+Netlist error in file input.cir at or near line 19
+ Model is required for device QVLGNPN12 and no valid model card found.
+Netlist error in file input.cir at or near line 20
+ Model is required for device QVLGNPN11 and no valid model card found.
+Netlist error in file input.cir at or near line 21
+ Model is required for device QVLGNPN10 and no valid model card found.
+Netlist error in file input.cir at or near line 22
+ Model is required for device QVLGNPN9 and no valid model card found.
+Netlist error in file input.cir at or near line 23
+ Model is required for device QVLGNPN8 and no valid model card found.
+Netlist error in file input.cir at or near line 24
+ Model is required for device QVLGNPN7 and no valid model card found.
+Netlist error in file input.cir at or near line 25
+ Model is required for device QVLGNPN6 and no valid model card found.
+Netlist error in file input.cir at or near line 26
+ Model is required for device QVLGNPN5 and no valid model card found.
+Netlist error in file input.cir at or near line 27
+ Model is required for device QVLGNPN4 and no valid model card found.
+Netlist error in file input.cir at or near line 28
+ Model is required for device QVLGNPN3 and no valid model card found.
+Simulation aborted due to error.  There are 0 MSG_FATAL errors and 14
+ MSG_ERROR errors
+*** Xyce Abort ***
+
+Simulation aborted due to error.  There are 0 MSG_FATAL errors and 14
+ MSG_ERROR errors
+
+
+*** Xyce Abort ***

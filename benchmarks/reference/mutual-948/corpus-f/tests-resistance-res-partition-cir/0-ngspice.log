@@ -1,0 +1,23 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: * resistive partition with different ratios for ac/dc (print v(2))
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 3  
+
+No. of Data Rows : 1
+
+Total analysis time (seconds) = 0.001331
+
+Total elapsed time (seconds) = 0.008 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 14893.594 MB.
+Maximum ngspice program size =   10.047 MB.
+Current ngspice program size =   10.047 MB.
+

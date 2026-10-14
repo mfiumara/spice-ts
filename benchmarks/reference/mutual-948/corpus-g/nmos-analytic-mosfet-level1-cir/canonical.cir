@@ -1,0 +1,47 @@
+Test Mosfet Level 1 Model
+*******************************************************
+* Tier: ?????
+* Directory/Circuit name:  NMOS_ANALYTIC/mosfet_level1.cir
+* Description:  Runs a transient analysis to check operation of level 1 NMOS
+*               model in saturation and triode regions.
+* Input:   V1=V(1)
+* Output:  V2=V(2) (drain voltage)
+* 
+* Created by:  K. R. Santarelli (09/07)
+*
+* We create the following circuit:  a DC voltage is connected to the gate 
+* terminal of an NMOS transistor whose source is connected to ground and whose
+* drain (the output) is connected to a capacitor.  The other end of the 
+* capacitor is connected to a 5V DC source (VCC), and the voltage across the
+* capacitor is initialized to 0.  The positive gate-source voltage induces a
+* current from the drain to the source which pulls down the capacitor voltage
+* to an (asymptotic) value of 0V.  In order to simplify things a bit, we zero
+* out the effect of the diodes in the Level 1 model by setting IS=0, and we 
+* connect the bulk node to the source node (no backgate effect).  Under 
+* assumptions, if we denote the voltage V(2) as Vout(t), we find that it 
+* follows the profile:
+*
+* Vout(t) = VCC- (K/2C) * (VGS-Vt)^2 * t      
+*                         for t <= (2C/K)*(VCC-(VGS-Vt))/(VGS-Vt)^2
+*
+* Vout(t) = 2*(VGS-Vt)*exp(-alpha*t)/(1+exp(-alpha*t))
+*                         for t >= (2C/K)*(VCC-(VGS-Vt))/(VGS-Vt)^2
+*
+* where alpha =K/C*(VGS-Vt).
+*
+* The first part of the expression accounts for the operation of the NMOS 
+* transistor in the saturation region.  At the indicated switching time, 
+* the drain-to-source voltage drops below VGS-Vt, and the NMOS device begins
+* to operate in the triode region (where it remains for all future time).
+***************************************************************************
+
+V1 1 0 2 
+M1 2 1 0 0 MOSMOD W=1u L=1u AD=0 AS=0 PD=0 PS=0
+C1 2 3 10u IC=0
+VCC 3 0 5
+
+.model MOSMOD NMOS LEVEL=1 Is=0 Js=0 VTO=1 
+.tran 1m 10s
+.print tran v(2)
+.options TIMEINT reltol=1e-7 abstol=1e-8 
+.end

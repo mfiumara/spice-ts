@@ -1,0 +1,130 @@
+{
+  "phase": "before",
+  "head": "f33407bc3b00ae8049f05ccb5afc8be411ef8636",
+  "node": "v22.23.1",
+  "ngspice": "ngspice-47",
+  "command": "spice-heavy pnpm exec tsx benchmarks/title-directive/x-continuations.ts before",
+  "policy": "Identical bytes, original MIT semantic probes; no speed claim. Before is the uncommitted main merge, after includes the bounded scanner fix.",
+  "cases": [
+    {
+      "name": "numeric",
+      "nested": false,
+      "input": "Original\n.param seed=1k\n.subckt load a params: r=1k\nR1 a 0 {r}\n.ends\nV1 in 0 1\nX1 in load r=\n.title metadata\n+ 2k\n.op\n.control\nop\nshow all\nprint v(in) i(v1)\nquit\n.endc\n.end",
+      "sha256": "72f72f08c933ba0d18c29550afee55c608b143783d2eec8765a652cc48787afe",
+      "ngspice": {
+        "exitCode": 0,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: metadata\n\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\n\nNo. of Data Rows : 1\n Resistor: Simple linear resistor\n     device               r.x1.r1\n      model                     R\n resistance                  2000\n         ac                  2000\n      dtemp                     0\n     bv_max                 1e+99\n      noisy                     1\n          i                0.0005\n          p                0.0005\n\n Vsource: Independent voltage source\n     device                    v1\n         dc                     1\n      acmag                     0\n      pulse                     -\n        sin                     -\n        exp                     -\n        pwl                     -\n       sffm                     -\n         am                     -\n    trnoise                     -\n   trrandom                     -\n    portnum                     0\n         z0                     0\n        pwr                     0\n       freq                     0\n      phase                     0\n          i               -0.0005\n          p               -0.0005\n\nv(in) = 1.000000e+00\ni(v1) = -5.00000e-04\nngspice-47 done\n",
+        "stderr": ""
+      },
+      "spiceTs": {
+        "status": "error",
+        "diagnostic": "ParseError: Parse error at line 7: Cannot parse number: '{}'\n  X1 in load r={} 2k"
+      }
+    },
+    {
+      "name": "bare",
+      "nested": false,
+      "input": "Original\n.param seed=1k\n.subckt load a params: r=1k\nR1 a 0 {r}\n.ends\nV1 in 0 1\nX1 in load r=\n.TiTlE metadata {missing}\n+ seed*2\n.op\n.control\nop\nshow all\nprint v(in) i(v1)\nquit\n.endc\n.end",
+      "sha256": "82bec05e6f23fc447f0489ce44a0c8066792c4274370135c4f5d352025eab696",
+      "ngspice": {
+        "exitCode": 0,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: metadata {missing}\n\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\n\nNo. of Data Rows : 1\n Resistor: Simple linear resistor\n     device               r.x1.r1\n      model                     R\n resistance                  2000\n         ac                  2000\n      dtemp                     0\n     bv_max                 1e+99\n      noisy                     1\n          i                0.0005\n          p                0.0005\n\n Vsource: Independent voltage source\n     device                    v1\n         dc                     1\n      acmag                     0\n      pulse                     -\n        sin                     -\n        exp                     -\n        pwl                     -\n       sffm                     -\n         am                     -\n    trnoise                     -\n   trrandom                     -\n    portnum                     0\n         z0                     0\n        pwr                     0\n       freq                     0\n      phase                     0\n          i               -0.0005\n          p               -0.0005\n\nv(in) = 1.000000e+00\ni(v1) = -5.00000e-04\nngspice-47 done\n",
+        "stderr": ""
+      },
+      "spiceTs": {
+        "status": "error",
+        "diagnostic": "ParseError: Parse error at line 7: Cannot parse number: '{}'\n  X1 in load r={} seed*2"
+      }
+    },
+    {
+      "name": "braced",
+      "nested": false,
+      "input": "Original\n.param seed=1k\n.subckt load a params: r=1k\nR1 a 0 {r}\n.ends\nV1 in 0 1\nX1 in load r={seed\n.title metadata\n+ *2}\n.op\n.control\nop\nshow all\nprint v(in) i(v1)\nquit\n.endc\n.end",
+      "sha256": "647ed7efb94dfe2690b7b4040ac1e97965651bfc989cb87bc5a40f14d62a765a",
+      "ngspice": {
+        "exitCode": 0,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: metadata\n\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\n\nNo. of Data Rows : 1\n Resistor: Simple linear resistor\n     device               r.x1.r1\n      model                     R\n resistance                  2000\n         ac                  2000\n      dtemp                     0\n     bv_max                 1e+99\n      noisy                     1\n          i                0.0005\n          p                0.0005\n\n Vsource: Independent voltage source\n     device                    v1\n         dc                     1\n      acmag                     0\n      pulse                     -\n        sin                     -\n        exp                     -\n        pwl                     -\n       sffm                     -\n         am                     -\n    trnoise                     -\n   trrandom                     -\n    portnum                     0\n         z0                     0\n        pwr                     0\n       freq                     0\n      phase                     0\n          i               -0.0005\n          p               -0.0005\n\nv(in) = 1.000000e+00\ni(v1) = -5.00000e-04\nngspice-47 done\n",
+        "stderr": ""
+      },
+      "spiceTs": {
+        "status": "error",
+        "diagnostic": "Error: Missing } in subcircuit call"
+      }
+    },
+    {
+      "name": "quoted",
+      "nested": false,
+      "input": "Original\n.param seed=1k\n.subckt load a params: r=1k\nR1 a 0 {r}\n.ends\nV1 in 0 1\nX1 in load r='seed\n.title metadata\n+ *2'\n.op\n.control\nop\nshow all\nprint v(in) i(v1)\nquit\n.endc\n.end",
+      "sha256": "ffd548368e2de43f5237e0e966e3bda906cdf160c8ccc9997ef3b69326f7c00f",
+      "ngspice": {
+        "exitCode": 0,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: metadata\n\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\n\nNo. of Data Rows : 1\n Resistor: Simple linear resistor\n     device               r.x1.r1\n      model                     R\n resistance                  2000\n         ac                  2000\n      dtemp                     0\n     bv_max                 1e+99\n      noisy                     1\n          i                0.0005\n          p                0.0005\n\n Vsource: Independent voltage source\n     device                    v1\n         dc                     1\n      acmag                     0\n      pulse                     -\n        sin                     -\n        exp                     -\n        pwl                     -\n       sffm                     -\n         am                     -\n    trnoise                     -\n   trrandom                     -\n    portnum                     0\n         z0                     0\n        pwr                     0\n       freq                     0\n      phase                     0\n          i               -0.0005\n          p               -0.0005\n\nv(in) = 1.000000e+00\ni(v1) = -5.00000e-04\nngspice-47 done\n",
+        "stderr": ""
+      },
+      "spiceTs": {
+        "status": "error",
+        "diagnostic": "Error: Missing quote in subcircuit call"
+      }
+    },
+    {
+      "name": "numeric",
+      "nested": true,
+      "input": "Original\n.param seed=1k\n.subckt load a params: r=1k\nR1 a 0 {r}\n.ends\nV1 in 0 1\n.subckt caller in params: seed=1k\nX1 in load r=\n.title metadata\n+ 2k\n.ends\nXouter in caller\n.op\n.control\nop\nshow all\nprint v(in) i(v1)\nquit\n.endc\n.end",
+      "sha256": "dd2cb74284d15ff53835ab8918c6bec563061d3a4347a589999fb8ffc0d87284",
+      "ngspice": {
+        "exitCode": 0,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: metadata\n\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\n\nNo. of Data Rows : 1\n Resistor: Simple linear resistor\n     device        r.xouter.x1.r1\n      model                     R\n resistance                  2000\n         ac                  2000\n      dtemp                     0\n     bv_max                 1e+99\n      noisy                     1\n          i                0.0005\n          p                0.0005\n\n Vsource: Independent voltage source\n     device                    v1\n         dc                     1\n      acmag                     0\n      pulse                     -\n        sin                     -\n        exp                     -\n        pwl                     -\n       sffm                     -\n         am                     -\n    trnoise                     -\n   trrandom                     -\n    portnum                     0\n         z0                     0\n        pwr                     0\n       freq                     0\n      phase                     0\n          i               -0.0005\n          p               -0.0005\n\nv(in) = 1.000000e+00\ni(v1) = -5.00000e-04\nngspice-47 done\n",
+        "stderr": ""
+      },
+      "spiceTs": {
+        "status": "error",
+        "diagnostic": "Error: Unexpected character 'EOF' at position 0"
+      }
+    },
+    {
+      "name": "bare",
+      "nested": true,
+      "input": "Original\n.param seed=1k\n.subckt load a params: r=1k\nR1 a 0 {r}\n.ends\nV1 in 0 1\n.subckt caller in params: seed=1k\nX1 in load r=\n.TiTlE metadata {missing}\n+ seed*2\n.ends\nXouter in caller\n.op\n.control\nop\nshow all\nprint v(in) i(v1)\nquit\n.endc\n.end",
+      "sha256": "28c1b9a9d85690340be98d7e6ed4796f2f6f6c20af5e445753c21d753bd8fa66",
+      "ngspice": {
+        "exitCode": 0,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: metadata {missing}\n\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\n\nNo. of Data Rows : 1\n Resistor: Simple linear resistor\n     device        r.xouter.x1.r1\n      model                     R\n resistance                  2000\n         ac                  2000\n      dtemp                     0\n     bv_max                 1e+99\n      noisy                     1\n          i                0.0005\n          p                0.0005\n\n Vsource: Independent voltage source\n     device                    v1\n         dc                     1\n      acmag                     0\n      pulse                     -\n        sin                     -\n        exp                     -\n        pwl                     -\n       sffm                     -\n         am                     -\n    trnoise                     -\n   trrandom                     -\n    portnum                     0\n         z0                     0\n        pwr                     0\n       freq                     0\n      phase                     0\n          i               -0.0005\n          p               -0.0005\n\nv(in) = 1.000000e+00\ni(v1) = -5.00000e-04\nngspice-47 done\n",
+        "stderr": ""
+      },
+      "spiceTs": {
+        "status": "error",
+        "diagnostic": "Error: Unexpected character 'EOF' at position 0"
+      }
+    },
+    {
+      "name": "braced",
+      "nested": true,
+      "input": "Original\n.param seed=1k\n.subckt load a params: r=1k\nR1 a 0 {r}\n.ends\nV1 in 0 1\n.subckt caller in params: seed=1k\nX1 in load r={seed\n.title metadata\n+ *2}\n.ends\nXouter in caller\n.op\n.control\nop\nshow all\nprint v(in) i(v1)\nquit\n.endc\n.end",
+      "sha256": "2fedb656220b295c5cc304b4490386e185bcba80303e724184d0e3767d0ba503",
+      "ngspice": {
+        "exitCode": 0,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: metadata\n\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\n\nNo. of Data Rows : 1\n Resistor: Simple linear resistor\n     device        r.xouter.x1.r1\n      model                     R\n resistance                  2000\n         ac                  2000\n      dtemp                     0\n     bv_max                 1e+99\n      noisy                     1\n          i                0.0005\n          p                0.0005\n\n Vsource: Independent voltage source\n     device                    v1\n         dc                     1\n      acmag                     0\n      pulse                     -\n        sin                     -\n        exp                     -\n        pwl                     -\n       sffm                     -\n         am                     -\n    trnoise                     -\n   trrandom                     -\n    portnum                     0\n         z0                     0\n        pwr                     0\n       freq                     0\n      phase                     0\n          i               -0.0005\n          p               -0.0005\n\nv(in) = 1.000000e+00\ni(v1) = -5.00000e-04\nngspice-47 done\n",
+        "stderr": ""
+      },
+      "spiceTs": {
+        "status": "error",
+        "diagnostic": "Error: Missing } in subcircuit call"
+      }
+    },
+    {
+      "name": "quoted",
+      "nested": true,
+      "input": "Original\n.param seed=1k\n.subckt load a params: r=1k\nR1 a 0 {r}\n.ends\nV1 in 0 1\n.subckt caller in params: seed=1k\nX1 in load r='seed\n.title metadata\n+ *2'\n.ends\nXouter in caller\n.op\n.control\nop\nshow all\nprint v(in) i(v1)\nquit\n.endc\n.end",
+      "sha256": "08e8b0b6138d64c67925417be6f0e9cd1f4117f69a75281bf4a4dd42736d8269",
+      "ngspice": {
+        "exitCode": 0,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: metadata\n\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\n\nNo. of Data Rows : 1\n Resistor: Simple linear resistor\n     device        r.xouter.x1.r1\n      model                     R\n resistance                  2000\n         ac                  2000\n      dtemp                     0\n     bv_max                 1e+99\n      noisy                     1\n          i                0.0005\n          p                0.0005\n\n Vsource: Independent voltage source\n     device                    v1\n         dc                     1\n      acmag                     0\n      pulse                     -\n        sin                     -\n        exp                     -\n        pwl                     -\n       sffm                     -\n         am                     -\n    trnoise                     -\n   trrandom                     -\n    portnum                     0\n         z0                     0\n        pwr                     0\n       freq                     0\n      phase                     0\n          i               -0.0005\n          p               -0.0005\n\nv(in) = 1.000000e+00\ni(v1) = -5.00000e-04\nngspice-47 done\n",
+        "stderr": ""
+      },
+      "spiceTs": {
+        "status": "error",
+        "diagnostic": "Error: Missing quote in subcircuit call"
+      }
+    }
+  ]
+}

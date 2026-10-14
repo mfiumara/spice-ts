@@ -1,0 +1,24 @@
+*SPICE circuit <03502.eps> from XCircuit v3.20
+
+* cascode amplifier
+Q2 3 2 A q2n2222
+Q3 A 5 0 q2n2222
+V3 4 6 SIN(0 0.1 1k)  ac 1
+R3 1 2 80k
+R4 3 9 4.7k
+C2 2 0 10n
+C3 4 5 10n
+R5 5 6 80k
+V4 1 0 11.5
+V5 9 0 20
+V6 6 0 1.5
+.model q2n2222 npn (is=19f bf=150
++ vaf=100 ikf=0.18 ise=50p ne=2.5 br=7.5
++ var=6.4 ikr=12m isc=8.7p nc=1.2 rb=50
++ re=0.4 rc=0.3 cje=26p tf=0.5n
++ cjc=11p tr=7n xtb=1.5 kf=0.032f af=1)
+
+.noise V(3) V3 DEC 10 1k 100Meg 
+.print noise {log(inoise)} {log(onoise)} 
+
+.end

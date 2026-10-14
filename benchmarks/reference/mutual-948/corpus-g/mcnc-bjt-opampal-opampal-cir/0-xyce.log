@@ -1,0 +1,31 @@
+
+*****
+***** Welcome to the Xyce(TM) Parallel Electronic Simulator
+*****
+***** This is version XyceNF Release 7.10.0
+***** Date: Wed Oct 14 02:02:19 CEST 2026
+
+
+***** Executing netlist input.cir
+
+***** Reading and parsing netlist...
+Netlist error: There were 64 undefined symbols in .PRINT command: node XA.1,
+ node XA.10, node XA.11, node XA.12, node XA.13, node XA.14, node XA.15, node
+ XA.16, node XA.2, node XA.3, node XA.4, node XA.5, node XA.6, node XA.7, node
+ XA.8, node XA.9, node XB.1, node XB.10, node XB.11, node XB.12, node XB.13,
+ node XB.14, node XB.15, node XB.16, node XB.2, node XB.3, node XB.4, node
+ XB.5, node XB.6, node XB.7, node XB.8, node XB.9, node XC.1, node XC.10, node
+ XC.11, node XC.12, node XC.13, node XC.14, node XC.15, node XC.16, node XC.2,
+ node XC.3, node XC.4, node XC.5, node XC.6, node XC.7, node XC.8, node XC.9,
+ node XD.1, node XD.10, node XD.11, node XD.12, node XD.13, node XD.14, node
+ XD.15, node XD.16, node XD.2, node XD.3, node XD.4, node XD.5, node XD.6,
+ node XD.7, node XD.8, node XD.9
+Simulation aborted due to error.  There are 0 MSG_FATAL errors and 1 MSG_ERROR
+ errors
+*** Xyce Abort ***
+
+Simulation aborted due to error.  There are 0 MSG_FATAL errors and 1 MSG_ERROR
+ errors
+
+
+*** Xyce Abort ***

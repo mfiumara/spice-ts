@@ -1,0 +1,44 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: * white noise, 1/f noise, rts noise
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 11  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+13                                           0
+12                                           0
+11                                           0
+21                                           0
+10                                           0
+9                                            0
+vw1of#branch                                 0
+vall#branch                                  0
+vrts3#branch                                 0
+vrts2#branch                                 0
+
+510 1/f noise values in time domain created
+510 1/f noise values in time domain created
+510 1/f noise values in time domain created
+510 1/f noise values in time domain created
+
+No. of Data Rows : 3037
+
+Total analysis time (seconds) = 0.016949
+
+Total elapsed time (seconds) = 0.024 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 12657.062 MB.
+Maximum ngspice program size =   11.109 MB.
+Current ngspice program size =   11.109 MB.
+
