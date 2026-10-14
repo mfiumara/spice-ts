@@ -184,6 +184,11 @@ function parseNetlist(
             if (isPspiceSwitchModel(tokens)) {
               // Values in body model expressions require the instance scope.
               if (!raw.includes('{')) translatePspiceSwitchModel(raw, lineNumber);
+            } else if (xspiceModelType(tokens) !== undefined) {
+              // Keep local code models in the body for instance-scoped resolution.
+              // Parameter expressions can only be checked after expansion.
+              if (!raw.includes('{')) parseXspiceModelCard(raw, lineNumber);
+              if (xspiceModelType(tokens) !== 'pwl') assertSupportedModelType(tokens, lineNumber, raw);
             } else {
               assertSupportedModelType(tokens, lineNumber, raw);
               if (!raw.includes('{')) assertSupportedResistorModel(tokens, lineNumber, raw);

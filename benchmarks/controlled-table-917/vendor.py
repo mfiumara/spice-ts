@@ -4,6 +4,7 @@ import importlib.util
 import json
 from pathlib import Path
 import sys
+import subprocess
 
 HERE = Path(__file__).resolve().parent
 OLD = HERE.parent / 'vendor-expanded-node-917'
@@ -15,10 +16,12 @@ spec.loader.exec_module(runner)
 
 def capture(source, target):
     data = json.loads(source.read_text())
+    native = Path(sys.argv[2]).resolve() if len(sys.argv) > 2 else HERE / 'vendor-native.mts'
+    data['nativeRevision'] = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=native.parent, text=True).strip()
     for row in data['receipts']:
         row['native'] = {k: row['native'][k] for k in [
             'process', 'status', 'terminalPivot', 'milliseconds', 'errorName',
-            'tableUnsupported', 'contextHash',
+            'tableUnsupported', 'contextHash', 'acRows',
         ] if k in row['native']}
     data.pop('childBudget', None)
     target.write_text(json.dumps(data, indent=2) + '\n')
@@ -36,7 +39,8 @@ else:
     original_child = runner.child
 
     def child(argv, cwd=runner.ROOT):
-        argv = [HERE / 'vendor-native.mts' if str(a) == str(HERE / 'trace.mts') else a for a in argv]
+        native = Path(sys.argv[2]).resolve() if len(sys.argv) > 2 else HERE / 'vendor-native.mts'
+        argv = [native if str(a) == str(HERE / 'trace.mts') else a for a in argv]
         return original_child(argv, cwd)
 
     runner.child = child
