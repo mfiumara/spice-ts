@@ -38,6 +38,8 @@ assert all(c['charge'] == c['loadedCharge'] for c in after['charges'])
 first = next(c for c in before['charges'] if c['charge'] != c['loadedCharge'])
 window = {label: [c for c in run['charges'] if c['device']=='md1' and 482e-9 < c['time'] < 483e-9][0] for label,run in [('before',before),('after',after)]}
 summary = dict(nativeReferenceMaxAbs=errors, points=1008, firstChangedHistory=first, window482ns=window,
+    integrationConfound=dict(beforeFallbacks=before['fallbacks'], afterFallbacks=after['fallbacks'],
+        interpretation='Direct history effects and retry-induced permanent Euler fallback are not separated.'),
     nativeWindowSteps=[s for s in steps if 480e-9 < s['time'] < 484e-9],
     beforeWindowSteps=[s for s in before['steps'] if 480e-9 < s['time'] < 484e-9],
     afterWindowSteps=[s for s in after['steps'] if 480e-9 < s['time'] < 484e-9],

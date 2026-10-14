@@ -56,11 +56,23 @@ reference, rather than assuming its configure flags are equivalent.
 
 Both engines already take the same accepted sequence, to at most 2.12e-22 s
 rounding difference. There are no rejected steps in the native run.
-The pre-fix spice-ts run records one NR retry overall; the fixed run records
-none. No LTE retries occur. Near
-480.28, 481.28, 482.28 and 483.28 ns both use 1 ns trapezoidal/order-2 steps and
-three Newton iterations. Thus this error is not caused by different accepted
-timesteps or iteration counts in that window. Native CKTtrunc returns its
+The baseline spice-ts run records one NR retry overall; the candidate records
+none. No LTE retries occur. At 438.28000000000374 ns, after the accepted
+437.2800000000037 ns point, the baseline's trapezoidal trial fails Newton.
+The driver's nonlinear-inductive recovery permanently switches to Euler and
+retries the same timepoint without a timestep cut. `fallbacks` in the baseline
+trace records that transition, failed/retried trial time and NR retry count;
+the candidate's `fallbacks` is empty. Every accepted step records its actual
+`method` and `order`, separately from the driver's `configuredMethod` (startup
+can use Euler even when configured for trapezoidal).
+Near 480.28, 481.28, 482.28 and 483.28 ns both use 1 ns steps and three Newton
+iterations, but baseline uses Euler/order 1, while candidate and native use
+trapezoidal/order 2. Matching grids and iterations therefore does NOT establish
+matching integration sequences. The mosrect improvement is causally confounded:
+last-load history may prevent the retry and consequent permanent Euler fallback,
+in addition to any direct history correction. These effects have not been
+separated; the evidence does not prove a history-only explanation under a fixed
+integration method. Native CKTtrunc returns its
 2 ns growth-capped bound at 482.28 ns; spice-ts's raw charge bound is
 47.25426971576924 ns, also capped to 2 ns by the driver. LTE does not cut the step.
 
@@ -87,10 +99,11 @@ default-step parity. No fixture or tolerance is edited to make the candidate pas
 
 A diagnostic retaining only bulk-junction last-load history keeps the mosamp2
 test green but leaves mosrect failing at 0.01583222624022387 normalized.
-`bulk-only.json` records all original-input signal scores. This separates the
-Meyer gate-history defect from the earliest small junction-charge mutation:
+`bulk-only.json` records all original-input signal scores. This distinguishes the
+gate-history candidate from the earliest small junction-charge mutation:
 bulk-junction acceptance alone does not explain or fix the observed waveform loss.
-The last-loaded gate history is the causal candidate, but a safe correction
+Last-loaded gate history is a candidate cause, with the integration-method
+confound above unresolved. A safe correction
 needs additional predictor/bypass/history interaction work that preserves the
 mosamp2 guard. `rejected-candidate.patch` includes the complete candidate and
 six focused regression tests, and can be applied to baseline `43aefef1`.
@@ -114,10 +127,25 @@ Generate current-source waveforms and internal-state observations:
     pnpm exec tsx evidence/1002/mosamp.ts candidate
 
 Use a clean throwaway checkout for applying the rejected patch. Expect the
+following isolated replay to leave production files untouched (initialize the
+archive's repository so `git apply` does not discover the enclosing worktree):
+
+    mkdir -p evidence/1002/.run/candidate
+    git archive HEAD | tar -x -C evidence/1002/.run/candidate
+    ln -s "$PWD/node_modules" evidence/1002/.run/candidate/node_modules
+    ln -s "$PWD/packages/core/node_modules" evidence/1002/.run/candidate/packages/core/node_modules
+    cd evidence/1002/.run/candidate
+    git init -q
+    git apply ../../rejected-candidate.patch
+    spice-heavy pnpm exec tsx evidence/1002/run.ts after
+    cd ../../../..
+    cmp evidence/1002/.run/candidate/evidence/1002/after.json evidence/1002/after.json
+
+The archive must include this remediated `run.ts`. Expect the
 mosamp2 regression above to FAIL; the six new candidate tests pass. For the
 baseline, run with `before` before applying the patch. The observation
 wrappers only read state. They do not change options, solutions or charge laws.
-Trace receipts retain all timestep/order/LTE/iteration observations, plus stored
+Trace receipts retain all timestep/method/order/fallback/LTE/iteration observations, plus stored
 charges/currents/capacitances in the first 100 ps and 480-484 ns windows.
 
 Native instrumentation, starting with the official ngspice-47 source archive:
@@ -127,11 +155,20 @@ Native instrumentation, starting with the official ngspice-47 source archive:
     python3 evidence/1002/instrument-native.py evidence/1002/.run/ngspice-47
     cd evidence/1002/.run/ngspice-47
     ./configure --enable-xspice --enable-cider --disable-debug --without-x --with-readline=no CPPFLAGS=-I/opt/homebrew/opt/libomp/include LDFLAGS=-L/opt/homebrew/opt/libomp/lib
-    spice-heavy make -j2 LDFLAGS='-L/opt/homebrew/opt/libomp/lib -lomp'
+    spice-heavy make -j2 LIBS='-lm -lc++ /opt/homebrew/opt/libomp/lib/libomp.dylib'
     cd ../../../..
     SPICE_ASCIIRAWFILE=1 evidence/1002/.run/ngspice-47/src/ngspice -n -b -r evidence/1002/.run/native.raw evidence/996/repro/mosrect.cir > evidence/1002/.run/native.stdout.txt 2> evidence/1002/.run/native.stderr.txt
     python3 evidence/1002/summarize.py
     python3 evidence/1002/check.py
+
+Do not override `LDFLAGS` on the make command: XSPICE code-model modules need
+their generated bundle-link flags. The `LIBS` alternative above supplies libomp
+while preserving those per-module LDFLAGS; a global LDFLAGS override can fail
+with `_main` undefined on macOS. Include `-lc++` for the HICUM2 C++ objects:
+the narrower `LIBS='-lm /opt/homebrew/opt/libomp/lib/libomp.dylib'` failed to
+resolve `std::__1` symbols in this fresh build. The path is for Homebrew arm64
+libomp. The full command above was exercised successfully and reproduced the
+1008-point / 10-signal native golden with zero absolute difference.
 
 Build and lint passed locally. The candidate's full suite failed as recorded
 above; it was reverted before final publication. Baseline full-suite and exact-head CI receipts are in the

@@ -13,8 +13,10 @@ type Observed = {
 };
 const trace: object[] = [];
 const loaded = new Map<string, number[]>();
+let observeTrial: ((time: number) => void) | undefined;
 const stamp = MOS2.prototype.stampTransientCharge;
 MOS2.prototype.stampTransientCharge = function(ctx, integration) {
+  observeTrial?.(ctx.time);
   stamp.call(this, ctx, integration);
   const device = this as unknown as Observed;
   const c = new Float64Array(5), q = new Float64Array(5);
@@ -72,7 +74,30 @@ for (const id of ['k-10', 'k-15']) {
 }
 trace.length = 0;
 const sim = await createTransientSim(readFileSync('evidence/996/repro/mosrect.cir', 'utf8'));
-const observed = sim as unknown as { chargeTruncationTimestep(dt: number, integration: object, order?: number): number };
+type Integration = { method: string; dt: number };
+const observed = sim as unknown as {
+  integrationMethod: string;
+  acceptTransientStep(time: number, integration?: Integration): void;
+  chargeTruncationTimestep(dt: number, integration: object, order?: number): number;
+};
+const fallbacks: object[] = [];
+let previousMethod = observed.integrationMethod;
+let previousTrialTime: number | undefined;
+observeTrial = time => {
+  if (observed.integrationMethod !== previousMethod) {
+    fallbacks.push({ from: previousMethod, to: observed.integrationMethod,
+      lastAcceptedTime: sim.simTime, failedTrialTime: previousTrialTime, retryTime: time,
+      nrRetries: sim.convergence.transient.nrRetries });
+    previousMethod = observed.integrationMethod;
+  }
+  previousTrialTime = time;
+};
+const acceptStep = observed.acceptTransientStep.bind(sim);
+let acceptedIntegration: Integration | undefined;
+observed.acceptTransientStep = (time, integration) => {
+  acceptedIntegration = integration;
+  acceptStep(time, integration);
+};
 const truncation = observed.chargeTruncationTimestep.bind(sim);
 const lte: object[] = [];
 observed.chargeTruncationTimestep = (dt, integration, order) => {
@@ -85,10 +110,14 @@ while (!sim.isDone) {
   const prior = sim.convergence.transient.newtonIterations;
   const before = sim.simTime;
   sim.advance();
-  steps.push({ time: sim.simTime, dt: sim.simTime - before, iterations: sim.convergence.transient.newtonIterations - prior });
+  if (!acceptedIntegration) throw new Error('Missing accepted integration observation');
+  steps.push({ time: sim.simTime, dt: sim.simTime - before, iterations: sim.convergence.transient.newtonIterations - prior,
+    method: acceptedIntegration.method, order: acceptedIntegration.method === 'euler' ? 1 : 2,
+    configuredMethod: observed.integrationMethod });
 }
+observeTrial = undefined;
 const label = process.argv[2] ?? 'current';
-writeFileSync(`evidence/1002/${label}-trace.json.gz`, gzipSync(JSON.stringify({ charges: trace, steps, lte, convergence: sim.convergence }) + '\n'));
+writeFileSync(`evidence/1002/${label}-trace.json.gz`, gzipSync(JSON.stringify({ charges: trace, steps, lte, fallbacks, convergence: sim.convergence }) + '\n'));
 writeFileSync(`evidence/1002/${label}.json`, JSON.stringify(report, null, 2) + '\n');
 }
 main().catch(e => { console.error(e); process.exitCode = 1; });

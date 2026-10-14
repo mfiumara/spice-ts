@@ -206,6 +206,20 @@
       ]
     }
   },
+  "integrationConfound": {
+    "beforeFallbacks": [
+      {
+        "from": "trapezoidal",
+        "to": "euler",
+        "lastAcceptedTime": 4.372800000000037e-07,
+        "failedTrialTime": 4.3828000000000374e-07,
+        "retryTime": 4.3828000000000374e-07,
+        "nrRetries": 1
+      }
+    ],
+    "afterFallbacks": [],
+    "interpretation": "Direct history effects and retry-induced permanent Euler fallback are not separated."
+  },
   "nativeWindowSteps": [
     {
       "time": 4.802800000000045e-07,
@@ -240,44 +254,68 @@
     {
       "time": 4.802800000000045e-07,
       "dt": 9.999999999999692e-10,
-      "iterations": 3
+      "iterations": 3,
+      "method": "euler",
+      "order": 1,
+      "configuredMethod": "euler"
     },
     {
       "time": 4.812800000000045e-07,
       "dt": 9.999999999999692e-10,
-      "iterations": 3
+      "iterations": 3,
+      "method": "euler",
+      "order": 1,
+      "configuredMethod": "euler"
     },
     {
       "time": 4.822800000000044e-07,
       "dt": 9.999999999999692e-10,
-      "iterations": 3
+      "iterations": 3,
+      "method": "euler",
+      "order": 1,
+      "configuredMethod": "euler"
     },
     {
       "time": 4.832800000000044e-07,
       "dt": 9.999999999999692e-10,
-      "iterations": 3
+      "iterations": 3,
+      "method": "euler",
+      "order": 1,
+      "configuredMethod": "euler"
     }
   ],
   "afterWindowSteps": [
     {
       "time": 4.802800000000045e-07,
       "dt": 9.999999999999692e-10,
-      "iterations": 3
+      "iterations": 3,
+      "method": "trapezoidal",
+      "order": 2,
+      "configuredMethod": "trapezoidal"
     },
     {
       "time": 4.812800000000045e-07,
       "dt": 9.999999999999692e-10,
-      "iterations": 3
+      "iterations": 3,
+      "method": "trapezoidal",
+      "order": 2,
+      "configuredMethod": "trapezoidal"
     },
     {
       "time": 4.822800000000044e-07,
       "dt": 9.999999999999692e-10,
-      "iterations": 3
+      "iterations": 3,
+      "method": "trapezoidal",
+      "order": 2,
+      "configuredMethod": "trapezoidal"
     },
     {
       "time": 4.832800000000044e-07,
       "dt": 9.999999999999692e-10,
-      "iterations": 3
+      "iterations": 3,
+      "method": "trapezoidal",
+      "order": 2,
+      "configuredMethod": "trapezoidal"
     }
   ],
   "sourceArchiveSha256": "894e649651f1838a14095e5a5439e7d3aa63e87ede14d283173fda4fcdef675f"
