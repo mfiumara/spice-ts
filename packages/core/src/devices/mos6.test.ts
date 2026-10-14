@@ -173,12 +173,13 @@ M1 d g 0 b N6X L=2u W=10u
     sim.dispose();
   });
 
-  it('rejects unsupported level-6 series resistances instead of ignoring them', async () => {
-    await expect(simulate(`MOS6 RD
+  it('runs level-6 series resistances instead of rejecting them', async () => {
+    const result = await simulate(`MOS6 RD
 VD d 0 5
 M1 d d 0 0 NR L=1u W=5u
 .MODEL NR NMOS LEVEL=6 RD=10
 .OP
-.END`)).rejects.toThrow(/series resistance parameter RD/);
+.END`);
+    expect(result.dc!.current('VD')).toBeLessThan(0);
   });
 });
