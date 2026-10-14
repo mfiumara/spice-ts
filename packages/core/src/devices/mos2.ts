@@ -25,8 +25,8 @@ import { InvalidCircuitError } from '../errors.js';
  * point with the averaged DEVqmeyer capacitance plus the overlap capacitance,
  * and the bulk junction charges are the exact depletion charges qbs/qbd.
  *
- * Not ported: the drain/source series resistances (RD, RS, RSH with NRD/NRS),
- * which need internal nodes; non-zero values are rejected.
+ * Drain/source series resistances are expanded by Circuit into linear
+ * resistors ahead of the prime nodes, shared by DC, AC and transient loads.
  */
 
 // ngspice const.h
@@ -126,6 +126,29 @@ interface MOS2TemperatureState {
   f4s: number;
 }
 
+/**
+ * mos2set.c creates a prime node for nonzero RD/RS or RSH*squares.
+ * mos2temp.c then gives RD/RS precedence, including explicit zero (open).
+ * Return 0 for a short, Infinity for an open, otherwise ohms divided by M.
+ * NRD/NRS default to one square; zero squares suppress the sheet resistor.
+ */
+export function mos2SeriesResistances(
+  card: Readonly<Record<string, number | undefined>>,
+  instance: Readonly<Record<string, number | undefined>> | undefined,
+): { drain: number; source: number } {
+  const m = instance?.M ?? 1;
+  const sheet = card.RSH ?? 0;
+  const resistance = (direct: number | undefined, squares: number): number => {
+    if ((direct ?? 0) === 0 && (sheet === 0 || squares === 0)) return 0;
+    if (direct !== undefined) return direct !== 0 ? direct / m : Infinity;
+    return sheet * squares / m;
+  };
+  return {
+    drain: resistance(card.RD, instance?.NRD ?? 1),
+    source: resistance(card.RS, instance?.NRS ?? 1),
+  };
+}
+
 function given(params: Readonly<Record<string, number | undefined>>, ...names: string[]): number | undefined {
   for (const name of names) {
     const value = params[name];
@@ -143,14 +166,6 @@ export function resolveMOS2Model(
   params: Readonly<Record<string, number | undefined>>,
   polarity: number,
 ): MOS2ModelParams {
-  for (const parameter of ['RD', 'RS', 'RSH'] as const) {
-    const value = params[parameter];
-    if (value !== undefined && value !== 0) {
-      throw new InvalidCircuitError(
-        `MOSFET level 2 model '${name}': series resistance parameter ${parameter} is not supported`,
-      );
-    }
-  }
   const tnom = (params.TNOM ?? 27) + CONSTCTOK;
   const vtnom = tnom * CONSTKOVERQ;
   const egfet1 = 1.16 - (7.02e-4 * tnom * tnom) / (tnom + 1108);
