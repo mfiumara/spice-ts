@@ -11,6 +11,26 @@ The runner, hashes, first accepted native points, full TypeScript iteration
 trace and rejected-candidate receipt are in `benchmarks/bjt-centered-1037/`.
 This is not a fix or a complete vendor-deck waveform oracle.
 
+## MOS9 op-amp AC diagnosis (#1079)
+
+[bsim3-opamp-1079](bsim3-opamp-1079/README.md) diagnoses the unchanged
+corpus-m m-3 `Netlists/ACtests/bsim3/op-amp.cir` from Xyce_Regression
+`7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2`, GPL-3.0-or-later.
+Its pinned source and retained licence grant are in corpus-m/SOURCES.md;
+the fixture SHA-256 is `003a743c4b7e1194f03a7f182ad3708f59e83b6138d0dee76b3d07c94d7c1bb2`.
+The source URL is https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/ACtests/bsim3/op-amp.cir.
+The one-transistor `minimal.cir`, diagnostic script and tests are self-written
+MIT project work. Native comparison values are generated measurements.
+ngspice-47 source inspection uses commit
+`a80f6e3e95d51534905b1f23410a951802666656` from
+https://sourceforge.net/p/ngspice/ngspice/ci/a80f6e3e95d51534905b1f23410a951802666656/tree/.
+ngspice's Berkeley/BSIM copyright notices and COPYING apply to the inspected
+sources; no native source is copied here. The report links parser, MOS9 and
+BSIM3v32 source and records their hashes. Both engines select MOS9 for
+LEVEL=9, despite the upstream BSIM3 name. Same-bias controls are explicitly
+diagnostic only. Public before/after uses identical original fixture bytes,
+publishes all losses and keeps m-3 at 0.637; no corpus scores or tolerances change.
+
 ## corpus-m AC, diode and MOS device batch (#1045)
 
 24 unchanged decks from Xyce_Regression at
