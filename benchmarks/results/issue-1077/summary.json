@@ -1,0 +1,322 @@
+{
+  "ngspice": {
+    "inputSha256": "a6d0f4220bde7a548209e0e845e3c9bb731b2819f7f7e256d284e5a85e10fa7c",
+    "medians": {
+      "spice-tsColdProcessMs": 3759.5662920000022,
+      "ngspiceColdProcessMs": 421.84375000000074,
+      "spiceTsWarmApiMs": 3521.133833,
+      "ngspiceWarmControlMs": 383.08333300000186,
+      "spiceTsColdApiMs": 3682.844625,
+      "spiceTsColdParseMs": 6.308667,
+      "spiceTsWarmParseMs": 0.9663330000003043
+    },
+    "spiceTsTelemetry": {
+      "dc": {
+        "newtonIterations": 143,
+        "acceptedSolves": 12,
+        "rejectedSolves": 1,
+        "sourceStepAttempts": 0,
+        "sourceStepFailures": 0,
+        "gminStepAttempts": 12,
+        "gminStepFailures": 0,
+        "failure": null
+      },
+      "transient": {
+        "acceptedSteps": 2428,
+        "rejectedSteps": 766,
+        "newtonIterations": 82710,
+        "nrRetries": 756,
+        "lteRetries": 10,
+        "minimumAcceptedTimestep": 7.569444300496845e-12,
+        "failure": null
+      }
+    },
+    "nativeAccounting": {
+      "Transient iterations": 83599.0,
+      "Accepted timepoints": 2429.0,
+      "Rejected timepoints": 766.0,
+      "Transient timepoints": 3195.0,
+      "Transient analysis time": 0.402358,
+      "Transient load time": 0.30971,
+      "Transient factor time": 0.03647,
+      "Transient solve time": 0.025107,
+      "Transient trunc time": 0.004733
+    },
+    "warmWallRatio": 9.191561025182953,
+    "coldWallRatio": 8.912224708793234,
+    "spiceTsWarmWallUsPerTransientNr": 42.57204489179059,
+    "ngspiceAcctTransientCpuUsPerNr": 4.812952308041962,
+    "setupDiagnostic": {
+      "parseMs": 0.6135420000009617,
+      "compileDcSetupMs": 3.820624999998472,
+      "transientWithStepMapsMs": 3125.607749999999
+    },
+    "topSelfFrames": [
+      {
+        "function": "stampG",
+        "bundledLineZeroBased": 41307,
+        "bundledColumn": 18,
+        "microseconds": 572130,
+        "percent": 14.487358979754465
+      },
+      {
+        "function": "stampTransientCharge",
+        "bundledLineZeroBased": 12785,
+        "bundledColumn": 22,
+        "microseconds": 450210,
+        "percent": 11.400125646750315
+      },
+      {
+        "function": "getVoltage",
+        "bundledLineZeroBased": 41316,
+        "bundledColumn": 22,
+        "microseconds": 407707,
+        "percent": 10.32387336367391
+      },
+      {
+        "function": "(garbage collector)",
+        "bundledLineZeroBased": -1,
+        "bundledColumn": -1,
+        "microseconds": 371830,
+        "percent": 9.415403298974189
+      },
+      {
+        "function": "stamp",
+        "bundledLineZeroBased": 12598,
+        "bundledColumn": 7,
+        "microseconds": 327587,
+        "percent": 8.2950910913618
+      },
+      {
+        "function": "evaluateChannel",
+        "bundledLineZeroBased": 12181,
+        "bundledColumn": 17,
+        "microseconds": 275081,
+        "percent": 6.965544885794903
+      },
+      {
+        "function": "evaluateCharges",
+        "bundledLineZeroBased": 12887,
+        "bundledColumn": 17,
+        "microseconds": 204207,
+        "percent": 5.1708879366205585
+      },
+      {
+        "function": "buildCompanionSystem",
+        "bundledLineZeroBased": 42283,
+        "bundledColumn": 29,
+        "microseconds": 186290,
+        "percent": 4.71719732287847
+      },
+      {
+        "function": "stampStaticDevices",
+        "bundledLineZeroBased": 41612,
+        "bundledColumn": 27,
+        "microseconds": 127165,
+        "percent": 3.2200461515048615
+      },
+      {
+        "function": "refactorWithPivots",
+        "bundledLineZeroBased": 40727,
+        "bundledColumn": 20,
+        "microseconds": 125247,
+        "percent": 3.1714789473324374
+      },
+      {
+        "function": "stampB",
+        "bundledLineZeroBased": 41310,
+        "bundledColumn": 18,
+        "microseconds": 109790,
+        "percent": 2.780079951037776
+      },
+      {
+        "function": "meyerHalf",
+        "bundledLineZeroBased": 12752,
+        "bundledColumn": 11,
+        "microseconds": 100501,
+        "percent": 2.544865790684466
+      },
+      {
+        "function": "solveLinearized",
+        "bundledLineZeroBased": 42585,
+        "bundledColumn": 24,
+        "microseconds": 84251,
+        "percent": 2.133386610391508
+      },
+      {
+        "function": "gradingFactors",
+        "bundledLineZeroBased": 12904,
+        "bundledColumn": 16,
+        "microseconds": 71418,
+        "percent": 1.8084320060407675
+      },
+      {
+        "function": "factorize",
+        "bundledLineZeroBased": 40218,
+        "bundledColumn": 11,
+        "microseconds": 50541,
+        "percent": 1.2797888769960855
+      }
+    ]
+  },
+  "classic": {
+    "inputSha256": "d8b0e627f7742490ac6e841ffb176c9b02ffe6de1246bb57d1db793f58027469",
+    "medians": {
+      "spice-tsColdProcessMs": 3802.5707919999973,
+      "ngspiceColdProcessMs": 417.82758300000467,
+      "spiceTsWarmApiMs": 4024.590833,
+      "ngspiceWarmControlMs": 418.2278749999995,
+      "spiceTsColdApiMs": 3726.874875,
+      "spiceTsColdParseMs": 7.081582999999995,
+      "spiceTsWarmParseMs": 0.8993330000012065
+    },
+    "spiceTsTelemetry": {
+      "dc": {
+        "newtonIterations": 143,
+        "acceptedSolves": 12,
+        "rejectedSolves": 1,
+        "sourceStepAttempts": 0,
+        "sourceStepFailures": 0,
+        "gminStepAttempts": 12,
+        "gminStepFailures": 0,
+        "failure": null
+      },
+      "transient": {
+        "acceptedSteps": 2428,
+        "rejectedSteps": 766,
+        "newtonIterations": 82710,
+        "nrRetries": 756,
+        "lteRetries": 10,
+        "minimumAcceptedTimestep": 7.569444300496845e-12,
+        "failure": null
+      }
+    },
+    "nativeAccounting": {
+      "Transient iterations": 83599.0,
+      "Accepted timepoints": 2429.0,
+      "Rejected timepoints": 766.0,
+      "Transient timepoints": 3195.0,
+      "Transient analysis time": 0.369667,
+      "Transient load time": 0.284234,
+      "Transient factor time": 0.034484,
+      "Transient solve time": 0.023553,
+      "Transient trunc time": 0.004349
+    },
+    "warmWallRatio": 9.622961723916669,
+    "coldWallRatio": 9.100813222280625,
+    "spiceTsWarmWallUsPerTransientNr": 48.65905976302744,
+    "ngspiceAcctTransientCpuUsPerNr": 4.421906960609577,
+    "setupDiagnostic": {
+      "parseMs": 0.6014580000010028,
+      "compileDcSetupMs": 3.486041000000114,
+      "transientWithStepMapsMs": 3005.4691669999993
+    },
+    "topSelfFrames": [
+      {
+        "function": "stampG",
+        "bundledLineZeroBased": 41307,
+        "bundledColumn": 18,
+        "microseconds": 522627,
+        "percent": 12.98129657228018
+      },
+      {
+        "function": "stampTransientCharge",
+        "bundledLineZeroBased": 12785,
+        "bundledColumn": 22,
+        "microseconds": 485751,
+        "percent": 12.065350223546945
+      },
+      {
+        "function": "stamp",
+        "bundledLineZeroBased": 12598,
+        "bundledColumn": 7,
+        "microseconds": 483831,
+        "percent": 12.017660208643814
+      },
+      {
+        "function": "(garbage collector)",
+        "bundledLineZeroBased": -1,
+        "bundledColumn": -1,
+        "microseconds": 383164,
+        "percent": 9.517237953303527
+      },
+      {
+        "function": "getVoltage",
+        "bundledLineZeroBased": 41316,
+        "bundledColumn": 22,
+        "microseconds": 332746,
+        "percent": 8.264927968206656
+      },
+      {
+        "function": "evaluateChannel",
+        "bundledLineZeroBased": 12181,
+        "bundledColumn": 17,
+        "microseconds": 277043,
+        "percent": 6.881346249379036
+      },
+      {
+        "function": "evaluateCharges",
+        "bundledLineZeroBased": 12887,
+        "bundledColumn": 17,
+        "microseconds": 204545,
+        "percent": 5.080601092896175
+      },
+      {
+        "function": "stampB",
+        "bundledLineZeroBased": 41310,
+        "bundledColumn": 18,
+        "microseconds": 165913,
+        "percent": 4.12103825136612
+      },
+      {
+        "function": "buildCompanionSystem",
+        "bundledLineZeroBased": 42283,
+        "bundledColumn": 29,
+        "microseconds": 164380,
+        "percent": 4.082960755091903
+      },
+      {
+        "function": "gradingFactors",
+        "bundledLineZeroBased": 12904,
+        "bundledColumn": 16,
+        "microseconds": 127335,
+        "percent": 3.162816691505216
+      },
+      {
+        "function": "stampStaticDevices",
+        "bundledLineZeroBased": 41612,
+        "bundledColumn": 27,
+        "microseconds": 107541,
+        "percent": 2.6711624441132638
+      },
+      {
+        "function": "solveLinearized",
+        "bundledLineZeroBased": 42585,
+        "bundledColumn": 24,
+        "microseconds": 105455,
+        "percent": 2.6193492300049677
+      },
+      {
+        "function": "refactorWithPivots",
+        "bundledLineZeroBased": 40727,
+        "bundledColumn": 20,
+        "microseconds": 104043,
+        "percent": 2.5842771982116246
+      },
+      {
+        "function": "terminalVoltages",
+        "bundledLineZeroBased": 12558,
+        "bundledColumn": 18,
+        "microseconds": 83250,
+        "percent": 2.0678092399403876
+      },
+      {
+        "function": "voltage7",
+        "bundledLineZeroBased": 12888,
+        "bundledColumn": 21,
+        "microseconds": 66125,
+        "percent": 1.6424490809736711
+      }
+    ]
+  }
+}
