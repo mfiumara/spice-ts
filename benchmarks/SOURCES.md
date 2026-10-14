@@ -1,5 +1,16 @@
 # Benchmark sources
 
+## BJT post-assembly centered Newton diagnosis (#1037)
+
+The rest reduction and nanosecond-grid control in
+`packages/core/src/analysis/transient-centered-1037.fixtures.ts` are original
+MIT-licensed spice-ts work, rounded-parameter extensions of the self-written
+`transient-bjt-rest-1037.test.ts` reduction. No vendor material is copied.
+Both engines receive identical bytes, including observational `.save` cards.
+The runner, hashes, first accepted native points, full TypeScript iteration
+trace and rejected-candidate receipt are in `benchmarks/bjt-centered-1037/`.
+This is not a fix or a complete vendor-deck waveform oracle.
+
 ## corpus-m AC, diode and MOS device batch (#1045)
 
 24 unchanged decks from Xyce_Regression at
