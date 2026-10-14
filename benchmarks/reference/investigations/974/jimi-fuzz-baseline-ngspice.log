@@ -1,0 +1,43 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: * jimi hendrix fuzz face - by j. dunlop
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 14  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+10                                           0
+9                                            0
+3                                            0
+6                                     0.816708
+5                                    0.0408354
+1                                            9
+8                                       1.5863
+4                                      8.74144
+11                                    0.906263
+7                                     0.722975
+2                                     0.722975
+v_v1#branch                       -0.000955929
+v_v2#branch                                  0
+
+ Reference value :  8.26955e-01 Reference value :  1.63632e+00 Reference value :  2.45087e+00 Reference value :  3.26434e+00 Reference value :  4.09588e+00 Reference value :  4.91727e+00
+No. of Data Rows : 243504
+
+Total analysis time (seconds) = 1.53361
+
+Total elapsed time (seconds) = 1.537 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 16316.703 MB.
+Maximum ngspice program size =   10.172 MB.
+Current ngspice program size =   10.172 MB.
+
