@@ -106,6 +106,14 @@ is not a claim of initialization support in the integrated device.
 
 ## Losses and unresolved integration work
 
+The following stage-3 status receipt is historical and superseded by
+`benchmarks/bsim4-validation-3/after.json` and `TABLES.md`. Current-main DC TEMP
+support plus the static port run all six unchanged BSIM482 DC commands, including
+both temperature sweeps. The validation publishes every native solution signal
+at all 1236 matched points. Binning remains unsupported (now a typed
+UnsupportedModelParameterError), as do the 4.3-family AC and G transient decks.
+Do not use the old four-loss statement below as the current result.
+
 The existing `baseline.ts` status probe was run unchanged with `spice-heavy`
 against the four unchanged original corpus-F/G inputs; its new output is
 `integration-after.json`. Historical `__fixtures__/bsim4/baseline.json` records

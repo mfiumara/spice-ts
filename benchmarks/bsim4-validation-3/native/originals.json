@@ -1,0 +1,39 @@
+{
+  "oracleRegeneration": "exact numerical and deck hash match",
+  "originals": [
+    {
+      "path": "benchmarks/corpus/corpus-f/fixtures/examples/mos/nmos_pmos_BSIM482.sp",
+      "sha256": "817b8ed1a1879fce346a1750268fbca0005e759a68fa1d41204fcbf3c3f38ecb",
+      "command": "ngspice -n -b input.cir",
+      "exitCode": 0,
+      "diagnostics": [],
+      "log": "native/0/original.log"
+    },
+    {
+      "path": "benchmarks/corpus/corpus-f/fixtures/examples/various/gain_stage.cir",
+      "sha256": "6b46e806f7dc963f45a87ab33e1ce0a667624f362f0e3166fea6425a3bc81d79",
+      "command": "ngspice -n -b input.cir",
+      "exitCode": 0,
+      "diagnostics": [],
+      "log": "native/1/original.log"
+    },
+    {
+      "path": "benchmarks/corpus/corpus-f/fixtures/tests/regression/model/binning-1.cir",
+      "sha256": "a255d905b57819f5a8f500362322bbb8039a742a8b4ed527eb4b07c256307e55",
+      "command": "ngspice -n -b input.cir",
+      "exitCode": 0,
+      "diagnostics": [],
+      "log": "native/2/original.log"
+    },
+    {
+      "path": "benchmarks/corpus/corpus-g/fixtures/SENS/bsim4_issue694_FD.cir",
+      "sha256": "389855a2c201ca9c67578051bb074cabc015c4b3c2942ac9ee149f7934156bbb",
+      "command": "ngspice -n -b input.cir",
+      "exitCode": 0,
+      "diagnostics": [
+        "Error: no function as { with that arity."
+      ],
+      "log": "native/3/original.log"
+    }
+  ]
+}

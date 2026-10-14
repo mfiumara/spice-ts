@@ -1,0 +1,53 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_4b6eacaf/packages/core
+
+ ❯ src/devices/bsim4/parity.test.ts (27 tests | 1 failed) 827ms
+     ✓ bsim482-nmos: id, all 108 native bias points  440ms
+     ✓ bsim482-nmos: gm, all 108 native bias points 11ms
+     ✓ bsim482-nmos: gds, all 108 native bias points 24ms
+     ✓ bsim482-nmos: gmbs, all 108 native bias points 14ms
+     ✓ bsim482-pmos: id, all 108 native bias points 58ms
+     ✓ bsim482-pmos: gm, all 108 native bias points 9ms
+     ✓ bsim482-pmos: gds, all 108 native bias points 9ms
+     ✓ bsim482-pmos: gmbs, all 108 native bias points 8ms
+     ✓ binning-vth07: id, all 108 native bias points 15ms
+     ✓ binning-vth07: gm, all 108 native bias points 40ms
+     ✓ binning-vth07: gds, all 108 native bias points 18ms
+     ✓ binning-vth07: gmbs, all 108 native bias points 5ms
+     ✓ binning-vth09: id, all 108 native bias points 23ms
+     ✓ binning-vth09: gm, all 108 native bias points 10ms
+     ✓ binning-vth09: gds, all 108 native bias points 36ms
+     ✓ binning-vth09: gmbs, all 108 native bias points 22ms
+     ✓ rejects the retained unported 4.3 family instead of comparing wrong equations 1ms
+     ✓ minimal-nmos: id, all 108 native bias points 4ms
+     ✓ minimal-nmos: gm, all 108 native bias points 6ms
+     ✓ minimal-nmos: gds, all 108 native bias points 6ms
+     ✓ minimal-nmos: gmbs, all 108 native bias points 5ms
+     ✓ minimal-pmos: id, all 108 native bias points 7ms
+     ✓ minimal-pmos: gm, all 108 native bias points 6ms
+     ✓ minimal-pmos: gds, all 108 native bias points 5ms
+     ✓ minimal-pmos: gmbs, all 108 native bias points 11ms
+     × reports original BSIM4 model-bin selection as typed unsupported, not an unknown model 28ms
+     ✓ keeps truly undefined model names as invalid circuits 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/devices/bsim4/parity.test.ts > BSIM4 ngspice-47 static bias-grid parity > reports original BSIM4 model-bin selection as typed unsupported, not an unknown model
+AssertionError: expected InvalidCircuitError: MOSFET 'mx2' referen… to be an instance of UnsupportedModelParameterError
+ ❯ src/devices/bsim4/parity.test.ts:41:34
+     39|   it('reports original BSIM4 model-bin selection as typed unsupported,…
+     40|     const input = readFileSync(new URL('../../../../../benchmarks/corp…
+     41|     await expect(simulate(input)).rejects.toBeInstanceOf(UnsupportedMo…
+       |                                  ^
+     42|   });
+     43|   it('keeps truly undefined model names as invalid circuits', async ()…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 26 passed (27)
+   Start at  04:16:52
+   Duration  4.47s (transform 3.07s, setup 0ms, import 3.41s, tests 827ms, environment 0ms)
+
+JUNIT report written to /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_4b6eacaf/packages/core/test-results.xml

@@ -42,6 +42,7 @@ import {
 } from './parser/behavioral-expression.js';
 import { BSIM3v3 } from './devices/bsim3v3.js';
 import { BSIM4 } from './devices/bsim4/device.js';
+import { UnsupportedModel as UnsupportedBsim4Model } from './devices/bsim4/setup.js';
 import { bsim3SeriesResistances, isSupportedBsim3Version, SUPPORTED_BSIM3_VERSIONS } from './devices/bsim3v3-params.js';
 import { VCCS } from './devices/vccs.js';
 import { VCVS } from './devices/vcvs.js';
@@ -3257,6 +3258,20 @@ export class Circuit {
   private requireModel(kind: string, desc: DeviceDescriptor): ModelParams {
     const model = this._models.get(desc.modelName ?? '');
     if (!model) {
+      // A declared BSIM4 bin family is not a typo or an implicit default model.
+      // Fail closed until native L/W bin selection is implemented.
+      if (desc.type === 'M' && desc.modelName) {
+        const prefix = `${desc.modelName.toLowerCase()}.`;
+        for (const candidate of this._models.values()) {
+          const suffix = candidate.name.toLowerCase().slice(prefix.length);
+          if (candidate.name.toLowerCase().startsWith(prefix) && /^\d+$/.test(suffix)
+            && (candidate.type === 'NMOS' || candidate.type === 'PMOS')
+            && (candidate.params.LEVEL === 14 || candidate.params.LEVEL === 54)) {
+            throw new UnsupportedBsim4Model(desc.name, 'model-binning',
+              'BSIM4 L/W model-bin selection is not implemented', { model: desc.modelName });
+          }
+        }
+      }
       throw new InvalidCircuitError(`${kind} '${desc.name}' references unknown model '${desc.modelName}'`);
     }
     return model;
