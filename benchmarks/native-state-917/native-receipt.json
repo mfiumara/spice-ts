@@ -1,0 +1,58 @@
+[
+  {
+    "label": "base",
+    "sha256": "d9310705e01c9ead00f033a7418e3c9cc5e5badc4699081fa0841f89031373a5",
+    "exitCode": 0,
+    "controlExitCode": 0,
+    "observationNeutral": true,
+    "observations": 9757,
+    "summary": [
+      "No. of Data Rows : 1",
+      "Note: Starting dynamic gmin stepping",
+      "Warning: Dynamic gmin stepping failed",
+      "Note: Starting true gmin stepping",
+      "Warning: True gmin stepping failed",
+      "Note: Starting source stepping",
+      "Note: Source stepping completed"
+    ]
+  },
+  {
+    "label": "variant",
+    "sha256": "fb1a6f8645a33268ab5a614a10b42d358b99f500d6d38b9add4c3cfd11d71562",
+    "exitCode": 1,
+    "controlExitCode": 1,
+    "observationNeutral": true,
+    "observations": 18292,
+    "summary": [
+      "Note: Starting dynamic gmin stepping",
+      "Warning: Dynamic gmin stepping failed",
+      "Note: Starting true gmin stepping",
+      "Warning: True gmin stepping failed",
+      "Note: Starting source stepping",
+      "Warning: source stepping failed",
+      "Note: Transient op started",
+      "Error: Transient op failed, timestep too small",
+      "Error: The operating point could not be simulated successfully.",
+      "doAnalyses: OP:  Timestep too small; trouble with xq190:dmos-instance m.xq190.m1"
+    ]
+  },
+  {
+    "label": "island",
+    "sha256": "ec0a52dd44741566e623407b4d0424d4af2f37c8d56c3ff70ad5961f81983333",
+    "exitCode": 0,
+    "controlExitCode": 0,
+    "observationNeutral": true,
+    "observations": 873,
+    "summary": [
+      "No. of Data Rows : 1",
+      "Note: Starting dynamic gmin stepping",
+      "Warning: Dynamic gmin stepping failed",
+      "Note: Starting true gmin stepping",
+      "Warning: True gmin stepping failed",
+      "Note: Starting source stepping",
+      "Warning: source stepping failed",
+      "Note: Transient op started",
+      "Note: Transient op finished successfully"
+    ]
+  }
+]

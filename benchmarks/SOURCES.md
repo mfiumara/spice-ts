@@ -1,5 +1,20 @@
 # Benchmark sources
 
+## Diode hidden state and source-step factorization (#917)
+
+[native-state-917](native-state-917/README.md) contains an original MIT
+series-diode/capacitor reduction and observation/replay scripts. Rounded
+parameters are self-written, not copied vendor model text. The unchanged
+ticket-795 base/variant and seven includes remain fetch-only under the
+existing policy below. Their historical hashes are checked before and after
+execution; no vendor netlist/model expressions or native source are shipped.
+The referenced native source is ngspice-47 revision
+`a80f6e3e95d51534905b1f23410a951802666656`, modified BSD, at
+https://git.code.sf.net/p/ngspice/ngspice. The script adds original numeric
+observation statements to a local ignored checkout. Receipt data retains the
+diode's numeric state and three rows, not complete expanded vendor material.
+Both vendor losses remain; before/after max/RMS are null, not zero.
+
 ## Floating diode OP recovery experiments (#917)
 
 [floating-island-recovery-917](floating-island-recovery-917/README.md) reuses the
@@ -23,6 +38,7 @@ are in its receipt. The instance-local prototype is not a production fix.
 The ngspice-47 load-order comparison uses the read-only upstream reference
 https://github.com/imr/ngspice/blob/ngspice-47/src/spicelib/devices/bjt/bjtload.c
 (source SHA-256 and line references in the experiment README).
+
 
 ## BJT post-assembly centered Newton diagnosis (#1037)
 
@@ -54,6 +70,7 @@ BSIM3v32 source and records their hashes. Both engines select MOS9 for
 LEVEL=9, despite the upstream BSIM3 name. Same-bias controls are explicitly
 diagnostic only. Public before/after uses identical original fixture bytes,
 publishes all losses and keeps m-3 at 0.637; no corpus scores or tolerances change.
+
 
 ## corpus-m AC, diode and MOS device batch (#1045)
 

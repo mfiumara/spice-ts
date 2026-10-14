@@ -1,0 +1,32 @@
+{
+  "scope": "Evidence-only, not a production #917 fix",
+  "redCommit": "85663099",
+  "productionDcSha256": "b47918b18b62b62e2c65847f5ecdc8925d21b711fcd12f119f35fa1f80a950fe",
+  "commands": [
+    {"command": "pnpm install --frozen-lockfile", "exitCode": 0},
+    {"command": "pnpm -C packages/core build", "exitCode": 0},
+    {"command": "pnpm exec tsx benchmarks/corpus/ngspice-bugs/fetch.ts 795", "exitCode": 0},
+    {"command": "tar -xf benchmarks/corpus/ngspice-bugs/fetched/795/project.7z -C benchmarks/corpus/ngspice-bugs/fetched/795", "exitCode": 0},
+    {"command": "sh benchmarks/native-state-917/build-native.sh", "exitCode": 0},
+    {"command": "spice-heavy python3 benchmarks/native-state-917/native.py", "exitCode": 0, "nativeChildExitCodes": [0, 1, 0], "controlChildExitCodes": [0, 1, 0]},
+    {"command": "python3 benchmarks/native-state-917/run.py", "exitCode": 0, "probeCount": 9},
+    {"command": "pnpm exec tsx benchmarks/native-state-917/replay.mts", "exitCode": 0, "outcome": "TS rejects native floating-island block"},
+    {"command": "python3 benchmarks/native-state-917/check.py", "exitCode": 0},
+    {"command": "EXPECT_NATIVE_DIODE_STATE=1 pnpm -C packages/core exec vitest run src/analysis/dc-native-state-917.test.ts", "exitCode": 1, "passed": 1, "failed": 1},
+    {"command": "pnpm -C packages/core exec vitest run src/analysis/dc-native-state-917.test.ts src/analysis/dc-floating-diode-917.test.ts src/analysis/dc-floating-recovery-917.test.ts src/solver/gilbert-peierls.test.ts", "exitCode": 0, "passed": 50, "expectedFailure": 2, "total": 52},
+    {"command": "pnpm build", "exitCode": 0},
+    {"command": "pnpm lint", "exitCode": 0}
+  ],
+  "fullSuite": {
+    "preMainIntegration": {"command": "spice-heavy pnpm test", "exitCode": 0},
+    "postMainIntegration": {
+      "head": "e3643c955e244f564dc67350b6137356ba926493",
+      "command": "spice-heavy pnpm test", "exitCode": 1,
+      "failed": 6, "passed": 4330, "expectedFailure": 5, "skipped": 8, "total": 4349,
+      "reason": "All six failures are wall-clock test timeouts under shared-host load; no assertion/convergence failure. Required exact-head GitHub CI is the authoritative full gate."
+    }
+  },
+  "exactHeadCi": "Recorded on PR/card after publication; not inferred here",
+  "hotspots": ["benchmarks/SOURCES.md"],
+  "limitations": ["Diode-local and three-row trace, not every vendor model state", "No matched TS timepoint exists at native first failed attempt3", "Neither vendor base OP parity nor variant structured error parity is fixed"]
+}
