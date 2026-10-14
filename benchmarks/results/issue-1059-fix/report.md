@@ -149,6 +149,7 @@ To regenerate the native trace, check out the pinned ngspice-47 source in
 scratch, apply ngspice-trace.patch, run autogen/configure/make headlessly:
 
 ```
+git apply --unidiff-zero <worktree>/benchmarks/results/issue-1059-fix/ngspice-trace.patch
 ./autogen.sh
 ./configure --disable-debug --without-x --disable-cider --enable-xspice --disable-openmp --with-readline=no YACC='/opt/homebrew/opt/bison/bin/bison -y'
 make -j2 YACC='/opt/homebrew/opt/bison/bin/bison -y'
