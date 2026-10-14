@@ -1,0 +1,68 @@
+{
+  "fixtures": 100,
+  "counts": {
+    "before": {
+      "matched": 44,
+      "notMatched": 56,
+      "paired": 71,
+      "unmatched": 27,
+      "engineStatus": {
+        "success": 68,
+        "unsupported": 31,
+        "failed": 1
+      },
+      "referenceStatus": {
+        "success": 52,
+        "failed": 48
+      }
+    },
+    "after": {
+      "matched": 45,
+      "notMatched": 55,
+      "paired": 73,
+      "unmatched": 32,
+      "engineStatus": {
+        "success": 68,
+        "unsupported": 31,
+        "failed": 1
+      },
+      "referenceStatus": {
+        "success": 52,
+        "failed": 48
+      }
+    }
+  },
+  "previouslyPairedComparisons": 71,
+  "previouslyPairedNumericDifferences": [],
+  "matchedToNotMatched": [],
+  "notMatchedToMatched": [
+    "corpus-e/bjt-diffpair-current-source"
+  ],
+  "newlyExposedUnpairable": [
+    {
+      "key": "corpus-e/diode-temperature-sweep",
+      "referenceStatus": "failed",
+      "before": 2,
+      "after": 4
+    },
+    {
+      "key": "corpus-e/mos1-nand-transient",
+      "referenceStatus": "failed",
+      "before": 2,
+      "after": 6
+    },
+    {
+      "key": "corpus-e/dual-lc-uic-rejection",
+      "referenceStatus": "failed",
+      "before": 1,
+      "after": 2
+    }
+  ],
+  "rawSha256": "9ccd5d221830be64b2db2102f9f28e05b7f9269b65df52eff844625c8f4adace",
+  "canonicalCheck": {
+    "beforeExit": 1,
+    "afterExit": 1,
+    "reason": "inherited stale provenance pins; no canonical aggregate refresh"
+  },
+  "method": "Diagnostic only. Manifest input hashes validated, historical report pin rejection bypassed only in ignored snapshot. Baseline last-per-type view reconstructed from the same retained native results. Uniform existing normalizer and threshold unchanged."
+}

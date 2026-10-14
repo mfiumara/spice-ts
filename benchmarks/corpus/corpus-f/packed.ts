@@ -161,9 +161,13 @@ export function compareInBatches(spiceTs: PackedExecution, ngspice: PackedExecut
     let merged: ComparisonReceipt | undefined;
     for (let start = 0; start < Math.max(1, names.length); start += perBatch) {
       const batch = new Set(names.slice(start, start + perBatch));
+      const reference = pair.right ? unpackAnalysis(pair.right, batch) : undefined;
+      // Occurrence was resolved against the full raw list, not this singleton
+      // subset. Carry that resolved identity through the inner comparison.
+      if (reference && pair.left?.plotId?.startsWith('dot:')) reference.plotId = pair.left.plotId;
       const [receipt] = compareExecutions(
         { status: 'success', convergence: 'converged', analyses: pair.left ? [unpackAnalysis(pair.left, batch)] : [] },
-        { status: 'success', convergence: 'converged', analyses: pair.right ? [unpackAnalysis(pair.right, batch)] : [] },
+        { status: 'success', convergence: 'converged', analyses: reference ? [reference] : [] },
       );
       if (!receipt) continue;
       merged = merged === undefined ? receipt : {
