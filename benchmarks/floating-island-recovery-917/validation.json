@@ -1,0 +1,48 @@
+{
+  "productionBaseline": "fd22b16a9606e2ab1f6fc3af05bf00fa4164118f",
+  "status": "unresolved; evidence only",
+  "commands": [
+    {
+      "command": "pnpm install --frozen-lockfile",
+      "exitCode": 0
+    },
+    {
+      "command": "pnpm build",
+      "exitCode": 0
+    },
+    {
+      "command": "pnpm lint",
+      "exitCode": 0
+    },
+    {
+      "command": "spice-heavy pnpm test",
+      "exitCode": 0
+    },
+    {
+      "command": "targeted vitest: diode RED, floating passive recovery, gmin baseline, ECL OP selection",
+      "exitCode": 0,
+      "passed": 23,
+      "expectedFailures": 1
+    },
+    {
+      "command": "python3 benchmarks/floating-island-recovery-917/check.py",
+      "exitCode": 0
+    }
+  ],
+  "experimentRunnerExitCodes": {
+    "baseline": 0,
+    "source": 0,
+    "optran": 0
+  },
+  "unmaskedRegressionExitCodes": {
+    "baseline": 1,
+    "source": 1,
+    "optran": 0
+  },
+  "acceptance": {
+    "baseParity": false,
+    "variantConvergenceSemantics": false,
+    "productionFix": false,
+    "vendorMetrics": null
+  }
+}

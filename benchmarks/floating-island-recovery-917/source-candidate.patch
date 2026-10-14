@@ -1,0 +1,105 @@
+diff --git a/packages/core/src/analysis/dc.ts b/packages/core/src/analysis/dc.ts
+index ad191221..4fc79069 100644
+--- a/packages/core/src/analysis/dc.ts
++++ b/packages/core/src/analysis/dc.ts
+@@ -55,7 +55,7 @@ export function solveDCOperatingPoint(
+   // the first successful homotopy reaches, so ramping sources up front picks
+   // a different operating point than ngspice (#622).
+   const hasNonlinear = devices.some(d => d.isNonlinear);
+-  const initialGuess = new Float64Array(assembler.solution);
++
+   const solveOperatingPoint = (): void => {
+     // Models opt in once they implement the device-local INITJCT load.
+     // Do not add a second convergence/stopping phase to unrelated models.
+@@ -78,7 +78,7 @@ export function solveDCOperatingPoint(
+         !hasNonlinear
+         || !(
+           gminSteppingHomotopy(assembler, devices, options, nodeNames, convergence, guard)
+-          || sourceStepping(assembler, devices, options, nodeNames, convergence, initialGuess, guard)
++          || sourceStepping(assembler, devices, options, nodeNames, convergence, guard)
+         )
+       ) {
+         if (err instanceof ConvergenceError) {
+@@ -245,8 +245,6 @@ export function gminSteppingHomotopy(
+     || trueGminStepping(assembler, devices, options, nodeNames, convergence, guard);
+ }
+ 
+-/** Source scales of the source-stepping fallback, ending at full sources. */
+-const SOURCE_STEPS = [0.01, 0.02, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0];
+ 
+ /**
+  * Source stepping, the last CKTop fallback (ngspice runs it only after both
+@@ -261,28 +259,61 @@ function sourceStepping(
+   options: ResolvedOptions,
+   nodeNames: string[],
+   convergence: ConvergenceTelemetry,
+-  initialGuess: Float64Array,
++
+   guard?: ProtocolExecutionGuard,
+ ): boolean {
+-  assembler.solution.set(initialGuess);
++  assembler.solution.fill(0);
++  for (const device of devices) {
++    device.resetTransient?.();
++    device.beginOperatingPoint?.();
++  }
+   if (assembler.operatingPointPhase) assembler.operatingPointPhase = 'junction';
++  const solveAt = (diagonal = options.gmin): number => {
++    convergence.dc.sourceStepAttempts++;
++    try {
++      return newtonRaphson(assembler, devices, { ...options, gmin: diagonal }, HOMOTOPY_STEP_MAX_ITER, nodeNames, convergence.dc, guard);
++    } catch (error) {
++      if (error instanceof ProtocolExecutionError) throw error;
++      convergence.dc.sourceStepFailures++;
++      return -1;
++    }
++  };
+   try {
+-    for (const scale of SOURCE_STEPS) {
+-      convergence.dc.sourceStepAttempts++;
+-      const lastGood = new Float64Array(assembler.solution);
+-      assembler.sourceScale = scale;
+-      try {
+-        newtonRaphson(assembler, devices, options, options.maxIterations, nodeNames, convergence.dc, guard);
+-      } catch (error) {
+-        if (error instanceof ProtocolExecutionError) throw error;
+-        convergence.dc.sourceStepFailures++;
++    assembler.sourceScale = 0;
++    let solved = solveAt() >= 0;
++    if (!solved) {
++      let diagonal = (options.gmin > 0 ? options.gmin : options.deviceGmin) * 1e10;
++      for (let step = 0; step <= 10; step++, diagonal /= 10) {
++        solved = solveAt(diagonal) >= 0;
++        if (!solved) break;
++      }
++    }
++    if (!solved) return false;
++    const lastGood = new Float64Array(assembler.solution);
++    let reached = 0;
++    let raise = 0.001;
++    assembler.sourceScale = raise;
++    while (raise >= 1e-7 && reached < 1) {
++      const iterations = solveAt();
++      if (assembler.operatingPointPhase) assembler.operatingPointPhase = 'floating';
++      if (iterations >= 0) {
++        reached = assembler.sourceScale;
++        lastGood.set(assembler.solution);
++        assembler.sourceScale = reached + raise;
++        if (iterations <= DC_TRCV_MAX_ITER / 4) raise *= 1.5;
++        if (iterations > 3 * DC_TRCV_MAX_ITER / 4) raise *= 0.5;
++      } else {
++        if (assembler.sourceScale - reached < 1e-8) break;
++        raise = Math.min(raise / 10, 0.01);
++        assembler.sourceScale = reached;
+         assembler.solution.set(lastGood);
+       }
++      assembler.sourceScale = Math.min(assembler.sourceScale, 1);
+     }
++    return reached === 1;
+   } finally {
+     assembler.sourceScale = 1;
+   }
+-  return finalGminSolve(assembler, devices, options, nodeNames, convergence, guard);
+ }
+ 
+ /** ngspice defaults: `itl2` (CKTdcTrcvMaxIter), `gminfactor` (CKTgminFactor). */
