@@ -105,7 +105,9 @@ Observed exits: frozen install 0; fetch 1 solely for ticket 725 log drift;
 preparation 0 with all four reconstructed pins matching; all three 14-variant
 runs 0 (individual failures are data); build 0; lint 0; RED targeted regression
 1 (7 failures, 6 passes); GREEN targeted regression 0 (13 passes); combined
-AC-adjacent/noise/PZ regression 0 (90 passes).
+AC-adjacent/noise/PZ regression 0 (90 passes); receipt checks 0 (2 passes);
+`spice-heavy pnpm test` 0 (guarded full monorepo suite, about 431 seconds).
+The final standalone benchmark-test stage reports 177 passes, 4 skips, 0 failures.
 
 Changed non-input log on 725: actual
 `bfc5ea49f206bda2371c50aa21cdc7af986dcce6f02f20d7dbddd8d958d4b7e4`, recorded
