@@ -69,6 +69,45 @@ test('SINE sources become native SIN without dropping DC, AC or waveform values'
   assert.ok(translated.netlist.includes('V_V1 1 0 dc 9.0'));
 });
 
+test('SINE after DC/AC expressions is normalized for V and I without rewriting values', () => {
+  for (const kind of ['V', 'I']) {
+    for (const prefix of ['DC {2.5}', 'AC {1 + 2} {45}', 'DC {2.5} AC {1} {0}', "DC '2.5' AC \"1\"", 'DC (2.5) AC (1 + (2))', 'DC {sine(2) + {3}}']) {
+      const source = `${kind}1 in 0 ${prefix} SiNe (1 .3 440 0 0)`;
+      const f = { ...fixture('tran'), netlist: fixture('tran').netlist.replace('V1 in 0 DC 1 AC 1', source) };
+      assert.ok(translateForXyce(f).netlist.includes(source.replace('SiNe', 'SIN')), source);
+    }
+  }
+});
+
+test('untranslatable top-level SINE fails closed before execution', async () => {
+  for (const body of ['unknown SINE(1 .3 440)', 'DC {2.5 SINE(1 .3 440)', 'DC 2.5 SINE 1 .3 440']) {
+    const result = await runXyce({ ...fixture('tran'), netlist: fixture('tran').netlist.replace('DC 1 AC 1', body) }, { executable: '/nonexistent/xyce-adapter' });
+    assert.equal(result.status, 'unsupported', JSON.stringify(result));
+    assert.equal(result.failureKind, 'translation');
+    assert.deepEqual(result.command, []);
+  }
+});
+
+test('live Xyce SINE after brace DC/AC agrees with ngspice extrema', { skip: !process.env.XYCE_BIN }, async () => {
+  for (const kind of ['V', 'I']) {
+    for (const prefix of ['DC {2.5}', 'AC {1} {45}', 'DC {2.5} AC {1} {45}']) {
+      const netlist = `expression source probe\n${kind}1 in 0 ${prefix} SINE(1 .3 440 0 0)\nR1 in 0 1\n.tran 10u 3m\n.end\n`;
+      const ng = runNgspiceReference(netlist, 'tran');
+      const xy = await runXyce({ name: 'expression-source', analysis: 'tran', netlist, signals: ['v(in)'] });
+      assert.equal(ng.status, 'success', JSON.stringify(ng));
+      assert.equal(xy.status, 'success', JSON.stringify(xy));
+      if (ng.status !== 'success' || xy.status !== 'success') continue;
+      const extrema = (run: typeof ng) => {
+        const values = run.series.signals['v(in)'].map(value => value.re);
+        return [Math.min(...values), Math.max(...values)];
+      };
+      const expected = extrema(ng), actual = extrema(xy);
+      console.log(JSON.stringify({ kind, prefix, ngspice: expected, xyce: actual }));
+      actual.forEach((value, i) => assert.ok(Math.abs(value - expected[i]) < .01));
+    }
+  }
+});
+
 test('SIN, DC-only sources, identifiers, expressions and comments remain untouched', () => {
   const sources = ['V1 sine 0 DC 2', 'Isine in 0 SIN(1 2 3)', 'V1 in 0 DC 2 ; sine(9 9 9)', 'V1 in 0 DC {sine(2)}'];
   for (const source of sources) {
