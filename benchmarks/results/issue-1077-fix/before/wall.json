@@ -1,0 +1,302 @@
+[
+  {
+    "fixture": "ngspice",
+    "engine": "spice-ts",
+    "run": 0,
+    "wallMs": 4667.3458329896675,
+    "command": [
+      "node",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/results/issue-1077-fix/worker.mjs",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/corpus/ngspice/fixtures/tests/general/mosamp.cir",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/results/issue-1077-fix/before/ngspice-spice-ts-0.json"
+    ],
+    "core": "/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T//t_3aca3607-before-dist/index.js",
+    "exitCode": 0
+  },
+  {
+    "fixture": "ngspice",
+    "engine": "ngspice",
+    "run": 0,
+    "wallMs": 432.6693330076523,
+    "command": [
+      "ngspice",
+      "-n",
+      "-b",
+      "-r",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/results/issue-1077-fix/before/ngspice-ngspice-0.raw",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/corpus/ngspice/fixtures/tests/general/mosamp.cir"
+    ],
+    "core": "/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T//t_3aca3607-before-dist/index.js",
+    "exitCode": 0
+  },
+  {
+    "fixture": "classic",
+    "engine": "spice-ts",
+    "run": 0,
+    "wallMs": 4081.945874990197,
+    "command": [
+      "node",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/results/issue-1077-fix/worker.mjs",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/corpus/classic/fixtures/spice3f5/mosamp2.cir",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/results/issue-1077-fix/before/classic-spice-ts-0.json"
+    ],
+    "core": "/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T//t_3aca3607-before-dist/index.js",
+    "exitCode": 0
+  },
+  {
+    "fixture": "classic",
+    "engine": "ngspice",
+    "run": 0,
+    "wallMs": 412.67550000338815,
+    "command": [
+      "ngspice",
+      "-n",
+      "-b",
+      "-r",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/results/issue-1077-fix/before/classic-ngspice-0.raw",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/corpus/classic/fixtures/spice3f5/mosamp2.cir"
+    ],
+    "core": "/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T//t_3aca3607-before-dist/index.js",
+    "exitCode": 0
+  },
+  {
+    "fixture": "ngspice",
+    "engine": "ngspice",
+    "run": 1,
+    "wallMs": 424.1035000013653,
+    "command": [
+      "ngspice",
+      "-n",
+      "-b",
+      "-r",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/results/issue-1077-fix/before/ngspice-ngspice-1.raw",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/corpus/ngspice/fixtures/tests/general/mosamp.cir"
+    ],
+    "core": "/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T//t_3aca3607-before-dist/index.js",
+    "exitCode": 0
+  },
+  {
+    "fixture": "ngspice",
+    "engine": "spice-ts",
+    "run": 1,
+    "wallMs": 4330.368541995995,
+    "command": [
+      "node",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/results/issue-1077-fix/worker.mjs",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/corpus/ngspice/fixtures/tests/general/mosamp.cir",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/results/issue-1077-fix/before/ngspice-spice-ts-1.json"
+    ],
+    "core": "/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T//t_3aca3607-before-dist/index.js",
+    "exitCode": 0
+  },
+  {
+    "fixture": "classic",
+    "engine": "ngspice",
+    "run": 1,
+    "wallMs": 395.09387499128934,
+    "command": [
+      "ngspice",
+      "-n",
+      "-b",
+      "-r",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/results/issue-1077-fix/before/classic-ngspice-1.raw",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/corpus/classic/fixtures/spice3f5/mosamp2.cir"
+    ],
+    "core": "/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T//t_3aca3607-before-dist/index.js",
+    "exitCode": 0
+  },
+  {
+    "fixture": "classic",
+    "engine": "spice-ts",
+    "run": 1,
+    "wallMs": 3466.904374989099,
+    "command": [
+      "node",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/results/issue-1077-fix/worker.mjs",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/corpus/classic/fixtures/spice3f5/mosamp2.cir",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/results/issue-1077-fix/before/classic-spice-ts-1.json"
+    ],
+    "core": "/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T//t_3aca3607-before-dist/index.js",
+    "exitCode": 0
+  },
+  {
+    "fixture": "ngspice",
+    "engine": "spice-ts",
+    "run": 2,
+    "wallMs": 3500.6828749901615,
+    "command": [
+      "node",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/results/issue-1077-fix/worker.mjs",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/corpus/ngspice/fixtures/tests/general/mosamp.cir",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/results/issue-1077-fix/before/ngspice-spice-ts-2.json"
+    ],
+    "core": "/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T//t_3aca3607-before-dist/index.js",
+    "exitCode": 0
+  },
+  {
+    "fixture": "ngspice",
+    "engine": "ngspice",
+    "run": 2,
+    "wallMs": 400.7102089963155,
+    "command": [
+      "ngspice",
+      "-n",
+      "-b",
+      "-r",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/results/issue-1077-fix/before/ngspice-ngspice-2.raw",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/corpus/ngspice/fixtures/tests/general/mosamp.cir"
+    ],
+    "core": "/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T//t_3aca3607-before-dist/index.js",
+    "exitCode": 0
+  },
+  {
+    "fixture": "classic",
+    "engine": "spice-ts",
+    "run": 2,
+    "wallMs": 3695.218124994426,
+    "command": [
+      "node",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/results/issue-1077-fix/worker.mjs",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/corpus/classic/fixtures/spice3f5/mosamp2.cir",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/results/issue-1077-fix/before/classic-spice-ts-2.json"
+    ],
+    "core": "/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T//t_3aca3607-before-dist/index.js",
+    "exitCode": 0
+  },
+  {
+    "fixture": "classic",
+    "engine": "ngspice",
+    "run": 2,
+    "wallMs": 425.14258400478866,
+    "command": [
+      "ngspice",
+      "-n",
+      "-b",
+      "-r",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/results/issue-1077-fix/before/classic-ngspice-2.raw",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/corpus/classic/fixtures/spice3f5/mosamp2.cir"
+    ],
+    "core": "/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T//t_3aca3607-before-dist/index.js",
+    "exitCode": 0
+  },
+  {
+    "fixture": "ngspice",
+    "engine": "ngspice",
+    "run": 3,
+    "wallMs": 419.5119590003742,
+    "command": [
+      "ngspice",
+      "-n",
+      "-b",
+      "-r",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/results/issue-1077-fix/before/ngspice-ngspice-3.raw",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/corpus/ngspice/fixtures/tests/general/mosamp.cir"
+    ],
+    "core": "/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T//t_3aca3607-before-dist/index.js",
+    "exitCode": 0
+  },
+  {
+    "fixture": "ngspice",
+    "engine": "spice-ts",
+    "run": 3,
+    "wallMs": 4918.059749994427,
+    "command": [
+      "node",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/results/issue-1077-fix/worker.mjs",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/corpus/ngspice/fixtures/tests/general/mosamp.cir",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/results/issue-1077-fix/before/ngspice-spice-ts-3.json"
+    ],
+    "core": "/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T//t_3aca3607-before-dist/index.js",
+    "exitCode": 0
+  },
+  {
+    "fixture": "classic",
+    "engine": "ngspice",
+    "run": 3,
+    "wallMs": 439.860749989748,
+    "command": [
+      "ngspice",
+      "-n",
+      "-b",
+      "-r",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/results/issue-1077-fix/before/classic-ngspice-3.raw",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/corpus/classic/fixtures/spice3f5/mosamp2.cir"
+    ],
+    "core": "/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T//t_3aca3607-before-dist/index.js",
+    "exitCode": 0
+  },
+  {
+    "fixture": "classic",
+    "engine": "spice-ts",
+    "run": 3,
+    "wallMs": 4183.99700000009,
+    "command": [
+      "node",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/results/issue-1077-fix/worker.mjs",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/corpus/classic/fixtures/spice3f5/mosamp2.cir",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/results/issue-1077-fix/before/classic-spice-ts-3.json"
+    ],
+    "core": "/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T//t_3aca3607-before-dist/index.js",
+    "exitCode": 0
+  },
+  {
+    "fixture": "ngspice",
+    "engine": "spice-ts",
+    "run": 4,
+    "wallMs": 6473.6280829965835,
+    "command": [
+      "node",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/results/issue-1077-fix/worker.mjs",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/corpus/ngspice/fixtures/tests/general/mosamp.cir",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/results/issue-1077-fix/before/ngspice-spice-ts-4.json"
+    ],
+    "core": "/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T//t_3aca3607-before-dist/index.js",
+    "exitCode": 0
+  },
+  {
+    "fixture": "ngspice",
+    "engine": "ngspice",
+    "run": 4,
+    "wallMs": 426.4553750108462,
+    "command": [
+      "ngspice",
+      "-n",
+      "-b",
+      "-r",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/results/issue-1077-fix/before/ngspice-ngspice-4.raw",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/corpus/ngspice/fixtures/tests/general/mosamp.cir"
+    ],
+    "core": "/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T//t_3aca3607-before-dist/index.js",
+    "exitCode": 0
+  },
+  {
+    "fixture": "classic",
+    "engine": "spice-ts",
+    "run": 4,
+    "wallMs": 4348.772666999139,
+    "command": [
+      "node",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/results/issue-1077-fix/worker.mjs",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/corpus/classic/fixtures/spice3f5/mosamp2.cir",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/results/issue-1077-fix/before/classic-spice-ts-4.json"
+    ],
+    "core": "/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T//t_3aca3607-before-dist/index.js",
+    "exitCode": 0
+  },
+  {
+    "fixture": "classic",
+    "engine": "ngspice",
+    "run": 4,
+    "wallMs": 433.139625005424,
+    "command": [
+      "ngspice",
+      "-n",
+      "-b",
+      "-r",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/results/issue-1077-fix/before/classic-ngspice-4.raw",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/benchmarks/corpus/classic/fixtures/spice3f5/mosamp2.cir"
+    ],
+    "core": "/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T//t_3aca3607-before-dist/index.js",
+    "exitCode": 0
+  }
+]
