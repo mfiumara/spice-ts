@@ -2632,7 +2632,7 @@ export class Circuit {
    * Only devices whose temperature model follows ngspice-47 are accepted:
    * resistors (TC1/TC2 around TNOM), the bounded VBIC (vbictemp.c mapping),
    * B sources (asrctemp.c tc1/tc2 and `temper`), diodes (diotemp.c), the
-   * Gummel-Poon BJT (bjttemp.c), MOS level 1 (mos1temp.c) and BSIM3 (b3temp.c,
+   * Gummel-Poon BJT (bjttemp.c), MOS levels 1/2 (mos1temp.c/mos2temp.c) and BSIM3 (b3temp.c,
    * b3v32temp.c). Every other temperature-dependent element is rejected instead of silently
    * running at 27 C.
    */
@@ -2664,7 +2664,7 @@ export class Circuit {
     for (const device of devices) {
       if (device instanceof Resistor || device instanceof VBIC || device instanceof BehavioralSource
         || device instanceof Diode || device instanceof BJT || device instanceof MOSFET
-        || device instanceof BSIM3v3) {
+        || device instanceof MOS2 || device instanceof BSIM3v3) {
         device.setTemperature(temperature);
       } else if (device.isNonlinear) {
         throw new UnsupportedTemperatureError(device.name, temperature);

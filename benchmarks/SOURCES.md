@@ -1,5 +1,15 @@
 # Benchmark sources
 
+## MOS2 temperature admission (#995)
+
+The 18 synthetic NMOS/PMOS temperature probes in [reference.ts](results/issue-995/reference.ts)
+are original spice-ts project work, MIT-licensed, not copied vendor decks. Recorded OP and
+short-transient references use ngspice-47 on identical decks at TEMP=27/50/125 C with model
+TNOM=50 C, no/direct/sheet series resistance and junction capacitances.
+The unchanged gm6 input uses the corpus-k k-8 source and GPL-3.0-or-later licence below.
+Its scoped before/after results and raw temperature probe are in [issue-995](results/issue-995/README.md).
+No fixture, comparison tolerance, corpus outcome or aggregate was changed.
+
 ## corpus-k CMOS/textbook/oscillator batch (#980)
 
 20 novel original Xyce_Regression decks at `7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2`, SPDX `GPL-3.0-or-later`. Redistribution basis is the repository README GPLv3-or-later grant. Notice and full GPL text are retained in corpus-k/licenses/xyce. All selected files have no separate copyright/licence notice and no external dependencies. Per-file bytes/hashes/include closures are in [manifest.json](corpus/corpus-k/manifest.json), selection and exclusions in [SOURCES.md](corpus/corpus-k/SOURCES.md). No fixture adaptation or engine-success filter. 19 ngspice-47 successes; 5 matches, 14 spice-ts losses, 1 both-engine failure. All results are in [README.md](corpus/corpus-k/README.md) and outcomes.json; gaps #982 and #983. No aggregate refresh.

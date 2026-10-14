@@ -1,0 +1,90 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_6c845ec3/packages/core
+
+ ❯ src/devices/mos2-temperature-995.test.ts (36 tests | 12 failed) 151ms
+     ✓ nmos-none-27 device temperature law independently of the circuit guard 13ms
+     ✓ nmos-none-27 OP and short transient with model TNOM=50 43ms
+     ✓ nmos-none-50 device temperature law independently of the circuit guard 2ms
+     × nmos-none-50 OP and short transient with model TNOM=50 5ms
+     ✓ nmos-none-125 device temperature law independently of the circuit guard 1ms
+     × nmos-none-125 OP and short transient with model TNOM=50 1ms
+     ✓ nmos-direct-27 device temperature law independently of the circuit guard 1ms
+     ✓ nmos-direct-27 OP and short transient with model TNOM=50 26ms
+     ✓ nmos-direct-50 device temperature law independently of the circuit guard 1ms
+     × nmos-direct-50 OP and short transient with model TNOM=50 1ms
+     ✓ nmos-direct-125 device temperature law independently of the circuit guard 1ms
+     × nmos-direct-125 OP and short transient with model TNOM=50 1ms
+     ✓ nmos-sheet-27 device temperature law independently of the circuit guard 1ms
+     ✓ nmos-sheet-27 OP and short transient with model TNOM=50 13ms
+     ✓ nmos-sheet-50 device temperature law independently of the circuit guard 1ms
+     × nmos-sheet-50 OP and short transient with model TNOM=50 0ms
+     ✓ nmos-sheet-125 device temperature law independently of the circuit guard 0ms
+     × nmos-sheet-125 OP and short transient with model TNOM=50 1ms
+     ✓ pmos-none-27 device temperature law independently of the circuit guard 1ms
+     ✓ pmos-none-27 OP and short transient with model TNOM=50 10ms
+     ✓ pmos-none-50 device temperature law independently of the circuit guard 0ms
+     × pmos-none-50 OP and short transient with model TNOM=50 0ms
+     ✓ pmos-none-125 device temperature law independently of the circuit guard 0ms
+     × pmos-none-125 OP and short transient with model TNOM=50 0ms
+     ✓ pmos-direct-27 device temperature law independently of the circuit guard 0ms
+     ✓ pmos-direct-27 OP and short transient with model TNOM=50 11ms
+     ✓ pmos-direct-50 device temperature law independently of the circuit guard 1ms
+     × pmos-direct-50 OP and short transient with model TNOM=50 1ms
+     ✓ pmos-direct-125 device temperature law independently of the circuit guard 0ms
+     × pmos-direct-125 OP and short transient with model TNOM=50 0ms
+     ✓ pmos-sheet-27 device temperature law independently of the circuit guard 0ms
+     ✓ pmos-sheet-27 OP and short transient with model TNOM=50 11ms
+     ✓ pmos-sheet-50 device temperature law independently of the circuit guard 1ms
+     × pmos-sheet-50 OP and short transient with model TNOM=50 1ms
+     ✓ pmos-sheet-125 device temperature law independently of the circuit guard 0ms
+     × pmos-sheet-125 OP and short transient with model TNOM=50 0ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 12 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/devices/mos2-temperature-995.test.ts > MOS2 .options TEMP ngspice-47 parity (#995) > nmos-none-50 OP and short transient with model TNOM=50
+ FAIL  src/devices/mos2-temperature-995.test.ts > MOS2 .options TEMP ngspice-47 parity (#995) > nmos-direct-50 OP and short transient with model TNOM=50
+ FAIL  src/devices/mos2-temperature-995.test.ts > MOS2 .options TEMP ngspice-47 parity (#995) > nmos-sheet-50 OP and short transient with model TNOM=50
+ FAIL  src/devices/mos2-temperature-995.test.ts > MOS2 .options TEMP ngspice-47 parity (#995) > pmos-none-50 OP and short transient with model TNOM=50
+ FAIL  src/devices/mos2-temperature-995.test.ts > MOS2 .options TEMP ngspice-47 parity (#995) > pmos-direct-50 OP and short transient with model TNOM=50
+ FAIL  src/devices/mos2-temperature-995.test.ts > MOS2 .options TEMP ngspice-47 parity (#995) > pmos-sheet-50 OP and short transient with model TNOM=50
+UnsupportedTemperatureError: Device 'M1' has no ngspice temperature model in spice-ts and cannot be simulated at TEMP=50 C
+ ❯ Circuit.applyCircuitTemperature src/circuit.ts:2670:15
+    2668|         device.setTemperature(temperature);
+    2669|       } else if (device.isNonlinear) {
+    2670|         throw new UnsupportedTemperatureError(device.name, temperature…
+       |               ^
+    2671|       }
+    2672|     }
+ ❯ Circuit.compile src/circuit.ts:2606:12
+ ❯ simulate src/simulate.ts:132:28
+ ❯ src/devices/mos2-temperature-995.test.ts:41:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/12]⎯
+
+ FAIL  src/devices/mos2-temperature-995.test.ts > MOS2 .options TEMP ngspice-47 parity (#995) > nmos-none-125 OP and short transient with model TNOM=50
+ FAIL  src/devices/mos2-temperature-995.test.ts > MOS2 .options TEMP ngspice-47 parity (#995) > nmos-direct-125 OP and short transient with model TNOM=50
+ FAIL  src/devices/mos2-temperature-995.test.ts > MOS2 .options TEMP ngspice-47 parity (#995) > nmos-sheet-125 OP and short transient with model TNOM=50
+ FAIL  src/devices/mos2-temperature-995.test.ts > MOS2 .options TEMP ngspice-47 parity (#995) > pmos-none-125 OP and short transient with model TNOM=50
+ FAIL  src/devices/mos2-temperature-995.test.ts > MOS2 .options TEMP ngspice-47 parity (#995) > pmos-direct-125 OP and short transient with model TNOM=50
+ FAIL  src/devices/mos2-temperature-995.test.ts > MOS2 .options TEMP ngspice-47 parity (#995) > pmos-sheet-125 OP and short transient with model TNOM=50
+UnsupportedTemperatureError: Device 'M1' has no ngspice temperature model in spice-ts and cannot be simulated at TEMP=125 C
+ ❯ Circuit.applyCircuitTemperature src/circuit.ts:2670:15
+    2668|         device.setTemperature(temperature);
+    2669|       } else if (device.isNonlinear) {
+    2670|         throw new UnsupportedTemperatureError(device.name, temperature…
+       |               ^
+    2671|       }
+    2672|     }
+ ❯ Circuit.compile src/circuit.ts:2606:12
+ ❯ simulate src/simulate.ts:132:28
+ ❯ src/devices/mos2-temperature-995.test.ts:41:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/12]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  12 failed | 24 passed (36)
+   Start at  04:21:03
+   Duration  888ms (transform 548ms, setup 0ms, import 660ms, tests 151ms, environment 0ms)
+
+JUNIT report written to /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_6c845ec3/packages/core/test-results.xml

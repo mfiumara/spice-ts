@@ -1,0 +1,198 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: .file: gm6.ckt
+
+Doing analysis at TEMP = 125.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+@mp2[temp] = 1.250000000000000e+02
+@mn3[temp] = 1.250000000000000e+02
+v(7) = 4.999999843316562e+00
+v(11) = 4.999999986533661e+00
+v(12) = 4.999999914925119e+00
+v(13) = -1.34346452429970e-16
+Doing analysis at TEMP = 125.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+10                                           5
+2                                            0
+5                                            0
+11                                           5
+12                                           5
+7                                            5
+13                                -1.34346e-16
+vin#branch                                   0
+vnen#branch                                  0
+vdd#branch                        -5.59509e-12
+
+
+No. of Data Rows : 223
+	Node                                  Voltage
+	----                                  -------
+	----	-------
+	V(13)                         -1.34346452429970e-16
+	V(7)                          4.999999843316562e+00
+	V(12)                         4.999999914925119e+00
+	V(11)                         4.999999986533661e+00
+	V(5)                          0.000000000000000e+00
+	V(2)                          0.000000000000000e+00
+	V(10)                         5.000000000000000e+00
+
+	Source	Current
+	------	-------
+
+	vdd#branch                    -5.59509271639642e-12
+	vnen#branch                   0.000000000000000e+00
+	vin#branch                    0.000000000000000e+00
+
+ Mos2 models (Level 2 MOSfet model with Meyer capacitance model)
+      model                 nrad6                 prad6
+
+       type                  nmos                  pmos
+        vto              0.886298               -1.2711
+         kp           3.88087e-05           1.45426e-05
+      gamma               1.91059              0.507832
+        phi              0.792084              0.654999
+     lambda             0.0147924             0.0261855
+         rd                  4.75                  6.92
+         rs                  4.75                  6.92
+        cbd                     0                     0
+        cbs                     0                     0
+         is                 1e-14                 1e-14
+         pb                  0.92                   0.9
+       cgso                     0                     0
+       cgdo                     0                     0
+       cgbo                     0                     0
+        rsh                     0                     0
+         cj                0.0004               0.00013
+         mj                   0.5                   0.5
+       cjsw                     0                     0
+       mjsw                  0.33                  0.33
+         js                 1e-07                 1e-07
+        tox               4.5e-08               4.5e-08
+         ld                     0                     0
+         u0               505.739               189.514
+         fc                   0.5                   0.5
+       nsub           6.47532e+16           4.57476e+15
+        tpg                     0                     0
+        nss                     0                     0
+      delta                     0                     0
+       uexp              0.650268               0.58329
+      ucrit                306080                120248
+       vmax                     0                     0
+         xj                 6e-07                 6e-07
+       neff                     1                     1
+        nfs                     0                     0
+         kf                     0                     0
+         af                     1                     1
+       nlev                     2                     2
+     gdsnoi                     1                     1
+
+ Mos2: Level 2 MOSfet model with Meyer capacitance model
+     device                   mn4                   mn3                   mp4
+      model                 nrad6                 nrad6                 prad6
+         id           2.27344e-06            4.4936e-08          -9.35771e-07
+        ibd          -2.27344e-06           -4.4936e-08           9.38196e-07
+        ibs          -5.00969e-08           2.33728e-10           -1.2391e-08
+         is           5.00969e-08          -2.33728e-10           9.96617e-09
+         ig          -1.50135e-07            1.4172e-08          -3.37379e-06
+         ib          -2.32354e-06          -4.47023e-08           9.25805e-07
+        vgs               0.25351          -1.11904e-09                4.9999
+        vds               5.25335              -0.25351            3.1001e-05
+        vbs               0.25351          -1.11904e-09          -9.72798e-05
+        von              0.341354              0.359205              -1.06471
+      vdsat                     0                     0              -3.31994
+         rs                  4.75                  4.75                  6.92
+         rd                  4.75                  4.75                  6.92
+         gm          -1.12316e-06           -1.2336e-06           2.56776e-10
+        gds          -1.19429e-23          -7.71819e-24           7.82176e-05
+        gmb          -1.69135e-06          -1.89503e-06           8.89634e-11
+        cbd           1.01523e-14           3.31218e-14           2.68004e-14
+        cbs           3.31218e-14           2.73614e-14           2.68009e-14
+        cgs           1.54807e-14                     0           4.83442e-14
+        cgd                     0           1.42603e-14           4.83439e-14
+        cgb           4.50415e-15           5.41944e-15                     0
+
+ Mos2: Level 2 MOSfet model with Meyer capacitance model
+     device                   mp3                   mp2
+      model                 prad6                 prad6
+         id           1.34699e-08            1.7009e-07
+        ibd          -7.48544e-09          -1.63642e-07
+        ibs           6.24434e-08          -6.96345e-10
+         is          -6.84278e-08          -5.75211e-09
+         ig           2.15344e-07          -1.57326e-07
+         ib           5.49579e-08          -1.64338e-07
+        vgs               4.99998                     5
+        vds           7.65097e-05           1.54312e-05
+        vbs          -1.99888e-05          -3.52579e-08
+        von              -1.06468              -1.04845
+      vdsat              -3.32001              -3.36217
+         rs                  6.92                  6.92
+         rd                  6.92                  6.92
+         gm           6.33716e-10           6.80024e-10
+        gds           7.82174e-05           0.000417884
+        gmb           2.19565e-10           2.12935e-10
+        cbd            2.6801e-14            7.1473e-14
+        cbs           2.68023e-14           7.14737e-14
+        cgs           4.83444e-14           6.44588e-14
+        cgd           4.83436e-14           6.44586e-14
+        cgb                     0                     0
+
+ Vsource: Independent voltage source
+     device                   vin                  vnen                   vdd
+         dc                     0                     0                     5
+      acmag                     0                     0                     0
+      pulse                     0                     -                     -
+                                5
+                            1e-09
+                            5e-09
+                            5e-09
+                          4.5e-08
+                            1e-07
+        sin                     -                     -                     -
+        exp                     -                     -                     -
+        pwl                     -                     -                     -
+       sffm                     -                     -                     -
+         am                     -                     -                     -
+    trnoise                     -                     -                     -
+   trrandom                     -                     -                     -
+    portnum                     0                     0                     0
+         z0                     0                     0                     0
+        pwr                     0                     0                     0
+       freq                     0                     0                     0
+      phase                     0                     0                     0
+          i          -3.02248e-06          -1.57326e-07           8.11329e-07
+          p                    -0                    -0           4.05665e-06
+
+
+
+Total analysis time (seconds) = 0.002061
+
+Total elapsed time (seconds) = 0.006
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13385.172 MB.
+Maximum ngspice program size =   10.281 MB.
+Current ngspice program size =   10.281 MB.
+
+Note: Starting dynamic gmin stepping
+Note: Dynamic gmin stepping completed
+Note: Starting dynamic gmin stepping
+Note: Dynamic gmin stepping completed
+Note: Starting dynamic gmin stepping
+Note: Dynamic gmin stepping completed
+
+Error: no such function as {v,
+    or {v(2) is not available.
