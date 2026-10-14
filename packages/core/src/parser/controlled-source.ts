@@ -1,5 +1,6 @@
 import { ParseError } from '../errors.js';
 import { polyExpression } from './spice2poly.js';
+import { assertNoControlledTable } from './controlled-table.js';
 
 const CONTROLLED_SOURCE_FORMS: Record<string, { tokens: number; form: string }> = {
   E: { tokens: 6, form: 'Exxx n+ n- nc+ nc- gain (or Exxx n+ n- value={expr})' },
@@ -96,6 +97,7 @@ export function translatePolySource(tokens: readonly string[], lineNumber: numbe
  * tokenizer ({@link translatePolySource}), before they reach this check.
  */
 export function assertControlledSourceCard(tokens: readonly string[], lineNumber: number, raw: string): void {
+  assertNoControlledTable(tokens, lineNumber, raw);
   const type = tokens[0][0].toUpperCase();
   const shape = CONTROLLED_SOURCE_FORMS[type];
   if (!shape) return;

@@ -1,0 +1,130 @@
+{
+  "baseline": "f07539c06b140514d7bd4bd05fc1eb4c8164efb2",
+  "configuration": "set ngbehavior=ltps\nset filetype=ascii\n",
+  "receipts": [
+    {
+      "name": "base_159.cir",
+      "inputHashBefore": "b256a9d5424897849261b0e727f65e46ebdfbd3709643a47646fe333eb1aaac4",
+      "inputHashAfter": "b256a9d5424897849261b0e727f65e46ebdfbd3709643a47646fe333eb1aaac4",
+      "includes": {
+        "AD620.mod": "99c3a83c8e4a44fc1c2e5b878a061e03f959e223fa646bb849589e68f603f395",
+        "lmx58_lm2904.lib": "467a3e573420d1f5a21fab57b76be0e13073e854f609a73459a191958e314726",
+        "UA555.mod": "e4b70989b2ca1cd9e3177bc4d35224098360461a2b6901a688542e2d1af6d7bf"
+      },
+      "native": {
+        "process": {
+          "argv": [
+            "node",
+            "--import",
+            "tsx",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5131343c/benchmarks/controlled-table-917/vendor-native.mts",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5131343c/benchmarks/controlled-table-917/.run/vendor/base_159.cir"
+          ],
+          "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5131343c",
+          "exit": 0,
+          "timedOut": false,
+          "limitSeconds": 29,
+          "wallSeconds": 0.446608625
+        },
+        "status": "failure",
+        "terminalPivot": 2,
+        "milliseconds": 45.20470899999998,
+        "errorName": "SingularMatrixError",
+        "tableUnsupported": false,
+        "contextHash": null
+      },
+      "reference": {
+        "process": {
+          "argv": [
+            "ngspice",
+            "-b",
+            "-r",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5131343c/benchmarks/controlled-table-917/.run/vendor/base_159.cir.raw",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5131343c/benchmarks/controlled-table-917/.run/vendor/base_159.cir"
+          ],
+          "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5131343c/benchmarks/controlled-table-917/.run/vendor",
+          "exit": 0,
+          "timedOut": false,
+          "limitSeconds": 29,
+          "wallSeconds": 0.167103958
+        },
+        "acRows": 141,
+        "solver": "SPARSE 1.3",
+        "ltpsConfirmed": true,
+        "xspicePresent": true,
+        "warnings": {
+          "singular": false,
+          "dynamicGminCompleted": true,
+          "dynamicGminFailed": false,
+          "trueGminFailed": false,
+          "sourceSteppingFailed": false,
+          "transientRecovery": false
+        }
+      },
+      "maxError": null,
+      "rmsError": null
+    },
+    {
+      "name": "variant_159.cir",
+      "inputHashBefore": "22ebc65cfb607a162f6602416efb292b644ee7a70127a957fae2e92f281e4a05",
+      "inputHashAfter": "22ebc65cfb607a162f6602416efb292b644ee7a70127a957fae2e92f281e4a05",
+      "includes": {
+        "AD620.mod": "99c3a83c8e4a44fc1c2e5b878a061e03f959e223fa646bb849589e68f603f395",
+        "lmx58_lm2904.lib": "467a3e573420d1f5a21fab57b76be0e13073e854f609a73459a191958e314726",
+        "UA555.mod": "e4b70989b2ca1cd9e3177bc4d35224098360461a2b6901a688542e2d1af6d7bf"
+      },
+      "native": {
+        "process": {
+          "argv": [
+            "node",
+            "--import",
+            "tsx",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5131343c/benchmarks/controlled-table-917/vendor-native.mts",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5131343c/benchmarks/controlled-table-917/.run/vendor/variant_159.cir"
+          ],
+          "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5131343c",
+          "exit": 0,
+          "timedOut": false,
+          "limitSeconds": 29,
+          "wallSeconds": 0.4106875000000001
+        },
+        "status": "failure",
+        "terminalPivot": 2,
+        "milliseconds": 50.78483299999999,
+        "errorName": "SingularMatrixError",
+        "tableUnsupported": false,
+        "contextHash": null
+      },
+      "reference": {
+        "process": {
+          "argv": [
+            "ngspice",
+            "-b",
+            "-r",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5131343c/benchmarks/controlled-table-917/.run/vendor/variant_159.cir.raw",
+            "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5131343c/benchmarks/controlled-table-917/.run/vendor/variant_159.cir"
+          ],
+          "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5131343c/benchmarks/controlled-table-917/.run/vendor",
+          "exit": 0,
+          "timedOut": false,
+          "limitSeconds": 29,
+          "wallSeconds": 0.06344241700000008
+        },
+        "acRows": 141,
+        "solver": "SPARSE 1.3",
+        "ltpsConfirmed": true,
+        "xspicePresent": true,
+        "warnings": {
+          "singular": false,
+          "dynamicGminCompleted": true,
+          "dynamicGminFailed": false,
+          "trueGminFailed": false,
+          "sourceSteppingFailed": false,
+          "transientRecovery": false
+        }
+      },
+      "maxError": null,
+      "rmsError": null
+    }
+  ]
+}
