@@ -36,6 +36,6 @@ undetermined: the correct poles are finite roots of the independently evaluated 
 
 Reproduces on ngspice-47: partially. Check: Check explicit PZ iteration-limit warnings and absent complex pair; roots require an independent G+sC oracle before labeling individual values wrong.
 
-Notes: Numeric root correctness is deliberately undetermined, not inferred from simulator disagreement. Ticket contains a historical null-feedback-pointer crash fix, not a solution of the root-finding defect. Third-party process libraries imply fetch-only.
+Notes: #803 recovery: 3024 unique deterministic candidate hashes, zero matches to original pin. See PIN_RECOVERY_803.md and reconstruction-803.json; no substitute executed. Numeric root correctness is deliberately undetermined, not inferred from simulator disagreement. Ticket contains a historical null-feedback-pointer crash fix, not a solution of the root-finding defect. Third-party process libraries imply fetch-only.
 
 Engines: ngspice-47 = ngspice-47 (Homebrew build, KLU), `ngspice -b [-r out.raw] <deck>`; master = ngspice pre-master-48 HEAD 3ef069fb1f04177a153f342a32d941fc20ff047e (2026-10-09, "Fixes bug 876"), configure --with-x=no --disable-debug --enable-xspice --enable-osdi --with-readline=no --disable-openmp; spice-ts = @spice-ts/core 0.3.0 at main 45d6ea73, simulate(<deck>) with a filesystem include resolver.

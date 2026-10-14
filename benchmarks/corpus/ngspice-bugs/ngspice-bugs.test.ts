@@ -38,6 +38,47 @@ function entry(manifest: Manifest, ticket: number): TicketEntry {
 }
 
 describe('ngspice-bugs manifest', () => {
+  it('#803: bounded recovery preserves the five original pins and never scores gaps', async () => {
+    const recovery = JSON.parse(await readFile(resolve(HERE, 'reconstruction-803.json'), 'utf8'));
+    const manifest = await loadManifest();
+    assert.equal(recovery.rows.length, 5);
+    assert.equal(new Set(recovery.rows.map((row: any) => `${row.ticket}/${row.deck}`)).size, 5);
+    for (const row of recovery.rows) {
+      const ticket = entry(manifest, row.ticket);
+      assert.equal(ticket.uncommittedDecks.find(deck => deck.name === row.deck)?.sha256, row.expectedSha256);
+      assert.equal(row.status, 'provenance-gap');
+      assert.deepEqual(row.matches, []);
+      assert.ok(row.attemptCount > 1000);
+      assert.match(row.attemptedHashSetSha256, /^[a-f0-9]{64}$/);
+      assert.ok(row.examples.length > 1);
+      for (const attempt of row.examples) {
+        assert.match(attempt.sha256, /^[a-f0-9]{64}$/);
+        assert.notEqual(attempt.sha256, row.expectedSha256);
+      }
+      assert.notEqual(ticket.spiceTs.verdict, 'right');
+    }
+  });
+
+  it('#737: partial OP oracle is not a complete transient correctness win', async () => {
+    const receipt = JSON.parse(await readFile(resolve(HERE, 'oracle-737.json'), 'utf8'));
+    assert.equal(receipt.rows.length, 5);
+    const ticket = entry(await loadManifest(), 737);
+    assert.notEqual(ticket.spiceTs.verdict, 'right');
+    assert.equal(receipt.rows[0].sha256, ticket.uncommittedDecks[0].sha256);
+    assert.equal(receipt.rows[0].spiceTs.finalTime, 0.01);
+    for (const row of receipt.rows.slice(0, 4)) {
+      assert.ok(row.ngspice.every((run: any) => run.exitCode !== 0));
+    }
+    const op = receipt.rows.at(-1);
+    assert.equal(op.name, 'NEW-op');
+    const native = op.ngspice.find((run: any) => run.mode === 'ltps');
+    assert.equal(native.exitCode, 0);
+    assert.equal(native.plots[0].points, 1);
+    // Publish disagreement, not a tolerance-tuned pass on a different analysis.
+    const reference = native.plots[0].signals['i(v159)'][0].re;
+    assert.ok(Math.abs(op.spiceTs.currents.V159 - reference) > 1e-4);
+  });
+
   it('lists every harvested ticket once, sorted, with valid enums', async () => {
     const manifest = await loadManifest();
     assert.equal(manifest.tickets.length, manifest.harvest.count);
@@ -92,7 +133,9 @@ describe('ngspice-bugs spice-ts verdicts', () => {
     const { simulate } = await core();
     for (const [name, expected] of [['arg_capture_cards.cir', -1], ['temper_capture_cards.cir', -1 / 6]] as const) {
       const result = await simulate(await deck(`tickets/871/${name}`));
-      assert.equal(result.dc.current('V1'), expected);
+      // Decimal numparam formatting (#782) can round 1/6 by one binary ULP.
+      // This is an analytic assertion at machine precision, not a corpus tolerance change.
+      assert.ok(Math.abs(result.dc.current('V1') - expected) <= Number.EPSILON * Math.abs(expected));
     }
   });
 

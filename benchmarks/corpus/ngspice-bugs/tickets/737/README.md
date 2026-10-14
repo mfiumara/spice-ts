@@ -36,6 +36,6 @@ undetermined: a KiCad op-amp test bench built from vendor PSpice macromodels; no
 
 Reproduces on ngspice-47: yes. Check: LTPS run aborts with Timestep too small at t=2.9e-10 s.
 
-Notes: Reporter compares with KiCad, which embeds ngspice with its own options. Default-mode parse failure is documented (PSpice libraries need ps/ltps).
+Notes: #803 oracle search at e358f89b: original spice-ts completes 30771 points to 10 ms; native ngspice parse-fails and LTPS aborts at 2.899990792104854e-10 s. Three NEW short-stop probes also abort. NEW .op diagnostic completes in LTPS, but i(V159) differs: spice-ts -0.0013554713473383079 A vs ngspice -0.001237320859729758 A (9.548896446662594% relative difference). Partial operating-point reference only, NOT an independent full-waveform oracle or a correctness win. See PIN_RECOVERY_803.md and oracle-737.json. Reporter compares with KiCad, which embeds ngspice with its own options. Default-mode parse failure is documented (PSpice libraries need ps/ltps).
 
 Engines: ngspice-47 = ngspice-47 (Homebrew build, KLU), `ngspice -b [-r out.raw] <deck>`; master = ngspice pre-master-48 HEAD 3ef069fb1f04177a153f342a32d941fc20ff047e (2026-10-09, "Fixes bug 876"), configure --with-x=no --disable-debug --enable-xspice --enable-osdi --with-readline=no --disable-openmp; spice-ts = @spice-ts/core 0.3.0 at main 45d6ea73, simulate(<deck>) with a filesystem include resolver.

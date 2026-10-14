@@ -48,6 +48,8 @@ The main manifest's ngspice/master verdicts and engine strings remain the **hist
 
 ## Exact-byte reconstruction and explicit provenance losses
 
+Follow-up at `e358f89b`: [bounded #803 recovery and #737 oracle search](PIN_RECOVERY_803.md) documents 3,024 / 32,256 / 64,512 candidate hashes per original pin, with zero matches. All five gap rows and original pins remain intact. #737 has a NEW diagnostic LTPS operating-point reference that disagrees (i(V159) relative difference 0.09548896446662594), but still no completed independent transient oracle. Three shortened diagnostic transients also fail ngspice; one fails spice-ts. Counts/verdicts below remain the original refresh, not new wins. #725 drift is reproduced and documented by exact attachment URL, not silently re-pinned.
+
 The supervisor authorized reconstruction of derived variants, conditioned on the existing SHA256 pins, plus one minimal orchestration script. Attachments were downloaded with unchanged `fetch.ts`; archives were extracted with macOS tar. No vendor files are redistributed, per `SOURCES.md` and the corpus licence policy.
 
 Verified preparations:

@@ -36,6 +36,6 @@ undetermined: vendor op-amp macromodels; developers point to LTPS compatibility 
 
 Reproduces on ngspice-47: yes. Check: LTPS run aborts with Timestep too small at t=1.3e-5 s.
 
-Notes: Developer reply: "For OpAmps with PSPICE models the compatibility mode LTPS is a must".
+Notes: #803 recovery: 32256 unique deterministic candidate hashes, zero matches to original pin. See PIN_RECOVERY_803.md and reconstruction-803.json; no substitute executed. Developer reply: "For OpAmps with PSPICE models the compatibility mode LTPS is a must".
 
 Engines: ngspice-47 = ngspice-47 (Homebrew build, KLU), `ngspice -b [-r out.raw] <deck>`; master = ngspice pre-master-48 HEAD 3ef069fb1f04177a153f342a32d941fc20ff047e (2026-10-09, "Fixes bug 876"), configure --with-x=no --disable-debug --enable-xspice --enable-osdi --with-readline=no --disable-openmp; spice-ts = @spice-ts/core 0.3.0 at main 45d6ea73, simulate(<deck>) with a filesystem include resolver.
