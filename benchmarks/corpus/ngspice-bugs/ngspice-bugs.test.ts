@@ -8,6 +8,7 @@ import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { describe, it } from 'node:test';
 import { gunzipSync } from 'node:zlib';
+import { oracleDiagnostic } from './oracle-diagnostics.js';
 import {
   CATEGORIES,
   EXPECTED_BASES,
@@ -40,9 +41,20 @@ function entry(manifest: Manifest, ticket: number): TicketEntry {
 }
 
 describe('ngspice-bugs manifest', () => {
+  it('#737: source-bearing engine errors are reduced to fixed codes and hashes', () => {
+    const text = 'Error on line 9: .subckt VENDOR 1 2\n.model SECRET D(IS=1e-12)\nb.xvendor 1 0 v={vendor_expression}';
+    assert.deepEqual(oracleDiagnostic(text), { code: 'parse-error', sha256: createHash('sha256').update(text).digest('hex') });
+    assert.equal(oracleDiagnostic('Timestep too small: ' + text).code, 'timestep-too-small');
+    assert.equal(oracleDiagnostic(text, true).code, 'completed');
+    assert.equal(oracleDiagnostic('Unknown error: ' + text.replace('Error on line', 'line')).code, 'failed');
+  });
+
   it('#737: committed oracle diagnostics contain only allowlisted metadata, never source text', async () => {
+    for (const path of ['oracle-737.json', 'reconstruction-803.json', 'clean-cache-1046.json']) {
+      const text = await readFile(resolve(HERE, path), 'utf8');
+      assert.equal(/\.(?:subckt|model|include)\b|b\.x\w*\.[^ ]*\s+[^ ]+\s+[^ ]+\s+v=/i.test(text), false, `${path} contains source fragments`);
+    }
     const text = await readFile(resolve(HERE, 'oracle-737.json'), 'utf8');
-    assert.doesNotMatch(text, /\.(?:subckt|model|include)\b|b\.x\w*\.[^ ]*\s+[^ ]+\s+[^ ]+\s+v=/i);
     const receipt = JSON.parse(text);
     for (const row of receipt.rows) {
       if (row.spiceTs.status === 'failed') {
@@ -57,6 +69,25 @@ describe('ngspice-bugs manifest', () => {
         assert.ok(!('error' in run), 'no free-form spawn error');
       }
     }
+  });
+
+  it('#737: clean-cache receipt retains five gaps and exactly one pinned execution', async () => {
+    const receipt = JSON.parse(await readFile(resolve(HERE, 'clean-cache-1046.json'), 'utf8'));
+    const manifest = await loadManifest();
+    const gaps = receipt.rows.filter((row: any) => row.status === 'provenance-gap');
+    const runs = receipt.rows.filter((row: any) => row.status !== 'provenance-gap');
+    assert.equal(receipt.cleanCache, true);
+    assert.equal(gaps.length, 5);
+    assert.equal(runs.length, 1);
+    for (const row of gaps) {
+      assert.equal(row.actualSha256, null);
+      assert.equal(entry(manifest, row.ticket).uncommittedDecks.find(deck => deck.name === row.deck)?.sha256, row.expectedSha256);
+    }
+    assert.equal(runs[0].ticket, 737);
+    assert.equal(runs[0].netlistSha256, entry(manifest, 737).uncommittedDecks[0].sha256);
+    assert.equal(runs[0].spiceTsStatus, 'success');
+    assert.equal(runs[0].ngspiceStatus, 'failed');
+    assert.equal(runs[0].spiceTsPoints, 30771);
   });
 
   it('#737: fresh archive preparation materializes only the exact derived pin', async () => {

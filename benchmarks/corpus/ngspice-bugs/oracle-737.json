@@ -1,5 +1,5 @@
 {
-  "core": "e358f89b50262623595c2659f0899c39ba6ad257",
+  "core": "5aa968f048f7bc92592a3a1f4b99c5f99547836f",
   "ngspiceVersion": "******\n** ngspice-47 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2026, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n******",
   "rows": [
     {
@@ -17,19 +17,19 @@
           "XU68.bE_E3": 0.0010079959795307554,
           "XU68.bE_E4": 0.001007995942626525,
           "XU68.bE_E1": -2.185227334301646e-11,
-          "XU68.X_F10.VF_F10": -1.0196829319427136e-05,
+          "XU68.X_F10.VF_F10": -0.000010196829319427136,
           "XU68.X_F3.VF_F3": 7.047723540100148e-11,
-          "XU68.X_F4.VF_F4": -7.729983998380773e-06,
-          "XU68.X_F6.VF_F6": 5.6507215156141655e-05,
+          "XU68.X_F4.VF_F4": -0.000007729983998380773,
+          "XU68.X_F6.VF_F6": 0.000056507215156141655,
           "XU68.V_V3": 8.461324002562165e-11,
-          "XU68.V_V4": -7.72996984213419e-06,
+          "XU68.V_V4": -0.00000772996984213419,
           "XU68.V_V5": 8.461100570178459e-11,
-          "XU68.V_V6": -1.019681516414448e-05,
-          "XU68.X_F5.VF_F5": 5.650722926122894e-05,
-          "XU68.X_F1.VF_F1": 5.6507243366381477e-05,
+          "XU68.V_V6": -0.00001019681516414448,
+          "XU68.X_F5.VF_F5": 0.00005650722926122894,
+          "XU68.X_F1.VF_F1": 0.000056507243366381477,
           "XU68.V_V1": -2.9846652392073752e-12,
           "XU68.V_V2": -6.632503281310127e-12,
-          "XU68.X_F2.VF_F2": 5.6507201051309024e-05,
+          "XU68.X_F2.VF_F2": 0.000056507201051309024,
           "XU68.bE_U1_E5": 1.4752123531579893e-11,
           "V160": 0.001264466647328634,
           "L85": 0,
@@ -44,14 +44,20 @@
           "mode": "native",
           "exitCode": 1,
           "signal": null,
-          "diagnostics": "\nNote: No compatibility mode selected!\n\n\nCircuit: KiCad schematic\n\n\n\nTotal elapsed time (seconds) = 0.020 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 18029.719 MB.\nMaximum ngspice program size =   11.797 MB.\nCurrent ngspice program size =   11.797 MB.\n\nWarning: Model issue on line 337 :\n  .model 1n5711 d (bv=70 cjo=1.476p eg=690m is=789.982p m=397.031m n=951.0 ...\nunrecognized parameter (rl) - ignored\n\nError on line 120 or its substitute:\n  d.xu68.d_d1 xu68.l xu68.10 xu68.dx 1  \ncould not find a valid modelname\n    Simulation interrupted due to error!\n\nError: circuit not parsed.\nNote: no resource usage information for 'time',\n\tor no active circuit available\n",
+          "diagnostics": {
+            "code": "parse-error",
+            "sha256": "045fd062c4b113c6a50ac22d8cfcfe65c0e9820759b5139ed9b512cc46e47bc4"
+          },
           "plots": []
         },
         {
           "mode": "ltps",
           "exitCode": 1,
           "signal": null,
-          "diagnostics": "Note: gnd in a subcircuit is not set to 0 automatically\n\nNote: Compatibility modes selected: ps lt\n\n\nCircuit: KiCad schematic\n\nASCII raw file \"<scratch>/oracle-737-FYi6R7/probe.raw\"\nReducing trtol to 1 for xspice 'A' devices\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 99  \n\nInitial Transient Solution\n--------------------------\n\nNode                                   Voltage\n----                                   -------\nnet-_r148-pad1_                       -14.7761\nnet-_d38-a_                            -14.776\nnet-_d37-k_                        7.74168e-19\nnet-_l85-pad2_                     7.74167e-19\nnet-_u68-v+_                                15\nxu68.zo                                5.77373\nxu68.33                                 14.136\nxu68.34                                 14.136\nxu68.16                               -14.1012\nxu68.26                               -14.1006\nnet-_u68-v-_                               -15\nxu68.39                                    -14\nxu68.2ndpole                           5.77373\nxu68.40                                14.9849\nxu68.41                                6.48861\nxu68.42                                5.05885\nxu68.43                               -14.9849\nxu68.38                                     14\nnet-_r151-pad2_                        5.77373\nxu68.35                                -14.155\nxu68.36                                -14.155\nunconnected-_u68-_dis-pad8_            2.09982\nxu68.10                                2.09983\nxu68.48                                0.75053\nxu68.49                               -0.75053\nunconnected-_u68-+-pad3_              -14.7741\nxu68.12                                14.9627\nxu68.46                               0.714674\nxu68.47                              -0.714674\nnet-_u68--_                           -14.7761\nxu68.13                                14.1366\nxu68.17                               -14.9203\nxu68.22                               -14.1562\nxu68.21                                 14.136\nxu68.15                               -13.9606\nxu68.29                               -13.9586\nxu68.30                               -14.9207\nxu68.14                                14.9424\nxu68.18                               -14.9435\nxu68.19                                     15\nxu68.24                               -15.0032\nxu68.25                                     15\nxu68.27                               -15.0032\nxu68.28                                14.9424\nxu68.31                               -14.9409\nxu68.32                                     15\nxu68.37                                -15.004\nxu68.20                                 14.136\nxu68.23                               -14.1562\nxu68.b                                 14.1366\nxu68.c                                 14.1366\nxu68.a                                 14.1366\nxu68.l                                  2.4745\nxu68.h                                   2.622\nxu68.11                                14.1366\nxu68.45                              -0.657346\nxu68.44                               0.657346\nxu68.2                                 -14.775\nnet-_c128-pad1_                    7.74167e-19\nnet-_q37-s_                          -0.104382\nnet-_d38-k_                           -14.7045\nnet-_c127-pad2_                              2\nnet-_r150-pad2_                       -14.7761\nxq37.1                             6.61416e-13\nxq37.2                                 5.77372\nxq37.3                               -0.104382\nnet-_q37-g_                            5.77372\nxq37.12                                5.66934\nxq37.14                              -0.104382\nxq37.13                              -0.104282\nxq37.15                                5.66924\nnet-_v158-e1_                                2\nv.xq37.vfb#branch                  5.43902e-11\nv.xu68.x_f2.vf_f2#branch           3.72516e-05\nv.xu68.x_f1.vf_f1#branch           3.72714e-05\nv.xu68.x_f5.vf_f5#branch           3.72648e-05\nv.xu68.x_f6.vf_f6#branch           3.72582e-05\nv.xu68.x_f4.vf_f4#branch          -7.65578e-06\nv.xu68.x_f3.vf_f3#branch           1.32074e-08\nv.xu68.x_f10.vf_f10#branch        -9.56454e-06\nv.xu68.x_f9.vf_f9#branch           1.32074e-08\nl84#branch                        -9.31323e-10\nl85#branch                          -3.605e-28\ne.xq37.egd#branch                 -0.000200005\nv158#branch                       -1.86265e-09\nv160#branch                         0.00116636\nv.xu68.v_v2#branch                -3.10737e-09\nv.xu68.v_v1#branch                -1.22149e-09\nv.xu68.v_v6#branch                -9.55795e-06\nv.xu68.v_v5#branch                   1.979e-08\nv.xu68.v_v4#branch                -7.64919e-06\nv.xu68.v_v3#branch                   1.979e-08\nv159#branch                        -0.00123732\na$poly$e.xu68.e_u1_e5#branch_1_0     6.88015e-09\na$poly$e.xu68.e_e1#branch_1_0     -6.52749e-09\na$poly$e.xu68.e_e4#branch_1_0       0.00100799\na$poly$e.xu68.e_e3#branch_1_0         0.001008\na$poly$e.xu68.e_e2#branch_1_0      6.53903e-09\n\n\nNo. of Data Rows : 13\n\nTotal analysis time (seconds) = 0.009319\n\nTotal elapsed time (seconds) = 0.037 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 18029.719 MB.\nMaximum ngspice program size =   12.672 MB.\nCurrent ngspice program size =   12.672 MB.\n\nWarning: Model issue on line 337 :\n  .model 1n5711 d (bv=70 cjo=1.476p eg=690m is=789.982p m=397.031m n=951.0 ...\nunrecognized parameter (rl) - ignored\n\ndoAnalyses: TRAN:  Timestep too small; time = 2.89999e-10, timestep = 2.5e-16: trouble with node \"a$poly$e.xu68.e_u1_e5#branch_1_0\"\n\n\nrun simulation(s) aborted\n",
+          "diagnostics": {
+            "code": "timestep-too-small",
+            "sha256": "1203c40f54e555477e2fd02f741d771d1ad7edbc24ba591b41465c9704f2d0e4"
+          },
           "plots": [
             {
               "plotName": "Transient Analysis",
@@ -95,7 +101,7 @@
                     "im": 0
                   },
                   {
-                    "re": -2.029349335789987e-09,
+                    "re": -2.029349335789987e-9,
                     "im": 0
                   }
                 ],
@@ -645,7 +651,7 @@
                     "im": 0
                   },
                   {
-                    "re": 2.515669211833327e-07,
+                    "re": 2.515669211833327e-7,
                     "im": 0
                   }
                 ],
@@ -695,7 +701,7 @@
                     "im": 0
                   },
                   {
-                    "re": 1.739938653790529e-08,
+                    "re": 1.739938653790529e-8,
                     "im": 0
                   }
                 ],
@@ -785,87 +791,87 @@
                     "im": 0
                   },
                   {
-                    "re": 1.413435797232054e-06,
+                    "re": 0.000001413435797232054,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.x_f2.vf_f2)": [
                   {
-                    "re": 3.725162746973959e-05,
+                    "re": 0.00003725162746973959,
                     "im": 0
                   },
                   {
-                    "re": 3.725162746974574e-05,
+                    "re": 0.00003725162746974574,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.x_f1.vf_f1)": [
                   {
-                    "re": 3.727137609918274e-05,
+                    "re": 0.00003727137609918274,
                     "im": 0
                   },
                   {
-                    "re": 3.72713760991797e-05,
+                    "re": 0.0000372713760991797,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.x_f5.vf_f5)": [
                   {
-                    "re": 3.72647932227017e-05,
+                    "re": 0.0000372647932227017,
                     "im": 0
                   },
                   {
-                    "re": 3.726479322270172e-05,
+                    "re": 0.00003726479322270172,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.x_f6.vf_f6)": [
                   {
-                    "re": 3.725821034622064e-05,
+                    "re": 0.00003725821034622064,
                     "im": 0
                   },
                   {
-                    "re": 3.725821034622373e-05,
+                    "re": 0.00003725821034622373,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.x_f4.vf_f4)": [
                   {
-                    "re": -7.655781787449468e-06,
+                    "re": -0.000007655781787449468,
                     "im": 0
                   },
                   {
-                    "re": -2.540462521905881e-06,
+                    "re": -0.000002540462521905881,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.x_f3.vf_f3)": [
                   {
-                    "re": 1.320739984750658e-08,
+                    "re": 1.320739984750658e-8,
                     "im": 0
                   },
                   {
-                    "re": -3.734803285690524e-06,
+                    "re": -0.000003734803285690524,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.x_f10.vf_f10)": [
                   {
-                    "re": -9.564542962650071e-06,
+                    "re": -0.000009564542962650071,
                     "im": 0
                   },
                   {
-                    "re": -9.261198502741977e-06,
+                    "re": -0.000009261198502741977,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.x_f9.vf_f9)": [
                   {
-                    "re": 1.320739795424095e-08,
+                    "re": 1.320739795424095e-8,
                     "im": 0
                   },
                   {
-                    "re": -3.755040928379429e-08,
+                    "re": -3.755040928379429e-8,
                     "im": 0
                   }
                 ],
@@ -901,11 +907,11 @@
                 ],
                 "i(v158)": [
                   {
-                    "re": -1.862645150098319e-09,
+                    "re": -1.862645150098319e-9,
                     "im": 0
                   },
                   {
-                    "re": -1.842346358566857e-09,
+                    "re": -1.842346358566857e-9,
                     "im": 0
                   }
                 ],
@@ -921,61 +927,61 @@
                 ],
                 "i(v.xu68.v_v2)": [
                   {
-                    "re": -3.10736952615069e-09,
+                    "re": -3.10736952615069e-9,
                     "im": 0
                   },
                   {
-                    "re": -3.107369526143548e-09,
+                    "re": -3.107369526143548e-9,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.v_v1)": [
                   {
-                    "re": -1.221487068602352e-09,
+                    "re": -1.221487068602352e-9,
                     "im": 0
                   },
                   {
-                    "re": -1.221487068602352e-09,
+                    "re": -1.221487068602352e-9,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.v_v6)": [
                   {
-                    "re": -9.557951521818034e-06,
+                    "re": -0.000009557951521818034,
                     "im": 0
                   },
                   {
-                    "re": -9.254607121234156e-06,
+                    "re": -0.000009254607121234156,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.v_v5)": [
                   {
-                    "re": 1.978998067552666e-08,
+                    "re": 1.978998067552666e-8,
                     "im": 0
                   },
                   {
-                    "re": -3.096781663426196e-08,
+                    "re": -3.096781663426196e-8,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.v_v4)": [
                   {
-                    "re": -7.649189788604653e-06,
+                    "re": -0.000007649189788604653,
                     "im": 0
                   },
                   {
-                    "re": -2.533871523505604e-06,
+                    "re": -0.000002533871523505604,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.v_v3)": [
                   {
-                    "re": 1.978998257030766e-08,
+                    "re": 1.978998257030766e-8,
                     "im": 0
                   },
                   {
-                    "re": -3.728219969940489e-06,
+                    "re": -0.000003728219969940489,
                     "im": 0
                   }
                 ],
@@ -991,21 +997,21 @@
                 ],
                 "i(a$poly$e.xu68.e_u1_e5)": [
                   {
-                    "re": 6.880147762990677e-09,
+                    "re": 6.880147762990677e-9,
                     "im": 0
                   },
                   {
-                    "re": 6.862758025400944e-09,
+                    "re": 6.862758025400944e-9,
                     "im": 0
                   }
                 ],
                 "i(a$poly$e.xu68.e_e1)": [
                   {
-                    "re": -6.52748529736069e-09,
+                    "re": -6.52748529736069e-9,
                     "im": 0
                   },
                   {
-                    "re": -6.527484965382352e-09,
+                    "re": -6.527484965382352e-9,
                     "im": 0
                   }
                 ],
@@ -1031,11 +1037,11 @@
                 ],
                 "i(a$poly$e.xu68.e_e2)": [
                   {
-                    "re": 6.539032753327496e-09,
+                    "re": 6.539032753327496e-9,
                     "im": 0
                   },
                   {
-                    "re": 6.539033085305834e-09,
+                    "re": 6.539033085305834e-9,
                     "im": 0
                   }
                 ]
@@ -1060,19 +1066,19 @@
           "XU68.bE_E3": 0.0010079959795307554,
           "XU68.bE_E4": 0.001007995942626525,
           "XU68.bE_E1": -2.185227334301646e-11,
-          "XU68.X_F10.VF_F10": -1.0196829319427136e-05,
+          "XU68.X_F10.VF_F10": -0.000010196829319427136,
           "XU68.X_F3.VF_F3": 7.047723540100148e-11,
-          "XU68.X_F4.VF_F4": -7.729983998380773e-06,
-          "XU68.X_F6.VF_F6": 5.6507215156141655e-05,
+          "XU68.X_F4.VF_F4": -0.000007729983998380773,
+          "XU68.X_F6.VF_F6": 0.000056507215156141655,
           "XU68.V_V3": 8.461324002562165e-11,
-          "XU68.V_V4": -7.72996984213419e-06,
+          "XU68.V_V4": -0.00000772996984213419,
           "XU68.V_V5": 8.461100570178459e-11,
-          "XU68.V_V6": -1.019681516414448e-05,
-          "XU68.X_F5.VF_F5": 5.650722926122894e-05,
-          "XU68.X_F1.VF_F1": 5.6507243366381477e-05,
+          "XU68.V_V6": -0.00001019681516414448,
+          "XU68.X_F5.VF_F5": 0.00005650722926122894,
+          "XU68.X_F1.VF_F1": 0.000056507243366381477,
           "XU68.V_V1": -2.9846652392073752e-12,
           "XU68.V_V2": -6.632503281310127e-12,
-          "XU68.X_F2.VF_F2": 5.6507201051309024e-05,
+          "XU68.X_F2.VF_F2": 0.000056507201051309024,
           "XU68.bE_U1_E5": 1.4752123531579893e-11,
           "V160": 0.001264466647328634,
           "L85": 0,
@@ -1087,14 +1093,20 @@
           "mode": "native",
           "exitCode": 1,
           "signal": null,
-          "diagnostics": "\nNote: No compatibility mode selected!\n\n\nCircuit: KiCad schematic\n\n\n\nTotal elapsed time (seconds) = 0.022 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 18029.719 MB.\nMaximum ngspice program size =   11.750 MB.\nCurrent ngspice program size =   11.750 MB.\n\nWarning: Model issue on line 337 :\n  .model 1n5711 d (bv=70 cjo=1.476p eg=690m is=789.982p m=397.031m n=951.0 ...\nunrecognized parameter (rl) - ignored\n\nError on line 120 or its substitute:\n  d.xu68.d_d1 xu68.l xu68.10 xu68.dx 1  \ncould not find a valid modelname\n    Simulation interrupted due to error!\n\nError: circuit not parsed.\nNote: no resource usage information for 'time',\n\tor no active circuit available\n",
+          "diagnostics": {
+            "code": "parse-error",
+            "sha256": "4696dae39922f3eef1fde7108c0d0a5380bfa6557ccb52519b25f97b41bac3e3"
+          },
           "plots": []
         },
         {
           "mode": "ltps",
           "exitCode": 1,
           "signal": null,
-          "diagnostics": "Note: gnd in a subcircuit is not set to 0 automatically\n\nNote: Compatibility modes selected: ps lt\n\n\nCircuit: KiCad schematic\n\nASCII raw file \"<scratch>/oracle-737-sesRsv/probe.raw\"\nReducing trtol to 1 for xspice 'A' devices\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 99  \n\nInitial Transient Solution\n--------------------------\n\nNode                                   Voltage\n----                                   -------\nnet-_r148-pad1_                       -14.7761\nnet-_d38-a_                            -14.776\nnet-_d37-k_                        7.74168e-19\nnet-_l85-pad2_                     7.74167e-19\nnet-_u68-v+_                                15\nxu68.zo                                5.77373\nxu68.33                                 14.136\nxu68.34                                 14.136\nxu68.16                               -14.1012\nxu68.26                               -14.1006\nnet-_u68-v-_                               -15\nxu68.39                                    -14\nxu68.2ndpole                           5.77373\nxu68.40                                14.9849\nxu68.41                                6.48861\nxu68.42                                5.05885\nxu68.43                               -14.9849\nxu68.38                                     14\nnet-_r151-pad2_                        5.77373\nxu68.35                                -14.155\nxu68.36                                -14.155\nunconnected-_u68-_dis-pad8_            2.09982\nxu68.10                                2.09983\nxu68.48                                0.75053\nxu68.49                               -0.75053\nunconnected-_u68-+-pad3_              -14.7741\nxu68.12                                14.9627\nxu68.46                               0.714674\nxu68.47                              -0.714674\nnet-_u68--_                           -14.7761\nxu68.13                                14.1366\nxu68.17                               -14.9203\nxu68.22                               -14.1562\nxu68.21                                 14.136\nxu68.15                               -13.9606\nxu68.29                               -13.9586\nxu68.30                               -14.9207\nxu68.14                                14.9424\nxu68.18                               -14.9435\nxu68.19                                     15\nxu68.24                               -15.0032\nxu68.25                                     15\nxu68.27                               -15.0032\nxu68.28                                14.9424\nxu68.31                               -14.9409\nxu68.32                                     15\nxu68.37                                -15.004\nxu68.20                                 14.136\nxu68.23                               -14.1562\nxu68.b                                 14.1366\nxu68.c                                 14.1366\nxu68.a                                 14.1366\nxu68.l                                  2.4745\nxu68.h                                   2.622\nxu68.11                                14.1366\nxu68.45                              -0.657346\nxu68.44                               0.657346\nxu68.2                                 -14.775\nnet-_c128-pad1_                    7.74167e-19\nnet-_q37-s_                          -0.104382\nnet-_d38-k_                           -14.7045\nnet-_c127-pad2_                              2\nnet-_r150-pad2_                       -14.7761\nxq37.1                             6.61416e-13\nxq37.2                                 5.77372\nxq37.3                               -0.104382\nnet-_q37-g_                            5.77372\nxq37.12                                5.66934\nxq37.14                              -0.104382\nxq37.13                              -0.104282\nxq37.15                                5.66924\nnet-_v158-e1_                                2\nv.xq37.vfb#branch                  5.43902e-11\nv.xu68.x_f2.vf_f2#branch           3.72516e-05\nv.xu68.x_f1.vf_f1#branch           3.72714e-05\nv.xu68.x_f5.vf_f5#branch           3.72648e-05\nv.xu68.x_f6.vf_f6#branch           3.72582e-05\nv.xu68.x_f4.vf_f4#branch          -7.65578e-06\nv.xu68.x_f3.vf_f3#branch           1.32074e-08\nv.xu68.x_f10.vf_f10#branch        -9.56454e-06\nv.xu68.x_f9.vf_f9#branch           1.32074e-08\nl84#branch                        -9.31323e-10\nl85#branch                          -3.605e-28\ne.xq37.egd#branch                 -0.000200005\nv158#branch                       -1.86265e-09\nv160#branch                         0.00116636\nv.xu68.v_v2#branch                -3.10737e-09\nv.xu68.v_v1#branch                -1.22149e-09\nv.xu68.v_v6#branch                -9.55795e-06\nv.xu68.v_v5#branch                   1.979e-08\nv.xu68.v_v4#branch                -7.64919e-06\nv.xu68.v_v3#branch                   1.979e-08\nv159#branch                        -0.00123732\na$poly$e.xu68.e_u1_e5#branch_1_0     6.88015e-09\na$poly$e.xu68.e_e1#branch_1_0     -6.52749e-09\na$poly$e.xu68.e_e4#branch_1_0       0.00100799\na$poly$e.xu68.e_e3#branch_1_0         0.001008\na$poly$e.xu68.e_e2#branch_1_0      6.53903e-09\n\n\nNo. of Data Rows : 8\n\nTotal analysis time (seconds) = 0.012078\n\nTotal elapsed time (seconds) = 0.042 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 18029.719 MB.\nMaximum ngspice program size =   12.750 MB.\nCurrent ngspice program size =   12.750 MB.\n\nWarning: Model issue on line 337 :\n  .model 1n5711 d (bv=70 cjo=1.476p eg=690m is=789.982p m=397.031m n=951.0 ...\nunrecognized parameter (rl) - ignored\n\ndoAnalyses: TRAN:  Timestep too small; time = 1.00001e-14, timestep = 2.5e-24: trouble with node \"v.xu68.x_f2.vf_f2#branch\"\n\n\nrun simulation(s) aborted\n",
+          "diagnostics": {
+            "code": "timestep-too-small",
+            "sha256": "498d40042debeef1bcfb659c48f0590cc2c6b5c173ce477561b9115709e8b14b"
+          },
           "plots": [
             {
               "plotName": "Transient Analysis",
@@ -1834,47 +1846,47 @@
                 ],
                 "i(v.xu68.x_f2.vf_f2)": [
                   {
-                    "re": 3.725162746973959e-05,
+                    "re": 0.00003725162746973959,
                     "im": 0
                   },
                   {
-                    "re": 3.730377268919184e-05,
+                    "re": 0.00003730377268919184,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.x_f1.vf_f1)": [
                   {
-                    "re": 3.727137609918274e-05,
+                    "re": 0.00003727137609918274,
                     "im": 0
                   },
                   {
-                    "re": 3.73103555656729e-05,
+                    "re": 0.0000373103555656729,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.x_f5.vf_f5)": [
                   {
-                    "re": 3.72647932227017e-05,
+                    "re": 0.0000372647932227017,
                     "im": 0
                   },
                   {
-                    "re": 3.730377268919184e-05,
+                    "re": 0.00003730377268919184,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.x_f6.vf_f6)": [
                   {
-                    "re": 3.725821034622064e-05,
+                    "re": 0.00003725821034622064,
                     "im": 0
                   },
                   {
-                    "re": 3.73103555656729e-05,
+                    "re": 0.0000373103555656729,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.x_f4.vf_f4)": [
                   {
-                    "re": -7.655781787449468e-06,
+                    "re": -0.000007655781787449468,
                     "im": 0
                   },
                   {
@@ -1884,7 +1896,7 @@
                 ],
                 "i(v.xu68.x_f3.vf_f3)": [
                   {
-                    "re": 1.320739984750658e-08,
+                    "re": 1.320739984750658e-8,
                     "im": 0
                   },
                   {
@@ -1894,21 +1906,21 @@
                 ],
                 "i(v.xu68.x_f10.vf_f10)": [
                   {
-                    "re": -9.564542962650071e-06,
+                    "re": -0.000009564542962650071,
                     "im": 0
                   },
                   {
-                    "re": -1.014402227639129e-05,
+                    "re": -0.00001014402227639129,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.x_f9.vf_f9)": [
                   {
-                    "re": 1.320739795424095e-08,
+                    "re": 1.320739795424095e-8,
                     "im": 0
                   },
                   {
-                    "re": 5.672301324653897e-06,
+                    "re": 0.000005672301324653897,
                     "im": 0
                   }
                 ],
@@ -1918,7 +1930,7 @@
                     "im": 0
                   },
                   {
-                    "re": -1.051617013695386e-09,
+                    "re": -1.051617013695386e-9,
                     "im": 0
                   }
                 ],
@@ -1944,11 +1956,11 @@
                 ],
                 "i(v158)": [
                   {
-                    "re": -1.862645150098319e-09,
+                    "re": -1.862645150098319e-9,
                     "im": 0
                   },
                   {
-                    "re": -1.982939588744545e-09,
+                    "re": -1.982939588744545e-9,
                     "im": 0
                   }
                 ],
@@ -1964,47 +1976,47 @@
                 ],
                 "i(v.xu68.v_v2)": [
                   {
-                    "re": -3.10736952615069e-09,
+                    "re": -3.10736952615069e-9,
                     "im": 0
                   },
                   {
-                    "re": -3.10736952615073e-09,
+                    "re": -3.10736952615073e-9,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.v_v1)": [
                   {
-                    "re": -1.221487068602352e-09,
+                    "re": -1.221487068602352e-9,
                     "im": 0
                   },
                   {
-                    "re": -1.221487068602352e-09,
+                    "re": -1.221487068602352e-9,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.v_v6)": [
                   {
-                    "re": -9.557951521818034e-06,
+                    "re": -0.000009557951521818034,
                     "im": 0
                   },
                   {
-                    "re": -1.013743072222385e-05,
+                    "re": -0.00001013743072222385,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.v_v5)": [
                   {
-                    "re": 1.978998067552666e-08,
+                    "re": 1.978998067552666e-8,
                     "im": 0
                   },
                   {
-                    "re": 5.678882800582437e-06,
+                    "re": 0.000005678882800582437,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.v_v4)": [
                   {
-                    "re": -7.649189788604653e-06,
+                    "re": -0.000007649189788604653,
                     "im": 0
                   },
                   {
@@ -2014,7 +2026,7 @@
                 ],
                 "i(v.xu68.v_v3)": [
                   {
-                    "re": 1.978998257030766e-08,
+                    "re": 1.978998257030766e-8,
                     "im": 0
                   },
                   {
@@ -2034,7 +2046,7 @@
                 ],
                 "i(a$poly$e.xu68.e_u1_e5)": [
                   {
-                    "re": 6.880147762990677e-09,
+                    "re": 6.880147762990677e-9,
                     "im": 0
                   },
                   {
@@ -2044,11 +2056,11 @@
                 ],
                 "i(a$poly$e.xu68.e_e1)": [
                   {
-                    "re": -6.52748529736069e-09,
+                    "re": -6.52748529736069e-9,
                     "im": 0
                   },
                   {
-                    "re": -6.52748529736069e-09,
+                    "re": -6.52748529736069e-9,
                     "im": 0
                   }
                 ],
@@ -2074,11 +2086,11 @@
                 ],
                 "i(a$poly$e.xu68.e_e2)": [
                   {
-                    "re": 6.539032753327496e-09,
+                    "re": 6.539032753327496e-9,
                     "im": 0
                   },
                   {
-                    "re": 6.539032753327497e-09,
+                    "re": 6.539032753327497e-9,
                     "im": 0
                   }
                 ]
@@ -2094,21 +2106,30 @@
       "bytes": 865,
       "spiceTs": {
         "status": "failed",
-        "error": "TimestepTooSmallError: Timestep too small at t=5.562971581351822e-11: dt=9.819386378610632e-16"
+        "error": {
+          "code": "timestep-too-small",
+          "sha256": "08690c39c806bc89f8320b84e7269600193aff6cbce2a068bbb2d9f517b6e4e4"
+        }
       },
       "ngspice": [
         {
           "mode": "native",
           "exitCode": 1,
           "signal": null,
-          "diagnostics": "\nNote: No compatibility mode selected!\n\n\nCircuit: KiCad schematic\n\n\n\nTotal elapsed time (seconds) = 0.023 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 18029.719 MB.\nMaximum ngspice program size =   11.734 MB.\nCurrent ngspice program size =   11.734 MB.\n\nWarning: Model issue on line 337 :\n  .model 1n5711 d (bv=70 cjo=1.476p eg=690m is=789.982p m=397.031m n=951.0 ...\nunrecognized parameter (rl) - ignored\n\nError on line 120 or its substitute:\n  d.xu68.d_d1 xu68.l xu68.10 xu68.dx 1  \ncould not find a valid modelname\n    Simulation interrupted due to error!\n\nError: circuit not parsed.\nNote: no resource usage information for 'time',\n\tor no active circuit available\n",
+          "diagnostics": {
+            "code": "parse-error",
+            "sha256": "905a06dbe6d19a627da1c2e20a18f0e50c642009ab8b01c18f50a1958b1e6a38"
+          },
           "plots": []
         },
         {
           "mode": "ltps",
           "exitCode": 1,
           "signal": null,
-          "diagnostics": "Note: gnd in a subcircuit is not set to 0 automatically\n\nNote: Compatibility modes selected: ps lt\n\n\nCircuit: KiCad schematic\n\nASCII raw file \"<scratch>/oracle-737-TQHYYr/probe.raw\"\nReducing trtol to 1 for xspice 'A' devices\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 99  \n\nInitial Transient Solution\n--------------------------\n\nNode                                   Voltage\n----                                   -------\nnet-_r148-pad1_                       -14.7761\nnet-_d38-a_                            -14.776\nnet-_d37-k_                        7.74168e-19\nnet-_l85-pad2_                     7.74167e-19\nnet-_u68-v+_                                15\nxu68.zo                                5.77373\nxu68.33                                 14.136\nxu68.34                                 14.136\nxu68.16                               -14.1012\nxu68.26                               -14.1006\nnet-_u68-v-_                               -15\nxu68.39                                    -14\nxu68.2ndpole                           5.77373\nxu68.40                                14.9849\nxu68.41                                6.48861\nxu68.42                                5.05885\nxu68.43                               -14.9849\nxu68.38                                     14\nnet-_r151-pad2_                        5.77373\nxu68.35                                -14.155\nxu68.36                                -14.155\nunconnected-_u68-_dis-pad8_            2.09982\nxu68.10                                2.09983\nxu68.48                                0.75053\nxu68.49                               -0.75053\nunconnected-_u68-+-pad3_              -14.7741\nxu68.12                                14.9627\nxu68.46                               0.714674\nxu68.47                              -0.714674\nnet-_u68--_                           -14.7761\nxu68.13                                14.1366\nxu68.17                               -14.9203\nxu68.22                               -14.1562\nxu68.21                                 14.136\nxu68.15                               -13.9606\nxu68.29                               -13.9586\nxu68.30                               -14.9207\nxu68.14                                14.9424\nxu68.18                               -14.9435\nxu68.19                                     15\nxu68.24                               -15.0032\nxu68.25                                     15\nxu68.27                               -15.0032\nxu68.28                                14.9424\nxu68.31                               -14.9409\nxu68.32                                     15\nxu68.37                                -15.004\nxu68.20                                 14.136\nxu68.23                               -14.1562\nxu68.b                                 14.1366\nxu68.c                                 14.1366\nxu68.a                                 14.1366\nxu68.l                                  2.4745\nxu68.h                                   2.622\nxu68.11                                14.1366\nxu68.45                              -0.657346\nxu68.44                               0.657346\nxu68.2                                 -14.775\nnet-_c128-pad1_                    7.74167e-19\nnet-_q37-s_                          -0.104382\nnet-_d38-k_                           -14.7045\nnet-_c127-pad2_                              2\nnet-_r150-pad2_                       -14.7761\nxq37.1                             6.61416e-13\nxq37.2                                 5.77372\nxq37.3                               -0.104382\nnet-_q37-g_                            5.77372\nxq37.12                                5.66934\nxq37.14                              -0.104382\nxq37.13                              -0.104282\nxq37.15                                5.66924\nnet-_v158-e1_                                2\nv.xq37.vfb#branch                  5.43902e-11\nv.xu68.x_f2.vf_f2#branch           3.72516e-05\nv.xu68.x_f1.vf_f1#branch           3.72714e-05\nv.xu68.x_f5.vf_f5#branch           3.72648e-05\nv.xu68.x_f6.vf_f6#branch           3.72582e-05\nv.xu68.x_f4.vf_f4#branch          -7.65578e-06\nv.xu68.x_f3.vf_f3#branch           1.32074e-08\nv.xu68.x_f10.vf_f10#branch        -9.56454e-06\nv.xu68.x_f9.vf_f9#branch           1.32074e-08\nl84#branch                        -9.31323e-10\nl85#branch                          -3.605e-28\ne.xq37.egd#branch                 -0.000200005\nv158#branch                       -1.86265e-09\nv160#branch                         0.00116636\nv.xu68.v_v2#branch                -3.10737e-09\nv.xu68.v_v1#branch                -1.22149e-09\nv.xu68.v_v6#branch                -9.55795e-06\nv.xu68.v_v5#branch                   1.979e-08\nv.xu68.v_v4#branch                -7.64919e-06\nv.xu68.v_v3#branch                   1.979e-08\nv159#branch                        -0.00123732\na$poly$e.xu68.e_u1_e5#branch_1_0     6.88015e-09\na$poly$e.xu68.e_e1#branch_1_0     -6.52749e-09\na$poly$e.xu68.e_e4#branch_1_0       0.00100799\na$poly$e.xu68.e_e3#branch_1_0         0.001008\na$poly$e.xu68.e_e2#branch_1_0      6.53903e-09\n\n\nNo. of Data Rows : 6\n\nTotal analysis time (seconds) = 0.011226\n\nTotal elapsed time (seconds) = 0.040 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 18029.719 MB.\nMaximum ngspice program size =   12.750 MB.\nCurrent ngspice program size =   12.750 MB.\n\nWarning: Model issue on line 337 :\n  .model 1n5711 d (bv=70 cjo=1.476p eg=690m is=789.982p m=397.031m n=951.0 ...\nunrecognized parameter (rl) - ignored\n\ndoAnalyses: TRAN:  Timestep too small; time = 1.016e-13, timestep = 2.5e-23: trouble with xq37:dlim-instance d.xq37.d1\n\n\nrun simulation(s) aborted\n",
+          "diagnostics": {
+            "code": "timestep-too-small",
+            "sha256": "f604ce6476e2d7f51cee62f0b734aa99d9e0d2b9a45597757d95882848fa503a"
+          },
           "plots": [
             {
               "plotName": "Transient Analysis",
@@ -2752,7 +2773,7 @@
                     "im": 0
                   },
                   {
-                    "re": -2.823143287484956e-05,
+                    "re": -0.00002823143287484956,
                     "im": 0
                   }
                 ],
@@ -2848,47 +2869,47 @@
                 ],
                 "i(v.xu68.x_f2.vf_f2)": [
                   {
-                    "re": 3.725162746973959e-05,
+                    "re": 0.00003725162746973959,
                     "im": 0
                   },
                   {
-                    "re": 3.725162746072063e-05,
+                    "re": 0.00003725162746072063,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.x_f1.vf_f1)": [
                   {
-                    "re": 3.727137609918274e-05,
+                    "re": 0.00003727137609918274,
                     "im": 0
                   },
                   {
-                    "re": 3.727137609015459e-05,
+                    "re": 0.00003727137609015459,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.x_f5.vf_f5)": [
                   {
-                    "re": 3.72647932227017e-05,
+                    "re": 0.0000372647932227017,
                     "im": 0
                   },
                   {
-                    "re": 3.726479321367661e-05,
+                    "re": 0.00003726479321367661,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.x_f6.vf_f6)": [
                   {
-                    "re": 3.725821034622064e-05,
+                    "re": 0.00003725821034622064,
                     "im": 0
                   },
                   {
-                    "re": 3.725821033719861e-05,
+                    "re": 0.00003725821033719861,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.x_f4.vf_f4)": [
                   {
-                    "re": -7.655781787449468e-06,
+                    "re": -0.000007655781787449468,
                     "im": 0
                   },
                   {
@@ -2898,7 +2919,7 @@
                 ],
                 "i(v.xu68.x_f3.vf_f3)": [
                   {
-                    "re": 1.320739984750658e-08,
+                    "re": 1.320739984750658e-8,
                     "im": 0
                   },
                   {
@@ -2908,21 +2929,21 @@
                 ],
                 "i(v.xu68.x_f10.vf_f10)": [
                   {
-                    "re": -9.564542962650071e-06,
+                    "re": -0.000009564542962650071,
                     "im": 0
                   },
                   {
-                    "re": -9.51132354272441e-06,
+                    "re": -0.00000951132354272441,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.x_f9.vf_f9)": [
                   {
-                    "re": 1.320739795424095e-08,
+                    "re": 1.320739795424095e-8,
                     "im": 0
                   },
                   {
-                    "re": -6.591136291066667e-06,
+                    "re": -0.000006591136291066667,
                     "im": 0
                   }
                 ],
@@ -2932,7 +2953,7 @@
                     "im": 0
                   },
                   {
-                    "re": 1.43809686349738e-09,
+                    "re": 1.43809686349738e-9,
                     "im": 0
                   }
                 ],
@@ -2958,7 +2979,7 @@
                 ],
                 "i(v158)": [
                   {
-                    "re": -1.862645150098319e-09,
+                    "re": -1.862645150098319e-9,
                     "im": 0
                   },
                   {
@@ -2978,47 +2999,47 @@
                 ],
                 "i(v.xu68.v_v2)": [
                   {
-                    "re": -3.10736952615069e-09,
+                    "re": -3.10736952615069e-9,
                     "im": 0
                   },
                   {
-                    "re": -3.107369526150903e-09,
+                    "re": -3.107369526150903e-9,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.v_v1)": [
                   {
-                    "re": -1.221487068602352e-09,
+                    "re": -1.221487068602352e-9,
                     "im": 0
                   },
                   {
-                    "re": -1.221487068602352e-09,
+                    "re": -1.221487068602352e-9,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.v_v6)": [
                   {
-                    "re": -9.557951521818034e-06,
+                    "re": -0.000009557951521818034,
                     "im": 0
                   },
                   {
-                    "re": -9.504732112299655e-06,
+                    "re": -0.000009504732112299655,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.v_v5)": [
                   {
-                    "re": 1.978998067552666e-08,
+                    "re": 1.978998067552666e-8,
                     "im": 0
                   },
                   {
-                    "re": -6.584552416684243e-06,
+                    "re": -0.000006584552416684243,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.v_v4)": [
                   {
-                    "re": -7.649189788604653e-06,
+                    "re": -0.000007649189788604653,
                     "im": 0
                   },
                   {
@@ -3028,7 +3049,7 @@
                 ],
                 "i(v.xu68.v_v3)": [
                   {
-                    "re": 1.978998257030766e-08,
+                    "re": 1.978998257030766e-8,
                     "im": 0
                   },
                   {
@@ -3048,21 +3069,21 @@
                 ],
                 "i(a$poly$e.xu68.e_u1_e5)": [
                   {
-                    "re": 6.880147762990677e-09,
+                    "re": 6.880147762990677e-9,
                     "im": 0
                   },
                   {
-                    "re": -1.794453883141165e-05,
+                    "re": -0.00001794453883141165,
                     "im": 0
                   }
                 ],
                 "i(a$poly$e.xu68.e_e1)": [
                   {
-                    "re": -6.52748529736069e-09,
+                    "re": -6.52748529736069e-9,
                     "im": 0
                   },
                   {
-                    "re": -6.527485297360689e-09,
+                    "re": -6.527485297360689e-9,
                     "im": 0
                   }
                 ],
@@ -3088,11 +3109,11 @@
                 ],
                 "i(a$poly$e.xu68.e_e2)": [
                   {
-                    "re": 6.539032753327496e-09,
+                    "re": 6.539032753327496e-9,
                     "im": 0
                   },
                   {
-                    "re": 6.539032753327497e-09,
+                    "re": 6.539032753327497e-9,
                     "im": 0
                   }
                 ]
@@ -3109,7 +3130,7 @@
       "spiceTs": {
         "status": "success",
         "points": 1588,
-        "finalTime": 1e-06,
+        "finalTime": 0.000001,
         "initialCurrents": {
           "V159": -0.0013554713473383079,
           "XU68.X_F9.VF_F9": 7.047500456503367e-11,
@@ -3117,19 +3138,19 @@
           "XU68.bE_E3": 0.0010079959795307554,
           "XU68.bE_E4": 0.001007995942626525,
           "XU68.bE_E1": -2.185227334301646e-11,
-          "XU68.X_F10.VF_F10": -1.0196829319427136e-05,
+          "XU68.X_F10.VF_F10": -0.000010196829319427136,
           "XU68.X_F3.VF_F3": 7.047723540100148e-11,
-          "XU68.X_F4.VF_F4": -7.729983998380773e-06,
-          "XU68.X_F6.VF_F6": 5.6507215156141655e-05,
+          "XU68.X_F4.VF_F4": -0.000007729983998380773,
+          "XU68.X_F6.VF_F6": 0.000056507215156141655,
           "XU68.V_V3": 8.461324002562165e-11,
-          "XU68.V_V4": -7.72996984213419e-06,
+          "XU68.V_V4": -0.00000772996984213419,
           "XU68.V_V5": 8.461100570178459e-11,
-          "XU68.V_V6": -1.019681516414448e-05,
-          "XU68.X_F5.VF_F5": 5.650722926122894e-05,
-          "XU68.X_F1.VF_F1": 5.6507243366381477e-05,
+          "XU68.V_V6": -0.00001019681516414448,
+          "XU68.X_F5.VF_F5": 0.00005650722926122894,
+          "XU68.X_F1.VF_F1": 0.000056507243366381477,
           "XU68.V_V1": -2.9846652392073752e-12,
           "XU68.V_V2": -6.632503281310127e-12,
-          "XU68.X_F2.VF_F2": 5.6507201051309024e-05,
+          "XU68.X_F2.VF_F2": 0.000056507201051309024,
           "XU68.bE_U1_E5": 1.4752123531579893e-11,
           "V160": 0.001264466647328634,
           "L85": 0,
@@ -3144,14 +3165,20 @@
           "mode": "native",
           "exitCode": 1,
           "signal": null,
-          "diagnostics": "\nNote: No compatibility mode selected!\n\n\nCircuit: KiCad schematic\n\n\n\nTotal elapsed time (seconds) = 0.019 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 18163.484 MB.\nMaximum ngspice program size =   11.750 MB.\nCurrent ngspice program size =   11.750 MB.\n\nWarning: Model issue on line 337 :\n  .model 1n5711 d (bv=70 cjo=1.476p eg=690m is=789.982p m=397.031m n=951.0 ...\nunrecognized parameter (rl) - ignored\n\nError on line 120 or its substitute:\n  d.xu68.d_d1 xu68.l xu68.10 xu68.dx 1  \ncould not find a valid modelname\n    Simulation interrupted due to error!\n\nError: circuit not parsed.\nNote: no resource usage information for 'time',\n\tor no active circuit available\n",
+          "diagnostics": {
+            "code": "parse-error",
+            "sha256": "4416bc26b9d07de94cded3c4df7e115f818aaffa9330e6e5429856e0420e2f3b"
+          },
           "plots": []
         },
         {
           "mode": "ltps",
           "exitCode": 1,
           "signal": null,
-          "diagnostics": "Note: gnd in a subcircuit is not set to 0 automatically\n\nNote: Compatibility modes selected: ps lt\n\n\nCircuit: KiCad schematic\n\nASCII raw file \"<scratch>/oracle-737-gfPgDY/probe.raw\"\nReducing trtol to 1 for xspice 'A' devices\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 99  \n\nInitial Transient Solution\n--------------------------\n\nNode                                   Voltage\n----                                   -------\nnet-_r148-pad1_                       -14.7761\nnet-_d38-a_                            -14.776\nnet-_d37-k_                        7.74168e-19\nnet-_l85-pad2_                     7.74167e-19\nnet-_u68-v+_                                15\nxu68.zo                                5.77373\nxu68.33                                 14.136\nxu68.34                                 14.136\nxu68.16                               -14.1012\nxu68.26                               -14.1006\nnet-_u68-v-_                               -15\nxu68.39                                    -14\nxu68.2ndpole                           5.77373\nxu68.40                                14.9849\nxu68.41                                6.48861\nxu68.42                                5.05885\nxu68.43                               -14.9849\nxu68.38                                     14\nnet-_r151-pad2_                        5.77373\nxu68.35                                -14.155\nxu68.36                                -14.155\nunconnected-_u68-_dis-pad8_            2.09982\nxu68.10                                2.09983\nxu68.48                                0.75053\nxu68.49                               -0.75053\nunconnected-_u68-+-pad3_              -14.7741\nxu68.12                                14.9627\nxu68.46                               0.714674\nxu68.47                              -0.714674\nnet-_u68--_                           -14.7761\nxu68.13                                14.1366\nxu68.17                               -14.9203\nxu68.22                               -14.1562\nxu68.21                                 14.136\nxu68.15                               -13.9606\nxu68.29                               -13.9586\nxu68.30                               -14.9207\nxu68.14                                14.9424\nxu68.18                               -14.9435\nxu68.19                                     15\nxu68.24                               -15.0032\nxu68.25                                     15\nxu68.27                               -15.0032\nxu68.28                                14.9424\nxu68.31                               -14.9409\nxu68.32                                     15\nxu68.37                                -15.004\nxu68.20                                 14.136\nxu68.23                               -14.1562\nxu68.b                                 14.1366\nxu68.c                                 14.1366\nxu68.a                                 14.1366\nxu68.l                                  2.4745\nxu68.h                                   2.622\nxu68.11                                14.1366\nxu68.45                              -0.657346\nxu68.44                               0.657346\nxu68.2                                 -14.775\nnet-_c128-pad1_                    7.74167e-19\nnet-_q37-s_                          -0.104382\nnet-_d38-k_                           -14.7045\nnet-_c127-pad2_                              2\nnet-_r150-pad2_                       -14.7761\nxq37.1                             6.61416e-13\nxq37.2                                 5.77372\nxq37.3                               -0.104382\nnet-_q37-g_                            5.77372\nxq37.12                                5.66934\nxq37.14                              -0.104382\nxq37.13                              -0.104282\nxq37.15                                5.66924\nnet-_v158-e1_                                2\nv.xq37.vfb#branch                  5.43902e-11\nv.xu68.x_f2.vf_f2#branch           3.72516e-05\nv.xu68.x_f1.vf_f1#branch           3.72714e-05\nv.xu68.x_f5.vf_f5#branch           3.72648e-05\nv.xu68.x_f6.vf_f6#branch           3.72582e-05\nv.xu68.x_f4.vf_f4#branch          -7.65578e-06\nv.xu68.x_f3.vf_f3#branch           1.32074e-08\nv.xu68.x_f10.vf_f10#branch        -9.56454e-06\nv.xu68.x_f9.vf_f9#branch           1.32074e-08\nl84#branch                        -9.31323e-10\nl85#branch                          -3.605e-28\ne.xq37.egd#branch                 -0.000200005\nv158#branch                       -1.86265e-09\nv160#branch                         0.00116636\nv.xu68.v_v2#branch                -3.10737e-09\nv.xu68.v_v1#branch                -1.22149e-09\nv.xu68.v_v6#branch                -9.55795e-06\nv.xu68.v_v5#branch                   1.979e-08\nv.xu68.v_v4#branch                -7.64919e-06\nv.xu68.v_v3#branch                   1.979e-08\nv159#branch                        -0.00123732\na$poly$e.xu68.e_u1_e5#branch_1_0     6.88015e-09\na$poly$e.xu68.e_e1#branch_1_0     -6.52749e-09\na$poly$e.xu68.e_e4#branch_1_0       0.00100799\na$poly$e.xu68.e_e3#branch_1_0         0.001008\na$poly$e.xu68.e_e2#branch_1_0      6.53903e-09\n\n\nNo. of Data Rows : 14\n\nTotal analysis time (seconds) = 0.006664\n\nTotal elapsed time (seconds) = 0.031 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 18163.484 MB.\nMaximum ngspice program size =   12.828 MB.\nCurrent ngspice program size =   12.828 MB.\n\nWarning: Model issue on line 337 :\n  .model 1n5711 d (bv=70 cjo=1.476p eg=690m is=789.982p m=397.031m n=951.0 ...\nunrecognized parameter (rl) - ignored\n\ndoAnalyses: TRAN:  Timestep too small; time = 3.69356e-10, timestep = 2.5e-20: trouble with xu68:npn8-instance q.xu68.q_q3\n\n\nrun simulation(s) aborted\n",
+          "diagnostics": {
+            "code": "timestep-too-small",
+            "sha256": "5481d3f77165c0d8e42e0a5c955b834b19d24aefb1b8c1556ce91fed0e04f3c9"
+          },
           "plots": [
             {
               "plotName": "Transient Analysis",
@@ -3795,7 +3822,7 @@
                     "im": 0
                   },
                   {
-                    "re": -5.534405247441497e-05,
+                    "re": -0.00005534405247441497,
                     "im": 0
                   }
                 ],
@@ -3891,57 +3918,57 @@
                 ],
                 "i(v.xu68.x_f2.vf_f2)": [
                   {
-                    "re": 3.725162746973959e-05,
+                    "re": 0.00003725162746973959,
                     "im": 0
                   },
                   {
-                    "re": 3.725162745309737e-05,
+                    "re": 0.00003725162745309737,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.x_f1.vf_f1)": [
                   {
-                    "re": 3.727137609918274e-05,
+                    "re": 0.00003727137609918274,
                     "im": 0
                   },
                   {
-                    "re": 3.727137608253133e-05,
+                    "re": 0.00003727137608253133,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.x_f5.vf_f5)": [
                   {
-                    "re": 3.72647932227017e-05,
+                    "re": 0.0000372647932227017,
                     "im": 0
                   },
                   {
-                    "re": 3.726479320605334e-05,
+                    "re": 0.00003726479320605334,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.x_f6.vf_f6)": [
                   {
-                    "re": 3.725821034622064e-05,
+                    "re": 0.00003725821034622064,
                     "im": 0
                   },
                   {
-                    "re": 3.725821032957535e-05,
+                    "re": 0.00003725821032957535,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.x_f4.vf_f4)": [
                   {
-                    "re": -7.655781787449468e-06,
+                    "re": -0.000007655781787449468,
                     "im": 0
                   },
                   {
-                    "re": -3.969053510500863e-05,
+                    "re": -0.00003969053510500863,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.x_f3.vf_f3)": [
                   {
-                    "re": 1.320739984750658e-08,
+                    "re": 1.320739984750658e-8,
                     "im": 0
                   },
                   {
@@ -3951,21 +3978,21 @@
                 ],
                 "i(v.xu68.x_f10.vf_f10)": [
                   {
-                    "re": -9.564542962650071e-06,
+                    "re": -0.000009564542962650071,
                     "im": 0
                   },
                   {
-                    "re": -1.06106076879652e-05,
+                    "re": -0.0000106106076879652,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.x_f9.vf_f9)": [
                   {
-                    "re": 1.320739795424095e-08,
+                    "re": 1.320739795424095e-8,
                     "im": 0
                   },
                   {
-                    "re": 5.094181186604609e-06,
+                    "re": 0.000005094181186604609,
                     "im": 0
                   }
                 ],
@@ -3975,7 +4002,7 @@
                     "im": 0
                   },
                   {
-                    "re": -2.430040256971531e-09,
+                    "re": -2.430040256971531e-9,
                     "im": 0
                   }
                 ],
@@ -4001,11 +4028,11 @@
                 ],
                 "i(v158)": [
                   {
-                    "re": -1.862645150098319e-09,
+                    "re": -1.862645150098319e-9,
                     "im": 0
                   },
                   {
-                    "re": -3.36136283202069e-09,
+                    "re": -3.36136283202069e-9,
                     "im": 0
                   }
                 ],
@@ -4021,57 +4048,57 @@
                 ],
                 "i(v.xu68.v_v2)": [
                   {
-                    "re": -3.10736952615069e-09,
+                    "re": -3.10736952615069e-9,
                     "im": 0
                   },
                   {
-                    "re": -3.107369526150793e-09,
+                    "re": -3.107369526150793e-9,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.v_v1)": [
                   {
-                    "re": -1.221487068602352e-09,
+                    "re": -1.221487068602352e-9,
                     "im": 0
                   },
                   {
-                    "re": -1.221487068602352e-09,
+                    "re": -1.221487068602352e-9,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.v_v6)": [
                   {
-                    "re": -9.557951521818034e-06,
+                    "re": -0.000009557951521818034,
                     "im": 0
                   },
                   {
-                    "re": -1.060401604254655e-05,
+                    "re": -0.00001060401604254655,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.v_v5)": [
                   {
-                    "re": 1.978998067552666e-08,
+                    "re": 1.978998067552666e-8,
                     "im": 0
                   },
                   {
-                    "re": 5.100762775602091e-06,
+                    "re": 0.000005100762775602091,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.v_v4)": [
                   {
-                    "re": -7.649189788604653e-06,
+                    "re": -0.000007649189788604653,
                     "im": 0
                   },
                   {
-                    "re": -3.968393684088142e-05,
+                    "re": -0.00003968393684088142,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.v_v3)": [
                   {
-                    "re": 1.978998257030766e-08,
+                    "re": 1.978998257030766e-8,
                     "im": 0
                   },
                   {
@@ -4091,7 +4118,7 @@
                 ],
                 "i(a$poly$e.xu68.e_u1_e5)": [
                   {
-                    "re": 6.880147762990677e-09,
+                    "re": 6.880147762990677e-9,
                     "im": 0
                   },
                   {
@@ -4101,11 +4128,11 @@
                 ],
                 "i(a$poly$e.xu68.e_e1)": [
                   {
-                    "re": -6.52748529736069e-09,
+                    "re": -6.52748529736069e-9,
                     "im": 0
                   },
                   {
-                    "re": -6.527485297634837e-09,
+                    "re": -6.527485297634837e-9,
                     "im": 0
                   }
                 ],
@@ -4131,11 +4158,11 @@
                 ],
                 "i(a$poly$e.xu68.e_e2)": [
                   {
-                    "re": 6.539032753327496e-09,
+                    "re": 6.539032753327496e-9,
                     "im": 0
                   },
                   {
-                    "re": 6.539032753053349e-09,
+                    "re": 6.539032753053349e-9,
                     "im": 0
                   }
                 ]
@@ -4262,19 +4289,19 @@
           "XU68.bE_E3": 0.0010079959795307554,
           "XU68.bE_E4": 0.001007995942626525,
           "XU68.bE_E1": -2.185227334301646e-11,
-          "XU68.X_F10.VF_F10": -1.0196829319427136e-05,
+          "XU68.X_F10.VF_F10": -0.000010196829319427136,
           "XU68.X_F3.VF_F3": 7.047723540100148e-11,
-          "XU68.X_F4.VF_F4": -7.729983998380773e-06,
-          "XU68.X_F6.VF_F6": 5.6507215156141655e-05,
+          "XU68.X_F4.VF_F4": -0.000007729983998380773,
+          "XU68.X_F6.VF_F6": 0.000056507215156141655,
           "XU68.V_V3": 8.461324002562165e-11,
-          "XU68.V_V4": -7.72996984213419e-06,
+          "XU68.V_V4": -0.00000772996984213419,
           "XU68.V_V5": 8.461100570178459e-11,
-          "XU68.V_V6": -1.019681516414448e-05,
-          "XU68.X_F5.VF_F5": 5.650722926122894e-05,
-          "XU68.X_F1.VF_F1": 5.6507243366381477e-05,
+          "XU68.V_V6": -0.00001019681516414448,
+          "XU68.X_F5.VF_F5": 0.00005650722926122894,
+          "XU68.X_F1.VF_F1": 0.000056507243366381477,
           "XU68.V_V1": -2.9846652392073752e-12,
           "XU68.V_V2": -6.632503281310127e-12,
-          "XU68.X_F2.VF_F2": 5.6507201051309024e-05,
+          "XU68.X_F2.VF_F2": 0.000056507201051309024,
           "XU68.bE_U1_E5": 1.4752123531579893e-11,
           "V160": 0.001264466647328634,
           "L85": 0,
@@ -4289,14 +4316,20 @@
           "mode": "native",
           "exitCode": 1,
           "signal": null,
-          "diagnostics": "\nNote: No compatibility mode selected!\n\n\nCircuit: KiCad schematic\n\n\n\nTotal elapsed time (seconds) = 0.025 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 18163.484 MB.\nMaximum ngspice program size =   11.844 MB.\nCurrent ngspice program size =   11.844 MB.\n\nWarning: Model issue on line 337 :\n  .model 1n5711 d (bv=70 cjo=1.476p eg=690m is=789.982p m=397.031m n=951.0 ...\nunrecognized parameter (rl) - ignored\n\nError on line 120 or its substitute:\n  d.xu68.d_d1 xu68.l xu68.10 xu68.dx 1  \ncould not find a valid modelname\n    Simulation interrupted due to error!\n\nError: circuit not parsed.\nNote: no resource usage information for 'time',\n\tor no active circuit available\n",
+          "diagnostics": {
+            "code": "parse-error",
+            "sha256": "2aac090a4a532e8eba4fa83791f340a1af6739805f441b498386c2c4a4bc5cd8"
+          },
           "plots": []
         },
         {
           "mode": "ltps",
           "exitCode": 0,
           "signal": null,
-          "diagnostics": "Note: gnd in a subcircuit is not set to 0 automatically\n\nNote: Compatibility modes selected: ps lt\n\n\nCircuit: KiCad schematic\n\nASCII raw file \"<scratch>/oracle-737-pmEOro/probe.raw\"\nReducing trtol to 1 for xspice 'A' devices\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 98  \n\nNo. of Data Rows : 1\n\nTotal analysis time (seconds) = 0.001703\n\nTotal elapsed time (seconds) = 0.035 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 18163.484 MB.\nMaximum ngspice program size =   12.734 MB.\nCurrent ngspice program size =   12.734 MB.\n\nWarning: Model issue on line 337 :\n  .model 1n5711 d (bv=70 cjo=1.476p eg=690m is=789.982p m=397.031m n=951.0 ...\nunrecognized parameter (rl) - ignored\n\n",
+          "diagnostics": {
+            "code": "completed",
+            "sha256": "adffc2393781f45222859524a41312c38f138fc6ab6ac38c2fec2bf43403d8fa"
+          },
           "plots": [
             {
               "plotName": "Operating Point",
@@ -5036,81 +5069,81 @@
                 ],
                 "i(v.xu68.x_f2.vf_f2)": [
                   {
-                    "re": 3.725162746973959e-05,
+                    "re": 0.00003725162746973959,
                     "im": 0
                   },
                   {
-                    "re": 3.725162746973959e-05,
+                    "re": 0.00003725162746973959,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.x_f1.vf_f1)": [
                   {
-                    "re": 3.727137609918274e-05,
+                    "re": 0.00003727137609918274,
                     "im": 0
                   },
                   {
-                    "re": 3.727137609918274e-05,
+                    "re": 0.00003727137609918274,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.x_f5.vf_f5)": [
                   {
-                    "re": 3.72647932227017e-05,
+                    "re": 0.0000372647932227017,
                     "im": 0
                   },
                   {
-                    "re": 3.72647932227017e-05,
+                    "re": 0.0000372647932227017,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.x_f6.vf_f6)": [
                   {
-                    "re": 3.725821034622064e-05,
+                    "re": 0.00003725821034622064,
                     "im": 0
                   },
                   {
-                    "re": 3.725821034622064e-05,
+                    "re": 0.00003725821034622064,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.x_f4.vf_f4)": [
                   {
-                    "re": -7.655781787449468e-06,
+                    "re": -0.000007655781787449468,
                     "im": 0
                   },
                   {
-                    "re": -7.655781787449468e-06,
+                    "re": -0.000007655781787449468,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.x_f3.vf_f3)": [
                   {
-                    "re": 1.320739984750658e-08,
+                    "re": 1.320739984750658e-8,
                     "im": 0
                   },
                   {
-                    "re": 1.320739984750658e-08,
+                    "re": 1.320739984750658e-8,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.x_f10.vf_f10)": [
                   {
-                    "re": -9.564542962650071e-06,
+                    "re": -0.000009564542962650071,
                     "im": 0
                   },
                   {
-                    "re": -9.564542962650071e-06,
+                    "re": -0.000009564542962650071,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.x_f9.vf_f9)": [
                   {
-                    "re": 1.320739795424095e-08,
+                    "re": 1.320739795424095e-8,
                     "im": 0
                   },
                   {
-                    "re": 1.320739795424095e-08,
+                    "re": 1.320739795424095e-8,
                     "im": 0
                   }
                 ],
@@ -5146,11 +5179,11 @@
                 ],
                 "i(v158)": [
                   {
-                    "re": -1.862645150098319e-09,
+                    "re": -1.862645150098319e-9,
                     "im": 0
                   },
                   {
-                    "re": -1.862645150098319e-09,
+                    "re": -1.862645150098319e-9,
                     "im": 0
                   }
                 ],
@@ -5166,61 +5199,61 @@
                 ],
                 "i(v.xu68.v_v2)": [
                   {
-                    "re": -3.10736952615069e-09,
+                    "re": -3.10736952615069e-9,
                     "im": 0
                   },
                   {
-                    "re": -3.10736952615069e-09,
+                    "re": -3.10736952615069e-9,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.v_v1)": [
                   {
-                    "re": -1.221487068602352e-09,
+                    "re": -1.221487068602352e-9,
                     "im": 0
                   },
                   {
-                    "re": -1.221487068602352e-09,
+                    "re": -1.221487068602352e-9,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.v_v6)": [
                   {
-                    "re": -9.557951521818034e-06,
+                    "re": -0.000009557951521818034,
                     "im": 0
                   },
                   {
-                    "re": -9.557951521818034e-06,
+                    "re": -0.000009557951521818034,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.v_v5)": [
                   {
-                    "re": 1.978998067552666e-08,
+                    "re": 1.978998067552666e-8,
                     "im": 0
                   },
                   {
-                    "re": 1.978998067552666e-08,
+                    "re": 1.978998067552666e-8,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.v_v4)": [
                   {
-                    "re": -7.649189788604653e-06,
+                    "re": -0.000007649189788604653,
                     "im": 0
                   },
                   {
-                    "re": -7.649189788604653e-06,
+                    "re": -0.000007649189788604653,
                     "im": 0
                   }
                 ],
                 "i(v.xu68.v_v3)": [
                   {
-                    "re": 1.978998257030766e-08,
+                    "re": 1.978998257030766e-8,
                     "im": 0
                   },
                   {
-                    "re": 1.978998257030766e-08,
+                    "re": 1.978998257030766e-8,
                     "im": 0
                   }
                 ],
@@ -5236,21 +5269,21 @@
                 ],
                 "i(a$poly$e.xu68.e_u1_e5)": [
                   {
-                    "re": 6.880147762990677e-09,
+                    "re": 6.880147762990677e-9,
                     "im": 0
                   },
                   {
-                    "re": 6.880147762990677e-09,
+                    "re": 6.880147762990677e-9,
                     "im": 0
                   }
                 ],
                 "i(a$poly$e.xu68.e_e1)": [
                   {
-                    "re": -6.52748529736069e-09,
+                    "re": -6.52748529736069e-9,
                     "im": 0
                   },
                   {
-                    "re": -6.52748529736069e-09,
+                    "re": -6.52748529736069e-9,
                     "im": 0
                   }
                 ],
@@ -5276,11 +5309,11 @@
                 ],
                 "i(a$poly$e.xu68.e_e2)": [
                   {
-                    "re": 6.539032753327496e-09,
+                    "re": 6.539032753327496e-9,
                     "im": 0
                   },
                   {
-                    "re": 6.539032753327496e-09,
+                    "re": 6.539032753327496e-9,
                     "im": 0
                   }
                 ]
@@ -5290,6 +5323,5 @@
         }
       ]
     }
-  ],
-  "receiptPolicy": "Diagnostics path-sanitized; native plots retain point counts and signal endpoints, not complete waveforms. Original pin unchanged; NEW variants are diagnostic only."
+  ]
 }

@@ -1,0 +1,82 @@
+{
+  "cleanCache": true,
+  "environment": {
+    "node": "v22.23.1",
+    "platform": "darwin",
+    "arch": "arm64",
+    "cpu": "Apple M5 Pro"
+  },
+  "core": "5aa968f048f7bc92592a3a1f4b99c5f99547836f",
+  "ngspice": "******\n** ngspice-47 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2026, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n******",
+  "commands": [
+    {
+      "command": "test ! -e benchmarks/corpus/ngspice-bugs/fetched",
+      "exitCode": 0
+    },
+    {
+      "command": "pnpm exec tsx benchmarks/corpus/ngspice-bugs/fetch.ts 158 738 791 794 737 725",
+      "exitCode": 1,
+      "knownDriftTicket": 725
+    },
+    {
+      "command": "pnpm exec tsx benchmarks/corpus/ngspice-bugs/prepare-737.ts",
+      "exitCode": 0
+    },
+    {
+      "command": "python3 benchmarks/corpus/ngspice-bugs/reconstruct.py benchmarks/corpus/ngspice-bugs/fetched/reconstruction-1046.json",
+      "exitCode": 0
+    },
+    {
+      "command": "spice-heavy pnpm exec tsx benchmarks/corpus/ngspice-bugs/refresh.ts benchmarks/corpus/ngspice-bugs/fetched/refresh-1046.jsonl 158 738 791 794 737",
+      "exitCode": 0
+    }
+  ],
+  "provenanceGaps": 5,
+  "executed": 1,
+  "rows": [
+    {
+      "ticket": 158,
+      "deck": "dot.cir",
+      "status": "provenance-gap",
+      "expectedSha256": "7e943e7c63cfbb2a5724ab5d01f2d91591d9f78a60e2966ecd91d62f92cd9b35",
+      "actualSha256": null
+    },
+    {
+      "ticket": 737,
+      "deck": "OPA890Test.local.cir",
+      "status": "failed",
+      "netlistSha256": "b58eda0bc033ac63358e66f275efeff0af13534ffe7cb3efbe391f13b1c15965",
+      "spiceTsStatus": "success",
+      "ngspiceStatus": "failed",
+      "spiceTsPoints": 30771
+    },
+    {
+      "ticket": 738,
+      "deck": "OP1177ARM_OPA818.local.cir",
+      "status": "provenance-gap",
+      "expectedSha256": "ade3ace7fd9c3649d7f1f4fa2590748bc33fed2b7526679472af831a9d89d02d",
+      "actualSha256": null
+    },
+    {
+      "ticket": 791,
+      "deck": "variant_62.local.cir",
+      "status": "provenance-gap",
+      "expectedSha256": "c973882f1606dd1c3f4c1d837d30b16de11863713e729a58ded40232dd70d464",
+      "actualSha256": null
+    },
+    {
+      "ticket": 794,
+      "deck": "NGspice/06101.local.cir",
+      "status": "provenance-gap",
+      "expectedSha256": "5fcebb2af191add8dae40125f927d24e2d05fbbd36a0a54a08c39e9a87fc210a",
+      "actualSha256": null
+    },
+    {
+      "ticket": 794,
+      "deck": "KiCad/06101/06101.local.cir",
+      "status": "provenance-gap",
+      "expectedSha256": "688b77c210b7cb33aa5bad84bb8ecd4f8f8013cb08e5b83f1221feb034243357",
+      "actualSha256": null
+    }
+  ]
+}

@@ -33,6 +33,8 @@ Zero matches is bounded evidence, not a proof that no recipe exists. Recovering 
 
 NEW short/OP probes are diagnostic variants only (own SHA256 in [oracle-737.json](oracle-737.json)), not replacements for the original pin, not new scored corpus rows. Short probes change only `.TRAN 1m 10m` tstop; OP changes that card to `.op`. All native-mode trials fail to parse the PSpice library. LTPS outcomes:
 
+The regenerated receipt contains only fixed diagnostic codes and SHA256 hashes of engine messages, plus numeric results and signal identifiers. Raw messages, source excerpts and free-form errors are never serialized. Unknown errors become `failed`, not a copied message. Regression tests cover source-bearing synthetic errors and the committed receipts. The before/after statuses, point counts and partial native endpoints below are unchanged.
+
 | Trial | spice-ts | ngspice-47 LTPS | Oracle scope |
 |---|---|---|---|
 | Original 10 ms | succeeds, 30,771 points, final 0.01 s | exit 1, 13 partial points to 2.899990792104854e-10 s | incomplete reference, unscored |
@@ -56,14 +58,19 @@ Fresh `fetch.ts` exits 1 for discussion attachment `.../_discuss/thread/4a83cdaa
 
 Source URLs/hashes are unchanged in manifest.json; licence/redistribution policy is the existing ngspice-bugs section of benchmarks/SOURCES.md: public tracker attachments have no explicit redistribution grant; vendor material remains fetch-only/git-ignored. No vendor bytes, exports or schematics are committed.
 
-1. `pnpm install --frozen-lockfile` — exit 0.
-2. `pnpm exec tsx benchmarks/corpus/ngspice-bugs/fetch.ts 158 738 791 794 737 725` — exit 1 solely for the disclosed log drift; all selected archives match.
-3. `pnpm build` — exit 0.
-4. `python3 benchmarks/corpus/ngspice-bugs/reconstruct.py <new-receipt.json>` — exit 0, five explicit gaps. Compare generated JSON to reconstruction-803.json.
-5. `spice-heavy pnpm exec tsx benchmarks/corpus/ngspice-bugs/refresh.ts <new-refresh.jsonl> 158 738 791 794 737` — exit 0, five hash-gated gaps plus original #737 execution; no candidate supplied.
-6. Extract fetched/737/Test.zip with `tar -xf ... -C ...`, then `spice-heavy pnpm exec tsx benchmarks/corpus/ngspice-bugs/oracle-737.ts <new-oracle.json>` — exit 0, trial failures are receipt data. Two runs reproduce all statuses/counts/OP values. Receipt paths sanitized; native plot counts and signal endpoints retained, not full sample arrays.
-7. `pnpm exec tsx benchmarks/corpus/ngspice-bugs/render.ts` and `render.ts --check` regenerate/verify summary and ticket READMEs.
-8. `pnpm exec tsx --test benchmarks/corpus/ngspice-bugs/ngspice-bugs.test.ts` — 12 pass, 4 fetch-dependent skips, 0 fail (16 tests). New receipt assertions initially failed without evidence; pass with real receipts. Existing #871 exact binary equality failed after merged #782 decimal formatting: -0.16666666666666663 versus analytic -1/6. The analytic unit assertion now admits one relative Number.EPSILON; no harness/corpus metric threshold changes.
-9. `pnpm lint` — exit 0. Full suite is run only under `spice-heavy`; exact-head GitHub required checks are the authoritative gate.
+Run from a fresh worktree with no fetched cache. Receipt output paths must not exist. Commands are separate shell commands; the disclosed fetch exit 1 must not suppress preparation, but unexpected fetch failures must be investigated.
+
+1. `test ! -e benchmarks/corpus/ngspice-bugs/fetched` confirms a clean cache, exit 0.
+2. `pnpm install --frozen-lockfile`, then `pnpm build`, both exit 0.
+3. `pnpm exec tsx benchmarks/corpus/ngspice-bugs/fetch.ts 158 738 791 794 737 725`, exit 1 solely for the disclosed #725 log drift. All selected archives match their original pins.
+4. `pnpm exec tsx benchmarks/corpus/ngspice-bugs/prepare-737.ts`, exit 0. It checks the archive SHA256 before extraction, applies only the original CRLF/include-path preparation, checks the unchanged derived SHA256, then writes `fetched/737/OPA890Test.local.cir`. Printed SHA256 is `b58eda0bc033ac63358e66f275efeff0af13534ffe7cb3efbe391f13b1c15965`, 864 B. No vendor bytes are committed.
+5. `python3 benchmarks/corpus/ngspice-bugs/reconstruct.py benchmarks/corpus/ngspice-bugs/fetched/reconstruction-1046.json`, exit 0, five explicit gaps. Compare generated JSON to reconstruction-803.json.
+6. `spice-heavy pnpm exec tsx benchmarks/corpus/ngspice-bugs/refresh.ts benchmarks/corpus/ngspice-bugs/fetched/refresh-1046.jsonl 158 738 791 794 737`, exit 0. Five hash-gated gaps plus original #737 execution, no candidate supplied. #737 spice-ts succeeds with 30,771 points; native ngspice fails, so the comparison remains failed/unscored.
+7. `spice-heavy pnpm exec tsx benchmarks/corpus/ngspice-bugs/oracle-737.ts benchmarks/corpus/ngspice-bugs/fetched/oracle-1046.json`, exit 0. Trial failures are receipt data. The rerun reproduces every original status/count/OP value. Native plot counts and signal endpoints are retained, not full sample arrays or raw diagnostic text.
+8. `pnpm exec tsx benchmarks/corpus/ngspice-bugs/render.ts --check`, exit 0, 58 files checked.
+9. `pnpm exec tsx --test benchmarks/corpus/ngspice-bugs/ngspice-bugs.test.ts`, exit 0. The source-leak and missing-preparation regressions failed first at `5aa968f0`, then passed after the fix. Synthetic archive tests also reject mismatched archive/deck pins without writing a candidate deck. The #871 block now matches main's PR1048 strict ngspice-47 binary assertions verbatim; the relative Number.EPSILON variant was removed. No harness threshold changes.
+10. `pnpm lint` and `spice-heavy pnpm test`, both exit 0. Exact-head GitHub required checks remain the authoritative gate.
+
+[clean-cache-1046.json](clean-cache-1046.json) is the sanitized execution log for steps 1 and 3–6, collected from this card's initially absent fetched cache. It records five missing pins and one executed #737 row, with engine statuses and 30,771 points. The `core` fields identify the checked-out base commit during the remediation run; preparation/diagnostic scripts were working-tree changes at execution time. No complete waveform oracle or restored missing pin is claimed.
 
 The prior refresh-812.jsonl.gz is intentionally retained as the original complete 25-ticket receipt; no unrelated decks were reclassified. The generated summary links this follow-up and distinguishes legacy enum labels from actual provenance/oracle coverage.
