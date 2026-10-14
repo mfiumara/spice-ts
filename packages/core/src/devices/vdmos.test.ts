@@ -301,6 +301,32 @@ mn 3 2 0 n1
   });
 });
 
+describe('VDMOS fourth node (issue #1103)', () => {
+  it.each(['', 'pchan'])('ignores the disabled Tj node for %s channel, even with RTHJC', async (channel) => {
+    const sign = channel ? -1 : 1;
+    const deck = (extra: string) => `disabled thermal node
+m1 d g s ${extra} n1 m=2 temp=50
+.model n1 vdmos ${channel} vto=${sign} kp=2 rd=.1 rs=.1 rb=.2 rthjc=1 cgs=1n cgdmin=1p cgdmax=10p
+vd d 0 ${5 * sign} ac 1
+vg g 0 ${3 * sign}
+vs s 0 0
+vb b 0 100
+.op
+.ac lin 2 100 1000
+.end
+`;
+    const reference = await simulate(deck(''));
+    for (const extra of ['s', '0', 'b']) {
+      const actual = await simulate(deck(extra));
+      expectClose(actual.dc!.current('vd'), reference.dc!.current('vd'), 1e-12);
+      expectClose(actual.dc!.current('vs'), reference.dc!.current('vs'), 1e-12);
+      expectClose(actual.dc!.current('vb'), 0, 0);
+      expect(actual.ac!.voltage('d')).toEqual(reference.ac!.voltage('d'));
+      expect(actual.ac!.voltage('s')).toEqual(reference.ac!.voltage('s'));
+    }
+  });
+});
+
 describe('VDMOS unsupported features (issue #506)', () => {
   it('rejects a VDMOS instance with more than three terminals (the thermal form)', async () => {
     await expect(simulate(`thermal
