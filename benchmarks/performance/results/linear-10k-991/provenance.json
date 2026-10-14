@@ -1,0 +1,22 @@
+{
+  "baseSha": "bd4ac625f15e344043a7431b24f64828966e2d41",
+  "issue": "https://github.com/mfiumara/spice-ts/issues/991",
+  "mode": "attribution-only",
+  "productionChanged": false,
+  "machine": {"cpu": "Apple M5 Pro", "memoryBytes": 51539607552, "os": "macOS 27.0.1", "build": "26A434", "node": "v22.23.1", "ngspice": "47 KLU", "pnpm": "10.28.1"},
+  "commands": [
+    {"command": "pnpm install --frozen-lockfile", "exit": 0},
+    {"command": "pnpm -C packages/core build", "exit": 0},
+    {"command": "spice-heavy python3 benchmarks/performance/linear-10k.py benchmarks/performance/results/linear-10k-991/baseline", "exit": 0, "engineWorkloads": 80},
+    {"command": "node --test benchmarks/performance/linear-10k.test.mjs", "phase": "RED", "exit": 1, "pass": 10, "fail": 1, "failure": "stored continuous clock corruption was not rejected"},
+    {"command": "node --test benchmarks/performance/linear-10k.test.mjs", "phase": "GREEN", "exit": 0, "pass": 11},
+    {"command": "python3 benchmarks/performance/linear-10k-test.py", "exit": 0, "pass": 5},
+    {"command": "pnpm exec tsx --test benchmarks/performance/scaling-m2.test.ts", "exit": 0, "pass": 6},
+    {"command": "node benchmarks/performance/linear-10k-verify.mjs benchmarks/performance/results/linear-10k-991/baseline", "exit": 0, "samples": 60, "eligibleSolverBuckets": 0},
+    {"command": "pnpm build", "exit": 0},
+    {"command": "pnpm lint", "exit": 0},
+    {"command": "spice-heavy pnpm test", "exit": 0, "corePassed": 3629, "coreSkipped": 2}
+  ],
+  "remainingScope": "Mesh parse is >=20% cold wall but parser edits are forbidden for this lane. Supervisor must route parser scope; #991 not closed.",
+  "harnessRefactorAfterMeasurement": "Removed unused --sizes option, kept identical fixed 10k plan, added annotations and receipt verification. No measured worker, engine bundle, deck or budget logic changed."
+}
