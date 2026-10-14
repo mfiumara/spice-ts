@@ -1,0 +1,41 @@
+benchmarks/results/issue-1053/cmos10k.cpuprofile: 624 samples, 3348.4 ms sampled
+
+Top self time
+     898.7 ms  26.8%  batchStamp benchmarks/results/issue-1053/run/control/chunk-LFXDOPTR.js:11339
+     341.6 ms  10.2%  convergenceTest benchmarks/results/issue-1053/run/control/chunk-LFXDOPTR.js:11096
+     224.8 ms   6.7%  (garbage collector)
+     160.7 ms   4.8%  chargeTruncationTimestep benchmarks/results/issue-1053/run/control/chunk-LFXDOPTR.js:43488
+     157.0 ms   4.7%  refactorWithPivots benchmarks/results/issue-1053/run/control/chunk-LFXDOPTR.js:40626
+     126.3 ms   3.8%  newtonRaphson benchmarks/results/issue-1053/run/control/chunk-LFXDOPTR.js:41615
+     117.0 ms   3.5%  factorize benchmarks/results/issue-1053/run/control/chunk-LFXDOPTR.js:40117
+     113.8 ms   3.4%  buildCompanionSystem benchmarks/results/issue-1053/run/control/chunk-LFXDOPTR.js:42182
+      90.4 ms   2.7%  attemptStep benchmarks/results/issue-1053/run/control/chunk-LFXDOPTR.js:42379
+      70.5 ms   2.1%  solveLinearized benchmarks/results/issue-1053/run/control/chunk-LFXDOPTR.js:42484
+      61.3 ms   1.8%  acceptAll benchmarks/results/issue-1053/run/control/chunk-LFXDOPTR.js:6692
+      46.5 ms   1.4%  mos1BulkJunctions benchmarks/results/issue-1053/run/control/chunk-LFXDOPTR.js:10312
+      41.0 ms   1.2%  bulkJunction benchmarks/results/issue-1053/run/control/chunk-LFXDOPTR.js:10298
+      35.4 ms   1.1%  evaluate benchmarks/results/issue-1053/run/control/chunk-LFXDOPTR.js:42852
+      33.4 ms   1.0%  flush benchmarks/results/issue-1053/run/control/chunk-LFXDOPTR.js:43851
+      33.1 ms   1.0%  batchNewtonStepScale benchmarks/results/issue-1053/run/control/chunk-LFXDOPTR.js:10905
+      31.2 ms   0.9%  stamp benchmarks/results/issue-1053/run/control/chunk-LFXDOPTR.js:10961
+      30.1 ms   0.9%  stampPrevB benchmarks/results/issue-1053/run/control/chunk-LFXDOPTR.js:43367
+
+Top inclusive time
+    3348.4 ms 100.0%  (root)
+    3044.4 ms  90.9%  (anonymous) benchmarks/results/issue-1053/worker.mjs:1
+    2951.5 ms  88.1%  simulate benchmarks/results/issue-1053/run/control/chunk-LFXDOPTR.js:49827
+    2854.8 ms  85.3%  solveCompiledAnalyses benchmarks/results/issue-1053/run/control/chunk-LFXDOPTR.js:49882
+    1954.7 ms  58.4%  solveTransient benchmarks/results/issue-1053/run/control/chunk-LFXDOPTR.js:43870
+    1841.3 ms  55.0%  advanceSolution benchmarks/results/issue-1053/run/control/chunk-LFXDOPTR.js:43066
+    1325.3 ms  39.6%  attemptStep benchmarks/results/issue-1053/run/control/chunk-LFXDOPTR.js:42379
+     996.4 ms  29.8%  batchStamp benchmarks/results/issue-1053/run/control/chunk-LFXDOPTR.js:11339
+     900.1 ms  26.9%  solveDCOperatingPoint benchmarks/results/issue-1053/run/control/chunk-LFXDOPTR.js:41889
+     900.1 ms  26.9%  transientInitialSolution benchmarks/results/issue-1053/run/control/chunk-LFXDOPTR.js:50290
+     893.2 ms  26.7%  newtonRaphson benchmarks/results/issue-1053/run/control/chunk-LFXDOPTR.js:41615
+     893.2 ms  26.7%  solveOperatingPoint benchmarks/results/issue-1053/run/control/chunk-LFXDOPTR.js:41908
+     726.7 ms  21.7%  dynamicGminStepping benchmarks/results/issue-1053/run/control/chunk-LFXDOPTR.js:42057
+     726.7 ms  21.7%  gminSteppingHomotopy benchmarks/results/issue-1053/run/control/chunk-LFXDOPTR.js:42028
+     717.7 ms  21.4%  (anonymous) benchmarks/results/issue-1053/run/control/chunk-LFXDOPTR.js:42063
+     717.7 ms  21.4%  stepGmin benchmarks/results/issue-1053/run/control/chunk-LFXDOPTR.js:42101
+     668.4 ms  20.0%  buildCompanionSystem benchmarks/results/issue-1053/run/control/chunk-LFXDOPTR.js:42182
+     627.2 ms  18.7%  stampStaticDevices benchmarks/results/issue-1053/run/control/chunk-LFXDOPTR.js:41511
