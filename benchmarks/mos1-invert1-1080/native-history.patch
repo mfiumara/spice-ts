@@ -1,0 +1,61 @@
+--- a/src/spicelib/devices/mos1/mos1load.c
++++ b/src/spicelib/devices/mos1/mos1load.c
+@@ -73,6 +73,7 @@
+     double capgd = 0.0;   /* total gate-drain capacitance */
+     double capgb = 0.0;   /* total gate-bulk capacitance */
+     int Check;
++    int trace_bypass;
+ #ifndef NOBYPASS
+     double tempv;
+ #endif /*NOBYPASS*/
+@@ -122,6 +123,7 @@
+              */
+ 
+             EffectiveLength=here->MOS1l - 2*model->MOS1latDiff;
++            trace_bypass = 0;
+ 
+             if( (here->MOS1tSatCurDens == 0) ||
+                     (here->MOS1drainArea == 0) ||
+@@ -309,6 +311,7 @@
+                                           fabs(here->MOS1cd)) +
+                                       ckt->CKTabstol))) {
+                     /* bypass code */
++                    trace_bypass = 1;
+                     /* nothing interesting has changed since last
+                     * iteration on this device, so we just
+                     * copy all the values computed last iteration out
+@@ -882,6 +885,14 @@
+              */
+             ceqbs = model->MOS1type *
+                     (here->MOS1cbs-(here->MOS1gbs)*vbs);
++            if (getenv("ISSUE1080_TRACE") && ckt->CKTtime <= 19.51e-6) {
++                fprintf(stderr, "LOAD %.17g %.17g %d %ld %d %s %.17g %.17g %.17g %.17g %.17g %.17g %.17g %.17g %.17g %.17g %.17g %.17g %.17g %.17g %.17g %.17g %.17g %.17g %.17g\n",
++                    ckt->CKTtime, ckt->CKTdelta, ckt->CKTorder, (long)ckt->CKTmode, trace_bypass, here->MOS1name,
++                    vgs, vds, vbs, ckt->CKTstate0[here->MOS1qgs], ckt->CKTstate0[here->MOS1qgd], ckt->CKTstate0[here->MOS1qgb],
++                    ckt->CKTstate0[here->MOS1cqgs], ckt->CKTstate0[here->MOS1cqgd], ckt->CKTstate0[here->MOS1cqgb], capgs, capgd, capgb,
++                    xfact, ckt->CKTstate1[here->MOS1qgs], ckt->CKTstate1[here->MOS1qgd], ckt->CKTstate1[here->MOS1qgb],
++                    gcgs, gcgd, gcgb);
++            }
+             ceqbd = model->MOS1type *
+                 (here->MOS1cbd-(here->MOS1gbd)*vbd);
+             if (here->MOS1mode >= 0) {
+--- a/src/spicelib/devices/mos1/mos1trun.c
++++ b/src/spicelib/devices/mos1/mos1trun.c
+@@ -24,6 +24,7 @@
+             CKTterr(here->MOS1qgs,ckt,timeStep);
+             CKTterr(here->MOS1qgd,ckt,timeStep);
+             CKTterr(here->MOS1qgb,ckt,timeStep);
++            if (getenv("ISSUE1080_TRACE") && ckt->CKTtime <= 19.51e-6) fprintf(stderr, "LTE %.17g %.17g %d %s %.17g\n", ckt->CKTtime, ckt->CKTdelta, ckt->CKTorder, here->MOS1name, *timeStep);
+         }
+     }
+     return(OK);
+--- a/src/maths/ni/niiter.c
++++ b/src/maths/ni/niiter.c
+@@ -77,6 +77,7 @@
+ 
+             error = CKTload(ckt);
+             /* printf("loaded, noncon is %d\n", ckt->CKTnoncon); */
++            if (getenv("ISSUE1080_TRACE") && ckt->CKTtime <= 19.51e-6) fprintf(stderr, "ITER %.17g %.17g %d %d %ld\n", ckt->CKTtime, ckt->CKTdelta, ckt->CKTorder, iterno + 1, (long)ckt->CKTmode);
+             /* fflush(stdout); */
+             iterno++;
+             if (error) {
