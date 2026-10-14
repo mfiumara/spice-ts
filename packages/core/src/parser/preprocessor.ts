@@ -5,6 +5,7 @@ import {
 } from './numparam.js';
 import { NODE_DEPENDENT_EXPRESSION, substituteBehavioralParameters } from './behavioral-expression.js';
 import { parseNumber } from './tokenizer.js';
+import { formatNumber as formatLiteralNumber } from '../netlist-number.js';
 import { tempDirective } from './temp-directive.js';
 import { translateMicroSign } from './micro-sign.js';
 import { bracedSubcircuitCallValues } from './subcircuit-syntax.js';
@@ -561,7 +562,10 @@ function substituteStatement(statement: PendingStatement, scopes: ParamScopes, m
       const substituted = substituteExpressions(text, scopes.params, true);
       return substituteBehavioralParameters(substituted, scopes.params);
     }
-    return substituteExpressions(quotedExpressionsAsBraces(text), scopes.numparam);
+    // X actuals are numparam bindings, not device values: preserve their
+    // double until the subcircuit body substitutes it into a device card.
+    return substituteExpressions(quotedExpressionsAsBraces(text), scopes.numparam, false,
+      /^\s*x/i.test(text) ? formatLiteralNumber : formatNumber);
   } catch (error) {
     if (error instanceof ParseError) throw error;
     throw toParseError(error, statement.line, statement.text.trim());
@@ -1051,20 +1055,20 @@ export function substituteExpressions(
   line: string,
   params: Record<string, number>,
   keepNodeDependent = false,
+  formatter: (value: number) => string = formatNumber,
 ): string {
   return line.replace(/\{([^}]+)\}/g, (match, expr: string) => {
     if (keepNodeDependent && NODE_DEPENDENT_EXPRESSION.test(expr)) return match;
     const value = evaluateExpression(expr, params);
-    return formatNumber(value);
+    return formatter(value);
   });
 }
 
-function formatNumber(value: number): string {
-  // JavaScript's Number.toString() already produces exponential notation for very
-  // small (< 5e-7) and very large (>= 1e21) values, and decimal strings otherwise.
-  // This naturally satisfies all test expectations (e.g. 1e-7 → "1e-7",
-  // 2e-6 → "0.000002", 1.8 → "1.8", 5 → "5").
-  return value.toString();
+export function formatNumber(value: number): string {
+  // ngspice-47 numparam double_to_string uses "% 23.15e". Padding and
+  // exponent zero-padding do not affect INPevaluate, but all 16 mantissa
+  // digits must survive until the downstream card reader parses the text.
+  return value.toExponential(15);
 }
 
 function extractLibSection(content: string, section: string): string {

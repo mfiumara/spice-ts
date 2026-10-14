@@ -69,7 +69,7 @@ import { evaluateExpression } from './parser/expression.js';
 import { parseNumber, tokenizeLine, tokenizeNetlist } from './parser/tokenizer.js';
 import { formatNumber } from './netlist-number.js';
 import { evaluateSubcircuitParams } from './subcircuit-params.js';
-import { substituteExpressions } from './parser/preprocessor.js';
+import { formatNumber as formatNumparamNumber, substituteExpressions } from './parser/preprocessor.js';
 import { isPspiceSwitchModel, translatePspiceSwitchModel } from './parser/pspice-switch.js';
 import { parseModelCard } from './parser/model-parser.js';
 import { assertDeviceModelType, normalizeModelType } from './parser/model-type.js';
@@ -3457,17 +3457,17 @@ export class Circuit {
 
     // Evaluate {expr} in a token using merged parameters
     // Handles both standalone {expr} and key={expr} patterns
-    const evalToken = (token: string): string => {
+    const evalToken = (token: string, formatter = formatNumparamNumber): string => {
       if (token.startsWith('{') && token.endsWith('}')) {
         const expr = token.slice(1, -1);
-        return evaluateExpression(expr, localParams).toString();
+        return formatter(evaluateExpression(expr, localParams));
       }
       const eqIdx = token.indexOf('=');
       if (eqIdx > 0) {
         const val = token.slice(eqIdx + 1);
         if (val.startsWith('{') && val.endsWith('}')) {
           const expr = val.slice(1, -1);
-          return token.slice(0, eqIdx + 1) + evaluateExpression(expr, localParams).toString();
+          return token.slice(0, eqIdx + 1) + formatter(evaluateExpression(expr, localParams));
         }
       }
       return token;
@@ -3811,7 +3811,7 @@ export class Circuit {
           const call = locateSubcircuitCall(tokens, raw);
           const nestedSubcktName = tokens[call.nameIndex];
           const nestedPorts = call.ports.map(mapNode);
-          const nestedParams = parseSubcircuitCallParams(raw, evalToken);
+          const nestedParams = parseSubcircuitCallParams(raw, token => evalToken(token, formatNumber));
 
           const newVisited = new Set(visited);
           newVisited.add(key);
