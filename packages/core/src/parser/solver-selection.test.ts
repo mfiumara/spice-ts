@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { ParseError } from '../errors.js';
-import { parse, parseTitleless } from './index.js';
+import { parse, parseControlOptions, parseTitleless } from './index.js';
 import { isNgspiceOptionField, splitXyceOptionPackage } from './xyce-option-packages.js';
 import { simulate } from '../simulate.js';
 
@@ -18,6 +18,7 @@ describe('solver-selection hints (#812)', () => {
     expect(isNgspiceOptionField(solver)).toBe(true);
     expect(splitXyceOptionPackage(['LINSOL', solver, 'TYPE=KLU']).fields).toEqual([solver]);
     expect(parse(deck(`.options LINSOL ${solver}`)).simulationOptions).toMatchObject({ solverSelection: solver });
+    expect(parseControlOptions([solver.toUpperCase()], 7, `option ${solver}`)).toEqual({ solverSelection: solver });
   });
 
   it('keeps the last hint across and within cards', () => {
@@ -35,6 +36,7 @@ describe('solver-selection hints (#812)', () => {
       expect(error).toBeInstanceOf(ParseError);
       expect(error).toMatchObject({ line: 5, context: option });
     }
+    expect(() => parseControlOptions(['LINSOL', field], 7, option)).toThrow(ParseError);
   });
 
   it.each([
