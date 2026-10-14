@@ -1,7 +1,7 @@
 /**
  * ngspice-47 XSPICE digital code models and node bridges, transcribed from
  * src/xspice/icm/digital/{d_buffer,d_inverter,d_and,d_nand,d_or,d_nor,d_xor,
- * d_xnor,adc_bridge,dac_bridge}/cfunc.mod.
+ * d_xnor,d_pulldown,d_pullup,adc_bridge,dac_bridge}/cfunc.mod.
  *
  * The gates and the adc_bridge output side are event-driven
  * ({@link EventBehavior}); the adc_bridge input and dac_bridge output sides
@@ -9,7 +9,7 @@
  * instance's event state through an {@link EventInstanceView}.
  */
 import {
-  ONE, STRONG, UNKNOWN, ZERO,
+  ONE, RESISTIVE, STRONG, UNKNOWN, ZERO,
   type EventBehavior, type EventCall, type EventInstanceView,
 } from './event-network.js';
 import { flag, real, STATIC, type CodeModelBehavior, type CodeModelCall, type ResolvedXspiceParams } from './models.js';
@@ -29,6 +29,25 @@ export interface DigitalModel<S> {
 }
 
 export type DigitalModelFactory = (params: ResolvedXspiceParams, context: DigitalModelContext) => DigitalModel<unknown>;
+
+/**
+ * digital/d_pulldown and d_pullup/cfunc.mod: LOAD(out), constant resistive output.
+ * Public Domain source at ngspice-47 a80f6e3e95d51534905b1f23410a951802666656:
+ * https://sourceforge.net/p/ngspice/ngspice/ci/ngspice-47/tree/src/xspice/icm/digital/
+ */
+function pull(value: number): DigitalModelFactory {
+  return params => ({
+    event: {
+      createState: () => null,
+      event(call) {
+        const out = call.outputs[0];
+        out.load = real(params, 'load');
+        out.state = value;
+        out.strength = RESISTIVE;
+      },
+    },
+  });
+}
 
 function portCount(context: DigitalModelContext, name: string): number {
   return context.connections.find(connection => connection.name === name)!.ports.length;
@@ -442,6 +461,8 @@ function splitStep(
 
 /** Implemented digital code models keyed by lower-case ngspice Spice_Model_Name. */
 export const DIGITAL_MODELS: ReadonlyMap<string, DigitalModelFactory> = new Map<string, DigitalModelFactory>([
+  ['d_pulldown', pull(ZERO)],
+  ['d_pullup', pull(ONE)],
   ['d_buffer', gate(buffer)],
   ['d_inverter', gate(inverter)],
   ['d_and', gate(dominantGate(ZERO, ZERO, ONE))],
