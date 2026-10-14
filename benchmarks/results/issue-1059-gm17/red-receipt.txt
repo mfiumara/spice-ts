@@ -1,0 +1,28 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e457fe0a/packages/core
+
+ ❯ src/devices/mos3-gm17-startup-1059.test.ts (2 tests | 1 failed) 98ms
+     × reproduces stock ngspice source-stepping startup current loss 70ms
+     ✓ agrees with the native-only retained-diagonal-shunt control at both steps 27ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/devices/mos3-gm17-startup-1059.test.ts > gm17 constrained startup #1059 (evidence only) > reproduces stock ngspice source-stepping startup current loss
+AssertionError: expected 7.36878939461622e-12 to be less than or equal to 1e-12
+ ❯ src/devices/mos3-gm17-startup-1059.test.ts:25:84
+     23|     for (const source of ['vdi', 'vwr'] as const) {
+     24|       for (let point = 1; point <= 2; point++) {
+     25|         expect(Math.abs(result.current(source)[point] - stock[source][…
+       |                                                                                    ^
+     26|       }
+     27|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed (2)
+   Start at  17:25:09
+   Duration  1.13s (transform 777ms, setup 0ms, import 929ms, tests 98ms, environment 0ms)
+
+JUNIT report written to /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e457fe0a/packages/core/test-results.xml
