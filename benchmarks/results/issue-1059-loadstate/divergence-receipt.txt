@@ -1,0 +1,80 @@
+[
+  {
+    "name": "pair",
+    "sha256": "2cf07960550f2227736d6f8d361a0207f5f3737fc85e1683dbaf4f07bdac82ba",
+    "tsPoints": 312,
+    "nativePoints": 312,
+    "firstMaterial": {
+      "time": 4.2010800772761916e-08,
+      "signal": "i(vp)",
+      "ts": 0.0005330899254077301,
+      "native": 0.0005627080129191441,
+      "normalized": 0.012979806832604218,
+      "peak": 0.002281858882292133,
+      "tsAccepted": true,
+      "nativeAccepted": false
+    },
+    "worst": {
+      "time": 1.109656686551295e-07,
+      "signal": "i(vp)",
+      "ts": -0.0015258225383737135,
+      "native": -0.001710133307654606,
+      "normalized": 0.08077220318539237,
+      "peak": 0.002281858882292133,
+      "tsAccepted": false,
+      "nativeAccepted": true
+    }
+  },
+  {
+    "name": "gm19",
+    "sha256": "0b94a01a96dd0ae19e93fe78b5fc7397411815d350ee13ee118c49548bb62c08",
+    "tsPoints": 1251,
+    "nativePoints": 1233,
+    "firstMaterial": {
+      "time": 2.9181658418938905e-08,
+      "signal": "i(vin)",
+      "ts": -4.6235144101118564e-05,
+      "native": -4.5471840926377624e-05,
+      "normalized": 0.015215223698442483,
+      "peak": 5.016706884296918e-05,
+      "tsAccepted": true,
+      "nativeAccepted": false
+    },
+    "worst": {
+      "time": 4.577994879080591e-07,
+      "signal": "v(x3.10)",
+      "ts": 3.054103818591048,
+      "native": 0.9481796428334962,
+      "normalized": 0.21014782135539922,
+      "peak": 10.02115635639182,
+      "tsAccepted": false,
+      "nativeAccepted": true
+    }
+  },
+  {
+    "name": "arom",
+    "sha256": "4db593d3133a5929e7efdcb26921d3fce15e6c6c17e8bcef2fa2a08c4f7d062c",
+    "tsPoints": 1330,
+    "nativePoints": 1337,
+    "firstMaterial": {
+      "time": 2.740313502218234e-08,
+      "signal": "v(33)",
+      "ts": 0.20403106770334278,
+      "native": 0.1563437929027398,
+      "normalized": 0.010392538849410179,
+      "peak": 4.588606835307566,
+      "tsAccepted": false,
+      "nativeAccepted": true
+    },
+    "worst": {
+      "time": 5.280111337979705e-07,
+      "signal": "i(v$d3)",
+      "ts": 0.0003661415790876246,
+      "native": 0.00015212241186463165,
+      "normalized": 0.23922141063286687,
+      "peak": 0.0008946488805362334,
+      "tsAccepted": true,
+      "nativeAccepted": false
+    }
+  }
+]

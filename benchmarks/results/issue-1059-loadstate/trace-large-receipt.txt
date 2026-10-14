@@ -1,0 +1,52 @@
+spice-heavy: all 2 heavy slots busy, waiting...
+spice-heavy: got slot 1
+
+<--- Last few GCs --->
+
+[13550:0x755dc00000]   103905 ms: Mark-Compact 3997.1 (4139.4) -> 3984.5 (4142.9) MB, pooled: 0 MB, 759.67 / 0.00 ms  (average mu = 0.223, current mu = 0.019) allocation failure; scavenge might not succeed
+[13550:0x755dc00000]   105498 ms: Mark-Compact 4000.9 (4143.4) -> 3988.3 (4146.6) MB, pooled: 0 MB, 1577.71 / 0.00 ms  (average mu = 0.088, current mu = 0.009) allocation failure; scavenge might not succeed
+
+
+<--- JS stacktrace --->
+
+FATAL ERROR: Reached heap limit Allocation failed - JavaScript heap out of memory
+----- Native stack trace -----
+
+ 1: 0x10102b680 node::OOMErrorHandler(char const*, v8::OOMDetails const&) [/Users/mattiafiumara/.hermes/node/bin/node]
+ 2: 0x101206a94 v8::internal::V8::FatalProcessOutOfMemory(v8::internal::Isolate*, char const*, v8::OOMDetails const&) [/Users/mattiafiumara/.hermes/node/bin/node]
+ 3: 0x1014160a8 v8::internal::Heap::stack() [/Users/mattiafiumara/.hermes/node/bin/node]
+ 4: 0x101414448 v8::internal::Heap::CollectGarbage(v8::internal::AllocationSpace, v8::internal::GarbageCollectionReason, v8::GCCallbackFlags) [/Users/mattiafiumara/.hermes/node/bin/node]
+ 5: 0x101408a3c v8::internal::HeapAllocator::AllocateRawWithLightRetrySlowPath(int, v8::internal::AllocationType, v8::internal::AllocationOrigin, v8::internal::AllocationAlignment) [/Users/mattiafiumara/.hermes/node/bin/node]
+ 6: 0x101409274 v8::internal::HeapAllocator::AllocateRawWithRetryOrFailSlowPath(int, v8::internal::AllocationType, v8::internal::AllocationOrigin, v8::internal::AllocationAlignment) [/Users/mattiafiumara/.hermes/node/bin/node]
+ 7: 0x1013ec560 v8::internal::Factory::NewFillerObject(int, v8::internal::AllocationAlignment, v8::internal::AllocationType, v8::internal::AllocationOrigin) [/Users/mattiafiumara/.hermes/node/bin/node]
+ 8: 0x1018089c0 v8::internal::Runtime_AllocateInYoungGeneration(int, unsigned long*, v8::internal::Isolate*) [/Users/mattiafiumara/.hermes/node/bin/node]
+ 9: 0x101cc9df4 Builtins_CEntry_Return1_ArgvOnStack_NoBuiltinExit [/Users/mattiafiumara/.hermes/node/bin/node]
+10: 0x10c86fe8c 
+11: 0x10c79f824 
+12: 0x10c8a523c 
+13: 0x10c893058 
+14: 0x10c857224 
+15: 0x10c879924 
+16: 0x10c78ed50 
+17: 0x101c34ef0 Builtins_InterpreterEntryTrampoline [/Users/mattiafiumara/.hermes/node/bin/node]
+18: 0x101c34ef0 Builtins_InterpreterEntryTrampoline [/Users/mattiafiumara/.hermes/node/bin/node]
+19: 0x101c71410 Builtins_AsyncFunctionAwaitResolveClosure [/Users/mattiafiumara/.hermes/node/bin/node]
+20: 0x101d3cf78 Builtins_PromiseFulfillReactionJob [/Users/mattiafiumara/.hermes/node/bin/node]
+21: 0x101c616f4 Builtins_RunMicrotasks [/Users/mattiafiumara/.hermes/node/bin/node]
+22: 0x101c32af4 Builtins_JSRunMicrotasksEntry [/Users/mattiafiumara/.hermes/node/bin/node]
+23: 0x10136de54 v8::internal::(anonymous namespace)::Invoke(v8::internal::Isolate*, v8::internal::(anonymous namespace)::InvokeParams const&) [/Users/mattiafiumara/.hermes/node/bin/node]
+24: 0x10136e6fc v8::internal::(anonymous namespace)::InvokeWithTryCatch(v8::internal::Isolate*, v8::internal::(anonymous namespace)::InvokeParams const&) [/Users/mattiafiumara/.hermes/node/bin/node]
+25: 0x10136e834 v8::internal::Execution::TryRunMicrotasks(v8::internal::Isolate*, v8::internal::MicrotaskQueue*) [/Users/mattiafiumara/.hermes/node/bin/node]
+26: 0x10139bab4 v8::internal::MicrotaskQueue::RunMicrotasks(v8::internal::Isolate*) [/Users/mattiafiumara/.hermes/node/bin/node]
+27: 0x10139c238 v8::internal::MicrotaskQueue::PerformCheckpoint(v8::Isolate*) [/Users/mattiafiumara/.hermes/node/bin/node]
+28: 0x100f2a878 node::InternalCallbackScope::Close() [/Users/mattiafiumara/.hermes/node/bin/node]
+29: 0x100f2a338 node::InternalCallbackScope::~InternalCallbackScope() [/Users/mattiafiumara/.hermes/node/bin/node]
+30: 0x1010ab7c0 node::PerIsolatePlatformData::RunForegroundTask(std::__1::unique_ptr<v8::Task, std::__1::default_delete<v8::Task>>) [/Users/mattiafiumara/.hermes/node/bin/node]
+31: 0x1010aa728 node::PerIsolatePlatformData::FlushForegroundTasksInternal() [/Users/mattiafiumara/.hermes/node/bin/node]
+32: 0x101c133c8 uv__async_io [/Users/mattiafiumara/.hermes/node/bin/node]
+33: 0x101c27760 uv__io_poll [/Users/mattiafiumara/.hermes/node/bin/node]
+34: 0x101c13930 uv_run [/Users/mattiafiumara/.hermes/node/bin/node]
+35: 0x100f2b394 node::SpinEventLoopInternal(node::Environment*) [/Users/mattiafiumara/.hermes/node/bin/node]
+36: 0x1010758d4 node::NodeMainInstance::Run() [/Users/mattiafiumara/.hermes/node/bin/node]
+37: 0x100fe67e8 node::Start(int, char**) [/Users/mattiafiumara/.hermes/node/bin/node]
+38: 0x18e533e80 start [/usr/lib/dyld]
