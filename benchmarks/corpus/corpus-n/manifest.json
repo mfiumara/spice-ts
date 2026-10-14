@@ -1,0 +1,512 @@
+{
+  "schemaVersion": 1,
+  "issue": "https://github.com/mfiumara/spice-ts/issues/1045",
+  "mechanicalAdaptation": "none",
+  "sources": [
+    {
+      "key": "ngspice",
+      "repository": "https://github.com/imr/ngspice",
+      "revision": "a80f6e3e95d51534905b1f23410a951802666656",
+      "license": "BSD-3-Clause",
+      "licenseUrl": "https://github.com/imr/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/COPYING",
+      "licensePath": "benchmarks/corpus/corpus-n/licenses/ngspice/COPYING",
+      "licenseSha256": "6d939001e899ede403277fb37124c2af6f1cf92926465cd8f4bf59859e06f579",
+      "licenseTextPath": "benchmarks/corpus/corpus-n/licenses/ngspice/COPYING",
+      "licenseTextSha256": "6d939001e899ede403277fb37124c2af6f1cf92926465cd8f4bf59859e06f579",
+      "basis": "COPYING explicitly adopts Modified BSD for all source, test and example files except listed paths; none of the selected example/test paths is an exception. The licensing document itself is CC-BY-SA-4.0 and is retained unchanged with attribution via the pinned URL."
+    },
+    {
+      "key": "xyce",
+      "repository": "https://github.com/Xyce/Xyce_Regression",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "license": "GPL-3.0-or-later",
+      "licenseUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/README.md",
+      "licensePath": "benchmarks/corpus/corpus-n/licenses/xyce/README.md",
+      "licenseSha256": "82ff6df7bddcdf639483d261949a02a5f43da85d579f1242b05c3aa0c430f7cb",
+      "licenseTextPath": "benchmarks/corpus/corpus-n/licenses/xyce/GPL-3.0.txt",
+      "licenseTextSha256": "12ac5047f2af0522f06798b1589ffc4599bc29c91f954d7874e0320634e777c0",
+      "basis": "Repository README grants GPL version 3 or later. Selected decks have no separate notice or external dependencies. README and full GPL text retained unchanged; independent benchmark inputs, not package code. Supervisor confirmed this licence is allowed under CHARTER."
+    }
+  ],
+  "selection": "All 13 successful BSD ngspice probes (100 eligible exhausted), then first 11 Xyce successes in survey order. Remaining Xyce candidates and other families deferred. No spice-ts selection filter.",
+  "circuits": [
+    {
+      "id": "n-1",
+      "source": "ngspice",
+      "upstreamPath": "examples/pss/vdp_osc_pss.cir",
+      "sourcePath": "ngspice/examples/pss/vdp_osc_pss.cir",
+      "sourceUrl": "https://github.com/imr/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/examples/pss/vdp_osc_pss.cir",
+      "revision": "a80f6e3e95d51534905b1f23410a951802666656",
+      "licence": "BSD-3-Clause",
+      "localPath": "benchmarks/corpus/corpus-n/fixtures/ngspice/examples/pss/vdp_osc_pss.cir",
+      "sha256": "501888a16ddd9741b851953c010e7de6c8b11ea70071909db9a5b192d0571511",
+      "bytes": 462,
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [
+        "pss"
+      ],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "n-2",
+      "source": "ngspice",
+      "upstreamPath": "paranoia_parallel/examples/Monte_Carlo/OpWien_s.sp",
+      "sourcePath": "ngspice/paranoia_parallel/examples/Monte_Carlo/OpWien_s.sp",
+      "sourceUrl": "https://github.com/imr/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/paranoia_parallel/examples/Monte_Carlo/OpWien_s.sp",
+      "revision": "a80f6e3e95d51534905b1f23410a951802666656",
+      "licence": "BSD-3-Clause",
+      "localPath": "benchmarks/corpus/corpus-n/fixtures/ngspice/paranoia_parallel/examples/Monte_Carlo/OpWien_s.sp",
+      "sha256": "4c74766c70cff535f141edb749dab6300bcbafd8db65243f1eef3061ed01b860",
+      "bytes": 2022,
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "n-3",
+      "source": "ngspice",
+      "upstreamPath": "paranoia_parallel/examples/transient-noise/noise_vnoi_test.cir",
+      "sourcePath": "ngspice/paranoia_parallel/examples/transient-noise/noise_vnoi_test.cir",
+      "sourceUrl": "https://github.com/imr/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/paranoia_parallel/examples/transient-noise/noise_vnoi_test.cir",
+      "revision": "a80f6e3e95d51534905b1f23410a951802666656",
+      "licence": "BSD-3-Clause",
+      "localPath": "benchmarks/corpus/corpus-n/fixtures/ngspice/paranoia_parallel/examples/transient-noise/noise_vnoi_test.cir",
+      "sha256": "296b5af65bedcd8793498d732411f36191217f94b89a7eb37275f9f4c7392ef8",
+      "bytes": 792,
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "n-4",
+      "source": "ngspice",
+      "upstreamPath": "paranoia_parallel/examples/transient-noise/simple-noise.cir",
+      "sourcePath": "ngspice/paranoia_parallel/examples/transient-noise/simple-noise.cir",
+      "sourceUrl": "https://github.com/imr/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/paranoia_parallel/examples/transient-noise/simple-noise.cir",
+      "revision": "a80f6e3e95d51534905b1f23410a951802666656",
+      "licence": "BSD-3-Clause",
+      "localPath": "benchmarks/corpus/corpus-n/fixtures/ngspice/paranoia_parallel/examples/transient-noise/simple-noise.cir",
+      "sha256": "5cb8c9d9856777689b944076fc07bd77ae92e70ce6731cd0db0fc04d23adeb44",
+      "bytes": 665,
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "n-5",
+      "source": "ngspice",
+      "upstreamPath": "paranoia_parallel/examples/various/adder_mos.cir",
+      "sourcePath": "ngspice/paranoia_parallel/examples/various/adder_mos.cir",
+      "sourceUrl": "https://github.com/imr/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/paranoia_parallel/examples/various/adder_mos.cir",
+      "revision": "a80f6e3e95d51534905b1f23410a951802666656",
+      "licence": "BSD-3-Clause",
+      "localPath": "benchmarks/corpus/corpus-n/fixtures/ngspice/paranoia_parallel/examples/various/adder_mos.cir",
+      "sha256": "837642247b44a0c70ac952e4d24a6fa52a4132ed50c1f5c6a4cbd35bd1747f7e",
+      "bytes": 2465,
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "n-6",
+      "source": "ngspice",
+      "upstreamPath": "paranoia_parallel/examples/vdmos/inv_vdmos_dc.cir",
+      "sourcePath": "ngspice/paranoia_parallel/examples/vdmos/inv_vdmos_dc.cir",
+      "sourceUrl": "https://github.com/imr/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/paranoia_parallel/examples/vdmos/inv_vdmos_dc.cir",
+      "revision": "a80f6e3e95d51534905b1f23410a951802666656",
+      "licence": "BSD-3-Clause",
+      "localPath": "benchmarks/corpus/corpus-n/fixtures/ngspice/paranoia_parallel/examples/vdmos/inv_vdmos_dc.cir",
+      "sha256": "b20eb59e3de6e8ac27f44097b7b19f2ebd1f821425c69b731f9b1c8a11a862e1",
+      "bytes": 547,
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "n-7",
+      "source": "ngspice",
+      "upstreamPath": "paranoia_parallel/examples/vdmos/inv_vdmos.cir",
+      "sourcePath": "ngspice/paranoia_parallel/examples/vdmos/inv_vdmos.cir",
+      "sourceUrl": "https://github.com/imr/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/paranoia_parallel/examples/vdmos/inv_vdmos.cir",
+      "revision": "a80f6e3e95d51534905b1f23410a951802666656",
+      "licence": "BSD-3-Clause",
+      "localPath": "benchmarks/corpus/corpus-n/fixtures/ngspice/paranoia_parallel/examples/vdmos/inv_vdmos.cir",
+      "sha256": "7ba5f6c24e3c6c5c1b22595173e635c0106e734232c170b8ea110d4f3480f737",
+      "bytes": 570,
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "n-8",
+      "source": "ngspice",
+      "upstreamPath": "paranoia_parallel/examples/vdmos/VDMOS-DIO-AC.cir",
+      "sourcePath": "ngspice/paranoia_parallel/examples/vdmos/VDMOS-DIO-AC.cir",
+      "sourceUrl": "https://github.com/imr/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/paranoia_parallel/examples/vdmos/VDMOS-DIO-AC.cir",
+      "revision": "a80f6e3e95d51534905b1f23410a951802666656",
+      "licence": "BSD-3-Clause",
+      "localPath": "benchmarks/corpus/corpus-n/fixtures/ngspice/paranoia_parallel/examples/vdmos/VDMOS-DIO-AC.cir",
+      "sha256": "5353769bf39031ee971d955dd92bdaae8ef827d99fdb0242d635ef4fc56b3d99",
+      "bytes": 640,
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "n-9",
+      "source": "ngspice",
+      "upstreamPath": "paranoia_parallel/examples/vdmos/VDMOS-DIO.cir",
+      "sourcePath": "ngspice/paranoia_parallel/examples/vdmos/VDMOS-DIO.cir",
+      "sourceUrl": "https://github.com/imr/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/paranoia_parallel/examples/vdmos/VDMOS-DIO.cir",
+      "revision": "a80f6e3e95d51534905b1f23410a951802666656",
+      "licence": "BSD-3-Clause",
+      "localPath": "benchmarks/corpus/corpus-n/fixtures/ngspice/paranoia_parallel/examples/vdmos/VDMOS-DIO.cir",
+      "sha256": "3e571540caef808b4acd9346962846cf0c974f9e95046f1b1cae7b9940b5687c",
+      "bytes": 670,
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "n-10",
+      "source": "ngspice",
+      "upstreamPath": "paranoia_parallel/examples/vdmos/vdmos-out_ir_mtr.cir",
+      "sourcePath": "ngspice/paranoia_parallel/examples/vdmos/vdmos-out_ir_mtr.cir",
+      "sourceUrl": "https://github.com/imr/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/paranoia_parallel/examples/vdmos/vdmos-out_ir_mtr.cir",
+      "revision": "a80f6e3e95d51534905b1f23410a951802666656",
+      "licence": "BSD-3-Clause",
+      "localPath": "benchmarks/corpus/corpus-n/fixtures/ngspice/paranoia_parallel/examples/vdmos/vdmos-out_ir_mtr.cir",
+      "sha256": "63b7483ca8406aef8f80b44443be204b367a5dc81f86697d15c4138f07455303",
+      "bytes": 815,
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "n-11",
+      "source": "ngspice",
+      "upstreamPath": "paranoia_parallel/examples/vdmos/vdmos-out_ir.cir",
+      "sourcePath": "ngspice/paranoia_parallel/examples/vdmos/vdmos-out_ir.cir",
+      "sourceUrl": "https://github.com/imr/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/paranoia_parallel/examples/vdmos/vdmos-out_ir.cir",
+      "revision": "a80f6e3e95d51534905b1f23410a951802666656",
+      "licence": "BSD-3-Clause",
+      "localPath": "benchmarks/corpus/corpus-n/fixtures/ngspice/paranoia_parallel/examples/vdmos/vdmos-out_ir.cir",
+      "sha256": "e991fe10546a7b7b0dc0a60d597782b35d9a5087682f5724b02e145fb5a27b1b",
+      "bytes": 367,
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "n-12",
+      "source": "ngspice",
+      "upstreamPath": "paranoia_parallel/examples/vdmos/vdmosp-out-mtr.cir",
+      "sourcePath": "ngspice/paranoia_parallel/examples/vdmos/vdmosp-out-mtr.cir",
+      "sourceUrl": "https://github.com/imr/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/paranoia_parallel/examples/vdmos/vdmosp-out-mtr.cir",
+      "revision": "a80f6e3e95d51534905b1f23410a951802666656",
+      "licence": "BSD-3-Clause",
+      "localPath": "benchmarks/corpus/corpus-n/fixtures/ngspice/paranoia_parallel/examples/vdmos/vdmosp-out-mtr.cir",
+      "sha256": "64176908ef6c543b9bfbc15195e75aaebd446c6c89bed69bca01eb6a647909fe",
+      "bytes": 953,
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "n-13",
+      "source": "ngspice",
+      "upstreamPath": "paranoia_parallel/examples/vdmos/vdmosp-out.cir",
+      "sourcePath": "ngspice/paranoia_parallel/examples/vdmos/vdmosp-out.cir",
+      "sourceUrl": "https://github.com/imr/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/paranoia_parallel/examples/vdmos/vdmosp-out.cir",
+      "revision": "a80f6e3e95d51534905b1f23410a951802666656",
+      "licence": "BSD-3-Clause",
+      "localPath": "benchmarks/corpus/corpus-n/fixtures/ngspice/paranoia_parallel/examples/vdmos/vdmosp-out.cir",
+      "sha256": "8c0ed92645e2876fe915703215dd208a8fdf93c9e365c5ec561760bbc3ce0e5c",
+      "bytes": 246,
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "n-14",
+      "source": "xyce",
+      "upstreamPath": "Netlists/ACSENS/bsim3/op-amp_expr_fd.cir",
+      "sourcePath": "xyce/Netlists/ACSENS/bsim3/op-amp_expr_fd.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/ACSENS/bsim3/op-amp_expr_fd.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-n/fixtures/xyce/Netlists/ACSENS/bsim3/op-amp_expr_fd.cir",
+      "sha256": "1667c34c9cd58942432fb21c93943b6f12b0138a1460f576acaaaaad82d61519",
+      "bytes": 2174,
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "n-15",
+      "source": "xyce",
+      "upstreamPath": "Netlists/ACSENS/bsim3/op-amp_unique_fd.cir",
+      "sourcePath": "xyce/Netlists/ACSENS/bsim3/op-amp_unique_fd.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/ACSENS/bsim3/op-amp_unique_fd.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-n/fixtures/xyce/Netlists/ACSENS/bsim3/op-amp_unique_fd.cir",
+      "sha256": "31770a8ccf83d8d1e4d84d32a80c5cb035d53c72b887cccf0a92409a598523ef",
+      "bytes": 2174,
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "n-16",
+      "source": "xyce",
+      "upstreamPath": "Netlists/Output/TRAN/tran-prn-filter.cir",
+      "sourcePath": "xyce/Netlists/Output/TRAN/tran-prn-filter.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/Output/TRAN/tran-prn-filter.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-n/fixtures/xyce/Netlists/Output/TRAN/tran-prn-filter.cir",
+      "sha256": "e2c25889d90fd5aa9f86793c969bd36a448e516637af2f1b741822170bdf369e",
+      "bytes": 212,
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "n-17",
+      "source": "xyce",
+      "upstreamPath": "Netlists/BJT_IC/bjt_ic.cir",
+      "sourcePath": "xyce/Netlists/BJT_IC/bjt_ic.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/BJT_IC/bjt_ic.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-n/fixtures/xyce/Netlists/BJT_IC/bjt_ic.cir",
+      "sha256": "b2f414dea73a0fb66b61335fe83320fecac2b7bbf1f12e0438b6893c363c5534",
+      "bytes": 1301,
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "n-18",
+      "source": "xyce",
+      "upstreamPath": "Netlists/CircuitSim90/MOS2_LARGE/add20.cir",
+      "sourcePath": "xyce/Netlists/CircuitSim90/MOS2_LARGE/add20.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS2_LARGE/add20.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-n/fixtures/xyce/Netlists/CircuitSim90/MOS2_LARGE/add20.cir",
+      "sha256": "197b34fcac1376f5351f3c3c8508b30cec83f0ba45540c233aac8b9856340bc1",
+      "bytes": 206326,
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "n-19",
+      "source": "xyce",
+      "upstreamPath": "Netlists/CircuitSim90/MOS2_LARGE/add32.cir",
+      "sourcePath": "xyce/Netlists/CircuitSim90/MOS2_LARGE/add32.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS2_LARGE/add32.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-n/fixtures/xyce/Netlists/CircuitSim90/MOS2_LARGE/add32.cir",
+      "sha256": "120cbd0023c06993224b862be199f095226ce4a0efa587dc8c46cebd21181138",
+      "bytes": 82193,
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "n-20",
+      "source": "xyce",
+      "upstreamPath": "Netlists/CircuitSim90/MOS2_LARGE/dac.cir",
+      "sourcePath": "xyce/Netlists/CircuitSim90/MOS2_LARGE/dac.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS2_LARGE/dac.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-n/fixtures/xyce/Netlists/CircuitSim90/MOS2_LARGE/dac.cir",
+      "sha256": "daff3bedde91fafd24d5a4123738d7845cd2f067d1c918f73dc07f8d9c3ab637",
+      "bytes": 60270,
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "n-21",
+      "source": "xyce",
+      "upstreamPath": "Netlists/CircuitSim90/MOS2_LARGE/fadd32.cir",
+      "sourcePath": "xyce/Netlists/CircuitSim90/MOS2_LARGE/fadd32.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS2_LARGE/fadd32.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-n/fixtures/xyce/Netlists/CircuitSim90/MOS2_LARGE/fadd32.cir",
+      "sha256": "e0056c1c0e9f7c9c1fd917affec058d32001c6172251359068506b165dc5a12d",
+      "bytes": 4164,
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "n-22",
+      "source": "xyce",
+      "upstreamPath": "Netlists/CircuitSim90/MOS2_LARGE/pchip.cir",
+      "sourcePath": "xyce/Netlists/CircuitSim90/MOS2_LARGE/pchip.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS2_LARGE/pchip.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-n/fixtures/xyce/Netlists/CircuitSim90/MOS2_LARGE/pchip.cir",
+      "sha256": "6abe8ffc3bb0e664b465bbb0ebc9d202265df9eb39608140bc976f28202bcb21",
+      "bytes": 106510,
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "n-23",
+      "source": "xyce",
+      "upstreamPath": "Netlists/CircuitSim90/MOS2_LARGE/sqrt.cir",
+      "sourcePath": "xyce/Netlists/CircuitSim90/MOS2_LARGE/sqrt.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS2_LARGE/sqrt.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-n/fixtures/xyce/Netlists/CircuitSim90/MOS2_LARGE/sqrt.cir",
+      "sha256": "efec05bb614eedd46c39b85f3e8430e3c0955230909ab2adb2542667306ee791",
+      "bytes": 22996,
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "n-24",
+      "source": "xyce",
+      "upstreamPath": "Netlists/CircuitSim90/MOS2_LARGE/sram.cir",
+      "sourcePath": "xyce/Netlists/CircuitSim90/MOS2_LARGE/sram.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS2_LARGE/sram.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-n/fixtures/xyce/Netlists/CircuitSim90/MOS2_LARGE/sram.cir",
+      "sha256": "f7199d0ba58e8b3563f9910511b7a1954f86ea647e276bb517eb49acdcf1fdd4",
+      "bytes": 151751,
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    }
+  ],
+  "exclusions": [
+    {
+      "source": "ngspice",
+      "receipt": "benchmarks/corpus/corpus-n/survey-ngspice.json",
+      "receiptSha256": "6f4cd13bc36f2298ab02d8e90aa71f37605326c10533b1495650c0ec9d52d27c",
+      "probe": "benchmarks/corpus/corpus-n/ngspice-probe.json",
+      "probeSha256": "9c95ea12fec19a1731e54086de9d0ce8e54a3f2659c1980ed12316e3f8ce8d15",
+      "selectedPaths": [
+        "examples/pss/vdp_osc_pss.cir",
+        "paranoia_parallel/examples/Monte_Carlo/OpWien_s.sp",
+        "paranoia_parallel/examples/transient-noise/noise_vnoi_test.cir",
+        "paranoia_parallel/examples/transient-noise/simple-noise.cir",
+        "paranoia_parallel/examples/various/adder_mos.cir",
+        "paranoia_parallel/examples/vdmos/inv_vdmos_dc.cir",
+        "paranoia_parallel/examples/vdmos/inv_vdmos.cir",
+        "paranoia_parallel/examples/vdmos/VDMOS-DIO-AC.cir",
+        "paranoia_parallel/examples/vdmos/VDMOS-DIO.cir",
+        "paranoia_parallel/examples/vdmos/vdmos-out_ir_mtr.cir",
+        "paranoia_parallel/examples/vdmos/vdmos-out_ir.cir",
+        "paranoia_parallel/examples/vdmos/vdmosp-out-mtr.cir",
+        "paranoia_parallel/examples/vdmos/vdmosp-out.cir"
+      ]
+    },
+    {
+      "source": "xyce",
+      "receipt": "benchmarks/corpus/corpus-n/survey-xyce.json",
+      "receiptSha256": "578e51fb4de3563a1a34d33435c7de1e3cdb11303519755f4969587a7b049dee",
+      "probe": "benchmarks/corpus/corpus-n/xyce-probe.json",
+      "probeSha256": "9990720292b95cb34d58d8d8440e2717fb015dff49781023740c1fb86b629b35",
+      "selectedPaths": [
+        "Netlists/ACSENS/bsim3/op-amp_expr_fd.cir",
+        "Netlists/ACSENS/bsim3/op-amp_unique_fd.cir",
+        "Netlists/Output/TRAN/tran-prn-filter.cir",
+        "Netlists/BJT_IC/bjt_ic.cir",
+        "Netlists/CircuitSim90/MOS2_LARGE/add20.cir",
+        "Netlists/CircuitSim90/MOS2_LARGE/add32.cir",
+        "Netlists/CircuitSim90/MOS2_LARGE/dac.cir",
+        "Netlists/CircuitSim90/MOS2_LARGE/fadd32.cir",
+        "Netlists/CircuitSim90/MOS2_LARGE/pchip.cir",
+        "Netlists/CircuitSim90/MOS2_LARGE/sqrt.cir",
+        "Netlists/CircuitSim90/MOS2_LARGE/sram.cir"
+      ]
+    }
+  ]
+}

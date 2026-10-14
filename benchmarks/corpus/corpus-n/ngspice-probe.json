@@ -1,0 +1,721 @@
+{
+  "revision": "a80f6e3e95d51534905b1f23410a951802666656",
+  "ngspice": "ngspice-47",
+  "command": "spice-heavy pnpm exec tsx benchmarks/corpus/corpus-n/probe.ts",
+  "selection": "Exhaust all static-eligible candidates; retain every success and failure.",
+  "probes": [
+    {
+      "sourcePath": "examples/pss/colpitt_osc_pss_ctrl.cir",
+      "sha256": "c37184bb2e88821ecc4ee887765f8f7e60001d8ac173dd1c5f65d00e5959b8e2",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "examples/pss/colpitt_osc_pss.cir",
+      "sha256": "79387ae5057307e6a6df07947c8b3656fae6c65b618be838c8d91d5a1dc92aeb",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error: Cannot find a minimum for error vector in estimated period. Try to adjust tstab! PSS analysis aborted"
+    },
+    {
+      "sourcePath": "examples/pss/compl_cross_quad_osc_pss_ctrl.cir",
+      "sha256": "9000330a7e987e56eaf28bcc4f0e175efa7e0666d6bf99bf1272a2c11af52648",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "examples/pss/compl_cross_quad_osc_pss.cir",
+      "sha256": "3b01e986b686d3c3b128db0b2b8288a1bd504b96b5d7177cfbb9522d2346a723",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error: Strange behavior"
+    },
+    {
+      "sourcePath": "examples/pss/hartley_osc_pss_ctrl.cir",
+      "sha256": "0c28c7452a80c687990cc5ba6adf25f98ce7c3d8e4e6ea233328687f1290580b",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Reference value : 1.65788e-01 Error: no such plot named pss1"
+    },
+    {
+      "sourcePath": "examples/pss/hartley_osc_pss.cir",
+      "sha256": "d50c4101b3c8513a6739bca7d41c199cfa2f5c40a8632713c784069fe8fb8d2c",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "examples/pss/ring_osc_pss_ctrl.cir",
+      "sha256": "3b1651eefdb2e4b737c7d4fe8a3fbfde20f37bd06f58decdd3f8732ac63b57ac",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "examples/pss/ring_osc_pss.cir",
+      "sha256": "e037c651ea2499077459252229ef209302838e65d2c32c32ae4beeba63df542a",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "examples/pss/vackar_osc_pss_ctrl.cir",
+      "sha256": "a238b8a5ee477376e55241cdb08c9963ea45d43b93e33bd6c3594bccece78302",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "examples/pss/vackar_osc_pss.cir",
+      "sha256": "784d6cceaa4b84e421f6ee7128595f7759da62e6d3f15025823229eef5337432",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "examples/pss/vdp_osc_pss_ctrl.cir",
+      "sha256": "5b59d47d6300fd25a99f5cb8bc1e010779356a2f369fbcddcef445bf3bfe5a25",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "examples/pss/vdp_osc_pss.cir",
+      "sha256": "501888a16ddd9741b851953c010e7de6c8b11ea70071909db9a5b192d0571511",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/Monte_Carlo/OpWien_s.sp",
+      "sha256": "4c74766c70cff535f141edb749dab6300bcbafd8db65243f1eef3061ed01b860",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/Monte_Carlo/OpWien.sp",
+      "sha256": "0182369631d349fd5b63efb84419d3a0dd453c02e6ae58653465119d78f3a844",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/pton/switch-oscillators.cir",
+      "sha256": "fd808f2ed6a6dab857002b3aaf29a35fce9f0723ee4da56bbc6d76c707d1d273",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "examples/sp/file.cir",
+      "sha256": "cd197eb28a1d42fb34427e3803f6ee0d1a64214be4e3ff6d9e60f3615eac5689",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/cider/cmosinv.cir",
+      "sha256": "662599540b310574f9670709c2ccae17828cd5d5530875cf6ac63d1373993a00",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/cider/diode.cir",
+      "sha256": "1fdf44b8654acc25feb971fdac8b238f0d2e661e842bc93af33c70174f2ea280",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/cider/pullup.cir",
+      "sha256": "0ab3a11c89c4257a1baa0530b529c057ff737b332ee29c601039ddcef594b209",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/cider/recovery.cir",
+      "sha256": "a5d5f91c7521161641239b4898779005f69a4d92b47db4cee3b25eaf12276522",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/cider/rtlinv.cir",
+      "sha256": "af5b48b8ad8bd788e10c5f05a8779312724f650dcea3ab666a95a7c799f90a5e",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/control_structs/foreach_bjt_ft.sp",
+      "sha256": "b2f8e1a3613f3b87abc1488b9903a131023c4a6ba5669b0af2a28c652835ce7b",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/digital_devices/counter.cir",
+      "sha256": "fb1b37cf77a8dad4fcc27ae6fc71d1d4692a04b5fc24ebc2b3605fdaaab9af6b",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error on line 4 or its substitute:"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/digital/adder_bip.cir",
+      "sha256": "83ac84fff9f8a9a0aa3d81719ef35ddb9484c27d1ff96e2db5a302e5f5ed8f52",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/digital/adder_cshunt.cir",
+      "sha256": "3dececfc40581f71b4ee8668faa8576ac6108cbf5808cdc875dd3a76b964410c",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/digital/adder_mos.cir",
+      "sha256": "480b4bfef2125212bfa81e7bbf404cee6a2320a691a206208fd3e0bbc6aadd8d",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/measure/func_cap.sp",
+      "sha256": "8e539ab9917f200a2fcbe1d112189a2b98f10b151a6e9c2146491795ed7b275d",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/measure/inv-meas-tran.sp",
+      "sha256": "7b1ace3cfe3bede565c22cc59b63425bee6f64fa60401e6a0bde4dec3b7addf6",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/measure/mos-meas-dc.sp",
+      "sha256": "0a5c7698ae3cf75dce55c15d179b79dcda91627c960a0881120f8bf7979144ee",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/measure/rc-meas-ac.sp",
+      "sha256": "83673e2b5ca9017df5707899e31b6dbe66d7e8e1ed3188e9d50a6a887e45837c",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/memristor/memristor_x.sp",
+      "sha256": "83680c2e333a41131d15a8c964236854df95d99f37f5177131e4e5fbc930fc18",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/memristor/memristor.sp",
+      "sha256": "ac34b581ac766e4c020d70843b5ac17b025491f900816cef1856b276bd446ab4",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/Monte_Carlo/MC_ring.sp",
+      "sha256": "61710d0cafe1fcf62a7e43da57e50694e552dfb0f10507d9e34d68bb676b8e4b",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/Monte_Carlo/MonteCarlo.sp",
+      "sha256": "a95e6a7fada32525310a309ae78c64e149c8d94e4c21cfa6cf6742ec3282db11",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/Monte_Carlo/names-test2.sp",
+      "sha256": "5da2a1c1de65b392353538fc3037466ea7c4f510c53e52b24e335efb8e9a11ba",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/optran/simple-tran.cir",
+      "sha256": "90efbf783eba8c30260e4992f809d6e7d71e940c2cdfdb590e54c01f58f9942f",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/pton/MOS1_out.cir",
+      "sha256": "91e79b5c63df553a0f0b88e8a7b5c6697359ea85e4aedc5e3e3f486ccbf04ce3",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/transient-noise/noi-sc-tr.cir",
+      "sha256": "ad188d5b8c3bfd389b1f72254f4d9150cd9e52aa70b81a59caeccc58fa354561",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/transient-noise/noise_vnoi_test.cir",
+      "sha256": "296b5af65bedcd8793498d732411f36191217f94b89a7eb37275f9f4c7392ef8",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/transient-noise/noise_vnoi.cir",
+      "sha256": "06c5df10444a1285fd7349f058e14075f716bec7ebc1f7b4081dd101c7b7f9dc",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/transient-noise/rts-1.cir",
+      "sha256": "2c7292979d1ef6c7073f37672a240e22cb9a505ef2526bf14260f544a99ba057",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/transient-noise/shot_ng.cir",
+      "sha256": "3d24ac172057f1958970a95821c1e8d545e43a08e8c7798bd65344e4e4ce521b",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/transient-noise/simple-noise.cir",
+      "sha256": "5cb8c9d9856777689b944076fc07bd77ae92e70ce6731cd0db0fc04d23adeb44",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/TransmissionLines/ltra1_1_line.sp",
+      "sha256": "268ffe38b355dc160e50a64fe2ba04fa94621b683e26d623bd0922d7aab70956",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/TransmissionLines/ltra1_4_line.sp",
+      "sha256": "1211ba156c255674fa274d9bf52e0e395bb308e5196b75aeb9a14cd4a14d35bb",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/TransmissionLines/ltra2_2_line.sp",
+      "sha256": "839d33b22400c8f3c12efb4b47690e1ab89df43e8512f01e06ac57b64ba876e8",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/TransmissionLines/ltra3_2_line.sp",
+      "sha256": "578a0754e87164573bfbd3c691c87a4efe11aa9e24a440172f76dcf3f650d9e9",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/TransmissionLines/ltra4_1_line.sp",
+      "sha256": "17c2e500a0e87c6b1d71d28ab3a9caf0312a1bf8b95966fa59c9a44ab04b12c3",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/TransmissionLines/ltra5_1_line.sp",
+      "sha256": "ed05a013f199cf2fd3f989513b38dd7951ec4770ee077c4a257468826aaf8b3c",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error on line 178 or its substitute:"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/TransmissionLines/ltra6_2_line.sp",
+      "sha256": "7af919fcb066ff7a14afaebba3a8c2d72057750853fdcf89bda60f8c085bc1d2",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/TransmissionLines/ltra7_4_line.sp",
+      "sha256": "bcd911f9d24d036fef10b336a89cad0e3f8588a194b88237c5808640e107fe23",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/TransmissionLines/txl4_1_line.sp",
+      "sha256": "24e502954b406e55fd3d7cd0e1003166ce413776972badedce0768973a53295e",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error on line 176 or its substitute:"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/various/3d_loop.sp",
+      "sha256": "4b0604bcb773cb11da1827a38cc9be63ccc8ae2554ce36d16b0c43b0bdad7693",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/various/adder_mos.cir",
+      "sha256": "837642247b44a0c70ac952e4d24a6fa52a4132ed50c1f5c6a4cbd35bd1747f7e",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/various/bjtnoise.cir",
+      "sha256": "e67f6fd6ced5d74ef35188c62c8e4254ad8695943d1b03d25e8e9e7182daa719",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/various/def_red.cir",
+      "sha256": "1f030125a69f8aebf1ce978ed93977582f451f497785cff1316f1a916c2865b9",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/various/FFT_Leakage.cir",
+      "sha256": "4e3cb901fc7c7fdabfd833a0fac5cf33d3890515c9d78708aa60babc426d822a",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/various/gain_stage.cir",
+      "sha256": "02989351fd14366b6d4ae353f0e8ace8190e5a3a6f6d22f409c00222d1655e5d",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/various/probe-i-dev.cir",
+      "sha256": "7198750f013cdfacbd8dd0678d4dbdb10c79167273a6aef6a0ed46c34341e0c6",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/various/ro_17_4.cir",
+      "sha256": "f5bb5d27829c65db5d6e531c5a90b709bc466d5987de0c5c3240bd8d4be64666",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/various/Tschebyschef-LP.cir",
+      "sha256": "c1d3c96b46b2b3ee584c4e24d062068b08a788f1d09f8c1d3787fc44b254e7ec",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/vbic/DFF_Y_ECL.sp",
+      "sha256": "784b66c0e7f0fdaa4bc3451aaba4388ee3c7c0ee61e48a41d604188d01e10744",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/vbic/self-heat.sp",
+      "sha256": "3f54aa227f8954609327d746ff6a42305d9f3e9072775a4544b07297311490eb",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/vbic/vbic99_dc.sp",
+      "sha256": "99351d5941d0791e606bb7d08f07d621149b8e0c1cc65ff6eef20ccf1da21404",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/vbic/vbic99_tran.sp",
+      "sha256": "166a0452cfcb2c64dd0819c87b001bbf48428f26026073d4a3fbb818a8b4a476",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/vdmos/100W_wingspread.sp",
+      "sha256": "45e5c727b505452218874e576c28f7d549ce913850cfdf6acd0f727803ba8f04",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/vdmos/100W.sp",
+      "sha256": "c33530c4e5b113b1fb30ba44777a56fc4938962901b4a14a99db4ae0e26a20bb",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/vdmos/crss_coss_ciss.sp",
+      "sha256": "57481a3cec10461e3b6bae2ffb2c9044ac9205eca2547bbc455602aac5c7fad2",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/vdmos/dcdc.sp",
+      "sha256": "75f41860edd1370c1269725ce4231633282a18f44fae9815093638a3c0c43717",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/vdmos/inv_vdmos_dc.cir",
+      "sha256": "b20eb59e3de6e8ac27f44097b7b19f2ebd1f821425c69b731f9b1c8a11a862e1",
+      "status": "success",
+      "plots": [
+        "dc"
+      ]
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/vdmos/inv_vdmos.cir",
+      "sha256": "7ba5f6c24e3c6c5c1b22595173e635c0106e734232c170b8ea110d4f3480f737",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/vdmos/inv_vdmos.sp",
+      "sha256": "4401aaf48a4999c43bb88ea4b564ff46bbbdaf56be17055efaec3bb1a187021b",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/vdmos/IXTP6N100D2-cap.cir",
+      "sha256": "1e7f4650cc36eb8f6d7cabf9551238c9710636d4d9d1dc8c31cdec1887cd3d96",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/vdmos/IXTP6N100D2-cap.sp",
+      "sha256": "69a9578cc4bc8c5c067c08c983c88bf1253addc752996bc20c0994783c7296d4",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/vdmos/IXTP6N100D2-n-weak-inv.cir",
+      "sha256": "51172b7a4e18fa9820fce7d6ee411f26f08ad1add8d6060c3117522ee8ff9939",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/vdmos/IXTP6N100D2-n-weak-inv.sp",
+      "sha256": "2f483123bfaabe3853bb45c903834e3162e5d099bb4969187b8db74a30d4dc8a",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/vdmos/mtriode_nch.sp",
+      "sha256": "b2ebd41543fc6facb324267f11ac8f1e7dbfc063964e9691974bebabf199d5fe",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/vdmos/ro_11_vdmos.cir",
+      "sha256": "ffae0745d406ba11b844f7b00539ec5fe5084d554cdd148d596e0bb28e9ab328",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error on line 7 or its substitute:"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/vdmos/ro_11_vdmos.sp",
+      "sha256": "fc94ce0de32c8ca4f1b6f562f06b8973f7044e7600d99b83f646b9b21a83eb7a",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/vdmos/self-heating.sp",
+      "sha256": "4e72eb8f28030f3ca5aa8941c2649057035f2cbf3f1496df86e0472a7fb37bd2",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/vdmos/soa_chk.sp",
+      "sha256": "ce1ea07e15b6b88752b540455f8701686b050cceec996044db17764268583a56",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/vdmos/theta_nch.sp",
+      "sha256": "4ccfa3cdfca99882d1448d95e6e87ce9f922035ec647261e73e7e196404cda7a",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/vdmos/VDMOS-DIO-AC.cir",
+      "sha256": "5353769bf39031ee971d955dd92bdaae8ef827d99fdb0242d635ef4fc56b3d99",
+      "status": "success",
+      "plots": [
+        "ac"
+      ]
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/vdmos/VDMOS-DIO.cir",
+      "sha256": "3e571540caef808b4acd9346962846cf0c974f9e95046f1b1cae7b9940b5687c",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/vdmos/VDMOS-DIO.sp",
+      "sha256": "7ac1927a37181a40973fb2de1c7637c7d14185ca3f65b7f1dbb38a37d8d9cb26",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/vdmos/vdmos-out_ir_mtr.cir",
+      "sha256": "63b7483ca8406aef8f80b44443be204b367a5dc81f86697d15c4138f07455303",
+      "status": "success",
+      "plots": [
+        "dc"
+      ]
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/vdmos/vdmos-out_ir_mtr.sp",
+      "sha256": "d78ec32f1783c3fbbfda03e43f8ec212aada96438580dea5543202dc9088d8f8",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/vdmos/vdmos-out_ir.cir",
+      "sha256": "e991fe10546a7b7b0dc0a60d597782b35d9a5087682f5724b02e145fb5a27b1b",
+      "status": "success",
+      "plots": [
+        "dc"
+      ]
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/vdmos/vdmos-out.cir",
+      "sha256": "e4560e53eecdfeb9c9e80eaafb0f91f0be622badc6c4728f9c3e4e67e83398e7",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/vdmos/vdmos-out.sp",
+      "sha256": "7629927e456cf4ef7b57af8c9cca5d8e1a95380d39a7a982b9e04569d1710fec",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/vdmos/vdmosp-out-mtr.cir",
+      "sha256": "64176908ef6c543b9bfbc15195e75aaebd446c6c89bed69bca01eb6a647909fe",
+      "status": "success",
+      "plots": [
+        "dc"
+      ]
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/vdmos/vdmosp-out-mtr.sp",
+      "sha256": "10e6a021c59928e7405cd6c92b5eaa41bcaa9d7cf2ead4df243efec7ac25e569",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/vdmos/vdmosp-out.cir",
+      "sha256": "8c0ed92645e2876fe915703215dd208a8fdf93c9e365c5ec561760bbc3ce0e5c",
+      "status": "success",
+      "plots": [
+        "dc"
+      ]
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/vdmos/vdmosp-out.sp",
+      "sha256": "b9ca640fe331dcb1cd4321066518b81d4a7cb4cfcd058427abe83d947f786708",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/xspice/bug-378-test-sequence.cir",
+      "sha256": "c9bb09355a4b44a2a815506ca666d93669c6c231099316bccfcc98ad51e10751",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/xspice/d_lut/mult4bit.spi",
+      "sha256": "e9ca8acee70b4ce22fac9b31333ba3e868e1ef2054d3be560d03434ea76e43bc",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/xspice/original-examples/supply_ramping.deck",
+      "sha256": "7d061db159f0459c18d461f9bc58656defd146df30ca36eaed4ff1ae37357ef3",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error on line 13 or its substitute:"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/xspice/xspice_c1.cir",
+      "sha256": "b244e51ad9c11ec3d56e839b9bad537aac504eae1ba2f4064e4aa3b0036192e7",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/xspice/xspice_c2.cir",
+      "sha256": "b17524ea6846e5e2b63b0265757fac27fe5d417821f54b047a880c39b5dcdfff",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "paranoia_parallel/examples/xspice/xspice_c3.cir",
+      "sha256": "c9ac27029e1d7be9db42ed6b0a4fed109dfb312004339d74a03e7e837c1bc706",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    }
+  ]
+}
