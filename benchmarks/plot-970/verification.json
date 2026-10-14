@@ -1,0 +1,27 @@
+{
+  "baseMain": "c4858434e58fedeeedab142f2479252e0a59e851",
+  "referenceCore": "cc1896298a1e7e884f1989593228a1bc2b97419f",
+  "scope": "implementation slice; exhaustive corpus inventory and stricter dynamic ordinal policy delegated to t_8f41d8b0",
+  "commands": [
+    {"command": "pnpm install --frozen-lockfile", "exitCode": 0},
+    {"command": "pnpm build", "exitCode": 0, "log": "build.log.gz"},
+    {"command": "pnpm lint", "exitCode": 0, "log": "lint.log.gz"},
+    {"command": "pnpm exec tsx --test --test-skip-pattern='runs the spice-ts child without per-sample|compares both engines on every signal' benchmarks/comparison-harness.test.ts benchmarks/aggregate-report.test.ts benchmarks/corpus/corpus-f/corpus-f.test.ts", "exitCode": 0, "passed": 95, "log": "targeted.log.gz"},
+    {"command": "spice-heavy pnpm test", "exitCode": 0, "rootTapPhase": {"tests": 161, "passed": 157, "failed": 0, "skipped": 4}, "log": "full-test.log.gz"},
+    {"command": "spice-heavy pnpm exec tsx benchmarks/plot-970/j14.ts", "exitCode": 0, "log": "j14.log.gz"},
+    {"command": "spice-heavy pnpm exec tsx benchmarks/plot-970/corpus-j-delta.ts", "exitCode": 0, "rows": 5, "receipt": "corpus-j-delta.json"},
+    {"command": "pnpm exec tsx --test benchmarks/plot-970/receipt.test.ts", "exitCode": 0, "passed": 1, "log": "offline.log.gz"},
+    {"command": "pnpm exec tsx benchmarks/plot-970/chunk-red.ts", "exitCode": 1, "expectedFailure": true, "log": "chunk-red.log.gz"},
+    {"command": "pnpm exec tsx --test --test-name-pattern='classic report uses the same' benchmarks/plot-alignment.test.ts", "exitCode": 1, "phase": "classic caller RED, before shared pairing fix", "log": "classic-red.log.gz"},
+    {"command": "pnpm -C packages/core exec tsc --noEmit --target ES2022 --module ESNext --moduleResolution Bundler --allowSyntheticDefaultImports --skipLibCheck --types node ../../benchmarks/plot-alignment.test.ts ../../benchmarks/plot-export.test.ts", "exitCode": 2, "diagnostic": "pre-existing raw-stream.ts state-narrowing error", "log": "types.log.gz"}
+  ],
+  "j14": {
+    "comparedPlots": [1, 6],
+    "alignedPoints": [6, 1236],
+    "excludedPoints": [180, 0],
+    "worstNormalized": [11.640724167089497, 7.609774879516523e-9],
+    "temperatureDrainAbsoluteMax": [5.84894348297301e-13, 8.36588334233654e-13],
+    "temperatureDrainRelativeMax": [1.336169668272112, 1.4273786867425677]
+  },
+  "guards": {"changedCore": false, "changedDecks": false, "changedSources": false, "regeneratedAggregate": false, "toleranceChanges": false, "speedClaim": false}
+}
