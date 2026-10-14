@@ -22,9 +22,11 @@ test('both MIT cases preserve bytes and retain complete finite ngspice-47 sweeps
     assert.equal(row.ngspice.grid.length, 81);
     assert.equal(row.ngspice.values.length, 81);
     assert.ok(row.ngspice.values.every(Number.isFinite));
-    assert.equal(row.spiceTs.status, 'unsupported');
-    assert.equal(row.maxError, null);
-    assert.equal(row.rmsError, null);
+    assert.equal(row.spiceTs.status, 'success');
+    assert.equal(row.spiceTs.values.length, 81);
+    assert.ok(row.spiceTs.values.every(Number.isFinite));
+    assert.ok(Number.isFinite(row.maxError) && row.maxError < 1e-8);
+    assert.ok(Number.isFinite(row.rmsError) && row.rmsError < 1e-8);
   }
 });
 
@@ -35,12 +37,11 @@ test('reference includes end clamping and smoothing, not just hard interpolation
     assert.ok(Math.abs(e.ngspice.values[index] - value) < 1e-12);
     assert.ok(Math.abs(g.ngspice.values[index] + value) < 1e-12);
   }
-  assert.equal(g.spiceTs.tableUnsupported, true);
-  // Top-level E is already rejected by numparam, before the TABLE tokenizer.
-  assert.equal(e.spiceTs.tableUnsupported, false);
+  assert.equal(g.spiceTs.status, 'success');
+  assert.equal(e.spiceTs.status, 'success');
 });
 
-test('vendor failure becomes explicit unsupported TABLE on unchanged input, not parity', () => {
+test('vendor TABLE parses but retains the solver loss on identical engine inputs', () => {
   const before = load('vendor-before.json').receipts;
   const after = load('vendor-after.json').receipts;
   assert.equal(after.length, 2);
@@ -49,11 +50,13 @@ test('vendor failure becomes explicit unsupported TABLE on unchanged input, not 
     assert.equal(row.inputHashBefore, row.inputHashAfter);
     assert.equal(row.inputHashBefore, before[index].inputHashBefore);
     assert.deepEqual(row.includes, before[index].includes);
-    assert.equal(before[index].native.status, 'failure');
-    assert.equal(before[index].native.terminalPivot, 2);
-    assert.equal(row.native.status, 'unsupported');
-    assert.equal(row.native.errorName, 'ParseError');
-    assert.equal(row.native.tableUnsupported, true);
+    assert.equal(before[index].native.status, 'unsupported');
+    assert.equal(before[index].native.tableUnsupported, true);
+    assert.equal(row.native.status, 'failure');
+    assert.equal(row.native.errorName, 'SingularMatrixError');
+    assert.equal(row.native.terminalPivot, 2);
+    assert.equal(row.native.acRows, 0);
+    assert.equal(row.native.tableUnsupported, false);
     assert.equal(row.native.process.exit, 0);
     assert.equal(row.reference.process.exit, 0);
     assert.equal(row.reference.acRows, 141);
