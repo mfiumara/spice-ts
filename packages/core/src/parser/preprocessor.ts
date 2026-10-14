@@ -11,6 +11,7 @@ import { tempDirective } from './temp-directive.js';
 import { translateMicroSign } from './micro-sign.js';
 import { bracedSubcircuitCallValues } from './subcircuit-syntax.js';
 import { lowerControlledTables } from './controlled-table.js';
+import { lowerBehavioralCapacitors } from './behavioral-capacitor.js';
 import { CycleError, ParseError } from '../errors.js';
 import type { IncludeResolver } from '../types.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
@@ -124,6 +125,7 @@ function* preprocessSteps(
     statement.control = false;
   }
   expandFunctionCalls(state);
+  statements = state.statements = lowerBehavioralCapacitors(statements);
   // inpcom.c TABLE lowering precedes numparam and retains per-instance scopes.
   if (statements.some(statement => /^\s*[eg]\S*\s+.*\btable\s*[={']/i.test(statement.text))) {
     statements = state.statements = lowerControlledTables(statements);
