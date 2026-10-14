@@ -203,9 +203,9 @@ function compareExecutions(spiceTs: EngineExecution, ngspice: EngineExecution): 
       comparisons.push({ analysis: own.type, plot: { spiceTs: spiceAnalysis?.plotId ?? spiceAnalysis?.plotName, ngspice: ngspiceAnalysis?.plotId ?? ngspiceAnalysis?.plotName }, unmatched: spiceAnalysis ? 'ngspice' : 'spice-ts', signals, metrics: alignAndMeasure(spiceAnalysis?.series ?? empty, ngspiceAnalysis?.series ?? empty, signals) });
       continue;
     }
-    const signals = sortedSignals(spiceAnalysis.series)
+    const common = sortedSignals(spiceAnalysis.series)
       .filter(signal => ngspiceAnalysis.series.signals[signal] !== undefined);
-    if (signals.length === 0) continue;
+    const signals = common.length ? common : [...new Set([...sortedSignals(spiceAnalysis.series), ...sortedSignals(ngspiceAnalysis.series)])].sort();
     comparisons.push({
       analysis: spiceAnalysis.type,
       ...(spiceAnalysis.plotId === undefined && ngspiceAnalysis.plotId === undefined && spiceTs.analyses.filter(a => a.type === spiceAnalysis.type).length === 1 ? {} : { plot: { spiceTs: spiceAnalysis.plotId ?? spiceAnalysis.plotName, ngspice: ngspiceAnalysis.plotId ?? ngspiceAnalysis.plotName } }),

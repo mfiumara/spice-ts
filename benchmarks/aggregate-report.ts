@@ -521,6 +521,9 @@ function measureInChunks(
   signals: string[],
   options: AlignmentOptions = {},
 ): ComparisonMetrics {
+  // Missing vectors cannot be sliced into chunks. Keep their coverage metrics,
+  // including the zero-sample result for an empty target grid.
+  if (spiceTs.grid.length === 0 || signals.some(signal => !Object.hasOwn(spiceTs.signals, signal) || !Object.hasOwn(ngspice.signals, signal))) return alignAndMeasure(spiceTs, ngspice, signals, options);
   // Preserve the whole nested coordinate space. Slicing only the target loses its reset ordinal
   // at a 25k boundary and falsely compares that slice with every reference group.
   if (spiceTs.secondaryGrid || ngspice.secondaryGrid || sweepSegments(spiceTs).length > 1 || sweepSegments(ngspice).length > 1) return alignAndMeasure(spiceTs, ngspice, signals, options);
@@ -594,8 +597,9 @@ export function compareExecutions(left: EngineExecution, right: EngineExecution)
       comparisons.push({ analysis: own.type, plot: { spiceTs: spiceAnalysis?.plotId ?? spiceAnalysis?.plotName, ngspice: ngspiceAnalysis?.plotId ?? ngspiceAnalysis?.plotName }, unmatched, signals, metrics, linearMetrics: metrics });
       continue;
     }
-    const signals = commonSignals(spiceAnalysis.series, ngspiceAnalysis.series);
-    if (signals.length === 0) continue;
+    const common = commonSignals(spiceAnalysis.series, ngspiceAnalysis.series);
+    // A paired plot without shared signals is missing coverage, not absent.
+    const signals = common.length ? common : [...new Set([...Object.keys(spiceAnalysis.series.signals), ...Object.keys(ngspiceAnalysis.series.signals)])].sort();
     comparisons.push({
       analysis: spiceAnalysis.type,
       ...(spiceAnalysis.plotId === undefined && ngspiceAnalysis.plotId === undefined && left.analyses.filter(a => a.type === spiceAnalysis.type).length === 1 ? {} : { plot: { spiceTs: spiceAnalysis.plotId ?? spiceAnalysis.plotName, ngspice: ngspiceAnalysis.plotId ?? ngspiceAnalysis.plotName, ngspiceIndex: right.analyses.indexOf(ngspiceAnalysis) } }),

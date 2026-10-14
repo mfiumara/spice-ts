@@ -310248,24 +310248,133 @@
       "after": {
         "engineStatus": "success",
         "referenceStatus": "success",
-        "alignedPoints": 0,
+        "alignedPoints": 511,
         "excludedPoints": 0,
         "normalizedMismatch": null,
-        "plotsPaired": 0,
+        "plotsPaired": 1,
         "plotsUnmatched": 0,
         "groupsUnmatched": 0,
-        "missing": 0,
+        "missing": 6,
         "matched": false,
         "signalErrors": [],
         "ordinalAligned": false,
-        "metricSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        "metricSha256": "81823c17e0f7074962e6f06c1bbaeda866bd8e5205588419dcb7ef8ab634424d"
       },
       "bucket": "not-comparable",
       "reason": "no aligned scored signals on either side",
       "direction": "coverage-change",
       "tags": [],
       "beforeComparisons": [],
-      "afterComparisons": []
+      "afterComparisons": [
+        {
+          "analysis": "dc",
+          "plot": {
+            "spiceTs": "dc1",
+            "ngspice": "dc1",
+            "ngspiceIndex": 0
+          },
+          "signals": [
+            "@d1[cd]",
+            "@d1[gd]",
+            "@d1[qd]",
+            "i(v1)",
+            "v(1)",
+            "v(d1.rs)"
+          ],
+          "metrics": {
+            "grid": {
+              "spiceTsPoints": 511,
+              "ngspicePoints": 511,
+              "alignedPoints": 511,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "@d1[cd]": {
+                "status": "missing",
+                "missingFrom": [
+                  "spice-ts"
+                ]
+              },
+              "@d1[gd]": {
+                "status": "missing",
+                "missingFrom": [
+                  "spice-ts"
+                ]
+              },
+              "@d1[qd]": {
+                "status": "missing",
+                "missingFrom": [
+                  "spice-ts"
+                ]
+              },
+              "i(v1)": {
+                "status": "missing",
+                "missingFrom": [
+                  "ngspice"
+                ]
+              },
+              "v(1)": {
+                "status": "missing",
+                "missingFrom": [
+                  "ngspice"
+                ]
+              },
+              "v(d1.rs)": {
+                "status": "missing",
+                "missingFrom": [
+                  "ngspice"
+                ]
+              }
+            }
+          },
+          "linearMetrics": {
+            "grid": {
+              "spiceTsPoints": 511,
+              "ngspicePoints": 511,
+              "alignedPoints": 511,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "@d1[cd]": {
+                "status": "missing",
+                "missingFrom": [
+                  "spice-ts"
+                ]
+              },
+              "@d1[gd]": {
+                "status": "missing",
+                "missingFrom": [
+                  "spice-ts"
+                ]
+              },
+              "@d1[qd]": {
+                "status": "missing",
+                "missingFrom": [
+                  "spice-ts"
+                ]
+              },
+              "i(v1)": {
+                "status": "missing",
+                "missingFrom": [
+                  "ngspice"
+                ]
+              },
+              "v(1)": {
+                "status": "missing",
+                "missingFrom": [
+                  "ngspice"
+                ]
+              },
+              "v(d1.rs)": {
+                "status": "missing",
+                "missingFrom": [
+                  "ngspice"
+                ]
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "key": "corpus-f/examples-various-fft-leakage-cir",
@@ -600077,24 +600186,68 @@
       "after": {
         "engineStatus": "success",
         "referenceStatus": "success",
-        "alignedPoints": 0,
+        "alignedPoints": 1,
         "excludedPoints": 0,
         "normalizedMismatch": null,
-        "plotsPaired": 0,
+        "plotsPaired": 1,
         "plotsUnmatched": 0,
         "groupsUnmatched": 0,
-        "missing": 0,
+        "missing": 1,
         "matched": false,
         "signalErrors": [],
         "ordinalAligned": false,
-        "metricSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        "metricSha256": "847610c9708c3652f26b98aa8016beecb4331db35864c69540f69f6142ea439a"
       },
       "bucket": "not-comparable",
       "reason": "no aligned scored signals on either side",
       "direction": "coverage-change",
       "tags": [],
       "beforeComparisons": [],
-      "afterComparisons": []
+      "afterComparisons": [
+        {
+          "analysis": "ac",
+          "plot": {
+            "spiceTs": "AC Analysis",
+            "ngspice": "ac1",
+            "ngspiceIndex": 0
+          },
+          "signals": [
+            "all"
+          ],
+          "metrics": {
+            "grid": {
+              "spiceTsPoints": 1,
+              "ngspicePoints": 1,
+              "alignedPoints": 1,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "all": {
+                "status": "missing",
+                "missingFrom": [
+                  "spice-ts"
+                ]
+              }
+            }
+          },
+          "linearMetrics": {
+            "grid": {
+              "spiceTsPoints": 1,
+              "ngspicePoints": 1,
+              "alignedPoints": 1,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "all": {
+                "status": "missing",
+                "missingFrom": [
+                  "spice-ts"
+                ]
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "key": "corpus-i/esim-examples-high-pass-filter-high-pass-filter-cir-out",

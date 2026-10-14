@@ -152,7 +152,10 @@ export function compareInBatches(spiceTs: PackedExecution, ngspice: PackedExecut
   const receipts: ComparisonReceipt[] = [];
   for (const pair of pairPlots(spiceTs.analyses, ngspice.analyses)) {
     const analysis = (pair.left ?? pair.right)!;
-    const names = Object.keys(analysis.signals).sort();
+    const common = pair.left && pair.right ? Object.keys(pair.left.signals).filter(name => pair.right!.signals[name] !== undefined) : [];
+    // Choose coverage before batching, so disjoint plots retain both sides' names
+    // without inventing missing signals in batches of a partially shared plot.
+    const names = (common.length ? common : [...new Set([...Object.keys(pair.left?.signals ?? {}), ...Object.keys(pair.right?.signals ?? {})])]).sort();
     const referencePoints = pair.right?.grid.length ?? 0;
     const perBatch = Math.max(1, Math.floor(budget / Math.max(1, analysis.grid.length + referencePoints)));
     let merged: ComparisonReceipt | undefined;

@@ -4,10 +4,61 @@ import { compareExecutions } from './aggregate-report.js';
 import { buildClassicReport, type EngineAnalysis, type EngineExecution, type ClassicCircuit } from './corpus/classic/report.js';
 import { createHash } from 'node:crypto';
 import { compareInBatches, packExecution } from './corpus/corpus-f/packed.js';
-import { normalizedSignalErrors, pairedReferenceSeries } from './corpus/corpus-f/lib.js';
+import { normalizedSignalErrors, pairedReferenceSeries, outcome } from './corpus/corpus-f/lib.js';
 import { declaredSecondaryGrid } from './sweep-coordinates.js';
 const plot = (id: string, grid: number[], values: number[]): EngineAnalysis => ({ type: 'dc', plotName: id, series: { grid, signals: { 'v(out)': values.map(re => ({ re, im: 0 })) } } });
 const execution = (...analyses: EngineAnalysis[]): EngineExecution => ({ status: 'success', convergence: 'converged', analyses });
+for (const variant of ['disjoint', 'empty-signals', 'one-empty-signals', 'empty-values', 'empty-grid'] as const) {
+  for (const path of ['aggregate', 'packed', 'classic'] as const) {
+    test(`${path} retains paired ${variant} coverage without a false match`, async () => {
+      const common = { ...plot('DC transfer characteristic', [0, 1], [0, 1]), plotId: 'dc1' };
+      const left = { ...plot('DC transfer characteristic', [0, 1], [0, 1]), plotId: 'dc2' };
+      const right = { ...plot('DC transfer characteristic', [0, 1], [0, 1]), plotId: 'dc2' };
+      if (variant === 'disjoint') {
+        left.series.signals = { 'v(left)': left.series.signals['v(out)'] };
+        right.series.signals = { 'v(right)': right.series.signals['v(out)'] };
+      } else if (variant === 'empty-signals') {
+        left.series.signals = {};
+        right.series.signals = {};
+      } else if (variant === 'one-empty-signals') {
+        left.series.signals = {};
+      } else if (variant === 'empty-values') {
+        right.series.signals['v(out)'] = [];
+      } else {
+        left.series.grid = [];
+        left.series.signals['v(out)'] = [];
+      }
+      const own = execution(common, left);
+      const reference = execution(common, right);
+      const bytes = Buffer.from('authored no-overlap adapter input');
+      const circuit = { id: 'authored', localPath: 'authored', analyses: ['dc'], sha256: createHash('sha256').update(bytes).digest('hex'), category: 'passive', sourcePath: 'authored', sourceUrl: '', ngspice: { expectedStatus: 'pass' }, spiceTs: { expectedStatus: 'pass' } } as ClassicCircuit;
+      const comparisons = path === 'aggregate' ? compareExecutions(own, reference)
+        : path === 'packed' ? compareInBatches(packExecution(own), packExecution(reference), 1)
+          : (await buildClassicReport({ schemaVersion: 1, source: { name: 'authored', revision: 'authored', license: 'MIT' }, circuits: [circuit] }, {
+            readFixture: async () => bytes, runNgspice: async () => reference, runSpiceTs: async () => own, tools: { ngspice: 'synthetic', spiceTs: 'synthetic' },
+          })).fixtures[0].comparisons;
+      assert.equal(comparisons.length, 2);
+      assert.equal(comparisons[1].plot?.spiceTs, 'dc2');
+      assert.equal(comparisons[1].plot?.ngspice, 'dc2');
+      if (variant === 'disjoint') {
+        assert.deepEqual(comparisons[1].metrics.signals, {
+          'v(left)': { status: 'missing', missingFrom: ['ngspice'] },
+          'v(right)': { status: 'missing', missingFrom: ['spice-ts'] },
+        });
+      }
+      const { errors, missing } = normalizedSignalErrors(comparisons, pairedReferenceSeries(own, reference));
+      assert.equal(missing, variant === 'disjoint' ? 2 : 1);
+      assert.equal(outcome({ ngspice: reference.status, spiceTs: own.status, comparedAnalyses: comparisons.length, spiceTsAnalyses: 1, worstNormalized: Math.max(...errors.map(e => e.normalized)), missingSignals: missing }), 'mismatch');
+    });
+  }
+}
+test('packed batching preserves shared-signal semantics for partially overlapping plots', () => {
+  const left = plot('dc1', [0, 1], [0, 1]);
+  const right = plot('dc1', [0, 1], [0, 1]);
+  left.series.signals['v(left)'] = left.series.signals['v(out)'];
+  right.series.signals['v(right)'] = right.series.signals['v(out)'];
+  assert.deepEqual(compareInBatches(packExecution(execution(left)), packExecution(execution(right)), 1), compareExecutions(execution(left), execution(right)));
+});
 test('repeated descriptive plots pair by occurrence without reference reuse', () => {
   const a = plot('DC transfer characteristic', [0, 1], [0, 1]);
   const b = plot('DC transfer characteristic', [0, 1], [0, 9]);

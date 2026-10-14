@@ -348,6 +348,8 @@ export function normalizedSignalErrors(
   let missing = 0;
   for (const comparison of comparisons) {
     if (comparison.unmatched) { missing += 1; continue; }
+    // Even a paired plot with no named vectors is one missing coverage unit.
+    if (Object.keys(comparison.metrics.signals).length === 0) missing += 1;
     missing += comparison.metrics.sweepGroups?.filter(group => group.unmatched).length ?? 0;
     for (const [signal, metric] of Object.entries(comparison.metrics.signals)) {
       if (metric.status !== 'compared' || metric.sampleCount === 0) { missing += 1; continue; }

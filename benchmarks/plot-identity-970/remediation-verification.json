@@ -1,0 +1,16 @@
+{
+  "baselineSha": "523987e1d1764fc77032c7f1bf4e7da9dab00dbc",
+  "receipts": [
+    {"command": "pnpm install --frozen-lockfile", "exitCode": 0},
+    {"command": "pnpm build", "exitCode": 0, "log": "remediation-build.log.gz"},
+    {"command": "pnpm lint", "exitCode": 0, "log": "remediation-lint.log.gz"},
+    {"command": "pnpm exec tsx --test benchmarks/plot-alignment.test.ts (before fix)", "exitCode": 1, "passed": 21, "failed": 6, "log": "remediation-red.log.gz"},
+    {"command": "pnpm exec tsx --test benchmarks/plot-alignment.test.ts benchmarks/comparison-harness.test.ts", "exitCode": 0, "passed": 92, "log": "remediation-final-targeted.log.gz"},
+    {"command": "pnpm exec tsx --test benchmarks/aggregate-report.test.ts benchmarks/corpus/corpus-f/corpus-f.test.ts benchmarks/plot-identity-970/packed-control.test.ts", "exitCode": 0, "passed": 56, "skipped": 1, "log": "remediation-targeted.log.gz", "note": "This targeted run included the corpus-f long native transient test without spice-heavy; the subsequent full suite was correctly guarded. Do not repeat unguarded."},
+    {"command": "pnpm exec tsx reviewer-probe.ts (unchanged reviewer probe copied to root)", "exitCode": 0, "object": {"plots": 2, "missing": 2, "outcome": "mismatch"}, "packed": {"plots": 2, "missing": 2, "outcome": "mismatch"}},
+    {"command": "spice-heavy pnpm test", "exitCode": 0, "log": "remediation-full-test.log.gz"},
+    {"command": "AUDIT_CHILD_MS=600000 AUDIT_HEAP_MB=12288 AUDIT_CORE_SHA=$(git rev-parse HEAD:packages/core) spice-heavy pnpm exec tsx benchmarks/plot-identity-970/audit.ts --replay", "exitCode": 0, "entries": 720, "executionReceipts": 706, "log": "remediation-replay.log.gz"},
+    {"command": "pnpm exec tsx benchmarks/plot-identity-970/remediation-delta.ts", "exitCode": 0, "changed": 2, "regressions": 0, "improvements": 0},
+    {"command": "pnpm exec tsx --test benchmarks/plot-identity-970/audit.test.ts", "exitCode": 0, "passed": 3, "log": "remediation-inventory-test.log.gz"}
+  ]
+}

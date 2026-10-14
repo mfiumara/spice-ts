@@ -1,5 +1,36 @@
 # #970 exhaustive adapter delta audit
 
+## PR993 zero-overlap remediation
+
+The inventory now includes paired plots with no shared signals instead of silently
+dropping them. Disjoint signal names are retained as missing metrics. Empty vectors
+retain zero-sample metrics; a plot with no named vectors counts as one missing
+coverage unit. None can produce a `matched` outcome. Partially overlapping plots
+retain the existing shared-signal semantics.
+
+Same-raw replay against reviewed head `523987e1d1764fc77032c7f1bf4e7da9dab00dbc`
+covered all 720 inventory entries and all 706 execution receipts. All raw hashes and
+historical before-comparisons remain identical. Two current comparison rows changed,
+with zero match-state regressions or improvements. The 16 previously published
+regressions remain. Two previously hidden no-overlap coverage losses are now visible:
+
+| Fixture | Paired plots | Missing signals | Match state |
+|---|---:|---:|---|
+| corpus-f/examples-various-diode-ac-par-sp | 0 → 1 | 0 → 6 | false → false |
+| corpus-i/esim-examples-fulladder-half-adder-cir-out | 0 → 1 | 0 → 1 | false → false |
+
+Both remain `not-comparable`, since neither has scored numeric overlap. Retained grid
+alignment is not evidence of signal parity. Counts are unchanged (16 regressed,
+11 improved, 9 neutral, 377 unchanged, 307 not-comparable). See
+`remediation-delta.json` for the exact reviewed-head delta; the historical audit
+below still compares against the original merge-base adapter.
+
+Reproduce with the raw cache and the existing guarded `audit.ts --replay` recipe,
+then `pnpm exec tsx benchmarks/plot-identity-970/remediation-delta.ts`.
+Regression checks are in `benchmarks/plot-alignment.test.ts` for aggregate, packed
+and classic report paths. RED had six failures; GREEN covers disjoint names, both
+empty signal maps, a one-sided empty map, empty samples, and an empty grid.
+
 Merge-base adapter: `bd4ac625f15e344043a7431b24f64828966e2d41`. Implementation head: `d5aa4c8c064a269e8e32bf74f1be12d9f6fc3d9a`.
 All 700 original manifest entries, plus 20 subsequently landed corpus-k entries, are inventoried (720 total). Original bucket counts: `{"changed-regressed":16,"unchanged":372,"not-comparable":292,"changed-neutral":9,"changed-improved":11}`. K counts: `{"not-comparable":15,"unchanged":5}`. Total counts: `{"changed-regressed":16,"unchanged":377,"not-comparable":307,"changed-neutral":9,"changed-improved":11}`.
 
