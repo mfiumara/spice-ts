@@ -1,0 +1,32 @@
+rca3040 ckt - rca 3040 wideband amplifier
+.op
+vin 1 0 sin(0 0.1 50meg 0.5ns) ac 1
+vcc     2       0       15.0
+vee     3       0       -15.0
+rs1     30      1       1k
+rs2     31      0       1k
+r1      5       3       4.8k
+r2      6       3       4.8k
+r3      9       3       811
+r4      8       3       2.17k
+r5      8       0       820
+r6      2       14      1.32k
+r7      2       12      4.5k
+r8      2       15      1.32k
+r9      16      0       5.25k
+r10     17      0       5.25k
+q1      2       30      5       qnl
+q2      2       31      6       qnl
+q3      10      5       7       qnl
+q4      11      6       7       qnl
+q5      14      12      10      qnl
+q6      15      12      11      qnl
+q7      12      12      13      qnl
+q8      13      13      0       qnl
+q9      7       8       9       qnl
+q10     2       15      16      qnl
+q11     2       14      17      qnl
+.model qnl npn bf=80 rb=100 ccs=2pf tf=0.3ns tr=6ns cje=3pf
++ cjc=2pf vaf=50
+.save all @q1[ic] @q1[vbe] @q1[vbc] @q1[gm] @q1[gpi] @q1[go] @q1[cpi] @q1[cmu] @q2[ic] @q2[vbe] @q2[vbc] @q2[gm] @q2[gpi] @q2[go] @q2[cpi] @q2[cmu] @q3[ic] @q3[vbe] @q3[vbc] @q3[gm] @q3[gpi] @q3[go] @q3[cpi] @q3[cmu] @q4[ic] @q4[vbe] @q4[vbc] @q4[gm] @q4[gpi] @q4[go] @q4[cpi] @q4[cmu] @q5[ic] @q5[vbe] @q5[vbc] @q5[gm] @q5[gpi] @q5[go] @q5[cpi] @q5[cmu] @q6[ic] @q6[vbe] @q6[vbc] @q6[gm] @q6[gpi] @q6[go] @q6[cpi] @q6[cmu] @q7[ic] @q7[vbe] @q7[vbc] @q7[gm] @q7[gpi] @q7[go] @q7[cpi] @q7[cmu] @q8[ic] @q8[vbe] @q8[vbc] @q8[gm] @q8[gpi] @q8[go] @q8[cpi] @q8[cmu] @q9[ic] @q9[vbe] @q9[vbc] @q9[gm] @q9[gpi] @q9[go] @q9[cpi] @q9[cmu] @q10[ic] @q10[vbe] @q10[vbc] @q10[gm] @q10[gpi] @q10[go] @q10[cpi] @q10[cmu] @q11[ic] @q11[vbe] @q11[vbc] @q11[gm] @q11[gpi] @q11[go] @q11[cpi] @q11[cmu]
+.end
