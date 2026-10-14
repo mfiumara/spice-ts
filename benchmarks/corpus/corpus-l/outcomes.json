@@ -14,7 +14,7 @@
     }
   ],
   "manifestSha256": "5f6fc990bff825e14efa17ec131863a76f8f2e33d47a2a4d071801b925327e75",
-  "coreTree": "78a260da2dba2eb7441e39f803e11246a501d8ab",
+  "coreTree": "5c3bc23221cbb930fbf61a1697453c08fe6d5260",
   "tools": {
     "ngspice": "ngspice-47",
     "spiceTs": "0.3.0",
@@ -129,8 +129,8 @@
       "gapBucket": null,
       "comparisons": [],
       "runtime": {
-        "ngspiceChildWallMs": 415.42225,
-        "spiceTsChildWallMs": 1105.009083
+        "ngspiceChildWallMs": 514.553625,
+        "spiceTsChildWallMs": 1269.307417
       }
     },
     {
@@ -1928,8 +1928,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 457.404708,
-        "spiceTsChildWallMs": 1111.3048329999997
+        "ngspiceChildWallMs": 512.2658339999998,
+        "spiceTsChildWallMs": 1342.4183750000002
       }
     },
     {
@@ -3698,8 +3698,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 451.49633399999993,
-        "spiceTsChildWallMs": 1137.4146249999994
+        "ngspiceChildWallMs": 522.5724169999994,
+        "spiceTsChildWallMs": 1692.1915410000001
       }
     },
     {
@@ -4946,8 +4946,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 538.3568340000002,
-        "spiceTsChildWallMs": 1237.596958
+        "ngspiceChildWallMs": 839.8213329999999,
+        "spiceTsChildWallMs": 1683.775541
       }
     },
     {
@@ -5324,8 +5324,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 481.30524999999943,
-        "spiceTsChildWallMs": 1147.227749999999
+        "ngspiceChildWallMs": 530.464417000001,
+        "spiceTsChildWallMs": 1322.5689999999995
       }
     },
     {
@@ -5702,8 +5702,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 474.9404169999998,
-        "spiceTsChildWallMs": 1143.7901660000007
+        "ngspiceChildWallMs": 612.9307079999999,
+        "spiceTsChildWallMs": 1363.0674589999999
       }
     },
     {
@@ -5935,8 +5935,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 470.57424999999967,
-        "spiceTsChildWallMs": 1150.8197499999987
+        "ngspiceChildWallMs": 546.6281249999993,
+        "spiceTsChildWallMs": 1735.0992079999996
       }
     },
     {
@@ -6168,8 +6168,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 436.064957999999,
-        "spiceTsChildWallMs": 1129.7131250000002
+        "ngspiceChildWallMs": 575.0842919999996,
+        "spiceTsChildWallMs": 1395.6542499999996
       }
     },
     {
@@ -6401,8 +6401,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 431.74320799999987,
-        "spiceTsChildWallMs": 1116.1832090000007
+        "ngspiceChildWallMs": 543.3106670000016,
+        "spiceTsChildWallMs": 1373.3244999999988
       }
     },
     {
@@ -6634,8 +6634,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 459.3780000000006,
-        "spiceTsChildWallMs": 1128.2001249999994
+        "ngspiceChildWallMs": 725.0035829999979,
+        "spiceTsChildWallMs": 1433.6893329999984
       }
     },
     {
@@ -6666,8 +6666,8 @@
       "gapBucket": "crash: uncaught TypeError instead of a structured error",
       "comparisons": [],
       "runtime": {
-        "ngspiceChildWallMs": 843.3383329999997,
-        "spiceTsChildWallMs": 1082.4333749999969
+        "ngspiceChildWallMs": 1032.507207999999,
+        "spiceTsChildWallMs": 1173.0994580000006
       }
     },
     {
@@ -7798,8 +7798,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 511.4736669999984,
-        "spiceTsChildWallMs": 1510.8809169999986
+        "ngspiceChildWallMs": 515.9005419999994,
+        "spiceTsChildWallMs": 1391.0645829999994
       }
     },
     {
@@ -8901,8 +8901,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 614.8584589999991,
-        "spiceTsChildWallMs": 1577.6496660000012
+        "ngspiceChildWallMs": 477.385457999997,
+        "spiceTsChildWallMs": 1203.8064589999994
       }
     },
     {
@@ -11976,8 +11976,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 1216.9557499999974,
-        "spiceTsChildWallMs": 5386.730416999999
+        "ngspiceChildWallMs": 1052.6895410000034,
+        "spiceTsChildWallMs": 4383.130166999999
       }
     },
     {
@@ -12238,8 +12238,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 773.169041000001,
-        "spiceTsChildWallMs": 2011.1613749999997
+        "ngspiceChildWallMs": 460.49804199999926,
+        "spiceTsChildWallMs": 1247.7714579999956
       }
     },
     {
@@ -12275,6 +12275,11 @@
       "comparisons": [
         {
           "analysis": "op",
+          "plot": {
+            "spiceTs": "dot:op:1",
+            "ngspice": "Operating Point",
+            "ngspiceIndex": 0
+          },
           "signals": [
             "i(vcc)",
             "i(vin)",
@@ -12851,6 +12856,11 @@
         },
         {
           "analysis": "tran",
+          "plot": {
+            "spiceTs": "dot:tran:1",
+            "ngspice": "Transient Analysis",
+            "ngspiceIndex": 1
+          },
           "signals": [
             "i(vcc)",
             "i(vin)",
@@ -13427,8 +13437,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 1330.0857080000023,
-        "spiceTsChildWallMs": 3677.0094580000004
+        "ngspiceChildWallMs": 492.8350000000064,
+        "spiceTsChildWallMs": 1220.5942080000023
       }
     },
     {
@@ -13459,8 +13469,8 @@
       "gapBucket": "device: non-nominal temperature unsupported",
       "comparisons": [],
       "runtime": {
-        "ngspiceChildWallMs": 10179.2955,
-        "spiceTsChildWallMs": 3851.286
+        "ngspiceChildWallMs": 2755.178249999997,
+        "spiceTsChildWallMs": 1216.4638329999943
       }
     },
     {
@@ -13982,8 +13992,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 1508.0993329999983,
-        "spiceTsChildWallMs": 4522.394625000001
+        "ngspiceChildWallMs": 498.38291699999536,
+        "spiceTsChildWallMs": 1332.3607909999992
       }
     },
     {
@@ -14014,8 +14024,8 @@
       "gapBucket": "crash: uncaught TypeError instead of a structured error",
       "comparisons": [],
       "runtime": {
-        "ngspiceChildWallMs": 4321.645292000001,
-        "spiceTsChildWallMs": 3221.3954169999997
+        "ngspiceChildWallMs": 937.1970829999991,
+        "spiceTsChildWallMs": 2564.5374169999996
       }
     },
     {
@@ -14624,8 +14634,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 1044.721375000001,
-        "spiceTsChildWallMs": 2940.459625000003
+        "ngspiceChildWallMs": 1198.4074160000018,
+        "spiceTsChildWallMs": 2526.2412909999985
       }
     }
   ],
@@ -14663,5 +14673,5 @@
       ]
     }
   ],
-  "outcomeSha256": "0c3e46cbaaaa0bb78259d18a2d7d0a854ac77c25c7a5c0b2948e1e96fa4ae5e5"
+  "outcomeSha256": "e65a59fa3d6e9669513c7f1c5092f021873aa69fe306f403ed4d1742f35a5e7a"
 }
