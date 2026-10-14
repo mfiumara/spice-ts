@@ -63,4 +63,6 @@ The previous run used #1118 without #1115, not the much older committed corpus b
 
 Native succeeds on all 24 decks in both runs. spice-ts has 18 success, 3 failed and 3 unsupported in both runs. Newly comparable rows expose losses as well as wins. n-3, n-4 and n-12 move from not-compared to mismatch; n-5 and n-8..n-11, n-13 move from not-compared to matched. Existing mismatches and execution losses remain published in the generated README. These are inherited pairing/export changes, not simulator improvements authored in this evidence PR. No aggregate refresh is included.
 
+The unchanged row classifier also calls unmatched extra plots a mismatch. n-3 and n-12 have paired-signal worst errors below 0.01, but retain unmatched `tran2` and `dc2` respectively. n-4 retains an unmatched `tran2` and has paired-signal worst error 4.49. Thus not all eight mismatch rows establish an above-threshold numerical error. Missing plots/signals remain visible and are not forced into a match.
+
 n-5 cold child wall is 1283.112334 ms native and 19742.574042 ms spice-ts. It includes startup, adapter, parse/solve/export on a shared host, not solver-only time. No speed claim.
