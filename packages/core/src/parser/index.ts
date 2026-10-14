@@ -1318,6 +1318,9 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number, raw
         instanceParamStart = 5;
       }
       const mosfetParams = parseInstanceParams(tokens, instanceParamStart);
+      if (tokens.slice(instanceParamStart).some(token => token.toUpperCase() === 'THERMAL')) {
+        mosfetParams.THERMAL = 1;
+      }
       circuit.addMOSFET(name, tokens[1], tokens[2], tokens[3], modelName, mosfetParams, bulkNode);
       break;
     }

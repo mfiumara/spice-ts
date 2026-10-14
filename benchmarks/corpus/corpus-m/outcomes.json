@@ -14,7 +14,7 @@
     }
   ],
   "manifestSha256": "33b9e518a546d12e1e16290b192a5764bd6d72b5389ae142902f536b69553596",
-  "coreTree": "445dc70f4efa4c25421b28eb9d76ae8f911c91ba",
+  "coreTree": "cb17f197ac69e72d4abae23c2f153149abc57a5a",
   "tools": {
     "ngspice": "ngspice-47",
     "spiceTs": "0.3.0",
@@ -175,8 +175,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 1706.0665,
-        "spiceTsChildWallMs": 7629.823125
+        "ngspiceChildWallMs": 706.1373330000001,
+        "spiceTsChildWallMs": 1613.5402080000001
       }
     },
     {
@@ -350,8 +350,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 2777.723917000001,
-        "spiceTsChildWallMs": 5260.256583
+        "ngspiceChildWallMs": 605.8836659999997,
+        "spiceTsChildWallMs": 1551.7940410000006
       }
     },
     {
@@ -873,8 +873,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 1400.4170840000006,
-        "spiceTsChildWallMs": 2153.0371659999983
+        "ngspiceChildWallMs": 625.1099999999997,
+        "spiceTsChildWallMs": 1494.944625
       }
     },
     {
@@ -905,8 +905,8 @@
       "gapBucket": "model: compact MOSFET model B3SOI (LEVEL=10)",
       "comparisons": [],
       "runtime": {
-        "ngspiceChildWallMs": 724.1755410000005,
-        "spiceTsChildWallMs": 1808.1915000000008
+        "ngspiceChildWallMs": 611.0379169999997,
+        "spiceTsChildWallMs": 1521.1279159999995
       }
     },
     {
@@ -1138,8 +1138,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 657.2120000000032,
-        "spiceTsChildWallMs": 1842.3946250000008
+        "ngspiceChildWallMs": 611.6960839999992,
+        "spiceTsChildWallMs": 1461.6942909999998
       }
     },
     {
@@ -1516,8 +1516,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 1381.1108340000028,
-        "spiceTsChildWallMs": 2312.3248329999988
+        "ngspiceChildWallMs": 649.331583000001,
+        "spiceTsChildWallMs": 1757.3307499999992
       }
     },
     {
@@ -1894,8 +1894,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 1569.159040999999,
-        "spiceTsChildWallMs": 6622.073958000001
+        "ngspiceChildWallMs": 779.7182499999999,
+        "spiceTsChildWallMs": 1620.5885419999995
       }
     },
     {
@@ -2272,8 +2272,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 1794.733834000006,
-        "spiceTsChildWallMs": 5618.894249999998
+        "ngspiceChildWallMs": 622.7642500000002,
+        "spiceTsChildWallMs": 1487.0321660000009
       }
     },
     {
@@ -2418,8 +2418,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 2256.640333000003,
-        "spiceTsChildWallMs": 4688.001792000003
+        "ngspiceChildWallMs": 622.8692499999997,
+        "spiceTsChildWallMs": 1464.163292000001
       }
     },
     {
@@ -3086,8 +3086,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 2108.9743329999983,
-        "spiceTsChildWallMs": 4709.877582999994
+        "ngspiceChildWallMs": 602.2903329999972,
+        "spiceTsChildWallMs": 1479.9155840000021
       }
     },
     {
@@ -3609,8 +3609,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 2028.4194169999973,
-        "spiceTsChildWallMs": 5974.472291999991
+        "ngspiceChildWallMs": 683.0325420000008,
+        "spiceTsChildWallMs": 1489.593499999999
       }
     },
     {
@@ -3784,8 +3784,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 1950.6064170000027,
-        "spiceTsChildWallMs": 6108.088624999989
+        "ngspiceChildWallMs": 613.2067920000009,
+        "spiceTsChildWallMs": 1508.822541999998
       }
     },
     {
@@ -3959,8 +3959,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 2707.8184170000022,
-        "spiceTsChildWallMs": 3986.8226670000004
+        "ngspiceChildWallMs": 642.9320420000004,
+        "spiceTsChildWallMs": 1628.106416999999
       }
     },
     {
@@ -4134,8 +4134,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 1628.0809169999993,
-        "spiceTsChildWallMs": 3454.2570829999895
+        "ngspiceChildWallMs": 639.5050840000004,
+        "spiceTsChildWallMs": 1549.5155000000013
       }
     },
     {
@@ -4309,8 +4309,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 1105.0073330000014,
-        "spiceTsChildWallMs": 2459.0536250000005
+        "ngspiceChildWallMs": 642.8843329999982,
+        "spiceTsChildWallMs": 1654.515457999998
       }
     },
     {
@@ -4588,8 +4588,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 1272.348582999999,
-        "spiceTsChildWallMs": 2553.0877920000057
+        "ngspiceChildWallMs": 684.6307500000039,
+        "spiceTsChildWallMs": 1572.412000000004
       }
     },
     {
@@ -4821,8 +4821,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 1128.7755830000096,
-        "spiceTsChildWallMs": 2930.0677079999878
+        "ngspiceChildWallMs": 676.1751670000012,
+        "spiceTsChildWallMs": 1566.1670830000003
       }
     },
     {
@@ -5054,8 +5054,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 1077.700291000001,
-        "spiceTsChildWallMs": 2841.8227079999924
+        "ngspiceChildWallMs": 760.3410829999993,
+        "spiceTsChildWallMs": 1667.3682909999989
       }
     },
     {
@@ -5287,8 +5287,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 1372.1089169999905,
-        "spiceTsChildWallMs": 3025.4646670000075
+        "ngspiceChildWallMs": 681.2568749999991,
+        "spiceTsChildWallMs": 1665.2383750000008
       }
     },
     {
@@ -5520,8 +5520,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 1229.078125,
-        "spiceTsChildWallMs": 3412.779833000008
+        "ngspiceChildWallMs": 692.6457080000037,
+        "spiceTsChildWallMs": 2249.784833999998
       }
     },
     {
@@ -5753,8 +5753,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 1261.8160420000058,
-        "spiceTsChildWallMs": 4222.707916999992
+        "ngspiceChildWallMs": 813.067959,
+        "spiceTsChildWallMs": 1938.3459580000053
       }
     },
     {
@@ -5986,8 +5986,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 1863.8743340000074,
-        "spiceTsChildWallMs": 5611.592082999996
+        "ngspiceChildWallMs": 870.307584000002,
+        "spiceTsChildWallMs": 1752.8329159999994
       }
     },
     {
@@ -6219,8 +6219,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 1772.1948330000014,
-        "spiceTsChildWallMs": 4896.7384170000005
+        "ngspiceChildWallMs": 724.6912079999965,
+        "spiceTsChildWallMs": 1808.2392919999984
       }
     },
     {
@@ -6452,8 +6452,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 1824.3738339999982,
-        "spiceTsChildWallMs": 4522.590333999979
+        "ngspiceChildWallMs": 710.5414170000004,
+        "spiceTsChildWallMs": 2314.5414170000004
       }
     }
   ],
@@ -6486,5 +6486,5 @@
       ]
     }
   ],
-  "outcomeSha256": "34c87ed696dc5a011b45ab0cd21229e8a62eb97d77e4b30a90cd717c5d30d7d1"
+  "outcomeSha256": "1454689659fc383b931ab3cd754bf44cba61a06c58687ad8e650431c6db55cf2"
 }

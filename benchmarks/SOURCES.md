@@ -1,5 +1,32 @@
 # Benchmark sources
 
+## Diode hidden state and source-step factorization (#917)
+
+[native-state-917](native-state-917/README.md) contains an original MIT
+series-diode/capacitor reduction and observation/replay scripts. Rounded
+parameters are self-written, not copied vendor model text. The unchanged
+ticket-795 base/variant and seven includes remain fetch-only under the
+existing policy below. Their historical hashes are checked before and after
+execution; no vendor netlist/model expressions or native source are shipped.
+The referenced native source is ngspice-47 revision
+`a80f6e3e95d51534905b1f23410a951802666656`, modified BSD, at
+https://git.code.sf.net/p/ngspice/ngspice. The script adds original numeric
+observation statements to a local ignored checkout. Receipt data retains the
+diode's numeric state and three rows, not complete expanded vendor material.
+Both vendor losses remain; before/after max/RMS are null, not zero.
+
+## Floating diode OP recovery experiments (#917)
+
+[floating-island-recovery-917](floating-island-recovery-917/README.md) reuses the
+self-written MIT reduction and unchanged fetch-only vendor decks pinned in
+[ticket795-singular-917](ticket795-singular-917/README.md). Vendor attachment
+https://sourceforge.net/p/ngspice/bugs/795/, `project.7z`, SHA256
+`4f553ecaa57d330c9db7ad9c581988252858451aad0c59a589b3953693fae924`.
+No vendor bytes are redistributed. New test, runner and experimental patches
+are original MIT project work. Ngspice-47 `a80f6e3e95d51534905b1f23410a951802666656`
+is a cited behavioral reference under its modified BSD licence; no C code is copied.
+Candidate losses are retained; no production algorithm or corpus score changes.
+
 ## BJT pre-charge residual boundary experiment (#1037)
 
 `benchmarks/bjt-precharge-1037/` reuses the original MIT-licensed rest and
@@ -11,6 +38,7 @@ are in its receipt. The instance-local prototype is not a production fix.
 The ngspice-47 load-order comparison uses the read-only upstream reference
 https://github.com/imr/ngspice/blob/ngspice-47/src/spicelib/devices/bjt/bjtload.c
 (source SHA-256 and line references in the experiment README).
+
 
 ## BJT post-assembly centered Newton diagnosis (#1037)
 
@@ -42,6 +70,7 @@ BSIM3v32 source and records their hashes. Both engines select MOS9 for
 LEVEL=9, despite the upstream BSIM3 name. Same-bias controls are explicitly
 diagnostic only. Public before/after uses identical original fixture bytes,
 publishes all losses and keeps m-3 at 0.637; no corpus scores or tolerances change.
+
 
 ## corpus-m AC, diode and MOS device batch (#1045)
 

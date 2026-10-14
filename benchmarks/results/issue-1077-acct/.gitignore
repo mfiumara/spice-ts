@@ -1,0 +1,4 @@
+.generated/
+__pycache__/
+*.raw
+*.cpuprofile

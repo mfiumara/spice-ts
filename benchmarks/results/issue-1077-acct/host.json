@@ -1,0 +1,18 @@
+{
+  "base": "0c63eac16234058fa1119fc6bb9361293fc130d4",
+  "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+  "node": "v22.23.1",
+  "ngspice": "******\n** ngspice-47 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2026, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n******",
+  "inputs": {
+    "ngspice": {
+      "path": "benchmarks/corpus/ngspice/fixtures/tests/general/mosamp.cir",
+      "originalSha256": "a6d0f4220bde7a548209e0e845e3c9bb731b2819f7f7e256d284e5a85e10fa7c",
+      "accountingSha256": "9b1b026dade2f8b72b4e0d0a22e9f80ad3d603e3088ccc37f5145e48e6f88d7f"
+    },
+    "classic": {
+      "path": "benchmarks/corpus/classic/fixtures/spice3f5/mosamp2.cir",
+      "originalSha256": "d8b0e627f7742490ac6e841ffb176c9b02ffe6de1246bb57d1db793f58027469",
+      "accountingSha256": "d8b0e627f7742490ac6e841ffb176c9b02ffe6de1246bb57d1db793f58027469"
+    }
+  }
+}

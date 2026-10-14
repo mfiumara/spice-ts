@@ -1,0 +1,137 @@
+[
+  {
+    "stage": "baseline",
+    "label": "base",
+    "command": [
+      "pnpm",
+      "exec",
+      "tsx",
+      "benchmarks/native-state-917/probe.mts",
+      "base",
+      "<receipt>"
+    ],
+    "exitCode": 0,
+    "error": "SingularMatrixError: Singular matrix: zero pivot at matrix column 10 (nodes: Net-_D183-K_)",
+    "factors": 173
+  },
+  {
+    "stage": "baseline",
+    "label": "variant",
+    "command": [
+      "pnpm",
+      "exec",
+      "tsx",
+      "benchmarks/native-state-917/probe.mts",
+      "variant",
+      "<receipt>"
+    ],
+    "exitCode": 0,
+    "error": "SingularMatrixError: Singular matrix: zero pivot at matrix column 10 (nodes: Net-_D183-K_)",
+    "factors": 173
+  },
+  {
+    "stage": "baseline",
+    "label": "island",
+    "command": [
+      "pnpm",
+      "exec",
+      "tsx",
+      "benchmarks/native-state-917/probe.mts",
+      "island",
+      "<receipt>"
+    ],
+    "exitCode": 0,
+    "error": null,
+    "factors": 2
+  },
+  {
+    "stage": "source",
+    "label": "base",
+    "command": [
+      "pnpm",
+      "exec",
+      "tsx",
+      "benchmarks/native-state-917/probe.mts",
+      "base",
+      "<receipt>"
+    ],
+    "exitCode": 0,
+    "error": "SingularMatrixError: Singular matrix: zero pivot at matrix column 10 (nodes: Net-_D183-K_)",
+    "factors": 203
+  },
+  {
+    "stage": "source",
+    "label": "variant",
+    "command": [
+      "pnpm",
+      "exec",
+      "tsx",
+      "benchmarks/native-state-917/probe.mts",
+      "variant",
+      "<receipt>"
+    ],
+    "exitCode": 0,
+    "error": "SingularMatrixError: Singular matrix: zero pivot at matrix column 10 (nodes: Net-_D183-K_)",
+    "factors": 203
+  },
+  {
+    "stage": "source",
+    "label": "island",
+    "command": [
+      "pnpm",
+      "exec",
+      "tsx",
+      "benchmarks/native-state-917/probe.mts",
+      "island",
+      "<receipt>"
+    ],
+    "exitCode": 0,
+    "error": null,
+    "factors": 2
+  },
+  {
+    "stage": "optran",
+    "label": "base",
+    "command": [
+      "pnpm",
+      "exec",
+      "tsx",
+      "benchmarks/native-state-917/probe.mts",
+      "base",
+      "<receipt>"
+    ],
+    "exitCode": 0,
+    "error": "SingularMatrixError: Singular matrix: zero pivot at matrix column 10 (nodes: Net-_D183-K_)",
+    "factors": 1903
+  },
+  {
+    "stage": "optran",
+    "label": "variant",
+    "command": [
+      "pnpm",
+      "exec",
+      "tsx",
+      "benchmarks/native-state-917/probe.mts",
+      "variant",
+      "<receipt>"
+    ],
+    "exitCode": 0,
+    "error": "SingularMatrixError: Singular matrix: zero pivot at matrix column 10 (nodes: Net-_D183-K_)",
+    "factors": 1903
+  },
+  {
+    "stage": "optran",
+    "label": "island",
+    "command": [
+      "pnpm",
+      "exec",
+      "tsx",
+      "benchmarks/native-state-917/probe.mts",
+      "island",
+      "<receipt>"
+    ],
+    "exitCode": 0,
+    "error": null,
+    "factors": 2
+  }
+]

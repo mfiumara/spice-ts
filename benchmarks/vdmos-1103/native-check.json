@@ -1,0 +1,103 @@
+{
+  "version": "******\n** ngspice-47 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2026, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n******\n",
+  "command": "spice-heavy python3 benchmarks/vdmos-1103/native-check.py",
+  "boundary": "synthetic OP node-semantics check only; not corpus parity",
+  "rows": [
+    {
+      "channel": "nchan",
+      "fourthNode": null,
+      "quantities": {
+        "i(vd)": -5.36813139209203,
+        "i(vs)": 5.368131392092046,
+        "i(vb)": 0.0,
+        "@m1[tempnode]": 0.0
+      },
+      "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: disabled thermal node\n\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\n\nNo. of Data Rows : 1\ni(vd) = -5.36813139209203e+00\ni(vs) = 5.368131392092046e+00\ni(vb) = 0.000000000000000e+00\n@m1[tempnode] = 0.000000000000000e+00\nngspice-47 done\n",
+      "stderr": ""
+    },
+    {
+      "channel": "nchan",
+      "fourthNode": "s",
+      "quantities": {
+        "i(vd)": -5.36813139209203,
+        "i(vs)": 5.368131392092046,
+        "i(vb)": 0.0,
+        "@m1[tempnode]": 0.0
+      },
+      "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: disabled thermal node\n\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\n\nNo. of Data Rows : 1\ni(vd) = -5.36813139209203e+00\ni(vs) = 5.368131392092046e+00\ni(vb) = 0.000000000000000e+00\n@m1[tempnode] = 0.000000000000000e+00\nngspice-47 done\n",
+      "stderr": ""
+    },
+    {
+      "channel": "nchan",
+      "fourthNode": "0",
+      "quantities": {
+        "i(vd)": -5.36813139209203,
+        "i(vs)": 5.368131392092046,
+        "i(vb)": 0.0,
+        "@m1[tempnode]": 0.0
+      },
+      "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: disabled thermal node\n\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\n\nNo. of Data Rows : 1\ni(vd) = -5.36813139209203e+00\ni(vs) = 5.368131392092046e+00\ni(vb) = 0.000000000000000e+00\n@m1[tempnode] = 0.000000000000000e+00\nngspice-47 done\n",
+      "stderr": ""
+    },
+    {
+      "channel": "nchan",
+      "fourthNode": "b",
+      "quantities": {
+        "i(vd)": -5.36813139209203,
+        "i(vs)": 5.368131392092046,
+        "i(vb)": 0.0,
+        "@m1[tempnode]": 0.0
+      },
+      "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: disabled thermal node\n\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\n\nNo. of Data Rows : 1\ni(vd) = -5.36813139209203e+00\ni(vs) = 5.368131392092046e+00\ni(vb) = 0.000000000000000e+00\n@m1[tempnode] = 0.000000000000000e+00\nngspice-47 done\n",
+      "stderr": ""
+    },
+    {
+      "channel": "pchan",
+      "fourthNode": null,
+      "quantities": {
+        "i(vd)": 5.368131392092032,
+        "i(vs)": -5.36813139209205,
+        "i(vb)": 0.0,
+        "@m1[tempnode]": 0.0
+      },
+      "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: disabled thermal node\n\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\n\nNo. of Data Rows : 1\ni(vd) = 5.368131392092032e+00\ni(vs) = -5.36813139209205e+00\ni(vb) = 0.000000000000000e+00\n@m1[tempnode] = 0.000000000000000e+00\nngspice-47 done\n",
+      "stderr": ""
+    },
+    {
+      "channel": "pchan",
+      "fourthNode": "s",
+      "quantities": {
+        "i(vd)": 5.368131392092032,
+        "i(vs)": -5.36813139209205,
+        "i(vb)": 0.0,
+        "@m1[tempnode]": 0.0
+      },
+      "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: disabled thermal node\n\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\n\nNo. of Data Rows : 1\ni(vd) = 5.368131392092032e+00\ni(vs) = -5.36813139209205e+00\ni(vb) = 0.000000000000000e+00\n@m1[tempnode] = 0.000000000000000e+00\nngspice-47 done\n",
+      "stderr": ""
+    },
+    {
+      "channel": "pchan",
+      "fourthNode": "0",
+      "quantities": {
+        "i(vd)": 5.368131392092032,
+        "i(vs)": -5.36813139209205,
+        "i(vb)": 0.0,
+        "@m1[tempnode]": 0.0
+      },
+      "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: disabled thermal node\n\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\n\nNo. of Data Rows : 1\ni(vd) = 5.368131392092032e+00\ni(vs) = -5.36813139209205e+00\ni(vb) = 0.000000000000000e+00\n@m1[tempnode] = 0.000000000000000e+00\nngspice-47 done\n",
+      "stderr": ""
+    },
+    {
+      "channel": "pchan",
+      "fourthNode": "b",
+      "quantities": {
+        "i(vd)": 5.368131392092032,
+        "i(vs)": -5.36813139209205,
+        "i(vb)": 0.0,
+        "@m1[tempnode]": 0.0
+      },
+      "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: disabled thermal node\n\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\n\nNo. of Data Rows : 1\ni(vd) = 5.368131392092032e+00\ni(vs) = -5.36813139209205e+00\ni(vb) = 0.000000000000000e+00\n@m1[tempnode] = 0.000000000000000e+00\nngspice-47 done\n",
+      "stderr": ""
+    }
+  ]
+}

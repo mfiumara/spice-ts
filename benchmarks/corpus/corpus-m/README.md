@@ -6,7 +6,7 @@ Every deck below is byte-identical to its pinned upstream revision (xyce `7bb7e9
 
 ## Totals
 
-- Fixtures: 24. Outcome SHA-256: `34c87ed696dc5a011b45ab0cd21229e8a62eb97d77e4b30a90cd717c5d30d7d1`.
+- Fixtures: 24. Outcome SHA-256: `1454689659fc383b931ab3cd754bf44cba61a06c58687ad8e650431c6db55cf2`.
 - ngspice (ngspice-47): 24 success, 0 failed, 0 unsupported.
 - spice-ts (0.3.0): 23 success, 0 failed, 1 unsupported.
 - Outcomes: matched 15, mismatch 8, not-compared 0, spice-ts-loss 1, ngspice-failed 0, both-failed 0.

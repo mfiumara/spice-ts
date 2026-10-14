@@ -709,7 +709,7 @@ function bjtInstanceScale(params: Record<string, number> | undefined): number {
 
 /** VDMOS instance parameters (vdmos.c): M, TEMP and DTEMP are supported. */
 function vdmosInstanceParams(desc: DeviceDescriptor): { M?: number; TEMP?: number; DTEMP?: number } {
-  const { M, TEMP, DTEMP, ...rest } = desc.params ?? {};
+  const { M, TEMP, DTEMP, THERMAL: _thermal, ...rest } = desc.params ?? {};
   const unsupported = Object.keys(rest);
   if (unsupported.length > 0) {
     throw new InvalidCircuitError(
@@ -3131,12 +3131,18 @@ export class Circuit {
    * because quasi saturation makes RD bias dependent.
    */
   private expandVdmosDescriptor(desc: DeviceDescriptor, model: ModelParams): DeviceDescriptor {
-    if (desc.nodes.length !== 3) {
+    if (desc.params?.THERMAL && model.params.RTHJC !== undefined) {
+      throw new InvalidCircuitError(`VDMOS '${desc.name}': self-heating is not implemented`);
+    }
+    if (desc.nodes.length !== 3 && desc.nodes.length !== 4) {
       throw new InvalidCircuitError(
-        `VDMOS '${desc.name}' has ${desc.nodes.length} terminals; only the 3-terminal (D G S) form is supported`
+        `VDMOS '${desc.name}' has ${desc.nodes.length} terminals; only the 3- or 4-terminal nonthermal form is supported`
         + ' (the 5-terminal thermal form needs the self-heating network, which is not implemented)',
       );
     }
+    // ngspice-47 inp2m.c binds terminal 4 as Tj (not MOS bulk).
+    // vdmosset.c grounds Tj/Tcase unless THERMAL && RTHJC-given, so the
+    // nonthermal fourth node has no effect on the channel or body diode.
     const { model: resolved } = resolveVdmosModel(model);
     const [drain, gate, source] = desc.nodes;
     const inner = (resistance: number, terminal: string, suffix: string) =>
@@ -3707,6 +3713,9 @@ export class Circuit {
           // Evaluate {expr} in instance params
           const evaluatedTokens = tokens.map(t => evalToken(t));
           const mParams = parseInstanceParams(evaluatedTokens, instanceParamStart);
+          if (evaluatedTokens.slice(instanceParamStart).some(token => token.toUpperCase() === 'THERMAL')) {
+            mParams.THERMAL = 1;
+          }
           const nodes = bulkNode
             ? [mapNode(tokens[1]), mapNode(tokens[2]), mapNode(tokens[3]), bulkNode]
             : [mapNode(tokens[1]), mapNode(tokens[2]), mapNode(tokens[3])];
