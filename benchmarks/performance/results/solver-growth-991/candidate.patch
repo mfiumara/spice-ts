@@ -1,0 +1,14 @@
+diff --git a/packages/core/src/solver/gilbert-peierls.ts b/packages/core/src/solver/gilbert-peierls.ts
+index 4e5f8b5c..49747f44 100644
+--- a/packages/core/src/solver/gilbert-peierls.ts
++++ b/packages/core/src/solver/gilbert-peierls.ts
+@@ -995,3 +995,3 @@
+   private growLFactors(required: number): void {
+-    const capacity = Math.max(required, Math.max(4, this.lValues.length * 2));
++    const capacity = Math.max(required, Math.max(4, this.lValues.length * 4));
+     const rows = new Int32Array(capacity);
+@@ -1005,3 +1005,3 @@
+   private growUFactors(required: number): void {
+-    const capacity = Math.max(required, Math.max(4, this.uValues.length * 2));
++    const capacity = Math.max(required, Math.max(4, this.uValues.length * 4));
+     const rows = new Int32Array(capacity);

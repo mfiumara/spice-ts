@@ -21,6 +21,7 @@ import {
   type SampleEncoding,
 } from '../classic/report.js';
 import type { PackedColumn } from './raw-stream.js';
+import { pairPlots } from '../../plot-pairing.js';
 
 /** One signal's samples; a real waveform from spice-ts carries no `im` (every imaginary part is +0). */
 export type PackedSignal = PackedColumn | { re: Float64Array; im?: undefined };
@@ -28,7 +29,9 @@ export type PackedSignal = PackedColumn | { re: Float64Array; im?: undefined };
 export interface PackedAnalysis {
   type: EngineAnalysis['type'];
   plotName: string;
+  plotId?: string;
   grid: Float64Array;
+  secondaryGrid?: Float64Array;
   signals: Record<string, PackedSignal>;
 }
 
@@ -53,6 +56,8 @@ export function packEncoded(execution: EncodedExecution<PackedSignal>): PackedEx
       type: analysis.type,
       plotName: analysis.plotName,
       grid: Float64Array.from(analysis.series.grid),
+      ...(analysis.series.secondaryGrid ? { secondaryGrid: Float64Array.from(analysis.series.secondaryGrid) } : {}),
+      ...(analysis.plotId === undefined ? {} : { plotId: analysis.plotId }),
       signals: analysis.series.signals,
     })),
   };
@@ -82,9 +87,11 @@ export function samples(signal: PackedSignal): ComplexValue[] {
 export function unpackAnalysis(analysis: PackedAnalysis, names?: ReadonlySet<string>): EngineAnalysis {
   return {
     type: analysis.type,
+    ...(analysis.plotId === undefined ? {} : { plotId: analysis.plotId }),
     plotName: analysis.plotName,
     series: {
       grid: Array.from(analysis.grid),
+      ...(analysis.secondaryGrid ? { secondaryGrid: Array.from(analysis.secondaryGrid) } : {}),
       signals: Object.fromEntries(Object.entries(analysis.signals)
         .filter(([name]) => names === undefined || names.has(name))
         .map(([name, signal]) => [name, samples(signal)])),
@@ -113,7 +120,8 @@ export function lazyExecution(packed: PackedExecution): EngineExecution {
       return {
         type: analysis.type,
         plotName: analysis.plotName,
-        series: { get grid() { return Array.from(analysis.grid); }, signals },
+        series: { get grid() { return Array.from(analysis.grid); }, signals, ...(analysis.secondaryGrid ? { secondaryGrid: Array.from(analysis.secondaryGrid) } : {}) },
+        ...(analysis.plotId === undefined ? {} : { plotId: analysis.plotId }),
       };
     }),
   };
@@ -131,7 +139,7 @@ export function defaultBatchSamples(): number {
 }
 
 function mergeMetrics(first: ComparisonMetrics, next: ComparisonMetrics): ComparisonMetrics {
-  return { grid: first.grid, signals: { ...first.signals, ...next.signals } };
+  return { ...first, signals: { ...first.signals, ...next.signals } };
 }
 
 /**
@@ -142,16 +150,20 @@ function mergeMetrics(first: ComparisonMetrics, next: ComparisonMetrics): Compar
  */
 export function compareInBatches(spiceTs: PackedExecution, ngspice: PackedExecution, budget = defaultBatchSamples()): ComparisonReceipt[] {
   const receipts: ComparisonReceipt[] = [];
-  for (const analysis of spiceTs.analyses) {
-    const names = Object.keys(analysis.signals).sort();
-    const referencePoints = Math.max(0, ...ngspice.analyses.filter(candidate => candidate.type === analysis.type).map(candidate => candidate.grid.length));
+  for (const pair of pairPlots(spiceTs.analyses, ngspice.analyses)) {
+    const analysis = (pair.left ?? pair.right)!;
+    const common = pair.left && pair.right ? Object.keys(pair.left.signals).filter(name => pair.right!.signals[name] !== undefined) : [];
+    // Choose coverage before batching, so disjoint plots retain both sides' names
+    // without inventing missing signals in batches of a partially shared plot.
+    const names = (common.length ? common : [...new Set([...Object.keys(pair.left?.signals ?? {}), ...Object.keys(pair.right?.signals ?? {})])]).sort();
+    const referencePoints = pair.right?.grid.length ?? 0;
     const perBatch = Math.max(1, Math.floor(budget / Math.max(1, analysis.grid.length + referencePoints)));
     let merged: ComparisonReceipt | undefined;
-    for (let start = 0; start < names.length; start += perBatch) {
+    for (let start = 0; start < Math.max(1, names.length); start += perBatch) {
       const batch = new Set(names.slice(start, start + perBatch));
       const [receipt] = compareExecutions(
-        { status: 'success', convergence: 'converged', analyses: [unpackAnalysis(analysis, batch)] },
-        { status: 'success', convergence: 'converged', analyses: ngspice.analyses.map(candidate => unpackAnalysis(candidate, batch)) },
+        { status: 'success', convergence: 'converged', analyses: pair.left ? [unpackAnalysis(pair.left, batch)] : [] },
+        { status: 'success', convergence: 'converged', analyses: pair.right ? [unpackAnalysis(pair.right, batch)] : [] },
       );
       if (!receipt) continue;
       merged = merged === undefined ? receipt : {
@@ -161,7 +173,11 @@ export function compareInBatches(spiceTs: PackedExecution, ngspice: PackedExecut
         linearMetrics: mergeMetrics(merged.linearMetrics, receipt.linearMetrics),
       };
     }
-    if (merged) receipts.push(merged);
+    if (merged) {
+      if (merged.plot || spiceTs.analyses.filter(a => a.type === analysis.type).length > 1) merged.plot = { spiceTs: pair.left?.plotId ?? pair.left?.plotName, ngspice: pair.right?.plotId ?? pair.right?.plotName, ...(pair.right ? { ngspiceIndex: ngspice.analyses.indexOf(pair.right) } : {}) };
+      const { analysis: type, plot, ...rest } = merged;
+      receipts.push({ analysis: type, ...(plot ? { plot } : {}), ...rest });
+    }
   }
   // compareExecutions' own order: spice-ts analysis order, then a stable sort by analysis type.
   return receipts.sort((a, b) => a.analysis.localeCompare(b.analysis));

@@ -8,6 +8,7 @@ import { parseNumber } from './tokenizer.js';
 import { tempDirective } from './temp-directive.js';
 import { translateMicroSign } from './micro-sign.js';
 import { bracedSubcircuitCallValues } from './subcircuit-syntax.js';
+import { lowerControlledTables } from './controlled-table.js';
 import { CycleError, ParseError } from '../errors.js';
 import type { IncludeResolver } from '../types.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
@@ -102,7 +103,8 @@ function* preprocessSteps(
   lineOffset: number,
 ): Generator<string, PreprocessedDeck, string> {
   const state = newCollectState();
-  const { definitions, statements } = state;
+  const { definitions } = state;
+  let statements = state.statements;
   yield* collectStatements(netlist, hasResolver, new Set(), [], 0, state, guard, lineOffset);
   const unterminated = state.openBlocks[0];
   if (unterminated !== undefined) {
@@ -120,6 +122,10 @@ function* preprocessSteps(
     statement.control = false;
   }
   expandFunctionCalls(state);
+  // inpcom.c TABLE lowering precedes numparam and retains per-instance scopes.
+  if (statements.some(statement => /^\s*[eg]\S*\s+.*\btable\s*[={']/i.test(statement.text))) {
+    statements = state.statements = lowerControlledTables(statements);
+  }
   // inpcom.c inp_quote_params: brace bare parameter names on R/C/L cards (#837).
   const numericParams = new Set([...definitions].filter(([, definition]) => !definition.stringValue).map(([name]) => name));
   braceBareParameters(statements, numericParams).forEach((text, index) => { statements[index].text = text; });

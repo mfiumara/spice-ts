@@ -1,0 +1,814 @@
+{
+  "schemaVersion": "maxord-983/v1",
+  "command": "spice-heavy pnpm exec tsx benchmarks/reference/maxord-983/run.ts",
+  "coreTree": "12a091ed20025e694005c43bb62d56e255e780b1",
+  "node": "v22.23.1",
+  "ngspice": "47",
+  "machine": {
+    "platform": "darwin",
+    "release": "27.0.0",
+    "arch": "arm64",
+    "cpu": "Apple M5 Pro"
+  },
+  "policy": {
+    "input": "identical bytes per case for both engines",
+    "perCircuitToleranceTuning": false,
+    "fixtureAdaptation": "none for pump; project-authored RC cases",
+    "runtime": "cold ngspice batch wall / cold Node child wall, not solver-only or speed claim",
+    "baseline": "committed corpus-k outcome plus RED tests at 13e8bd0c"
+  },
+  "baselineCommit": "8c8318aa011e104b0488f0e69bb17f63aee3ce72",
+  "before": {
+    "id": "k-13",
+    "sourcePath": "xyce/Netlists/CircuitSim90/MOS2/pump.cir",
+    "sha256": "142a0df7fc79780e9eb85491b0307224a5e0fa745e15dffb3c27bb6f38bb668f",
+    "analyses": [
+      "tran"
+    ],
+    "unmappedAnalyses": [],
+    "sameNameAs": [],
+    "ngspice": {
+      "status": "success",
+      "analyses": [
+        "tran:868"
+      ]
+    },
+    "spiceTs": {
+      "status": "unsupported",
+      "analyses": [],
+      "firstErrorLine": "Parse error at line 53: Unsupported .options maxord value: '1' (order-1-only integration is not implemented) .options timeint maxord=1"
+    },
+    "comparedAnalyses": 0,
+    "comparedSignals": 0,
+    "worstNormalizedError": null,
+    "worstSignal": null,
+    "outcome": "spice-ts-loss",
+    "gapBucket": "integration: MAXORD=1 unsupported",
+    "comparisons": [],
+    "runtime": {
+      "ngspiceChildWallMs": 203.70083299999897,
+      "spiceTsChildWallMs": 515.9722499999989
+    }
+  },
+  "fixtures": [
+    {
+      "id": "k-13",
+      "sourcePath": "xyce/Netlists/CircuitSim90/MOS2/pump.cir",
+      "sha256": "142a0df7fc79780e9eb85491b0307224a5e0fa745e15dffb3c27bb6f38bb668f",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:868"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:869"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 4,
+      "worstNormalizedError": 0.0585,
+      "worstSignal": "tran i(vnin)",
+      "outcome": "mismatch",
+      "gapBucket": null,
+      "comparisons": [
+        {
+          "analysis": "tran",
+          "signals": [
+            "i(vnin)",
+            "v(2)",
+            "v(5)",
+            "v(6)"
+          ],
+          "metrics": {
+            "grid": {
+              "spiceTsPoints": 869,
+              "ngspicePoints": 868,
+              "alignedPoints": 869,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "i(vnin)": {
+                "status": "compared",
+                "sampleCount": 869,
+                "absoluteError": {
+                  "max": 0.000018148676523257204,
+                  "rms": 0.000001759707422927546
+                },
+                "relativeError": {
+                  "max": 0.9625120915221232,
+                  "rms": 0.1669454675836345,
+                  "sampleCount": 612,
+                  "excludedZeroReferences": 257
+                }
+              },
+              "v(2)": {
+                "status": "compared",
+                "sampleCount": 869,
+                "absoluteError": {
+                  "max": 1.6542323066914832e-13,
+                  "rms": 2.8890454713415104e-14
+                },
+                "relativeError": {
+                  "max": 1,
+                  "rms": 0.06013850502060455,
+                  "sampleCount": 553,
+                  "excludedZeroReferences": 316
+                }
+              },
+              "v(5)": {
+                "status": "compared",
+                "sampleCount": 869,
+                "absoluteError": {
+                  "max": 0.001453041810509148,
+                  "rms": 0.0006777194730935159
+                },
+                "relativeError": {
+                  "max": 48.88289349824105,
+                  "rms": 1.7094167420424917,
+                  "sampleCount": 836,
+                  "excludedZeroReferences": 33
+                }
+              },
+              "v(6)": {
+                "status": "compared",
+                "sampleCount": 869,
+                "absoluteError": {
+                  "max": 0.0014530418105336285,
+                  "rms": 0.0006777194731232649
+                },
+                "relativeError": {
+                  "max": 48.88289361576186,
+                  "rms": 1.7094167460752145,
+                  "sampleCount": 836,
+                  "excludedZeroReferences": 33
+                }
+              }
+            }
+          },
+          "linearMetrics": {
+            "grid": {
+              "spiceTsPoints": 869,
+              "ngspicePoints": 868,
+              "alignedPoints": 869,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "i(vnin)": {
+                "status": "compared",
+                "sampleCount": 869,
+                "absoluteError": {
+                  "max": 0.00005240878542752453,
+                  "rms": 0.0000031435715615903785
+                },
+                "relativeError": {
+                  "max": 0.9625120915221232,
+                  "rms": 0.1745009815099693,
+                  "sampleCount": 612,
+                  "excludedZeroReferences": 257
+                }
+              },
+              "v(2)": {
+                "status": "compared",
+                "sampleCount": 869,
+                "absoluteError": {
+                  "max": 1.6542323066914832e-13,
+                  "rms": 2.889637593072994e-14
+                },
+                "relativeError": {
+                  "max": 1,
+                  "rms": 0.06013850502060455,
+                  "sampleCount": 553,
+                  "excludedZeroReferences": 316
+                }
+              },
+              "v(5)": {
+                "status": "compared",
+                "sampleCount": 869,
+                "absoluteError": {
+                  "max": 0.001453041810509148,
+                  "rms": 0.0006777735803914802
+                },
+                "relativeError": {
+                  "max": 48.88289349824105,
+                  "rms": 1.7094167421407236,
+                  "sampleCount": 836,
+                  "excludedZeroReferences": 33
+                }
+              },
+              "v(6)": {
+                "status": "compared",
+                "sampleCount": 869,
+                "absoluteError": {
+                  "max": 0.0014530418105336285,
+                  "rms": 0.0006777735804212299
+                },
+                "relativeError": {
+                  "max": 48.88289361576186,
+                  "rms": 1.7094167461734462,
+                  "sampleCount": 836,
+                  "excludedZeroReferences": 33
+                }
+              }
+            }
+          }
+        }
+      ],
+      "runtime": {
+        "ngspiceWallMs": 22.521208,
+        "spiceTsWallMs": 478.133
+      }
+    },
+    {
+      "id": "rc-trap-1",
+      "sourcePath": "project-authored RC order-cap regression",
+      "sha256": "2a282a909786754337053920529324cfe6ff8291a05d86830239957cbe84e9f7",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:97"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:97"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 3,
+      "worstNormalizedError": 1.24e-15,
+      "worstSignal": "tran v(out)",
+      "outcome": "matched",
+      "gapBucket": null,
+      "comparisons": [
+        {
+          "analysis": "tran",
+          "signals": [
+            "i(v1)",
+            "v(in)",
+            "v(out)"
+          ],
+          "metrics": {
+            "grid": {
+              "spiceTsPoints": 97,
+              "ngspicePoints": 97,
+              "alignedPoints": 97,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "i(v1)": {
+                "status": "compared",
+                "sampleCount": 97,
+                "absoluteError": {
+                  "max": 7.047314121155779e-19,
+                  "rms": 2.109070480929952e-19
+                },
+                "relativeError": {
+                  "max": 1.896385400438503e-15,
+                  "rms": 5.060786885397034e-16,
+                  "sampleCount": 96,
+                  "excludedZeroReferences": 1
+                }
+              },
+              "v(in)": {
+                "status": "compared",
+                "sampleCount": 97,
+                "absoluteError": {
+                  "max": 1.1102230246251565e-16,
+                  "rms": 2.6617294798858347e-17
+                },
+                "relativeError": {
+                  "max": 7.401210835948905e-16,
+                  "rms": 1.353439013345881e-16,
+                  "sampleCount": 96,
+                  "excludedZeroReferences": 1
+                }
+              },
+              "v(out)": {
+                "status": "compared",
+                "sampleCount": 97,
+                "absoluteError": {
+                  "max": 7.771561172376096e-16,
+                  "rms": 2.0701103620188185e-16
+                },
+                "relativeError": {
+                  "max": 1.2474902406717202e-15,
+                  "rms": 4.997020831752919e-16,
+                  "sampleCount": 96,
+                  "excludedZeroReferences": 1
+                }
+              }
+            }
+          },
+          "linearMetrics": {
+            "grid": {
+              "spiceTsPoints": 97,
+              "ngspicePoints": 97,
+              "alignedPoints": 97,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "i(v1)": {
+                "status": "compared",
+                "sampleCount": 97,
+                "absoluteError": {
+                  "max": 7.047314121155779e-19,
+                  "rms": 2.109070480929952e-19
+                },
+                "relativeError": {
+                  "max": 1.896385400438503e-15,
+                  "rms": 5.060786885397034e-16,
+                  "sampleCount": 96,
+                  "excludedZeroReferences": 1
+                }
+              },
+              "v(in)": {
+                "status": "compared",
+                "sampleCount": 97,
+                "absoluteError": {
+                  "max": 1.1102230246251565e-16,
+                  "rms": 2.6617294798858347e-17
+                },
+                "relativeError": {
+                  "max": 7.401210835948905e-16,
+                  "rms": 1.353439013345881e-16,
+                  "sampleCount": 96,
+                  "excludedZeroReferences": 1
+                }
+              },
+              "v(out)": {
+                "status": "compared",
+                "sampleCount": 97,
+                "absoluteError": {
+                  "max": 7.771561172376096e-16,
+                  "rms": 2.0701103620188185e-16
+                },
+                "relativeError": {
+                  "max": 1.2474902406717202e-15,
+                  "rms": 4.997020831752919e-16,
+                  "sampleCount": 96,
+                  "excludedZeroReferences": 1
+                }
+              }
+            }
+          }
+        }
+      ],
+      "runtime": {
+        "ngspiceWallMs": 16.31812500000001,
+        "spiceTsWallMs": 473.2662500000001
+      }
+    },
+    {
+      "id": "rc-trap-2",
+      "sourcePath": "project-authored RC order-cap regression",
+      "sha256": "ef08f3c936011e7d4dd5c9c67e675f473b3702e9482b389ed04472cc59f2e9ca",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:67"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:67"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 3,
+      "worstNormalizedError": 2.99e-15,
+      "worstSignal": "tran v(out)",
+      "outcome": "matched",
+      "gapBucket": null,
+      "comparisons": [
+        {
+          "analysis": "tran",
+          "signals": [
+            "i(v1)",
+            "v(in)",
+            "v(out)"
+          ],
+          "metrics": {
+            "grid": {
+              "spiceTsPoints": 67,
+              "ngspicePoints": 67,
+              "alignedPoints": 67,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "i(v1)": {
+                "status": "compared",
+                "sampleCount": 67,
+                "absoluteError": {
+                  "max": 2.0057740190981832e-18,
+                  "rms": 7.962564006456021e-19
+                },
+                "relativeError": {
+                  "max": 5.378524195468948e-15,
+                  "rms": 1.8834386598464635e-15,
+                  "sampleCount": 66,
+                  "excludedZeroReferences": 1
+                }
+              },
+              "v(in)": {
+                "status": "compared",
+                "sampleCount": 67,
+                "absoluteError": {
+                  "max": 5.551115123125783e-17,
+                  "rms": 7.644190521726801e-18
+                },
+                "relativeError": {
+                  "max": 1.7347234759768068e-16,
+                  "rms": 4.7746692239112824e-17,
+                  "sampleCount": 66,
+                  "excludedZeroReferences": 1
+                }
+              },
+              "v(out)": {
+                "status": "compared",
+                "sampleCount": 67,
+                "absoluteError": {
+                  "max": 1.887379141862766e-15,
+                  "rms": 7.923753301961207e-16
+                },
+                "relativeError": {
+                  "max": 3.03368089908067e-15,
+                  "rms": 1.5319969466668956e-15,
+                  "sampleCount": 66,
+                  "excludedZeroReferences": 1
+                }
+              }
+            }
+          },
+          "linearMetrics": {
+            "grid": {
+              "spiceTsPoints": 67,
+              "ngspicePoints": 67,
+              "alignedPoints": 67,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "i(v1)": {
+                "status": "compared",
+                "sampleCount": 67,
+                "absoluteError": {
+                  "max": 2.0057740190981832e-18,
+                  "rms": 7.962564006456021e-19
+                },
+                "relativeError": {
+                  "max": 5.378524195468948e-15,
+                  "rms": 1.8834386598464635e-15,
+                  "sampleCount": 66,
+                  "excludedZeroReferences": 1
+                }
+              },
+              "v(in)": {
+                "status": "compared",
+                "sampleCount": 67,
+                "absoluteError": {
+                  "max": 5.551115123125783e-17,
+                  "rms": 7.644190521726801e-18
+                },
+                "relativeError": {
+                  "max": 1.7347234759768068e-16,
+                  "rms": 4.7746692239112824e-17,
+                  "sampleCount": 66,
+                  "excludedZeroReferences": 1
+                }
+              },
+              "v(out)": {
+                "status": "compared",
+                "sampleCount": 67,
+                "absoluteError": {
+                  "max": 1.887379141862766e-15,
+                  "rms": 7.923753301961207e-16
+                },
+                "relativeError": {
+                  "max": 3.03368089908067e-15,
+                  "rms": 1.5319969466668956e-15,
+                  "sampleCount": 66,
+                  "excludedZeroReferences": 1
+                }
+              }
+            }
+          }
+        }
+      ],
+      "runtime": {
+        "ngspiceWallMs": 13.829250000000002,
+        "spiceTsWallMs": 477.3615829999999
+      }
+    },
+    {
+      "id": "rc-gear-1",
+      "sourcePath": "project-authored RC order-cap regression",
+      "sha256": "724507e9bc6133ffc7c9a28438b6555507c4023f3753e24aa6ed98e8e2585499",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:97"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:97"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 3,
+      "worstNormalizedError": 1.24e-15,
+      "worstSignal": "tran v(out)",
+      "outcome": "matched",
+      "gapBucket": null,
+      "comparisons": [
+        {
+          "analysis": "tran",
+          "signals": [
+            "i(v1)",
+            "v(in)",
+            "v(out)"
+          ],
+          "metrics": {
+            "grid": {
+              "spiceTsPoints": 97,
+              "ngspicePoints": 97,
+              "alignedPoints": 97,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "i(v1)": {
+                "status": "compared",
+                "sampleCount": 97,
+                "absoluteError": {
+                  "max": 7.047314121155779e-19,
+                  "rms": 2.109070480929952e-19
+                },
+                "relativeError": {
+                  "max": 1.896385400438503e-15,
+                  "rms": 5.060786885397034e-16,
+                  "sampleCount": 96,
+                  "excludedZeroReferences": 1
+                }
+              },
+              "v(in)": {
+                "status": "compared",
+                "sampleCount": 97,
+                "absoluteError": {
+                  "max": 1.1102230246251565e-16,
+                  "rms": 2.6617294798858347e-17
+                },
+                "relativeError": {
+                  "max": 7.401210835948905e-16,
+                  "rms": 1.353439013345881e-16,
+                  "sampleCount": 96,
+                  "excludedZeroReferences": 1
+                }
+              },
+              "v(out)": {
+                "status": "compared",
+                "sampleCount": 97,
+                "absoluteError": {
+                  "max": 7.771561172376096e-16,
+                  "rms": 2.0701103620188185e-16
+                },
+                "relativeError": {
+                  "max": 1.2474902406717202e-15,
+                  "rms": 4.997020831752919e-16,
+                  "sampleCount": 96,
+                  "excludedZeroReferences": 1
+                }
+              }
+            }
+          },
+          "linearMetrics": {
+            "grid": {
+              "spiceTsPoints": 97,
+              "ngspicePoints": 97,
+              "alignedPoints": 97,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "i(v1)": {
+                "status": "compared",
+                "sampleCount": 97,
+                "absoluteError": {
+                  "max": 7.047314121155779e-19,
+                  "rms": 2.109070480929952e-19
+                },
+                "relativeError": {
+                  "max": 1.896385400438503e-15,
+                  "rms": 5.060786885397034e-16,
+                  "sampleCount": 96,
+                  "excludedZeroReferences": 1
+                }
+              },
+              "v(in)": {
+                "status": "compared",
+                "sampleCount": 97,
+                "absoluteError": {
+                  "max": 1.1102230246251565e-16,
+                  "rms": 2.6617294798858347e-17
+                },
+                "relativeError": {
+                  "max": 7.401210835948905e-16,
+                  "rms": 1.353439013345881e-16,
+                  "sampleCount": 96,
+                  "excludedZeroReferences": 1
+                }
+              },
+              "v(out)": {
+                "status": "compared",
+                "sampleCount": 97,
+                "absoluteError": {
+                  "max": 7.771561172376096e-16,
+                  "rms": 2.0701103620188185e-16
+                },
+                "relativeError": {
+                  "max": 1.2474902406717202e-15,
+                  "rms": 4.997020831752919e-16,
+                  "sampleCount": 96,
+                  "excludedZeroReferences": 1
+                }
+              }
+            }
+          }
+        }
+      ],
+      "runtime": {
+        "ngspiceWallMs": 15.452458999999862,
+        "spiceTsWallMs": 445.4923329999999
+      }
+    },
+    {
+      "id": "rc-gear-2",
+      "sourcePath": "project-authored RC order-cap regression",
+      "sha256": "4f0caca602180304788b4b636d7e69dadfd8a66845b6858dff8404bdcc4125f0",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:67"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:67"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 3,
+      "worstNormalizedError": 2.01e-7,
+      "worstSignal": "tran v(out)",
+      "outcome": "matched",
+      "gapBucket": null,
+      "comparisons": [
+        {
+          "analysis": "tran",
+          "signals": [
+            "i(v1)",
+            "v(in)",
+            "v(out)"
+          ],
+          "metrics": {
+            "grid": {
+              "spiceTsPoints": 67,
+              "ngspicePoints": 67,
+              "alignedPoints": 67,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "i(v1)": {
+                "status": "compared",
+                "sampleCount": 67,
+                "absoluteError": {
+                  "max": 1.271193406614246e-10,
+                  "rms": 8.86809850683907e-11
+                },
+                "relativeError": {
+                  "max": 0.0000016666472222265864,
+                  "rms": 3.3829445749046804e-7,
+                  "sampleCount": 66,
+                  "excludedZeroReferences": 1
+                }
+              },
+              "v(in)": {
+                "status": "compared",
+                "sampleCount": 67,
+                "absoluteError": {
+                  "max": 5.551115123125783e-17,
+                  "rms": 7.644190521726801e-18
+                },
+                "relativeError": {
+                  "max": 1.7347234759768068e-16,
+                  "rms": 4.7746692239112824e-17,
+                  "sampleCount": 66,
+                  "excludedZeroReferences": 1
+                }
+              },
+              "v(out)": {
+                "status": "compared",
+                "sampleCount": 67,
+                "absoluteError": {
+                  "max": 1.2711934066955612e-7,
+                  "rms": 8.868098506231031e-8
+                },
+                "relativeError": {
+                  "max": 0.11110962964444454,
+                  "rms": 0.016079238912814094,
+                  "sampleCount": 66,
+                  "excludedZeroReferences": 1
+                }
+              }
+            }
+          },
+          "linearMetrics": {
+            "grid": {
+              "spiceTsPoints": 67,
+              "ngspicePoints": 67,
+              "alignedPoints": 67,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "i(v1)": {
+                "status": "compared",
+                "sampleCount": 67,
+                "absoluteError": {
+                  "max": 1.271193406614246e-10,
+                  "rms": 8.86809850683907e-11
+                },
+                "relativeError": {
+                  "max": 0.0000016666472222265864,
+                  "rms": 3.3829445749046804e-7,
+                  "sampleCount": 66,
+                  "excludedZeroReferences": 1
+                }
+              },
+              "v(in)": {
+                "status": "compared",
+                "sampleCount": 67,
+                "absoluteError": {
+                  "max": 5.551115123125783e-17,
+                  "rms": 7.644190521726801e-18
+                },
+                "relativeError": {
+                  "max": 1.7347234759768068e-16,
+                  "rms": 4.7746692239112824e-17,
+                  "sampleCount": 66,
+                  "excludedZeroReferences": 1
+                }
+              },
+              "v(out)": {
+                "status": "compared",
+                "sampleCount": 67,
+                "absoluteError": {
+                  "max": 1.2711934066955612e-7,
+                  "rms": 8.868098506231031e-8
+                },
+                "relativeError": {
+                  "max": 0.11110962964444454,
+                  "rms": 0.016079238912814094,
+                  "sampleCount": 66,
+                  "excludedZeroReferences": 1
+                }
+              }
+            }
+          }
+        }
+      ],
+      "runtime": {
+        "ngspiceWallMs": 15.593834000000243,
+        "spiceTsWallMs": 433.7899160000002
+      }
+    }
+  ]
+}

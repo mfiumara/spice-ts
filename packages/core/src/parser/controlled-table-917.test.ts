@@ -22,16 +22,17 @@ function expectTableError(action: () => unknown): void {
   expect((caught as ParseError).context).toMatch(/lookup/i);
 }
 
-describe('controlled-source TABLE fails closed (#917)', () => {
+describe('controlled-source TABLE front-end safety (#917)', () => {
   it.each(cards)('rejects the logical card before producing node tokens: %s', card => {
     expectTableError(() => tokenizeNetlist(card));
   });
 
-  it.each(cards)('rejects a TABLE in a subcircuit during parsing: %s', card => {
-    expectTableError(() => parse([
+  it.each(cards)('lowers a TABLE in a subcircuit before tokenization: %s', card => {
+    const circuit = parse([
       'MIT TABLE safety probe', '.subckt lookup in out', card, '.ends lookup',
       'Vinput in 0 0.5', 'Xlookup in out lookup', 'Rload out 0 1k', '.op', '.end',
-    ].join('\n')));
+    ].join('\n'));
+    expect(() => circuit.compile()).not.toThrow();
   });
 
   it('guards the direct linear controlled-source validator too', () => {
@@ -41,18 +42,16 @@ describe('controlled-source TABLE fails closed (#917)', () => {
     ));
   });
 
-  it('rejects a top-level constant TABLE with its source location', () => {
-    expectTableError(() => parse('probe\nElookup out 0 TABLE {0.5} = (0,0) (1,1)\n.op\n.end'));
+  it('lowers a top-level constant TABLE', () => {
+    expect(() => parse('probe\nElookup out 0 TABLE {0.5} = (0,0) (1,1)\n.op\n.end').compile()).not.toThrow();
   });
 
-  it('rejects an included TABLE subcircuit without returning a circuit', async () => {
+  it('lowers an included TABLE subcircuit', async () => {
     const deck = 'probe\n.include "lookup.lib"\nVinput in 0 0.5\nXlookup in out lookup\n.op\n.end';
-    await expect(parseAsync(deck, async () => [
+    const circuit = await parseAsync(deck, async () => [
       '.subckt lookup in out', cards[0], '.ends lookup',
-    ].join('\n'))).rejects.toMatchObject({ name: 'ParseError' });
-    await expect(parseAsync(deck, async () => [
-      '.subckt lookup in out', cards[0], '.ends lookup',
-    ].join('\n'))).rejects.toThrow(/TABLE.*not supported/);
+    ].join('\n'));
+    expect(() => circuit.compile()).not.toThrow();
   });
 
   it.each(['E', 'G'])('preserves a genuine linear %s control node named table', type => {

@@ -10,7 +10,8 @@ const { pathToFileURL } = await import('node:url');
 const { spawn } = await import('node:child_process');
 const { hashVectors } = await import('./rc1k-attribution-data.mjs');
 const { parsePhases } = await import('./parse-1000-targets.mjs');
-const parserAttribution = JSON.parse(readFileSync(join(directory, 'prepared.json'), 'utf8')).attribution === 'parse';
+const prepared = JSON.parse(readFileSync(join(directory, 'prepared.json'), 'utf8'));
+const parserAttribution = prepared.attribution === 'parse';
 const totals = {}, calls = {}, stack = [];
 globalThis.__rc1k = {
   enter(key) { const span = { key, start: process.hrtime.bigint(), children: 0n }; stack.push(span); return span; },
@@ -96,6 +97,11 @@ try {
     for (const key of ['compile', 'matrixBuild', 'ordering', 'loadStamp', 'factor', 'solve', 'outputMaterialization']) boundaries[key] = mode === 'instrumented' && !parserAttribution ? totals[key] ?? 0 : null;
     if (mode === 'instrumented' && !parserAttribution) boundaries.simulateResidual = boundaries.simulate - Object.values(totals).reduce((a, b) => a + b, 0);
     evidence.calls = calls;
+    if (prepared.factorComparison) {
+      boundaries.factor = (totals.factor ?? 0) + (totals.growth ?? 0);
+      boundaries.growth = totals.growth ?? 0;
+      evidence.maxRssKiB = process.resourceUsage().maxRSS;
+    }
   }
 } catch (error) {
   status = 'failed'; evidence.error = String(error?.stack ?? error);

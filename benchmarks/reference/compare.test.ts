@@ -120,8 +120,18 @@ test('EKV evidence uses published decks and never labels MOS1 fallback as parity
       assert.equal(digest, engine === 'ngspice' ? f.ngspice.analyses[0].seriesSha256 : f[engine].seriesSha256);
     }
     const signals = f.xyce.signals;
-    if (f.series.spiceTs) assert.deepEqual(f.spiceTsVsXyce, alignAndMeasure(f.series.spiceTs, f.series.xyce, signals));
-    if (f.series.ngspice) assert.deepEqual(f.ngspiceVsXyce, alignAndMeasure(f.series.ngspice, f.series.xyce, signals));
+    // Archived EKV losses used ordinal interpolation on unequal primary grids.
+    // Keep those losses intact, but require the new policy to reject that pairing.
+    const historicalMetrics = (metric: ReturnType<typeof alignAndMeasure>) => ({ grid: metric.grid, signals: metric.signals });
+    const verify = (target: Parameters<typeof alignAndMeasure>[0], savedMetric: unknown) => {
+      const current = alignAndMeasure(target, f.series.xyce, signals);
+      if (current.sweepGroups?.some(group => group.unmatched)) {
+        assert.equal(current.sweepAlignment, 'reset-ordinal');
+        assert.ok(current.grid.excludedOutOfRange > 0);
+      } else assert.deepEqual(savedMetric, historicalMetrics(current));
+    };
+    if (f.series.spiceTs) verify(f.series.spiceTs, f.spiceTsVsXyce);
+    if (f.series.ngspice) verify(f.series.ngspice, f.ngspiceVsXyce);
     // A successful MOS1 run is still an EKV coverage loss.
     assert.ok(Object.values(f.spiceTsVsXyce.signals).some((m: any) => m.absoluteError.max > 1e-5));
   }
