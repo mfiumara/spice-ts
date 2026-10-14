@@ -28,6 +28,11 @@ describe('ngspice-47 smoothed TABLE lowering (#917)', () => {
     expect(result.ac!.voltage('out')[0].magnitude).toBeCloseTo(2.5, 8);
     expect(result.ac!.voltage('out')[0].phase).toBeCloseTo(0, 8);
   });
+  it('combines scoped G parameters, a port voltage and local branch current', async () => {
+    const result = await simulate('MIT G branch TABLE\n.subckt lookup in out params: scale=2 bias=.5\nVlocal internal 0 {bias}\nRlocal internal 0 1\nGlookup out 0 TABLE {v(in)*scale+i(Vlocal)} = (-1,-2m) (0,0) (1,3m) m=2\n.ends\nVinput in 0 .5\nXone in out lookup\nXtwo in out2 lookup bias=1\nRload out 0 1k\nRload2 out2 0 1k\n.op\n.end');
+    expect(result.dc!.voltage('out')).toBeCloseTo(-3, 8);
+    expect(result.dc!.voltage('out2')).toBeCloseTo(-.05, 8);
+  });
   it('avoids internal-name collisions and preserves output polarity', async () => {
     const result = await simulate('MIT collision TABLE\nVinput in 0 .5\nVreserved __table917_0_in 0 7\nElookup 0 out TABLE {v(in)} = (-1,-2) (0,0) (1,3)\nRload out 0 1k\n.op\n.end');
     expect(result.dc!.voltage('out')).toBeCloseTo(-1.5, 8);

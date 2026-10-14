@@ -36,13 +36,13 @@ accessor was corrected from result.op to the actual result.dc API after the
 parser failures were removed. GREEN production commit is
 ce2acdd1a9e722166b9aaaa4b21afd39d9afa074.
 
-Targeted final TABLE coverage passes 44/44, covering all six ngspice reference
+Targeted final TABLE coverage passes 45/45, covering all six ngspice reference
 inputs, G polarity/multiplicity, independent instance parameters/ports,
 i(Vlocal), AC derivative 2.5 at the smoothed zero corner, internal-name
 collision, reversed output polarity, table-pair parameters and continuations.
-Build, lint/typecheck and guarded full monorepo tests passed. Final core
-verification was 3759 passed / 2 skipped. Offline receipt verification
-passes 3/3.
+Build, lint/typecheck and guarded full monorepo tests passed. Core verification
+was 3759 passed / 2 skipped before the final combined G port/current test,
+which also passes. Offline receipt verification passes 4/4.
 
 ## Identical-byte MIT comparison
 
@@ -69,6 +69,11 @@ matched sweep rows, not rounded representative values.
 
 Hard interpolation would miss the smoothed corners. No simulator tolerances
 or vendor decks were tuned.
+
+The extra original MIT ac.cir is compared by ac-compare.ts. Both engines
+consume identical bytes at 1 Hz and report output magnitude 2.5 V/V, phase
+0 degrees. ac-after.json retains the exact hash, reference and native values;
+both magnitude and phase errors are zero. The source is recorded in SOURCES.md.
 
 ## Vendor 784: remaining execution loss, not parity
 
@@ -117,6 +122,7 @@ in-process. Raw timings are retained in JSON.
     pnpm install --frozen-lockfile
     pnpm -C packages/core exec vitest run src/parser/controlled-table-917*.test.ts
     spice-heavy pnpm exec tsx benchmarks/controlled-table-917/compare.ts after.json
+    spice-heavy pnpm exec tsx benchmarks/controlled-table-917/ac-compare.ts
     spice-heavy python3 benchmarks/controlled-table-917/vendor.py after
     pnpm exec tsx --test benchmarks/controlled-table-917/evidence.test.mts
     pnpm build && pnpm lint

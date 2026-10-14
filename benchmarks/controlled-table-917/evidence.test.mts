@@ -9,6 +9,18 @@ import { fileURLToPath } from 'node:url';
 const here = dirname(fileURLToPath(import.meta.url));
 const load = (name: string) => JSON.parse(readFileSync(join(here, name), 'utf8'));
 
+test('same-byte AC probe matches the ngspice-47 smoothed derivative', () => {
+  const row = load('ac-after.json');
+  assert.equal(row.sha256, createHash('sha256').update(readFileSync(join(here, 'ac.cir'))).digest('hex'));
+  assert.equal(row.identicalBytes, true);
+  assert.equal(row.ngspice.exit, 0);
+  assert.equal(row.spiceTs.rows, 1);
+  assert.deepEqual(row.frequencies, [1]);
+  assert.deepEqual(row.ngspice.voltage, { magnitude: 2.5, phase: 0 });
+  assert.deepEqual(row.spiceTs.voltage, row.ngspice.voltage);
+  assert.equal(row.maxError, 0);
+});
+
 test('both MIT cases preserve bytes and retain complete finite ngspice-47 sweeps', () => {
   const before = load('before.json');
   const after = load('after.json');

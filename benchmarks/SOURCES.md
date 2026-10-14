@@ -51,9 +51,9 @@ The machine-readable catalogue is `benchmarks/corpus/ngspice/manifest.json`.
 - Reference semantics: https://github.com/imr/ngspice/blob/ngspice-47/src/frontend/inpcom.c lines 1442-1456 turn `.title` into a comment before continuation stitching at 1958; lines 694-702 preserve the preceding card across comments.
 - `benchmarks/title-directive/x-continuations.ts` adds original MIT numeric/bare/braced/quoted X RHS probes at top-level and nested scope. `x-continuations-{before,after}.json` retain same-byte hashes and raw ngspice-47 output (R=2000 ohms, i(v1)=-5e-4 A). Before is the uncommitted PR955/main merge; after includes the metadata-skip scanner fix. No corpus or speed claim.
 
-## Controlled E/G TABLE fail-closed probes (#917)
+## Controlled E/G TABLE probes (#917)
 
-- `benchmarks/controlled-table-917/{e,g-subckt}.cir` are original project-authored MIT netlists (repository `LICENSE`), not vendor extracts. Issue https://github.com/mfiumara/spice-ts/issues/917. Both engines receive identical bytes, with ngspice-47 `ngbehavior=ltps`; all 81 DC rows retain endpoint clamping and smoothed corners. Native unsupported results and null comparison metrics are published, not counted as parity wins.
+- `benchmarks/controlled-table-917/{e,g-subckt,ac}.cir` are original project-authored MIT netlists (repository `LICENSE`), not vendor extracts. Issue https://github.com/mfiumara/spice-ts/issues/917. Both engines receive identical bytes, with ngspice-47 `ngbehavior=ltps`; all 81 DC rows retain endpoint clamping and smoothed corners, and the one-row AC probe verifies the smoothed derivative. Receipts publish native values and max/RMS errors where available, and unsupported/failed outcomes with null metrics otherwise.
 - `vendor.py` reuses the fetch-only pinned attachment/hash/path-relocation policy of `benchmarks/vendor-expanded-node-917/run.py` for https://sourceforge.net/p/ngspice/bugs/784/. No vendor deck, model, expanded expression or raw log is redistributed. New before/after scalar receipts preserve identical relocated bytes and include hashes; both native runs remain non-completing while ngspice completes 141 AC rows per original. Existing #939 receipts are unchanged.
 
 ## X-call RHS continuation remediation (#797 / PR955)
