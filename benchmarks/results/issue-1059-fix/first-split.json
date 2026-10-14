@@ -1,0 +1,21 @@
+{
+  "ngspiceRevision": "a80f6e3e95d51534905b1f23410a951802666656",
+  "firstSplit": {
+    "index": 20,
+    "tsTime": 1.0067151215848725e-8,
+    "ngTime": 1.006715127739681e-8,
+    "delta": -6.154808574087601e-17
+  },
+  "firstRejectedEdgeTrial": {
+    "time": 1.0094080480255495e-8,
+    "device": "mn1",
+    "charge": "qgb",
+    "nativeLine": "TERR 1.0094080480255495e-08 32 2 5.3760274431710822e-11 2.6880137215855411e-11 1.3440068607927706e-11 4.4288958285460897e-15 4.4288958285460897e-15 2.5304044651794653e-15 0 4.7017103874016187e-05 -4.7017103874016187e-05 2.6831071573030077e-11",
+    "nativeRecomputed": 2.6831071573030077e-11,
+    "tsRecomputed": 2.683101002494171e-11,
+    "tsBound": 2.683101002494171e-11,
+    "tsCharge": 4.428865368901515e-15,
+    "ngCharge": 4.42889582854609e-15
+  },
+  "conclusion": "CKTterr arithmetic reproduces native bound on native history. The tiny initial split reflects different charge/current history, not a proven truncation-formula error. Final-load-voltage candidate fails broad acceptance gates."
+}
