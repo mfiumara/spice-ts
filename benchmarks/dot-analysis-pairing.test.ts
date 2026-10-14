@@ -52,13 +52,28 @@ test('adapter retains distinct 11-point first and 3-point second DC cards with O
 });
 
 test('single analysis, step and control continue to use legacy identities', async () => {
-  for (const [cards, expected] of [
-    ['.op', [undefined]],
-    ['.step param resistance list 1000 2000\n.op', [undefined]],
-    ['.control\nop\nop\n.endc', ['op1', 'op2']],
+  for (const [cards, status, expected] of [
+    ['.op', 'success', [undefined]],
+    // The legacy adapter does not map step envelopes to plots.
+    ['.step R1 list 1000 2000\n.op', 'unsupported', []],
+    ['.control\nop\nop\n.endc', 'success', ['op1', 'op2']],
+    ['.control\nop\nac lin 3 1 3\n.endc', 'success', [undefined, undefined]],
   ] as const) {
-    const own = await runNativeSpiceTs(Buffer.from(`legacy\nV1 out 0 1\nR1 out 0 1k\n${cards}\n.end\n`), { analyses: ['op'] } as ClassicCircuit);
-    assert.equal(own.status, 'success');
+    const own = await runNativeSpiceTs(Buffer.from(`legacy\nV1 out 0 1 AC 1\nR1 out 0 1k\n${cards}\n.end\n`), { analyses: cards.includes('ac lin') ? ['op', 'ac'] : ['op'] } as ClassicCircuit);
+    assert.equal(own.status, status);
     assert.deepEqual(own.analyses.map(a => a.plotId), expected);
   }
+});
+
+test('retained runs emit one plot each even with repeated manifest types', async () => {
+  const own = await runNativeSpiceTs(Buffer.from('duplicates\nV1 out 0 1\nR1 out 0 1k\n.op\n.op\n.end\n'), { analyses: ['op', 'op'] } as ClassicCircuit);
+  assert.deepEqual(own.analyses.map(a => a.plotId), ['dot:op:2', 'dot:op:1']);
+});
+
+test('unmeasured native noise type retains legacy aggregate plots', async () => {
+  const own = await runNativeSpiceTs(Buffer.from('noise\nV1 in 0 AC 1\nR1 in out 1k\nR2 out 0 1k\n.op\n.noise V(out) V1 dec 10 1 1Meg\n.end\n'), { analyses: ['op', 'noise'] } as ClassicCircuit);
+  assert.equal(own.status, 'success');
+  assert.equal(own.analyses[0].plotId, 'dot:op:1');
+  assert.ok(own.analyses.filter(a => a.type === 'noise').every(a => a.plotId === undefined));
+  assert.equal(own.analyses.filter(a => a.type === 'noise').length, 2);
 });
