@@ -1,0 +1,109 @@
+{
+  "rest": {
+    "baselineStatus": "TimestepTooSmallError",
+    "baselineAccepted": 1,
+    "nativeRowsIncludingDC": 108,
+    "candidate": {
+      "points": 107,
+      "exactTimeMatches": 76,
+      "endpointRoundoffMatches": 0,
+      "vbe": {
+        "maxAbsV": 8.851596468072497e-15,
+        "rmsAbsV": 7.213699047501834e-15,
+        "maxRelative": 1.9034706863998274e-05,
+        "rmsRelative": 1.5512552493190632e-05
+      },
+      "vbc": {
+        "maxAbsV": 6.394884621840902e-14,
+        "rmsAbsV": 3.51801316433253e-14,
+        "maxRelative": 1.3752440060887143e-15,
+        "rmsRelative": 7.565619715898407e-16
+      }
+    }
+  },
+  "nanosecond-control": {
+    "baselineStatus": null,
+    "baselineAccepted": 107,
+    "nativeRowsIncludingDC": 108,
+    "candidate": {
+      "points": 107,
+      "exactTimeMatches": 72,
+      "endpointRoundoffMatches": 1,
+      "vbe": {
+        "maxAbsV": 2.9429603668293155e-15,
+        "rmsAbsV": 6.386465694876253e-16,
+        "maxRelative": 6.3287578960962924e-06,
+        "rmsRelative": 1.3733892733431762e-06
+      },
+      "vbc": {
+        "maxAbsV": 1.4210854715202004e-14,
+        "rmsAbsV": 1.9428680588608335e-15,
+        "maxRelative": 3.056097791308259e-16,
+        "rmsRelative": 4.1782108834989643e-17
+      }
+    },
+    "baseline": {
+      "points": 107,
+      "exactTimeMatches": 72,
+      "endpointRoundoffMatches": 1,
+      "vbe": {
+        "maxAbsV": 4.041605274368709e-15,
+        "rmsAbsV": 8.098489559953361e-16,
+        "maxRelative": 8.691361250926055e-06,
+        "rmsRelative": 1.7415522153569773e-06
+      },
+      "vbc": {
+        "maxAbsV": 1.4210854715202004e-14,
+        "rmsAbsV": 7.171525779614835e-15,
+        "maxRelative": 3.056097791308259e-16,
+        "rmsRelative": 1.5422636100800914e-16
+      }
+    }
+  },
+  "moving-control": {
+    "baselineStatus": "TimestepTooSmallError",
+    "baselineAccepted": 1,
+    "nativeRowsIncludingDC": 114,
+    "candidate": {
+      "points": 113,
+      "exactTimeMatches": 86,
+      "endpointRoundoffMatches": 0,
+      "vbe": {
+        "maxAbsV": 1.3366926315816485e-09,
+        "rmsAbsV": 8.859717374153137e-10,
+        "maxRelative": 1.768692621940593e-05,
+        "rmsRelative": 6.3764355061823995e-06
+      },
+      "vbc": {
+        "maxAbsV": 1.706929708689131e-09,
+        "rmsAbsV": 1.1681955129262025e-09,
+        "maxRelative": 3.676892506693091e-11,
+        "rmsRelative": 2.515982547117364e-11
+      }
+    }
+  },
+  "localization": {
+    "qbcEquivalentA": 82940.87472616718,
+    "qbcConductanceS": 1783.6747270989981,
+    "rhsAddRoundingA": [
+      "-5.92397027907214796310837214010636131433784612454473972320556640625E-22",
+      "-6.354406006575988828666279317758380784653127193450927734375E-12",
+      "1.1666666540102564285530081087034239006872127220049151219427585601806640625E-14",
+      "0E-32",
+      "0E-36",
+      "0E-32"
+    ],
+    "beforeResidualA": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "afterResidualA": [
+      -1.4551915228366852e-11,
+      1.4551915228366852e-11,
+      0,
+      0
+    ]
+  }
+}
