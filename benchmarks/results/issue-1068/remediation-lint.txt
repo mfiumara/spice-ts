@@ -1,0 +1,64 @@
+
+> spice-ts@ lint /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_19e2e6cb
+> node scripts/check-agent-artifacts.mjs && node --test scripts/check-agent-artifacts.test.mjs && pnpm -r lint
+
+Agent artifact check passed (no new tracked *.log or *POTETO*.md files).
+TAP version 13
+# Subtest: preserves historical tracked receipts and allows ordinary additions
+ok 1 - preserves historical tracked receipts and allows ordinary additions
+  ---
+  duration_ms: 361.662958
+  type: 'test'
+  ...
+# Subtest: rejects staged logs and nested POTETO notes, including spaces
+ok 2 - rejects staged logs and nested POTETO notes, including spaces
+  ---
+  duration_ms: 352.136833
+  type: 'test'
+  ...
+# Subtest: rejects committed additions and renamed ordinary files
+ok 3 - rejects committed additions and renamed ordinary files
+  ---
+  duration_ms: 733.981459
+  type: 'test'
+  ...
+# Subtest: permits modification and removal of grandfathered evidence
+ok 4 - permits modification and removal of grandfathered evidence
+  ---
+  duration_ms: 370.726875
+  type: 'test'
+  ...
+# Subtest: checks the staged index when no remote main exists
+ok 5 - checks the staged index when no remote main exists
+  ---
+  duration_ms: 333.685625
+  type: 'test'
+  ...
+# Subtest: invalid base fails closed
+ok 6 - invalid base fails closed
+  ---
+  duration_ms: 305.6805
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2503.408666
+Scope: 9 of 10 workspace projects
+packages/core lint$ tsc --noEmit
+packages/protocol lint$ tsc --noEmit
+packages/protocol lint: Done
+packages/core lint: Done
+packages/circuit-json lint$ tsc --noEmit
+packages/ui lint$ tsc --noEmit
+packages/mcp lint$ tsc --noEmit
+packages/wasm lint$ tsc --noEmit
+packages/circuit-json lint: Done
+packages/mcp lint: Done
+packages/wasm lint: Done
+packages/ui lint: Done

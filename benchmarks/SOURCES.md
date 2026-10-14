@@ -54,7 +54,7 @@ the native option-narrowing evidence and the unchanged original benchmark loss.
 
 ## Explicit junction GMIN regression (#1068)
 
-The diode/BJT/MOS1/JFET probes in [results/issue-1068](results/issue-1068/README.md)
+The diode/BJT/MOS1/MOS6/JFET/HFET1 probes in [results/issue-1068](results/issue-1068/README.md)
 are original spice-ts project work under the repository MIT licence, not vendor
 models. Source context: https://github.com/mfiumara/spice-ts/issues/1068.
 Both simulators receive identical bytes. The scoped comparison also reruns the

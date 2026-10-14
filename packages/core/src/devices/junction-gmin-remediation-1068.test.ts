@@ -28,15 +28,20 @@ describe('configured junction gmin remediation (#1068)', () => {
     // Both junctions share this bias, covering reverse and exponential branches.
     assembler.solution[drain] = assembler.solution[source] = 0;
     const conductances: number[] = [];
+    const currents: number[] = [];
     for (const gmin of [0, 1e-9, 1e-3, 0]) {
       assembler.deviceGmin = gmin;
       assembler.clear();
       device.stamp(assembler.getStampContext());
       conductances.push(assembler.G.get(body, body));
+      currents.push(assembler.G.get(body, body) * bulk - assembler.b[body]);
     }
     expect(conductances[1] - conductances[0]).toBeCloseTo(2e-9, 18);
     expect(conductances[2] - conductances[0]).toBeCloseTo(2e-3, 15);
     expect(conductances[3]).toBe(conductances[0]);
+    expect(currents[1] - currents[0]).toBeCloseTo(2e-9 * bulk, 18);
+    expect(currents[2] - currents[0]).toBeCloseTo(2e-3 * bulk, 15);
+    expect(currents[3]).toBe(currents[0]);
   });
 
   it('updates both HFET1 reverse gate junctions during gmin stepping', () => {

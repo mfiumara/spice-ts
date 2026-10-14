@@ -1,5 +1,5 @@
-import type {
-  ChargeIntegration, ChargeTruncation, ConvergenceTolerances, DeviceModel, StampContext,
+import {
+  DEVICE_GMIN, type ChargeIntegration, type ChargeTruncation, type ConvergenceTolerances, type DeviceModel, type StampContext,
 } from './device.js';
 import { stampChargeBranch, stampChargeCurrent, TransientChargeState } from './charge-state.js';
 import { InvalidCircuitError } from '../errors.js';
@@ -28,8 +28,7 @@ const CONSTCTOK = 273.15;
 const REFTEMP = 27 + CONSTCTOK;
 const CONSTROOT2 = Math.SQRT2;
 const MAX_EXP_ARG = 709;
-// ngspice default CKTgmin, used by the bulk junction model.
-const JUNCTION_GMIN = 1e-12;
+
 // ngspice CKTdefaultMosL / CKTdefaultMosW.
 const DEFAULT_MOS_LENGTH = 100e-6;
 const DEFAULT_MOS_WIDTH = 100e-6;
@@ -590,6 +589,7 @@ export class MOS6 implements DeviceModel {
 
   stamp(ctx: StampContext): void {
     const model = this.model;
+    const gmin = ctx.gmin ?? DEVICE_GMIN;
     const type = model.polarity;
     const m = this.instance.M;
     const { vt, sourceVcrit, drainVcrit } = this.temp;
@@ -615,22 +615,22 @@ export class MOS6 implements DeviceModel {
     let gbs: number;
     let cbs: number;
     if (vbs <= -3 * vt) {
-      gbs = JUNCTION_GMIN;
+      gbs = gmin;
       cbs = gbs * vbs - sourceSatCur;
     } else {
       const evbs = Math.exp(Math.min(MAX_EXP_ARG, vbs / vt));
-      gbs = sourceSatCur * evbs / vt + JUNCTION_GMIN;
-      cbs = sourceSatCur * (evbs - 1) + JUNCTION_GMIN * vbs;
+      gbs = sourceSatCur * evbs / vt + gmin;
+      cbs = sourceSatCur * (evbs - 1) + gmin * vbs;
     }
     let gbd: number;
     let cbd: number;
     if (vbd <= -3 * vt) {
-      gbd = JUNCTION_GMIN;
+      gbd = gmin;
       cbd = gbd * vbd - drainSatCur;
     } else {
       const evbd = Math.exp(Math.min(MAX_EXP_ARG, vbd / vt));
-      gbd = drainSatCur * evbd / vt + JUNCTION_GMIN;
-      cbd = drainSatCur * (evbd - 1) + JUNCTION_GMIN * vbd;
+      gbd = drainSatCur * evbd / vt + gmin;
+      cbd = drainSatCur * (evbd - 1) + gmin * vbd;
     }
 
     const channel = this.evaluateChannel(vgs, vds, vbs);

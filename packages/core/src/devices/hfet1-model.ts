@@ -1,4 +1,5 @@
 import type { ModelParams } from '../types.js';
+import { DEVICE_GMIN } from './device.js';
 
 export interface HFET1InstanceParams {
   L: number;
@@ -180,7 +181,7 @@ function intrinsic(vGS: number, vDS: number, model: HFET1Model, instance: HFET1I
   return { drainCurrent, capGS, capGD };
 }
 
-function leakage(voltage: number, density: number, instance: HFET1InstanceParams): { current: number; conductance: number } {
+function leakage(voltage: number, density: number, instance: HFET1InstanceParams, gmin: number): { current: number; conductance: number } {
   const is1 = density * instance.W * instance.L / 2;
   const is2 = 1.15e6 * instance.W * instance.L / 2;
   const m1 = 1.32;
@@ -193,8 +194,8 @@ function leakage(voltage: number, density: number, instance: HFET1InstanceParams
     current = 0;
     conductance = 0;
   } else if (voltage <= -10 * vt1) {
-    current = 1e-12 * voltage - is1;
-    conductance = 1e-12;
+    current = gmin * voltage - is1;
+    conductance = gmin;
   } else {
     const resistance = 90;
     const effectiveVoltage = vt1 + vt2;
@@ -247,6 +248,7 @@ export function evaluateHFET1(
   vDS: number,
   model: HFET1Model,
   instance: HFET1InstanceParams,
+  gmin = DEVICE_GMIN,
 ): HFET1Evaluation {
   const result = intrinsic(vGS, vDS, model, instance);
   const evaluationVGS = vGS;
@@ -260,8 +262,8 @@ export function evaluateHFET1(
     - intrinsic(evaluationVGS - hGS, evaluationVDS, model, instance).drainCurrent) / (2 * hGS);
   const gds = (intrinsic(evaluationVGS, evaluationVDS + hDS, model, instance).drainCurrent
     - intrinsic(evaluationVGS, evaluationVDS - hDS, model, instance).drainCurrent) / (2 * hDS);
-  const gateSource = leakage(vGS, model.JS1S, instance);
-  const gateDrain = leakage(vGS - vDS, model.JS1D, instance);
+  const gateSource = leakage(vGS, model.JS1S, instance, gmin);
+  const gateDrain = leakage(vGS - vDS, model.JS1D, instance, gmin);
   return {
     ...result,
     gm,
