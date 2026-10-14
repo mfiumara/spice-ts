@@ -83,20 +83,23 @@ export function sensitivitySeries(sens: Sensitivity): SampleSeries {
 }
 
 /**
- * The first plot of a type, as the ngspice wrapper exports `setplot <type>1`: the first control
- * run of that analysis when the deck ran one from `.control`, else the deck's dot-card result.
+ * Every control plot of a type, retaining its engine ID; otherwise the dot-card result.
  */
 export function controlPlotAnalyses(result: CoreResult, types: readonly ControlPlotType[]): EngineAnalysis[] {
   const analyses: EngineAnalysis[] = [];
   for (const type of types) {
     const field = type === 'sp' ? 'sParameters' : 'sensitivity';
-    const run = result.control?.runs.find(candidate => candidate.result[field] !== undefined)?.result ?? result;
-    // The shared adapter's type union predates these plots; compareExecutions only reads it as a key.
-    const engineType = type as unknown as EngineAnalysis['type'];
-    if (type === 'sp' && run.sParameters) {
-      analyses.push({ type: engineType, plotName: 'SP Analysis', series: sParameterSeries(run.sParameters) });
-    } else if (type === 'sens' && run.sensitivity) {
-      analyses.push({ type: engineType, plotName: 'Sensitivity Analysis', series: sensitivitySeries(run.sensitivity) });
+    const runs = result.control?.runs.filter(candidate => candidate.result[field] !== undefined) ?? [];
+    const selected = runs.length ? runs : [{ plot: undefined, result }];
+    for (const candidate of selected) {
+      const run = candidate.result;
+      // The shared adapter's type union predates these plots; compareExecutions only reads it as a key.
+      const engineType = type as unknown as EngineAnalysis['type'];
+      if (type === 'sp' && run.sParameters) {
+        analyses.push({ type: engineType, plotName: 'SP Analysis', ...(candidate.plot ? { plotId: candidate.plot } : {}), series: sParameterSeries(run.sParameters) });
+      } else if (type === 'sens' && run.sensitivity) {
+        analyses.push({ type: engineType, plotName: 'Sensitivity Analysis', ...(candidate.plot ? { plotId: candidate.plot } : {}), series: sensitivitySeries(run.sensitivity) });
+      }
     }
   }
   return analyses;

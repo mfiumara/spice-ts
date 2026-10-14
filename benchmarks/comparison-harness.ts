@@ -26,6 +26,8 @@ export interface ComplexValue {
 export interface SampleSeries {
   grid: number[];
   signals: Record<string, ComplexValue[]>;
+  /** Per-point secondary DC coordinate, when the engine exposes it. */
+  secondaryGrid?: number[];
 }
 
 export interface SuccessfulEngineRun {
@@ -78,6 +80,8 @@ export type SignalComparison =
     };
 
 export interface ComparisonMetrics {
+  sweepAlignment?: 'secondary-value' | 'reset-ordinal';
+  sweepGroups?: Array<{ ordinal: number; secondaryValue?: number; alignedPoints: number; unmatched?: 'spice-ts' | 'ngspice' }>;
   grid: {
     spiceTsPoints: number;
     ngspicePoints: number;
@@ -210,7 +214,7 @@ function interpolate(
  * strictly reverses its direction (a nested DC sweep restarting its primary
  * source); repeated values such as transient breakpoints stay in one run.
  */
-function monotonicSegments(grid: number[]): Array<{ start: number; end: number }> {
+export function monotonicSegments(grid: number[]): Array<{ start: number; end: number }> {
   const segments: Array<{ start: number; end: number }> = [];
   let start = 0;
   let direction = 0;
@@ -224,6 +228,21 @@ function monotonicSegments(grid: number[]): Array<{ start: number; end: number }
     }
   }
   if (grid.length > 0) segments.push({ start, end: grid.length });
+  return segments;
+}
+
+export function sweepSegments(series: SampleSeries): Array<{ start: number; end: number; secondaryValue?: number }> {
+  if (series.secondaryGrid === undefined) return monotonicSegments(series.grid);
+  if (series.secondaryGrid.length !== series.grid.length || series.secondaryGrid.some(value => !Number.isFinite(value))) throw new Error('invalid secondary DC grid');
+  const segments: Array<{ start: number; end: number; secondaryValue: number }> = [];
+  for (let start = 0; start < series.grid.length;) {
+    const secondaryValue = series.secondaryGrid[start];
+    let end = start + 1;
+    while (end < series.grid.length && series.secondaryGrid[end] === secondaryValue) end++;
+    segments.push({ start, end, secondaryValue });
+    start = end;
+  }
+  if (new Set(segments.map(segment => segment.secondaryValue)).size !== segments.length) throw new Error('repeated secondary DC coordinate');
   return segments;
 }
 
@@ -269,16 +288,23 @@ export function alignAndMeasure(
   // value, so each engine's grid is a sequence of monotonic segments. Points are
   // only ever aligned within the segment with the same ordinal in both engines;
   // interpolating across the repeated grid would compare unrelated sweep points.
-  const spiceSegments = monotonicSegments(spiceTs.grid);
-  const referenceSegments = monotonicSegments(ngspice.grid).map(({ start, end }) => {
+  const spiceSegments = sweepSegments(spiceTs);
+  const referenceSegments = sweepSegments(ngspice).map(({ start, end, secondaryValue }) => {
     const grid = ngspice.grid.slice(start, end);
     const descending = grid.length > 1 && grid[0] > grid[grid.length - 1];
-    return { start, end, descending, grid: descending ? grid.reverse() : grid };
+    return { start, end, secondaryValue, descending, grid: descending ? grid.reverse() : grid };
   });
-  const segmentsAlign = spiceSegments.length === referenceSegments.length;
+  const explicit = spiceTs.secondaryGrid !== undefined && ngspice.secondaryGrid !== undefined;
+  const referenceCoordinates = new Map(referenceSegments.map((group, index) => [group.secondaryValue, index]));
+  const pairing = spiceSegments.map((group, ordinal) => explicit
+    ? referenceCoordinates.get(group.secondaryValue) ?? -1
+    : spiceSegments.length === referenceSegments.length ? ordinal : -1);
+  const pairedReferences = new Set(pairing);
+  const groupAlignedPoints = spiceSegments.map(() => 0);
   const { breakpoints } = options;
-  const targetIndexes = segmentsAlign
-    ? spiceSegments.flatMap(({ start, end }, segment) => {
+  const targetIndexes = spiceSegments.flatMap(({ start, end }, ordinal) => {
+      const segment = pairing[ordinal];
+      if (segment < 0) return [];
       const referenceGrid = referenceSegments[segment].grid;
       const targets: Array<{ point: number; index: number; segment: number }> = [];
       for (let index = start; index < end; index += 1) {
@@ -287,9 +313,9 @@ export function alignAndMeasure(
           targets.push({ point, index, segment });
         }
       }
+      groupAlignedPoints[ordinal] = targets.length;
       return targets;
-    })
-    : [];
+    });
   const signals: Record<string, SignalComparison> = {};
 
   for (const requestedName of requestedSignals) {
@@ -343,6 +369,10 @@ export function alignAndMeasure(
   }
 
   return {
+    ...(spiceSegments.length > 1 || referenceSegments.length > 1 || explicit ? { sweepAlignment: explicit ? 'secondary-value' as const : 'reset-ordinal' as const, sweepGroups: [
+      ...spiceSegments.map((group, ordinal) => ({ ordinal, ...(group.secondaryValue === undefined ? {} : { secondaryValue: group.secondaryValue }), alignedPoints: groupAlignedPoints[ordinal], ...(pairing[ordinal] < 0 ? { unmatched: 'ngspice' as const } : {}) })),
+      ...referenceSegments.flatMap((group, ordinal) => pairedReferences.has(ordinal) ? [] : [{ ordinal, ...(group.secondaryValue === undefined ? {} : { secondaryValue: group.secondaryValue }), alignedPoints: 0, unmatched: 'spice-ts' as const }]),
+    ] } : {}),
     grid: {
       spiceTsPoints: spiceTs.grid.length,
       ngspicePoints: ngspice.grid.length,

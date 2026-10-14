@@ -28,7 +28,6 @@ import {
   type SampleSeries,
 } from './comparison-harness.js';
 import {
-  findMatchingAnalysis,
   runNativeNgspice,
   runNativeSpiceTs,
   type ClassicAnalysisType,
@@ -36,6 +35,8 @@ import {
   type EngineExecution,
 } from './corpus/classic/report.js';
 import { type FineReference, FINE_REFERENCE_RULE, fineReferenceColumn, fineReferenceSection } from './fine-reference.js';
+import { pairPlots } from './plot-pairing.js';
+import { sweepSegments } from './comparison-harness.js';
 
 const SCHEMA = 'spice-ts-aggregate-parity/v1' as const;
 const CORPORA = ['ngspice', 'classic', 'xyce', 'corpus-d', 'corpus-e'] as const;
@@ -99,6 +100,8 @@ interface FixtureReceipt {
 
 export interface ComparisonReceipt {
   analysis: ClassicAnalysisType;
+  plot?: { spiceTs?: string; ngspice?: string; ngspiceIndex?: number };
+  unmatched?: 'spice-ts' | 'ngspice';
   signals: string[];
   /** Primary metric (`policy.breakpointAlignment`): one-sided at shared transient breakpoints. */
   metrics: ComparisonMetrics;
@@ -488,6 +491,9 @@ function measureInChunks(
   signals: string[],
   options: AlignmentOptions = {},
 ): ComparisonMetrics {
+  // Preserve the whole nested coordinate space. Slicing only the target loses its reset ordinal
+  // at a 25k boundary and falsely compares that slice with every reference group.
+  if (spiceTs.secondaryGrid || ngspice.secondaryGrid || sweepSegments(spiceTs).length > 1 || sweepSegments(ngspice).length > 1) return alignAndMeasure(spiceTs, ngspice, signals, options);
   const chunkSize = 25_000;
   const chunks = Array.from({ length: Math.ceil(spiceTs.grid.length / chunkSize) }, (_, index) => {
     const start = index * chunkSize;
@@ -546,13 +552,23 @@ function measureInChunks(
  */
 export function compareExecutions(left: EngineExecution, right: EngineExecution): ComparisonReceipt[] {
   const comparisons: ComparisonReceipt[] = [];
-  for (const spiceAnalysis of left.analyses) {
-    const ngspiceAnalysis = findMatchingAnalysis(right.analyses, spiceAnalysis);
-    if (!ngspiceAnalysis) continue;
+  for (const { left: spiceAnalysis, right: ngspiceAnalysis } of pairPlots(left.analyses, right.analyses)) {
+    if (!spiceAnalysis || !ngspiceAnalysis) {
+      const own = (spiceAnalysis ?? ngspiceAnalysis)!;
+      const unmatched = spiceAnalysis ? 'ngspice' : 'spice-ts';
+      const signals = Object.keys(own.series.signals).sort();
+      const metrics: ComparisonMetrics = {
+        grid: { spiceTsPoints: spiceAnalysis?.series.grid.length ?? 0, ngspicePoints: ngspiceAnalysis?.series.grid.length ?? 0, alignedPoints: 0, excludedOutOfRange: spiceAnalysis?.series.grid.length ?? 0 },
+        signals: Object.fromEntries(signals.map(signal => [signal, { status: 'missing', missingFrom: [unmatched] }])),
+      };
+      comparisons.push({ analysis: own.type, plot: { spiceTs: spiceAnalysis?.plotId ?? spiceAnalysis?.plotName, ngspice: ngspiceAnalysis?.plotId ?? ngspiceAnalysis?.plotName }, unmatched, signals, metrics, linearMetrics: metrics });
+      continue;
+    }
     const signals = commonSignals(spiceAnalysis.series, ngspiceAnalysis.series);
     if (signals.length === 0) continue;
     comparisons.push({
       analysis: spiceAnalysis.type,
+      ...(spiceAnalysis.plotId === undefined && ngspiceAnalysis.plotId === undefined && left.analyses.filter(a => a.type === spiceAnalysis.type).length === 1 ? {} : { plot: { spiceTs: spiceAnalysis.plotId ?? spiceAnalysis.plotName, ngspice: ngspiceAnalysis.plotId ?? ngspiceAnalysis.plotName, ngspiceIndex: right.analyses.indexOf(ngspiceAnalysis) } }),
       signals,
       metrics: measureInChunks(spiceAnalysis.series, ngspiceAnalysis.series, signals, {
         breakpoints: spiceAnalysis.type === 'tran'
