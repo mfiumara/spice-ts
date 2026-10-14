@@ -57,11 +57,12 @@ including the existing quantity floors. No adapted/fine-step reference is used.
 - Before, recorded in that reviewed corpus-l baseline (not remeasured): ngspice
   succeeds, spice-ts fails with `UnsupportedTemperatureError` for m0 at 100 C.
   No comparable waveform, so worst error is null, not zero.
-- After on committed core tree `24918b5dac7ba4c42acf92ff8d6339aa4a660262`:
+- After merging main and rerunning on committed core tree
+  `fbc345b319d0189637f4431e27bac33ea5337dc5`:
   both engines succeed with 5410 transient points; outcome `matched`.
 - Worst peak-normalized error is 0.000367 on `tran i(vshiftlsp2)`, below 0.01.
   Full matched-point max/RMS absolute/relative metrics are in `jge.json`.
-- Measured cold engine/adapter wall: ngspice 1978.631 ms, spice-ts 10080.134 ms.
+- Measured cold engine/adapter wall: ngspice 5842.928917 ms, spice-ts 17473.532416 ms.
   spice-ts is slower in this run. These include startup, adapter and export and
   are not solver-only timings or a performance-improvement claim.
 

@@ -22,7 +22,6 @@ ngspice-47 and Xyce 7.10 receive identical source values; only the native
 SINE/SIN alias and output cards differ. Native-grid extrema are reported,
 including the pre-fix flat-output loss. No corpus tolerance is changed.
 
-
 ## MAXORD order-cap regression (#983)
 
 [maxord-983](reference/maxord-983/README.md) reruns unchanged corpus-k k-13
