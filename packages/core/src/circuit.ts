@@ -675,8 +675,8 @@ function formatAnalysis(analysis: AnalysisDirective | PoleZeroAnalysis): string 
       return `.pz ${analysis.inputPositive} ${analysis.inputNegative} ${analysis.outputPositive} ${analysis.outputNegative} ${analysis.inputType} ${analysis.mode}`;
     case 'sens':
       return analysis.mode === 'dc'
-        ? `.sens v(${analysis.outputNode})`
-        : `.sens v(${analysis.outputNode}) ac dec ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}`;
+        ? `.sens v(${analysis.outputNode}${analysis.outputReferenceNode === undefined ? '' : `,${analysis.outputReferenceNode}`})`
+        : `.sens v(${analysis.outputNode}${analysis.outputReferenceNode === undefined ? '' : `,${analysis.outputReferenceNode}`}) ac ${analysis.variation} ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}`;
   }
 }
 
@@ -1701,8 +1701,8 @@ export class Circuit {
     | { outputNode: string; inputSource: string }
     | { outputSource: string; inputSource: string }): void;
   addAnalysis(type: 'pz', params: { inputPositive: string; inputNegative: string; outputPositive: string; outputNegative: string; inputType: 'cur' | 'vol'; mode: 'pol' | 'zer' | 'pz' }): void;
-  addAnalysis(type: 'sens', params: { outputNode: string; mode: 'dc' }): void;
-  addAnalysis(type: 'sens', params: { outputNode: string; mode: 'ac'; variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number }): void;
+  addAnalysis(type: 'sens', params: { outputNode: string; outputReferenceNode?: string; mode: 'dc' }): void;
+  addAnalysis(type: 'sens', params: { outputNode: string; outputReferenceNode?: string; mode: 'ac'; variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number }): void;
   addAnalysis(type: string, params?: Record<string, unknown>): void {
     switch (type) {
       case 'op':
