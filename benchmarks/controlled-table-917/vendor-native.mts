@@ -22,6 +22,7 @@ try {
 } catch (error) {
   receipt = {
     status: error instanceof ParseError ? 'unsupported' : 'failure',
+    acRows: 0,
     errorName: (error as Error).name,
     terminalPivot: error instanceof SingularMatrixError ? error.pivotIndex : null,
     tableUnsupported: error instanceof ParseError && /TABLE.*not supported/.test(error.message),

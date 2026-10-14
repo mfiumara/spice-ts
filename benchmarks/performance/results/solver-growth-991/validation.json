@@ -1,0 +1,21 @@
+{
+  "baselineSha": "43aefef1a1105696cdce74acbfd3144e5cff3b7d",
+  "productionChanges": false,
+  "candidateRetained": false,
+  "commands": [
+    {"command": "pnpm install --frozen-lockfile", "exitCode": 0},
+    {"command": "pnpm build", "exitCode": 0, "originalBundlePinsMatchAfterRebuild": true},
+    {"command": "pnpm lint", "exitCode": 0},
+    {"command": "pnpm -C packages/core exec vitest run src/solver/gilbert-peierls.test.ts src/solver/gilbert-peierls-equivalence.test.ts src/solver/gilbert-peierls-reuse.test.ts", "exitCode": 0, "testsPassed": 47, "candidateAndUnchangedSourceExercised": true},
+    {"command": "node --test benchmarks/performance/solver-growth-991.test.mjs benchmarks/performance/linear-10k.test.mjs benchmarks/performance/parse-1000.test.mjs", "exitCode": 0, "testsPassed": 36},
+    {"command": "python3 benchmarks/performance/solver-growth-991-test.py", "exitCode": 0, "testsPassed": 3},
+    {"command": "spice-heavy python3 benchmarks/performance/solver-growth-991.py benchmarks/performance/results/solver-growth-991/matrix", "exitCode": 0, "completedCells": 270, "nativeChildren": 90, "actualRunSeconds": 1366.2268763333268},
+    {"command": "node benchmarks/performance/solver-growth-991-verify.mjs benchmarks/performance/results/solver-growth-991/matrix", "exitCode": 0, "compressedArchiveAlsoVerified": true, "thresholdMet": false},
+    {"command": "git apply --check benchmarks/performance/results/solver-growth-991/candidate.patch", "exitCode": 0},
+    {"command": "git diff --cached --check", "exitCode": 0}
+  ],
+  "receiptTestRed": {"command": "node --test benchmarks/performance/solver-growth-991.test.mjs", "exitCode": 1, "reason": "verifier module absent before implementation"},
+  "rootFullSuite": "Not run locally; card requires targeted tests only. Exact-head GitHub CI is authoritative.",
+  "requiredCi": ["test (20)", "test (22)", "build", "accuracy"],
+  "ciReceipt": "Recorded on the PR/card after publication, not claimed by this local receipt."
+}

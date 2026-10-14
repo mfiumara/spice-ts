@@ -48,22 +48,27 @@ for (const name of ['e.cir', 'g-subckt.cir']) {
   }
   native.milliseconds = performance.now() - nativeStarted;
   if (sha256(readFileSync(path)) !== sha256(deck)) throw new Error('Input bytes changed');
+  const referenceValues = plot.signals['v(out)'].map(v => v.re);
+  const nativeValues = native.values as number[] | undefined;
+  if (nativeValues && nativeValues.length !== referenceValues.length) throw new Error('Native grid length differs');
+  const errors = nativeValues?.map((value, index) => value - referenceValues[index]);
   cases.push({
     name, sha256: sha256(deck), identicalBytes: true,
     ngspice: { exit: reference.status, milliseconds: ngspiceMilliseconds,
-      grid: plot.grid, values: plot.signals['v(out)'].map(v => v.re) },
-    spiceTs: native, maxError: null, rmsError: null,
+      grid: plot.grid, values: referenceValues },
+    spiceTs: native, maxError: errors ? Math.max(...errors.map(Math.abs)) : null,
+    rmsError: errors ? Math.sqrt(errors.reduce((sum, value) => sum + value * value, 0) / errors.length) : null,
   });
 }
 const output = process.argv[2] ?? 'after.json';
 if (!/^(before|after)\.json$/.test(output)) throw new Error('Expected before.json or after.json');
 writeFileSync(join(here, output), JSON.stringify({
   configuration: 'set ngbehavior=ltps\nset filetype=ascii\n',
-  ngspiceVersion: version.stdout.trim(), scope: 'fail-closed safety, not numeric parity', cases,
+  ngspiceVersion: version.stdout.trim(), scope: 'smoothed TABLE numeric parity', cases,
 }, null, 2) + '\n');
 console.log(JSON.stringify(cases.map(c => ({ name: c.name, rows: c.ngspice.grid.length,
-  native: c.spiceTs.status, tableUnsupported: c.spiceTs.tableUnsupported })), null, 2));
-if (output === 'after.json' && cases.some(c => c.spiceTs.status !== 'unsupported')) process.exitCode = 1;
+  native: c.spiceTs.status, maxError: c.maxError, rmsError: c.rmsError })), null, 2));
+if (output === 'after.json' && cases.some(c => c.spiceTs.status !== 'success' || c.maxError === null || c.maxError > 1e-8)) process.exitCode = 1;
 }
 
 main().catch(error => { console.error(error); process.exitCode = 1; });

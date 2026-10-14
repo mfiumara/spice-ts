@@ -1,0 +1,6 @@
+# Generated evidence can be reconstructed from the pinned MIT generator.
+matrix/*.cir
+matrix/*.worker.stdout.txt
+matrix/*.worker.stderr.txt
+matrix/*.stdout.txt.gz
+matrix/*.stderr.txt.gz

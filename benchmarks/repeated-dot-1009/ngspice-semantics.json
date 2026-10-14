@@ -1,0 +1,260 @@
+[
+  {
+    "fixture": "bjt-diffpair-current-source",
+    "deck": "benchmarks/corpus/corpus-e/fixtures/tests/d_bjt-diffpair-ccs.ckt",
+    "deck_sha256": "7060377579bdb6bfef87225ee4710b81744462af1548ccff755adf061f14f37c",
+    "cards": [
+      ".op",
+      ".tran 10ns 280ns",
+      ".ac dec 3 1k 10ghz",
+      ".op",
+      ".ac dec 3 1k 10ghz"
+    ],
+    "command": [
+      "ngspice",
+      "-b",
+      "-r",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_882e0c16/benchmarks/repeated-dot-1009/raw/bjt-diffpair-current-source.raw",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_882e0c16/benchmarks/corpus/corpus-e/fixtures/tests/d_bjt-diffpair-ccs.ckt"
+    ],
+    "exit_code": 0,
+    "raw_sha256": "6c1b32ace3a22378084011b604c844cab93424f5bc6695e99e4d426ce0eeae18",
+    "raw_plots_in_file_order": [
+      {
+        "name": "AC Analysis",
+        "points": 22
+      },
+      {
+        "name": "AC Analysis",
+        "points": 22
+      },
+      {
+        "name": "Operating Point",
+        "points": 1
+      },
+      {
+        "name": "Operating Point",
+        "points": 1
+      },
+      {
+        "name": "Transient Analysis",
+        "points": 59
+      }
+    ]
+  },
+  {
+    "fixture": "vcvs-operating-point",
+    "deck": "benchmarks/corpus/corpus-e-spice3/fixtures/d_vcvs.1.cir",
+    "deck_sha256": "00d220af322f4cfb9ffe032617ee46c0295d1ad336a488b177e2e712553e7b73",
+    "cards": [
+      ".op",
+      ".op",
+      ".op",
+      ".ac lin 1 1k 1k",
+      ".ac lin 1 1k 1k",
+      ".ac lin 1 1k 1k"
+    ],
+    "command": [
+      "ngspice",
+      "-b",
+      "-r",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_882e0c16/benchmarks/repeated-dot-1009/raw/vcvs-operating-point.raw",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_882e0c16/benchmarks/corpus/corpus-e-spice3/fixtures/d_vcvs.1.cir"
+    ],
+    "exit_code": 0,
+    "raw_sha256": "6068e6e59800c92f77e1786c400c0361c2444fc56d810f5dfefd8a21784a84f5",
+    "raw_plots_in_file_order": [
+      {
+        "name": "AC Analysis",
+        "points": 1
+      },
+      {
+        "name": "AC Analysis",
+        "points": 1
+      },
+      {
+        "name": "AC Analysis",
+        "points": 1
+      },
+      {
+        "name": "Operating Point",
+        "points": 1
+      },
+      {
+        "name": "Operating Point",
+        "points": 1
+      },
+      {
+        "name": "Operating Point",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "fixture": "diode-temperature-sweep",
+    "deck": "benchmarks/corpus/corpus-e-spice3/fixtures/d_diode.6.cir",
+    "deck_sha256": "208068d2573391e75c75987d0c19f87f988073c80e9bd991ec35fdf78fa12274",
+    "cards": [
+      ".op",
+      ".dc v1 -10 10 2",
+      ".dc v1 9.999 10.001 .001",
+      ".op"
+    ],
+    "command": [
+      "ngspice",
+      "-b",
+      "-r",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_882e0c16/benchmarks/repeated-dot-1009/raw/diode-temperature-sweep.raw",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_882e0c16/benchmarks/corpus/corpus-e-spice3/fixtures/d_diode.6.cir"
+    ],
+    "exit_code": 0,
+    "raw_sha256": "e58b85769aecff304f91735fdc2b81c38c19a34e311257ffd964d896d73cd2d7",
+    "raw_plots_in_file_order": [
+      {
+        "name": "DC transfer characteristic",
+        "points": 3
+      },
+      {
+        "name": "DC transfer characteristic",
+        "points": 11
+      },
+      {
+        "name": "Operating Point",
+        "points": 1
+      },
+      {
+        "name": "Operating Point",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "fixture": "mos1-nand-transient",
+    "deck": "benchmarks/corpus/corpus-e-spice3/fixtures/d_mos1.nand1.cir",
+    "deck_sha256": "57de959ed069f9436f2dffdbc6fc975458996e3dca131774b40b7d41b18e5ef6",
+    "cards": [
+      ".op",
+      ".op",
+      ".op",
+      ".op",
+      ".op",
+      ".tran 0.1n 10n"
+    ],
+    "command": [
+      "ngspice",
+      "-b",
+      "-r",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_882e0c16/benchmarks/repeated-dot-1009/raw/mos1-nand-transient.raw",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_882e0c16/benchmarks/corpus/corpus-e-spice3/fixtures/d_mos1.nand1.cir"
+    ],
+    "exit_code": 0,
+    "raw_sha256": "4cbc2aa140c12281ac8656227a1c3e9b8031eacec85b8464425663bc4882c3fb",
+    "raw_plots_in_file_order": [
+      {
+        "name": "Operating Point",
+        "points": 1
+      },
+      {
+        "name": "Operating Point",
+        "points": 1
+      },
+      {
+        "name": "Operating Point",
+        "points": 1
+      },
+      {
+        "name": "Operating Point",
+        "points": 1
+      },
+      {
+        "name": "Operating Point",
+        "points": 1
+      },
+      {
+        "name": "Transient Analysis",
+        "points": 114
+      }
+    ]
+  },
+  {
+    "fixture": "dual-lc-uic-rejection",
+    "deck": "benchmarks/corpus/corpus-e-spice3/fixtures/oscillator.7.cir",
+    "deck_sha256": "0d9459725ec0fbfc07cddbd7999b0f193fc1e187d8b7586ad090cc3f1832e515",
+    "cards": [
+      ".tran .1 100 0 uic",
+      ".tran .1 100 0 uic"
+    ],
+    "command": [
+      "ngspice",
+      "-b",
+      "-r",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_882e0c16/benchmarks/repeated-dot-1009/raw/dual-lc-uic-rejection.raw",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_882e0c16/benchmarks/corpus/corpus-e-spice3/fixtures/oscillator.7.cir"
+    ],
+    "exit_code": 0,
+    "raw_sha256": "f33f568730d0add412d0bd308292534a90182b0ca35ef73ef0560edfec38dc76",
+    "raw_plots_in_file_order": [
+      {
+        "name": "Transient Analysis",
+        "points": 1011
+      },
+      {
+        "name": "Transient Analysis",
+        "points": 1011
+      }
+    ]
+  },
+  {
+    "fixture": "interleaved",
+    "deck": "benchmarks/repeated-dot-1009/raw/interleaved.cir",
+    "deck_sha256": "91656a41394e6031f84a89368b81ebb44e4ba118f1ece36947fcd3858a8d8fec",
+    "cards": [
+      ".ac lin 4 10 40",
+      ".op",
+      ".dc V1 0 1 1",
+      ".ac lin 3 30 50",
+      ".op",
+      ".dc V1 2 4 1",
+      ".op"
+    ],
+    "command": [
+      "ngspice",
+      "-b",
+      "-r",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_882e0c16/benchmarks/repeated-dot-1009/raw/interleaved.raw",
+      "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_882e0c16/benchmarks/repeated-dot-1009/raw/interleaved.cir"
+    ],
+    "exit_code": 0,
+    "raw_sha256": "5b16013a13b7f3e502e4cd066655466d76ec065b63ae29414c7577c1934a1c18",
+    "raw_plots_in_file_order": [
+      {
+        "name": "AC Analysis",
+        "points": 3
+      },
+      {
+        "name": "AC Analysis",
+        "points": 4
+      },
+      {
+        "name": "DC transfer characteristic",
+        "points": 3
+      },
+      {
+        "name": "DC transfer characteristic",
+        "points": 2
+      },
+      {
+        "name": "Operating Point",
+        "points": 1
+      },
+      {
+        "name": "Operating Point",
+        "points": 1
+      },
+      {
+        "name": "Operating Point",
+        "points": 1
+      }
+    ]
+  }
+]

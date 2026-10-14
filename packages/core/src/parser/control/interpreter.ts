@@ -1,5 +1,5 @@
 import type { AnalysisDirective, TransientAnalysis } from '../../types.js';
-import type { MeasurementResult, SensitivityEntry, SimulationResult } from '../../results.js';
+import { TransientResult, type MeasurementResult, type SensitivityEntry, type SimulationResult } from '../../results.js';
 import { getMeasure2, type MeasurePlot } from '../../measure/measure2.js';
 import { gettokWords } from '../../measure/dot-measure.js';
 import { inpEvaluate } from '../../measure/numparse.js';
@@ -740,6 +740,28 @@ class ControlInterpreter {
       if (!values) fail(`can't interpolate ${vector.name}`);
       plot.vectors.set(key, { name: vector.name, re: values!, scale: time });
     }
+    // The plot exists in the interpreter, but consumers of simulate() can only
+    // see control.runs. Export the transformed circuit vectors as a separate
+    // transient result, not the old adaptive solve under a new plot identity.
+    // Use the source result's names/units: a let vector is not a node voltage.
+    const transient = this.runs.filter(run => run.plot === old.name).at(-1)?.result.transient;
+    const copy = (names: Iterable<string>, branch: boolean): Map<string, number[]> => {
+      const vectors = new Map<string, number[]>();
+      for (const name of names) {
+        const vector = plot.vectors.get(`${name.toLowerCase()}${branch ? '#branch' : ''}`);
+        if (vector) vectors.set(name, Array.from(vector.re));
+      }
+      return vectors;
+    };
+    this.runs.push({
+      plot: plot.name, analysis: 'tran',
+      result: {
+        transient: new TransientResult(
+          Array.from(grid), copy(transient?.voltages.keys() ?? [], false), copy(transient?.currents.keys() ?? [], true),
+        ),
+        warnings: [],
+      },
+    });
   }
 
   /**

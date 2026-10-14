@@ -18,6 +18,7 @@ import { Diode, canonicalDiodeModelParams, diodeZeroBiasCapacitance } from './de
 import { BJT, hasBiasDependentBaseResistance } from './devices/bjt.js';
 import { VBIC, resolveVBICParams, vbicNodeCount } from './devices/vbic.js';
 import { MOSFET } from './devices/mosfet.js';
+import { EKV26 } from './devices/ekv.js';
 import { MOS2, mos2SeriesResistances, resolveMOS2Model } from './devices/mos2.js';
 import { MOS3, mos3SeriesResistances, resolveMOS3Model } from './devices/mos3.js';
 import { MOS6, resolveMOS6Model } from './devices/mos6.js';
@@ -41,6 +42,8 @@ import {
   type BehavioralSourceKind,
 } from './parser/behavioral-expression.js';
 import { BSIM3v3 } from './devices/bsim3v3.js';
+import { BSIM4 } from './devices/bsim4/device.js';
+import { UnsupportedModel as UnsupportedBsim4Model } from './devices/bsim4/setup.js';
 import { bsim3SeriesResistances, isSupportedBsim3Version, SUPPORTED_BSIM3_VERSIONS } from './devices/bsim3v3-params.js';
 import { VCCS } from './devices/vccs.js';
 import { VCVS } from './devices/vcvs.js';
@@ -58,7 +61,7 @@ import {
   prepareXspiceInstance,
   type PreparedXspiceInstance,
 } from './devices/xspice/compile.js';
-import type { XspiceInstanceCard, XspiceModelCard } from './parser/xspice-parser.js';
+import { parseXspiceInstance, parseXspiceModelCard, xspiceModelType, type XspiceInstanceCard, type XspiceModelCard } from './parser/xspice-parser.js';
 import { assertControlledSourceCard, withoutNodePairParentheses } from './parser/controlled-source.js';
 import type { ControlScript } from './parser/control/script.js';
 import { DEFAULT_OPTIONS, GROUND_NODE } from './types.js';
@@ -112,9 +115,9 @@ import { CaseFoldedNameSet, CaseInsensitiveMap } from './case-fold.js';
 
 /**
  * MOSFET model levels with a spice-ts implementation: MOS1, MOS2, MOS3, BSIM1 (4), BSIM2 (5), MOS6,
- * BSIM3v3 (8/49) and MOS9.
+ * BSIM3v3 (8/49), MOS9, the static BSIM4 subset (14/54) and nominal-temperature static EKV2.6 (260).
  */
-const SUPPORTED_MOSFET_LEVELS: readonly number[] = [1, 2, 3, 4, 5, 6, 8, 9, 49];
+const SUPPORTED_MOSFET_LEVELS: readonly number[] = [1, 2, 3, 4, 5, 6, 8, 9, 14, 49, 54, 260];
 /** ngspice's default circuit temperature (and TNOM) in degrees Celsius. */
 const NOMINAL_TEMPERATURE_C = 27;
 /** ngspice CONSTCtoK. */
@@ -1947,7 +1950,12 @@ export class Circuit {
       ['gmin', 'gmin', String],
       ['maxIterations', 'itl1', String],
       ['maxTransientIterations', 'itl4', String],
-      ['integrationMethod', 'method', value => value === 'trapezoidal' ? 'trap' : value === 'gear2' ? 'gear' : String(value)],
+      ['integrationMethod', 'method', value => {
+        // ngspice expresses backward Euler as trap with an order-one cap.
+        if (value === 'euler') return this._simulationOptions.maxOrder === undefined ? 'trap maxord=1' : 'trap';
+        return value === 'trapezoidal' ? 'trap' : value === 'gear2' ? 'gear' : String(value);
+      }],
+      ['maxOrder', 'maxord', value => this._simulationOptions.integrationMethod === 'euler' ? '1' : String(value)],
       ['trtol', 'trtol', String],
       ['chgtol', 'chgtol', String],
       ['rshunt', 'rshunt', String],
@@ -2400,7 +2408,28 @@ export class Circuit {
           const polarity = model.type === 'PMOS' ? -1 : 1;
           const level = modelParams.LEVEL ?? 1;
 
-          if (level === 49 || level === 8) {
+          if (level === 260) {
+            if (model.version !== undefined) {
+              throw new UnsupportedModelVersionError(desc.name, desc.modelName, level, model.version, []);
+            }
+            const bulkNode = desc.nodes[3] ?? desc.nodes[2];
+            const ekv = new EKV26(desc.name,
+              [desc.nodes[0], desc.nodes[1], desc.nodes[2], bulkNode].map(resolveNode),
+              modelParams, desc.params ?? {}, polarity, desc.modelName);
+            ekv.setTemperature(this._temperature ?? NOMINAL_TEMPERATURE_C);
+            devices.push(ekv);
+          } else if (level === 14 || level === 54) {
+            const bulkNode = desc.nodes[3] ?? desc.nodes[2];
+            const bsim4 = new BSIM4(desc.name,
+              [resolveNode(desc.nodes[0]), resolveNode(desc.nodes[1]), resolveNode(desc.nodes[2]), resolveNode(bulkNode)],
+              { ...modelParams, ...(model.version !== undefined ? { VERSION: model.version } : {}) },
+              desc.params ?? {}, polarity);
+            bsim4.assertAnalyses([
+              ...this._analyses.map(analysis => analysis.type),
+              ...(this._poleZeroAnalyses.length > 0 ? ['pz'] : []),
+            ]);
+            devices.push(bsim4);
+          } else if (level === 49 || level === 8) {
             // #503/#594: VERSION=3.2.x runs the bsim3v32 revisions; 3.0/3.1 (BSIM3v0/v1) are not implemented.
             if (!isSupportedBsim3Version(model.version)) {
               throw new UnsupportedModelVersionError(
@@ -2664,7 +2693,7 @@ export class Circuit {
     for (const device of devices) {
       if (device instanceof Resistor || device instanceof VBIC || device instanceof BehavioralSource
         || device instanceof Diode || device instanceof BJT || device instanceof MOSFET
-        || device instanceof MOS2 || device instanceof BSIM3v3) {
+        || device instanceof MOS2 || device instanceof BSIM3v3 || device instanceof BSIM4 || device instanceof EKV26) {
         device.setTemperature(temperature);
       } else if (device.isNonlinear) {
         throw new UnsupportedTemperatureError(device.name, temperature);
@@ -3247,6 +3276,20 @@ export class Circuit {
   private requireModel(kind: string, desc: DeviceDescriptor): ModelParams {
     const model = this._models.get(desc.modelName ?? '');
     if (!model) {
+      // A declared BSIM4 bin family is not a typo or an implicit default model.
+      // Fail closed until native L/W bin selection is implemented.
+      if (desc.type === 'M' && desc.modelName) {
+        const prefix = `${desc.modelName.toLowerCase()}.`;
+        for (const candidate of this._models.values()) {
+          const suffix = candidate.name.toLowerCase().slice(prefix.length);
+          if (candidate.name.toLowerCase().startsWith(prefix) && /^\d+$/.test(suffix)
+            && (candidate.type === 'NMOS' || candidate.type === 'PMOS')
+            && (candidate.params.LEVEL === 14 || candidate.params.LEVEL === 54)) {
+            throw new UnsupportedBsim4Model(desc.name, 'model-binning',
+              'BSIM4 L/W model-bin selection is not implemented', { model: desc.modelName });
+          }
+        }
+      }
       throw new InvalidCircuitError(`${kind} '${desc.name}' references unknown model '${desc.modelName}'`);
     }
     return model;
@@ -3291,6 +3334,14 @@ export class Circuit {
         throw new ParseError((error as Error).message, lineNumber, raw);
       }
       let modelTokens = tokenizeLine(evaluated);
+      if (xspiceModelType(modelTokens) !== undefined) {
+        const card = parseXspiceModelCard(evaluated, lineNumber);
+        const scoped = `${instanceName}:${card.name}`;
+        this._xspiceModels.set(scoped.toUpperCase(), { ...card, name: scoped });
+        this._subcircuitModelNames.add(scoped.toUpperCase());
+        local.set(card.name.toUpperCase(), scoped);
+        continue;
+      }
       if (isPspiceSwitchModel(modelTokens)) {
         const translated = translatePspiceSwitchModel(evaluated, lineNumber);
         if (translated.kind === 'xspice') {
@@ -3679,6 +3730,21 @@ export class Circuit {
             nodes: [mapNode(fields[1]), mapNode(fields[2]), mapNode(fields[3]), mapNode(fields[4])],
             value: parseNumber(valStr),
           });
+          break;
+        }
+        case 'A': {
+          const card = parseXspiceInstance(raw, lineNumber);
+          const modelName = scopeModel(card.modelName);
+          // This seam admits scoped PWL transfers only. Other A-card families
+          // retain the explicit unsupported boundary until their ports are scoped.
+          if (this._xspiceModels.get(modelName.toUpperCase())?.codeModel !== 'pwl') {
+            throw new ParseError("Unsupported device card: 'A'", lineNumber, raw);
+          }
+          const connectionTokens = card.connectionTokens.map((token, index) => token.kind === 'string'
+            && card.connectionTokens[index - 1]?.kind !== 'percent'
+            ? { ...token, text: mapNode(token.text) } : token);
+          result.push({ type: 'A', name: devName, nodes: [], modelName,
+            xspice: { ...card, name: devName, modelName, connectionTokens } });
           break;
         }
         case 'B': {

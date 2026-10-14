@@ -88,7 +88,10 @@ export function parseModelCard(
   let version: string | undefined;
   const body = tokens.slice(3).filter((token) => token !== '(' && token !== ')');
   const writtenLevel = modelLevel(body);
-  const ngspiceLevel = writtenLevel !== undefined && INPFINDLEV_MODEL_TYPES.has(type)
+  // Owner-approved second reference: Xyce 7.10 registers EKV2.6 at exactly
+  // LEVEL=260. All other levels retain the ngspice rounding/fallback policy.
+  const ekvLevel = (type === 'NMOS' || type === 'PMOS') && writtenLevel === 260;
+  const ngspiceLevel = !ekvLevel && writtenLevel !== undefined && INPFINDLEV_MODEL_TYPES.has(type)
     ? ngspiceModelLevel(writtenLevel) : undefined;
   const level = ngspiceLevel?.level ?? writtenLevel;
   const context = tokens.join(' ');

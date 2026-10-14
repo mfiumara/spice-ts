@@ -6,7 +6,7 @@
  * The original outcomes.json remains the historical batch-1 receipt, not a new measurement.
  */
 import { spawn, spawnSync } from 'node:child_process';
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { arch, cpus, platform, tmpdir } from 'node:os';
 import { basename, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -15,6 +15,7 @@ import type { CorpusFCircuit, CorpusFManifest } from './ingest.js';
 import { CONTROL_SECTION, CORPUS_ROOT, MATCH_THRESHOLD, classifyNgspiceFailure, corpusFPlotType, firstNgspiceErrorLine, gapBucket, scoredPlotTypes, scrub } from './lib.js';
 import { GAP_ISSUES, runFixture, runNgspice, summarize, type FixtureOutcome, type ReferenceSelection } from './outcomes.js';
 import { readNgspiceRawFile, type RawPlot } from './raw-stream.js';
+import { declaredSecondaryGrid } from '../../sweep-coordinates.js';
 
 export { CONTROL_SECTION };
 const CHILD = '--control-vector-child';
@@ -37,15 +38,16 @@ export function hasControlBlock(text: string): boolean {
  */
 export const DEFERRED_EXIT_ALIASES = ['quit', 'exit'].map(command => `alias ${command} echo corpus-f: deck ${command} deferred until export`);
 
-export function controlWrapperDeck(types: readonly string[]): string {
+export function controlWrapperDeck(_types: readonly string[]): string {
   return ['* corpus-f unmodified-fixture export wrapper', '.control', ...DEFERRED_EXIT_ALIASES, 'source fixture.cir',
-    ...[...new Set(types)].flatMap(type => [`setplot ${type}1`, `write ${type}.raw all`]),
+    // $plots is ngspice's actual retained plot list, including loops and repeated runs.
+    'foreach exported_plot $plots', 'setplot $exported_plot', 'write {$exported_plot}.raw all', 'end',
     '.endc', '.end', ''].join('\n');
 }
 
 /**
- * A missing setplot leaves the previous plot selected: never mislabel that plot as another type.
- * Every declared plot type is exported, including `sp` and `sens` (#694). Raw files are read line
+ * Every retained plot is exported by ID. Only declared types are admitted, including `sp` and
+ * `sens` (#694), and each raw header is checked against its exported type. Raw files are read line
  * by line and keep only the signals `select` names (those spice-ts produced, so the only ones that
  * can be scored); a reference larger than the Node string limit still loads.
  */
@@ -75,10 +77,14 @@ export async function runControlReference(
     }
     const analyses: EngineAnalysis[] = [];
     const unreadable: string[] = [];
-    for (const type of types) {
+    const files = (await readdir(directory)).filter(name => /^(?:op|dc|ac|tran|noise|pz|disto|sp|sens)\d+\.raw$/.test(name))
+      .sort((a, b) => types.indexOf(a.replace(/\d+\.raw$/, '') as typeof types[number]) - types.indexOf(b.replace(/\d+\.raw$/, '') as typeof types[number]) || Number(a.match(/\d+/)![0]) - Number(b.match(/\d+/)![0]));
+    for (const file of files) {
+      const type = file.replace(/\d+\.raw$/, '') as typeof types[number];
+      if (!types.includes(type)) continue;
       let plots: RawPlot[];
       try {
-        plots = await readNgspiceRawFile(resolve(directory, `${type}.raw`),
+        plots = await readNgspiceRawFile(resolve(directory, file),
           select && ((plotName, signal) => corpusFPlotType(plotName, analysisType) !== type || select(type, signal)));
       } catch (readError) {
         const code = (readError as NodeJS.ErrnoException).code;
@@ -88,7 +94,9 @@ export async function runControlReference(
       for (const plot of plots) {
         // The shared adapter's type union predates sp/sens; compareExecutions only reads it as a key.
         if (corpusFPlotType(plot.plotName, analysisType) === type) {
-          analyses.push({ type: type as EngineAnalysis['type'], plotName: plot.plotName, series: { grid: plot.grid, signals: plot.signals } });
+          const plotId = file.replace(/\.raw$/, '');
+          const secondaryGrid = declaredSecondaryGrid(input.toString('utf8'), plotId, plot.grid);
+          analyses.push({ type: type as EngineAnalysis['type'], plotName: plot.plotName, plotId, series: { grid: plot.grid, signals: plot.signals, ...(secondaryGrid ? { secondaryGrid } : {}) } });
         }
       }
     }

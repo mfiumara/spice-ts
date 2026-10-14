@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { UnsupportedModelLevelError, UnsupportedModelVersionError } from '../errors.js';
+import { UnsupportedModelParameterError, UnsupportedModelVersionError } from '../errors.js';
+import { BSIM4 } from '../devices/bsim4/device.js';
 import { simulate } from '../simulate.js';
 import { parse } from './index.js';
 
@@ -66,11 +67,15 @@ describe('BSIM model cards with dotted VERSION= values (#503)', () => {
     }
   });
 
-  it('reports BSIM4 cards with a dotted VERSION= as an unsupported LEVEL, not a parse error', async () => {
-    for (const [level, version] of [[14, '4.5.0'], [54, '4.8.2']] as const) {
+  it('registers BSIM4 dotted VERSION=4.8.2 and rejects unported revisions, not their LEVEL', async () => {
+    for (const level of [14, 54]) {
+      const version = '4.8.2';
       const netlist = inverter(`.model n1 nmos level=${level} version=${version}\n.model p1 pmos level=${level} version=${version}`);
-      await expect(simulate(netlist)).rejects.toBeInstanceOf(UnsupportedModelLevelError);
-      await expect(simulate(netlist)).rejects.toMatchObject({ code: 'UNSUPPORTED_MODEL_LEVEL', level });
+      expect(parse(netlist).compile().devices.find(device => device.name === 'M1')).toBeInstanceOf(BSIM4);
+      expect(Number.isFinite((await simulate(netlist)).dc!.voltage('out'))).toBe(true);
+      const unported = inverter(`.model n1 nmos level=${level} version=4.5.0\n.model p1 pmos level=${level} version=4.5.0`);
+      await expect(simulate(unported)).rejects.toBeInstanceOf(UnsupportedModelParameterError);
+      await expect(simulate(unported)).rejects.toMatchObject({ code: 'UNSUPPORTED_MODEL_PARAMETER', parameter: 'version' });
     }
   });
 

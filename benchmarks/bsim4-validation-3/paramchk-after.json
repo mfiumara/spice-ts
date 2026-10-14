@@ -1,0 +1,214 @@
+[
+  {
+    "name": "source",
+    "outcome": "UnsupportedModelParameterError",
+    "native": {
+      "@m1[gbs]": 8.922063566058626e-11,
+      "@m1[gbd]": 1.0000000000336864e-12,
+      "i(vb)": 2.3202450146045394e-13
+    },
+    "actual": null,
+    "errors": null
+  },
+  {
+    "name": "drain",
+    "outcome": "UnsupportedModelParameterError",
+    "native": {
+      "@m1[gbs]": 1.0083777630974259e-12,
+      "@m1[gbd]": 1e-12,
+      "i(vb)": 4.59983315971702e-13
+    },
+    "actual": null,
+    "errors": null
+  },
+  {
+    "name": "inherited-drain",
+    "outcome": "UnsupportedModelParameterError",
+    "native": {
+      "@m1[gbs]": 8.922063566058626e-11,
+      "@m1[gbd]": 1e-12,
+      "i(vb)": 2.3202450146132525e-13
+    },
+    "actual": null,
+    "errors": null
+  },
+  {
+    "name": "default-paramchk",
+    "outcome": "UnsupportedModelParameterError",
+    "native": {
+      "@m1[gbs]": 8.922063566058626e-11,
+      "@m1[gbd]": 1.0000000000336864e-12,
+      "i(vb)": 2.3202450146045394e-13
+    },
+    "actual": null,
+    "errors": null
+  },
+  {
+    "name": "source-boundary",
+    "outcome": "compared",
+    "native": {
+      "@m1[gbs]": 8.922063566058626e-11,
+      "@m1[gbd]": 1.0000000000336864e-12,
+      "i(vb)": 2.3202450146045394e-13
+    },
+    "actual": {
+      "@m1[gbs]": 8.922063566058626e-11,
+      "@m1[gbd]": 1.0000000000336864e-12,
+      "i(vb)": 2.1202450146045393e-13
+    },
+    "errors": {
+      "@m1[gbs]": {
+        "absolute": 0,
+        "relative": 0
+      },
+      "@m1[gbd]": {
+        "absolute": 0,
+        "relative": 0
+      },
+      "i(vb)": {
+        "absolute": 2.0000000000000016e-14,
+        "relative": 0.0861977932249056
+      }
+    }
+  },
+  {
+    "name": "drain-boundary",
+    "outcome": "compared",
+    "native": {
+      "@m1[gbs]": 1.0083777630974259e-12,
+      "@m1[gbd]": 1e-12,
+      "i(vb)": 4.59983315971702e-13
+    },
+    "actual": {
+      "@m1[gbs]": 1.0083777630974259e-12,
+      "@m1[gbd]": 1e-12,
+      "i(vb)": 4.3998331597170197e-13
+    },
+    "errors": {
+      "@m1[gbs]": {
+        "absolute": 0,
+        "relative": 0
+      },
+      "@m1[gbd]": {
+        "absolute": 0,
+        "relative": 0
+      },
+      "i(vb)": {
+        "absolute": 2.0000000000000016e-14,
+        "relative": 0.04347983786705518
+      }
+    }
+  },
+  {
+    "name": "inherited-boundary",
+    "outcome": "compared",
+    "native": {
+      "@m1[gbs]": 8.922063566058626e-11,
+      "@m1[gbd]": 1e-12,
+      "i(vb)": 2.3202450146132525e-13
+    },
+    "actual": {
+      "@m1[gbs]": 8.922063566058626e-11,
+      "@m1[gbd]": 1e-12,
+      "i(vb)": 2.1202450146132553e-13
+    },
+    "errors": {
+      "@m1[gbs]": {
+        "absolute": 0,
+        "relative": 0
+      },
+      "@m1[gbd]": {
+        "absolute": 0,
+        "relative": 0
+      },
+      "i(vb)": {
+        "absolute": 1.9999999999999713e-14,
+        "relative": 0.0861977932245806
+      }
+    }
+  },
+  {
+    "name": "source-unchecked",
+    "outcome": "compared",
+    "native": {
+      "@m1[gbs]": 4.025967504650611e-7,
+      "@m1[gbd]": 1.0000000000336864e-12,
+      "i(vb)": -5.201803813337284e-10
+    },
+    "actual": {
+      "@m1[gbs]": 4.025967504650611e-7,
+      "@m1[gbd]": 1.0000000000336864e-12,
+      "i(vb)": -5.202003813337282e-10
+    },
+    "errors": {
+      "@m1[gbs]": {
+        "absolute": 0,
+        "relative": 0
+      },
+      "@m1[gbd]": {
+        "absolute": 0,
+        "relative": 0
+      },
+      "i(vb)": {
+        "absolute": 1.999999999975798e-14,
+        "relative": 0.000038448201272947895
+      }
+    }
+  },
+  {
+    "name": "drain-unchecked",
+    "outcome": "compared",
+    "native": {
+      "@m1[gbs]": 1.0083777630974259e-12,
+      "@m1[gbd]": 1e-12,
+      "i(vb)": 4.59983315971702e-13
+    },
+    "actual": {
+      "@m1[gbs]": 1.0083777630974259e-12,
+      "@m1[gbd]": 1e-12,
+      "i(vb)": 4.3998331597170197e-13
+    },
+    "errors": {
+      "@m1[gbs]": {
+        "absolute": 0,
+        "relative": 0
+      },
+      "@m1[gbd]": {
+        "absolute": 0,
+        "relative": 0
+      },
+      "i(vb)": {
+        "absolute": 2.0000000000000016e-14,
+        "relative": 0.04347983786705518
+      }
+    }
+  },
+  {
+    "name": "inherited-unchecked",
+    "outcome": "compared",
+    "native": {
+      "@m1[gbs]": 4.025967504650611e-7,
+      "@m1[gbd]": 1e-12,
+      "i(vb)": -5.201803813337275e-10
+    },
+    "actual": {
+      "@m1[gbs]": 4.025967504650611e-7,
+      "@m1[gbd]": 1e-12,
+      "i(vb)": -5.202003813337265e-10
+    },
+    "errors": {
+      "@m1[gbs]": {
+        "absolute": 0,
+        "relative": 0
+      },
+      "@m1[gbd]": {
+        "absolute": 0,
+        "relative": 0
+      },
+      "i(vb)": {
+        "absolute": 1.9999999999034198e-14,
+        "relative": 0.00003844820127155656
+      }
+    }
+  }
+]
