@@ -33,7 +33,7 @@ function signalParts(signal: string): { kind: string; args: string } {
   return { kind: match[1].toUpperCase(), args: match[2] };
 }
 
-/** Output cards and bare BJT scalar assignments are rewritten; values are not tuned. */
+/** Output cards and native syntax aliases are rewritten; values are not tuned. */
 export function translateForXyce(fixture: ComparisonFixture): { netlist: string; changes: string[] } {
   if (!['op', 'dc', 'tran', 'ac'].includes(fixture.analysis)) limited(`Unsupported analysis: ${fixture.analysis}`);
   if (fixture.signals.length === 0) limited('At least one requested signal is required');
@@ -94,6 +94,31 @@ export function translateForXyce(fixture: ComparisonFixture): { netlist: string;
     // TYPE is not a generic ignorable parameter. In particular VSOURCE does not
     // establish a DC waveform. Until a documented mapping exists, fail closed.
     if (/^[vi]\S*\s+\S+\s+\S+.*\btype\s*=/i.test(logical)) limited('Source TYPE markers require a documented Xyce mapping');
+    if (/^[vi]\S*\s+\S+\s+\S+\s/i.test(logical)) {
+      // ngspice accepts SINE as a SIN alias. Xyce 7.10 silently ignores SINE,
+      // leaving only DC (or zero). Change the waveform keyword, never its values.
+      // Match only a waveform after optional scalar DC/AC specifications.
+      // Node/device names, comments and expression functions are not keywords.
+      const comments: string[] = [];
+      const code = record.map((line, i) => {
+        const text = i ? line.replace(/^\s*\+/, '') : line;
+        const comment = text.search(/[;$]/);
+        if (comment < 0) return text;
+        comments.push(`* ${text.slice(comment)}`);
+        return text.slice(0, comment);
+      }).join(' ');
+      const header = /^\s*[vi]\S*\s+\S+\s+\S+\s+/i.exec(code)!;
+      let changed = false;
+      const body = code.slice(header[0].length).replace(/^((?:(?:DC|AC)\s+|[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?[a-z]*\s+)*)SINE(?=\s*\()/i, (_token, prefix: string) => {
+        changed = true;
+        return prefix + 'SIN';
+      });
+      if (changed) {
+        changes.push(`Normalised source ${logical.split(/\s+/)[0]} SINE to SIN (values preserved)`);
+        kept.push(header[0] + body, ...comments);
+        continue;
+      }
+    }
     if (/^\.step\b/i.test(logical)) limited('.step output is outside this reference slice');
     // Keep the original bootstrap non-OP translation byte-for-byte reproducible.
     // Canonical multi-analysis callers supply a single-analysis projection.
