@@ -88,10 +88,10 @@ describe('comparison metrics', () => {
     assert.deepEqual(signal.absoluteError, { max: 0, rms: 0 });
   });
 
-  it('interpolates within the matching nested DC sweep segment when primary grids differ', () => {
+  it('interpolates within explicitly identified secondary groups when primary grids differ', () => {
     const result = alignAndMeasure(
-      { grid: [0, 0.5, 1, 0, 0.5, 1], signals: { 'v(2)': real([0, 0.5, 1, 10, 10.5, 11]) } },
-      { grid: [0, 1, 0, 1], signals: { 'v(2)': real([0, 1, 10, 11]) } },
+      { grid: [0, 0.5, 1, 0, 0.5, 1], secondaryGrid: [0, 0, 0, 10, 10, 10], signals: { 'v(2)': real([0, 0.5, 1, 10, 10.5, 11]) } },
+      { grid: [0, 1, 0, 1], secondaryGrid: [0, 0, 10, 10], signals: { 'v(2)': real([0, 1, 10, 11]) } },
       ['v(2)'],
     );
 

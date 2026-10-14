@@ -36,6 +36,38 @@ test('descending nested primary sweep aligns all points', () => {
   const a = plot('dc1', [2, 1, 0, 2, 1, 0], [2, 1, 0, 12, 11, 10]);
   assert.equal(compareExecutions(execution(a), execution(a))[0].metrics.grid.alignedPoints, 6);
 });
+test('ordinal fallback rejects different primary grids instead of interpolating', () => {
+  const own = plot('dc1', [0, 0.5, 1, 0, 0.5, 1], [0, 0.5, 1, 10, 10.5, 11]);
+  const reference = plot('dc1', [0, 1, 0, 1], [0, 1, 10, 11]);
+  const comparisons = compareExecutions(execution(own), execution(reference));
+  assert.equal(comparisons[0].metrics.grid.alignedPoints, 0);
+  assert.equal(comparisons[0].metrics.sweepGroups?.filter(group => group.unmatched).length, 4);
+  assert.ok(normalizedSignalErrors(comparisons, pairedReferenceSeries(execution(own), execution(reference))).missing > 0);
+});
+test('ordinal fallback rejects unequal reset counts visibly', () => {
+  const own = plot('dc1', [0, 1, 0, 1], [0, 1, 10, 11]);
+  const reference = plot('dc1', [0, 1, 0, 1, 0, 1], [0, 1, 10, 11, 20, 21]);
+  const metrics = compareExecutions(execution(own), execution(reference))[0].metrics;
+  assert.equal(metrics.grid.alignedPoints, 0);
+  assert.equal(metrics.sweepGroups?.filter(group => group.unmatched).length, 5);
+});
+test('ordinal fallback checks coordinates, not merely the grid length', () => {
+  const own = plot('dc1', [0, 1, 0, 1], [0, 1, 10, 11]);
+  const reference = plot('dc1', [0, 1, 0, 2], [0, 1, 10, 12]);
+  const comparisons = compareExecutions(execution(own), execution(reference));
+  assert.equal(comparisons[0].metrics.grid.alignedPoints, 2);
+  assert.equal(comparisons[0].metrics.sweepGroups?.filter(group => group.unmatched).length, 2);
+  assert.ok(normalizedSignalErrors(comparisons, pairedReferenceSeries(execution(own), execution(reference))).missing > 0);
+});
+test('ordinal fallback checks a singleton secondary group with unknown reference coordinates', () => {
+  const own = plot('dc1', [0, 0.5, 1], [0, 0.5, 1]);
+  own.series.secondaryGrid = [10, 10, 10];
+  const reference = plot('dc1', [0, 1], [0, 1]);
+  const metrics = compareExecutions(execution(own), execution(reference))[0].metrics;
+  assert.equal(metrics.grid.alignedPoints, 0);
+  assert.equal(metrics.sweepAlignment, 'reset-ordinal');
+  assert.equal(metrics.sweepGroups?.filter(group => group.unmatched).length, 2);
+});
 test('packed batching preserves repeated plot pairing', () => {
   const a = plot('DC transfer characteristic', [0, 1], [0, 1]);
   const b = plot('DC transfer characteristic', [0, 1], [0, 9]);

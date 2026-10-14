@@ -296,9 +296,21 @@ export function alignAndMeasure(
   });
   const explicit = spiceTs.secondaryGrid !== undefined && ngspice.secondaryGrid !== undefined;
   const referenceCoordinates = new Map(referenceSegments.map((group, index) => [group.secondaryValue, index]));
-  const pairing = spiceSegments.map((group, ordinal) => explicit
-    ? referenceCoordinates.get(group.secondaryValue) ?? -1
-    : spiceSegments.length === referenceSegments.length ? ordinal : -1);
+  const ordinalFallback = !explicit && (spiceTs.secondaryGrid !== undefined || ngspice.secondaryGrid !== undefined || spiceSegments.length > 1 || referenceSegments.length > 1);
+  const pairing = spiceSegments.map((group, ordinal) => {
+    if (explicit) return referenceCoordinates.get(group.secondaryValue) ?? -1;
+    if (spiceSegments.length !== referenceSegments.length) return -1;
+    if (ordinalFallback) {
+      const reference = referenceSegments[ordinal];
+      // Unknown secondary coordinates cannot justify interpolation. Require the
+      // same primary samples (in acquisition order) in each reset-ordinal group.
+      if (group.end - group.start !== reference.end - reference.start) return -1;
+      for (let index = group.start; index < group.end; index += 1) {
+        if (spiceTs.grid[index] !== ngspice.grid[reference.start + index - group.start]) return -1;
+      }
+    }
+    return ordinal;
+  });
   const pairedReferences = new Set(pairing);
   const groupAlignedPoints = spiceSegments.map(() => 0);
   const { breakpoints } = options;
@@ -369,7 +381,7 @@ export function alignAndMeasure(
   }
 
   return {
-    ...(spiceSegments.length > 1 || referenceSegments.length > 1 || explicit ? { sweepAlignment: explicit ? 'secondary-value' as const : 'reset-ordinal' as const, sweepGroups: [
+    ...(ordinalFallback || explicit ? { sweepAlignment: explicit ? 'secondary-value' as const : 'reset-ordinal' as const, sweepGroups: [
       ...spiceSegments.map((group, ordinal) => ({ ordinal, ...(group.secondaryValue === undefined ? {} : { secondaryValue: group.secondaryValue }), alignedPoints: groupAlignedPoints[ordinal], ...(pairing[ordinal] < 0 ? { unmatched: 'ngspice' as const } : {}) })),
       ...referenceSegments.flatMap((group, ordinal) => pairedReferences.has(ordinal) ? [] : [{ ordinal, ...(group.secondaryValue === undefined ? {} : { secondaryValue: group.secondaryValue }), alignedPoints: 0, unmatched: 'spice-ts' as const }]),
     ] } : {}),
