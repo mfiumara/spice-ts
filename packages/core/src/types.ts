@@ -203,6 +203,8 @@ export type IntegrationMethod = 'euler' | 'trapezoidal' | 'gear2';
  * All fields are optional; SPICE-convention defaults are used when omitted.
  */
 export interface SimulationOptions {
+  /** Parsed ngspice solver-selection hint. Native analyses always use spice-ts's sparse LU solver. */
+  solverSelection?: 'klu' | 'sparse';
   /** ngspice nonlinear-device bypass request. Native solver always evaluates devices and warns when nonzero. */
   bypass?: number;
   /** ngspice-47 RAMPTIME breakpoint (s). Ordinary V/I sources do not ramp in the release build. Default: 0. */

@@ -22,7 +22,10 @@ const XYCE_OPTION_PACKAGES = new Set([
   'sens', 'timeint', 'topology',
 ]);
 
-/** ngspice-47 spicelib/analysis/cktsopt.c OPTtbl names. */
+/** ngspice-47 spicelib/analysis/cktsopt.c OPTtbl names.
+ * KLU/SPARSE remain meaningful fields in package cards: the strict parser
+ * records bare solver hints and rejects assigned forms, rather than ignoring them.
+ */
 const NGSPICE_ANALYSIS_OPTIONS = [
   'absdv', 'abstol', 'accept', 'acct', 'acfactortime', 'acloadtime', 'acsolvetime', 'acsynctime',
   'actime', 'autopartial', 'badmos3', 'bypass', 'chgtol', 'convabsstep', 'convlimit', 'convstep',
