@@ -1,0 +1,78 @@
+{
+  "rc1k.cir": {
+    "bytes": 32566,
+    "sha256": "0944ed6b76f64f56c8e04b48919f1e12b9de19df4e5a08708c4be314fa7a91b7"
+  },
+  "mesh10k.cir": {
+    "bytes": 456461,
+    "sha256": "c88e6076daf2523437e3da014d7a3c329f679a7405f789530c5c805f447ed0dc"
+  },
+  "cmos1k.cir": {
+    "bytes": 87247,
+    "sha256": "1a9866593c778a9fa26e23c1916c7b00b1bdb1adc2e7a246d9e3f4aa4f1ca1e1"
+  },
+  "control/chunk-FQBQJOXE.js": {
+    "bytes": 557,
+    "sha256": "f23fcdb67158fdea9ab43e29da6b7116e4031cce5cefbd847d8660159ffe36f8"
+  },
+  "control/chunk-QJD7B5UI.js": {
+    "bytes": 1793227,
+    "sha256": "b9bf1d75aa07bfa266db1e0ea6d385d0471ece0b2512615c6bc53443cacb770e"
+  },
+  "control/index.cjs": {
+    "bytes": 1842815,
+    "sha256": "4aa4e4b4a9bfb1d96f402a4778e2c2daa0a1fec3606d0013a82cc98e4ded2479"
+  },
+  "control/index.js": {
+    "bytes": 48003,
+    "sha256": "46956a7f08728c383aa5c3635bb1721b9efdd2ed34160f3a40f611a8cd3ab704"
+  },
+  "control/step-worker-browser.cjs": {
+    "bytes": 1779277,
+    "sha256": "3fc311cccebf87f3f5ba856c3ec9f1649f715e601bd0c48f0937f27b453e4098"
+  },
+  "control/step-worker-browser.js": {
+    "bytes": 455,
+    "sha256": "1be1a6839ee4dae11e7207cac9b2c69696cf8747f7c709aa0b4ca226df78af13"
+  },
+  "control/step-worker.cjs": {
+    "bytes": 1779171,
+    "sha256": "ce4d395375525a2a934b2841f6f6134878bd6a790d7e4e7a6aee4c47314c7467"
+  },
+  "control/step-worker.js": {
+    "bytes": 546,
+    "sha256": "7bd41a87291b70b9437527d21c1cb66fee8dc02ce02642eb2bca73ac46d16f9d"
+  },
+  "candidate/chunk-5SLSRAOS.js": {
+    "bytes": 356,
+    "sha256": "170f853892f5bb77cffd4c35969794f8da98264c6da28175b313129840313ba3"
+  },
+  "candidate/chunk-NUTDMYGO.js": {
+    "bytes": 838786,
+    "sha256": "2499c26ec2338c0a750b2fa249cc23a0e4acd890a93db06f679b2c9c7d83a965"
+  },
+  "candidate/index.cjs": {
+    "bytes": 867352,
+    "sha256": "8a5797ec18078c25810f0eb2aaeaca8c5c28aa10d98896e9179a195dd05065fb"
+  },
+  "candidate/index.js": {
+    "bytes": 27816,
+    "sha256": "5797f6892e70ef773638d8ee49d272ef64d100e519c25284a71a5f1beb14785a"
+  },
+  "candidate/step-worker-browser.cjs": {
+    "bytes": 832265,
+    "sha256": "9cb485004c35d906d641568f4836eaa309cc0ad90db9f412f3eed7d666481816"
+  },
+  "candidate/step-worker-browser.js": {
+    "bytes": 294,
+    "sha256": "77a0906d3b348cefc0a84d10c3f57fe3f0d0b12d401b08b5401d46c5b854b11f"
+  },
+  "candidate/step-worker.cjs": {
+    "bytes": 832331,
+    "sha256": "bf2f246fe417464a5e712f276fd21a61e1192eb5d7fabb0350b9d2c3450dc172"
+  },
+  "candidate/step-worker.js": {
+    "bytes": 366,
+    "sha256": "ce80368991dfa75d2a1574af1523691fafba82cdee815ca46037907af6ab2234"
+  }
+}

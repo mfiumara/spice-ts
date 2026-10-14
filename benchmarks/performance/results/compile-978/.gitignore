@@ -1,0 +1,7 @@
+control/*
+!control/*.gz
+candidate/*
+!candidate/*.gz
+fresh/
+*.log
+__pycache__/
