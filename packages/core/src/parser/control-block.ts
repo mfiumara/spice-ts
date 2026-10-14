@@ -46,6 +46,7 @@ export function lowerControlScript(
   script: ControlScript,
   dotAnalysisTypes: ReadonlySet<string>,
 ): LoweredControlAnalysis[] | null {
+  if (script.preSet?.length) return null;
   const lowered: LoweredControlAnalysis[] = [];
   const types = new Set(dotAnalysisTypes);
   for (const statement of script.statements) {
