@@ -10,6 +10,7 @@ import { tmpdir, platform, arch } from 'node:os';
 import { simulate, parseAsync } from '../../../packages/core/dist/index.js';
 import { MNAAssembler } from '../../../packages/core/src/mna/assembler.js';
 import { parseNgspiceRaw } from '../../comparison-harness.js';
+import { sanitizeDiagnostics } from './diagnostics.js';
 
 type Point = Record<string, number>;
 type Run = { status: string; point: Point; error?: string; exitCode?: number | null; diagnostics?: string; transientPoints?: number; finalTime?: number };
@@ -22,6 +23,8 @@ function diff(own: Point, native: Point): Difference[] {
 async function main(): Promise<void> {
   if (process.argv[2] === '--check') {
     const receipt = JSON.parse(readFileSync(process.argv[3], 'utf8'));
+    // Fetch-only model cards must never survive diagnostic serialization.
+    assert(!/(?:^|\\n)\s*(?:\.model\b|\+)/i.test(JSON.stringify(receipt)), 'Receipt leaks model-card source');
     assert.equal(receipt.input.sha256, '53bd1936ee8529e1b1158d91a6fba578e8eceb4e5c2ca7219aa03b2d31208245');
     assert.equal(receipt.baseline.differences.length, 98);
     assert.equal(receipt.baseline.unmatchedNative.length, 0);
@@ -71,7 +74,7 @@ async function main(): Promise<void> {
       const canonical = name.startsWith('i(') ? `i(${canonCurrent(name.slice(2, -1))})` : name.toLowerCase();
       point[canonical] = values[0].re;
     }
-    return { status: run.status === 0 ? 'success' : 'failed', exitCode: run.status, point, diagnostics: (run.stdout + run.stderr).replaceAll(scratch, '<scratch>'), ...(run.error ? { error: run.error.message } : {}) };
+    return { status: run.status === 0 ? 'success' : 'failed', exitCode: run.status, point, diagnostics: sanitizeDiagnostics(run.stdout + run.stderr), ...(run.error ? { error: run.error.message.replaceAll(scratch, '<scratch>') } : {}) };
   }
   try {
     const ownBase = await own(op);
