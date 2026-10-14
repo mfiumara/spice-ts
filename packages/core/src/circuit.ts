@@ -1950,7 +1950,12 @@ export class Circuit {
       ['gmin', 'gmin', String],
       ['maxIterations', 'itl1', String],
       ['maxTransientIterations', 'itl4', String],
-      ['integrationMethod', 'method', value => value === 'trapezoidal' ? 'trap' : value === 'gear2' ? 'gear' : String(value)],
+      ['integrationMethod', 'method', value => {
+        // ngspice expresses backward Euler as trap with an order-one cap.
+        if (value === 'euler') return this._simulationOptions.maxOrder === undefined ? 'trap maxord=1' : 'trap';
+        return value === 'trapezoidal' ? 'trap' : value === 'gear2' ? 'gear' : String(value);
+      }],
+      ['maxOrder', 'maxord', value => this._simulationOptions.integrationMethod === 'euler' ? '1' : String(value)],
       ['trtol', 'trtol', String],
       ['chgtol', 'chgtol', String],
       ['rshunt', 'rshunt', String],
