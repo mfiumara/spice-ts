@@ -1,0 +1,103 @@
+{
+  "finding": "All four cards already execute. Native aggregate fields retain only the last result per type; protocol v1 retains every analysis.",
+  "parsedAnalyses": [
+    {
+      "type": "dc",
+      "source": "V1",
+      "start": 0,
+      "stop": 2,
+      "step": 1
+    },
+    {
+      "type": "dc",
+      "source": "V1",
+      "start": 3,
+      "stop": 5,
+      "step": 1
+    },
+    {
+      "type": "op"
+    },
+    {
+      "type": "op"
+    }
+  ],
+  "nativeMeasurementValues": [
+    1,
+    4
+  ],
+  "nativeFinalSweep": [
+    3,
+    4,
+    5
+  ],
+  "nativeAcceptedDCSolves": 8,
+  "protocolAnalysisTypes": [
+    "dc",
+    "dc",
+    "op",
+    "op"
+  ],
+  "fixtures": [
+    {
+      "fixture": "bjt-diffpair-current-source",
+      "parsedAnalysisTypes": [
+        "op",
+        "tran",
+        "ac",
+        "op",
+        "ac"
+      ]
+    },
+    {
+      "fixture": "vcvs-operating-point",
+      "parsedAnalysisTypes": [
+        "op",
+        "op",
+        "op",
+        "ac",
+        "ac",
+        "ac"
+      ]
+    },
+    {
+      "fixture": "diode-temperature-sweep",
+      "parsedAnalysisTypes": [
+        "op",
+        "dc",
+        "dc",
+        "op"
+      ]
+    },
+    {
+      "fixture": "mos1-nand-transient",
+      "parsedAnalysisTypes": [
+        "op",
+        "op",
+        "op",
+        "op",
+        "op",
+        "tran"
+      ]
+    },
+    {
+      "fixture": "dual-lc-uic-rejection",
+      "parsedAnalysisTypes": [
+        "tran",
+        "tran"
+      ]
+    },
+    {
+      "fixture": "interleaved",
+      "parsedAnalysisTypes": [
+        "ac",
+        "op",
+        "dc",
+        "ac",
+        "op",
+        "dc",
+        "op"
+      ]
+    }
+  ]
+}

@@ -1,5 +1,13 @@
 # Benchmark sources
 
+## Repeated dot-card semantics (#1009)
+
+[repeated-dot-1009](repeated-dot-1009/README.md) reruns five unchanged corpus-e /
+corpus-e-spice3 Gnucap regression decks with their existing GPL-3.0-or-later
+provenance below. The synthetic interleaved order and native execution probes
+are original MIT-licensed spice-ts project work. This is an evidence-only
+investigation, not a corpus or comparison-tolerance change.
+
 ## MOS2 temperature admission (#995)
 
 The 18 synthetic NMOS/PMOS temperature probes in [reference.ts](results/issue-995/reference.ts)
