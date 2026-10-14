@@ -3072,7 +3072,8 @@ export class Circuit {
         }
         if (model && (level === undefined || level === 1 || level === 2 || level === 6)) {
           // MOS1/MOS2/MOS6 (mos*set.c and temperature preprocessing): RD/RS in front of prime nodes, or
-          // RSH*NRD / RSH*NRS (one square by default) when RD/RS are not given (#719). An open
+          // RSH*NRD / RSH*NRS when RD/RS are not given (#719). MOS6's resolver preserves
+          // its different omitted-square setup semantics. An open
           // terminal (#757) keeps its prime node but gets no resistor.
           const series = level === 6
             ? mos6SeriesResistances(model.params, desc.params)
