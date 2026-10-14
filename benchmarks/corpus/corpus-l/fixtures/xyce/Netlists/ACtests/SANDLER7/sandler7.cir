@@ -1,0 +1,87 @@
+CHEBYSHEV BAND-PASS FILTER 
+********************************************************************************
+* Tier No.: 3
+* Directory/Circuit Name:SANDLER7/sandler7.cir
+* Description:  Chebyshev band-pass filter circuit netlist developed by Steve
+*       Sandler to compare the validity of simulations using three different
+*       circuit simulation tools. The results were compared to measured data.
+* Input: V4
+* Output: VDB(19)
+********************************************************************************
+* NOTE: 7/22/02 Code enhancement to read E,F,G poly sources.
+*       Updated netlist by replacing B sources with E,F,G sources from original
+*       circuit. (RLS)
+********************************************************************************
+*
+* MAIN CIRCUIT DEFINITION
+*
+V3 0 9 15
+R10 1 6 13.68K
+C7 1 11 .1U
+C8 6 11 .1U
+R11 11 0 43.1
+R12 11 14 1.99K
+V4 14 0 AC 1
+R13 15 16 5.644K
+C9 15 17 .1U
+C10 16 17 .1U
+R14 17 0 76.7
+R15 17 6 2.88K
+R16 18 19 9.77K
+C11 18 22 .1U
+C12 19 22 .1U
+R17 22 0 29.5
+R18 22 16 1.374K
+X8 0 1 5 9 6 LM324T
+X9 0 15 5 9 16 LM324T
+X10 0 18 5 9 19 LM324T
+V2 5 0 15
+*
+* ANALYSIS AND OPTIONS
+*
+.AC DEC 40 100 100KHZ
+* V(19)=OUTPUT
+.PRINT AC  V(19) 
+*.PRINT AC  vr(19) vi(19)
+.OPTION ACCT
+* SUBCIRCUIT DEFINITION
+*
+.SUBCKT LM324T    1 2 3 4 5
+*
+C1   11 12 5.544E-12
+C2    6  7 20.00E-12
+DC    5 53 DX
+DE   54  5 DX
+DLP  90 91 DX
+DLN  92 90 DX
+DP    4  3 DX
+EGND 99 0 POLY(1) 3 4 0 0.5 0.5
+*BEGND 99  0 V= 0.5*V(3,4) + 0.5*V(3,4)*V(3,4) 
+FB    7 99 POLY(5) VB VC VE VLP VLN 0 15.91E6 -20E6 20E6 20E6 -20E6
+*BFB 7 99 I=15.91e6*I(VB)-20e6*I(VC)+ 20e6*I(VE)+20e6*I(VLP)-20e6*I(VLN)
+GA    6  0 11 12 125.7E-6
+GCM   0  6 10 99 7.067E-9
+IEE   3 10 DC 10.04E-6
+HLIM 90  0 VLIM 1K
+Q1   11  2 13 QX
+Q2   12  1 14 QX
+R2    6  9 100.0E3
+RC1   4 11 7.957E3
+RC2   4 12 7.957E3
+RE1  13 10 2.773E3
+RE2  14 10 2.773E3
+REE  10 99 19.92E6
+RO1   8  5 50
+RO2   7 99 50
+RP    3  4 30.31E3
+VB    9  0 DC 0
+VC 3 53 DC 2.100
+VE   54  4 DC .6
+VLIM  7  8 DC 0
+VLP  91  0 DC 40
+VLN   0 92 DC 40
+.MODEL DX D(IS=800.0E-18)
+.MODEL QX PNP(IS=800.0E-18 BF=250)
+.ENDS
+.END
+

@@ -1,0 +1,28 @@
+TAP version 13
+# Subtest: 20 original standalone decks have pinned licence and byte provenance without duplicate padding
+ok 1 - 20 original standalone decks have pinned licence and byte provenance without duplicate padding
+  ---
+  duration_ms: 683.401625
+  type: 'test'
+  ...
+# Subtest: error buckets use classes, not fixture identities
+ok 2 - error buckets use classes, not fixture identities
+  ---
+  duration_ms: 0.126042
+  type: 'test'
+  ...
+# Subtest: all outcomes and losses are retained, hashed, uniformly compared and rendered
+ok 3 - all outcomes and losses are retained, hashed, uniformly compared and rendered
+  ---
+  duration_ms: 10.526167
+  type: 'test'
+  ...
+1..3
+# tests 3
+# suites 0
+# pass 3
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1831.931667
