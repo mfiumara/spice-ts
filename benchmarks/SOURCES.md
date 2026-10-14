@@ -1,5 +1,15 @@
 # Benchmark sources
 
+## MAXORD order-cap regression (#983)
+
+[maxord-983](reference/maxord-983/README.md) reruns unchanged corpus-k k-13
+`Netlists/CircuitSim90/MOS2/pump.cir` at Xyce_Regression revision
+`7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2` (GPL-3.0-or-later, existing
+corpus-k licence/provenance below). The four RC method/order probes in
+`reference/maxord-983/run.ts` are original MIT-licensed spice-ts project work.
+Both engines receive identical bytes per case. This scoped receipt publishes
+the residual pump mismatch; no fixture, corpus outcome or tolerance is changed.
+
 ## Repeated dot-card semantics (#1009)
 
 [repeated-dot-1009](repeated-dot-1009/README.md) reruns five unchanged corpus-e /
@@ -51,6 +61,34 @@ Every row below is GPL-3.0-or-later, under the same retained Xyce README grant. 
 
 This file records the provenance and redistribution decision for benchmark fixtures.
 The machine-readable catalogue is `benchmarks/corpus/ngspice/manifest.json`.
+
+## EKV 2.6 static DC implementation evidence (#4)
+
+- Equation reference: EPFL, *The EPFL-EKV MOSFET Model Equations for Simulation*,
+  model version 2.6, revisions I/II and March 1999 corrections:
+  https://ngspice.sourceforge.io/external-documents/models/ekv_v262.pdf.
+  The report is cited, not redistributed. The MIT TypeScript implementation is
+  independently written from equations; no GPL device source is copied into it.
+- Behavioral reference: Xyce 7.10.0 at
+  `a592a42ae7472151d1c8e3bca0ca62d27476f2f3`. The generated C++ device/registration
+  `src/DeviceModelPKG/ADMS/N_DEV_ADMSekv_va.C` has GPL-3.0-or-later headers.
+  Its original `utils/ADMS/examples/EKV/ekv-2.6/ekv26_SDext_Verilog-A.va`
+  carries ECL-2.0 and a legacy restrictive notice; no redistribution of that
+  source is attempted. These are behavioral references, not copied code:
+  https://github.com/Xyce/Xyce/tree/a592a42ae7472151d1c8e3bca0ca62d27476f2f3/utils/ADMS/examples/EKV/ekv-2.6.
+  Used to check defaults, revision-III smoothing and LEVEL=260 (no aliases).
+  Source is not redistributed in this change.
+- Fixtures reuse the three existing GPL-3.0-or-later hash-pinned upstream decks
+  recorded below plus the corpus-g EKV inverter (same source bytes, explicitly
+  a repeated fixture rather than a fourth novel circuit). No new third-party
+  deck or licence claim. Both spice-ts and Xyce receive identical output-adapted
+  deck bytes in `benchmarks/reference/ekv-static/compare.ts`; original source
+  hashes and all output adaptations are retained. ngspice uses the terminated
+  source deck and is labelled `ngspice-lacks-model (MOS1 fallback)`.
+- `before-identical.json.gz` and `after-identical.json.gz` retain waveforms,
+  native tool output, warnings, hashes and all outcomes. `metrics.md` includes
+  all signals, six ascending/descending DC sweeps each and transient residuals.
+  No per-circuit tuning, no full EKV/AC/transient parity or speed claim.
 
 ## BSIM4 implementation source (#3), static OP/DC subset
 

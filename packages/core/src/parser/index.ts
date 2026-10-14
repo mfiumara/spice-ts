@@ -936,7 +936,7 @@ interface SimulationOptionHooks {
   /** Receive a non-fatal parse diagnostic. */
   warn?(message: string): void;
   /**
-   * Receive an accepted ngspice MAXORD (2..6). Without this hook, orders above
+   * Receive an accepted ngspice MAXORD (1..6). Without this hook, orders above
    * 2 are rejected because their effect depends on the deck's final METHOD.
    */
   maxOrder?(order: number): void;
@@ -1091,13 +1091,7 @@ function parseSimulationOptions(
       if (!Number.isFinite(value)) throw new Error(`Invalid .options maxord value: '${rawValue}'`);
       // ngspice-47 if_option() rounds a real value; cktsopt.c clamps to 1..6.
       const order = Math.min(6, Math.max(1, Math.floor(value + 0.5)));
-      if (order < 2) {
-        throw new ParseError(
-          `Unsupported .options maxord value: '${rawValue}' (order-1-only integration is not implemented)`,
-          lineNumber,
-          context,
-        );
-      }
+
       if (order > 2 && hooks.maxOrder === undefined) {
         throw new ParseError(
           `Unsupported .options maxord=${order} outside a netlist .options card`,
@@ -1113,6 +1107,7 @@ function parseSimulationOptions(
         );
       }
       hooks.maxOrder?.(order);
+      options.maxOrder = order;
       continue;
     }
 
