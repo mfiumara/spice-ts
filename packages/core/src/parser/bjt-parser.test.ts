@@ -114,7 +114,7 @@ describe('BJT Q-card parser', () => {
     ['Q1 c b e QMOD DTEMP=2', "Unsupported BJT instance parameter: 'DTEMP=2'"],
     ['Q1 c b e QMOD AREAB=0', 'BJT AREAB must be a finite number greater than zero'],
     ['Q1 c b e QMOD AREAC=1 AREAC=2', "Duplicate BJT instance parameter: 'AREAC'"],
-    ['Q1 c b e QMOD IC=0.6', "Unsupported BJT instance parameter: 'IC=0.6'"],
+    ['Q1 c b e QMOD IC=0.6,1,2', 'Unsupported BJT instance token after the model'],
     ['Q1 c b e QMOD TEMP=50', "Unsupported BJT instance parameter: 'TEMP=50'"],
     ['Q1 c b e QMOD AREA=0', 'BJT AREA must be a finite number greater than zero'],
     ['Q1 c b e QMOD M=-1', 'BJT M must be a finite number greater than zero'],

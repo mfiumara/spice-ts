@@ -696,7 +696,7 @@ function bjtInstanceDescriptorParams(
 ): Record<string, number> | undefined {
   if (!instance) return undefined;
   const params: Record<string, number> = {};
-  for (const name of ['AREA', 'AREAB', 'AREAC', 'M'] as const) {
+  for (const name of ['AREA', 'AREAB', 'AREAC', 'M', 'ICVBE', 'ICVCE'] as const) {
     if (instance[name] !== undefined) params[name] = instance[name];
   }
   return Object.keys(params).length > 0 ? params : undefined;
@@ -2345,6 +2345,9 @@ export class Circuit {
           const modelParams = model.params;
           const polarity = model.type === 'PNP' ? -1 : 1;
           if (modelParams.LEVEL === 4) {
+            if (desc.params?.ICVBE !== undefined || desc.params?.ICVCE !== undefined) {
+              throw new InvalidCircuitError(`VBIC '${desc.name}' does not support instance IC`);
+            }
             // ngspice-47 vbic.c has no areab/areac instance parameters.
             const geometry = ['AREAB', 'AREAC'].filter(name => desc.params?.[name] !== undefined);
             if (geometry.length > 0) {

@@ -24,6 +24,23 @@ describe('BJT instance IC (#1096)', () => {
       .toMatchObject({ params: { ICVBE: -0.2, ICVCE: -1, M: 2 } });
   });
 
+  it('accepts a single IC component', () => {
+    expect(parseBJTInstance(['Q1', 'c', 'b', 'e', 'QMOD', 'IC=0.2'], 1))
+      .toMatchObject({ params: { ICVBE: 0.2 } });
+  });
+
+  it.each(['IC=', 'IC=bad', 'IC=0,1,2', 'IC=0 IC=1', 'IC=1e999'])('rejects malformed or duplicate %s', (ic) => {
+    expect(() => parse(deck(ic, true))).toThrow();
+  });
+
+  it('explicitly rejects unsupported VBIC IC', () => {
+    const vbic = deck('IC=0,0', true)
+      .replace('IS=1e-14 BF=100 CJE=1n CJC=1n', 'LEVEL=4')
+      .replace('.tran 1n 20n uic', '.op');
+    expect(() => parse(vbic).compile())
+      .toThrow("VBIC 'Q1' does not support instance IC");
+  });
+
   it.each(['NPN', 'PNP'] as const)('ignores instance IC without UIC for %s', async (polarity) => {
     const sign = polarity === 'NPN' ? 1 : -1;
     const ordinary = await simulate(deck('', false, polarity));

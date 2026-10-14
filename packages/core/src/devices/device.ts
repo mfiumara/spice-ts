@@ -39,6 +39,8 @@ export interface StampContext {
   gmin?: number;
   /** Operating-point load phase, absent outside DC initialization. */
   operatingPointPhase?: 'junction' | 'fixed' | 'floating';
+  /** True only while accepting the t=0 transient UIC seed, never a Newton load. */
+  initialUIC?: boolean;
 }
 
 /**
