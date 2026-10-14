@@ -79,6 +79,7 @@ Ctest a b C={base*(1+v(control))}
     const lowered = await preprocess("V__behavioral_cap_0 x 0 1\nCtest a 0 C={1u*v(x)}\nCplain b 0 1u");
     expect(lowered).toContain('i(v__behavioral_cap_1)');
     expect(lowered).toContain('Cplain b 0 1u');
+    expect(await preprocess('Cplain b 0 1u\n+ ic=0')).toBe('Cplain b 0 1u\n+ ic=0');
   });
 
   it('keeps time-dependent capacitance live', async () => {

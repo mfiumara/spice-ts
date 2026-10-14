@@ -12,7 +12,10 @@ export function lowerBehavioralCapacitors<T extends { text: string; line: number
   const logical: T[] = [];
   let previous: T | undefined;
   for (const statement of statements) {
-    if (previous && !statement.control && /^\s*\+/.test(statement.text) && /^\s*c\S*\s/i.test(previous.text)) {
+    const previousBody = previous && /^\s*c\S*\s+\S+\s+\S+\s+(.+)$/i.exec(previous.text)?.[1];
+    const behavioral = previousBody !== undefined && (NODE_DEPENDENT_EXPRESSION.test(previousBody)
+      || /\b(?:time|temper|hertz)\b|\bq\s*=/i.test(previousBody));
+    if (previous && behavioral && !statement.control && /^\s*\+/.test(statement.text)) {
       previous.text = previous.text.slice(0, endOfLineCommentStart(previous.text)) + ` ${statement.text.replace(/^\s*\+\s*/, '')}`;
       logical.push({ ...statement, text: '' });
     } else {
