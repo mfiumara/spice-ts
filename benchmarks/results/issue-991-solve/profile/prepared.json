@@ -1,0 +1,96 @@
+{
+  "baseSha": "d39157cd467ddd63ce501334b330609e7ee0a644",
+  "counts": {
+    "Circuit.compile": 1,
+    "DCResult.constructor": 1,
+    "TransientResult.constructor": 1,
+    "GilbertPeierlsSolver.analyzePattern": 1,
+    "GilbertPeierlsSolver.factorize": 1,
+    "GilbertPeierlsSolver.solve": 1,
+    "MNAAssembler.constructor": 1,
+    "MNAAssembler.lockTopology": 1,
+    "stampStaticDevices": 1,
+    "stampDynamicDevices": 1,
+    "buildCompanionSystem": 1,
+    "ColumnRecorder.record": 1,
+    "ColumnRecorder.flush": 1
+  },
+  "hashes": {
+    "control/chunk-4YVICUA7.js": "69959f21cf3bdc3a5c41269f3542f76c6e73d317543d967f34d20916183807d6",
+    "control/chunk-J4OURGTK.js": "c94f7dcf6c5650632235f9d93c7fd9c4b1b08996a8da15ed2039cd02d5a7d86b",
+    "control/index.js": "1be7edf7298e0fd7ff192a3d0aa44b71714ada75a7b6cb855444722c757970a9",
+    "control/step-worker-browser.js": "2f09f1f44c3fb99ee5af795258ce7823c3489a480f77a30b5c764e7b9782c390",
+    "control/step-worker.js": "b7993f65ddc15f3acaec92513fb6be1cf0b1b5ba9aa3551047bbfcbabd48dbbd",
+    "instrumented/chunk-4YVICUA7.js": "69959f21cf3bdc3a5c41269f3542f76c6e73d317543d967f34d20916183807d6",
+    "instrumented/chunk-J4OURGTK.js": "72c73830394dc4ae4f7a0a63f734d01c88c6943cec07b7939c4e6387ba88b9cf",
+    "instrumented/index.js": "1be7edf7298e0fd7ff192a3d0aa44b71714ada75a7b6cb855444722c757970a9",
+    "instrumented/step-worker-browser.js": "2f09f1f44c3fb99ee5af795258ce7823c3489a480f77a30b5c764e7b9782c390",
+    "instrumented/step-worker.js": "b7993f65ddc15f3acaec92513fb6be1cf0b1b5ba9aa3551047bbfcbabd48dbbd"
+  },
+  "decks": [
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 1000,
+      "file": "rc-ladder-tran-1000.cir",
+      "deckSha256": "0944ed6b76f64f56c8e04b48919f1e12b9de19df4e5a08708c4be314fa7a91b7",
+      "actualNodes": 1000,
+      "probe": "n10"
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 1000,
+      "file": "resistor-mesh-op-1000.cir",
+      "deckSha256": "6c6d5adb109cdde9ac844c3346135f4e7ffc352626b2f3c430598c0ebd9d8d40",
+      "actualNodes": 1024,
+      "probe": "n31_31"
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 10000,
+      "file": "rc-ladder-tran-10000.cir",
+      "deckSha256": "eb21933fd99fcbc32276816a4f389ba216dcdddc29683551a67f606f352dfca7",
+      "actualNodes": 10000,
+      "probe": "n10"
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "file": "resistor-mesh-op-10000.cir",
+      "deckSha256": "c88e6076daf2523437e3da014d7a3c329f679a7405f789530c5c805f447ed0dc",
+      "actualNodes": 10000,
+      "probe": "n99_99"
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 50000,
+      "file": "rc-ladder-tran-50000.cir",
+      "deckSha256": "2fd0c2090d17dddf80980eb3391440a3e4f99e1a77d1158360ffedc4246a7ada",
+      "actualNodes": 50000,
+      "probe": "n10"
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "file": "resistor-mesh-op-50000.cir",
+      "deckSha256": "f81ed198f7ba67068138846b12fe93b9ec957e6bb3a89300d2c7c50e30d47329",
+      "actualNodes": 50176,
+      "probe": "n223_223"
+    }
+  ],
+  "targets": {
+    "Circuit.compile": "compile",
+    "GilbertPeierlsSolver.factorize": "factor",
+    "GilbertPeierlsSolver.solve": "solve",
+    "buildCompanionSystem": "loadStamp",
+    "stampStaticDevices": "loadStamp",
+    "stampDynamicDevices": "loadStamp",
+    "ColumnRecorder.record": "outputMaterialization",
+    "ColumnRecorder.flush": "outputMaterialization",
+    "TransientResult.constructor": "outputMaterialization",
+    "MNAAssembler.constructor": "matrixBuild",
+    "MNAAssembler.lockTopology": "matrixBuild",
+    "GilbertPeierlsSolver.analyzePattern": "ordering",
+    "DCResult.constructor": "outputMaterialization"
+  },
+  "attribution": "solver"
+}
