@@ -1,26 +1,26 @@
 spice-heavy: all 2 heavy slots busy, waiting...
 spice-heavy: got slot 0
-m-1 matched: ng=success ts=success 
-m-2 matched: ng=success ts=success 
-m-3 mismatch: ng=success ts=success 
+m-1 matched: ng=success ts=success
+m-2 matched: ng=success ts=success
+m-3 mismatch: ng=success ts=success
 m-4 spice-ts-loss: ng=success ts=unsupported MOSFET 'M1' (model 'nmos') uses unsupported model LEVEL=10 (supported MOSFET levels: 1, 2, 3, 4, 5, 6, 8, 9, 14, 49, 54, 260)
-m-5 matched: ng=success ts=success 
-m-6 matched: ng=success ts=success 
-m-7 matched: ng=success ts=success 
-m-8 matched: ng=success ts=success 
-m-9 matched: ng=success ts=success 
-m-10 matched: ng=success ts=success 
-m-11 matched: ng=success ts=success 
-m-12 matched: ng=success ts=success 
-m-13 matched: ng=success ts=success 
-m-14 matched: ng=success ts=success 
-m-15 matched: ng=success ts=success 
-m-16 matched: ng=success ts=success 
-m-17 matched: ng=success ts=success 
-m-18 mismatch: ng=success ts=success 
-m-19 mismatch: ng=success ts=success 
-m-20 mismatch: ng=success ts=success 
-m-21 mismatch: ng=success ts=success 
-m-22 mismatch: ng=success ts=success 
+m-5 matched: ng=success ts=success
+m-6 matched: ng=success ts=success
+m-7 matched: ng=success ts=success
+m-8 matched: ng=success ts=success
+m-9 matched: ng=success ts=success
+m-10 matched: ng=success ts=success
+m-11 matched: ng=success ts=success
+m-12 matched: ng=success ts=success
+m-13 matched: ng=success ts=success
+m-14 matched: ng=success ts=success
+m-15 matched: ng=success ts=success
+m-16 matched: ng=success ts=success
+m-17 matched: ng=success ts=success
+m-18 mismatch: ng=success ts=success
+m-19 mismatch: ng=success ts=success
+m-20 mismatch: ng=success ts=success
+m-21 mismatch: ng=success ts=success
+m-22 mismatch: ng=success ts=success
 m-23 spice-ts-loss: ng=success ts=failed MOSFET level 6 model 'CD4012_NMOS': series resistance parameter RD is not supported
 m-24 spice-ts-loss: ng=success ts=failed MOSFET level 6 model 'CD4012_NMOS': series resistance parameter RD is not supported

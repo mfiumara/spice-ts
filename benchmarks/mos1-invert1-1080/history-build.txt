@@ -198,7 +198,7 @@ examples/editor build: dist/assets/chunk-B3K2TuZy.js                         0.5
 examples/editor build: dist/assets/index-Dm7rk2yg.js                     1,015.39 kB │ gzip:   336.03 kB
 examples/editor build: dist/assets/eecircuit-engine-CAaQWCsJ.js         20,262.84 kB │ gzip: 5,825.73 kB
 examples/editor build: ✓ built in 2.47s
-examples/editor build: [plugin builtin:vite-reporter] 
+examples/editor build: [plugin builtin:vite-reporter]
 examples/editor build: (!) Some chunks are larger than 500 kB after minification. Consider:
 examples/editor build: - Using dynamic import() to code-split the application
 examples/editor build: - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
@@ -211,7 +211,7 @@ examples/showcase build: dist/assets/chunk-B3K2TuZy.js                         0
 examples/showcase build: dist/assets/index-BQ1MuKQy.js                     1,032.60 kB │ gzip:   340.76 kB
 examples/showcase build: dist/assets/eecircuit-engine-CAaQWCsJ.js         20,262.84 kB │ gzip: 5,825.73 kB
 examples/showcase build: ✓ built in 2.47s
-examples/showcase build: [plugin builtin:vite-reporter] 
+examples/showcase build: [plugin builtin:vite-reporter]
 examples/showcase build: (!) Some chunks are larger than 500 kB after minification. Consider:
 examples/showcase build: - Using dynamic import() to code-split the application
 examples/showcase build: - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
