@@ -161,13 +161,14 @@ export interface PoleZeroAnalysis {
   mode: 'pol' | 'zer' | 'pz';
 }
 
-/** Bounded single-node voltage sensitivity analysis. */
+/** Bounded single-ended or differential voltage sensitivity analysis. */
 export type SensitivityAnalysis = DCSensitivityAnalysis | ACSensitivityAnalysis;
 
 /** DC operating-point sensitivity (`.sens v(node)`). */
 export interface DCSensitivityAnalysis {
   type: 'sens';
   outputNode: string;
+  outputReferenceNode?: string;
   mode: 'dc';
 }
 
@@ -175,6 +176,7 @@ export interface DCSensitivityAnalysis {
 export interface ACSensitivityAnalysis {
   type: 'sens';
   outputNode: string;
+  outputReferenceNode?: string;
   mode: 'ac';
   variation: 'dec' | 'oct' | 'lin';
   points: number;

@@ -656,11 +656,13 @@ function parseDotCommand(
       if (analysis.mode === 'dc') {
         circuit.addAnalysis('sens', {
           outputNode: analysis.outputNode,
+          outputReferenceNode: analysis.outputReferenceNode,
           mode: 'dc',
         });
       } else {
         circuit.addAnalysis('sens', {
           outputNode: analysis.outputNode,
+          outputReferenceNode: analysis.outputReferenceNode,
           mode: 'ac',
           variation: analysis.variation,
           points: analysis.points,
