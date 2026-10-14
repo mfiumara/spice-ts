@@ -120,6 +120,7 @@ describe('tokenizeNetlist', () => {
 // referenceParseNumber); which tokens are accepted is unchanged.
 // #790 accepts non-ASCII unit text after a number (`27°C`), which INPevaluate
 // skips like ASCII unit letters (see referenceParseNumber).
+// #1056 preserves embedded dollars; only token-boundary dollars are comments.
 // ---------------------------------------------------------------------------
 
 const REFERENCE_SI_SUFFIX_MAP: Record<string, string> = {
@@ -245,7 +246,13 @@ function referenceTokenizeNetlist(
 
 function referenceStripEndOfLineComment(line: string): string {
   let commentStart = line.length;
-  for (const delimiter of ['$', ';', '//']) {
+  for (let i = 0; i < line.length; i++) {
+    if (line[i] === '$' && (i === 0 || /[\s,]/.test(line[i - 1]))) {
+      commentStart = i;
+      break;
+    }
+  }
+  for (const delimiter of [';', '//']) {
     const index = line.indexOf(delimiter);
     if (index >= 0 && index < commentStart) commentStart = index;
   }
@@ -390,7 +397,7 @@ describe('tokenizeNetlist behavior pins (#369)', () => {
       { raw: 'R4 a/b c 1', lineNumber: 7, tokens: ['R4', 'a/b', 'c', '1'] },
     ]);
     expect(tokenizeNetlist('$ only\n   // only\nR1 a b 1k$x')).toEqual([
-      { raw: 'R1 a b 1k', lineNumber: 3, tokens: ['R1', 'a', 'b', '1k'] },
+      { raw: 'R1 a b 1k$x', lineNumber: 3, tokens: ['R1', 'a', 'b', '1k$x'] },
     ]);
   });
 

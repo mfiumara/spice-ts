@@ -10,6 +10,8 @@
  * and the subcircuits nested in it; top-level functions are visible everywhere.
  */
 
+import { endOfLineCommentStart } from './end-of-line-comment.js';
+
 export interface UserFunction {
   name: string;
   params: string[];
@@ -151,10 +153,7 @@ export interface DeckLine {
 }
 
 /** End of the card text before an end-of-line comment (`;`, `$` or `//`). */
-function cardEnd(line: string): number {
-  const starts = [line.indexOf(';'), line.indexOf('$'), line.indexOf('//')].filter(index => index >= 0);
-  return starts.length === 0 ? line.length : Math.min(...starts);
-}
+const cardEnd = endOfLineCommentStart;
 
 const PARAM_NAME = /([A-Za-z_]\w*)\s*=/g;
 /** A subcircuit header assignment `name=`, ahead of a value. */
