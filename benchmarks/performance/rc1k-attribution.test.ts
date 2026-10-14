@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { hashVectors, parseRaw, statistics, summarize, rederiveEpoch } from './rc1k-attribution-data.mjs';
-import { instrument } from './rc1k-attribution-prepare.mjs';
+import { instrument, residualTargets, targets } from './rc1k-attribution-prepare.mjs';
 import { runInNewContext } from 'node:vm';
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { gunzipSync } from 'node:zlib';
@@ -15,6 +15,75 @@ function raw() {
 }
 
 describe('RC1k offline attribution receipts', () => {
+  it('reconciles the residual archive, disjoint spans, thresholds and hashes offline', () => {
+    const archive = fileURLToPath(new URL('./results/rc1k-residual-969/', import.meta.url));
+    type Receipt = {
+      id: string; mode: string; certified: boolean; status: string;
+      boundaries: Record<string, number>;
+      before: { loadavg: number[] }; after: { processCount: number };
+      worker: { evidence: { calls: Record<string, number>;
+        output: { count: number; vectors: number; outputSha256: string };
+        convergence: { transient: { newtonIterations: number } } } };
+    };
+    const receipts: Receipt[] = readFileSync(archive + 'receipts.jsonl', 'utf8').trim().split('\n').map(JSON.parse);
+    const saved = JSON.parse(readFileSync(archive + 'summary.json', 'utf8'));
+    expect(receipts).toHaveLength(45);
+    expect(new Set(receipts.map(r => r.id)).size).toBe(45);
+    expect(receipts.every(r => r.certified && r.status === 'ok')).toBe(true);
+    expect(readdirSync(archive).filter(n => n.endsWith('.native.json'))).toHaveLength(15);
+    for (const mode of ['control', 'instrumented', 'ngspice']) {
+      expect(receipts.filter(r => r.mode === mode)).toHaveLength(15);
+    }
+    const keys = [...new Set(Object.values(residualTargets))];
+    const instrumented = receipts.filter(r => r.mode === 'instrumented');
+    for (const row of instrumented) {
+      const measured = keys.reduce((total, key) => total + row.boundaries[key], 0);
+      expect(measured + row.boundaries.simulateResidual).toBeCloseTo(row.boundaries.simulate, 10);
+      expect(row.boundaries.simulateResidual).toBeGreaterThanOrEqual(0);
+      expect(Object.values(row.worker.evidence.calls).every(n => n > 0)).toBe(true);
+    }
+    for (const key of [...new Set(Object.entries(residualTargets).filter(([name]) => !(name in targets)).map(([, key]) => key)), 'simulateResidual']) {
+      const values = instrumented.map(r => r.boundaries[key]);
+      expect(saved.residual[key].milliseconds).toEqual(statistics(values));
+      expect(saved.residual[key].percentOfSimulate).toEqual(statistics(instrumented.map(r => 100 * r.boundaries[key] / r.boundaries.simulate)));
+      expect(saved.residual[key].observationsAtLeast20Percent).toBe(0);
+    }
+    for (const row of receipts) {
+      expect(row.before.loadavg).toHaveLength(3);
+      expect(row.after.processCount).toBeGreaterThan(0);
+      expect(row.worker.evidence.output.count).toBe(120240);
+      expect(row.worker.evidence.output.vectors).toBe(1002);
+      if (row.mode !== 'ngspice') {
+        expect(row.worker.evidence.output.outputSha256).toBe('6a650522805562c8018777ab78a344668d2fb12038fd6e4fcfd7cc3302c4e8a7');
+        expect(row.worker.evidence.convergence.transient.newtonIterations).toBe(238);
+      } else {
+        expect(hashVectors(parseRaw(gunzipSync(readFileSync(archive + row.id + '.raw.gz'))))).toEqual(row.worker.evidence.output);
+      }
+    }
+    for (const line of readFileSync(archive + 'SHA256SUMS', 'utf8').trim().split('\n')) {
+      const [hash, name] = line.split('  ');
+      expect(createHash('sha256').update(readFileSync(archive + name)).digest('hex')).toBe(hash);
+    }
+    const prepared = JSON.parse(readFileSync(archive + 'prepared.json', 'utf8'));
+    expect(Object.values(prepared.counts).every(n => n === 1)).toBe(true);
+    expect(prepared.targets).toEqual(residualTargets);
+    for (const [name, hash] of Object.entries(prepared.hashes)) {
+      expect(createHash('sha256').update(gunzipSync(readFileSync(archive + name + '.gz'))).digest('hex')).toBe(hash);
+    }
+  });
+  it('supports optional residual spans without changing the default targets', () => {
+    const source = 'function outer() { return inner(); } function inner() { return 7; } outer();';
+    const counts = {};
+    const events: string[] = [];
+    const code = instrument(source, 'nested.js', counts, { outer: 'driver', inner: 'lte' });
+    expect(runInNewContext(code, { __rc1k: {
+      enter: (key: string) => { events.push(key); return key; },
+      leave: (key: string) => events.push('leave:' + key),
+    } })).toBe(7);
+    expect(counts).toEqual({ outer: 1, inner: 1 });
+    expect(events).toEqual(['driver', 'lte', 'leave:lte', 'leave:driver']);
+    expect(instrument(source, 'nested.js', {})).toBe(source);
+  });
   it('verifies every archived SHA256 and benchmark-only bundle snapshot', () => {
     const archive = fileURLToPath(new URL('./results/rc1k-cold-attribution-2026-10-14/', import.meta.url));
     for (const line of readFileSync(archive + 'SHA256SUMS', 'utf8').trim().split('\n')) {

@@ -1,0 +1,9 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_d2157b6a
+
+
+ Test Files  1 passed (1)
+      Tests  11 passed (11)
+   Start at  01:27:24
+   Duration  338ms (transform 30ms, setup 0ms, import 127ms, tests 133ms, environment 0ms)
+

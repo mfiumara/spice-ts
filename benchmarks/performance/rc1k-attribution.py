@@ -28,6 +28,7 @@ def host():
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('out', type=Path)
+    parser.add_argument('--residual', action='store_true', help='also attribute transient driver/newton self times')
     parser.add_argument('--rounds', type=int, default=15, help='total rounds, including existing attempted rounds')
     args = parser.parse_args()
     if not 1 <= args.rounds <= 15:
@@ -47,7 +48,11 @@ def main():
     if not ids <= valid_ids:
         raise RuntimeError('journal contains workloads outside the 60-process budget')
     if not (out / 'prepared.json').exists():
-        subprocess.run(['node', str(ROOT / 'benchmarks/performance/rc1k-attribution-prepare.mjs'), str(out)], cwd=ROOT, check=True)
+        subprocess.run(['node', str(ROOT / 'benchmarks/performance/rc1k-attribution-prepare.mjs'), str(out)] +
+                       (['--residual'] if args.residual else []), cwd=ROOT, check=True)
+    prepared = json.loads((out / 'prepared.json').read_text())
+    if ('attemptStep' in prepared.get('targets', {})) != args.residual:
+        raise RuntimeError('prepared instrumentation mode differs from requested mode')
     clock = ContinuousClock()
     run_start = clock.read()
     meta = dict(baseSha=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
