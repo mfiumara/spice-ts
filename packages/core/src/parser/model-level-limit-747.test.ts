@@ -47,12 +47,15 @@ function interpolate(time: ArrayLike<number>, values: ArrayLike<number>, at: num
   return values[index - 1] + fraction * (values[index] - values[index - 1]);
 }
 
-const LEVEL_WARNING = /LEVEL=260 .*level=1 assumed/;
+// #4 now implements EKV at LEVEL=260. Preserve #747's historical MOS1
+// reference arrays by exercising the still-unmapped LEVEL=100 instead.
+const fallbackDeck = (name: string): string => deck(name).replaceAll('LEVEL=260', 'LEVEL=100');
+const LEVEL_WARNING = /LEVEL=100 .*level=1 assumed/;
 
 describe('model LEVEL above 99 falls back to level 1 like ngspice-47 inpfindl.c (issue #747)', () => {
-  it('NMOS LEVEL=260 drain sweep with body bias matches the ngspice-47 MOS1 reference', async () => {
+  it('NMOS unmapped LEVEL=100 drain sweep retains the historical MOS1 reference', async () => {
     const ref = reference('nmos-dc-level260');
-    const result = await simulate(deck('nmos-dc-level260'));
+    const result = await simulate(fallbackDeck('nmos-dc-level260'));
     const id = result.dcSweep!.current('VD');
     const ib = result.dcSweep!.current('VB');
     expect(id.length).toBe(ref.grid.length);
@@ -66,9 +69,9 @@ describe('model LEVEL above 99 falls back to level 1 like ngspice-47 inpfindl.c 
     expect(result.warnings.some(warning => LEVEL_WARNING.test(warning.message))).toBe(true);
   });
 
-  it('NMOS LEVEL=260 common-source AC response matches the ngspice-47 MOS1 reference', async () => {
+  it('NMOS unmapped LEVEL=100 AC retains the historical MOS1 reference', async () => {
     const ref = reference('cs-amp-ac-level260');
-    const result = await simulate(deck('cs-amp-ac-level260'));
+    const result = await simulate(fallbackDeck('cs-amp-ac-level260'));
     const out = result.ac!.voltage('out');
     expect(out.length).toBe(ref.grid.length);
     const expected = ref.signals['v(out)'] as Array<[number, number]>;
@@ -83,9 +86,9 @@ describe('model LEVEL above 99 falls back to level 1 like ngspice-47 inpfindl.c 
     });
   });
 
-  it('CMOS inverter with default LEVEL=260 cards follows the ngspice-47 MOS1 transient', async () => {
+  it('CMOS inverter with unmapped LEVEL=100 retains the historical MOS1 transient', async () => {
     const ref = reference('cmos-inverter-tran-level260');
-    const result = await simulate(deck('cmos-inverter-tran-level260'));
+    const result = await simulate(fallbackDeck('cmos-inverter-tran-level260'));
     const time = result.transient!.time;
     const out = result.transient!.voltage('out');
     const expected = real(ref, 'v(out)');
@@ -107,13 +110,13 @@ describe('model LEVEL above 99 falls back to level 1 like ngspice-47 inpfindl.c 
   });
 
   it('applies the same fallback, with the warning, to a .model card inside a .subckt', async () => {
-    const result = await simulate(`subckt-local LEVEL=260 model
+    const result = await simulate(`subckt-local LEVEL=100 model
 VD d 0 DC 2
 VG g 0 DC 2
 X1 d g cell
 .SUBCKT cell d g
 M1 d g 0 0 NE W=10U L=2U
-.MODEL NE NMOS (LEVEL=260 VTO=0.7 KP=110U)
+.MODEL NE NMOS (LEVEL=100 VTO=0.7 KP=110U)
 .ENDS
 .OP
 .END`);
@@ -122,7 +125,7 @@ M1 d g 0 0 NE W=10U L=2U
     expect(result.warnings.some(warning => LEVEL_WARNING.test(warning.message))).toBe(true);
   });
 
-  it.each(['100', '260', '1E3', '-3'])('LEVEL=%s simulates bit-identically to LEVEL=1', async level => {
+  it.each(['100', '1E3', '-3'])('LEVEL=%s simulates bit-identically to LEVEL=1', async level => {
     const netlist = (value: string) => deck('nmos-dc-level260').replace('NMOS (LEVEL=260', `NMOS (LEVEL=${value}`);
     const clamped = await simulate(netlist(level));
     const level1 = await simulate(netlist('1'));
