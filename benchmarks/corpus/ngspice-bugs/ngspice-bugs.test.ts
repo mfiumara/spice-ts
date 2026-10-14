@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { existsSync } from 'node:fs';
-import { readFile } from 'node:fs/promises';
+import { readFile, mkdtemp, mkdir, writeFile, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { describe, it } from 'node:test';
@@ -38,6 +40,50 @@ function entry(manifest: Manifest, ticket: number): TicketEntry {
 }
 
 describe('ngspice-bugs manifest', () => {
+  it('#737: committed oracle diagnostics contain only allowlisted metadata, never source text', async () => {
+    const text = await readFile(resolve(HERE, 'oracle-737.json'), 'utf8');
+    assert.doesNotMatch(text, /\.(?:subckt|model|include)\b|b\.x\w*\.[^ ]*\s+[^ ]+\s+[^ ]+\s+v=/i);
+    const receipt = JSON.parse(text);
+    for (const row of receipt.rows) {
+      if (row.spiceTs.status === 'failed') {
+        assert.equal(typeof row.spiceTs.error, 'object');
+        assert.deepEqual(Object.keys(row.spiceTs.error).sort(), ['code', 'sha256']);
+      }
+      for (const run of row.ngspice) {
+        assert.equal(typeof run.diagnostics, 'object');
+        assert.deepEqual(Object.keys(run.diagnostics).sort(), ['code', 'sha256']);
+        assert.match(run.diagnostics.sha256, /^[a-f0-9]{64}$/);
+        assert.ok(['completed', 'parse-error', 'timestep-too-small', 'failed'].includes(run.diagnostics.code));
+        assert.ok(!('error' in run), 'no free-form spawn error');
+      }
+    }
+  });
+
+  it('#737: fresh archive preparation materializes only the exact derived pin', async () => {
+    const { prepare737 } = await import('./prepare-737.js');
+    const directory = await mkdtemp(resolve(tmpdir(), 'prepare-737-test-'));
+    try {
+      const source = resolve(directory, 'source');
+      const fetched = resolve(directory, 'fetched');
+      await mkdir(source);
+      await mkdir(fetched);
+      // Synthetic source, not redistributed vendor material.
+      const original = 'Synthetic preparation fixture\r\n.include "D:/spice_lib/test.lib"\r\n.op\r\n.end\r\n';
+      const expected = 'Synthetic preparation fixture\n.include spice_lib/test.lib\n.op\n.end\n';
+      const hash = (text: string | Buffer) => createHash('sha256').update(text).digest('hex');
+      await writeFile(resolve(source, 'OPA890Test.cir'), original);
+      execFileSync('tar', ['-cf', resolve(fetched, 'Test.zip'), '-C', source, 'OPA890Test.cir']);
+      const pins = { archiveSha256: hash(await readFile(resolve(fetched, 'Test.zip'))), deckSha256: hash(expected), deckName: 'OPA890Test.local.cir' };
+      assert.equal(existsSync(resolve(fetched, pins.deckName)), false);
+      await prepare737(fetched, pins);
+      assert.equal(await readFile(resolve(fetched, pins.deckName), 'utf8'), expected);
+      await rm(resolve(fetched, pins.deckName));
+      await assert.rejects(prepare737(fetched, { ...pins, deckSha256: '0'.repeat(64) }), /deck pin mismatch/);
+      assert.equal(existsSync(resolve(fetched, pins.deckName)), false);
+      await assert.rejects(prepare737(fetched, { ...pins, archiveSha256: '0'.repeat(64) }), /archive pin mismatch/);
+    } finally { await rm(directory, { recursive: true, force: true }); }
+  });
+
   it('#803: bounded recovery preserves the five original pins and never scores gaps', async () => {
     const recovery = JSON.parse(await readFile(resolve(HERE, 'reconstruction-803.json'), 'utf8'));
     const manifest = await loadManifest();
