@@ -302,6 +302,23 @@ mn 3 2 0 n1
 });
 
 describe('VDMOS fourth node (issue #1103)', () => {
+  it('accepts a scoped fourth node and keeps the body diode tied to source', async () => {
+    const result = await simulate(`scoped Tj
+.subckt power d g s tj
+m1 d g s tj n1 thermal=0
+.model n1 vdmos kp=2 vto=1 is=10n rb=1 rthjc=1
+.ends power
+x1 d g 0 b power
+vd d 0 -1
+vg g 0 0
+vb b 0 100
+.op
+.end
+`);
+    expect(result.dc!.current('vd')).toBeGreaterThan(0.1);
+    expectClose(result.dc!.current('vb'), 0, 0);
+  });
+
   it.each(['', 'pchan'])('ignores the disabled Tj node for %s channel, even with RTHJC', async (channel) => {
     const sign = channel ? -1 : 1;
     const deck = (extra: string) => `disabled thermal node
@@ -328,16 +345,30 @@ vb b 0 100
 });
 
 describe('VDMOS unsupported features (issue #506)', () => {
-  it('rejects a VDMOS instance with more than three terminals (the thermal form)', async () => {
+  it('rejects active self-heating inside a subcircuit', async () => {
+    await expect(simulate(`scoped heating
+.subckt power d g s tj
+m1 d g s tj n1 thermal
+.model n1 vdmos rthjc=1
+.ends power
+x1 d g 0 tj power
+vd d 0 1
+vg g 0 1
+.op
+.end
+`)).rejects.toThrow(/self-heating is not implemented/);
+  });
+
+  it.each(['thermal', 'thermal=1'])('rejects active self-heating instead of discarding %s', async (flag) => {
     await expect(simulate(`thermal
-m1 d g s tj n1
+m1 d g s tj n1 ${flag}
 .model n1 vdmos rthjc=1
 vd d 0 1
 vg g 0 1
 vs s 0 0
 .op
 .end
-`)).rejects.toThrow(/only the 3-terminal/);
+`)).rejects.toThrow(/self-heating is not implemented/);
   });
 
   it('rejects soft reverse recovery (VP with TT) instead of ignoring it', async () => {
