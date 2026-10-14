@@ -1,0 +1,194 @@
+[
+  {
+    "inputSha256": "a6d0f4220bde7a548209e0e845e3c9bb731b2819f7f7e256d284e5a85e10fa7c",
+    "mode": "warm",
+    "run": 0,
+    "wallMs": 3828.4628749999997,
+    "parseMs": 7.203375000000001,
+    "compileDcTransientRecordMs": 3821.2594999999997,
+    "points": 2429,
+    "telemetry": {
+      "dc": {
+        "newtonIterations": 143,
+        "acceptedSolves": 12,
+        "rejectedSolves": 1,
+        "sourceStepAttempts": 0,
+        "sourceStepFailures": 0,
+        "gminStepAttempts": 12,
+        "gminStepFailures": 0,
+        "failure": null
+      },
+      "transient": {
+        "acceptedSteps": 2428,
+        "rejectedSteps": 766,
+        "newtonIterations": 82710,
+        "nrRetries": 756,
+        "lteRetries": 10,
+        "minimumAcceptedTimestep": 7.569444300496845e-12,
+        "failure": null
+      }
+    },
+    "final20": 0.04197415204949512,
+    "final66": 0.041969637992174305
+  },
+  {
+    "inputSha256": "a6d0f4220bde7a548209e0e845e3c9bb731b2819f7f7e256d284e5a85e10fa7c",
+    "mode": "warm",
+    "run": 1,
+    "wallMs": 3485.2810419999996,
+    "parseMs": 1.3288330000000315,
+    "compileDcTransientRecordMs": 3483.9522089999996,
+    "points": 2429,
+    "telemetry": {
+      "dc": {
+        "newtonIterations": 143,
+        "acceptedSolves": 12,
+        "rejectedSolves": 1,
+        "sourceStepAttempts": 0,
+        "sourceStepFailures": 0,
+        "gminStepAttempts": 12,
+        "gminStepFailures": 0,
+        "failure": null
+      },
+      "transient": {
+        "acceptedSteps": 2428,
+        "rejectedSteps": 766,
+        "newtonIterations": 82710,
+        "nrRetries": 756,
+        "lteRetries": 10,
+        "minimumAcceptedTimestep": 7.569444300496845e-12,
+        "failure": null
+      }
+    },
+    "final20": 0.04197415204949512,
+    "final66": 0.041969637992174305
+  },
+  {
+    "inputSha256": "a6d0f4220bde7a548209e0e845e3c9bb731b2819f7f7e256d284e5a85e10fa7c",
+    "mode": "warm",
+    "run": 2,
+    "wallMs": 3214.0981660000007,
+    "parseMs": 0.9843330000003334,
+    "compileDcTransientRecordMs": 3213.1138330000003,
+    "points": 2429,
+    "telemetry": {
+      "dc": {
+        "newtonIterations": 143,
+        "acceptedSolves": 12,
+        "rejectedSolves": 1,
+        "sourceStepAttempts": 0,
+        "sourceStepFailures": 0,
+        "gminStepAttempts": 12,
+        "gminStepFailures": 0,
+        "failure": null
+      },
+      "transient": {
+        "acceptedSteps": 2428,
+        "rejectedSteps": 766,
+        "newtonIterations": 82710,
+        "nrRetries": 756,
+        "lteRetries": 10,
+        "minimumAcceptedTimestep": 7.569444300496845e-12,
+        "failure": null
+      }
+    },
+    "final20": 0.04197415204949512,
+    "final66": 0.041969637992174305
+  },
+  {
+    "inputSha256": "a6d0f4220bde7a548209e0e845e3c9bb731b2819f7f7e256d284e5a85e10fa7c",
+    "mode": "warm",
+    "run": 3,
+    "wallMs": 3521.133833,
+    "parseMs": 0.9663330000003043,
+    "compileDcTransientRecordMs": 3520.1674999999996,
+    "points": 2429,
+    "telemetry": {
+      "dc": {
+        "newtonIterations": 143,
+        "acceptedSolves": 12,
+        "rejectedSolves": 1,
+        "sourceStepAttempts": 0,
+        "sourceStepFailures": 0,
+        "gminStepAttempts": 12,
+        "gminStepFailures": 0,
+        "failure": null
+      },
+      "transient": {
+        "acceptedSteps": 2428,
+        "rejectedSteps": 766,
+        "newtonIterations": 82710,
+        "nrRetries": 756,
+        "lteRetries": 10,
+        "minimumAcceptedTimestep": 7.569444300496845e-12,
+        "failure": null
+      }
+    },
+    "final20": 0.04197415204949512,
+    "final66": 0.041969637992174305
+  },
+  {
+    "inputSha256": "a6d0f4220bde7a548209e0e845e3c9bb731b2819f7f7e256d284e5a85e10fa7c",
+    "mode": "warm",
+    "run": 4,
+    "wallMs": 3609.634624999999,
+    "parseMs": 0.9081249999999272,
+    "compileDcTransientRecordMs": 3608.726499999999,
+    "points": 2429,
+    "telemetry": {
+      "dc": {
+        "newtonIterations": 143,
+        "acceptedSolves": 12,
+        "rejectedSolves": 1,
+        "sourceStepAttempts": 0,
+        "sourceStepFailures": 0,
+        "gminStepAttempts": 12,
+        "gminStepFailures": 0,
+        "failure": null
+      },
+      "transient": {
+        "acceptedSteps": 2428,
+        "rejectedSteps": 766,
+        "newtonIterations": 82710,
+        "nrRetries": 756,
+        "lteRetries": 10,
+        "minimumAcceptedTimestep": 7.569444300496845e-12,
+        "failure": null
+      }
+    },
+    "final20": 0.04197415204949512,
+    "final66": 0.041969637992174305
+  },
+  {
+    "inputSha256": "a6d0f4220bde7a548209e0e845e3c9bb731b2819f7f7e256d284e5a85e10fa7c",
+    "mode": "warm",
+    "run": 5,
+    "wallMs": 3706.7089590000032,
+    "parseMs": 0.5780000000013388,
+    "compileDcTransientRecordMs": 3706.130959000002,
+    "points": 2429,
+    "telemetry": {
+      "dc": {
+        "newtonIterations": 143,
+        "acceptedSolves": 12,
+        "rejectedSolves": 1,
+        "sourceStepAttempts": 0,
+        "sourceStepFailures": 0,
+        "gminStepAttempts": 12,
+        "gminStepFailures": 0,
+        "failure": null
+      },
+      "transient": {
+        "acceptedSteps": 2428,
+        "rejectedSteps": 766,
+        "newtonIterations": 82710,
+        "nrRetries": 756,
+        "lteRetries": 10,
+        "minimumAcceptedTimestep": 7.569444300496845e-12,
+        "failure": null
+      }
+    },
+    "final20": 0.04197415204949512,
+    "final66": 0.041969637992174305
+  }
+]
