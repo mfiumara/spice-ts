@@ -1,0 +1,22 @@
+{
+  "01-rc-ladder-tran-10000-ngspice": "dac2581988d954450f3a943bea98e3f4a5fa351111bf65df52e9dcc500535148",
+  "01-resistor-mesh-op-10000-ngspice": "b6a5ee20152d78cc31d5fd343fc1396fa920623938089d87761cb47941863fdf",
+  "02-rc-ladder-tran-10000-ngspice": "ef3e007c504ac38f0505721869a5ad4710ec0cc4982b54edf6060618d899dbcd",
+  "02-resistor-mesh-op-10000-ngspice": "db35d2f66ebd59a0312a70abb443a09a0438877921a4c9a7a128ea2e8d65e340",
+  "03-rc-ladder-tran-10000-ngspice": "9cd65e4268721fbcce30536c610e408961224eac8dec4181e08e4033bbb640aa",
+  "03-resistor-mesh-op-10000-ngspice": "5d3cedd8445870a2158440582933ccb511d6f9b4dce0bfae8b8a82d9accd174d",
+  "04-rc-ladder-tran-10000-ngspice": "7876299a9d2775fdf2095c45a0d3c1d1a74c1342136a0bfbd9ae69cfe2144d17",
+  "04-resistor-mesh-op-10000-ngspice": "e371aa28de438be8ddd20abf1385193ea3c32d091d912aea0fee52a75dbaf098",
+  "05-rc-ladder-tran-10000-ngspice": "30189f4eb04137a72e697a8497455aabfe1c080c9de348b50718f7105346c6a3",
+  "05-resistor-mesh-op-10000-ngspice": "1f294b01f2eb33c547d34eb777d0fc8190a4ffa404ab1ad3f11ae4831dca47b0",
+  "06-rc-ladder-tran-10000-ngspice": "f567910e84f5ed307482d16fff538766ea63ef2ded36f653ee7a29cda7cc24b4",
+  "06-resistor-mesh-op-10000-ngspice": "1c6b1071cbc14c98dae4fe3f16e76e81592da9c40e47d3973270d9a76be55117",
+  "07-rc-ladder-tran-10000-ngspice": "239165b6e7a3ad3eba55d9320eb2a892beeb7ca1dc280b790860d22e88e98d9e",
+  "07-resistor-mesh-op-10000-ngspice": "0db3d36bdaca8ad33897b2257111cc7bc3047567d81feb445401587e67524a39",
+  "08-rc-ladder-tran-10000-ngspice": "2fd4aa054a83527b1e05a5aa06b235b7f3a05fc5db025b379005a02b3aabfbd5",
+  "08-resistor-mesh-op-10000-ngspice": "dc9203d9f999b56afb6b91f29ae62e0c086a584d173b4e9d275fbb843ff66a9f",
+  "09-rc-ladder-tran-10000-ngspice": "fbe26e1529fc23304a7be1afc6e6a8e68c944d2fd33a1c3983fb685f1cd1fb0a",
+  "09-resistor-mesh-op-10000-ngspice": "f3fad75f66e3d815e1425c9e2500f97bcdcc62f9d3aea367334b04705ba27bdf",
+  "10-rc-ladder-tran-10000-ngspice": "fa47565ff6cbe8228f494f1a468c5a51704f7f044b5f8a0bc3a2c57fb1d8b40e",
+  "10-resistor-mesh-op-10000-ngspice": "51419df6637b91b0b9169eda0c5b4a051bb390b10f81eb3209a2de064884a176"
+}
