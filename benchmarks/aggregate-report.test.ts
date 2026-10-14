@@ -100,10 +100,10 @@ describe('aggregate report artifact verification', () => {
     const { json } = await committedArtifacts();
     const report = JSON.parse(json);
 
-    assert.equal(report.comparisonToPrevious.issueUrl, 'https://github.com/mfiumara/spice-ts/issues/321');
-    assert.equal(report.comparisonToPrevious.pullRequestUrl, 'https://github.com/mfiumara/spice-ts/pull/325');
-    assert.equal(report.comparisonToPrevious.headSha, 'ad7ba71b65848053afa7bc64ba22fd989ef89ca4');
-    assert.equal(report.comparisonToPrevious.outcomeSha256, '68aa8e2e7b78b82f801da84cf5c88c489634d203f44bca5df9345a1946deddb9');
+    assert.equal(report.comparisonToPrevious.issueUrl, 'https://github.com/mfiumara/spice-ts/issues/502');
+    assert.equal(report.comparisonToPrevious.pullRequestUrl, 'https://github.com/mfiumara/spice-ts/pull/603');
+    assert.equal(report.comparisonToPrevious.headSha, 'a91fd90db94c6f5fbfe1f53b420aa5d4298527f1');
+    assert.equal(report.comparisonToPrevious.outcomeSha256, '4cb5cbd09a8045fbd35e337d44fcc7064175bfdd0521a85d477da768d08d063f');
     assert.deepEqual(
       report.comparisonToPrevious.statusTransitions.map((transition: Record<string, string>) => [
         transition.engine,
@@ -112,34 +112,26 @@ describe('aggregate report artifact verification', () => {
         transition.to,
       ]),
       [
-        ['spiceTs', 'classic/diode-distortion', 'failed', 'success'],
-        ['spiceTs', 'ngspice/vbic-fo', 'unsupported', 'success'],
-        ['spiceTs', 'ngspice/hfet-inverter', 'unsupported', 'success'],
-        ['spiceTs', 'classic/bjt-noise', 'unsupported', 'success'],
-        ['spiceTs', 'classic/resistor-noise', 'unsupported', 'success'],
-        ['spiceTs', 'xyce/inductor-transient', 'failed', 'success'],
-        ['spiceTs', 'ngspice/probe-ac', 'unsupported', 'success'],
-        ['spiceTs', 'classic/bjt-mixer-distortion', 'unsupported', 'failed'],
-        ['spiceTs', 'ngspice/mesa-oscillator', 'unsupported', 'success'],
-        ['spiceTs', 'ngspice/vbic-temperature', 'unsupported', 'success'],
-        ['spiceTs', 'ngspice/ac-zero-frequency', 'unsupported', 'success'],
-        ['spiceTs', 'ngspice/mos-amplifier-transient', 'success', 'unsupported'],
-        ['spiceTs', 'classic/mos-amplifier', 'success', 'unsupported'],
-        ['spiceTs', 'classic/bsim1-device-sweep', 'success', 'unsupported'],
-        ['spiceTs', 'classic/bsim2-device-sweep', 'success', 'unsupported'],
+        ['spiceTs', 'ngspice/mos-amplifier-transient', 'unsupported', 'success'],
+        ['spiceTs', 'classic/bsim1-device-sweep', 'unsupported', 'success'],
+        ['spiceTs', 'classic/bsim2-device-sweep', 'unsupported', 'success'],
+        ['spiceTs', 'classic/mos-amplifier', 'unsupported', 'success'],
+        ['spiceTs', 'xyce/capacitor-rc-transient-newlte', 'unsupported', 'success'],
+        ['spiceTs', 'xyce/diode-zener-5229', 'unsupported', 'success'],
+        ['spiceTs', 'corpus-e/mutual-inductance-ac', 'unsupported', 'success'],
       ],
     );
     assert.deepEqual(report.totals.ngspice, { success: 52, failed: 9, unsupported: 39 });
-    assert.deepEqual(report.totals.spiceTs, { success: 61, failed: 1, unsupported: 38 });
-    assert.equal(report.totals.comparedAnalyses, 67);
-    assert.equal(report.totals.comparedFixtures, 48);
+    assert.deepEqual(report.totals.spiceTs, { success: 68, failed: 1, unsupported: 31 });
+    assert.equal(report.totals.comparedAnalyses, 71);
+    assert.equal(report.totals.comparedFixtures, 52);
     // .OPTIONS TEMP (#459): the unchanged tests/vbic/temp.cir DC sweep at 150 C, losses locked exactly.
     const vbicTemp = report.fixtures.find((fixture: { key: string }) => fixture.key === 'ngspice/vbic-temperature');
     assert.equal(vbicTemp.spiceTs.status, 'success');
     assert.deepEqual(vbicTemp.comparisons.map((comparison: { analysis: string }) => comparison.analysis), ['dc']);
     assert.deepEqual(vbicTemp.comparisons[0].metrics.grid, { spiceTsPoints: 101, ngspicePoints: 101, alignedPoints: 101, excludedOutOfRange: 0 });
-    assert.equal(vbicTemp.comparisons[0].metrics.signals['i(vc)'].absoluteError.max, 9.235316265725213e-7);
-    assert.equal(vbicTemp.comparisons[0].metrics.signals['i(vb)'].absoluteError.max, 1.6703690530533652e-7);
+    assert.equal(vbicTemp.comparisons[0].metrics.signals['i(vc)'].absoluteError.max, 9.235316265256838e-7);
+    assert.equal(vbicTemp.comparisons[0].metrics.signals['i(vb)'].absoluteError.max, 1.6703690530067445e-7);
     // #537, #542, #541 and #546 are outcome-neutral; #545/#550 losses published; #459 changes only vbic-temperature.
     assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #537') && text.includes('PR #542') && text.includes('PR #541') && text.includes('PR #546') && text.includes('corpus-d/pwm-switch')
       && text.includes('PR #545') && text.includes('worst v(5) 5.255 to 5.300 V') && text.includes('201300.57592313777 to 203361.3440880642')
@@ -177,28 +169,28 @@ describe('aggregate report artifact verification', () => {
     assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #466') && text.includes('PR #463') && text.includes('PR #471')));
     // VBIC substrate terminal (#453, PR #473): the PZ abs envelope moves to pole(1) at 7175.3, with every pole and zero closer to ngspice.
     assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #476') && text.includes('PR #473') && text.includes('PR #481') && text.includes('7175.34033203125')));
-    assert.equal(vbicAc.comparisons[1].metrics.signals['v(pole(1))'].absoluteError.max, report.matchedPointEnvelope.maximumAbsoluteError);
+    assert.equal(vbicAc.comparisons[1].metrics.signals['v(pole(1))'].absoluteError.max, 5572.905517578125);
     // MOS6 TransientChargeState (#468, PR #478): simpleinv improves, the mos6inv node voltages lose (#479). Locked exactly, not bounded.
     assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #474') && text.includes('PR #485') && text.includes('PR #478') && text.includes('#479')));
     // Charge LTE and PULSE breakpoints (#469, PR #483): bjt-rtl v(3) loss gone, rc-transient matched-point loss published.
     assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #483') && text.includes('231274507458.05075') && text.includes('rc-transient')));
     // VBIC per-junction pnjlim (#472, PR #512): pole(1) envelope loss 7175.3 -> 7853.2 and AC v(3) loss published next to the PZ gains.
     assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #512') && text.includes('7175.34033203125 to 7853.15771484375') && text.includes('v(3) abs max 9.11e-10 to 1.20e-9')));
-    assert.equal(vbicAc.comparisons[1].metrics.signals['v(pole(1))'].absoluteError.max, 7853.15771484375);
-    assert.equal(vbicAc.comparisons[0].metrics.signals['v(3)'].absoluteError.max, 1.1984493472929842e-9);
+    assert.equal(report.matchedPointEnvelope.maximumAbsoluteError, 7018.333251953125);
+    assert.equal(vbicAc.comparisons[0].metrics.signals['v(3)'].absoluteError.max, 0);
     // Static trapezoidal history under breakpoints (#482, PR #522): mesa and mos6inv gain, coupled-lossy-lines relative envelope loss published.
     assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #515') && text.includes('PR #523') && text.includes('PR #522') && text.includes('231274507458.05075 to 535751686335.6694') && text.includes('PR #527')));
     // MOS1-3 defaults (#534), LTRA convolution (#536) and BJT IS/VT (#540): the #522 relative envelope loss is gone, mos-amp v(5) and rca3040 AC losses published.
     assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #534') && text.includes('PR #536') && text.includes('PR #516') && text.includes('PR #540') && text.includes('PR #535') && text.includes('PR #533') && text.includes('535751686335.6694 to 190231.44') && text.includes('4.806 V v(6) to 5.255 V v(5)') && text.includes('AC v(14) abs max 1.017 to 1.775 V')));
     const mosAmp = report.fixtures.find((fixture: { key: string }) => fixture.key === 'ngspice/mos-amplifier-transient');
-    // Typed UnsupportedModelLevelError (#530, PR #552): the LEVEL=2 deck no longer runs Level-1 equations.
-    assert.equal(mosAmp.spiceTs.status, 'unsupported');
-    assert.deepEqual(mosAmp.comparisons, []);
+    // #658 restores the LEVEL=2 deck with MOS2 equations, not Level-1 substitution.
+    assert.equal(mosAmp.spiceTs.status, 'success');
+    assert.deepEqual(mosAmp.comparisons.map((comparison: { analysis: string }) => comparison.analysis), ['tran']);
     assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #552') && text.includes('#565') && text.includes('classic/mos-memory-cell (155 points) worst 1.906 V v(8) to 0.248 V v(3)')));
     const mos6Worst: Record<string, number> = {
-      'ngspice/mos6-inverter-transient': 0.2848979467162085,
-      'ngspice/mos6-simple-inverter-transient': 0.10560974273955948, // #572 LU pivot order moved this at rounding level (#583).
-      'classic/mos6-inverter-chain': 0.2848979467162085,
+      'ngspice/mos6-inverter-transient': 0.03104435978862541,
+      'ngspice/mos6-simple-inverter-transient': 0.000312254521728228,
+      'classic/mos6-inverter-chain': 0.03104435978862541,
     };
     for (const [key, expected] of Object.entries(mos6Worst)) {
       const mos6 = report.fixtures.find((fixture: { key: string }) => fixture.key === key);
@@ -240,13 +232,13 @@ describe('aggregate report artifact verification', () => {
     assert.match(tstart.scope, /closed by PR #440/);
     const mesaTran = mesa.comparisons.find((comparison: { analysis: string }) => comparison.analysis === 'tran');
     // Static trapezoidal history under breakpoints (#482, PR #522) cut mesa-oscillator from 3861 to 1348 points; the t=0 first step (#532, PR #545) to 1339.
-    assert.deepEqual(mesaTran.metrics.grid, { spiceTsPoints: 1339, ngspicePoints: 201, alignedPoints: 1336, excludedOutOfRange: 3 });
+    assert.deepEqual(mesaTran.metrics.grid, { spiceTsPoints: 201, ngspicePoints: 201, alignedPoints: 200, excludedOutOfRange: 1 });
     assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #440') && text.includes('PR #443') && text.includes('PR #442')));
     assert.ok(!report.comparisonToPrevious.statusTransitions.some((transition: { explanation: string }) => /3219 of those are before TSTART/.test(transition.explanation)));
     assert.deepEqual(report.comparisonToPrevious.totals.ngspice, { success: 52, failed: 9, unsupported: 39 });
-    assert.deepEqual(report.comparisonToPrevious.totals.spiceTs, { success: 55, failed: 2, unsupported: 43 });
-    assert.equal(report.comparisonToPrevious.totals.comparedAnalyses, 58);
-    assert.equal(report.comparisonToPrevious.totals.comparedFixtures, 43);
+    assert.deepEqual(report.comparisonToPrevious.totals.spiceTs, { success: 61, failed: 1, unsupported: 38 });
+    assert.equal(report.comparisonToPrevious.totals.comparedAnalyses, 67);
+    assert.equal(report.comparisonToPrevious.totals.comparedFixtures, 48);
   });
 
   it('locks the current aggregate corpus tree and unchanged source catalogue', async () => {
@@ -254,8 +246,8 @@ describe('aggregate report artifact verification', () => {
     const report = JSON.parse(json);
 
     assert.deepEqual(report.provenance, {
-      fixtureTreeSha256: 'd53277772db73fd3fb2a193f323b0681db173fa8798b764b97755998a5f36d87',
-      sourcesSha256: '98991942508358a0fb9bf9ae388837c7bb5d44b73bcba57345a627c3f933ed90',
+      fixtureTreeSha256: '23aaa91cfde358550eec443e8b5aaec134d7a7f930b1810f6e7f7db2532d6307',
+      sourcesSha256: '39a927d7fe2dd6fae7b44eaef34c5e438ef053534761b5b6af45d442e436a8b3',
     });
   });
 
@@ -264,12 +256,12 @@ describe('aggregate report artifact verification', () => {
     const report = JSON.parse(json);
 
     assert.deepEqual(report.matchedPointEnvelope, matchedPointEnvelope(report.fixtures));
-    assert.equal(report.matchedPointEnvelope.comparedSignals, 879);
-    assert.equal(report.matchedPointEnvelope.relativeComparedSignals, 847);
-    assert.equal(report.matchedPointEnvelope.maximumAbsoluteError, 7853.15771484375);
-    assert.equal(report.matchedPointEnvelope.maximumAbsoluteRms, 7853.15771484375);
-    assert.equal(report.matchedPointEnvelope.maximumRelativeError, 975815.5539797375);
-    assert.equal(report.matchedPointEnvelope.maximumRelativeRms, 203361.3440880642);
+    assert.equal(report.matchedPointEnvelope.comparedSignals, 975);
+    assert.equal(report.matchedPointEnvelope.relativeComparedSignals, 939);
+    assert.equal(report.matchedPointEnvelope.maximumAbsoluteError, 7018.333251953125);
+    assert.equal(report.matchedPointEnvelope.maximumAbsoluteRms, 7018.333251953125);
+    assert.equal(report.matchedPointEnvelope.maximumRelativeError, 436128.09132992564);
+    assert.equal(report.matchedPointEnvelope.maximumRelativeRms, 243438.5559477603);
   });
 
   it('commits runtime sums derived from all 100 engine receipts', async () => {

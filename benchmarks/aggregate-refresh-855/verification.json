@@ -1,0 +1,36 @@
+{
+  "baseMainSha": "d3901ec1355519e582dc068b4dec5cc033e22de8",
+  "previousArtifactOutcomeSha256": "4cb5cbd09a8045fbd35e337d44fcc7064175bfdd0521a85d477da768d08d063f",
+  "refreshedArtifactOutcomeSha256": "c2730d089c82c845f2d3717abb553751227772143eaeb4d41f0983332814aead",
+  "commands": [
+    { "command": "pnpm install --frozen-lockfile", "exitCode": 0 },
+    { "command": "spice-heavy pnpm exec tsx benchmarks/aggregate-report.ts --check", "phase": "stale-input RED", "exitCode": 1 },
+    { "command": "pnpm build", "phase": "final verification", "exitCode": 0 },
+    { "command": "pnpm lint", "phase": "final verification", "exitCode": 0 },
+    { "command": "spice-heavy pnpm test", "exitCode": 0 },
+    { "command": "spice-heavy pnpm exec tsx benchmarks/aggregate-report.ts", "phase": "final generation", "exitCode": 0 },
+    { "command": "spice-heavy python3 benchmarks/aggregate-refresh-855/replay.py", "phase": "current-main replay and historical supplement", "exitCode": 0 },
+    { "command": "python3 benchmarks/aggregate-refresh-855/summarize.py", "exitCode": 0 },
+    { "command": "python3 benchmarks/aggregate-refresh-855/verify.py", "exitCode": 0, "testsPassed": 3 },
+    { "command": "pnpm exec tsx --test benchmarks/aggregate-report.test.ts benchmarks/fine-reference.test.ts", "exitCode": 0, "testsPassed": 30 }
+  ],
+  "attribution": {
+    "scheduledRevisions": 133,
+    "fixtureRevisionReceipts": 13300,
+    "adjacentFixtureTransitions": 272,
+    "changedScalarFields": 49732,
+    "attributedPullRequests": [584, 623, 652, 658, 659, 663, 664, 667, 676, 677, 689, 703, 724, 741, 745, 746, 758, 762, 776, 777, 783, 805, 821, 836, 876, 887],
+    "finalChangedFixtures": 57,
+    "unexplainedHarnessDrift": 0,
+    "currentEndpointExactlyMatchesGeneratedReport": true
+  },
+  "fineReference": { "compared": 25, "unavailable": 1, "absent": 74 },
+  "notes": [
+    "The first pre-build generation was rejected by status accounting; generation after building and the final full generation both passed.",
+    "A replay launch failed on CJS top-level await; the async main repair was exercised in the successful full replay.",
+    "The stored #603 artifact measured e58322e before concurrent #623/#616 merges; replaying from #613 accounts for those merges.",
+    "The #592 fine-reference column is diagnostic and changes no status/envelope.",
+    "Single-run loaded-host runtime sums support no speed claim. Engine success is not a parity pass.",
+    "Exact PR-head aggregate --check and CI receipts are supplied in the PR and Kanban handoff, not guessed before publication."
+  ]
+}
