@@ -1,0 +1,11 @@
+A Simple AC Run
+
+.AC DEC 10 1k 1Meg
+
+V1 1 0 DC 0 AC 1 SIN 0 1 1K 0 0 DISTOF1 0 DISTOF2 0
+R1 1 2 10k
+R2 2 0 10k
+C1 2 0 1n
+
+.print AC format=csv file=output.csv precision=17 IR(v1) II(v1) VR(1) VI(1) VR(2) VI(2)
+.END

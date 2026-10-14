@@ -1,0 +1,9 @@
+test_deadline_is_not_circuit_failure (test_matrix.MatrixTests) ... ok
+test_headroom_includes_cleanup (test_matrix.MatrixTests) ... ok
+test_ngspice_timeout_is_not_spice_loss (test_matrix.MatrixTests) ... ok
+test_selects_spice_timeout_before_ratio (test_matrix.MatrixTests) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.000s
+
+OK

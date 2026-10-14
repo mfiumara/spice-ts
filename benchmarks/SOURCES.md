@@ -1,5 +1,54 @@
 # Benchmark sources
 
+## Repeated dot-card semantics (#1009)
+
+[repeated-dot-1009](repeated-dot-1009/README.md) reruns five unchanged corpus-e /
+corpus-e-spice3 Gnucap regression decks with their existing GPL-3.0-or-later
+provenance below. The synthetic interleaved order and native execution probes
+are original MIT-licensed spice-ts project work. This is an evidence-only
+investigation, not a corpus or comparison-tolerance change.
+
+## MOS2 temperature admission (#995)
+
+The 18 synthetic NMOS/PMOS temperature probes in [reference.ts](results/issue-995/reference.ts)
+are original spice-ts project work, MIT-licensed, not copied vendor decks. Recorded OP and
+short-transient references use ngspice-47 on identical decks at TEMP=27/50/125 C with model
+TNOM=50 C, no/direct/sheet series resistance and junction capacitances.
+The unchanged gm6 input uses the corpus-k k-8 source and GPL-3.0-or-later licence below.
+Its scoped before/after results and raw temperature probe are in [issue-995](results/issue-995/README.md).
+No fixture, comparison tolerance, corpus outcome or aggregate was changed.
+
+## corpus-k CMOS/textbook/oscillator batch (#980)
+
+20 novel original Xyce_Regression decks at `7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2`, SPDX `GPL-3.0-or-later`. Redistribution basis is the repository README GPLv3-or-later grant. Notice and full GPL text are retained in corpus-k/licenses/xyce. All selected files have no separate copyright/licence notice and no external dependencies. Per-file bytes/hashes/include closures are in [manifest.json](corpus/corpus-k/manifest.json), selection and exclusions in [SOURCES.md](corpus/corpus-k/SOURCES.md). No fixture adaptation or engine-success filter. 19 ngspice-47 successes; 5 matches, 14 spice-ts losses, 1 both-engine failure. All results are in [README.md](corpus/corpus-k/README.md) and outcomes.json; gaps #982 and #983. No aggregate refresh.
+
+Fresh ngspice SourceForge survey at `36fb6f51ff125f19ea8b36bda6ebe47dcc87a263` contributes zero decks: all 509 candidates are duplicate/static exclusions. Analog Devices, Symmetry Design and David Zan notices are not assumed covered by repository BSD. Xyce survey has 4,133 candidates, 20 selected, 4,113 duplicate/static/batch-deferred exclusions. Deferred candidates are not engine failures or licence rejections.
+
+Every row below is GPL-3.0-or-later, under the same retained Xyce README grant. URLs resolve relative to the [pinned source tree](https://github.com/Xyce/Xyce_Regression/tree/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2); exact per-file source URLs are in the manifest.
+
+| ID | Original upstream path | Licence / redistribution basis |
+|---|---|---|
+| k-1 | Netlists/ACtests/mos/opamp-ol.cir | GPL-3.0-or-later; Xyce README grant |
+| k-2 | Netlists/CircuitSim90/MOS2/ab_ac.cir | GPL-3.0-or-later; Xyce README grant |
+| k-3 | Netlists/CircuitSim90/MOS2/ab_integ.cir | GPL-3.0-or-later; Xyce README grant |
+| k-4 | Netlists/CircuitSim90/MOS2/ab_opamp.cir | GPL-3.0-or-later; Xyce README grant |
+| k-5 | Netlists/CircuitSim90/MOS2/cram.cir | GPL-3.0-or-later; Xyce README grant |
+| k-6 | Netlists/CircuitSim90/MOS2/e1480.cir | GPL-3.0-or-later; Xyce README grant |
+| k-7 | Netlists/CircuitSim90/MOS2/g1310.cir | GPL-3.0-or-later; Xyce README grant |
+| k-8 | Netlists/CircuitSim90/MOS2/gm6.cir | GPL-3.0-or-later; Xyce README grant |
+| k-9 | Netlists/CircuitSim90/MOS2/hussamp.cir | GPL-3.0-or-later; Xyce README grant |
+| k-10 | Netlists/CircuitSim90/MOS2/mosrect.cir | GPL-3.0-or-later; Xyce README grant |
+| k-11 | Netlists/CircuitSim90/MOS2/mux8.cir | GPL-3.0-or-later; Xyce README grant |
+| k-12 | Netlists/CircuitSim90/MOS2/nand.cir | GPL-3.0-or-later; Xyce README grant |
+| k-13 | Netlists/CircuitSim90/MOS2/pump.cir | GPL-3.0-or-later; Xyce README grant |
+| k-14 | Netlists/CircuitSim90/MOS2/reg0.cir | GPL-3.0-or-later; Xyce README grant |
+| k-15 | Netlists/CircuitSim90/MOS2/ring.cir | GPL-3.0-or-later; Xyce README grant |
+| k-16 | Netlists/CircuitSim90/MOS2/schmitfast.cir | GPL-3.0-or-later; Xyce README grant |
+| k-17 | Netlists/CircuitSim90/MOS2/schmitslow.cir | GPL-3.0-or-later; Xyce README grant |
+| k-18 | Netlists/CircuitSim90/MOS2/slowlatch.cir | GPL-3.0-or-later; Xyce README grant |
+| k-19 | Netlists/CircuitSim90/MOS2/toronto.cir | GPL-3.0-or-later; Xyce README grant |
+| k-20 | Netlists/WAMPDE/HARTLEY/hartley.cir | GPL-3.0-or-later; Xyce README grant |
+
 This file records the provenance and redistribution decision for benchmark fixtures.
 The machine-readable catalogue is `benchmarks/corpus/ngspice/manifest.json`.
 
@@ -31,6 +80,48 @@ The machine-readable catalogue is `benchmarks/corpus/ngspice/manifest.json`.
   all signals, six ascending/descending DC sweeps each and transient residuals.
   No per-circuit tuning, no full EKV/AC/transient parity or speed claim.
 
+## BSIM4 implementation source (#3), static OP/DC subset
+
+| Port destination / upstream subset | Pinned upstream revision | Licence / notices |
+| --- | --- | --- |
+| `packages/core/src/devices/bsim4/` and `bsim4-junction.ts`: full ordered model defaults/instance setup from `src/spicelib/devices/bsim4/b4set.c`, baseline silicon size/binning/TEMPMOD=0 preprocessing from `b4temp.c`, GEOMOD=0 junction geometry from `b4geo.c:28-88`, relevant DC fatal checks and rejection of unported PARAMCHK correction domains from `b4check.c`, DIOMOD=1 junction currents and channel Ids/gm/gds/gmbs including substrate current from `b4ld.c:1004-2189,5413-5431`. Registered LEVEL=14/54 static subset, not full BSIM4 or dynamic support. Detailed inventories in SETUP.md, TEMPERATURE.md and LOAD.md. | [ngspice-47 bsim4/](https://github.com/imr/ngspice/tree/a80f6e3e95d51534905b1f23410a951802666656/src/spicelib/devices/bsim4), SHA `a80f6e3e95d51534905b1f23410a951802666656` | ECL-2.0, Copyright (c) 2025 University of California. Original per-file notices retained in generated ports and `NOTICE-BSIM4.txt`, with a TypeScript modification notice. Full licence in `packages/core/src/devices/bsim4/LICENSE-ECL-2.0`, obtained from [SPDX licence text](https://github.com/spdx/license-list-data/blob/main/text/ECL-2.0.txt). The per-file ECL notice overrides ngspice's project-level BSD default for these files. |
+
+The channel kernel embeds the full ECL-2.0 licence and upstream notice contents
+in a bundler-preserved legal comment. Package licence metadata and npm publication
+remain owner-gated and unchanged. Targeted oracle tests are not corpus-wide
+parity or speed evidence. This extends the existing single provenance row;
+it does not relabel these files BSD-3-Clause or add a duplicate source entry.
+
+PR999 PARAMCHK correction-domain regression probes in
+`benchmarks/bsim4-validation-3/paramchk-native.py` are original MIT project-authored
+netlists, reproducing the review at
+https://github.com/mfiumara/spice-ts/pull/999#pullrequestreview-5512569635.
+No new third-party source is copied. Both engines receive identical recorded
+deck bytes. Scalar references and before/after errors retain the unsupported
+correction domains and the supported-domain global-gmin current residual;
+these probes are not corpus expansion or speed evidence. Native semantics are
+the same pinned ECL-2.0 `b4check.c:797-806` source recorded above.
+
+## Title-continuation regression probes (#957 / PR #976)
+
+- Source: original project-authored minimal netlists in `benchmarks/title-directive/continuations.ts`, MIT (repository `LICENSE`), reproducing https://github.com/mfiumara/spice-ts/pull/976#pullrequestreview-5511583515. No third-party fixture or source code is redistributed.
+- Both engines receive identical bytes. `continuations-before.json` and `continuations-after.json` retain input SHA-256, native ngspice-47 output/exit codes and spice-ts results, including the previous input loss and hidden parameter error. These are semantic regression probes, not novel public-corpus fixtures or speed evidence.
+- Reference semantics: https://github.com/imr/ngspice/blob/ngspice-47/src/frontend/inpcom.c lines 1442-1456 turn `.title` into a comment before continuation stitching at 1958; lines 694-702 preserve the preceding card across comments.
+- `benchmarks/title-directive/x-continuations.ts` adds original MIT numeric/bare/braced/quoted X RHS probes at top-level and nested scope. `x-continuations-{before,after}.json` retain same-byte hashes and raw ngspice-47 output (R=2000 ohms, i(v1)=-5e-4 A). Before is the uncommitted PR955/main merge; after includes the metadata-skip scanner fix. No corpus or speed claim.
+
+
+## Controlled E/G TABLE fail-closed probes (#917)
+
+- `benchmarks/controlled-table-917/{e,g-subckt}.cir` are original project-authored MIT netlists (repository `LICENSE`), not vendor extracts. Issue https://github.com/mfiumara/spice-ts/issues/917. Both engines receive identical bytes, with ngspice-47 `ngbehavior=ltps`; all 81 DC rows retain endpoint clamping and smoothed corners. Native unsupported results and null comparison metrics are published, not counted as parity wins.
+- `vendor.py` reuses the fetch-only pinned attachment/hash/path-relocation policy of `benchmarks/vendor-expanded-node-917/run.py` for https://sourceforge.net/p/ngspice/bugs/784/. No vendor deck, model, expanded expression or raw log is redistributed. New before/after scalar receipts preserve identical relocated bytes and include hashes; both native runs remain non-completing while ngspice completes 141 AC rows per original. Existing #939 receipts are unchanged.
+
+
+## X-call RHS continuation remediation (#797 / PR955)
+
+- `benchmarks/comma-numparam-fix-797/rhs-continuation/*.cir` are original project-authored OP probes, MIT (repository `LICENSE`), for https://github.com/mfiumara/spice-ts/issues/797 and https://github.com/mfiumara/spice-ts/pull/955. No third-party decks are copied.
+- `run.py before` / `run.py after`, under `spice-heavy`, retain same-byte SHA-256 hashes, ngspice-47 raw OP data, native values/errors and fixed shared-node error metrics. The after phase also reruns all 20 unchanged legacy inputs with their existing provenance. Earlier receipts are immutable; no speed claim or per-circuit settings.
+
+
 ## Xyce second-reference bootstrap (#948)
 
 - `benchmarks/reference/ekv/fixtures/*.cir` are byte-identical copies of the three
@@ -52,10 +143,20 @@ The machine-readable catalogue is `benchmarks/corpus/ngspice/manifest.json`.
 
 ## corpus-j partial novel source survey (#940)
 
+Continuation: the catalogue now contains 20 fixtures; the 11-row historical receipt below remains unchanged. Nine further verbatim source/input hashes, five with ngspice-47 raw output, are registered in [corpus-j/SOURCES.md Part 2](corpus/corpus-j/SOURCES.md#part-2-nine-further-original-inputs), [manifest.json](corpus/corpus-j/manifest.json), and [PART2.md](corpus/corpus-j/PART2.md). Exact pinned paths/licences/empty include closures:
+
+| Original paths | Repository / revision | SPDX | Include closure |
+|---|---|---|---|
+| `examples/measure/rc-meas-ac-control.sp`; `examples/p-to-n-examples/aswitch-pswitch.cir`; `examples/mos/nmos_pmos_BSIM330.sp`; `examples/xspice/original-examples/xspice.deck` | https://sourceforge.net/p/ngspice/ngspice at `a80f6e3e95d51534905b1f23410a951802666656` | BSD-3-Clause | empty per fixture |
+| `examples/testfiles/test_kicad_nets.cir`; `examples/testfiles/ac_rawtest.net`; `examples/testfiles/ngsteps.net`; `examples/testfiles/sens_ngspice_rawtest.net`; `examples/testfiles/tran_rawtest.net` | https://github.com/nunobrum/spicelib at `d8f8ecceeb361741f1f660f03b03ac49697f8700` | GPL-3.0-only | empty per fixture |
+
+The current ngspice COPYING explicitly covers examples/tests outside listed exceptions; all selected paths qualify. Complete original notices retained in corpus-j `licenses/ngspice-current/COPYING` (document CC-BY-SA-4.0) and `licenses/spicelib/LICENSE`. No vendor libraries, golden output variants or byte adaptation. Exact and terminal-newline-stripped input hashes are deduped against all corpus fixture directories. Existing source topologies are not counted as new topology families. Both engines receive original bytes; control vectors use unchanged corpus-f source/write collection (first plot/type only, deferred exit), fixed shared metrics, serial <=20s engine groups and <=900s cumulative wall including the historical ledger. Published new outcomes: 3 matched, 2 spice-ts-only losses ([#956](https://github.com/mfiumara/spice-ts/issues/956), [#957](https://github.com/mfiumara/spice-ts/issues/957)), 4 both-failed. No speed claim or daytime aggregate refresh; nightly #855 owns incorporation.
+
 - 11 novel verbatim SpiceSharpParser inputs, not the requested 20: https://github.com/SpiceSharp/SpiceSharpParser at `8fc01560fe303eeebaeb5cbf5edfe77bf635e1c7`, SPDX `MIT`. Original paths, revision URLs, byte hashes and empty include closures are recorded per fixture in [corpus-j/SOURCES.md](corpus/corpus-j/SOURCES.md) and [manifest.json](corpus/corpus-j/manifest.json). Original MIT copyright/licence retained byte-identically under `licenses/spicesharpparser/LICENSE`.
 - Original paths at that revision: `circuits/a-devices/{clock-divider,controlled-clamp-varistor,edge-capture-dff,fm-modulator,non-ground-common-latch,ota-current-limiter,phase-detector,sample-and-hold-sensor}.cir`; `circuits/cookbook/custom-components/simple-pll/simple-pll.cir`; `src/SpiceSharpParser.IntegrationTests/Examples/Circuits/{band-pass_1,band-pass_2}.cir`. Every fixture is standalone (include closure empty), no vendor model redistribution. These are existing original upstream decks, never generated derivatives.
 - eSim survey only: https://github.com/FOSSEE/eSim at `1a25a46ce15e0ccc35296dd513f40249c089a5a7`, `GPL-3.0-only`; licence retained in corpus-j. All 65 explicitly surveyed paths were duplicate/no-analysis/include-dependent; no eSim deck, PDK or vendor companion is committed. PWL-file sources are also excluded. Exact inspected exclusions and input hashes are retained in the manifest.
 - Both engines receive unchanged bytes through existing corpus-f runners, with a scoped serial 19 s execution deadline/20 s owned process-group bound and <=900 s persisted cumulative child-wall budget. No source-success filtering or per-circuit tolerance tuning. Published losses: all 11 both-failed; ngspice 8 failed/3 unsupported, spice-ts 11 unsupported. Nine cross-dialect LTspice A-device inputs and two `mc()` filters have no ngspice reference. Empty/null waveform metrics are unavailable, never zero errors. This is a partial survey receipt, not expanded measured parity or a speed win. No daytime aggregate refresh; nightly #855 owns incorporation.
+
 
 ## B-source finite-Jacobian overflow probes (#899)
 
@@ -858,8 +959,37 @@ Local paths are relative to `benchmarks/corpus/xyce-spice3/`; full SHA-256 value
 - Selection (spice-ts-blind, corpus-h rules unchanged plus the `.sim` and `.cir.out` extensions): 467 candidate netlists; content-hash dedupe against every existing corpus fixture (0 already in a corpus) and across sources (31 duplicates); corpus-f static rules (1 licence notice, 8 host commands, 195 not self-contained, 190 without analysis); an ngspice-47 reference probe on the identical bytes (17 without a reference, receipt `benchmarks/corpus/corpus-i/ngspice-probe.json`); a 16-per-directory cap (none capped). The KiCad demo netlist and the VACASK transistor-level ISCAS c6288 decks load companion files and are listed as `not-self-contained`.
 - Outcome receipt: `benchmarks/corpus/corpus-i/outcomes.json` and [`README.md`](corpus/corpus-i/README.md), generated by `pnpm build && spice-heavy pnpm exec tsx benchmarks/corpus/corpus-i/parity.ts` with the corpus-f runner and uniform 1% metric. At commit time on ngspice-47 / spice-ts 0.3.0: ngspice 25/25 success; spice-ts matched 17, mismatch 1, spice-ts-loss 7. Every loss is listed; gap buckets link #553 (XSPICE code models), #837 (bare `.param` names as R/C/L values), #838 (`.ac` with event-driven digital instances) and #839 (harness heap on a 1e6-point transient); the mismatch is #840.
 
+## Mutually accepted ngspice / Xyce cross-check (#948)
+
+`benchmarks/reference/mutual-948/` is a separate reference-only artifact, not
+aggregate scoring. The original aggregate A..E fixtures are followed by the
+already-licensed original F..J manifests in manifest order (hash tie-breaker).
+No new external material or already-translated `-spice3` variants are ingested.
+Per-file URLs, revisions and original licences remain in the existing corpus
+manifests and `SOURCES.md` files; canonical/projected derivatives retain those
+licences, not the MIT licence of the reporting code. Original/canonical hashes,
+analysis types, every exclusion and observed reference disagreement are in
+the subset manifest and [report](reference/mutual-948/README.md). Both references
+see the same canonical circuit and ordinal analysis projection; only export
+directives differ. Selection never uses spice-ts results. Every native warning
+and execution/export/parse failure is retained; export failure is not evidence
+of nonconvergence. Runs require `spice-heavy`; no model-equivalence claim is made.
+
 ## Known ngspice bugs corpus (issue #803)
 
 - Source: the open ngspice bug tickets (status `open` or `open-accepted`, 134 tickets on 2026-10-12) at https://sourceforge.net/p/ngspice/bugs/, harvested read-only through the SourceForge REST API (`https://sourceforge.net/rest/p/ngspice/bugs/search?q=status:open+OR+status:open-accepted`). Every deck records its ticket URL, attachment URL and SHA-256 in `benchmarks/corpus/ngspice-bugs/manifest.json`.
 - Licence: decks were posted publicly on the tracker by their authors without an explicit licence. Redistribution decision: only small (at most 3 KB) user-authored decks are committed, quoted to reproduce the bug reports, plus dot-card variants derived from them; #877/#878 decks were written by the spice-ts owner. Vendor model libraries, PDK files, archives and large attachments are not committed; `benchmarks/corpus/ngspice-bugs/fetch.ts` downloads them from the tracker into the git-ignored `fetched/` directory and verifies their hashes.
 - Adaptation: dot-card variants of `.control`-only decks and rewritten absolute Windows include paths, each recorded per ticket in the manifest. Method, engines and outcomes: [`benchmarks/corpus/ngspice-bugs/README.md`](corpus/ngspice-bugs/README.md) and [`benchmarks/NGSPICE_BUGS.md`](NGSPICE_BUGS.md).
+
+## Xyce Linux reference container (#948 source-build verification)
+
+| Source | Pin | Licence / redistribution | Local recipe and evidence |
+| --- | --- | --- | --- |
+| [Docker Official Ubuntu image](https://hub.docker.com/_/ubuntu), Ubuntu 24.04.4, Linux arm64 | OCI index `sha256:786a8b558f7be160c6c8c4a54f9a57274f3b4fb1491cf65146521ae77ff1dc54`; arm64 manifest `sha256:ea0b2b8607a61f981b2461f21edc27c0b37ddd53d23d4d350936480adf5de28c` | Per-package Ubuntu licences ([copyright policy](https://www.ubuntu.com/legal/intellectual-property-policy)); image and installed packages fetched, no image or executable redistributed in this repository | `benchmarks/reference/Dockerfile.xyce` pins GCC 13.3.0, CMake 3.28.3 and direct prerequisites; `benchmarks/reference/linux-build/` records build and cross-check evidence; Xyce/SuiteSparse/Trilinos source provenance remains in the existing Xyce section |
+
+## MOS2 series-resistance evidence (#982)
+
+- Unit probes in `packages/core/src/devices/mos2-series-resistance-982.test.ts` and `evidence/982/reference-probes.py` are original spice-ts test circuits (repository MIT licence). ngspice-47 OP/AC/transient reference numbers are measured on identical probe bytes; no vendor model library is used.
+- Public corpus inputs are read without alteration from corpus-k at accepted commit `e05f5f1748bb7aaada478e9c3378ec4dfb45e17c`, not copied into this implementation branch. Canonical source is [Xyce_Regression](https://github.com/Xyce/Xyce_Regression/tree/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2), revision `7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2`, GPL-3.0-or-later. The pinned corpus-k manifest and licence receipts retain the upstream notices and per-deck hashes.
+- `evidence/982/parity.ts` runs the 13 reference-successful MOS2 resistance-gap fixtures plus e1480 (both-engine failure) through unchanged corpus-f runners and corpus-j metrics. Before results come from the accepted corpus-k receipt; after results use the implementation build. Original-byte hashes are checked, uniform 1% thresholds are unchanged, and all outcomes remain in `evidence/982/parity.json`. No aggregate refresh or speed-superiority claim.
+

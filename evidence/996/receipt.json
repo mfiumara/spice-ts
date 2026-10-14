@@ -1,0 +1,33 @@
+{
+  "task": "t_2ddea73e",
+  "issue": "https://github.com/mfiumara/spice-ts/issues/996",
+  "baselineCommit": "ab17a0eccd357cfcd11c1c9ff5162ce02b10f39c",
+  "coreTree": "2fd270ed8ea43e367f6b1ab8fbb9d3e47c86687d",
+  "environment": {"platform":"darwin","release":"27.0.0","arch":"arm64","cpu":"Apple M5 Pro","node":"v22.23.1","pnpm":"10.28.1","ngspice":"ngspice-47, KLU"},
+  "commands": [
+    {"command":"pnpm install --frozen-lockfile","exitCode":0},
+    {"command":"pnpm build","exitCode":0},
+    {"command":"pnpm lint","exitCode":0},
+    {"command":"spice-heavy pnpm test","exitCode":0,"processReceipt":"proc_987281e95de0","note":"Full monorepo suite, then root benchmark tests. Final root TAP group: 148 tests, 144 pass, 4 skip, 0 fail; not a claim that these are the monorepo total."},
+    {"command":"spice-heavy pnpm exec tsx evidence/996/localize.ts && python3 evidence/996/analyze.py && spice-heavy pnpm exec tsx evidence/996/device-probes.ts && python3 evidence/996/check.py","exitCode":0,"processReceipt":"proc_ea511b7b3682","runs":21,"matchedBiasProbes":430}
+  ],
+  "originalFirstViolations": [
+    {"id":"k-5","time":0,"node":"v(xi10.10)","absoluteDifference":4.9999998785166415,"unit":"V"},
+    {"id":"k-10","time":4.822800000000044e-7,"node":"i(vdd)","absoluteDifference":3.027814174721054e-7,"unit":"A"},
+    {"id":"k-15","time":2.9137595656308023e-9,"node":"v(13)","absoluteDifference":0.05562019996679767,"unit":"V"}
+  ],
+  "buckets": [
+    {"id":"A","classification":"OP solution selection in multistable SRAM","issue":"https://github.com/mfiumara/spice-ts/issues/1001"},
+    {"id":"B","classification":"mosrect finite-step/nonlinear transient trajectory; exact history/integration/stopping line not yet identified","issue":"https://github.com/mfiumara/spice-ts/issues/1002"},
+    {"id":"C","classification":"ring startup phase offset plus residual shape error; not accumulating frequency drift","issue":"https://github.com/mfiumara/spice-ts/issues/1003"}
+  ],
+  "limitations": [
+    "No simulator fix; no fixture, tolerance, or aggregate refresh.",
+    "First violation uses the unchanged 1% threshold, not first nonzero floating difference.",
+    "Instantaneous matched-bias probes do not validate transient history.",
+    "ngspice MOS2 has no qb output parameter; qbs/qbd are compared separately with explicit qb unavailability stderr.",
+    "The smallest tested reproducer of the original ring voltage/phase symptom remains 17 stages; smaller controls are retained, not claimed to prove the same cause.",
+    "Tight-tolerance cram fails in both engines and remains not-compared.",
+    "No Xyce or analytic verdict and no speed claim."
+  ]
+}

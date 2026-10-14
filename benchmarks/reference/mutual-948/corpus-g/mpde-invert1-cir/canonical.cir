@@ -1,0 +1,46 @@
+MOS LEVEL 1 MODEL CMOS INVERTER.  new-DAE baseline for MDPE test.
+*
+* new-DAE baseline version.
+* Eric Keiter, Sandia National Laboratories.
+*
+* This ia 1-input CMOS inverter, which is derived from the INVERT1 
+* regression test.   For the original description, see file 
+* Xyce_Test/Netlists/INVERT1/invert1.cir.
+*
+* The biggest difference between this circuit and the 
+* original is that the rise and fall times are longer,
+* in order for the fast time scale to more easily resolve
+* the rise and fall.  
+*
+*    original TR, TF = 5ns
+*    new      TR, TF = 0.15us
+*
+.tran 20ns 6us
+*COMP {v(vout)+2.0} reltol=3.0e-2
+.print tran {v(vout)+2.0} {v(in)+2.0} {v(1)+2.0}
+.options TIMEINT maxord=5 debuglevel=-10 reltol=1.0e-4
+
+VDDdev 	VDD	0	5V
+RIN	IN	1	1K
+*                   v1 v2   td  tr  tf   pw   per
+*VIN1  1	0  5V PULSE (5V 0V 1.5us 5ns 5ns 1.5us 3us)
+VIN1  1	0  5V PULSE (5V 0V 1.5us 0.15us 0.15us 1.5us 3.3us)
+R1    VOUT  0  10K  
+C2    VOUT  0  0.1p 
+MN1   VOUT  IN 0 0 CD4012_NMOS L=5u W=175u 
+MP1   VOUT IN VDD VDD CD4012_PMOS L=5u W=270u 
+**************************************************************************
+.MODEL cd4012_pmos PMOS (
++ LEVEL = 1  UO = 310  VTO = -1.6  TOX = 6E-08  NSUB = 5.701E+15 
++ NSS =1E-10   RS = 5.359  RD = 93.66  RSH =2E-10  IS = 1E-14  
++ LD = 3E-08  KP = 1.711E-05 L=5u W=270u lambda=0.02 GAMMA=0.37 PHI=0.65
++ CBD=0.1P CBS=0.1P PB=0.81 CGSO=2P CGBO=4P CGDO=2P CJ=2E-4 MJ=0.5 CJSW=1E-9
++ MJSW=0.5 JS=1E-8 TPG=0 KF=1E-25 AF=1 FC=0.5 TNOM=27)
+**************************************************************************
+.MODEL cd4012_nmos NMOS (
++ LEVEL = 1 UO = 190   VTO = 1.679  TOX = 6E-08   NSUB = 8.601E+15
++ NSS = 0     RS = 13.21   RD = 11.59   RSH = 0   IS = 1E-14
++ LD = 8.6E-07   KP = 2.161E-05  L=5u W=175u lambda=0.02 GAMMA=0.37 PHI=0.65
++ CBD=0.1P CBS=0.1P PB=0.81 CGSO=2P CGBO=4P CGDO=2P CJ=2E-4 MJ=0.5 CJSW=1E-9
++ MJSW=0.5 JS=1E-8 TPG=0 KF=1E-25 AF=1 FC=0.5 TNOM=27)
+.END

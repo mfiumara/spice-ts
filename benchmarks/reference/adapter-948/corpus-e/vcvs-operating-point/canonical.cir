@@ -1,0 +1,16 @@
+# voltage source test
+v1 1 0 1 ac 1
+r1 1 2 1k
+r2 2 0 1k
+e1 3 0 2 0 4.
+r3 3 0 1k
+g1 4 0 2 0 4.
+r3 4 0 1k
+.op
+.op
+.op
+.ac 1k
+.ac 1k
+.ac 1k
+*>.status notime
+.end

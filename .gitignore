@@ -12,3 +12,8 @@ test-results.xml
 .vercel/
 .vercel
 benchmarks/corpus/ngspice-bugs/fetched/
+*.log
+*POTETO*.md
+PR.md
+SUBSET-PR.md
+benchmarks/reference/*-issue.md

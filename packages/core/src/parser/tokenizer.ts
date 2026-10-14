@@ -1,5 +1,6 @@
 import { ParseError } from '../errors.js';
 import { translatePolySource } from './controlled-source.js';
+import { assertNoControlledTable } from './controlled-table.js';
 
 // Ngspice scale factors are case-insensitive. In particular, both M and m
 // mean milli; mega must be written as MEG. Values are decimal exponents.
@@ -181,6 +182,7 @@ export function tokenizeNetlist(
  */
 function pushCard(result: ParsedLine[], text: string, lineNumber: number): void {
   const tokens = tokenizeLine(text);
+  assertNoControlledTable(tokens, lineNumber, text);
   const poly = translatePolySource(tokens, lineNumber, text);
   result.push(poly === undefined ? { raw: text, lineNumber, tokens } : { raw: poly, lineNumber, tokens: tokenizeLine(poly) });
 }

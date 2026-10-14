@@ -1,0 +1,29 @@
+Title: Age Aware Capacitor Model Test
+**
+R1 1 2 1
+V1 1 0 PULSE(0 2 100N 1U 1U 15U)
+R2 2 0 10E12
+VMON 2 3 0
+
+*
+* ageCoef = 0.0233 by default.
+* baseCap = 4.0UF
+* age     = 87600
+* baseCap = baseCap * (1-ageCoef*log10(age));
+*
+.param ageCoef = {0.023300000000}
+.param baseCap = {4.000000000UF}
+.param age     = {8.76e+4}
+.param log_age = {log10(age)}
+.param cap     = {baseCap * (1.0-ageCoef*log_age)}
+
+COLD 3 0 {cap}
+.TRAN 0.1US 100US
+
+* Xyce option needed when default is changed to 1 (Backward Euler).
+* Also serves as useful test of non-default method.
+*.OPTIONS TIMEINT METHOD=2 reltol=1.0e-4
+.OPTIONS TIMEINT reltol=1.0e-4
+
+.PRINT TRAN I(VMON) V(3)
+.END

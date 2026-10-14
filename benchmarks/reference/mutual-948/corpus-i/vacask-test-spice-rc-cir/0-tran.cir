@@ -1,0 +1,6 @@
+* RC low-pass, SPICE dialect
+V1 1 0 DC 0 PULSE(0 5 1m 1u 1u 4m 10m)
+R1 1 2 1k
+C1 2 0 2u
+.tran 1u 10m
+.end

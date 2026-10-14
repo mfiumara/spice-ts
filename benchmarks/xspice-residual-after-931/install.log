@@ -1,0 +1,23 @@
+Scope: all 10 workspace projects
+Lockfile is up to date, resolution step is skipped
+Progress: resolved 1, reused 0, downloaded 0, added 0
+Packages: +368
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Progress: resolved 368, reused 368, downloaded 0, added 368, done
+ WARN  Failed to create bin at /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/examples/node_modules/.bin/spice-ts-mcp. ENOENT: no such file or directory, open '/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/packages/mcp/dist/stdio.js'
+
+devDependencies:
++ @changesets/cli 2.31.0
++ @types/node 25.5.2
++ eecircuit-engine 1.7.0
++ tsx 4.21.0
+
+ WARN  Failed to create bin at /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/examples/node_modules/.bin/spice-ts-mcp. ENOENT: no such file or directory, open '/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_2025565b/examples/node_modules/@spice-ts/mcp/dist/stdio.js'
+╭ Warning ─────────────────────────────────────────────────────────────────────╮
+│                                                                              │
+│   Ignored build scripts: esbuild@0.27.7.                                     │
+│   Run "pnpm approve-builds" to pick which dependencies should be allowed     │
+│   to run scripts.                                                            │
+│                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Done in 868ms using pnpm v10.28.1

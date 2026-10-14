@@ -1,0 +1,81 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: * mult4bit.spi ---
+
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+b3                                           0
+b2                                           0
+b1                                           0
+b0                                           0
+a3                                           0
+a2                                           0
+a1                                           0
+a0                                           0
+p7                                           0
+p6                                           0
+p5                                           0
+p4                                           0
+p3                                           0
+p2                                           0
+p1                                           0
+p0                                           0
+vv0#branch                                   0
+vv1#branch                                   0
+vv2#branch                                   0
+vv3#branch                                   0
+vv4#branch                                   0
+vv5#branch                                   0
+vv6#branch                                   0
+vv7#branch                                   0
+a.xmult4.ad2a00#branch_1_0                   0
+a.xmult4.ad2a00#branch_1_1                   0
+a.xmult4.ad2a00#branch_1_2                   0
+a.xmult4.ad2a00#branch_1_3                   0
+a.xmult4.ad2a00#branch_1_4                   0
+a.xmult4.ad2a00#branch_1_5                   0
+a.xmult4.ad2a00#branch_1_6                   0
+a.xmult4.ad2a00#branch_1_7                   0
+
+ Reference value :  1.09006e-02
+No. of Data Rows : 71796
+
+Total analysis time (seconds) = 0.276465
+
+Total elapsed time (seconds) = 0.281 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 12235.750 MB.
+Maximum ngspice program size =   37.453 MB.
+Current ngspice program size =   37.453 MB.
+INFO: multiplier output does match golden response
+ASCII raw file "output.raw"
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Total analysis time (seconds) = 0.276496
+
+Total elapsed time (seconds) = 0.285 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 12235.750 MB.
+Maximum ngspice program size =   37.688 MB.
+Current ngspice program size =   37.688 MB.
+
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+

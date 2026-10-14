@@ -1,0 +1,24 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: * test for issue 729, ac version
+
+
+Error in netlist line no. 25, new internal line no. 30:
+
+Undefined parameter [ir]
+Error in netlist line no. 25, new internal line no. 30:
+
+ Expression err: ir(v1_r1))-(ir(v1)))/dr } {((ii(v1_r1))-(ii(v1)))/dr } {((im(v1_r1))-(im(v1)))/dr } {((ip(v1_r1))-(ip(v1)))/dr } v(v1) vm(v1) vp(v1) {((vr(v1_r1))-(vr(v1)))/dr } {((vi(v1_r1))-(vi(v1)))/dr } {((vm(v1_r1))-(vm(v1)))/dr } {((vp(v1_r1))-(vp(v1)))/dr }
+Error in netlist line no. 25, new internal line no. 30:
+
+ Expression err: (ir(v1_r1))-(ir(v1)))/dr } {((ii(v1_r1))-(ii(v1)))/dr } {((im(v1_r1))-(im(v1)))/dr } {((ip(v1_r1))-(ip(v1)))/dr } v(v1) vm(v1) vp(v1) {((vr(v1_r1))-(vr(v1)))/dr } {((vi(v1_r1))-(vi(v1)))/dr } {((vm(v1_r1))-(vm(v1)))/dr } {((vp(v1_r1))-(vp(v1)))/dr }
+Error in netlist line no. 25, new internal line no. 30:
+
+ Expression err: ((ir(v1_r1))-(ir(v1)))/dr } {((ii(v1_r1))-(ii(v1)))/dr } {((im(v1_r1))-(im(v1)))/dr } {((ip(v1_r1))-(ip(v1)))/dr } v(v1) vm(v1) vp(v1) {((vr(v1_r1))-(vr(v1)))/dr } {((vi(v1_r1))-(vi(v1)))/dr } {((vm(v1_r1))-(vm(v1)))/dr } {((vp(v1_r1))-(vp(v1)))/dr }
+Error in netlist line no. 25, new internal line no. 30:
+
+Cannot compute substitute
+
+ERROR: fatal error in ngspice, exit(1)

@@ -1,0 +1,21 @@
+***********************************************************
+* A Xyce netlist that has a .OP statement but not a .NOISE
+* statement will produce a fatal error during netlist
+* parsing.  That is not optimal, and should be changed.
+***********************************************************
+
+* RESISTOR DIVIDER
+V1  1 0 DC 5.0 AC  1.0
+R1  1 2 100K
+R2  2 0 100K
+*
+* AMP AND LP FILTER
+EAMP  3 0 2 0 1
+RLP1  3 4 100
+CLP1  4 0 1.59NF
+
+.OP
+
+.MEASURE NOISE maxvm4 max vm(4)
+
+.end

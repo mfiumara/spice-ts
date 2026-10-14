@@ -1,0 +1,73 @@
+{
+  "deck": "MOS2 series reference direct\nVDD vdd 0 5\nVG g 0 PULSE(0 3 2n 1n 1n 3n 8n)\nRL vdd d 1k\nM1 d g 0 0 N W=10u L=2u NRD=2 NRS=3 M=2\n.MODEL N NMOS (LEVEL=2 VTO=0.8 KP=50u GAMMA=0.5 PHI=0.6 LAMBDA=0.02 TOX=25n CGSO=1n CGDO=1n CBD=1p CBS=1p RD=50 RS=30 RSH=500)\n.TRAN 0.05n 10n\n.END\n",
+  "exitCode": 0,
+  "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: mos2 series reference direct\n\nASCII raw file \"/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/mos2-982-probes/transient.raw\"\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 6  \n\nInitial Transient Solution\n--------------------------\n\nNode                                   Voltage\n----                                   -------\nvdd                                          5\ng                                            0\nd                                            5\nvg#branch                                    0\nvdd#branch                           -5.02e-12\n\n\nNo. of Data Rows : 220\n\nTotal analysis time (seconds) = 0.002326\n\nTotal elapsed time (seconds) = 0.009 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 14601.562 MB.\nMaximum ngspice program size =   10.172 MB.\nCurrent ngspice program size =   10.172 MB.\n\n",
+  "stderr": "",
+  "points": 220,
+  "samples": [
+    {
+      "time": 0,
+      "v(vdd)": 5.0,
+      "v(g)": 0.0,
+      "v(d)": 4.999999994979996,
+      "i(vg)": 0.0,
+      "i(vdd)": -5.020003968070341e-12
+    },
+    {
+      "time": 2e-09,
+      "v(vdd)": 5.0,
+      "v(g)": 0.0,
+      "v(d)": 4.99999999498001,
+      "i(vg)": 1.952632979140493e-17,
+      "i(vdd)": -5.019989757215626e-12
+    },
+    {
+      "time": 2.5e-09,
+      "v(vdd)": 5.0,
+      "v(g)": 1.5000000000000007,
+      "v(d)": 5.0182792531992115,
+      "i(vg)": -0.0002315118101388017,
+      "i(vdd)": 1.8279253199211515e-05
+    },
+    {
+      "time": 3e-09,
+      "v(vdd)": 5.0,
+      "v(g)": 3.0,
+      "v(d)": 4.780334625426376,
+      "i(vg)": -0.000248276475716221,
+      "i(vdd)": -0.0002196653745736237
+    },
+    {
+      "time": 4e-09,
+      "v(vdd)": 5.0,
+      "v(g)": 3.0,
+      "v(d)": 4.1963878689350915,
+      "i(vg)": -5.910480262040673e-06,
+      "i(vdd)": -0.0008036121310649084
+    },
+    {
+      "time": 6.5e-09,
+      "v(vdd)": 5.0,
+      "v(g)": 1.5000000000000002,
+      "v(d)": 4.2086154561284195,
+      "i(vg)": 0.00024488583357521696,
+      "i(vdd)": -0.0007913845438715802
+    },
+    {
+      "time": 8e-09,
+      "v(vdd)": 5.0,
+      "v(g)": 0.0,
+      "v(d)": 4.866543614257182,
+      "i(vg)": 3.458757765347051e-06,
+      "i(vdd)": -0.00013345638574281733
+    },
+    {
+      "time": 1e-08,
+      "v(vdd)": 5.0,
+      "v(g)": 0.0,
+      "v(d)": 4.989565822193103,
+      "i(vg)": 2.717330151029e-07,
+      "i(vdd)": -1.043417780689726e-05
+    }
+  ]
+}

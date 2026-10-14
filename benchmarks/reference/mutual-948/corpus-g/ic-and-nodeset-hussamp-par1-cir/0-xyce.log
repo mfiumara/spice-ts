@@ -1,0 +1,272 @@
+
+*****
+***** Welcome to the Xyce(TM) Parallel Electronic Simulator
+*****
+***** This is version XyceNF Release 7.10.0
+***** Date: Wed Oct 14 02:02:06 CEST 2026
+
+
+***** Executing netlist input.cir
+
+***** Reading and parsing netlist...
+***** Setting up topology...
+
+***** Device Count Summary ...
+       C level 1 (Capacitor)                   2
+       M level 2 (MOSFET level 2)             16
+       R level 1 (Resistor)                    1
+       V level 1 (Independent Voltage Source)  3
+       -----------------------------------------
+       Total Devices                          22
+***** Setting up matrix structure...
+***** Number of Unknowns = 17
+***** Initializing...
+
+------------------------------------------------------------
+Operating point information:
+Number of Capacitor models: 1
+          name C level 1 (Capacitor)
+          type                
+         level               1
+           TNOM             27
+            TC2              0
+            TC1              0
+           CJSW              0
+         NARROW              0
+           DEFW          1e-06
+             CJ              0
+
+              C              1
+
+Number of Capacitor instances: 2
+          name              CC             CL
+         model C level 1 (Capacitor)C level 1 (Capacitor)
+            TC2              0              0
+             IC              0              0
+            TC1              0              0
+              D         0.0233         0.0233
+            AGE              0              0
+              C        2.2e-13          1e-11
+              W          1e-06          1e-06
+          DTEMP              0              0
+              L              1              1
+           TEMP             27             27
+              Q              0              0
+              M              1              1
+
+
+Number of Independent Voltage Source models: 1
+          name V level 1 (Independent Voltage Source)
+          type                
+         level               1
+
+Number of Independent Voltage Source instances: 3
+          name             VAP            VDD            VIN
+         model V level 1 (Independent Voltage Source)V level 1 (Independent Voltage Source)V level 1 (Independent Voltage Source)
+           PORT              0              0              0
+            NUM              0              0              0
+   DCSOURCETYPE              6              6              6
+TRANSIENTSOURCETYPE              2              6              6
+        TSAMPLE          5e-08              0              0
+            VLO            0.5              0              0
+              R              0              0              0
+   ACSOURCETYPE              7              7              7
+          ACMAG              0              0              0
+            VHI              0              0              0
+           TAU1          1e-09              0              0
+        ACPHASE              0              0              0
+             PW          5e-08              0              0
+           TAU2          5e-08              0              0
+            TD1              0              0              0
+          PHASE          5e-08              0              0
+           FREQ          1e-09              0              0
+             Z0             50             50             50
+             V0              0              0              0
+             VA            0.5              0              0
+             TF          1e-09              0              0
+            PER          1e-07              0              0
+             V2            0.5              0              0
+            TD2          1e-09              0              0
+             FC              0              0              0
+             RB              1              1              1
+             TR          1e-09              0              0
+          THETA          1e-09              0              0
+           DCV0              0              5            2.5
+             TD              0              0              0
+           DATA                                             
+            MDI          1e-09              0              0
+              T              0              0              0
+             FS          1e-09              0              0
+              V              0              0              0
+             V1              0              0              0
+
+
+Number of MOSFET level 2 models: 2
+          name             NCH            PCH
+          type            NMOS           PMOS
+         level               2              2
+            TPG              1              1
+             AF              1              1
+            NFS              0              0
+      TEMPMODEL           NONE           NONE
+             XJ              0          2e-07
+           VMAX              0              0
+           UEXP              0              0
+            NSS              0              0
+             U0            411            139
+           TNOM             27             27
+            TOX       2.25e-08       2.25e-08
+             CJ       0.000374       0.000475
+           MJSW            0.5            0.5
+             LD              0              0
+           CGDO       2.89e-10       3.35e-10
+           CJSW              0              0
+            RSH              0              0
+           CGSO       2.89e-10       3.35e-10
+             PB            0.8            0.8
+           CGBO              0              0
+         LAMBDA           0.02           0.02
+             IS          1e-14          1e-14
+            CBS              0              0
+          UCRIT          10000          10000
+             UO            411            139
+          GAMMA           0.29            0.6
+            CBD              0              0
+             JS              0              0
+             RS              0              0
+            VTO           0.71          -0.76
+             FC            0.5            0.5
+             KP    6.30774e-05    2.13328e-05
+             MJ            0.4            0.4
+             KF              0              0
+            VT0           0.71          -0.76
+           NEFF              1              1
+             RD              0              0
+            PHI       0.760237       0.719746
+          DELTA              0              0
+              L         0.0001         0.0001
+           NSUB        3.5e+16        1.6e+16
+              W         0.0001         0.0001
+
+Number of MOSFET level 2 instances: 16
+          name              M3            M30             M4            M40            M61            M62             M7
+             M8            M80            M10             M2            M20            M50            M63            M64
+            M65
+         model             NCH            NCH            NCH            NCH            NCH            NCH            NCH
+            NCH            NCH            PCH            PCH            PCH            PCH            PCH            PCH
+            PCH
+            IC3              0              0              0              0              0              0              0
+              0              0              0              0              0              0              0              0
+              0
+            IC2              0              0              0              0              0              0              0
+              0              0              0              0              0              0              0              0
+              0
+              M              1              1              1              1              1              1              1
+              1              1              1              1              1              1              1              1
+              1
+            OFF              0              0              0              0              0              0              0
+              0              0              0              0              0              0              0              0
+              0
+             PS              0              0              0              0              0              0              0
+              0              0              0              0              0              0              0              0
+              0
+            IC1              0              0              0              0              0              0              0
+              0              0              0              0              0              0              0              0
+              0
+            NRS              1              1              1              1              1              1              1
+              1              1              1              1              1              1              1              1
+              1
+            NRD              1              1              1              1              1              1              1
+              1              1              1              1              1              1              1              1
+              1
+             PD              0              0              0              0              0              0              0
+              0              0              0              0              0              0              0              0
+              0
+             AD       1.36e-10       1.36e-10       1.36e-10       1.36e-10              0              0       1.36e-10
+       1.36e-10              0        2.4e-11        2.4e-11        2.4e-11        2.4e-11              0              0
+              0
+             AS       1.36e-10       1.36e-10       1.36e-10       1.36e-10              0              0       1.36e-10
+       1.36e-10              0        2.4e-11        2.4e-11        2.4e-11        2.4e-11              0              0
+              0
+              W        2.4e-05          6e-06        4.6e-05          6e-06        1.2e-05        3.5e-05         0.0001
+        6.3e-05          4e-06        1.1e-05          8e-05        1.1e-05        1.4e-05        6.9e-05        7.1e-05
+        4.5e-06
+          DTEMP              0              0              0              0              0              0              0
+              0              0              0              0              0              0              0              0
+              0
+              L          2e-06          3e-06          2e-06          3e-06          1e-05          1e-05          2e-06
+          2e-06          3e-06          2e-06          2e-06          2e-06          2e-06          1e-05          1e-05
+          4e-05
+           TEMP             27             27             27             27             27             27             27
+             27             27             27             27             27             27             27             27
+             27
+
+
+Number of Resistor models: 1
+          name R level 1 (Resistor)
+          type                
+         level               1
+           TNOM             27
+           DEFW          1e-05
+         NARROW              0
+              R              1
+            RSH              0
+            TC2              0
+            TCE              0
+
+            TC1              0
+
+Number of Resistor instances: 1
+          name              RF
+         model R level 1 (Resistor)
+            TCE              0
+            TC2              0
+            TC1              0
+           TEMP             27
+          DTEMP              0
+              L              0
+              W          1e-05
+              M              1
+              R            100
+
+------------------------------------------------------------
+
+***** Solution Summary *****
+	Number Successful Steps Taken:		1
+	Number Failed Steps Attempted:		0
+	Number Jacobians Evaluated:		2121
+	Number Linear Solves:			2121
+	Number Failed Linear Solves:		0
+	Number Residual Evaluations:		2173
+	Number Nonlinear Convergence Failures:	0
+	Total Residual Load Time:		0.00448751 seconds
+	Total Jacobian Load Time:		0.00198364 seconds
+	Total Linear Solution Time:		0.00544834 seconds
+
+
+***** Total Simulation Solvers Run Time: 0.0343771 seconds
+***** Total Elapsed Run Time:            0.0363979 seconds
+*****
+***** End of Xyce(TM) Simulation
+*****
+
+Timing summary of 1 processor
+                 Stats                   Count       CPU Time              Wall Time
+---------------------------------------- ----- --------------------- ---------------------
+Xyce                                         1        0.028 (100.0%)        0.037 (100.0%)
+  Analysis                                   1        0.026 (95.09%)        0.034 (92.94%)
+    DC Sweep                                 1        0.026 (95.07%)        0.034 (92.93%)
+      Solve                                  1        0.026 (94.26%)        0.033 (90.61%)
+        Residual                          2173        0.005 (17.15%)        0.006 (15.45%)
+        Jacobian                          2121        0.002 ( 8.30%)        0.003 ( 8.63%)
+        Linear Solve                      2121        0.006 (20.48%)        0.007 (17.92%)
+      Successful Step                        1        0.000 ( 0.73%)        0.001 ( 1.53%)
+  Netlist Import                             1        0.001 ( 2.61%)        0.001 ( 3.42%)
+    Parse Context                            1        0.000 ( 0.69%)        0.000 ( 0.67%)
+    Distribute Devices                       1        0.000 ( 1.06%)        0.000 ( 0.85%)
+    Verify Devices                           1        0.000 ( 0.01%)        0.000 ( 0.01%)
+    Instantiate                              1        0.000 ( 0.28%)        0.000 ( 1.10%)
+  Late Initialization                        1        0.000 ( 0.94%)        0.000 ( 1.01%)
+    Global Indices                           1        0.000 ( 0.16%)        0.000 ( 0.13%)
+  Setup Matrix Structure                     1        0.000 ( 0.20%)        0.000 ( 0.29%)
+

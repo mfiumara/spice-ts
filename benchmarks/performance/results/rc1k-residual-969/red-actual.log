@@ -1,0 +1,36 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_d2157b6a
+
+ ❯ benchmarks/performance/rc1k-attribution.test.ts (11 tests | 1 failed) 133ms
+     × supports optional residual spans without changing the default targets 9ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  benchmarks/performance/rc1k-attribution.test.ts > RC1k offline attribution receipts > supports optional residual spans without changing the default targets
+AssertionError: expected {} to deeply equal { outer: 1, inner: 1 }
+
+- Expected
++ Received
+
+- {
+-   "inner": 1,
+-   "outer": 1,
+- }
++ {}
+
+ ❯ benchmarks/performance/rc1k-attribution.test.ts:27:20
+     25|       leave: (key: string) => events.push('leave:' + key),
+     26|     } })).toBe(7);
+     27|     expect(counts).toEqual({ outer: 1, inner: 1 });
+       |                    ^
+     28|     expect(events).toEqual(['driver', 'lte', 'leave:lte', 'leave:drive…
+     29|     expect(instrument(source, 'nested.js', {})).toBe(source);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 10 passed (11)
+   Start at  01:28:03
+   Duration  355ms (transform 30ms, setup 0ms, import 139ms, tests 133ms, environment 0ms)
+

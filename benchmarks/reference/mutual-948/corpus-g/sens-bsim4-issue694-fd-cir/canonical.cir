@@ -1,0 +1,29 @@
+* Reference circuit for bug4_issue694.  This circuit is equivalent, but the sensitivities are computed via a crude finite difference.
+
+.model nfet_model nmos level = 54 
+.options timeint reltol=1.0e-6 method=gear
+.options device temp=25 
+
+* Not using option scale:
+.param Wparam=0.65u
+.param Lparam=0.15u
+
+.param dW=Wparam*1.0e-8
+
+* main circuit
+VIN1 vi 0 PWL(0S 0V  100ps 0V 300ps 1.8V )
+m_nfet 0 vi vo 0 nfet_model l = {Lparam} w = {Wparam}
+r1 vo 0 1.0e-4
+c1 vo 0 1.0e-7
+
+* m_fet:w perturbation circuit
+VIN1_w vi_w 0 PWL(0S 0V  100ps 0V 300ps 1.8V )
+m_nfet_w 0 vi_w vo_w 0 nfet_model l = {Lparam} w = {Wparam+dW}
+r1_w vo_w 0 1.0e-4
+c1_w vo_w 0 1.0e-7
+
+.tran 2ps 1ns
+*.dc vin1 1.8 1.8 1
+.print tran v(vo) { (v(vo_w) - v(vo))/dW }
+
+.end

@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "sourceHead": "0af58dbf5a4cd50be9d4bfd70058a68da084a8e0",
+  "command": "pnpm exec tsx packages/core/src/devices/__fixtures__/bsim4/baseline.ts",
+  "note": "Fresh spice-ts run on unchanged inputs. Native statuses are historical outcomes, not new executions. No numerical comparison exists.",
+  "fixtures": [
+    {
+      "corpus": "f",
+      "id": "examples-mos-nmos-pmos-bsim482-sp",
+      "path": "benchmarks/corpus/corpus-f/fixtures/examples/mos/nmos_pmos_BSIM482.sp",
+      "sha256": "817b8ed1a1879fce346a1750268fbca0005e759a68fa1d41204fcbf3c3f38ecb",
+      "recordedNgspiceStatus": "success",
+      "status": "failed",
+      "errorName": "InvalidCircuitError",
+      "errorCode": null,
+      "message": "DC sweep source 'temp' not found",
+      "comparedSignals": 0,
+      "maxAbsError": null,
+      "rmsError": null
+    },
+    {
+      "corpus": "f",
+      "id": "examples-various-gain-stage-cir",
+      "path": "benchmarks/corpus/corpus-f/fixtures/examples/various/gain_stage.cir",
+      "sha256": "6b46e806f7dc963f45a87ab33e1ce0a667624f362f0e3166fea6425a3bc81d79",
+      "recordedNgspiceStatus": "success",
+      "status": "failed",
+      "errorName": "UnsupportedModelParameterError",
+      "errorCode": "UNSUPPORTED_MODEL_PARAMETER",
+      "message": "BSIM4 static setup model '?' uses unsupported model parameter 'version': unported BSIM4 version family",
+      "comparedSignals": 0,
+      "maxAbsError": null,
+      "rmsError": null
+    },
+    {
+      "corpus": "f",
+      "id": "tests-regression-model-binning-1-cir",
+      "path": "benchmarks/corpus/corpus-f/fixtures/tests/regression/model/binning-1.cir",
+      "sha256": "a255d905b57819f5a8f500362322bbb8039a742a8b4ed527eb4b07c256307e55",
+      "recordedNgspiceStatus": "success",
+      "status": "failed",
+      "errorName": "InvalidCircuitError",
+      "errorCode": null,
+      "message": "MOSFET 'mx2' references unknown model 'nmos_tst'",
+      "comparedSignals": 0,
+      "maxAbsError": null,
+      "rmsError": null
+    },
+    {
+      "corpus": "g",
+      "id": "sens-bsim4-issue694-fd-cir",
+      "path": "benchmarks/corpus/corpus-g/fixtures/SENS/bsim4_issue694_FD.cir",
+      "sha256": "389855a2c201ca9c67578051bb074cabc015c4b3c2942ac9ee149f7934156bbb",
+      "recordedNgspiceStatus": "success",
+      "status": "failed",
+      "errorName": "UnsupportedModelParameterError",
+      "errorCode": "UNSUPPORTED_MODEL_PARAMETER",
+      "message": "Device 'm_nfet' uses unsupported model parameter 'tran': BSIM4 supports only static OP/DC in this slice",
+      "comparedSignals": 0,
+      "maxAbsError": null,
+      "rmsError": null
+    }
+  ]
+}

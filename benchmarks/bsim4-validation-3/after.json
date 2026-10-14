@@ -1,0 +1,1168 @@
+{
+  "schemaVersion": 1,
+  "sourceHead": "60e3e2a8853bb6329c2028dc11090a64dc9bf7a4",
+  "baselineHead": "760833b948280918f6abcfaa0d051a4f4d865ae9",
+  "command": "pnpm exec tsx benchmarks/bsim4-validation-3/compare.ts",
+  "policy": {
+    "identicalOriginalBytes": true,
+    "outputOnlyNativeInstrumentation": true,
+    "perCircuitTuning": false,
+    "pointMatching": "source order, full six plots; primary and secondary coordinates verified",
+    "relativeFloor": 1e-18
+  },
+  "grid": [
+    {
+      "name": "bsim482-nmos",
+      "status": "compared",
+      "signals": {
+        "id": {
+          "samples": 108,
+          "maxAbsError": 5.421010862427522e-19,
+          "rmsError": 8.793912248933251e-20,
+          "maxRelativeError": 4.9763671846152975e-15,
+          "rmsRelativeError": 1.3051684798713557e-15
+        },
+        "gm": {
+          "samples": 108,
+          "maxAbsError": 4.336808689942018e-19,
+          "rmsError": 9.743456585128148e-20,
+          "maxRelativeError": 5.554347758690551e-15,
+          "rmsRelativeError": 1.5406259913735578e-15
+        },
+        "gds": {
+          "samples": 108,
+          "maxAbsError": 1.3010426069826053e-18,
+          "rmsError": 1.7852092044882468e-19,
+          "maxRelativeError": 1.3493179035221754e-14,
+          "rmsRelativeError": 2.261800849920061e-15
+        },
+        "gmbs": {
+          "samples": 108,
+          "maxAbsError": 6.776263578034403e-20,
+          "rmsError": 1.3771236911932754e-20,
+          "maxRelativeError": 5.896090974044434e-15,
+          "rmsRelativeError": 1.6047581564810102e-15
+        }
+      }
+    },
+    {
+      "name": "bsim482-pmos",
+      "status": "compared",
+      "signals": {
+        "id": {
+          "samples": 108,
+          "maxAbsError": 5.421010862427522e-19,
+          "rmsError": 1.0278960662131419e-19,
+          "maxRelativeError": 9.623187770655412e-15,
+          "rmsRelativeError": 1.7214854246701186e-15
+        },
+        "gm": {
+          "samples": 108,
+          "maxAbsError": 3.2526065174565133e-19,
+          "rmsError": 9.8292599175758e-20,
+          "maxRelativeError": 1.0817294197641883e-14,
+          "rmsRelativeError": 2.0516560262605546e-15
+        },
+        "gds": {
+          "samples": 108,
+          "maxAbsError": 8.673617379884035e-19,
+          "rmsError": 2.04608822761669e-19,
+          "maxRelativeError": 3.2736394460751864e-14,
+          "rmsRelativeError": 3.9045168627734105e-15
+        },
+        "gmbs": {
+          "samples": 108,
+          "maxAbsError": 6.776263578034403e-20,
+          "rmsError": 1.5324008962593192e-20,
+          "maxRelativeError": 1.0289790328676901e-14,
+          "rmsRelativeError": 2.0016947574186826e-15
+        }
+      }
+    },
+    {
+      "name": "binning-vth07",
+      "status": "compared",
+      "signals": {
+        "id": {
+          "samples": 108,
+          "maxAbsError": 1.3552527156068805e-19,
+          "rmsError": 1.9899426753424497e-20,
+          "maxRelativeError": 4.294427336906589e-14,
+          "rmsRelativeError": 4.240003318115468e-15
+        },
+        "gm": {
+          "samples": 108,
+          "maxAbsError": 3.7947076036992655e-19,
+          "rmsError": 4.354754924238303e-20,
+          "maxRelativeError": 4.408408887573546e-14,
+          "rmsRelativeError": 4.3886433081323754e-15
+        },
+        "gds": {
+          "samples": 108,
+          "maxAbsError": 2.973085644862594e-19,
+          "rmsError": 4.571499047598711e-20,
+          "maxRelativeError": 3.4008649204066223e-13,
+          "rmsRelativeError": 3.2961519275938095e-14
+        },
+        "gmbs": {
+          "samples": 108,
+          "maxAbsError": 2.0328790734103208e-20,
+          "rmsError": 4.559145091966737e-21,
+          "maxRelativeError": 4.303477490345872e-14,
+          "rmsRelativeError": 4.3008600238442906e-15
+        }
+      }
+    },
+    {
+      "name": "binning-vth09",
+      "status": "compared",
+      "signals": {
+        "id": {
+          "samples": 108,
+          "maxAbsError": 1.1180834903756764e-19,
+          "rmsError": 2.281569036229501e-20,
+          "maxRelativeError": 5.3740804907549143e-14,
+          "rmsRelativeError": 7.88072416376408e-15
+        },
+        "gm": {
+          "samples": 108,
+          "maxAbsError": 6.505213034913027e-19,
+          "rmsError": 9.148092858645024e-20,
+          "maxRelativeError": 5.3699720400025446e-14,
+          "rmsRelativeError": 7.84797970818794e-15
+        },
+        "gds": {
+          "samples": 108,
+          "maxAbsError": 3.4558944247975454e-19,
+          "rmsError": 8.527775725445807e-20,
+          "maxRelativeError": 3.39664341654251e-13,
+          "rmsRelativeError": 3.7831273662285875e-14
+        },
+        "gmbs": {
+          "samples": 108,
+          "maxAbsError": 6.098637220230962e-20,
+          "rmsError": 7.736741226141078e-21,
+          "maxRelativeError": 5.149622430416615e-14,
+          "rmsRelativeError": 7.511117957094933e-15
+        }
+      }
+    },
+    {
+      "name": "gain-v43",
+      "status": "unsupported",
+      "error": "BSIM4 static setup model '?' uses unsupported model parameter 'version': unported BSIM4 version family",
+      "signals": null
+    },
+    {
+      "name": "minimal-nmos",
+      "status": "compared",
+      "signals": {
+        "id": {
+          "samples": 108,
+          "maxAbsError": 6.505213034913027e-19,
+          "rmsError": 8.934785830135292e-20,
+          "maxRelativeError": 5.398995718416266e-15,
+          "rmsRelativeError": 1.8730920063982495e-15
+        },
+        "gm": {
+          "samples": 108,
+          "maxAbsError": 4.336808689942018e-19,
+          "rmsError": 1.3027112988569697e-19,
+          "maxRelativeError": 6.615912507205386e-15,
+          "rmsRelativeError": 2.2487179940516e-15
+        },
+        "gds": {
+          "samples": 108,
+          "maxAbsError": 1.5178830414797062e-18,
+          "rmsError": 2.578715212701151e-19,
+          "maxRelativeError": 6.36449124211039e-15,
+          "rmsRelativeError": 2.0576433057616226e-15
+        },
+        "gmbs": {
+          "samples": 108,
+          "maxAbsError": 8.131516293641283e-20,
+          "rmsError": 1.5392638151684702e-20,
+          "maxRelativeError": 6.0544055021865415e-15,
+          "rmsRelativeError": 2.1518615804180367e-15
+        }
+      }
+    },
+    {
+      "name": "minimal-pmos",
+      "status": "compared",
+      "signals": {
+        "id": {
+          "samples": 108,
+          "maxAbsError": 1.4907779871675686e-19,
+          "rmsError": 3.7359472050145665e-20,
+          "maxRelativeError": 6.161335841573714e-15,
+          "rmsRelativeError": 1.937830814270512e-15
+        },
+        "gm": {
+          "samples": 108,
+          "maxAbsError": 3.2526065174565133e-19,
+          "rmsError": 6.692097601767093e-20,
+          "maxRelativeError": 7.713449146869715e-15,
+          "rmsRelativeError": 2.337985282697135e-15
+        },
+        "gds": {
+          "samples": 108,
+          "maxAbsError": 5.421010862427522e-19,
+          "rmsError": 1.0249080609121357e-19,
+          "maxRelativeError": 7.585196964658125e-15,
+          "rmsRelativeError": 2.1037346576358536e-15
+        },
+        "gmbs": {
+          "samples": 108,
+          "maxAbsError": 2.710505431213761e-20,
+          "rmsError": 7.355812725104433e-21,
+          "maxRelativeError": 7.451636188456855e-15,
+          "rmsRelativeError": 2.2333854180464485e-15
+        }
+      }
+    }
+  ],
+  "fixtures": [
+    {
+      "path": "benchmarks/corpus/corpus-f/fixtures/examples/mos/nmos_pmos_BSIM482.sp",
+      "sha256": "817b8ed1a1879fce346a1750268fbca0005e759a68fa1d41204fcbf3c3f38ecb",
+      "command": "ngspice -n -b input.cir",
+      "exitCode": 0,
+      "diagnostics": [],
+      "before": {
+        "corpus": "f",
+        "id": "examples-mos-nmos-pmos-bsim482-sp",
+        "path": "benchmarks/corpus/corpus-f/fixtures/examples/mos/nmos_pmos_BSIM482.sp",
+        "sha256": "817b8ed1a1879fce346a1750268fbca0005e759a68fa1d41204fcbf3c3f38ecb",
+        "recordedNgspiceStatus": "success",
+        "status": "unsupported",
+        "errorName": "UnsupportedModelLevelError",
+        "errorCode": "UNSUPPORTED_MODEL_LEVEL",
+        "message": "MOSFET 'M1' (model 'n1') uses unsupported model LEVEL=54 (supported MOSFET levels: 1, 2, 3, 4, 5, 6, 8, 9, 49)",
+        "comparedSignals": 0,
+        "maxAbsError": null,
+        "rmsError": null
+      },
+      "after": "compared",
+      "analyses": [
+        {
+          "plot": "dc1",
+          "command": "dc vgsn 0 1.5 0.05 vbsn 0 -2.5 -0.5",
+          "points": 186,
+          "outer": "vbsn",
+          "coordinates": {
+            "samples": 186,
+            "maxAbsError": 0,
+            "rmsError": 0,
+            "maxRelativeError": 0,
+            "rmsRelativeError": 0
+          },
+          "signals": {
+            "v(v-sweep)": {
+              "samples": 186,
+              "maxAbsError": 4.440892098500626e-16,
+              "rmsError": 2.366192031228846e-16,
+              "maxRelativeError": 3.861645303044023e-16,
+              "rmsRelativeError": 1.9135224577013047e-16
+            },
+            "v(1)": {
+              "samples": 186,
+              "maxAbsError": 4.440892098500626e-16,
+              "rmsError": 2.366192031228846e-16,
+              "maxRelativeError": 3.861645303044023e-16,
+              "rmsRelativeError": 1.9135224577013047e-16
+            },
+            "v(2)": {
+              "samples": 186,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "v(3)": {
+              "samples": 186,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "v(4)": {
+              "samples": 186,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "v(11)": {
+              "samples": 186,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "v(22)": {
+              "samples": 186,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "v(33)": {
+              "samples": 186,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "v(44)": {
+              "samples": 186,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "i(vbsn)": {
+              "samples": 186,
+              "maxAbsError": 8.077935669463161e-28,
+              "rmsError": 3.517736473199129e-28,
+              "maxRelativeError": 5.041306141096238e-16,
+              "rmsRelativeError": 2.0104911275286502e-16
+            },
+            "i(vbsp)": {
+              "samples": 186,
+              "maxAbsError": 1.262177448353619e-29,
+              "rmsError": 1.262177448353619e-29,
+              "maxRelativeError": 1.2590956061212563e-16,
+              "rmsRelativeError": 1.2590956061212536e-16
+            },
+            "i(vdsn)": {
+              "samples": 186,
+              "maxAbsError": 4.0955037471089575e-13,
+              "rmsError": 3.30023002776016e-14,
+              "maxRelativeError": 0.16753420250091278,
+              "rmsRelativeError": 0.013250560728546166
+            },
+            "i(vdsp)": {
+              "samples": 186,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "i(vgsn)": {
+              "samples": 186,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "i(vgsp)": {
+              "samples": 186,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "i(vssn)": {
+              "samples": 186,
+              "maxAbsError": 4.0955037471089696e-13,
+              "rmsError": 3.300230027760198e-14,
+              "maxRelativeError": 0.24735450725187794,
+              "rmsRelativeError": 0.01905332707200231
+            },
+            "i(vssp)": {
+              "samples": 186,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            }
+          }
+        },
+        {
+          "plot": "dc2",
+          "command": "dc vdsn 0 2 0.05 vgsn 0 2 0.4",
+          "points": 246,
+          "outer": "vgsn",
+          "coordinates": {
+            "samples": 246,
+            "maxAbsError": 0,
+            "rmsError": 0,
+            "maxRelativeError": 0,
+            "rmsRelativeError": 0
+          },
+          "signals": {
+            "v(v-sweep)": {
+              "samples": 246,
+              "maxAbsError": 4.440892098500626e-16,
+              "rmsError": 2.1987619014851944e-16,
+              "maxRelativeError": 3.861645303044023e-16,
+              "rmsRelativeError": 1.7293283719144348e-16
+            },
+            "v(1)": {
+              "samples": 246,
+              "maxAbsError": 2.220446049250313e-16,
+              "rmsError": 9.064933036736789e-17,
+              "maxRelativeError": 1.8503717077085943e-16,
+              "rmsRelativeError": 7.55411086394732e-17
+            },
+            "v(2)": {
+              "samples": 246,
+              "maxAbsError": 4.440892098500626e-16,
+              "rmsError": 2.1987619014851944e-16,
+              "maxRelativeError": 3.861645303044023e-16,
+              "rmsRelativeError": 1.7293283719144348e-16
+            },
+            "v(3)": {
+              "samples": 246,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "v(4)": {
+              "samples": 246,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "v(11)": {
+              "samples": 246,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "v(22)": {
+              "samples": 246,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "v(33)": {
+              "samples": 246,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "v(44)": {
+              "samples": 246,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "i(vbsn)": {
+              "samples": 246,
+              "maxAbsError": 6.058451752097371e-28,
+              "rmsError": 2.2129625823139056e-28,
+              "maxRelativeError": 5.041306141096238e-16,
+              "rmsRelativeError": 1.8695140609887509e-16
+            },
+            "i(vbsp)": {
+              "samples": 246,
+              "maxAbsError": 1.262177448353619e-29,
+              "rmsError": 1.262177448353619e-29,
+              "maxRelativeError": 1.2590956061212563e-16,
+              "rmsRelativeError": 1.2590956061212553e-16
+            },
+            "i(vdsn)": {
+              "samples": 246,
+              "maxAbsError": 7.589415207398531e-19,
+              "rmsError": 1.3369917573567042e-19,
+              "maxRelativeError": 4.1191513188908885e-14,
+              "rmsRelativeError": 2.8986585585896365e-15
+            },
+            "i(vdsp)": {
+              "samples": 246,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "i(vgsn)": {
+              "samples": 246,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "i(vgsp)": {
+              "samples": 246,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "i(vssn)": {
+              "samples": 246,
+              "maxAbsError": 6.505213034913027e-19,
+              "rmsError": 1.2924736748164673e-19,
+              "maxRelativeError": 4.13614045055966e-14,
+              "rmsRelativeError": 2.906407753499406e-15
+            },
+            "i(vssp)": {
+              "samples": 246,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            }
+          }
+        },
+        {
+          "plot": "dc3",
+          "command": "dc vgsn 0 1.5 0.05 temp -40 160 40",
+          "points": 186,
+          "outer": "temp",
+          "coordinates": {
+            "samples": 186,
+            "maxAbsError": 0,
+            "rmsError": 0,
+            "maxRelativeError": 0,
+            "rmsRelativeError": 0
+          },
+          "signals": {
+            "v(v-sweep)": {
+              "samples": 186,
+              "maxAbsError": 4.440892098500626e-16,
+              "rmsError": 2.366192031228846e-16,
+              "maxRelativeError": 3.861645303044023e-16,
+              "rmsRelativeError": 1.9135224577013047e-16
+            },
+            "v(1)": {
+              "samples": 186,
+              "maxAbsError": 4.440892098500626e-16,
+              "rmsError": 2.366192031228846e-16,
+              "maxRelativeError": 3.861645303044023e-16,
+              "rmsRelativeError": 1.9135224577013047e-16
+            },
+            "v(2)": {
+              "samples": 186,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "v(3)": {
+              "samples": 186,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "v(4)": {
+              "samples": 186,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "v(11)": {
+              "samples": 186,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "v(22)": {
+              "samples": 186,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "v(33)": {
+              "samples": 186,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "v(44)": {
+              "samples": 186,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "i(vbsn)": {
+              "samples": 186,
+              "maxAbsError": 1.0339757656912846e-25,
+              "rmsError": 3.216550056423867e-26,
+              "maxRelativeError": 3.7865323402103127e-16,
+              "rmsRelativeError": 2.359156189959968e-16
+            },
+            "i(vbsp)": {
+              "samples": 186,
+              "maxAbsError": 4.1359030627651384e-25,
+              "rmsError": 1.689299618717013e-25,
+              "maxRelativeError": 4.955063569744061e-16,
+              "rmsRelativeError": 3.0683069018895316e-16
+            },
+            "i(vdsn)": {
+              "samples": 186,
+              "maxAbsError": 1.0842021724855044e-19,
+              "rmsError": 2.5492781167240796e-20,
+              "maxRelativeError": 1.4833128503091805e-14,
+              "rmsRelativeError": 2.267439169068998e-15
+            },
+            "i(vdsp)": {
+              "samples": 186,
+              "maxAbsError": 5.421010862427522e-19,
+              "rmsError": 2.2406116255694233e-19,
+              "maxRelativeError": 2.0104612288637544e-15,
+              "rmsRelativeError": 8.409986752635461e-16
+            },
+            "i(vgsn)": {
+              "samples": 186,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "i(vgsp)": {
+              "samples": 186,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "i(vssn)": {
+              "samples": 186,
+              "maxAbsError": 1.2197274440461925e-19,
+              "rmsError": 2.756769744415277e-20,
+              "maxRelativeError": 1.4836203495816044e-14,
+              "rmsRelativeError": 2.277427374259243e-15
+            },
+            "i(vssp)": {
+              "samples": 186,
+              "maxAbsError": 4.87890977618477e-19,
+              "rmsError": 2.0493763338209662e-19,
+              "maxRelativeError": 1.80941510664844e-15,
+              "rmsRelativeError": 7.573090750591311e-16
+            }
+          }
+        },
+        {
+          "plot": "dc4",
+          "command": "dc vgsp 0 -1.5 -0.05 vbsp 0 2.5 0.5",
+          "points": 186,
+          "outer": "vbsp",
+          "coordinates": {
+            "samples": 186,
+            "maxAbsError": 0,
+            "rmsError": 0,
+            "maxRelativeError": 0,
+            "rmsRelativeError": 0
+          },
+          "signals": {
+            "v(v-sweep)": {
+              "samples": 186,
+              "maxAbsError": 4.440892098500626e-16,
+              "rmsError": 2.366192031228846e-16,
+              "maxRelativeError": 3.861645303044023e-16,
+              "rmsRelativeError": 1.9135224577013047e-16
+            },
+            "v(1)": {
+              "samples": 186,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "v(2)": {
+              "samples": 186,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "v(3)": {
+              "samples": 186,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "v(4)": {
+              "samples": 186,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "v(11)": {
+              "samples": 186,
+              "maxAbsError": 4.440892098500626e-16,
+              "rmsError": 2.366192031228846e-16,
+              "maxRelativeError": 3.861645303044023e-16,
+              "rmsRelativeError": 1.9135224577013047e-16
+            },
+            "v(22)": {
+              "samples": 186,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "v(33)": {
+              "samples": 186,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "v(44)": {
+              "samples": 186,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "i(vbsn)": {
+              "samples": 186,
+              "maxAbsError": 3.7865323450608567e-29,
+              "rmsError": 3.7865323450608567e-29,
+              "maxRelativeError": 3.780979605822179e-16,
+              "rmsRelativeError": 3.780979605822177e-16
+            },
+            "i(vbsp)": {
+              "samples": 186,
+              "maxAbsError": 4.0389678347315804e-28,
+              "rmsError": 2.4699739206543355e-28,
+              "maxRelativeError": 3.670120703984867e-16,
+              "rmsRelativeError": 1.8315562522426916e-16
+            },
+            "i(vdsn)": {
+              "samples": 186,
+              "maxAbsError": 4.87890977618477e-19,
+              "rmsError": 4.87890977618477e-19,
+              "maxRelativeError": 2.123961061911707e-15,
+              "rmsRelativeError": 2.1239610619117047e-15
+            },
+            "i(vdsp)": {
+              "samples": 186,
+              "maxAbsError": 7.174183816332093e-13,
+              "rmsError": 5.785041538060464e-14,
+              "maxRelativeError": 0.2653417486545594,
+              "rmsRelativeError": 0.021182675236479185
+            },
+            "i(vgsn)": {
+              "samples": 186,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "i(vgsp)": {
+              "samples": 186,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "i(vssn)": {
+              "samples": 186,
+              "maxAbsError": 5.149960319306146e-19,
+              "rmsError": 5.149960319306146e-19,
+              "maxRelativeError": 2.241958899662017e-15,
+              "rmsRelativeError": 2.2419588996620173e-15
+            },
+            "i(vssp)": {
+              "samples": 186,
+              "maxAbsError": 7.174183816332097e-13,
+              "rmsError": 5.785041538060496e-14,
+              "maxRelativeError": 0.5136349372863755,
+              "rmsRelativeError": 0.03918239725426539
+            }
+          }
+        },
+        {
+          "plot": "dc5",
+          "command": "dc vdsp 0 -2 -0.05 vgsp 0 -2 -0.4",
+          "points": 246,
+          "outer": "vgsp",
+          "coordinates": {
+            "samples": 246,
+            "maxAbsError": 0,
+            "rmsError": 0,
+            "maxRelativeError": 0,
+            "rmsRelativeError": 0
+          },
+          "signals": {
+            "v(v-sweep)": {
+              "samples": 246,
+              "maxAbsError": 4.440892098500626e-16,
+              "rmsError": 2.1987619014851944e-16,
+              "maxRelativeError": 3.861645303044023e-16,
+              "rmsRelativeError": 1.7293283719144348e-16
+            },
+            "v(1)": {
+              "samples": 246,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "v(2)": {
+              "samples": 246,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "v(3)": {
+              "samples": 246,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "v(4)": {
+              "samples": 246,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "v(11)": {
+              "samples": 246,
+              "maxAbsError": 2.220446049250313e-16,
+              "rmsError": 9.064933036736789e-17,
+              "maxRelativeError": 1.8503717077085943e-16,
+              "rmsRelativeError": 7.55411086394732e-17
+            },
+            "v(22)": {
+              "samples": 246,
+              "maxAbsError": 4.440892098500626e-16,
+              "rmsError": 2.1987619014851944e-16,
+              "maxRelativeError": 3.861645303044023e-16,
+              "rmsRelativeError": 1.7293283719144348e-16
+            },
+            "v(33)": {
+              "samples": 246,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "v(44)": {
+              "samples": 246,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "i(vbsn)": {
+              "samples": 246,
+              "maxAbsError": 3.7865323450608567e-29,
+              "rmsError": 3.7865323450608567e-29,
+              "maxRelativeError": 3.780979605822179e-16,
+              "rmsRelativeError": 3.7809796058221765e-16
+            },
+            "i(vbsp)": {
+              "samples": 246,
+              "maxAbsError": 6.058451752097371e-28,
+              "rmsError": 2.0471648867586047e-28,
+              "maxRelativeError": 4.1775223251834997e-16,
+              "rmsRelativeError": 1.528939669369676e-16
+            },
+            "i(vdsn)": {
+              "samples": 246,
+              "maxAbsError": 4.87890977618477e-19,
+              "rmsError": 4.87890977618477e-19,
+              "maxRelativeError": 2.123961061911707e-15,
+              "rmsRelativeError": 2.1239610619117043e-15
+            },
+            "i(vdsp)": {
+              "samples": 246,
+              "maxAbsError": 1.5178830414797062e-18,
+              "rmsError": 2.0375568339783857e-19,
+              "maxRelativeError": 3.6209331006904374e-14,
+              "rmsRelativeError": 3.828810999643714e-15
+            },
+            "i(vgsn)": {
+              "samples": 246,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "i(vgsp)": {
+              "samples": 246,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "i(vssn)": {
+              "samples": 246,
+              "maxAbsError": 5.149960319306146e-19,
+              "rmsError": 5.149960319306146e-19,
+              "maxRelativeError": 2.241958899662017e-15,
+              "rmsRelativeError": 2.2419588996620205e-15
+            },
+            "i(vssp)": {
+              "samples": 246,
+              "maxAbsError": 1.5178830414797062e-18,
+              "rmsError": 2.221020540967087e-19,
+              "maxRelativeError": 3.656259011445585e-14,
+              "rmsRelativeError": 3.852251152898038e-15
+            }
+          }
+        },
+        {
+          "plot": "dc6",
+          "command": "dc vgsp 0 -1.5 -0.05 temp -40 160 40",
+          "points": 186,
+          "outer": "temp",
+          "coordinates": {
+            "samples": 186,
+            "maxAbsError": 0,
+            "rmsError": 0,
+            "maxRelativeError": 0,
+            "rmsRelativeError": 0
+          },
+          "signals": {
+            "v(v-sweep)": {
+              "samples": 186,
+              "maxAbsError": 4.440892098500626e-16,
+              "rmsError": 2.366192031228846e-16,
+              "maxRelativeError": 3.861645303044023e-16,
+              "rmsRelativeError": 1.9135224577013047e-16
+            },
+            "v(1)": {
+              "samples": 186,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "v(2)": {
+              "samples": 186,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "v(3)": {
+              "samples": 186,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "v(4)": {
+              "samples": 186,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "v(11)": {
+              "samples": 186,
+              "maxAbsError": 4.440892098500626e-16,
+              "rmsError": 2.366192031228846e-16,
+              "maxRelativeError": 3.861645303044023e-16,
+              "rmsRelativeError": 1.9135224577013047e-16
+            },
+            "v(22)": {
+              "samples": 186,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "v(33)": {
+              "samples": 186,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "v(44)": {
+              "samples": 186,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "i(vbsn)": {
+              "samples": 186,
+              "maxAbsError": 5.048709793414476e-29,
+              "rmsError": 2.822314574185922e-29,
+              "maxRelativeError": 3.7865323402103127e-16,
+              "rmsRelativeError": 2.0107237237834594e-16
+            },
+            "i(vbsp)": {
+              "samples": 186,
+              "maxAbsError": 6.203854594147708e-25,
+              "rmsError": 1.5907136920918084e-25,
+              "maxRelativeError": 5.328981515753789e-16,
+              "rmsRelativeError": 2.821473556304788e-16
+            },
+            "i(vdsn)": {
+              "samples": 186,
+              "maxAbsError": 1.0842021724855044e-19,
+              "rmsError": 6.356698695826013e-20,
+              "maxRelativeError": 6.382904893893202e-16,
+              "rmsRelativeError": 3.539702594251695e-16
+            },
+            "i(vdsp)": {
+              "samples": 186,
+              "maxAbsError": 1.8973538018496328e-19,
+              "rmsError": 3.3757204664040325e-20,
+              "maxRelativeError": 1.1750274258009218e-14,
+              "rmsRelativeError": 2.2406772972559336e-15
+            },
+            "i(vgsn)": {
+              "samples": 186,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "i(vgsp)": {
+              "samples": 186,
+              "maxAbsError": 0,
+              "rmsError": 0,
+              "maxRelativeError": 0,
+              "rmsRelativeError": 0
+            },
+            "i(vssn)": {
+              "samples": 186,
+              "maxAbsError": 5.421010862427522e-20,
+              "rmsError": 3.8332335417084355e-20,
+              "maxRelativeError": 3.1914528105192337e-16,
+              "rmsRelativeError": 1.7275239128333197e-16
+            },
+            "i(vssp)": {
+              "samples": 186,
+              "maxAbsError": 1.0842021724855044e-19,
+              "rmsError": 2.9522950298335195e-20,
+              "maxRelativeError": 1.196128312473286e-14,
+              "rmsRelativeError": 2.264686996633918e-15
+            }
+          }
+        }
+      ]
+    },
+    {
+      "path": "benchmarks/corpus/corpus-f/fixtures/examples/various/gain_stage.cir",
+      "sha256": "6b46e806f7dc963f45a87ab33e1ce0a667624f362f0e3166fea6425a3bc81d79",
+      "command": "ngspice -n -b input.cir",
+      "exitCode": 0,
+      "diagnostics": [],
+      "before": {
+        "corpus": "f",
+        "id": "examples-various-gain-stage-cir",
+        "path": "benchmarks/corpus/corpus-f/fixtures/examples/various/gain_stage.cir",
+        "sha256": "6b46e806f7dc963f45a87ab33e1ce0a667624f362f0e3166fea6425a3bc81d79",
+        "recordedNgspiceStatus": "success",
+        "status": "unsupported",
+        "errorName": "UnsupportedModelLevelError",
+        "errorCode": "UNSUPPORTED_MODEL_LEVEL",
+        "message": "MOSFET 'M1' (model 'N1') uses unsupported model LEVEL=14 (supported MOSFET levels: 1, 2, 3, 4, 5, 6, 8, 9, 49)",
+        "comparedSignals": 0,
+        "maxAbsError": null,
+        "rmsError": null
+      },
+      "after": "unsupported",
+      "errorName": "UnsupportedModelParameterError",
+      "errorCode": "UNSUPPORTED_MODEL_PARAMETER",
+      "message": "BSIM4 static setup model '?' uses unsupported model parameter 'version': unported BSIM4 version family",
+      "comparedSignals": 0,
+      "maxAbsError": null,
+      "rmsError": null,
+      "analyses": [],
+      "unavailableSignals": []
+    },
+    {
+      "path": "benchmarks/corpus/corpus-f/fixtures/tests/regression/model/binning-1.cir",
+      "sha256": "a255d905b57819f5a8f500362322bbb8039a742a8b4ed527eb4b07c256307e55",
+      "command": "ngspice -n -b input.cir",
+      "exitCode": 0,
+      "diagnostics": [],
+      "before": {
+        "corpus": "f",
+        "id": "tests-regression-model-binning-1-cir",
+        "path": "benchmarks/corpus/corpus-f/fixtures/tests/regression/model/binning-1.cir",
+        "sha256": "a255d905b57819f5a8f500362322bbb8039a742a8b4ed527eb4b07c256307e55",
+        "recordedNgspiceStatus": "success",
+        "status": "unsupported",
+        "errorName": "UnsupportedModelLevelError",
+        "errorCode": "UNSUPPORTED_MODEL_LEVEL",
+        "message": "MOSFET 'mx1' (model 'nmos0v7') uses unsupported model LEVEL=54 (supported MOSFET levels: 1, 2, 3, 4, 5, 6, 8, 9, 49)",
+        "comparedSignals": 0,
+        "maxAbsError": null,
+        "rmsError": null
+      },
+      "after": "unsupported",
+      "errorName": "UnsupportedModelParameterError",
+      "errorCode": "UNSUPPORTED_MODEL_PARAMETER",
+      "message": "Device 'mx2' uses unsupported model parameter 'model-binning': BSIM4 L/W model-bin selection is not implemented",
+      "comparedSignals": 0,
+      "maxAbsError": null,
+      "rmsError": null,
+      "analyses": [],
+      "unavailableSignals": [
+        {
+          "signal": "v(1)",
+          "maxAbsError": null,
+          "rmsError": null
+        },
+        {
+          "signal": "v(2)",
+          "maxAbsError": null,
+          "rmsError": null
+        },
+        {
+          "signal": "v(3)",
+          "maxAbsError": null,
+          "rmsError": null
+        },
+        {
+          "signal": "v(4)",
+          "maxAbsError": null,
+          "rmsError": null
+        }
+      ]
+    },
+    {
+      "path": "benchmarks/corpus/corpus-g/fixtures/SENS/bsim4_issue694_FD.cir",
+      "sha256": "389855a2c201ca9c67578051bb074cabc015c4b3c2942ac9ee149f7934156bbb",
+      "command": "ngspice -n -b input.cir",
+      "exitCode": 0,
+      "diagnostics": [
+        "Error: no function as { with that arity."
+      ],
+      "before": {
+        "corpus": "g",
+        "id": "sens-bsim4-issue694-fd-cir",
+        "path": "benchmarks/corpus/corpus-g/fixtures/SENS/bsim4_issue694_FD.cir",
+        "sha256": "389855a2c201ca9c67578051bb074cabc015c4b3c2942ac9ee149f7934156bbb",
+        "recordedNgspiceStatus": "success",
+        "status": "unsupported",
+        "errorName": "UnsupportedModelLevelError",
+        "errorCode": "UNSUPPORTED_MODEL_LEVEL",
+        "message": "MOSFET 'm_nfet' (model 'nfet_model') uses unsupported model LEVEL=54 (supported MOSFET levels: 1, 2, 3, 4, 5, 6, 8, 9, 49)",
+        "comparedSignals": 0,
+        "maxAbsError": null,
+        "rmsError": null
+      },
+      "after": "unsupported",
+      "errorName": "UnsupportedModelParameterError",
+      "errorCode": "UNSUPPORTED_MODEL_PARAMETER",
+      "message": "Device 'm_nfet' uses unsupported model parameter 'tran': BSIM4 supports only static OP/DC in this slice",
+      "comparedSignals": 0,
+      "maxAbsError": null,
+      "rmsError": null,
+      "analyses": [],
+      "unavailableSignals": []
+    }
+  ]
+}

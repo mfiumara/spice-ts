@@ -1,0 +1,1960 @@
+[
+  {
+    "key": "ngspice/vbic-fo",
+    "originalSha256": "de57231ef8879e785b07068db662bfa5ecfde8734011b88b09f319b826242e92",
+    "canonicalSha256": "bec0aabfc180dc8a6044b9366203ac4572729fdda8d5c7cb4d7b934854198902",
+    "canonicalPath": "benchmarks/reference/adapter-948/ngspice/vbic-fo/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "dc",
+        "sharedInputPath": "benchmarks/reference/adapter-948/ngspice/vbic-fo/0-dc.cir",
+        "sharedInputSha256": "bec0aabfc180dc8a6044b9366203ac4572729fdda8d5c7cb4d7b934854198902",
+        "xyceInputPath": "benchmarks/reference/adapter-948/ngspice/vbic-fo/0-dc-xyce.cir",
+        "xyceInputSha256": "6fccecc85b2420035a291bdb87e14c4674a5ca05ea0ece96446207f59ecf0f7e"
+      }
+    ]
+  },
+  {
+    "key": "ngspice/vbic-temperature",
+    "originalSha256": "5dfd5fb1e620eac69af1eed64463aac62efd23dee169f2a3773d1091088f31e7",
+    "canonicalSha256": "0d54cc189679ab7156bd2e6e2ab978a47436ff0679a9f5650ce702cdbc648392",
+    "canonicalPath": "benchmarks/reference/adapter-948/ngspice/vbic-temperature/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "dc",
+        "sharedInputPath": "benchmarks/reference/adapter-948/ngspice/vbic-temperature/0-dc.cir",
+        "sharedInputSha256": "0d54cc189679ab7156bd2e6e2ab978a47436ff0679a9f5650ce702cdbc648392",
+        "xyceInputPath": "benchmarks/reference/adapter-948/ngspice/vbic-temperature/0-dc-xyce.cir",
+        "xyceInputSha256": "7b8379be06f93cccd665685ca957a5f3c704eaa058ad7989f3d65809d1fd256d"
+      }
+    ]
+  },
+  {
+    "key": "ngspice/mos6-inverter-transient",
+    "originalSha256": "c1ee39a6f458dc2b527ab1de29d6d6a4858e35c6acc4ff760ac45774512534dc",
+    "canonicalSha256": "1f4501abe168872b13f4f8d3af02eb337f3ecf9d4b0c890ae92467f21380fbab",
+    "canonicalPath": "benchmarks/reference/adapter-948/ngspice/mos6-inverter-transient/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "tran",
+        "sharedInputPath": "benchmarks/reference/adapter-948/ngspice/mos6-inverter-transient/0-tran.cir",
+        "sharedInputSha256": "1f4501abe168872b13f4f8d3af02eb337f3ecf9d4b0c890ae92467f21380fbab",
+        "xyceInputPath": "benchmarks/reference/adapter-948/ngspice/mos6-inverter-transient/0-tran-xyce.cir",
+        "xyceInputSha256": "97c1aea502a35f046b9b80889dfe543d94c28ac0b3122cb5c9995d0e3466f8c7"
+      }
+    ]
+  },
+  {
+    "key": "ngspice/jfet-vds-vgs",
+    "originalSha256": "64d61d79415c585195fcda1a21a170bda67f863e20b9492eaeb33e1efc9fd72a",
+    "canonicalSha256": "ceff58a7358a96fbf49be565e6b08f9465656e7c802418b237a4340bb5150f8c",
+    "canonicalPath": "benchmarks/reference/adapter-948/ngspice/jfet-vds-vgs/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "op",
+        "sharedInputPath": "benchmarks/reference/adapter-948/ngspice/jfet-vds-vgs/0-op.cir",
+        "sharedInputSha256": "5699dc141d57dbf9ccc8022814970c453126ea21302a7cdda25a09d75ddf8c39",
+        "xyceInputPath": "benchmarks/reference/adapter-948/ngspice/jfet-vds-vgs/0-op-xyce.cir",
+        "xyceInputSha256": "bcfa3c5cd9b4717db262f9a7be456a98ad9418583d449470c7e7fcd609fdcaff"
+      },
+      {
+        "ordinal": 1,
+        "analysis": "dc",
+        "sharedInputPath": "benchmarks/reference/adapter-948/ngspice/jfet-vds-vgs/1-dc.cir",
+        "sharedInputSha256": "37ad65fa61e7abf06582369dd6b49bdf3f2c7cb6d50ce507a3490b847efb3515",
+        "xyceInputPath": "benchmarks/reference/adapter-948/ngspice/jfet-vds-vgs/1-dc-xyce.cir",
+        "xyceInputSha256": "5d234b5b94e01b7ea999f8c471b8b30075186f40ce67541a4dd000b92297c4c2"
+      }
+    ]
+  },
+  {
+    "key": "ngspice/rc-lowpass-ac",
+    "originalSha256": "aa48cf8809bb62ada7bd48b8d81808589126a69f784482e5fb0c80cc3fbf718d",
+    "canonicalSha256": "23c04d72dfdba2b50ef354d2a38bd051adf7349a7c45f27d8b28004869663e88",
+    "canonicalPath": "benchmarks/reference/adapter-948/ngspice/rc-lowpass-ac/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "op",
+        "sharedInputPath": "benchmarks/reference/adapter-948/ngspice/rc-lowpass-ac/0-op.cir",
+        "sharedInputSha256": "d0e23474059fe05359b6d16b20caf2ab934cf8d7e0b23f1294e0c3d72fed6b92",
+        "xyceInputPath": "benchmarks/reference/adapter-948/ngspice/rc-lowpass-ac/0-op-xyce.cir",
+        "xyceInputSha256": "8832fcb49c436c371ed4342198bf3f6896551023adf40d2235417bf441a5cf42"
+      },
+      {
+        "ordinal": 1,
+        "analysis": "ac",
+        "sharedInputPath": "benchmarks/reference/adapter-948/ngspice/rc-lowpass-ac/1-ac.cir",
+        "sharedInputSha256": "8459937cc63e0be934fb4e64a12023556bc1f862256b8aaed05b2a395752d6ce",
+        "xyceInputPath": "benchmarks/reference/adapter-948/ngspice/rc-lowpass-ac/1-ac-xyce.cir",
+        "xyceInputSha256": "d136f44a0f3435255eacbe8c34607879a5628a07ca43a12cb0469c1a1b24ca3a"
+      }
+    ]
+  },
+  {
+    "key": "ngspice/ac-zero-frequency",
+    "originalSha256": "40371f8363b2d3b494a05c604ab2e4b20052fd5b413fba4b5ceeedbc9104ecb6",
+    "canonicalSha256": "40371f8363b2d3b494a05c604ab2e4b20052fd5b413fba4b5ceeedbc9104ecb6",
+    "canonicalPath": "benchmarks/reference/adapter-948/ngspice/ac-zero-frequency/canonical.cir",
+    "limitations": [
+      "Unsupported control semantics: let v3_gold = 0.5",
+      "Unsupported control semantics: let err = abs(v(3)/v3_gold - 1)",
+      "Unsupported control semantics: if err > 1e-15",
+      "Unsupported control semantics: quit 1",
+      "Unsupported control semantics: else",
+      "Control command after terminal cleanup: end",
+      "Unsupported control semantics: end"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/ngspice/ac-zero-frequency/canonical.cir",
+        "sharedInputSha256": "40371f8363b2d3b494a05c604ab2e4b20052fd5b413fba4b5ceeedbc9104ecb6"
+      }
+    ]
+  },
+  {
+    "key": "ngspice/vbic-common-emitter-ac",
+    "originalSha256": "088d1ebede86588ff8b823ba45219006bfeec34939af69e10c176e23d8a020ab",
+    "canonicalSha256": "088d1ebede86588ff8b823ba45219006bfeec34939af69e10c176e23d8a020ab",
+    "canonicalPath": "benchmarks/reference/adapter-948/ngspice/vbic-common-emitter-ac/canonical.cir",
+    "limitations": [
+      "Unsupported analysis/control directive: .pz 1 0 4 0 cur pz"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/ngspice/vbic-common-emitter-ac/canonical.cir",
+        "sharedInputSha256": "088d1ebede86588ff8b823ba45219006bfeec34939af69e10c176e23d8a020ab"
+      }
+    ]
+  },
+  {
+    "key": "ngspice/probe-ac",
+    "originalSha256": "3afb9105918f939cbbdab957f8f872bbc886209fb83dbd27003c605977916479",
+    "canonicalSha256": "5ba4416dcb10d7580bca45a5b408160a89e06de26c081c08119431396c954e18",
+    "canonicalPath": "benchmarks/reference/adapter-948/ngspice/probe-ac/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "ac",
+        "sharedInputPath": "benchmarks/reference/adapter-948/ngspice/probe-ac/0-ac.cir",
+        "sharedInputSha256": "5ba4416dcb10d7580bca45a5b408160a89e06de26c081c08119431396c954e18",
+        "xyceInputPath": "benchmarks/reference/adapter-948/ngspice/probe-ac/0-ac-xyce.cir",
+        "xyceInputSha256": "317a55879ef51251cc1a9c1747fab066a03f2a31614e7d72acdfed5178704012"
+      }
+    ]
+  },
+  {
+    "key": "ngspice/rc-transient",
+    "originalSha256": "293c22e9953f3e28efcae55d6c00cab0b929d2c3fdf88810ab27b7a71e900bfe",
+    "canonicalSha256": "e1b9dd39ccfd712aa1a80a6d5e7c6558500be973233b53eee50423eebd76f576",
+    "canonicalPath": "benchmarks/reference/adapter-948/ngspice/rc-transient/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "tran",
+        "sharedInputPath": "benchmarks/reference/adapter-948/ngspice/rc-transient/0-tran.cir",
+        "sharedInputSha256": "e1b9dd39ccfd712aa1a80a6d5e7c6558500be973233b53eee50423eebd76f576",
+        "xyceInputPath": "benchmarks/reference/adapter-948/ngspice/rc-transient/0-tran-xyce.cir",
+        "xyceInputSha256": "27923e05ca4043dcd5c6bdde4779873d5507b8693ba33e35e911214de378c854"
+      }
+    ]
+  },
+  {
+    "key": "ngspice/mos-amplifier-transient",
+    "originalSha256": "a6d0f4220bde7a548209e0e845e3c9bb731b2819f7f7e256d284e5a85e10fa7c",
+    "canonicalSha256": "a6d0f4220bde7a548209e0e845e3c9bb731b2819f7f7e256d284e5a85e10fa7c",
+    "canonicalPath": "benchmarks/reference/adapter-948/ngspice/mos-amplifier-transient/canonical.cir",
+    "limitations": [
+      "Unsupported shared solver options: .options  abstol=10n  vntol=10n noacct"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/ngspice/mos-amplifier-transient/canonical.cir",
+        "sharedInputSha256": "a6d0f4220bde7a548209e0e845e3c9bb731b2819f7f7e256d284e5a85e10fa7c"
+      }
+    ]
+  },
+  {
+    "key": "ngspice/mos6-simple-inverter-transient",
+    "originalSha256": "3ad1ef05a4197b420b0d35b3a4c4c0aa2544025e200b619743a890e305b7e1b8",
+    "canonicalSha256": "791b2c14b1a750f79245631d0308efa098a48a5e989e4bacfac59046ed51f8cb",
+    "canonicalPath": "benchmarks/reference/adapter-948/ngspice/mos6-simple-inverter-transient/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "tran",
+        "sharedInputPath": "benchmarks/reference/adapter-948/ngspice/mos6-simple-inverter-transient/0-tran.cir",
+        "sharedInputSha256": "791b2c14b1a750f79245631d0308efa098a48a5e989e4bacfac59046ed51f8cb",
+        "xyceInputPath": "benchmarks/reference/adapter-948/ngspice/mos6-simple-inverter-transient/0-tran-xyce.cir",
+        "xyceInputSha256": "cb507a39422ffab566d2e0502dc848440d657868f0c3a93e954e0651955ba1b4"
+      }
+    ]
+  },
+  {
+    "key": "ngspice/ltra-line-transient",
+    "originalSha256": "4e7cf33648f6d6039772716720afce93dfd5e44c9ad7eaf40eb7347b6c03b7d4",
+    "canonicalSha256": "f70fac70b97ea2c6eccafc19f82f5efe84afa32d37c9a7a9716556854b15b659",
+    "canonicalPath": "benchmarks/reference/adapter-948/ngspice/ltra-line-transient/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "tran",
+        "sharedInputPath": "benchmarks/reference/adapter-948/ngspice/ltra-line-transient/0-tran.cir",
+        "sharedInputSha256": "f70fac70b97ea2c6eccafc19f82f5efe84afa32d37c9a7a9716556854b15b659",
+        "xyceInputPath": "benchmarks/reference/adapter-948/ngspice/ltra-line-transient/0-tran-xyce.cir",
+        "xyceInputSha256": "7dc001ef5969797daa5faa28944727b29ddff2b4a993a8bdfcdb23b00f50d6c6"
+      }
+    ]
+  },
+  {
+    "key": "ngspice/hfet-inverter",
+    "originalSha256": "3fa93266e9036443173bf9416eb67e8ff4c2c24aeefc6ef687f355d8548239e1",
+    "canonicalSha256": "e249284351a4f7258cb193a014d422b491cee6bb64d4a1aadd88fbd240511a14",
+    "canonicalPath": "benchmarks/reference/adapter-948/ngspice/hfet-inverter/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "tran",
+        "sharedInputPath": "benchmarks/reference/adapter-948/ngspice/hfet-inverter/0-tran.cir",
+        "sharedInputSha256": "e249284351a4f7258cb193a014d422b491cee6bb64d4a1aadd88fbd240511a14",
+        "xyceInputPath": "benchmarks/reference/adapter-948/ngspice/hfet-inverter/0-tran-xyce.cir",
+        "xyceInputSha256": "85009ef578ea8bb16c61a3d86649027d03815427cdf55385e87adb905d12ec60"
+      }
+    ]
+  },
+  {
+    "key": "ngspice/mesa-oscillator",
+    "originalSha256": "3cd4609cca7874775b7b2cac8cd0124bd2b8c5512064a0550a29de2da4896bcf",
+    "canonicalSha256": "661d859a38625f9ec1b7a76b752bc7465d949cae5ab3cfe4f5b7c813a27e6dac",
+    "canonicalPath": "benchmarks/reference/adapter-948/ngspice/mesa-oscillator/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "tran",
+        "sharedInputPath": "benchmarks/reference/adapter-948/ngspice/mesa-oscillator/0-tran.cir",
+        "sharedInputSha256": "661d859a38625f9ec1b7a76b752bc7465d949cae5ab3cfe4f5b7c813a27e6dac",
+        "xyceInputPath": "benchmarks/reference/adapter-948/ngspice/mesa-oscillator/0-tran-xyce.cir",
+        "xyceInputSha256": "efc66fbbb463474c064cecddc53d1e61b7ae6e4f84d6074a57107da67fad5e6b"
+      }
+    ]
+  },
+  {
+    "key": "ngspice/jimi-fuzz",
+    "originalSha256": "0607c7f358628d0ce60eff584b329a4d685ae215894c466622a19357c7163b0e",
+    "canonicalSha256": "a9812c5e5fe7e48bf7e2571d14ec2b665a948f16482db5f4c8d6426cc8f834f8",
+    "canonicalPath": "benchmarks/reference/adapter-948/ngspice/jimi-fuzz/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "tran",
+        "sharedInputPath": "benchmarks/reference/adapter-948/ngspice/jimi-fuzz/0-tran.cir",
+        "sharedInputSha256": "fc23c8e82e791dd0268d8e28086b60f9e470a20b3d774eb4b608a68b4e9d0f99",
+        "xyceInputPath": "benchmarks/reference/adapter-948/ngspice/jimi-fuzz/0-tran-xyce.cir",
+        "xyceInputSha256": "3184f4acfcd175b90b46e6b929f97d67c27e9009322b55855b1f5ff022d03372"
+      },
+      {
+        "ordinal": 1,
+        "analysis": "op",
+        "sharedInputPath": "benchmarks/reference/adapter-948/ngspice/jimi-fuzz/1-op.cir",
+        "sharedInputSha256": "a9109f1dd02b115f1b03b6e5f7edd00bab6cac50c1fd5327d960945fc5a56737",
+        "xyceInputPath": "benchmarks/reference/adapter-948/ngspice/jimi-fuzz/1-op-xyce.cir",
+        "xyceInputSha256": "a99580bcdb32c727e26badbe54af28b872a1b1eac97f31aa7e2c8c3e58e4054c"
+      }
+    ]
+  },
+  {
+    "key": "ngspice/schmitt-trigger",
+    "originalSha256": "c3e897ecd60c66cb5350c2a0fa7788f34af374803c10f4cf58d6f5ed01b00e55",
+    "canonicalSha256": "c3e897ecd60c66cb5350c2a0fa7788f34af374803c10f4cf58d6f5ed01b00e55",
+    "canonicalPath": "benchmarks/reference/adapter-948/ngspice/schmitt-trigger/canonical.cir",
+    "limitations": [
+      "Unsupported shared solver options: .opt list node lvlcod=2 noacct"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/ngspice/schmitt-trigger/canonical.cir",
+        "sharedInputSha256": "c3e897ecd60c66cb5350c2a0fa7788f34af374803c10f4cf58d6f5ed01b00e55"
+      }
+    ]
+  },
+  {
+    "key": "ngspice/inductive-positive-definite-2x2",
+    "originalSha256": "47f725038c0199c042484ae480336ea3fd52f6de4d59d46d996824ad0eea1c2b",
+    "canonicalSha256": "2d9af86bf98805091783d1c112bad12ebd67d6c6a88509c5159c88ca99906b33",
+    "canonicalPath": "benchmarks/reference/adapter-948/ngspice/inductive-positive-definite-2x2/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "op",
+        "sharedInputPath": "benchmarks/reference/adapter-948/ngspice/inductive-positive-definite-2x2/0-op.cir",
+        "sharedInputSha256": "2d9af86bf98805091783d1c112bad12ebd67d6c6a88509c5159c88ca99906b33",
+        "xyceInputPath": "benchmarks/reference/adapter-948/ngspice/inductive-positive-definite-2x2/0-op-xyce.cir",
+        "xyceInputSha256": "39d738be01ce65ea80a9a99eefcc09b23e27445c3003e863ed2cbefebe885cf4"
+      }
+    ]
+  },
+  {
+    "key": "ngspice/inductive-positive-definite-3x3",
+    "originalSha256": "e5130509610d8f8b25861f00467fdf29be3b4a03c25a6652bb9961442443f62e",
+    "canonicalSha256": "039049c510846446256351d452a3da91249572fc48647ae69b6d5758f5a369bd",
+    "canonicalPath": "benchmarks/reference/adapter-948/ngspice/inductive-positive-definite-3x3/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "op",
+        "sharedInputPath": "benchmarks/reference/adapter-948/ngspice/inductive-positive-definite-3x3/0-op.cir",
+        "sharedInputSha256": "039049c510846446256351d452a3da91249572fc48647ae69b6d5758f5a369bd",
+        "xyceInputPath": "benchmarks/reference/adapter-948/ngspice/inductive-positive-definite-3x3/0-op-xyce.cir",
+        "xyceInputSha256": "01194e1f941910759f9ffc010853eafc1d5ada7e0df07d3ab3a1afa5419c6e45"
+      }
+    ]
+  },
+  {
+    "key": "ngspice/inductive-positive-definite-4x4",
+    "originalSha256": "8ade81e9db6be13889c589c9a32656d415b462b8628fe4dd6fb2cc3dcc31ea56",
+    "canonicalSha256": "f63b8946db6c641f33defaae3e5ee15379c6c4d0d1b89381340c40e55d42a655",
+    "canonicalPath": "benchmarks/reference/adapter-948/ngspice/inductive-positive-definite-4x4/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "op",
+        "sharedInputPath": "benchmarks/reference/adapter-948/ngspice/inductive-positive-definite-4x4/0-op.cir",
+        "sharedInputSha256": "f63b8946db6c641f33defaae3e5ee15379c6c4d0d1b89381340c40e55d42a655",
+        "xyceInputPath": "benchmarks/reference/adapter-948/ngspice/inductive-positive-definite-4x4/0-op-xyce.cir",
+        "xyceInputSha256": "7712c3dcf1fe23f79a272a469d65b6b6ef8476b0c6760cfb0f3bb32a63a4e75c"
+      }
+    ]
+  },
+  {
+    "key": "ngspice/inductive-positive-definite-ac",
+    "originalSha256": "cec36ec4288af28a58a2ce62a0904b075345684f794ffc9b732179a5d44f5782",
+    "canonicalSha256": "cec36ec4288af28a58a2ce62a0904b075345684f794ffc9b732179a5d44f5782",
+    "canonicalPath": "benchmarks/reference/adapter-948/ngspice/inductive-positive-definite-ac/canonical.cir",
+    "limitations": [
+      "Unsupported control semantics: alter k12 0.96",
+      "Unsupported control semantics: alter k23 0.99",
+      "Unsupported control semantics: alter k13 0.98",
+      "Unsupported control semantics: alter k13 0.9898988607",
+      "Unsupported control semantics: alter k13 0.9898988608",
+      "Unsupported control semantics: alter k12 1",
+      "Unsupported control semantics: alter k23 1",
+      "Unsupported control semantics: alter k13 1",
+      "Unsupported control semantics: alter k12 1.01",
+      "Unsupported control semantics: set indverbosity = 2",
+      "Unsupported control semantics: set indverbosity = 1",
+      "Unsupported control semantics: set indverbosity = 0",
+      "Mixed static and executed control analyses need ordered execution semantics",
+      "Control block does not execute the static deck analyses"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/ngspice/inductive-positive-definite-ac/canonical.cir",
+        "sharedInputSha256": "cec36ec4288af28a58a2ce62a0904b075345684f794ffc9b732179a5d44f5782"
+      }
+    ]
+  },
+  {
+    "key": "classic/bjt-noise",
+    "originalSha256": "183a30585cee976f2990857df941ca500aea2755a1e4ecf946c14699f09b36fc",
+    "canonicalSha256": "183a30585cee976f2990857df941ca500aea2755a1e4ecf946c14699f09b36fc",
+    "canonicalPath": "benchmarks/reference/adapter-948/classic/bjt-noise/canonical.cir",
+    "limitations": [
+      "Unsupported analysis/control directive: .noise v(3) vin dec 10 10 100k 1",
+      "No supported static analysis"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/classic/bjt-noise/canonical.cir",
+        "sharedInputSha256": "183a30585cee976f2990857df941ca500aea2755a1e4ecf946c14699f09b36fc"
+      }
+    ]
+  },
+  {
+    "key": "classic/bsim1-device-sweep",
+    "originalSha256": "dffabf12d196b6b3d5ac058f7a402ee0dbb51c597c23599379f0502e84088062",
+    "canonicalSha256": "dffabf12d196b6b3d5ac058f7a402ee0dbb51c597c23599379f0502e84088062",
+    "canonicalPath": "benchmarks/reference/adapter-948/classic/bsim1-device-sweep/canonical.cir",
+    "limitations": [
+      "Unsupported shared solver options: .OPTIONS LIMPTS=5000 ACCT"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/classic/bsim1-device-sweep/canonical.cir",
+        "sharedInputSha256": "dffabf12d196b6b3d5ac058f7a402ee0dbb51c597c23599379f0502e84088062"
+      }
+    ]
+  },
+  {
+    "key": "classic/bsim2-device-sweep",
+    "originalSha256": "ff2da08b0c8db25fe617c9f1ba2f99d5169c26b8167b30258a1631d93b79beee",
+    "canonicalSha256": "ff2da08b0c8db25fe617c9f1ba2f99d5169c26b8167b30258a1631d93b79beee",
+    "canonicalPath": "benchmarks/reference/adapter-948/classic/bsim2-device-sweep/canonical.cir",
+    "limitations": [
+      "Unsupported shared solver options: .OPTIONS LIMPTS=5000 ACCT"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/classic/bsim2-device-sweep/canonical.cir",
+        "sharedInputSha256": "ff2da08b0c8db25fe617c9f1ba2f99d5169c26b8167b30258a1631d93b79beee"
+      }
+    ]
+  },
+  {
+    "key": "classic/bjt-differential-pair",
+    "originalSha256": "d67594a868128d758cfa593047884990abff05d7ee4cc050afca8a152ace3add",
+    "canonicalSha256": "d67594a868128d758cfa593047884990abff05d7ee4cc050afca8a152ace3add",
+    "canonicalPath": "benchmarks/reference/adapter-948/classic/bjt-differential-pair/canonical.cir",
+    "limitations": [
+      "Unsupported shared solver options: .opt acct list node lvlcod=2"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/classic/bjt-differential-pair/canonical.cir",
+        "sharedInputSha256": "d67594a868128d758cfa593047884990abff05d7ee4cc050afca8a152ace3add"
+      }
+    ]
+  },
+  {
+    "key": "classic/diode-distortion",
+    "originalSha256": "912c8cedf66aadbe78f17ceb28644cb8c39a2cb3442559be3219fbaac6d11de8",
+    "canonicalSha256": "912c8cedf66aadbe78f17ceb28644cb8c39a2cb3442559be3219fbaac6d11de8",
+    "canonicalPath": "benchmarks/reference/adapter-948/classic/diode-distortion/canonical.cir",
+    "limitations": [
+      "Unsupported analysis/control directive: .disto dec 20 1.0e3 1.0e8 0.9",
+      "No supported static analysis"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/classic/diode-distortion/canonical.cir",
+        "sharedInputSha256": "912c8cedf66aadbe78f17ceb28644cb8c39a2cb3442559be3219fbaac6d11de8"
+      }
+    ]
+  },
+  {
+    "key": "classic/lossy-line-24-inch",
+    "originalSha256": "53e333e9629c3e3c4e839c4b72c9a512a220dec4baf0536e36626f290d240cd6",
+    "canonicalSha256": "53e333e9629c3e3c4e839c4b72c9a512a220dec4baf0536e36626f290d240cd6",
+    "canonicalPath": "benchmarks/reference/adapter-948/classic/lossy-line-24-inch/canonical.cir",
+    "limitations": [
+      "Unsupported shared solver options: .options itl5=0 acct reltol=1e-3 abstol=1e-14"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/classic/lossy-line-24-inch/canonical.cir",
+        "sharedInputSha256": "53e333e9629c3e3c4e839c4b72c9a512a220dec4baf0536e36626f290d240cd6"
+      }
+    ]
+  },
+  {
+    "key": "classic/lossy-line-aluminium",
+    "originalSha256": "4b5bacda04d9c528d4c88d58d211114cb53edbc213c34a62a8c6b2379958db97",
+    "canonicalSha256": "0cff7907e6022776e334bfb5dd885b8fb036369fccadde47fe3a96c5f6552b74",
+    "canonicalPath": "benchmarks/reference/adapter-948/classic/lossy-line-aluminium/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "tran",
+        "sharedInputPath": "benchmarks/reference/adapter-948/classic/lossy-line-aluminium/0-tran.cir",
+        "sharedInputSha256": "0cff7907e6022776e334bfb5dd885b8fb036369fccadde47fe3a96c5f6552b74",
+        "xyceInputPath": "benchmarks/reference/adapter-948/classic/lossy-line-aluminium/0-tran-xyce.cir",
+        "xyceInputSha256": "acfa62930416bfb1f8705c4b4ad61530119c2f71998673d79044c6a217405963"
+      }
+    ]
+  },
+  {
+    "key": "classic/coupled-lossy-lines",
+    "originalSha256": "1927a2a547342e6c60ab1e0489c26d5ca7e92f36d5b08f6a03690b95aa7448b3",
+    "canonicalSha256": "1927a2a547342e6c60ab1e0489c26d5ca7e92f36d5b08f6a03690b95aa7448b3",
+    "canonicalPath": "benchmarks/reference/adapter-948/classic/coupled-lossy-lines/canonical.cir",
+    "limitations": [
+      "Unsupported shared solver options: .options itl5=0 acct reltol=1e-3 abstol=1e-12"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/classic/coupled-lossy-lines/canonical.cir",
+        "sharedInputSha256": "1927a2a547342e6c60ab1e0489c26d5ca7e92f36d5b08f6a03690b95aa7448b3"
+      }
+    ]
+  },
+  {
+    "key": "classic/bjt-mixer-distortion",
+    "originalSha256": "9f172a78faabd09f0b4e61d733b542e48380a452a4767b83e05617ab4642894e",
+    "canonicalSha256": "9f172a78faabd09f0b4e61d733b542e48380a452a4767b83e05617ab4642894e",
+    "canonicalPath": "benchmarks/reference/adapter-948/classic/bjt-mixer-distortion/canonical.cir",
+    "limitations": [
+      "No supported static analysis"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/classic/bjt-mixer-distortion/canonical.cir",
+        "sharedInputSha256": "9f172a78faabd09f0b4e61d733b542e48380a452a4767b83e05617ab4642894e"
+      }
+    ]
+  },
+  {
+    "key": "classic/mos6-inverter-chain",
+    "originalSha256": "60f1f49e2f9ac1eccf6bbf717b3c177de885e1e2438b175db4a4360bfe080434",
+    "canonicalSha256": "3190d49b31b465ab91101a45d50c75f7efd4b7be274930ea761a52699eb4ca48",
+    "canonicalPath": "benchmarks/reference/adapter-948/classic/mos6-inverter-chain/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "tran",
+        "sharedInputPath": "benchmarks/reference/adapter-948/classic/mos6-inverter-chain/0-tran.cir",
+        "sharedInputSha256": "3190d49b31b465ab91101a45d50c75f7efd4b7be274930ea761a52699eb4ca48",
+        "xyceInputPath": "benchmarks/reference/adapter-948/classic/mos6-inverter-chain/0-tran-xyce.cir",
+        "xyceInputSha256": "a35a323543c9f947d4a774a33d7fd03a599b6d2774e6c9ad46277cca781bba3c"
+      }
+    ]
+  },
+  {
+    "key": "classic/mos-amplifier",
+    "originalSha256": "d8b0e627f7742490ac6e841ffb176c9b02ffe6de1246bb57d1db793f58027469",
+    "canonicalSha256": "d8b0e627f7742490ac6e841ffb176c9b02ffe6de1246bb57d1db793f58027469",
+    "canonicalPath": "benchmarks/reference/adapter-948/classic/mos-amplifier/canonical.cir",
+    "limitations": [
+      "Unsupported shared solver options: .options acct abstol=10n  vntol=10n"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/classic/mos-amplifier/canonical.cir",
+        "sharedInputSha256": "d8b0e627f7742490ac6e841ffb176c9b02ffe6de1246bb57d1db793f58027469"
+      }
+    ]
+  },
+  {
+    "key": "classic/mos-memory-cell",
+    "originalSha256": "f63d832e7e63dd866e528d6e41eb653859243fdbfed48a83e55d9274e111859d",
+    "canonicalSha256": "f63d832e7e63dd866e528d6e41eb653859243fdbfed48a83e55d9274e111859d",
+    "canonicalPath": "benchmarks/reference/adapter-948/classic/mos-memory-cell/canonical.cir",
+    "limitations": [
+      "Unsupported shared solver options: .opt abstol=1u"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/classic/mos-memory-cell/canonical.cir",
+        "sharedInputSha256": "f63d832e7e63dd866e528d6e41eb653859243fdbfed48a83e55d9274e111859d"
+      }
+    ]
+  },
+  {
+    "key": "classic/pole-zero-four-stage",
+    "originalSha256": "c21a9628a46581ad9e163632d992422afafeaa15443787e00153dbd7331d3b73",
+    "canonicalSha256": "c21a9628a46581ad9e163632d992422afafeaa15443787e00153dbd7331d3b73",
+    "canonicalPath": "benchmarks/reference/adapter-948/classic/pole-zero-four-stage/canonical.cir",
+    "limitations": [
+      "Unsupported analysis/control directive: .pz\t1 0\t4 0\tcur pol",
+      "No supported static analysis"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/classic/pole-zero-four-stage/canonical.cir",
+        "sharedInputSha256": "c21a9628a46581ad9e163632d992422afafeaa15443787e00153dbd7331d3b73"
+      }
+    ]
+  },
+  {
+    "key": "classic/pole-zero-three-stage",
+    "originalSha256": "1c50c0623b02d991eb04a1523d1aa50914e88c0ea53a64438daeec97ec359a18",
+    "canonicalSha256": "1c50c0623b02d991eb04a1523d1aa50914e88c0ea53a64438daeec97ec359a18",
+    "canonicalPath": "benchmarks/reference/adapter-948/classic/pole-zero-three-stage/canonical.cir",
+    "limitations": [
+      "Unsupported analysis/control directive: .pz\t1 0\t3 0\tcur pol",
+      "No supported static analysis"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/classic/pole-zero-three-stage/canonical.cir",
+        "sharedInputSha256": "1c50c0623b02d991eb04a1523d1aa50914e88c0ea53a64438daeec97ec359a18"
+      }
+    ]
+  },
+  {
+    "key": "classic/rc-transient",
+    "originalSha256": "0abbffc7b66510fc170e9e57a9d2b94b13213e888be9060022bc00e06a30f1be",
+    "canonicalSha256": "e1b9dd39ccfd712aa1a80a6d5e7c6558500be973233b53eee50423eebd76f576",
+    "canonicalPath": "benchmarks/reference/adapter-948/classic/rc-transient/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "tran",
+        "sharedInputPath": "benchmarks/reference/adapter-948/classic/rc-transient/0-tran.cir",
+        "sharedInputSha256": "e1b9dd39ccfd712aa1a80a6d5e7c6558500be973233b53eee50423eebd76f576",
+        "xyceInputPath": "benchmarks/reference/adapter-948/classic/rc-transient/0-tran-xyce.cir",
+        "xyceInputSha256": "27923e05ca4043dcd5c6bdde4779873d5507b8693ba33e35e911214de378c854"
+      }
+    ]
+  },
+  {
+    "key": "classic/rca3040-wideband-amplifier",
+    "originalSha256": "5024b28b797b53f35d838e1fefeecae059302c4b0106485ff711c9306eedfad1",
+    "canonicalSha256": "5024b28b797b53f35d838e1fefeecae059302c4b0106485ff711c9306eedfad1",
+    "canonicalPath": "benchmarks/reference/adapter-948/classic/rca3040-wideband-amplifier/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "ac",
+        "sharedInputPath": "benchmarks/reference/adapter-948/classic/rca3040-wideband-amplifier/0-ac.cir",
+        "sharedInputSha256": "52c10c8ef864808b39f2df52898fbdf6bde0eebe78d812a6cbb8f6f4513e107a",
+        "xyceInputPath": "benchmarks/reference/adapter-948/classic/rca3040-wideband-amplifier/0-ac-xyce.cir",
+        "xyceInputSha256": "292b5cbf679a8462205e83625a19358be318d7b0dbae68a53499180a0dd3b6b1"
+      },
+      {
+        "ordinal": 1,
+        "analysis": "dc",
+        "sharedInputPath": "benchmarks/reference/adapter-948/classic/rca3040-wideband-amplifier/1-dc.cir",
+        "sharedInputSha256": "33baa702994a149f7d9beeaf23aa4d2fa6529f24b5851096f31ba3862396aff2",
+        "xyceInputPath": "benchmarks/reference/adapter-948/classic/rca3040-wideband-amplifier/1-dc-xyce.cir",
+        "xyceInputSha256": "932790335e5b3bab641a325f0e8224fb80fd2d2ba3a244667d0cbb445e2fc628"
+      },
+      {
+        "ordinal": 2,
+        "analysis": "tran",
+        "sharedInputPath": "benchmarks/reference/adapter-948/classic/rca3040-wideband-amplifier/2-tran.cir",
+        "sharedInputSha256": "217250d78b916218f6ef79bb084d74046e0f25c9a31ca0bf943b426a529f7598",
+        "xyceInputPath": "benchmarks/reference/adapter-948/classic/rca3040-wideband-amplifier/2-tran-xyce.cir",
+        "xyceInputSha256": "a1a0b32c6e9d34f46188515ac0619cac284b7217c65ec74d5f3f3eecf009de9c"
+      }
+    ]
+  },
+  {
+    "key": "classic/resistor-noise",
+    "originalSha256": "241ea1ce167a449e91b1cf29904f5c9513338cff31c2c0beb72a845482048661",
+    "canonicalSha256": "241ea1ce167a449e91b1cf29904f5c9513338cff31c2c0beb72a845482048661",
+    "canonicalPath": "benchmarks/reference/adapter-948/classic/resistor-noise/canonical.cir",
+    "limitations": [
+      "Unsupported analysis/control directive: .noise v(1) iin dec 10 10 100k 1",
+      "No supported static analysis"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/classic/resistor-noise/canonical.cir",
+        "sharedInputSha256": "241ea1ce167a449e91b1cf29904f5c9513338cff31c2c0beb72a845482048661"
+      }
+    ]
+  },
+  {
+    "key": "classic/rtl-inverter-chain",
+    "originalSha256": "29aa3c8914aa7908881b4ab2657c23b5c4877811f09d1526ea6d5c833fce95c0",
+    "canonicalSha256": "29aa3c8914aa7908881b4ab2657c23b5c4877811f09d1526ea6d5c833fce95c0",
+    "canonicalPath": "benchmarks/reference/adapter-948/classic/rtl-inverter-chain/canonical.cir",
+    "limitations": [
+      "Unsupported shared solver options: .opt acct list node lvlcod=2"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/classic/rtl-inverter-chain/canonical.cir",
+        "sharedInputSha256": "29aa3c8914aa7908881b4ab2657c23b5c4877811f09d1526ea6d5c833fce95c0"
+      }
+    ]
+  },
+  {
+    "key": "classic/ecl-schmitt-trigger",
+    "originalSha256": "ad673d52014030a49980fcbafeda898d547ab701fb5cf8eeaf374c9338324a31",
+    "canonicalSha256": "ad673d52014030a49980fcbafeda898d547ab701fb5cf8eeaf374c9338324a31",
+    "canonicalPath": "benchmarks/reference/adapter-948/classic/ecl-schmitt-trigger/canonical.cir",
+    "limitations": [
+      "Unsupported shared solver options: .opt acct list node lvlcod=2"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/classic/ecl-schmitt-trigger/canonical.cir",
+        "sharedInputSha256": "ad673d52014030a49980fcbafeda898d547ab701fb5cf8eeaf374c9338324a31"
+      }
+    ]
+  },
+  {
+    "key": "classic/high-pass-pole-zero",
+    "originalSha256": "750846efbf93b9ae9f93e477922589439b859648de15b7508d2ea8e39da23720",
+    "canonicalSha256": "750846efbf93b9ae9f93e477922589439b859648de15b7508d2ea8e39da23720",
+    "canonicalPath": "benchmarks/reference/adapter-948/classic/high-pass-pole-zero/canonical.cir",
+    "limitations": [
+      "Unsupported analysis/control directive: .pz 1 0 2 0 cur pz",
+      "No supported static analysis"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/classic/high-pass-pole-zero/canonical.cir",
+        "sharedInputSha256": "750846efbf93b9ae9f93e477922589439b859648de15b7508d2ea8e39da23720"
+      }
+    ]
+  },
+  {
+    "key": "xyce/capacitor-rc-transient",
+    "originalSha256": "38b0d8271d4cef0f783be9a5ba0bc391c6d164fbe0dba9027e93927f0656e90b",
+    "canonicalSha256": "38b0d8271d4cef0f783be9a5ba0bc391c6d164fbe0dba9027e93927f0656e90b",
+    "canonicalPath": "benchmarks/reference/adapter-948/xyce/capacitor-rc-transient/canonical.cir",
+    "limitations": [
+      "Unsupported shared solver options: .options timeint reltol=1e-6 abstol=1e-6"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/xyce/capacitor-rc-transient/canonical.cir",
+        "sharedInputSha256": "38b0d8271d4cef0f783be9a5ba0bc391c6d164fbe0dba9027e93927f0656e90b"
+      }
+    ]
+  },
+  {
+    "key": "xyce/capacitor-rc-transient-newlte",
+    "originalSha256": "628f4953ca83a0e8840e100ea4671c778afe47bdcad0f52c09f5053c023c5194",
+    "canonicalSha256": "628f4953ca83a0e8840e100ea4671c778afe47bdcad0f52c09f5053c023c5194",
+    "canonicalPath": "benchmarks/reference/adapter-948/xyce/capacitor-rc-transient-newlte/canonical.cir",
+    "limitations": [
+      "Unsupported shared solver options: .options timeint reltol=1e-6 abstol=1e-6 newlte=2"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/xyce/capacitor-rc-transient-newlte/canonical.cir",
+        "sharedInputSha256": "628f4953ca83a0e8840e100ea4671c778afe47bdcad0f52c09f5053c023c5194"
+      }
+    ]
+  },
+  {
+    "key": "xyce/capacitor-rc-oscillator",
+    "originalSha256": "add8ca9d2654398a4c394bc9232809677b479fe35172c66bbb8e2ad9bf9410a4",
+    "canonicalSha256": "add8ca9d2654398a4c394bc9232809677b479fe35172c66bbb8e2ad9bf9410a4",
+    "canonicalPath": "benchmarks/reference/adapter-948/xyce/capacitor-rc-oscillator/canonical.cir",
+    "limitations": [
+      "Unsupported shared solver options: .options timeint reltol=1.0e-4 abstol=1e-4 method=7"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/xyce/capacitor-rc-oscillator/canonical.cir",
+        "sharedInputSha256": "add8ca9d2654398a4c394bc9232809677b479fe35172c66bbb8e2ad9bf9410a4"
+      }
+    ]
+  },
+  {
+    "key": "xyce/diode-level2-temperature-breakdown",
+    "originalSha256": "9c52a577a2f0b0a7419160b6cd340894ed41ebc403023a3b3f1d809d171bee0e",
+    "canonicalSha256": "9c52a577a2f0b0a7419160b6cd340894ed41ebc403023a3b3f1d809d171bee0e",
+    "canonicalPath": "benchmarks/reference/adapter-948/xyce/diode-level2-temperature-breakdown/canonical.cir",
+    "limitations": [
+      "Unsupported analysis/control directive: .step TEMP list -55 25 72"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/xyce/diode-level2-temperature-breakdown/canonical.cir",
+        "sharedInputSha256": "9c52a577a2f0b0a7419160b6cd340894ed41ebc403023a3b3f1d809d171bee0e"
+      }
+    ]
+  },
+  {
+    "key": "xyce/diode-zener-5229",
+    "originalSha256": "aefc2180e4bb6a5b39e3f4105546f3c5ba22af3b74f003d2d4d3c55f45938e9e",
+    "canonicalSha256": "391e28987d175bffbc1124f76f953c51a5dc62ab288b44e92bf2768f97e4ce3f",
+    "canonicalPath": "benchmarks/reference/adapter-948/xyce/diode-zener-5229/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "dc",
+        "sharedInputPath": "benchmarks/reference/adapter-948/xyce/diode-zener-5229/0-dc.cir",
+        "sharedInputSha256": "391e28987d175bffbc1124f76f953c51a5dc62ab288b44e92bf2768f97e4ce3f",
+        "xyceInputPath": "benchmarks/reference/adapter-948/xyce/diode-zener-5229/0-dc-xyce.cir",
+        "xyceInputSha256": "3a67c9683191bcecdaa44ee1b389df7c3aa15d547d58f575fe8b6c6f695eb151"
+      }
+    ]
+  },
+  {
+    "key": "xyce/diode-transient",
+    "originalSha256": "334e2dde43335851dc96f76ba5e78ef3e0b1de142cca073b3c70f83937637d8c",
+    "canonicalSha256": "334e2dde43335851dc96f76ba5e78ef3e0b1de142cca073b3c70f83937637d8c",
+    "canonicalPath": "benchmarks/reference/adapter-948/xyce/diode-transient/canonical.cir",
+    "limitations": [
+      "Unsupported shared solver options: .options timeint reltol=1.0e-4"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/xyce/diode-transient/canonical.cir",
+        "sharedInputSha256": "334e2dde43335851dc96f76ba5e78ef3e0b1de142cca073b3c70f83937637d8c"
+      }
+    ]
+  },
+  {
+    "key": "xyce/diode-sidewall-dc",
+    "originalSha256": "fb7d40fe14305d830afa0c4477e68b2da541f428883cec677f4c8cb13906d658",
+    "canonicalSha256": "0846f753424e8d36d7859e6729fce50f8ef08f2a44ec1d2026cea3f370fbcc9c",
+    "canonicalPath": "benchmarks/reference/adapter-948/xyce/diode-sidewall-dc/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "dc",
+        "sharedInputPath": "benchmarks/reference/adapter-948/xyce/diode-sidewall-dc/0-dc.cir",
+        "sharedInputSha256": "0846f753424e8d36d7859e6729fce50f8ef08f2a44ec1d2026cea3f370fbcc9c",
+        "xyceInputPath": "benchmarks/reference/adapter-948/xyce/diode-sidewall-dc/0-dc-xyce.cir",
+        "xyceInputSha256": "557b6f937bea7cae074f2d257afdb1313e0d487ec47d7d9deb5a75a0354a0fdd"
+      }
+    ]
+  },
+  {
+    "key": "xyce/inductor-transient",
+    "originalSha256": "a0a869d9fe3b04d3bbdc8abf9e8a89a9302a54ac5be9c97f446f06834a248b35",
+    "canonicalSha256": "a0a869d9fe3b04d3bbdc8abf9e8a89a9302a54ac5be9c97f446f06834a248b35",
+    "canonicalPath": "benchmarks/reference/adapter-948/xyce/inductor-transient/canonical.cir",
+    "limitations": [
+      "Unsupported shared solver options: .options timeint newbpstepping=0 reltol=1.0e-4"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/xyce/inductor-transient/canonical.cir",
+        "sharedInputSha256": "a0a869d9fe3b04d3bbdc8abf9e8a89a9302a54ac5be9c97f446f06834a248b35"
+      }
+    ]
+  },
+  {
+    "key": "xyce/njfet-2109-dc",
+    "originalSha256": "d25578ed59ddc0f94e3a2f9281f1200982f82c682ec63d5256bf0399f34ecd46",
+    "canonicalSha256": "3dd53130e1a0516f626f7c9524a00f0ed6519cb176f13924cab1e15f37cf85d6",
+    "canonicalPath": "benchmarks/reference/adapter-948/xyce/njfet-2109-dc/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "dc",
+        "sharedInputPath": "benchmarks/reference/adapter-948/xyce/njfet-2109-dc/0-dc.cir",
+        "sharedInputSha256": "3dd53130e1a0516f626f7c9524a00f0ed6519cb176f13924cab1e15f37cf85d6",
+        "xyceInputPath": "benchmarks/reference/adapter-948/xyce/njfet-2109-dc/0-dc-xyce.cir",
+        "xyceInputSha256": "cea48c56662d6076ee292a955e5bfb2b1fb2c5b5baaff6d9994ec8d59de1f696"
+      }
+    ]
+  },
+  {
+    "key": "xyce/njfet-stepped-dc",
+    "originalSha256": "295e3d4208ea2d839acf4724473b921ef1706976b254912b6e8455508c65b412",
+    "canonicalSha256": "295e3d4208ea2d839acf4724473b921ef1706976b254912b6e8455508c65b412",
+    "canonicalPath": "benchmarks/reference/adapter-948/xyce/njfet-stepped-dc/canonical.cir",
+    "limitations": [
+      "Unsupported analysis/control directive: .Step Vgs 0 -1.875 -0.625"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/xyce/njfet-stepped-dc/canonical.cir",
+        "sharedInputSha256": "295e3d4208ea2d839acf4724473b921ef1706976b254912b6e8455508c65b412"
+      }
+    ]
+  },
+  {
+    "key": "xyce/nmos-level1-dc",
+    "originalSha256": "3ab24382b4fb966d2111ba8b2aa0590b989fc09b367c09eb41cc7ac475e0e255",
+    "canonicalSha256": "f1976463f2bd28b871844ab101fce9a111aa5420753c29175a69ca8ba15a82e7",
+    "canonicalPath": "benchmarks/reference/adapter-948/xyce/nmos-level1-dc/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "dc",
+        "sharedInputPath": "benchmarks/reference/adapter-948/xyce/nmos-level1-dc/0-dc.cir",
+        "sharedInputSha256": "f1976463f2bd28b871844ab101fce9a111aa5420753c29175a69ca8ba15a82e7",
+        "xyceInputPath": "benchmarks/reference/adapter-948/xyce/nmos-level1-dc/0-dc-xyce.cir",
+        "xyceInputSha256": "0c0bd6a37fa24cf7926035863e3c262e44ad9803a053f7216bcb1eb08c4336a9"
+      }
+    ]
+  },
+  {
+    "key": "xyce/npn-dc",
+    "originalSha256": "8775a88a3f9c032ee047d770781a5a0cbcf21a2e28b7b6352e63636a7c9f1ce0",
+    "canonicalSha256": "f86a04c7b6846370e8e4498e9623cc77d7a7316911b2120b0192e8e060c785e3",
+    "canonicalPath": "benchmarks/reference/adapter-948/xyce/npn-dc/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "dc",
+        "sharedInputPath": "benchmarks/reference/adapter-948/xyce/npn-dc/0-dc.cir",
+        "sharedInputSha256": "f86a04c7b6846370e8e4498e9623cc77d7a7316911b2120b0192e8e060c785e3",
+        "xyceInputPath": "benchmarks/reference/adapter-948/xyce/npn-dc/0-dc-xyce.cir",
+        "xyceInputSha256": "30ba83ff5c9a20e144fcafb954be7197b2f45f6994dd77155f3294b4901b2eca"
+      }
+    ]
+  },
+  {
+    "key": "xyce/pmos-level1-dc",
+    "originalSha256": "767c989ba6c4ad761d2211ae39c9c82536895e76f6288e77276ad9468b2b2093",
+    "canonicalSha256": "f8bee64a23caddd9f6949a587692611dda147ec5dc63d914f9a0c2013a657070",
+    "canonicalPath": "benchmarks/reference/adapter-948/xyce/pmos-level1-dc/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "dc",
+        "sharedInputPath": "benchmarks/reference/adapter-948/xyce/pmos-level1-dc/0-dc.cir",
+        "sharedInputSha256": "f8bee64a23caddd9f6949a587692611dda147ec5dc63d914f9a0c2013a657070",
+        "xyceInputPath": "benchmarks/reference/adapter-948/xyce/pmos-level1-dc/0-dc-xyce.cir",
+        "xyceInputSha256": "5e210aebd63a9b6b25fdccc35fc7a1af2a662fde62e5ce45f20d4d07de270378"
+      }
+    ]
+  },
+  {
+    "key": "xyce/pnp-dc",
+    "originalSha256": "95796ac998eb051a535fcb498c259e715c1e8edd237e1e07add401fc6a1601df",
+    "canonicalSha256": "c337d910300ef2f2eee4e4effc76166892d8fe545bb28a1db4562dcd2f4646b1",
+    "canonicalPath": "benchmarks/reference/adapter-948/xyce/pnp-dc/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "dc",
+        "sharedInputPath": "benchmarks/reference/adapter-948/xyce/pnp-dc/0-dc.cir",
+        "sharedInputSha256": "c337d910300ef2f2eee4e4effc76166892d8fe545bb28a1db4562dcd2f4646b1",
+        "xyceInputPath": "benchmarks/reference/adapter-948/xyce/pnp-dc/0-dc-xyce.cir",
+        "xyceInputSha256": "8208fc0d7c72046437e10c2393344cdf7cc27ceb1ce2cebaa5ed6515aae042c4"
+      }
+    ]
+  },
+  {
+    "key": "xyce/resistor-dc",
+    "originalSha256": "c0def3533cd6c07bf3cc6ee06f806c50d0b491d4d70d8296cc286ad8fc6066ba",
+    "canonicalSha256": "08d4a4f4eaf02dcdd51b7f0b3b8c97e10fc8015cdad93e6824b46c26b1b0dac1",
+    "canonicalPath": "benchmarks/reference/adapter-948/xyce/resistor-dc/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "dc",
+        "sharedInputPath": "benchmarks/reference/adapter-948/xyce/resistor-dc/0-dc.cir",
+        "sharedInputSha256": "08d4a4f4eaf02dcdd51b7f0b3b8c97e10fc8015cdad93e6824b46c26b1b0dac1",
+        "xyceInputPath": "benchmarks/reference/adapter-948/xyce/resistor-dc/0-dc-xyce.cir",
+        "xyceInputSha256": "5e6d0b9c23c1868936fe8748d373454abaf96b44a9da8bfe06c86395dac5f147"
+      }
+    ]
+  },
+  {
+    "key": "xyce/resistor-level3-zero",
+    "originalSha256": "ab40c80d1175ad3079155b07bfed914b7085a6d9396f16a577446deb7693eb81",
+    "canonicalSha256": "042d964e435ada0fc3b7e648515c8e88b47b275214767ca74fe715fdfb2547c5",
+    "canonicalPath": "benchmarks/reference/adapter-948/xyce/resistor-level3-zero/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "dc",
+        "sharedInputPath": "benchmarks/reference/adapter-948/xyce/resistor-level3-zero/0-dc.cir",
+        "sharedInputSha256": "042d964e435ada0fc3b7e648515c8e88b47b275214767ca74fe715fdfb2547c5",
+        "xyceInputPath": "benchmarks/reference/adapter-948/xyce/resistor-level3-zero/0-dc-xyce.cir",
+        "xyceInputSha256": "08ed81bd3379cd6d647b5dc7f4e348d78f8fd07cb8f84a1d8997648e976beefc"
+      }
+    ]
+  },
+  {
+    "key": "xyce/resistor-negative",
+    "originalSha256": "7576379306251dd8c2baf89b4dbbe25527c399edb1fd701e7e5d38e83851614b",
+    "canonicalSha256": "773379a396c10921d337074502ff102b560271862a1517594256db56202bcd88",
+    "canonicalPath": "benchmarks/reference/adapter-948/xyce/resistor-negative/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "dc",
+        "sharedInputPath": "benchmarks/reference/adapter-948/xyce/resistor-negative/0-dc.cir",
+        "sharedInputSha256": "773379a396c10921d337074502ff102b560271862a1517594256db56202bcd88",
+        "xyceInputPath": "benchmarks/reference/adapter-948/xyce/resistor-negative/0-dc-xyce.cir",
+        "xyceInputSha256": "cfa7136b140bd3682208dda47f81890974362f3f51385d65197a6c4e9f30249b"
+      }
+    ]
+  },
+  {
+    "key": "xyce/rlc-transient",
+    "originalSha256": "4d52f9df5eb4fe814fdd137e3f66cd4b4ec6c988174e0fe1c7a19e6eddf21763",
+    "canonicalSha256": "4d52f9df5eb4fe814fdd137e3f66cd4b4ec6c988174e0fe1c7a19e6eddf21763",
+    "canonicalPath": "benchmarks/reference/adapter-948/xyce/rlc-transient/canonical.cir",
+    "limitations": [
+      "Unsupported shared solver options: .options timeint reltol=1.0e-3"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/xyce/rlc-transient/canonical.cir",
+        "sharedInputSha256": "4d52f9df5eb4fe814fdd137e3f66cd4b4ec6c988174e0fe1c7a19e6eddf21763"
+      }
+    ]
+  },
+  {
+    "key": "xyce/vccs-dc",
+    "originalSha256": "963d8d506600a2ac7f43812156739c8f49d332c50701f64268041ecd51b0306d",
+    "canonicalSha256": "7c6a7c80d72f8c8b6295edcc88d81cda428a76b030eeebfb0668880f8072f6ec",
+    "canonicalPath": "benchmarks/reference/adapter-948/xyce/vccs-dc/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "dc",
+        "sharedInputPath": "benchmarks/reference/adapter-948/xyce/vccs-dc/0-dc.cir",
+        "sharedInputSha256": "7c6a7c80d72f8c8b6295edcc88d81cda428a76b030eeebfb0668880f8072f6ec",
+        "xyceInputPath": "benchmarks/reference/adapter-948/xyce/vccs-dc/0-dc-xyce.cir",
+        "xyceInputSha256": "083f9010fcc7f2bdfd8700e23028bbaaaade982121c3ff0059af7b8aadec514a"
+      }
+    ]
+  },
+  {
+    "key": "xyce/vcvs-dc",
+    "originalSha256": "62541466b4010245a24d2c37b35c3debfc675b86f1bd3b2523fb91a01b4bbd5c",
+    "canonicalSha256": "de6fcf2391f42cd0aeb737a7414584ad5e725159e4ded0349e61a3285ebeb02c",
+    "canonicalPath": "benchmarks/reference/adapter-948/xyce/vcvs-dc/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "dc",
+        "sharedInputPath": "benchmarks/reference/adapter-948/xyce/vcvs-dc/0-dc.cir",
+        "sharedInputSha256": "de6fcf2391f42cd0aeb737a7414584ad5e725159e4ded0349e61a3285ebeb02c",
+        "xyceInputPath": "benchmarks/reference/adapter-948/xyce/vcvs-dc/0-dc-xyce.cir",
+        "xyceInputSha256": "c56ba1b7ed6996d2d04d880f981e1febb56e1bb9b8f3c8b897f6f7334e83a2ef"
+      }
+    ]
+  },
+  {
+    "key": "corpus-d/ohms-law-op",
+    "originalSha256": "be2e9901695aab2a53c140f845bb0fe41d3c43eecd41cddca3ce6c4946b5bbd2",
+    "canonicalSha256": "59529d77b3bd9f5828e51a879a0cc53d6c67aada18936f695f98b67c9ca264b4",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-d/ohms-law-op/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "op",
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-d/ohms-law-op/0-op.cir",
+        "sharedInputSha256": "59529d77b3bd9f5828e51a879a0cc53d6c67aada18936f695f98b67c9ca264b4",
+        "xyceInputPath": "benchmarks/reference/adapter-948/corpus-d/ohms-law-op/0-op-xyce.cir",
+        "xyceInputSha256": "f1b1ec279423ea97d5e30fce6c76e710394c04f25d76a64fa2d12b6daab74b40"
+      }
+    ]
+  },
+  {
+    "key": "corpus-d/diode-operating-point",
+    "originalSha256": "1c7dbbf5941ce07f6806803f1c22df8165acde82d5dd66f9a9076da009e19b8e",
+    "canonicalSha256": "90b556fdee0bb00fe6b6c0c7c37cdeb0af4355a7d756b3eb0a33ce24c087c882",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-d/diode-operating-point/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "op",
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-d/diode-operating-point/0-op.cir",
+        "sharedInputSha256": "90b556fdee0bb00fe6b6c0c7c37cdeb0af4355a7d756b3eb0a33ce24c087c882",
+        "xyceInputPath": "benchmarks/reference/adapter-948/corpus-d/diode-operating-point/0-op-xyce.cir",
+        "xyceInputSha256": "75ca231655d76aea53e67618e685b10f5306331912ce24d1ec30518304c08886"
+      }
+    ]
+  },
+  {
+    "key": "corpus-d/ekv-bias-sweep",
+    "originalSha256": "2d680251e499b4b857ea78280d8e8c0e2114eb0977d2b1b4f69ba234a08f0271",
+    "canonicalSha256": "2d680251e499b4b857ea78280d8e8c0e2114eb0977d2b1b4f69ba234a08f0271",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-d/ekv-bias-sweep/canonical.cir",
+    "limitations": [
+      "Unsupported analysis syntax: .dc source=vbias start=0 stop=2.5 step=0.01"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-d/ekv-bias-sweep/canonical.cir",
+        "sharedInputSha256": "2d680251e499b4b857ea78280d8e8c0e2114eb0977d2b1b4f69ba234a08f0271"
+      }
+    ]
+  },
+  {
+    "key": "corpus-d/downscaling-current-mirror",
+    "originalSha256": "09fa542dd664647c2deaef15f2d8bf07f7f3e30b40e7e6a9242673b62d28da1f",
+    "canonicalSha256": "09fa542dd664647c2deaef15f2d8bf07f7f3e30b40e7e6a9242673b62d28da1f",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-d/downscaling-current-mirror/canonical.cir",
+    "limitations": [
+      "Unsupported analysis syntax: .dc source=i1 start=0 stop=100u step=2u"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-d/downscaling-current-mirror/canonical.cir",
+        "sharedInputSha256": "09fa542dd664647c2deaef15f2d8bf07f7f3e30b40e7e6a9242673b62d28da1f"
+      }
+    ]
+  },
+  {
+    "key": "corpus-d/transresistance-ac",
+    "originalSha256": "e9c675ae1029b278422be65104ef1c10925d3506b7432274c9dce4c8c49d0765",
+    "canonicalSha256": "e9c675ae1029b278422be65104ef1c10925d3506b7432274c9dce4c8c49d0765",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-d/transresistance-ac/canonical.cir",
+    "limitations": [
+      "Unsupported analysis syntax: .ac start=7957.747 stop=79577.471 nsteps=1000",
+      "Unsupported analysis/control directive: .symbolic"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-d/transresistance-ac/canonical.cir",
+        "sharedInputSha256": "e9c675ae1029b278422be65104ef1c10925d3506b7432274c9dce4c8c49d0765"
+      }
+    ]
+  },
+  {
+    "key": "corpus-d/passive-pole-zero-ac",
+    "originalSha256": "3a597bfe073b0d0219444b15559e6390a2aabe9ca8f1b9246db626efd8dda94c",
+    "canonicalSha256": "3a597bfe073b0d0219444b15559e6390a2aabe9ca8f1b9246db626efd8dda94c",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-d/passive-pole-zero-ac/canonical.cir",
+    "limitations": [
+      "Unsupported analysis/control directive: .PZ  V(3,0) IN",
+      "Unsupported analysis syntax: .AC nsteps=100 start=.1 stop=10"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-d/passive-pole-zero-ac/canonical.cir",
+        "sharedInputSha256": "3a597bfe073b0d0219444b15559e6390a2aabe9ca8f1b9246db626efd8dda94c"
+      }
+    ]
+  },
+  {
+    "key": "corpus-d/resistor-voltage-ac",
+    "originalSha256": "a632b37a296d71114ea1bb8185029e041c28f86defdc4e6e671dfbe55de3a6ed",
+    "canonicalSha256": "a632b37a296d71114ea1bb8185029e041c28f86defdc4e6e671dfbe55de3a6ed",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-d/resistor-voltage-ac/canonical.cir",
+    "limitations": [
+      "Unsupported analysis syntax: .ac start=1 stop=100 nsteps=10",
+      "Unsupported analysis/control directive: .symbolic"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-d/resistor-voltage-ac/canonical.cir",
+        "sharedInputSha256": "a632b37a296d71114ea1bb8185029e041c28f86defdc4e6e671dfbe55de3a6ed"
+      }
+    ]
+  },
+  {
+    "key": "corpus-d/series-resonance-ac",
+    "originalSha256": "6b687bc2f3cd7415af561f26e80669ce8df3e08be977958dbc6db1446f5f22d0",
+    "canonicalSha256": "6b687bc2f3cd7415af561f26e80669ce8df3e08be977958dbc6db1446f5f22d0",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-d/series-resonance-ac/canonical.cir",
+    "limitations": [
+      "Unsupported source TYPE semantics: va1 1 0 type=vdc vdc=0 type=vac vac=1",
+      "Unsupported analysis syntax: .ac start=1 stop=10k nsteps=100",
+      "Unsupported analysis/control directive: .symbolic"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-d/series-resonance-ac/canonical.cir",
+        "sharedInputSha256": "6b687bc2f3cd7415af561f26e80669ce8df3e08be977958dbc6db1446f5f22d0"
+      }
+    ]
+  },
+  {
+    "key": "corpus-d/am-source-transient",
+    "originalSha256": "e5027b8f925e83ac09ef477b77b7219b215dcb74e0e172c8369c3c777a7e5632",
+    "canonicalSha256": "e5027b8f925e83ac09ef477b77b7219b215dcb74e0e172c8369c3c777a7e5632",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-d/am-source-transient/canonical.cir",
+    "limitations": [
+      "Unsupported source TYPE semantics: V1 1 0 type=vdc vdc=0 type=AM 10 1 100 1K 1M",
+      "Unsupported source TYPE semantics: V2 2 0 type=vdc vdc=0 type=AM 2.5 4 100 1K 1M",
+      "Unsupported source TYPE semantics: I3 3 0 type=idc idc=0 type=AM 10 1 1K 100 1M"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-d/am-source-transient/canonical.cir",
+        "sharedInputSha256": "e5027b8f925e83ac09ef477b77b7219b215dcb74e0e172c8369c3c777a7e5632"
+      }
+    ]
+  },
+  {
+    "key": "corpus-d/fft-source-transient",
+    "originalSha256": "04d2554f966d5ffd8cfd00f665575e02d11045790cf201bb596b610c0e2ff59b",
+    "canonicalSha256": "04d2554f966d5ffd8cfd00f665575e02d11045790cf201bb596b610c0e2ff59b",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-d/fft-source-transient/canonical.cir",
+    "limitations": [
+      "Unsupported source TYPE semantics: vs 1 0 type=sin 0 15 60 0 0",
+      "Unsupported analysis syntax: .tran tstep=1m tstop=30m",
+      "Unsupported analysis/control directive: .fft I(VS) np=512"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-d/fft-source-transient/canonical.cir",
+        "sharedInputSha256": "04d2554f966d5ffd8cfd00f665575e02d11045790cf201bb596b610c0e2ff59b"
+      }
+    ]
+  },
+  {
+    "key": "corpus-d/coupled-transformer-transient",
+    "originalSha256": "df9bf42844508fc38edffdc685e935ac90e10bde5fab0ee957ce68f5da6ba4a5",
+    "canonicalSha256": "df9bf42844508fc38edffdc685e935ac90e10bde5fab0ee957ce68f5da6ba4a5",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-d/coupled-transformer-transient/canonical.cir",
+    "limitations": [
+      "Unsupported source TYPE semantics: VIN 2 0 type=vdc vdc=0 type=sin 0 170 60 0 0",
+      "Unsupported analysis/control directive: .PSS 0.016666666666666666 POINTS=100 method=shooting"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-d/coupled-transformer-transient/canonical.cir",
+        "sharedInputSha256": "df9bf42844508fc38edffdc685e935ac90e10bde5fab0ee957ce68f5da6ba4a5"
+      }
+    ]
+  },
+  {
+    "key": "corpus-d/rlc-trapezoidal-transient",
+    "originalSha256": "8932d8cc9e536d8ad910c67d199536f39750dea7a0ff282d9ee81bc861145cc8",
+    "canonicalSha256": "8932d8cc9e536d8ad910c67d199536f39750dea7a0ff282d9ee81bc861145cc8",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-d/rlc-trapezoidal-transient/canonical.cir",
+    "limitations": [
+      "Unsupported source TYPE semantics: v1 1 0 type=vdc vdc=0 type=pulse v1=0 v2=1 td=0 tr=1n tf=1n pw=1n per=1000",
+      "Unsupported analysis syntax: .tran tstep=10n tstop=1u uic=2 method=trap"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-d/rlc-trapezoidal-transient/canonical.cir",
+        "sharedInputSha256": "8932d8cc9e536d8ad910c67d199536f39750dea7a0ff282d9ee81bc861145cc8"
+      }
+    ]
+  },
+  {
+    "key": "corpus-d/diode-voltage-doubler",
+    "originalSha256": "de110e81dd425b8117efd6acd32d7d4311b854bf1236715f3233b1e12419da50",
+    "canonicalSha256": "de110e81dd425b8117efd6acd32d7d4311b854bf1236715f3233b1e12419da50",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-d/diode-voltage-doubler/canonical.cir",
+    "limitations": [
+      "Unsupported source TYPE semantics: V1 4 0 type=vdc vdc=0 type=SIN vo=0 va=5 freq=1k",
+      "Unsupported analysis syntax: .tran tstep=0.01m tstop=5m"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-d/diode-voltage-doubler/canonical.cir",
+        "sharedInputSha256": "de110e81dd425b8117efd6acd32d7d4311b854bf1236715f3233b1e12419da50"
+      }
+    ]
+  },
+  {
+    "key": "corpus-d/ekv-ring-oscillator",
+    "originalSha256": "300a3d7c7441224ce67bbed31f9ecd334e8dd79cf4bfbeca9e49dc673a09f9ef",
+    "canonicalSha256": "300a3d7c7441224ce67bbed31f9ecd334e8dd79cf4bfbeca9e49dc673a09f9ef",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-d/ekv-ring-oscillator/canonical.cir",
+    "limitations": [
+      "Circuit state statement after analysis: .ic name=tran_start v(1)=0 v(2)=2.5 v(3)=2.5 v(4)=0",
+      "Unsupported analysis syntax: .tran tstop=50n tstep=1n uic=3 ic_label=tran_start  method=trap"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-d/ekv-ring-oscillator/canonical.cir",
+        "sharedInputSha256": "300a3d7c7441224ce67bbed31f9ecd334e8dd79cf4bfbeca9e49dc673a09f9ef"
+      }
+    ]
+  },
+  {
+    "key": "corpus-d/cockcroft-walton-x8",
+    "originalSha256": "050a38d7396b25410446e79dd8106578825bcce223f4c2cb0bb6889fdb18727b",
+    "canonicalSha256": "050a38d7396b25410446e79dd8106578825bcce223f4c2cb0bb6889fdb18727b",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-d/cockcroft-walton-x8/canonical.cir",
+    "limitations": [
+      "Unsupported source TYPE semantics: V1 99 0 type=vdc vdc=0 type=SIN vo=0 va=5 freq=1k"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-d/cockcroft-walton-x8/canonical.cir",
+        "sharedInputSha256": "050a38d7396b25410446e79dd8106578825bcce223f4c2cb0bb6889fdb18727b"
+      }
+    ]
+  },
+  {
+    "key": "corpus-d/pwm-switch",
+    "originalSha256": "e3d1544f41fef2361132c89b6a85776f3e2f32c7ec95b1321144c82cd6799ff5",
+    "canonicalSha256": "e3d1544f41fef2361132c89b6a85776f3e2f32c7ec95b1321144c82cd6799ff5",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-d/pwm-switch/canonical.cir",
+    "limitations": [
+      "Unsupported source TYPE semantics: v1 in 0 type=vdc vdc=0 type=pulse v1=0 v2=5 td=25n tr=1n tf=1n pw=50n per=100n",
+      "Unsupported OP arguments: .op guess=0",
+      "Unsupported analysis syntax: .tran 1n .25u uic=2"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-d/pwm-switch/canonical.cir",
+        "sharedInputSha256": "e3d1544f41fef2361132c89b6a85776f3e2f32c7ec95b1321144c82cd6799ff5"
+      }
+    ]
+  },
+  {
+    "key": "corpus-d/rlc-gear3",
+    "originalSha256": "98fd4fd298a27da8d9286ec29a1af412b7fa7d9098809b8f0635dc42e9062219",
+    "canonicalSha256": "98fd4fd298a27da8d9286ec29a1af412b7fa7d9098809b8f0635dc42e9062219",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-d/rlc-gear3/canonical.cir",
+    "limitations": [
+      "Unsupported source TYPE semantics: v1 1 0 type=vdc vdc=0 type=pulse v1=0 v2=1 td=0 tr=1n tf=1n pw=1n per=1000",
+      "Unsupported analysis syntax: .tran tstep=10n tstop=1u uic=2 method=gear3"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-d/rlc-gear3/canonical.cir",
+        "sharedInputSha256": "98fd4fd298a27da8d9286ec29a1af412b7fa7d9098809b8f0635dc42e9062219"
+      }
+    ]
+  },
+  {
+    "key": "corpus-d/rlc-gear5",
+    "originalSha256": "ac0ae49a5c9868c6d783449b84514d69e9dc171354782d53785b1b2300a064a4",
+    "canonicalSha256": "ac0ae49a5c9868c6d783449b84514d69e9dc171354782d53785b1b2300a064a4",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-d/rlc-gear5/canonical.cir",
+    "limitations": [
+      "Unsupported source TYPE semantics: v1 1 0 type=vdc vdc=0 type=pulse v1=0 v2=1 td=0 tr=1n tf=1n pw=1n per=1000",
+      "Unsupported analysis syntax: .tran tstep=10n tstop=1u uic=2 method=gear5"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-d/rlc-gear5/canonical.cir",
+        "sharedInputSha256": "ac0ae49a5c9868c6d783449b84514d69e9dc171354782d53785b1b2300a064a4"
+      }
+    ]
+  },
+  {
+    "key": "corpus-d/rlc-gear6",
+    "originalSha256": "1974b92f58344b953e481e579f63a374d722ca3a90bff1d3b305d2c35fb3d5d6",
+    "canonicalSha256": "1974b92f58344b953e481e579f63a374d722ca3a90bff1d3b305d2c35fb3d5d6",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-d/rlc-gear6/canonical.cir",
+    "limitations": [
+      "Unsupported source TYPE semantics: v1 1 0 type=vdc vdc=0 type=pulse v1=0 v2=1 td=0 tr=1n tf=1n pw=1n per=1000",
+      "Unsupported analysis syntax: .tran tstep=10n tstop=1u uic=2 method=gear6"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-d/rlc-gear6/canonical.cir",
+        "sharedInputSha256": "1974b92f58344b953e481e579f63a374d722ca3a90bff1d3b305d2c35fb3d5d6"
+      }
+    ]
+  },
+  {
+    "key": "corpus-d/colpitts-oscillator",
+    "originalSha256": "02bc0b17610975b80bb01bf5b73e5a334ef39412d3c14cc39ba6f8e236f67d8c",
+    "canonicalSha256": "02bc0b17610975b80bb01bf5b73e5a334ef39412d3c14cc39ba6f8e236f67d8c",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-d/colpitts-oscillator/canonical.cir",
+    "limitations": [
+      "Unsupported source TYPE semantics: vtest nd nd1 type=vdc vdc=0 *read current",
+      "Unsupported analysis syntax: .tran tstop=25n tstep=.1n method=trap uic=2"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-d/colpitts-oscillator/canonical.cir",
+        "sharedInputSha256": "02bc0b17610975b80bb01bf5b73e5a334ef39412d3c14cc39ba6f8e236f67d8c"
+      }
+    ]
+  },
+  {
+    "key": "corpus-e/cccs-mixed-analysis",
+    "originalSha256": "87e7a7e164e9cdac5891b12fd038c06945043f5455a79fb31d26c97bc0463e05",
+    "canonicalSha256": "70bcd37a51895eaa68ff9b09495828d9acbd91c11d367c12242c29d07b5e6d4c",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-e/cccs-mixed-analysis/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "op",
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/cccs-mixed-analysis/0-op.cir",
+        "sharedInputSha256": "d65d13ff3e0974c6faf7c0a6a86cd71b0ebd2479dcd114fb473388298eedba56",
+        "xyceInputPath": "benchmarks/reference/adapter-948/corpus-e/cccs-mixed-analysis/0-op-xyce.cir",
+        "xyceInputSha256": "f56bb2957199233e7172c6315774e54f336422fe04dcdb2eaa9008a159a537e2"
+      },
+      {
+        "ordinal": 1,
+        "analysis": "tran",
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/cccs-mixed-analysis/1-tran.cir",
+        "sharedInputSha256": "68b4d1d4ab9ff2eccfcf769a6a24ea12ff932cd9270b2ac8bbe3e9fd0713faf9",
+        "xyceInputPath": "benchmarks/reference/adapter-948/corpus-e/cccs-mixed-analysis/1-tran-xyce.cir",
+        "xyceInputSha256": "7acb335d8a28a21328d7e265b758d585a227cf829e03189555c99cc92fb941cc"
+      },
+      {
+        "ordinal": 2,
+        "analysis": "ac",
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/cccs-mixed-analysis/2-ac.cir",
+        "sharedInputSha256": "259b2651b0612cdff4ebb89ef2f60d9d7765ccd152ca0a3648e8ba369662b794",
+        "xyceInputPath": "benchmarks/reference/adapter-948/corpus-e/cccs-mixed-analysis/2-ac-xyce.cir",
+        "xyceInputSha256": "1b82d9b99a4aae743e43befee404755fe6f9d938a5b0aa5c95cd14930dd783b4"
+      }
+    ]
+  },
+  {
+    "key": "corpus-e/vcvs-operating-point",
+    "originalSha256": "cd4c6c8b18a27254b06859424268763a7f5b4a39a648981fc27d6a18b91e2cd1",
+    "canonicalSha256": "c65d1419092d28b5f326b0483682e2008ff34a400e041dde267267d57d641574",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-e/vcvs-operating-point/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "op",
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/vcvs-operating-point/0-op.cir",
+        "sharedInputSha256": "71159044270b93cb28aee5579d543cc4ed486a0733b8dbb61296388a8c0db759",
+        "xyceInputPath": "benchmarks/reference/adapter-948/corpus-e/vcvs-operating-point/0-op-xyce.cir",
+        "xyceInputSha256": "5608bd072192ae3e8ee60bc3d7d3e2343d3d094b3966871cdde063d2d34ce329"
+      },
+      {
+        "ordinal": 1,
+        "analysis": "op",
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/vcvs-operating-point/1-op.cir",
+        "sharedInputSha256": "71159044270b93cb28aee5579d543cc4ed486a0733b8dbb61296388a8c0db759",
+        "xyceInputPath": "benchmarks/reference/adapter-948/corpus-e/vcvs-operating-point/1-op-xyce.cir",
+        "xyceInputSha256": "5608bd072192ae3e8ee60bc3d7d3e2343d3d094b3966871cdde063d2d34ce329"
+      },
+      {
+        "ordinal": 2,
+        "analysis": "op",
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/vcvs-operating-point/2-op.cir",
+        "sharedInputSha256": "71159044270b93cb28aee5579d543cc4ed486a0733b8dbb61296388a8c0db759",
+        "xyceInputPath": "benchmarks/reference/adapter-948/corpus-e/vcvs-operating-point/2-op-xyce.cir",
+        "xyceInputSha256": "5608bd072192ae3e8ee60bc3d7d3e2343d3d094b3966871cdde063d2d34ce329"
+      },
+      {
+        "ordinal": 3,
+        "analysis": "ac",
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/vcvs-operating-point/3-ac.cir",
+        "sharedInputSha256": "a4b2b35bead51961bd1a4347e90898e408aeb7e07885beecdbcc06989e7b339d",
+        "xyceInputPath": "benchmarks/reference/adapter-948/corpus-e/vcvs-operating-point/3-ac-xyce.cir",
+        "xyceInputSha256": "14242ca388d491c99d7dd950a10899df29153617275937caf133082e577f0b2a"
+      },
+      {
+        "ordinal": 4,
+        "analysis": "ac",
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/vcvs-operating-point/4-ac.cir",
+        "sharedInputSha256": "a4b2b35bead51961bd1a4347e90898e408aeb7e07885beecdbcc06989e7b339d",
+        "xyceInputPath": "benchmarks/reference/adapter-948/corpus-e/vcvs-operating-point/4-ac-xyce.cir",
+        "xyceInputSha256": "14242ca388d491c99d7dd950a10899df29153617275937caf133082e577f0b2a"
+      },
+      {
+        "ordinal": 5,
+        "analysis": "ac",
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/vcvs-operating-point/5-ac.cir",
+        "sharedInputSha256": "a4b2b35bead51961bd1a4347e90898e408aeb7e07885beecdbcc06989e7b339d",
+        "xyceInputPath": "benchmarks/reference/adapter-948/corpus-e/vcvs-operating-point/5-ac-xyce.cir",
+        "xyceInputSha256": "14242ca388d491c99d7dd950a10899df29153617275937caf133082e577f0b2a"
+      }
+    ]
+  },
+  {
+    "key": "corpus-e/diode-bias-sweep",
+    "originalSha256": "f84c531a2e0b4ef201f1cef5d85279b360d5fd20d17d3deb91563581a9371055",
+    "canonicalSha256": "e84315258f59ba02fef813c4aad349869dc086ee22f32c06ed2120e98fc156c5",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-e/diode-bias-sweep/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "op",
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/diode-bias-sweep/0-op.cir",
+        "sharedInputSha256": "c7e39619a57edc55a8f1312b04a3f3ed5c832024e6dc330ae8580b21361cc805",
+        "xyceInputPath": "benchmarks/reference/adapter-948/corpus-e/diode-bias-sweep/0-op-xyce.cir",
+        "xyceInputSha256": "6b01ed71688880034e7ffba3216d7743925976771dff6bc5b120139cb1b586d6"
+      },
+      {
+        "ordinal": 1,
+        "analysis": "dc",
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/diode-bias-sweep/1-dc.cir",
+        "sharedInputSha256": "9ed002301b9239573e25d9a02a2fef595e983d9dce48c4cd04274d1bf14e6558",
+        "xyceInputPath": "benchmarks/reference/adapter-948/corpus-e/diode-bias-sweep/1-dc-xyce.cir",
+        "xyceInputSha256": "94cee6be7e8b7f30bf90a799da377763e340f580cd548774d0fe95c6543ff849"
+      }
+    ]
+  },
+  {
+    "key": "corpus-e/mos1-inverter-sweep",
+    "originalSha256": "e832b2a4c0099a68c035342e81e780256fa8369239fcd61c0fd1ad5a5a249de5",
+    "canonicalSha256": "e832b2a4c0099a68c035342e81e780256fa8369239fcd61c0fd1ad5a5a249de5",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-e/mos1-inverter-sweep/canonical.cir",
+    "limitations": [
+      "Unsupported shared solver options: .options itl4=40"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/mos1-inverter-sweep/canonical.cir",
+        "sharedInputSha256": "e832b2a4c0099a68c035342e81e780256fa8369239fcd61c0fd1ad5a5a249de5"
+      }
+    ]
+  },
+  {
+    "key": "corpus-e/transmission-line-ac",
+    "originalSha256": "99cc373d602fad9ecd4ea0e8f14d9eba9322b0083ae02c7631091dcbece7828b",
+    "canonicalSha256": "99cc373d602fad9ecd4ea0e8f14d9eba9322b0083ae02c7631091dcbece7828b",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-e/transmission-line-ac/canonical.cir",
+    "limitations": [
+      "Circuit state statement after analysis: .param rs=.1",
+      "Unsupported analysis syntax: .ac",
+      "Circuit state statement after analysis: .param rs=25.",
+      "Circuit state statement after analysis: .param rs= 100"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/transmission-line-ac/canonical.cir",
+        "sharedInputSha256": "99cc373d602fad9ecd4ea0e8f14d9eba9322b0083ae02c7631091dcbece7828b"
+      }
+    ]
+  },
+  {
+    "key": "corpus-e/mutual-inductance-ac",
+    "originalSha256": "45bf5fdc96b7985a744455ff7c3222478665e3db487bbcfedc5c7efa8297fc3c",
+    "canonicalSha256": "694786edd3bc0649d4ac9b0414628f57536da2a3bc18654728a706f2274d20f5",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-e/mutual-inductance-ac/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "ac",
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/mutual-inductance-ac/0-ac.cir",
+        "sharedInputSha256": "0c3d51c8c297c39f666554b8a6e47d754ee78e24ac7fb778648e68dbc28fe16c",
+        "xyceInputPath": "benchmarks/reference/adapter-948/corpus-e/mutual-inductance-ac/0-ac-xyce.cir",
+        "xyceInputSha256": "471e72056761b0747e1f47953f1fc1aff6a200a0603272a86563e35d1456b230"
+      },
+      {
+        "ordinal": 1,
+        "analysis": "tran",
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/mutual-inductance-ac/1-tran.cir",
+        "sharedInputSha256": "5f02ccf9bc37cd439631aa12e34fff803e3595aac88baa720c0e620df80f7bfb",
+        "xyceInputPath": "benchmarks/reference/adapter-948/corpus-e/mutual-inductance-ac/1-tran-xyce.cir",
+        "xyceInputSha256": "e256c49de5c0957b1f235cf56e2702c340b6e8e8b8bafd23b7eb1b62e090f3f4"
+      }
+    ]
+  },
+  {
+    "key": "corpus-e/bjt-diffpair-ac",
+    "originalSha256": "f8cde99b71d9978c5216dffbc9dfc036c8bdf7b37f1c9949fa9835e6eb741213",
+    "canonicalSha256": "f8cde99b71d9978c5216dffbc9dfc036c8bdf7b37f1c9949fa9835e6eb741213",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-e/bjt-diffpair-ac/canonical.cir",
+    "limitations": [
+      "Unsupported shared solver options: .option method=gear"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/bjt-diffpair-ac/canonical.cir",
+        "sharedInputSha256": "f8cde99b71d9978c5216dffbc9dfc036c8bdf7b37f1c9949fa9835e6eb741213"
+      }
+    ]
+  },
+  {
+    "key": "corpus-e/opamp-open-loop-ac",
+    "originalSha256": "92e47652dbecdbd2c971cce3c047fc0b8e4a0406a7d2c953dffce299c60b183c",
+    "canonicalSha256": "92e47652dbecdbd2c971cce3c047fc0b8e4a0406a7d2c953dffce299c60b183c",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-e/opamp-open-loop-ac/canonical.cir",
+    "limitations": [
+      "Unsupported analysis syntax: .ac",
+      "Unsupported analysis syntax: .dc"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/opamp-open-loop-ac/canonical.cir",
+        "sharedInputSha256": "92e47652dbecdbd2c971cce3c047fc0b8e4a0406a7d2c953dffce299c60b183c"
+      }
+    ]
+  },
+  {
+    "key": "corpus-e/capacitor-step-transient",
+    "originalSha256": "2c0864497272439baa44213381271915107ccd9f8c47354df2e4b9c3028a1608",
+    "canonicalSha256": "514d94ca5439d0183655f6b01d139ba23dcfe1105164ccb7b2d69ee0f4a29e2f",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-e/capacitor-step-transient/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "tran",
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/capacitor-step-transient/0-tran.cir",
+        "sharedInputSha256": "514d94ca5439d0183655f6b01d139ba23dcfe1105164ccb7b2d69ee0f4a29e2f",
+        "xyceInputPath": "benchmarks/reference/adapter-948/corpus-e/capacitor-step-transient/0-tran-xyce.cir",
+        "xyceInputSha256": "926cfdea64f36e733bf7a057f5211aeb610f785539dc6c6e14dba3d449218735"
+      }
+    ]
+  },
+  {
+    "key": "corpus-e/capacitor-initial-condition",
+    "originalSha256": "65199506e3a8b9bd05b3842cc9ef180308d0d02ba2e9857e89f7f1f8c32c3c84",
+    "canonicalSha256": "3f941c973f8d0ea1c137f79ca22b36a6bf0b59d37699a8f3a6fa384156850605",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-e/capacitor-initial-condition/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "tran",
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/capacitor-initial-condition/0-tran.cir",
+        "sharedInputSha256": "3f941c973f8d0ea1c137f79ca22b36a6bf0b59d37699a8f3a6fa384156850605",
+        "xyceInputPath": "benchmarks/reference/adapter-948/corpus-e/capacitor-initial-condition/0-tran-xyce.cir",
+        "xyceInputSha256": "fbbde80f5df33e363c2b8f73a1759905d5a0aa560a7ad9e85ab919ee092aaacb"
+      }
+    ]
+  },
+  {
+    "key": "corpus-e/lc-oscillator-transient",
+    "originalSha256": "020684099d172ec7cc2a6fe3d57792ef51b3d9162f41f83ed486704062d6d702",
+    "canonicalSha256": "59183b63dbfac31926743af5f11400f8cdad60be4b85878f0bf6e7dd99102ffd",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-e/lc-oscillator-transient/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "tran",
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/lc-oscillator-transient/0-tran.cir",
+        "sharedInputSha256": "59183b63dbfac31926743af5f11400f8cdad60be4b85878f0bf6e7dd99102ffd",
+        "xyceInputPath": "benchmarks/reference/adapter-948/corpus-e/lc-oscillator-transient/0-tran-xyce.cir",
+        "xyceInputSha256": "633b664ef94d6cdf258719b9b345ebd2ddb9b587fda26f0574d6ff50984dd1c3"
+      }
+    ]
+  },
+  {
+    "key": "corpus-e/bjt-diffpair-transient",
+    "originalSha256": "f142fa0c6378f80666343a83c8582cca065ed7ad5d49dd3d9e5cd88e7474301e",
+    "canonicalSha256": "15683750dfdc7d74d49ef7d88f909c4bb77ba1feb252478d68a291c832165fee",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-e/bjt-diffpair-transient/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "op",
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/bjt-diffpair-transient/0-op.cir",
+        "sharedInputSha256": "6ba957d05c3e3da4d2ad6da25b492aeec0030d66a1b96bb68efd7ce2af9d6f0a",
+        "xyceInputPath": "benchmarks/reference/adapter-948/corpus-e/bjt-diffpair-transient/0-op-xyce.cir",
+        "xyceInputSha256": "d705d7cef193e08f303430baa0fabd7f6ee088154ef181a4eedf6856f3574890"
+      },
+      {
+        "ordinal": 1,
+        "analysis": "tran",
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/bjt-diffpair-transient/1-tran.cir",
+        "sharedInputSha256": "8392c768e8a2a1a54600f53fa388e7f33781b5c4bb3f6a28d4b546027c8803f9",
+        "xyceInputPath": "benchmarks/reference/adapter-948/corpus-e/bjt-diffpair-transient/1-tran-xyce.cir",
+        "xyceInputSha256": "fab2a4acbd4f7c076d75a2ee3f81deebe43cb9b82996972c0709ee1b470ef00e"
+      }
+    ]
+  },
+  {
+    "key": "corpus-e/bjt-schmitt-trigger",
+    "originalSha256": "ec6efed82593b525b1661173b3a11dbec4880449968389ff86424051d42274b5",
+    "canonicalSha256": "e93548d04416fda1e7d6f988390f55f2fa6891e50de037ce8a26fe9e47816471",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-e/bjt-schmitt-trigger/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "op",
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/bjt-schmitt-trigger/0-op.cir",
+        "sharedInputSha256": "bbbdc643100dd7c9da5fc464f8317e045cc69016ada0c776055f940d0e5d40d8",
+        "xyceInputPath": "benchmarks/reference/adapter-948/corpus-e/bjt-schmitt-trigger/0-op-xyce.cir",
+        "xyceInputSha256": "e7a5a80b569dbf160cae86c9279c8516c4012e4f699109d3a7cc641f24394394"
+      },
+      {
+        "ordinal": 1,
+        "analysis": "tran",
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/bjt-schmitt-trigger/1-tran.cir",
+        "sharedInputSha256": "72d8ec72afb138a60b4c82cc8ee410fbf21ab910361ea10008f7c7c358522a4c",
+        "xyceInputPath": "benchmarks/reference/adapter-948/corpus-e/bjt-schmitt-trigger/1-tran-xyce.cir",
+        "xyceInputSha256": "39b6220cdbd087d53cf3c05f59c82e896654ffb4992912ee3ec1b7634ffd1914"
+      }
+    ]
+  },
+  {
+    "key": "corpus-e/diode-temperature-sweep",
+    "originalSha256": "d2d7df0b8050008df98e6a8410433c6ef346d9851371c2032edaeb0c9c43dd48",
+    "canonicalSha256": "3ad38fee05072d51e0ea7a9e2ba69295ade53bd344deeb25a30614d365250600",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-e/diode-temperature-sweep/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "op",
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/diode-temperature-sweep/0-op.cir",
+        "sharedInputSha256": "ef3192a63e24d65ff4cc1c935165149e8b8fc888a4eb88f1b9ae13be1a9d1e1a",
+        "xyceInputPath": "benchmarks/reference/adapter-948/corpus-e/diode-temperature-sweep/0-op-xyce.cir",
+        "xyceInputSha256": "2b8168de5e1e57c498b25bb9c45db0bf43e44a6a101c334f5a08843e544edfba"
+      },
+      {
+        "ordinal": 1,
+        "analysis": "dc",
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/diode-temperature-sweep/1-dc.cir",
+        "sharedInputSha256": "e362a667996deeaf5b4a3c9b512884b88a0165fbfa6aa31be728bff146bcd711",
+        "xyceInputPath": "benchmarks/reference/adapter-948/corpus-e/diode-temperature-sweep/1-dc-xyce.cir",
+        "xyceInputSha256": "82e41176ca6e8927087158272792d8fcdb3b38f63caf335351f2a83f2b8c3eb4"
+      },
+      {
+        "ordinal": 2,
+        "analysis": "dc",
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/diode-temperature-sweep/2-dc.cir",
+        "sharedInputSha256": "e6cda6cea15f8986e0f72c23fc8c63c433f2d9f977033b2638955900d61233ee",
+        "xyceInputPath": "benchmarks/reference/adapter-948/corpus-e/diode-temperature-sweep/2-dc-xyce.cir",
+        "xyceInputSha256": "bfaf93b2856e65569ba11f707d40ad26dbdeca47e54c6e94643a452d41427105"
+      },
+      {
+        "ordinal": 3,
+        "analysis": "op",
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/diode-temperature-sweep/3-op.cir",
+        "sharedInputSha256": "ef3192a63e24d65ff4cc1c935165149e8b8fc888a4eb88f1b9ae13be1a9d1e1a",
+        "xyceInputPath": "benchmarks/reference/adapter-948/corpus-e/diode-temperature-sweep/3-op-xyce.cir",
+        "xyceInputSha256": "2b8168de5e1e57c498b25bb9c45db0bf43e44a6a101c334f5a08843e544edfba"
+      }
+    ]
+  },
+  {
+    "key": "corpus-e/mos1-nand-transient",
+    "originalSha256": "183f57f24707d2597f83396a777896e336a17a4ec8a13027f89c5029440d8300",
+    "canonicalSha256": "183f57f24707d2597f83396a777896e336a17a4ec8a13027f89c5029440d8300",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-e/mos1-nand-transient/canonical.cir",
+    "limitations": [
+      "Unsupported OP arguments: .op trace iter"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/mos1-nand-transient/canonical.cir",
+        "sharedInputSha256": "183f57f24707d2597f83396a777896e336a17a4ec8a13027f89c5029440d8300"
+      }
+    ]
+  },
+  {
+    "key": "corpus-e/bjt-rtl-inverter-chain",
+    "originalSha256": "48b7f67014d43f0c9987ebbc9b349cf53908cc51426d784c4be6db3397fd6e2d",
+    "canonicalSha256": "3d963fefcb55247552b5714d798be6fe1d146d8f3d5230292d0c07b2eb846af4",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-e/bjt-rtl-inverter-chain/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "op",
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/bjt-rtl-inverter-chain/0-op.cir",
+        "sharedInputSha256": "396b902e6f943f0f0c47a3aad12d48de9f8ea4a86bb5602f128662c481b00e98",
+        "xyceInputPath": "benchmarks/reference/adapter-948/corpus-e/bjt-rtl-inverter-chain/0-op-xyce.cir",
+        "xyceInputSha256": "279ec5f86c940880366b2e8deb4ba041f47da2e3edfb7efde8b108714f473ced"
+      },
+      {
+        "ordinal": 1,
+        "analysis": "dc",
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/bjt-rtl-inverter-chain/1-dc.cir",
+        "sharedInputSha256": "021d2db325001b225d9ba689780ebae61915da9e1b080b0d0148b1aa0b43d9ff",
+        "xyceInputPath": "benchmarks/reference/adapter-948/corpus-e/bjt-rtl-inverter-chain/1-dc-xyce.cir",
+        "xyceInputSha256": "f5a44b94bf8f356864dd67ca3fe311cfc0b41e2af903bf4c813a811e916995b5"
+      },
+      {
+        "ordinal": 2,
+        "analysis": "tran",
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/bjt-rtl-inverter-chain/2-tran.cir",
+        "sharedInputSha256": "c8a7ecc0484b1bb34dace6cf3e871cc0fa28fe0f9b61e1db8dd26bc592fd57a7",
+        "xyceInputPath": "benchmarks/reference/adapter-948/corpus-e/bjt-rtl-inverter-chain/2-tran-xyce.cir",
+        "xyceInputSha256": "00666bd8996606f89af79b0d956766b16fc8a89f3bf8e62d906d5e55454d43bb"
+      }
+    ]
+  },
+  {
+    "key": "corpus-e/dual-lc-uic-rejection",
+    "originalSha256": "f1f6a53ef0bb2d41988b1ec4fb022abea8830cd8a847aa3b693d96fe7e66e36d",
+    "canonicalSha256": "ac5c618ac3830f3b1c45d5b532ef10339d0fcc9142d3cab869fd8df1e397d834",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-e/dual-lc-uic-rejection/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "tran",
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/dual-lc-uic-rejection/0-tran.cir",
+        "sharedInputSha256": "e7ce754aa12716b17745c2d17f3bf291849b2a0081b2e28cb4e59b90d40221de",
+        "xyceInputPath": "benchmarks/reference/adapter-948/corpus-e/dual-lc-uic-rejection/0-tran-xyce.cir",
+        "xyceInputSha256": "a07694c35df46245ce5e6c9f61cc1e93b4f4594ca593649d11bc13e490033aef"
+      },
+      {
+        "ordinal": 1,
+        "analysis": "tran",
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/dual-lc-uic-rejection/1-tran.cir",
+        "sharedInputSha256": "5ae4edfad12a0c957f9cc64f0c39504151ab15b2ac0fd881b7e2eef24ca45b05",
+        "xyceInputPath": "benchmarks/reference/adapter-948/corpus-e/dual-lc-uic-rejection/1-tran-xyce.cir",
+        "xyceInputSha256": "5b360121081edd7d0f8d20d05ccbac9767d8e0e8ec7fdacb8e2272b211948d9b"
+      }
+    ]
+  },
+  {
+    "key": "corpus-e/opamp-voltage-follower",
+    "originalSha256": "923e0da63d9fbeca5cb94d049af3f85036f5b1a1af38a0701dbed8c258ff1ebd",
+    "canonicalSha256": "923e0da63d9fbeca5cb94d049af3f85036f5b1a1af38a0701dbed8c258ff1ebd",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-e/opamp-voltage-follower/canonical.cir",
+    "limitations": [
+      "Unsupported shared solver options: .options dampstrategy=11",
+      "Unsupported shared solver options: .options trsteporder=1"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/opamp-voltage-follower/canonical.cir",
+        "sharedInputSha256": "923e0da63d9fbeca5cb94d049af3f85036f5b1a1af38a0701dbed8c258ff1ebd"
+      }
+    ]
+  },
+  {
+    "key": "corpus-e/mos7-nand-no-bypass",
+    "originalSha256": "81a387433d50c7d280d2b80d2463f3a9d42fc6ea969ef783333b16eaca046868",
+    "canonicalSha256": "81a387433d50c7d280d2b80d2463f3a9d42fc6ea969ef783333b16eaca046868",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-e/mos7-nand-no-bypass/canonical.cir",
+    "limitations": [
+      "Unsupported shared solver options: .option noincmode nobypass",
+      "Unsupported OP arguments: .op trace iter"
+    ],
+    "projections": [
+      {
+        "ordinal": null,
+        "analysis": null,
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/mos7-nand-no-bypass/canonical.cir",
+        "sharedInputSha256": "81a387433d50c7d280d2b80d2463f3a9d42fc6ea969ef783333b16eaca046868"
+      }
+    ]
+  },
+  {
+    "key": "corpus-e/bjt-diffpair-current-source",
+    "originalSha256": "7060377579bdb6bfef87225ee4710b81744462af1548ccff755adf061f14f37c",
+    "canonicalSha256": "d2362f403d4086856468b682149d2ca468ba809d196df7750a8b0af3b0d2fe75",
+    "canonicalPath": "benchmarks/reference/adapter-948/corpus-e/bjt-diffpair-current-source/canonical.cir",
+    "limitations": [],
+    "projections": [
+      {
+        "ordinal": 0,
+        "analysis": "op",
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/bjt-diffpair-current-source/0-op.cir",
+        "sharedInputSha256": "09d529d72cd932fb89c5de44cb224b34ed999a1244d59acf3adc6928867d1ac2",
+        "xyceInputPath": "benchmarks/reference/adapter-948/corpus-e/bjt-diffpair-current-source/0-op-xyce.cir",
+        "xyceInputSha256": "1188d4ccd41e011db890b9025f375f16ad23027b72268ee583d09f76a060ddc5"
+      },
+      {
+        "ordinal": 1,
+        "analysis": "tran",
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/bjt-diffpair-current-source/1-tran.cir",
+        "sharedInputSha256": "40240f80757f2055963675ff5abcc5d7e11fdf84a373f6338727f64252426263",
+        "xyceInputPath": "benchmarks/reference/adapter-948/corpus-e/bjt-diffpair-current-source/1-tran-xyce.cir",
+        "xyceInputSha256": "418ef666fa0d48436bde63759876546fca3ce07467eadefc6d77913eec8a7b74"
+      },
+      {
+        "ordinal": 2,
+        "analysis": "ac",
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/bjt-diffpair-current-source/2-ac.cir",
+        "sharedInputSha256": "800796a1d67adedb4fe4497a35a4f231fee77b09ac26f8b05b1b21715f37fc8c",
+        "xyceInputPath": "benchmarks/reference/adapter-948/corpus-e/bjt-diffpair-current-source/2-ac-xyce.cir",
+        "xyceInputSha256": "c95d528e76b579b4d2647241ebb98501addf2479481d73f97afd38306e4a34a4"
+      },
+      {
+        "ordinal": 3,
+        "analysis": "op",
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/bjt-diffpair-current-source/3-op.cir",
+        "sharedInputSha256": "b83521ec4fcc0321298a0cd6caf23509c9a6ef407498bde9af7ff3118b342381",
+        "xyceInputPath": "benchmarks/reference/adapter-948/corpus-e/bjt-diffpair-current-source/3-op-xyce.cir",
+        "xyceInputSha256": "c3b0374f2d39a2e312863aa6a937b578a96f1225497bcf4865f8b59024cafaa8"
+      },
+      {
+        "ordinal": 4,
+        "analysis": "ac",
+        "sharedInputPath": "benchmarks/reference/adapter-948/corpus-e/bjt-diffpair-current-source/4-ac.cir",
+        "sharedInputSha256": "800796a1d67adedb4fe4497a35a4f231fee77b09ac26f8b05b1b21715f37fc8c",
+        "xyceInputPath": "benchmarks/reference/adapter-948/corpus-e/bjt-diffpair-current-source/4-ac-xyce.cir",
+        "xyceInputSha256": "c95d528e76b579b4d2647241ebb98501addf2479481d73f97afd38306e4a34a4"
+      }
+    ]
+  }
+]

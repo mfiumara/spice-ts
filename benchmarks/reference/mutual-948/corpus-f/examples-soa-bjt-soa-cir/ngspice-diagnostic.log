@@ -1,0 +1,15 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: soa check for bipolar
+
+
+Error in netlist line no. 9, new internal line no. 11:
+
+Undefined parameter [siemens]
+Error in netlist line no. 9, new internal line no. 11:
+
+Cannot compute substitute
+
+ERROR: fatal error in ngspice, exit(1)

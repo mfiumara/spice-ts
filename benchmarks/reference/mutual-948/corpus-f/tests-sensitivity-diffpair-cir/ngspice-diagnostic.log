@@ -1,0 +1,24 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: simple differential pair - cm and dm dc sensitivity
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 3  
+
+No. of Data Rows : 1
+No. of Data Columns : 3  
+
+No. of Data Rows : 1
+No. of Data Columns : 576  
+
+No. of Data Rows : 1
+.print line ignored since rawfile was produced.
+
+
+Note: vdm: dc value used for op instead of transient time=0 value.
+Note: vcm: dc value used for op instead of transient time=0 value.

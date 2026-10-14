@@ -1,0 +1,502 @@
+
+*****
+***** Welcome to the Xyce(TM) Parallel Electronic Simulator
+*****
+***** This is version XyceNF Release 7.10.0
+***** Date: Wed Oct 14 02:03:28 CEST 2026
+
+
+***** Executing netlist input.cir
+
+***** Reading and parsing netlist...
+***** Setting up topology...
+
+Netlist warning: Voltage Node (GND) does not have a DC path to ground
+Netlist warning: Voltage Node (IN) does not have a DC path to ground
+Netlist warning: Voltage Node (OUT) does not have a DC path to ground
+***** Device Count Summary ...
+       C level 1 (Capacitor)                  1
+       R level 1 (Resistor)                   1
+       V level 1 (Independent Voltage Source) 1
+       ----------------------------------------
+       Total Devices                          3
+***** Setting up matrix structure...
+***** Number of Unknowns = 4
+***** Initializing...
+
+***** Beginning DC Operating Point Calculation...
+
+***** Beginning Transient Calculation...
+
+***** Percent complete: 1.25409 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 2.46063 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 3.51635 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 4.72289 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 5.827 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 6.91344 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 8.36204 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 9.52092 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 10.6798 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 11.8387 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 12.9975 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 14.1564 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 15.2574 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 16.3003 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 17.3433 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 18.3863 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 19.4293 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 20.4723 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 21.5153 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 22.5583 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 23.9069 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 25.0646 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 26.6081 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 28.1516 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 29.6951 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 30.7068 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 31.7185 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 33.7419 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 35.7653 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 37.7887 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+***** Percent complete: 38.8343 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+***** Percent complete: 39.8799 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+***** Percent complete: 40.8837 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+***** Percent complete: 41.9293 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+***** Percent complete: 42.933 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+***** Percent complete: 43.9786 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+***** Percent complete: 44.9824 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+***** Percent complete: 46.028 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+***** Percent complete: 47.0317 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+***** Percent complete: 48.0773 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+***** Percent complete: 49.0811 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+***** Percent complete: 50.1014 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 51.1071 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 52.5275 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 53.9215 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 55.5453 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 56.6081 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 58.0253 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 59.4425 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 60.8596 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 62.2768 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 63.6939 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 65.1111 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 66.6988 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 68.2866 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+***** Percent complete: 69.4774 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 71.0651 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 72.6528 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+***** Percent complete: 73.8436 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 75.4314 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 77.0191 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+***** Percent complete: 78.2099 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 79.7976 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+***** Percent complete: 80.9884 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 82.5762 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+***** Percent complete: 83.767 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 85.3547 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+***** Percent complete: 86.5455 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 88.1332 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 89.721 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+***** Percent complete: 90.9118 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 92.4995 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+***** Percent complete: 93.6903 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 95.278 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+***** Percent complete: 96.4688 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 98.0566 %
+***** Current system time: Wed Oct 14 02:03:28 2026
+***** Estimated time to completion:  0 sec.
+
+***** Problem read in and set up time: 0.00104904 seconds
+ ***** DCOP time: 0.000349045 seconds.  Breakdown follows:
+	Number Successful Steps Taken:		1
+	Number Failed Steps Attempted:		0
+	Number Jacobians Evaluated:		1
+	Number Linear Solves:			1
+	Number Failed Linear Solves:		0
+	Number Residual Evaluations:		3
+	Number Nonlinear Convergence Failures:	0
+	Total Residual Load Time:		6.91414e-06 seconds
+	Total Jacobian Load Time:		3.09944e-06 seconds
+	Total Linear Solution Time:		3.00407e-05 seconds
+
+ ***** Transient Stepping time: 0.00560999 seconds.  Breakdown follows:
+	Number Successful Steps Taken:		289
+	Number Failed Steps Attempted:		65
+	Number Jacobians Evaluated:		370
+	Number Linear Solves:			370
+	Number Failed Linear Solves:		50
+	Number Residual Evaluations:		724
+	Number Nonlinear Convergence Failures:	50
+	Total Residual Load Time:		0.000395298 seconds
+	Total Jacobian Load Time:		8.15392e-05 seconds
+	Total Linear Solution Time:		0.00059247 seconds
+
+
+***** Solution Summary *****
+	Number Successful Steps Taken:		290
+	Number Failed Steps Attempted:		65
+	Number Jacobians Evaluated:		371
+	Number Linear Solves:			371
+	Number Failed Linear Solves:		50
+	Number Residual Evaluations:		727
+	Number Nonlinear Convergence Failures:	50
+	Total Residual Load Time:		0.000402212 seconds
+	Total Jacobian Load Time:		8.46386e-05 seconds
+	Total Linear Solution Time:		0.000622511 seconds
+
+
+***** Total Simulation Solvers Run Time: 0.00607181 seconds
+***** Total Elapsed Run Time:            0.00711918 seconds
+*****
+***** End of Xyce(TM) Simulation
+*****
+
+Timing summary of 1 processor
+                 Stats                   Count       CPU Time              Wall Time
+---------------------------------------- ----- --------------------- ---------------------
+Xyce                                         1        0.004 (100.0%)        0.008 (100.0%)
+  Analysis                                   1        0.003 (81.70%)        0.006 (78.84%)
+    Transient                                1        0.003 (81.65%)        0.006 (78.80%)
+      Nonlinear Solve                      355        0.002 (46.81%)        0.003 (42.30%)
+        Residual                           727        0.000 (11.56%)        0.001 ( 9.71%)
+        Jacobian                           371        0.000 ( 2.84%)        0.000 ( 3.45%)
+        Linear Solve                       371        0.001 (14.61%)        0.001 (10.34%)
+      Successful DCOP Steps                  1        0.000 ( 0.81%)        0.000 ( 1.95%)
+      Successful Step                      289        0.001 (19.09%)        0.002 (19.61%)
+      Failed Steps                          65        0.000 ( 0.55%)        0.000 ( 1.23%)
+        Nonlinear Failure                   50        0.000 ( 0.10%)        0.000 ( 0.28%)
+  Netlist Import                             1        0.000 ( 6.05%)        0.000 ( 5.48%)
+    Parse Context                            1        0.000 ( 0.91%)        0.000 ( 0.88%)
+    Distribute Devices                       1        0.000 ( 1.53%)        0.000 ( 1.03%)
+    Verify Devices                           1        0.000 ( 0.05%)        0.000 ( 0.07%)
+    Instantiate                              1        0.000 ( 0.60%)        0.000 ( 0.39%)
+  Late Initialization                        1        0.000 ( 4.00%)        0.000 ( 3.73%)
+    Global Indices                           1        0.000 ( 0.38%)        0.000 ( 0.27%)
+  Setup Matrix Structure                     1        0.000 ( 0.83%)        0.000 ( 0.98%)
+

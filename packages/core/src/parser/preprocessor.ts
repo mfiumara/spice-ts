@@ -226,8 +226,8 @@ const UNUSUAL_LEADING_WARNING = (character: string) =>
   + "in netlist or included files, will be replaced with '*'";
 
 /**
- * The card after ngspice's leading space/tab skip when ngspice-47 comments it
- * out: an unusual leading character (warned) or `#` (silent); else undefined.
+ * The card after ngspice's leading space/tab skip when ngspice-47 comments
+ * it out: `#` or an unusual leading character.
  */
 function commentedOutCard(line: string): { card: string; warn: boolean } | undefined {
   const card = line.replace(/^[ \t]+/, '');
@@ -793,7 +793,7 @@ function* collectStatements(
   let inSubckt = 0;
   let inControl = false;
   let inOutputCard = false;
-  let inSubcircuitCall = false;
+  const foldedCallContinuations = new Set<number>();
   // A card ngspice-47 comments out takes its `+` continuations with it (#843).
   let inCommentedOutCard = false;
 
@@ -807,9 +807,20 @@ function* collectStatements(
     // Consumed numparam cards and unselected `.if` branches keep their line, blank.
     const blank = () => statements.push({ text: '', substitute: false, line: lineNumber });
 
+    if (foldedCallContinuations.has(index)) {
+      blank();
+      continue;
+    }
+
     // Comments are metadata, not expression-bearing netlist statements.
     if (trimmed.startsWith('*')) {
       passThrough();
+      continue;
+    }
+    // inpcom.c:1442-1456 comments .title before continuation stitching (1958).
+    // Like an ordinary comment, it must leave the preceding card's state intact.
+    if (!inControl && /^\.title(?:\s|$)/i.test(trimmed)) {
+      blank();
       continue;
     }
     const commentedOut = inControl ? undefined : commentedOutCard(line);
@@ -837,10 +848,23 @@ function* collectStatements(
     // A `+` continuation (blank and comment lines may sit in between) belongs to the preceding card.
     if (trimmed !== '' && !trimmed.startsWith('+')) {
       inOutputCard = OUTPUT_CARD.test(trimmed);
-      inSubcircuitCall = /^x/i.test(trimmed);
     }
-    // An X card and its `+` continuations, with bare `name=value` values braced (#788).
-    const card = inSubcircuitCall ? bracedSubcircuitCallValues(line, commentStart(line)) : line;
+    let card = line;
+    if (!inControl && /^x/i.test(trimmed)) {
+      // Scan the logical X card, not physical fragments. An RHS may start
+      // after '=' on the next line, or a brace/quote may span continuations.
+      // Leave consumed lines blank so subsequent source line numbers survive.
+      card = line.slice(0, commentStart(line));
+      for (let next = index + 1; next < lines.length; next++) {
+        const continuation = lines[next].slice(0, commentStart(lines[next])).trim();
+        // .title is commented before stitching in ngspice, including inside X RHS values.
+        if (continuation === '' || continuation.startsWith('*') || /^\.title(?:\s|$)/i.test(continuation)) continue;
+        if (!continuation.startsWith('+')) break;
+        card += ' ' + continuation.slice(1);
+        foldedCallContinuations.add(next);
+      }
+      card = bracedSubcircuitCallValues(card, card.length);
+    }
 
     const conditional = inControl ? null : CONDITIONAL_CARD.exec(trimmed);
     if (conditional) {

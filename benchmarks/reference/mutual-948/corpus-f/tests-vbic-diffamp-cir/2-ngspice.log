@@ -1,0 +1,63 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: vbic diffamp test
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+AC operating point failed -
+
+Last Node Voltages
+------------------
+
+Node                                   Last Voltage        Previous Iter
+----                                   ------------        -------------
+vcc                                             3.3                  3.3
+v2_p                                            nan                  nan
+r3_n                                            nan                  nan
+q3_c                                            nan                  nan
+q4_c                                            nan                  nan
+q1_e                                            nan                  nan
+i1_n                                            nan                  nan
+q9_b                                            nan                  nan
+q5_b                                            nan                  nan
+q5_c                                            nan                  nan
+q6_c                                            nan                  nan
+e1_p                                            nan                  nan
+q8_b                                            nan                  nan
+e1#branch                                       nan                  nan
+v2#branch                                       nan                  nan
+v1#branch                                       nan                  nan
+
+
+Total analysis time (seconds) = 1.07746
+
+Total elapsed time (seconds) = 1.082 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 14131.641 MB.
+Maximum ngspice program size =   10.234 MB.
+Current ngspice program size =   10.234 MB.
+
+
+Note: Starting dynamic gmin stepping
+Warning: Dynamic gmin stepping failed
+Note: Starting true gmin stepping
+Warning: True gmin stepping failed
+Note: Starting source stepping
+Warning: source stepping failed
+Note: Transient op started
+Error: Transient op failed, timestep too small
+
+
+Error: The operating point could not be simulated successfully.
+    Any of the following steps may fail.!
+
+doAnalyses: AC:  Timestep too small; frequency = 0: trouble with n1-instance q10
+
+
+run simulation(s) aborted

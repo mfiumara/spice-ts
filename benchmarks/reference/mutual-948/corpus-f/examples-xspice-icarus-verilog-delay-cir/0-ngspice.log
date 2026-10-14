@@ -1,0 +1,15 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: * waveform generation by verilog delays
+
+ASCII raw file "output.raw"
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 1  
+
+Cannot open dynamic library libvvp: dlopen(/opt/homebrew/Cellar/libngspice/47/lib/ngspice/libvvp.dylib, 0x000A): tried: '/opt/homebrew/Cellar/libngspice/47/lib/ngspice/libvvp.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/opt/homebrew/Cellar/libngspice/47/lib/ngspice/libvvp.dylib' (no such file), '/opt/homebrew/Cellar/libngspice/47/lib/ngspice/libvvp.dylib' (no such file)
+Icarus shim failed to load VVP library

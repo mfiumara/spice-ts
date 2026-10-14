@@ -1,0 +1,79 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: schmitt ckt - ecl compatible schmitt trigger
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 11  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+1                                         -1.6
+8                                           -5
+2                                         -1.6
+3                                    -0.259699
+5                                     -1.22059
+6                                     -1.11058
+4                                     -2.06802
+7                                     -1.89187
+vee#branch                           0.0411148
+vin#branch                        -1.43483e-10
+
+
+No. of Data Rows : 135
+.print line ignored since rawfile was produced.
+.plot line ignored since rawfile was produced.
+Total elapsed time (seconds) = 0.008 
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 14364.203 MB.
+Maximum ngspice program size =   10.141 MB.
+Current ngspice program size =   10.141 MB.
+24 page faults, 0 vol + 8 invol = 8 context switches.
+
+Number of lines in the deck = 21
+Netlist loading time = 0.000188
+Subckt and Param expansion time = 0.000239
+Netlist parsing time = 0.000205
+
+Nominal temperature = 27
+Operating temperature = 27
+Total iterations = 671
+Transient iterations = 430
+Circuit Equations = 19
+Circuit original non-zeroes = 74
+Circuit fill-in non-zeroes = 6
+Circuit total non-zeroes = 0
+Transient timepoints = 145
+Accepted timepoints = 135
+Rejected timepoints = 10
+Total analysis time (seconds) = 0.002659
+Matrix load time = 0.000406
+Matrix synchronize time = 0
+Matrix reorder time = 1.2E-05
+Matrix factor time = 0.000222
+Matrix solve time = 0.000165
+Transient analysis time = 0.001647
+Transient load time = 0.00027
+Transient sync time = 0
+Transient factor time = 0.000149
+Transient solve time = 9.9E-05
+Transient trunc time = 6.1E-05
+Transient iterations for the last time point = 0
+AC analysis time = 0
+AC load time = 0
+AC sync time = 0
+AC factor time = 0
+AC solve time = 0
+
+
+Warning: option lvlcod is obsolete.
+Note: Starting dynamic gmin stepping
+Note: Dynamic gmin stepping completed
+.options: no listing, rawfile was generated.

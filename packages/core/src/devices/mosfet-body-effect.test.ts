@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { InvalidCircuitError, UnsupportedModelLevelError } from '../errors.js';
+import { BSIM4 } from './bsim4/device.js';
 import { parse } from '../parser/index.js';
 import { simulate } from '../simulate.js';
 
@@ -115,7 +116,7 @@ M1 out gate 0 0 NMOD W=10u L=3u
 
 describe('unimplemented MOSFET levels are rejected (issue #530)', () => {
   // LEVEL=2 (mos2, #565), LEVEL=3/9 (mos3/mos9, #715), LEVEL=4 (BSIM1) and LEVEL=5 (BSIM2, #657) are implemented.
-  it.each([7, 14, 54])('rejects LEVEL=%i with a typed error', level => {
+  it.each([7])('rejects LEVEL=%i with a typed error', level => {
     const deck = `level ${level}
 VD d 0 DC 2
 VG g 0 DC 2
@@ -137,8 +138,21 @@ M1 d g 0 0 NX W=10u L=2u
       deviceName: 'M1',
       modelName: 'NX',
       level,
-      supportedLevels: [1, 2, 3, 4, 5, 6, 8, 9, 49, 260],
+      supportedLevels: [1, 2, 3, 4, 5, 6, 8, 9, 14, 49, 54, 260],
     });
+  });
+
+  it.each([14, 54])('registers static BSIM4 LEVEL=%i', async level => {
+    const deck = `level ${level}
+VD d 0 DC 2
+VG g 0 DC 2
+M1 d g 0 0 NX W=10u L=2u
+.model NX NMOS (LEVEL=${level})
+.op
+.end
+`;
+    expect(parse(deck).compile().devices.find(device => device.name === 'M1')).toBeInstanceOf(BSIM4);
+    expect((await simulate(deck)).dc!.current('VD')).toBeLessThan(0);
   });
 
   it('still accepts LEVEL=1 explicitly and by default', async () => {

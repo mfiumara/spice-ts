@@ -1,0 +1,90 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: emulate fmcw radar
+
+
+Note: No compatibility mode selected!
+
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+ain1                                        -1
+ain2                                        -1
+mout                                       3.3
+afout                                      3.3
+vin2#branch                                  0
+vin1#branch                                  0
+auto_dac2#branch_1_0              -8.04912e-20
+
+ Reference value :  7.84984e-01
+No. of Data Rows : 128054
+
+Total analysis time (seconds) = 0.302935
+
+Total elapsed time (seconds) = 0.307 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 12346.422 MB.
+Maximum ngspice program size =   21.406 MB.
+Current ngspice program size =   21.406 MB.
+FFT: Time span: 1.00001 s, input length: 100001
+FFT: Frequency resolution: 0.99999 Hz, output length: 50001
+maxout              =  9.37790e-02 at=  8.99991e+02
+ASCII raw file "output.raw"
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 8  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+ain1                                        -1
+ain2                                        -1
+mout                                       3.3
+afout                                      3.3
+vin2#branch                                  0
+vin1#branch                                  0
+auto_dac2#branch_1_0              -8.04912e-20
+
+ Reference value :  4.22512e-01 Reference value :  8.36251e-01
+No. of Data Rows : 128054
+
+Total analysis time (seconds) = 0.903561
+
+Total elapsed time (seconds) = 0.914 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 12506.141 MB.
+Maximum ngspice program size =   29.328 MB.
+Current ngspice program size =   29.328 MB.
+
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+

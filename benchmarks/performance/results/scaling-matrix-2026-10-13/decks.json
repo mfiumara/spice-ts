@@ -1,0 +1,74 @@
+[
+  {
+    "circuit": "rc-ladder-tran",
+    "size": 1000,
+    "actualNodes": 1000,
+    "probe": "n10",
+    "file": "decks/rc-ladder-tran-1000.cir",
+    "deckSha256": "0944ed6b76f64f56c8e04b48919f1e12b9de19df4e5a08708c4be314fa7a91b7"
+  },
+  {
+    "circuit": "resistor-mesh-op",
+    "size": 1000,
+    "actualNodes": 1024,
+    "probe": "n31_31",
+    "file": "decks/resistor-mesh-op-1000.cir",
+    "deckSha256": "6c6d5adb109cdde9ac844c3346135f4e7ffc352626b2f3c430598c0ebd9d8d40"
+  },
+  {
+    "circuit": "cmos-inverter-chain-tran",
+    "size": 1000,
+    "actualNodes": 1000,
+    "probe": "s20",
+    "file": "decks/cmos-inverter-chain-tran-1000.cir",
+    "deckSha256": "1a9866593c778a9fa26e23c1916c7b00b1bdb1adc2e7a246d9e3f4aa4f1ca1e1"
+  },
+  {
+    "circuit": "rc-ladder-tran",
+    "size": 10000,
+    "actualNodes": 10000,
+    "probe": "n10",
+    "file": "decks/rc-ladder-tran-10000.cir",
+    "deckSha256": "eb21933fd99fcbc32276816a4f389ba216dcdddc29683551a67f606f352dfca7"
+  },
+  {
+    "circuit": "resistor-mesh-op",
+    "size": 10000,
+    "actualNodes": 10000,
+    "probe": "n99_99",
+    "file": "decks/resistor-mesh-op-10000.cir",
+    "deckSha256": "c88e6076daf2523437e3da014d7a3c329f679a7405f789530c5c805f447ed0dc"
+  },
+  {
+    "circuit": "cmos-inverter-chain-tran",
+    "size": 10000,
+    "actualNodes": 10000,
+    "probe": "s20",
+    "file": "decks/cmos-inverter-chain-tran-10000.cir",
+    "deckSha256": "2ce663326238609299d8628016b1211632f1474e9d40b6c39747fff964999a18"
+  },
+  {
+    "circuit": "rc-ladder-tran",
+    "size": 50000,
+    "actualNodes": 50000,
+    "probe": "n10",
+    "file": "decks/rc-ladder-tran-50000.cir",
+    "deckSha256": "2fd0c2090d17dddf80980eb3391440a3e4f99e1a77d1158360ffedc4246a7ada"
+  },
+  {
+    "circuit": "resistor-mesh-op",
+    "size": 50000,
+    "actualNodes": 50176,
+    "probe": "n223_223",
+    "file": "decks/resistor-mesh-op-50000.cir",
+    "deckSha256": "f81ed198f7ba67068138846b12fe93b9ec957e6bb3a89300d2c7c50e30d47329"
+  },
+  {
+    "circuit": "cmos-inverter-chain-tran",
+    "size": 50000,
+    "actualNodes": 50000,
+    "probe": "s20",
+    "file": "decks/cmos-inverter-chain-tran-50000.cir",
+    "deckSha256": "d680f1054eb14002980a7a65eb68a5dddae8063a871050fde025e8f5080bc543"
+  }
+]

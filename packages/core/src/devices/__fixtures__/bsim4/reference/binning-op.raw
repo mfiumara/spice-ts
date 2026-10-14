@@ -1,0 +1,18 @@
+Title: check model binning
+Date: Wed Oct 14 02:20:21  2026
+Command: ngspice-47, Build 
+Plotname: Operating Point
+Flags: real
+No. Variables: 4
+No. Points: 1
+Variables:
+	0	v(1)	voltage
+	1	v(2)	voltage
+	2	v(3)	voltage
+	3	v(4)	voltage
+Values:
+ 0	8.693589670633045e-01
+	8.693589670633045e-01
+	1.071660594471147e+00
+	1.071660594471147e+00
+

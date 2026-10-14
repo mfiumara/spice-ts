@@ -1,0 +1,8 @@
+.title Low Pass RC Filter
+Vinput in 0 DC 0V AC SIN(0V 10V 1kHz)
+R1 in out 1k
+C1 out 0 1u
+.ac dec 1 1 10k
+* plot v(out)
+.print AC format=csv file=output.csv precision=17 IR(vinput) II(vinput) VR(in) VI(in) VR(out) VI(out)
+.end

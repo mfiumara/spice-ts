@@ -1,0 +1,70 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: capacitance and current comparison between models d and bulk diode in vdmos
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+ad                                          -2
+kd                                           0
+d                                            2
+g                                           -5
+s                                            0
+vs#branch                          2.13018e-08
+vg#branch                                    0
+vd#branch                         -2.13018e-08
+vk#branch                         -2.13018e-08
+va#branch                          2.13017e-08
+
+
+No. of Data Rows : 258
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 51
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Total analysis time (seconds) = 0.001285
+
+Total elapsed time (seconds) = 0.005 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 12235.750 MB.
+Maximum ngspice program size =   10.625 MB.
+Current ngspice program size =   10.625 MB.
+
+
+Note: vd: dc value used for op instead of transient time=0 value.
+Note: va: dc value used for op instead of transient time=0 value.
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+Note: vd: dc value used for op instead of transient time=0 value.
+Note: va: dc value used for op instead of transient time=0 value.
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+Note: vd: dc value used for op instead of transient time=0 value.
+Note: va: dc value used for op instead of transient time=0 value.

@@ -1,13 +1,73 @@
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { alignAndMeasure } from '../comparison-harness.js';
 import { loadCorpus, summarize } from './compare.js';
 import { translateForXyce } from './xyce.js';
+import { canonicalize, projectAnalysis } from './canonical.js';
+import { sha256 } from './expanded.js';
+import './subset.test.js';
 
 const hash = (bytes: string | Buffer) => createHash('sha256').update(bytes).digest('hex');
 const report = (name: string) => JSON.parse(readFileSync(new URL(`./${name}-report.json`, import.meta.url), 'utf8'));
+
+test('canonical transform Vitest cases run in the existing offline CI gate', () => {
+  const run = spawnSync('pnpm', ['-C', 'packages/core', 'exec', 'vitest', 'run', '--config', '../../benchmarks/reference/vitest.config.ts'],
+    { encoding: 'utf8', timeout: 60_000 });
+  assert.equal(run.status, 0, run.error?.message ?? run.stdout + run.stderr);
+});
+
+test('canonical evidence retains all 100 rows, exact shared inputs, outputs and losses', () => {
+  const saved = JSON.parse(readFileSync('benchmarks/reference/adapter-948/report.json', 'utf8'));
+  const manifest = JSON.parse(readFileSync('benchmarks/reference/adapter-948/hash-manifest.json', 'utf8'));
+  const originals = loadCorpus();
+  assert.equal(saved.fixtures.length, 100);
+  assert.equal(manifest.length, 100);
+  assert.deepEqual(saved.totals, summarize(saved.fixtures));
+  assert.deepEqual(saved.before, report('corpus').totals);
+  assert.equal(saved.beforeReportSha256, sha256(readFileSync('benchmarks/reference/corpus-report.json')));
+  for (const [file, digest] of Object.entries(saved.adapterSourceHashes)) assert.equal(digest, sha256(readFileSync(`benchmarks/reference/${file}`)));
+  assert.deepEqual(saved.fixtures.map((row: any) => row.key), originals.map(row => row.key));
+  saved.fixtures.forEach((row: any, i: number) => {
+    const plan = canonicalize(originals[i].input.toString('utf8'));
+    assert.equal(row.originalSha256, sha256(originals[i].input));
+    assert.equal(row.canonicalSha256, sha256(plan.netlist));
+    assert.equal(row.canonicalSha256, sha256(readFileSync(row.canonicalPath)));
+    assert.equal(manifest[i].canonicalSha256, row.canonicalSha256);
+    assert.equal(manifest[i].originalSha256, row.originalSha256);
+    assert.deepEqual(row.limitations, plan.limitations);
+    assert.deepEqual(row.changes, plan.changes);
+    if (row.limitations.length) {
+      assert.equal(row.xyce.status, 'unsupported');
+      assert.equal(row.canonicalSha256, row.originalSha256, 'Failed lowering must be atomic');
+    }
+    if (row.comparisons.length) {
+      assert.equal(row.eligibility, 'comparable');
+      assert.equal(row.ngspice.status, 'success');
+      assert.equal(row.xyce.status, 'success');
+      assert.equal(row.limitations.length + row.losses.length, 0);
+      assert.equal(row.comparisons.length, plan.analyses.length);
+    }
+    for (const projection of row.projections) {
+      const shared = readFileSync(projection.sharedInputPath, 'utf8');
+      assert.equal(projection.sharedInputSha256, sha256(shared));
+      if (projection.ordinal !== null) {
+        assert.equal(shared, projectAnalysis(plan, projection.ordinal));
+        if (projection.xyceInputPath) {
+          const xyceInput = readFileSync(projection.xyceInputPath, 'utf8');
+          assert.equal(projection.xyceInputSha256, sha256(xyceInput));
+          assert.equal(xyceInput.replace(/^\.print .*\n/gm, ''), shared, 'Only output directives may differ');
+        }
+      }
+      for (const receipt of [projection.ngspice, projection.xyce]) {
+        if (receipt.outputPath) assert.equal(receipt.outputSha256, sha256(readFileSync(receipt.outputPath)));
+        if (receipt.failureKind === 'export' || receipt.failureKind === 'parse') assert.equal(receipt.convergence, 'not-run');
+      }
+    }
+  });
+});
 
 test('100 unique hash-pinned aggregate fixtures retain every attempted outcome', () => {
   const rows = loadCorpus();

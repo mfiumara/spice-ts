@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "issue": "https://github.com/mfiumara/spice-ts/issues/940",
   "requestedFixtures": 20,
-  "deliveredFixtures": 11,
-  "partial": true,
+  "deliveredFixtures": 20,
+  "partial": false,
   "mechanicalAdaptation": "none",
   "selection": "Partial source-survey artifact: every statically eligible novel standalone SpiceSharpParser deck, including ngspice-incompatible LTspice A-devices and stochastic mc() filters. The eSim survey (24 example pairs plus 17 PLL/mixed-signal/adder decks) yielded no novel standalone candidates. PWL file sources excluded in addition to unchanged corpus-h static rules. No engine probe or success filter. No derived variants or byte adaptation. Include closure is empty for every selected deck.",
   "sources": [
@@ -26,6 +26,26 @@
       "basis": "Repository-wide MIT grant; retained verbatim copyright and licence notice. Separate notices excluded.",
       "licensePath": "benchmarks/corpus/corpus-j/licenses/spicesharpparser/LICENSE",
       "licenseSha256": "36101d87e6558d862cfba70474a744978b49b792309b094a74ad229037695ada"
+    },
+    {
+      "key": "ngspice-current",
+      "repository": "https://sourceforge.net/p/ngspice/ngspice",
+      "revision": "a80f6e3e95d51534905b1f23410a951802666656",
+      "license": "BSD-3-Clause",
+      "licenseFile": "COPYING",
+      "basis": "COPYING lines 14-15 explicitly adopt Modified BSD for all source, test and example files except listed paths. Selected examples are outside every exception; inline models are generic authored examples, not vendor libraries.",
+      "licensePath": "benchmarks/corpus/corpus-j/licenses/ngspice-current/COPYING",
+      "licenseSha256": "6d939001e899ede403277fb37124c2af6f1cf92926465cd8f4bf59859e06f579"
+    },
+    {
+      "key": "spicelib",
+      "repository": "https://github.com/nunobrum/spicelib",
+      "revision": "d8f8ecceeb361741f1f660f03b03ac49697f8700",
+      "license": "GPL-3.0-only",
+      "licenseFile": "LICENSE",
+      "basis": "Repository-wide LICENSE GPLv3, pyproject GPL-3.0 and README GNU V3 License. Original examples only, not machine-edited golden output; no vendor models or third-party notices.",
+      "licensePath": "benchmarks/corpus/corpus-j/licenses/spicelib/LICENSE",
+      "licenseSha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
     }
   ],
   "circuits": [
@@ -222,6 +242,168 @@
       "localPath": "benchmarks/corpus/corpus-j/fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/band-pass_2.cir",
       "analyses": [
         "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "j-12",
+      "source": "ngspice-current",
+      "upstreamPath": "examples/measure/rc-meas-ac-control.sp",
+      "sourcePath": "ngspice-current/examples/measure/rc-meas-ac-control.sp",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/a80f6e3e95d51534905b1f23410a951802666656/tree/examples/measure/rc-meas-ac-control.sp",
+      "revision": "a80f6e3e95d51534905b1f23410a951802666656",
+      "licence": "BSD-3-Clause",
+      "sha256": "94e9eb54ea9d56d8a81cf50dde33b49e77917b9d260a3064cc11fa082e601b4b",
+      "bytes": 1481,
+      "localPath": "benchmarks/corpus/corpus-j/fixtures/ngspice-current/examples/measure/rc-meas-ac-control.sp",
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "j-13",
+      "source": "ngspice-current",
+      "upstreamPath": "examples/p-to-n-examples/aswitch-pswitch.cir",
+      "sourcePath": "ngspice-current/examples/p-to-n-examples/aswitch-pswitch.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/a80f6e3e95d51534905b1f23410a951802666656/tree/examples/p-to-n-examples/aswitch-pswitch.cir",
+      "revision": "a80f6e3e95d51534905b1f23410a951802666656",
+      "licence": "BSD-3-Clause",
+      "sha256": "08e1740f1b0b12bd6cdbf27c4d5df63bbc25a392a9725db0eb6ca467c60b012f",
+      "bytes": 897,
+      "localPath": "benchmarks/corpus/corpus-j/fixtures/ngspice-current/examples/p-to-n-examples/aswitch-pswitch.cir",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "j-14",
+      "source": "ngspice-current",
+      "upstreamPath": "examples/mos/nmos_pmos_BSIM330.sp",
+      "sourcePath": "ngspice-current/examples/mos/nmos_pmos_BSIM330.sp",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/a80f6e3e95d51534905b1f23410a951802666656/tree/examples/mos/nmos_pmos_BSIM330.sp",
+      "revision": "a80f6e3e95d51534905b1f23410a951802666656",
+      "licence": "BSD-3-Clause",
+      "sha256": "64980e734428b4a24605d1fff5004cd393a1108be56e36618c1c280847fc0952",
+      "bytes": 1495,
+      "localPath": "benchmarks/corpus/corpus-j/fixtures/ngspice-current/examples/mos/nmos_pmos_BSIM330.sp",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "j-15",
+      "source": "ngspice-current",
+      "upstreamPath": "examples/xspice/original-examples/xspice.deck",
+      "sourcePath": "ngspice-current/examples/xspice/original-examples/xspice.deck",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/a80f6e3e95d51534905b1f23410a951802666656/tree/examples/xspice/original-examples/xspice.deck",
+      "revision": "a80f6e3e95d51534905b1f23410a951802666656",
+      "licence": "BSD-3-Clause",
+      "sha256": "b62c51739831020f5580a7b0c22892910cdcde92b63a11737f84674bff8b6f96",
+      "bytes": 379,
+      "localPath": "benchmarks/corpus/corpus-j/fixtures/ngspice-current/examples/xspice/original-examples/xspice.deck",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "j-16",
+      "source": "spicelib",
+      "upstreamPath": "examples/testfiles/test_kicad_nets.cir",
+      "sourcePath": "spicelib/examples/testfiles/test_kicad_nets.cir",
+      "sourceUrl": "https://github.com/nunobrum/spicelib/blob/d8f8ecceeb361741f1f660f03b03ac49697f8700/examples/testfiles/test_kicad_nets.cir",
+      "revision": "d8f8ecceeb361741f1f660f03b03ac49697f8700",
+      "licence": "GPL-3.0-only",
+      "sha256": "5a124dc0286910a59a8782d0094a9bf8a57507a9c864090b6745ef4230b88f7f",
+      "bytes": 319,
+      "localPath": "benchmarks/corpus/corpus-j/fixtures/spicelib/examples/testfiles/test_kicad_nets.cir",
+      "analyses": [
+        "op"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "j-17",
+      "source": "spicelib",
+      "upstreamPath": "examples/testfiles/ac_rawtest.net",
+      "sourcePath": "spicelib/examples/testfiles/ac_rawtest.net",
+      "sourceUrl": "https://github.com/nunobrum/spicelib/blob/d8f8ecceeb361741f1f660f03b03ac49697f8700/examples/testfiles/ac_rawtest.net",
+      "revision": "d8f8ecceeb361741f1f660f03b03ac49697f8700",
+      "licence": "GPL-3.0-only",
+      "sha256": "e6e98a5a3f5536846f743974350c5ac38fb348bc2d393857279078ba62342dc2",
+      "bytes": 134,
+      "localPath": "benchmarks/corpus/corpus-j/fixtures/spicelib/examples/testfiles/ac_rawtest.net",
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "j-18",
+      "source": "spicelib",
+      "upstreamPath": "examples/testfiles/ngsteps.net",
+      "sourcePath": "spicelib/examples/testfiles/ngsteps.net",
+      "sourceUrl": "https://github.com/nunobrum/spicelib/blob/d8f8ecceeb361741f1f660f03b03ac49697f8700/examples/testfiles/ngsteps.net",
+      "revision": "d8f8ecceeb361741f1f660f03b03ac49697f8700",
+      "licence": "GPL-3.0-only",
+      "sha256": "68b0ca2e2eba7d8e59942ce491b91b44c003d6c8f87c3abbd28cbd04bdfde8ea",
+      "bytes": 1518,
+      "localPath": "benchmarks/corpus/corpus-j/fixtures/spicelib/examples/testfiles/ngsteps.net",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "j-19",
+      "source": "spicelib",
+      "upstreamPath": "examples/testfiles/sens_ngspice_rawtest.net",
+      "sourcePath": "spicelib/examples/testfiles/sens_ngspice_rawtest.net",
+      "sourceUrl": "https://github.com/nunobrum/spicelib/blob/d8f8ecceeb361741f1f660f03b03ac49697f8700/examples/testfiles/sens_ngspice_rawtest.net",
+      "revision": "d8f8ecceeb361741f1f660f03b03ac49697f8700",
+      "licence": "GPL-3.0-only",
+      "sha256": "561115941ce8997a21386c15fec66def353eef9aea22460f89b9eb75afe28918",
+      "bytes": 142,
+      "localPath": "benchmarks/corpus/corpus-j/fixtures/spicelib/examples/testfiles/sens_ngspice_rawtest.net",
+      "analyses": [],
+      "unmappedAnalyses": [
+        "sens"
+      ],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "j-20",
+      "source": "spicelib",
+      "upstreamPath": "examples/testfiles/tran_rawtest.net",
+      "sourcePath": "spicelib/examples/testfiles/tran_rawtest.net",
+      "sourceUrl": "https://github.com/nunobrum/spicelib/blob/d8f8ecceeb361741f1f660f03b03ac49697f8700/examples/testfiles/tran_rawtest.net",
+      "revision": "d8f8ecceeb361741f1f660f03b03ac49697f8700",
+      "licence": "GPL-3.0-only",
+      "sha256": "fd9800b396c7d5a9a628ddb991a9337ee657ce4acaafd26ac5bb92716f572241",
+      "bytes": 295,
+      "localPath": "benchmarks/corpus/corpus-j/fixtures/spicelib/examples/testfiles/tran_rawtest.net",
+      "analyses": [
+        "tran"
       ],
       "unmappedAnalyses": [],
       "sameNameAs": [],
@@ -908,5 +1090,7 @@
       "reason": "already-in-corpus-or-batch",
       "detail": ""
     }
-  ]
+  ],
+  "historicalManifestSha256": "c0a1d231b9f2c2a4858f7dbc9bbf7421cdd2afd0a7ff0b7fde992c67d3e2972f",
+  "part2Selection": "Nine explicitly selected original standalone examples, novel exact and terminal-newline-stripped input hashes. Prioritise ngspice-native filter, switch, CMOS and XSPICE amplifier plus KiCad and spicelib analysis decks. All nine outcomes retained even if ngspice fails. No spice-ts-success filter, fixture adaptation, golden-output padding or vendor libraries. Historical 11 rows and receipts unchanged."
 }

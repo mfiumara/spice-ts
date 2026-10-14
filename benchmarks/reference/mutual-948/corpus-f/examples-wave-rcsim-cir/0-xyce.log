@@ -1,0 +1,64 @@
+
+*****
+***** Welcome to the Xyce(TM) Parallel Electronic Simulator
+*****
+***** This is version XyceNF Release 7.10.0
+***** Date: Wed Oct 14 01:52:25 CEST 2026
+
+
+***** Executing netlist input.cir
+
+***** Reading and parsing netlist...
+***** Setting up topology...
+
+***** Device Count Summary ...
+       C level 1 (Capacitor)                  2
+       R level 1 (Resistor)                   2
+       V level 1 (Independent Voltage Source) 1
+       ----------------------------------------
+       Total Devices                          5
+***** Setting up matrix structure...
+***** Number of Unknowns = 4
+***** Initializing...
+
+
+***** Solution Summary *****
+	Number Successful Steps Taken:		50
+	Number Failed Steps Attempted:		0
+	Number Jacobians Evaluated:		1
+	Number Linear Solves:			1
+	Number Failed Linear Solves:		0
+	Number Residual Evaluations:		3
+	Number Nonlinear Convergence Failures:	0
+	Total Residual Load Time:		8.82149e-06 seconds
+	Total Jacobian Load Time:		0.000145912 seconds
+	Total Linear Solution Time:		0.000380039 seconds
+
+
+***** Total Simulation Solvers Run Time: 0.00258398 seconds
+***** Total Elapsed Run Time:            0.00743198 seconds
+*****
+***** End of Xyce(TM) Simulation
+*****
+
+Timing summary of 1 processor
+                 Stats                   Count       CPU Time              Wall Time
+---------------------------------------- ----- --------------------- ---------------------
+Xyce                                         1        0.001 (100.0%)        0.008 (100.0%)
+  Analysis                                   1        0.001 (37.24%)        0.003 (31.95%)
+    AC                                       1        0.001 (37.09%)        0.003 (31.90%)
+      DC Nonlinear Solve                     1        0.000 ( 8.67%)        0.002 (21.16%)
+        Residual                             3        0.000 ( 0.71%)        0.000 ( 0.14%)
+        Jacobian                             1        0.000 ( 0.21%)        0.000 ( 1.84%)
+        Linear Solve                         1        0.000 ( 1.41%)        0.000 ( 4.77%)
+      AC Linear Solve                       50        0.000 ( 9.45%)        0.000 ( 2.65%)
+        Linear Solve                        50        0.000 ( 8.32%)        0.000 ( 2.03%)
+  Netlist Import                             1        0.000 (20.66%)        0.001 ( 9.84%)
+    Parse Context                            1        0.000 ( 3.03%)        0.000 ( 1.00%)
+    Distribute Devices                       1        0.000 ( 5.50%)        0.000 ( 1.20%)
+    Verify Devices                           1        0.000 ( 0.14%)        0.000 ( 3.63%)
+    Instantiate                              1        0.000 ( 2.19%)        0.000 ( 0.74%)
+  Late Initialization                        1        0.000 (15.94%)        0.004 (46.31%)
+    Global Indices                           1        0.000 ( 0.99%)        0.000 ( 4.18%)
+  Setup Matrix Structure                     1        0.000 ( 3.46%)        0.002 (26.82%)
+

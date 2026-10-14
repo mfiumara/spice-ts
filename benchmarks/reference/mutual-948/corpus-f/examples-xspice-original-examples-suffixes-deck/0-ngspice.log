@@ -1,0 +1,15 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: engineering suffixes
+
+
+Error in netlist line no. 16, new internal line no. 15:
+
+Undefined parameter [six]
+Error in netlist line no. 16, new internal line no. 15:
+
+Cannot compute substitute
+
+ERROR: fatal error in ngspice, exit(1)

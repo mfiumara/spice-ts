@@ -1,0 +1,95 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: memristor with threshold as xspice code model
+
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+v(1) = -1.00000e-01
+v(2) = 0.000000e+00
+v(11) = -8.74993e-02
+v1#branch = -1.25007e-05
+vgnd#branch = -1.25007e-05
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 101
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+Operating point simulation skipped by 'uic',
+  now using transient initial conditions.
+
+No. of Data Rows : 350
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+Operating point simulation skipped by 'uic',
+  now using transient initial conditions.
+
+No. of Data Rows : 111
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+Operating point simulation skipped by 'uic',
+  now using transient initial conditions.
+
+No. of Data Rows : 111
+
+Total analysis time (seconds) = 0.012011
+
+Total elapsed time (seconds) = 0.016 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 14101.578 MB.
+Maximum ngspice program size =   10.516 MB.
+Current ngspice program size =   10.516 MB.
+ASCII raw file "output.raw"
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+OP information in rawfile.
+
+Total analysis time (seconds) = 0.012021
+
+Total elapsed time (seconds) = 0.016 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 14101.578 MB.
+Maximum ngspice program size =   10.531 MB.
+Current ngspice program size =   10.531 MB.
+
+
+Note: v1: dc value used for op instead of transient time=0 value.
+Note: v1: dc value used for op instead of transient time=0 value.
+Note: v1: dc value used for op instead of transient time=0 value.
+Note: v1: dc value used for op instead of transient time=0 value.
+Note: v1: dc value used for op instead of transient time=0 value.
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+Note: v1: dc value used for op instead of transient time=0 value.

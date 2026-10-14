@@ -1,0 +1,36 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: test mosfet level 1 model
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 6  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+1                                            2
+2                                            0
+3                                            5
+vcc#branch                                   0
+v1#branch                                    0
+
+
+No. of Data Rows : 10008
+.print line ignored since rawfile was produced.
+
+Total analysis time (seconds) = 0.038163
+
+Total elapsed time (seconds) = 0.043 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13821.516 MB.
+Maximum ngspice program size =   10.156 MB.
+Current ngspice program size =   10.156 MB.
+

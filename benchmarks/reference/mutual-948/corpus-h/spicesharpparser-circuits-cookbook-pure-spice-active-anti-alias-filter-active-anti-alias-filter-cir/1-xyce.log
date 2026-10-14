@@ -1,0 +1,37 @@
+
+*****
+***** Welcome to the Xyce(TM) Parallel Electronic Simulator
+*****
+***** This is version XyceNF Release 7.10.0
+***** Date: Wed Oct 14 02:03:24 CEST 2026
+
+
+***** Executing netlist input.cir
+
+***** Reading and parsing netlist...
+***** Setting up topology...
+
+***** Device Count Summary ...
+       C level 1 (Capacitor)                                 3
+       E level 1 (Linear Voltage Controlled Voltage Source)  2
+       R level 1 (Resistor)                                  5
+       V level 1 (Independent Voltage Source)                1
+       -------------------------------------------------------
+       Total Devices                                        11
+***** Setting up matrix structure...
+***** Number of Unknowns = 10
+***** Initializing...
+
+Netlist error: Netlist analysis statement and measure mode (AC) for measure
+ GAIN_100HZ do not agree
+Netlist error: Netlist analysis statement and measure mode (AC) for measure
+ GAIN_1KHZ do not agree
+Netlist error: Netlist analysis statement and measure mode (AC) for measure
+ GAIN_10KHZ do not agree
+Netlist error: Netlist analysis statement and measure mode (AC) for measure
+ FIRST_STAGE_10KHZ do not agree
+Netlist error: Netlist analysis statement and measure mode (AC) for measure
+ FILTER_3DB do not agree
+
+***** Total Elapsed Run Time: 0.00127721 seconds
+Xyce Initialization Phase failed

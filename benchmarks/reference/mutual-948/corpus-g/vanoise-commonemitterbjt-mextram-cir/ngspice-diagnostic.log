@@ -1,0 +1,100 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: * gnetlist -g spice-sdb commonemitteri.sch
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 25  
+
+No. of Data Rows : 167
+No. of Data Columns : 46  
+
+No. of Data Rows : 1
+.print line ignored since rawfile was produced.
+
+Total analysis time (seconds) = 0.002124
+
+Total elapsed time (seconds) = 0.006 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13129.891 MB.
+Maximum ngspice program size =   10.266 MB.
+Current ngspice program size =   10.266 MB.
+
+
+Illegal value for level.
+Level must be < 99 (Setting Level to 1)
+Warning: Model issue on line 78 :
+  .model mymodel npn level=504 level=504.0 tref=25.00 dta=0.000 exmod=1.00 ...
+unrecognized parameter (dta) - ignored
+unrecognized parameter (exmod) - ignored
+unrecognized parameter (exphi) - ignored
+unrecognized parameter (exavl) - ignored
+unrecognized parameter (exsub) - ignored
+unrecognized parameter (ver) - ignored
+unrecognized parameter (vef) - ignored
+unrecognized parameter (ibf) - ignored
+unrecognized parameter (mlf) - ignored
+unrecognized parameter (xibi) - ignored
+unrecognized parameter (izeb) - ignored
+unrecognized parameter (nzeb) - ignored
+unrecognized parameter (bri) - ignored
+unrecognized parameter (ibr) - ignored
+unrecognized parameter (vlr) - ignored
+unrecognized parameter (xext) - ignored
+unrecognized parameter (wavl) - ignored
+unrecognized parameter (vavl) - ignored
+unrecognized parameter (sfh) - ignored
+unrecognized parameter (rbc) - ignored
+unrecognized parameter (rbv) - ignored
+unrecognized parameter (rcc) - ignored
+unrecognized parameter (rcblx) - ignored
+unrecognized parameter (rcbli) - ignored
+unrecognized parameter (rcv) - ignored
+unrecognized parameter (scrcv) - ignored
+unrecognized parameter (ihc) - ignored
+unrecognized parameter (axi) - ignored
+unrecognized parameter (vde) - ignored
+unrecognized parameter (xcje) - ignored
+unrecognized parameter (cbeo) - ignored
+unrecognized parameter (vdc) - ignored
+unrecognized parameter (xp) - ignored
+unrecognized parameter (cbco) - ignored
+unrecognized parameter (mtau) - ignored
+unrecognized parameter (taue) - ignored
+unrecognized parameter (taub) - ignored
+unrecognized parameter (tepi) - ignored
+unrecognized parameter (taur) - ignored
+unrecognized parameter (deg) - ignored
+unrecognized parameter (xrec) - ignored
+unrecognized parameter (aqbo) - ignored
+unrecognized parameter (ae) - ignored
+unrecognized parameter (ab) - ignored
+unrecognized parameter (aex) - ignored
+unrecognized parameter (aepi) - ignored
+unrecognized parameter (ac) - ignored
+unrecognized parameter (acbl) - ignored
+unrecognized parameter (dais) - ignored
+unrecognized parameter (dvgbf) - ignored
+unrecognized parameter (dvgbr) - ignored
+unrecognized parameter (vgb) - ignored
+unrecognized parameter (vgc) - ignored
+unrecognized parameter (vgj) - ignored
+unrecognized parameter (vgzeb) - ignored
+unrecognized parameter (avgeb) - ignored
+unrecognized parameter (tvgeb) - ignored
+unrecognized parameter (dvgte) - ignored
+unrecognized parameter (kfn) - ignored
+unrecognized parameter (kavl) - ignored
+unrecognized parameter (icss) - ignored
+unrecognized parameter (iks) - ignored
+unrecognized parameter (vds) - ignored
+unrecognized parameter (vgs) - ignored
+unrecognized parameter (as) - ignored
+unrecognized parameter (asub) - ignored
+unrecognized parameter (mult) - ignored
+

@@ -1,0 +1,17 @@
+{
+  "baseSha": "760833b948280918f6abcfaa0d051a4f4d865ae9",
+  "harnessSha": "405e9dc6f054931bf90f1a21b9272a32228c7370",
+  "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+  "node": "v22.23.1",
+  "distHashes": {
+    "chunk-ORQ6XEWW.js": "3ce8f8c122cf8570a1778a3ebe9720fdaac13442ed902daa1b0f0af2bdda7dd9",
+    "index.js": "488e406cc865b2e709c6ba712b0b36ef44b2657ca85ff4a91a14a8b156f53851",
+    "chunk-XJNADJEL.js": "36ae16fb31091a6074baa5ccfb1cd3e4a141af901d3beb19e15b72934e6ca33d",
+    "step-worker.js": "90314805116d9a428a6f3098381fc0c8c6bce03edb29df0951f3a793ddcff1f2",
+    "step-worker-browser.js": "b6792431a638f3dee380408a380d631aab16764c75d685f24c355ace48d2fc86"
+  },
+  "sourceHashes": {
+    "packages/core/src/parser/tokenizer.ts": "af68f20a64812adaf96e558d520935486f2e9eb978e4ca9d9e5c42586311ebe9",
+    "packages/core/tsup.config.ts": "5b6de18bc55b8cbb3c68178a39eac0768ab18515429cb82cc98a35daa7a69e78"
+  }
+}

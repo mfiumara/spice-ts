@@ -1,0 +1,20 @@
+Bip model in subckt Gummel Test Ic=f(Vc,Vb)
+
+VB B 0 0.5
+VC C 0 1.0
+VS S 0 0.0
+X1 C B 0 S bip_default
+
+.dc vb 0.2 1.4 0.01
+
+********************************************************************************
+* Complete test transistor: default
+********************************************************************************
+.subckt bip_default c b e s
+qhcm0 c b e s hic0_full
+.model  hic0_full npn
+.ends hicumL0V11_default
+********************************************************************************
+
+.print DC format=csv file=output.csv precision=17 {vb} I(vb) I(vc) I(vs) V(b) V(c) V(s)
+.end

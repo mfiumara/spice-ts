@@ -1,0 +1,171 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: * simple sample & hold, transient noise
+
+
+Total analysis time (seconds) = 0
+
+Total elapsed time (seconds) = 0.004 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 12975.516 MB.
+Maximum ngspice program size =    9.844 MB.
+Current ngspice program size =    9.844 MB.
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+ga1                                          0
+1                                            0
+2                                            0
+ga2                                          0
+4                                            0
+3                                            0
+e1#branch                                    0
+vgate2#branch                                0
+vin#branch                                   0
+vgate1#branch                                0
+
+500009 1/f noise values in time domain created
+ Reference value :  1.78300e-06 Reference value :  7.01000e-06 Reference value :  1.21993e-05 Reference value :  1.74498e-05 Reference value :  2.27612e-05 Reference value :  2.81281e-05 Reference value :  3.33952e-05 Reference value :  3.88151e-05 Reference value :  4.40544e-05 Reference value :  4.92798e-05 Reference value :  5.45226e-05 Reference value :  5.99374e-05 Reference value :  6.53124e-05 Reference value :  7.05821e-05 Reference value :  7.59905e-05 Reference value :  8.13991e-05 Reference value :  8.67360e-05 Reference value :  9.21420e-05 Reference value :  9.74125e-05
+No. of Data Rows : 2572120
+Total elapsed time (seconds) = 4.872 
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 12894.703 MB.
+Maximum ngspice program size =  193.078 MB.
+Current ngspice program size =  193.078 MB.
+63 page faults, 0 vol + 927 invol = 927 context switches.
+
+Number of lines in the deck = 23
+Netlist loading time = 0.000197
+Subckt and Param expansion time = 0.000433
+Netlist parsing time = 0.000183
+
+Nominal temperature = 27
+Operating temperature = 27
+Total iterations = 5146241
+Transient iterations = 5146238
+Circuit Equations = 11
+Circuit original non-zeroes = 17
+Circuit fill-in non-zeroes = 1
+Circuit total non-zeroes = 0
+Transient timepoints = 2572120
+Accepted timepoints = 2572120
+Rejected timepoints = 0
+Total analysis time (seconds) = 4.86829
+Matrix load time = 0.899759
+Matrix synchronize time = 0
+Matrix reorder time = 4E-06
+Matrix factor time = 0.204019
+Matrix solve time = 0.155868
+Transient analysis time = 4.86778
+Transient load time = 0.899756
+Transient sync time = 0
+Transient factor time = 0.204018
+Transient solve time = 0.155866
+Transient trunc time = 0.422805
+Transient iterations for the last time point = 0
+AC analysis time = 0
+AC load time = 0
+AC sync time = 0
+AC factor time = 0
+AC solve time = 0
+ASCII raw file "noi_test.out"
+FFT: Time span: 0.0001 s, input length: 250001
+FFT: Frequency resolution: 9999.96 Hz, output length: 125001
+PSD: Time span: 0.0001 s, input length: 250001
+PSD: Frequency resolution: 10000 Hz, output length: 125001
+Total noise power up to Nyquist frequency 1.250e+09 Hz: 5.888486e-08 V^2 (or A^2), 
+Noise voltage or current: 2.426620e-04 V (or A)
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 11  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+ga1                                          0
+1                                            0
+2                                            0
+ga2                                          0
+4                                            0
+3                                            0
+e1#branch                                    0
+vgate2#branch                                0
+vin#branch                                   0
+vgate1#branch                                0
+
+500009 1/f noise values in time domain created
+ Reference value :  8.40600e-07 Reference value :  2.79304e-06 Reference value :  4.75968e-06 Reference value :  6.71621e-06 Reference value :  8.74794e-06 Reference value :  1.07792e-05 Reference value :  1.28126e-05 Reference value :  1.48280e-05 Reference value :  1.68674e-05 Reference value :  1.88871e-05 Reference value :  2.09079e-05 Reference value :  2.29581e-05 Reference value :  2.49700e-05 Reference value :  2.70371e-05 Reference value :  2.91000e-05 Reference value :  3.11500e-05 Reference value :  3.31803e-05 Reference value :  3.52259e-05 Reference value :  3.72319e-05 Reference value :  3.92604e-05 Reference value :  4.13623e-05 Reference value :  4.34199e-05 Reference value :  4.55032e-05 Reference value :  4.75441e-05 Reference value :  4.96110e-05 Reference value :  5.16836e-05 Reference value :  5.37564e-05 Reference value :  5.58210e-05 Reference value :  5.79109e-05 Reference value :  5.99742e-05 Reference value :  6.20577e-05 Reference value :  6.41264e-05 Reference value :  6.61854e-05 Reference value :  6.82599e-05 Reference value :  7.03026e-05 Reference value :  7.23876e-05 Reference value :  7.44804e-05 Reference value :  7.65257e-05 Reference value :  7.85763e-05 Reference value :  8.06280e-05 Reference value :  8.26907e-05 Reference value :  8.47384e-05 Reference value :  8.67851e-05 Reference value :  8.88362e-05 Reference value :  9.08966e-05 Reference value :  9.29440e-05 Reference value :  9.49966e-05 Reference value :  9.70357e-05 Reference value :  9.91230e-05
+No. of Data Rows : 2572120
+Total elapsed time (seconds) = 19.333 
+elapsed time since last call (seconds) = 14.461 
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13431.719 MB.
+Maximum ngspice program size =  389.953 MB.
+Current ngspice program size =  389.953 MB.
+63 page faults, 51 vol + 2815 invol = 2866 context switches.
+
+Number of lines in the deck = 23
+Netlist loading time = 0.000197
+Subckt and Param expansion time = 0.000433
+Netlist parsing time = 0.000183
+
+Nominal temperature = 27
+Operating temperature = 27
+Total iterations = 10292482
+Transient iterations = 10292476
+Circuit Equations = 11
+Circuit original non-zeroes = 17
+Circuit fill-in non-zeroes = 1
+Circuit total non-zeroes = 0
+Transient timepoints = 5144240
+Accepted timepoints = 5144240
+Rejected timepoints = 0
+Total analysis time (seconds) = 17.2838
+Matrix load time = 1.81261
+Matrix synchronize time = 0
+Matrix reorder time = 7E-06
+Matrix factor time = 0.400879
+Matrix solve time = 0.315108
+Transient analysis time = 17.2832
+Transient load time = 1.81261
+Transient sync time = 0
+Transient factor time = 0.400877
+Transient solve time = 0.315105
+Transient trunc time = 0.864822
+Transient iterations for the last time point = 0
+AC analysis time = 0
+AC load time = 0
+AC sync time = 0
+AC factor time = 0
+AC solve time = 0
+
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+

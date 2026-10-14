@@ -1,0 +1,96 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: ring cmos oscillator
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+Operating point simulation skipped by 'uic',
+  now using transient initial conditions.
+
+No. of Data Rows : 20019
+FFT: Time span: 1.00005e-07 s, input length: 20001
+FFT: Frequency resolution: 9.9995e+06 Hz, output length: 10001
+Reset re-loads circuit ring cmos oscillator
+
+Circuit: ring cmos oscillator
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+Periodic Steady State Analysis Started
+
+PSS Guessed Frequency 2e+09
+PSS Points 1024
+PSS Harmonics number 10
+PSS Steady Coefficient 0.005
+PSS sc_iter 5
+PSS Stabilization Time 1e-08
+Exiting from stabilization
+Time of first shooting evaluation will be 1.05e-08
+In shooting...
+Updated guessed frequency: 2.374182304e9 Hz.
+Next shooting evaluation time is 1.092119765e-08 and current time is 1.05e-08.
+----------------
+
+Updated guessed frequency: 3.848862744e9 Hz.
+Next shooting evaluation time is 1.118101465e-08 and current time is 1.092119765e-08.
+----------------
+
+Updated guessed frequency: 3.781338836e9 Hz.
+Next shooting evaluation time is 1.144547125e-08 and current time is 1.118101465e-08.
+----------------
+
+Updated guessed frequency: 3.848477795e9 Hz.
+Next shooting evaluation time is 1.170531425e-08 and current time is 1.144547125e-08.
+----------------
+
+Updated guessed frequency: 3.780960641e9 Hz.
+Next shooting evaluation time is 1.19697973e-08 and current time is 1.170531425e-08.
+----------------
+
+Updated guessed frequency: 3.848452307e9 Hz.
+Next shooting evaluation time is 1.222964201e-08 and current time is 1.19697973e-08.
+----------------
+
+0   -> FE: 2374182304      || RR:     2.069860583 || predsum/dynamic_test: 1.785959246e-11 || minimum: 1.785959246e-11
+1   -> FE: 3848862744      || RR:     1.378999443 || predsum/dynamic_test: 6.383800562e-11 || minimum: 1.785959246e-11
+2   -> FE: 3781338836      || RR: 0.0009881021634 || predsum/dynamic_test: 4.639589418e-12 || minimum: 4.639589418e-12
+3   -> FE: 3848477795      || RR:    0.1227910492 || predsum/dynamic_test: 6.296585639e-12 || minimum: 4.639589418e-12
+4   -> FE: 3780960641      || RR: 0.0001349527187 || predsum/dynamic_test: 4.640053499e-12 || minimum: 4.639589418e-12
+5   -> FE: 3848452307      || RR:    0.1004409419 || predsum/dynamic_test:     149796.5714 || minimum: 4.639589418e-12
+ Reference value :  1.19698e-08
+Convergence not reached. However the most near convergence iteration has predicted (iteration 2) a fundamental frequency of 3.781338836e9 Hz
+
+No. of Data Rows : 1025
+
+No. of Data Rows : 10
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Total analysis time (seconds) = 1.04674
+
+Total elapsed time (seconds) = 1.272 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13989.969 MB.
+Maximum ngspice program size =   14.953 MB.
+Current ngspice program size =   14.953 MB.
+
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+

@@ -1,0 +1,15 @@
+RC circuit excited by a pulse train 
+
+vs 1 0 dc 0 pulse 0 1 1u 1u 1u 1m 2m
+r1 1 2 1k
+c1 2 0 1u
+
+.options timeint method=trap
+*.print tran file=xy.tran1.raw format=raw v(1) v(2)
+.tran 1u 1 0 1u
+
+*.print tran file=out.dat format=std v(1) v(2)
+*.tran 1u 0.1 0
+* gnuplot -e "plot \"out.dat\" using 2:3 with lines, \"out.dat\" using 2:4 with lines" -p
+
+.end

@@ -19,7 +19,7 @@ import { BJT, hasBiasDependentBaseResistance } from './devices/bjt.js';
 import { VBIC, resolveVBICParams, vbicNodeCount } from './devices/vbic.js';
 import { MOSFET } from './devices/mosfet.js';
 import { EKV26 } from './devices/ekv.js';
-import { MOS2, resolveMOS2Model } from './devices/mos2.js';
+import { MOS2, mos2SeriesResistances, resolveMOS2Model } from './devices/mos2.js';
 import { MOS3, mos3SeriesResistances, resolveMOS3Model } from './devices/mos3.js';
 import { MOS6, resolveMOS6Model } from './devices/mos6.js';
 import { createBSIM1, resolveBSIM1Model } from './devices/bsim1.js';
@@ -42,6 +42,8 @@ import {
   type BehavioralSourceKind,
 } from './parser/behavioral-expression.js';
 import { BSIM3v3 } from './devices/bsim3v3.js';
+import { BSIM4 } from './devices/bsim4/device.js';
+import { UnsupportedModel as UnsupportedBsim4Model } from './devices/bsim4/setup.js';
 import { bsim3SeriesResistances, isSupportedBsim3Version, SUPPORTED_BSIM3_VERSIONS } from './devices/bsim3v3-params.js';
 import { VCCS } from './devices/vccs.js';
 import { VCVS } from './devices/vcvs.js';
@@ -76,7 +78,7 @@ import {
   transientNoiseWaveform, transientRandomWaveform, VOLTAGE_SOURCE_MULTIPLIER_ERROR,
 } from './parser/waveform-parser.js';
 import { invalidPassiveInstanceLine, parsePassiveElement } from './parser/passive-parser.js';
-import { locateSubcircuitCall, splitNestedSubcircuits } from './parser/subcircuit-syntax.js';
+import { locateSubcircuitCall, parseSubcircuitCallParams, splitNestedSubcircuits, validateSubcircuitCallCommas } from './parser/subcircuit-syntax.js';
 import { assertSupportedResistorModel, parseResistorElement } from './parser/resistor-parser.js';
 import { parseZInstance } from './parser/z-device-parser.js';
 import { parseSwitchInstance } from './parser/switch-parser.js';
@@ -113,9 +115,9 @@ import { CaseFoldedNameSet, CaseInsensitiveMap } from './case-fold.js';
 
 /**
  * MOSFET model levels with a spice-ts implementation: MOS1, MOS2, MOS3, BSIM1 (4), BSIM2 (5), MOS6,
- * BSIM3v3 (8/49), MOS9 and nominal-temperature static EKV2.6 (260).
+ * BSIM3v3 (8/49), MOS9, the static BSIM4 subset (14/54) and nominal-temperature static EKV2.6 (260).
  */
-const SUPPORTED_MOSFET_LEVELS: readonly number[] = [1, 2, 3, 4, 5, 6, 8, 9, 49, 260];
+const SUPPORTED_MOSFET_LEVELS: readonly number[] = [1, 2, 3, 4, 5, 6, 8, 9, 14, 49, 54, 260];
 /** ngspice's default circuit temperature (and TNOM) in degrees Celsius. */
 const NOMINAL_TEMPERATURE_C = 27;
 /** ngspice CONSTCtoK. */
@@ -825,6 +827,8 @@ export class Circuit {
   /** XSPICE code model cards, keyed by upper-case model name like {@link ModelTable}. */
   private _xspiceModels = new Map<string, XspiceModelCard>();
   private _subcircuits = new Map<string, SubcktDefinition>();
+  /** Parser-only X cards retained until formal definitions are resolved. */
+  private readonly _subcircuitCallCards = new WeakMap<DeviceDescriptor, string>();
   /** `.global` node names, keyed upper-case, valued with their first spelling. */
   private _globalNodes = new Map<string, string>();
   /** Top-level `.param` values (upper-case names) visible inside subcircuits. */
@@ -1653,11 +1657,14 @@ export class Circuit {
     ports: string[],
     subcktName: string,
     params?: Record<string, number>,
+    rawCard?: string,
   ): void {
     for (const p of ports) this.nodeSet.add(p);
-    this.descriptors.push({
+    const descriptor: DeviceDescriptor = {
       type: 'X', name, nodes: ports, modelName: subcktName, params,
-    });
+    };
+    this.descriptors.push(descriptor);
+    if (rawCard !== undefined) this._subcircuitCallCards.set(descriptor, rawCard);
   }
 
   /**
@@ -2406,6 +2413,17 @@ export class Circuit {
               modelParams, desc.params ?? {}, polarity, desc.modelName);
             ekv.setTemperature(this._temperature ?? NOMINAL_TEMPERATURE_C);
             devices.push(ekv);
+          } else if (level === 14 || level === 54) {
+            const bulkNode = desc.nodes[3] ?? desc.nodes[2];
+            const bsim4 = new BSIM4(desc.name,
+              [resolveNode(desc.nodes[0]), resolveNode(desc.nodes[1]), resolveNode(desc.nodes[2]), resolveNode(bulkNode)],
+              { ...modelParams, ...(model.version !== undefined ? { VERSION: model.version } : {}) },
+              desc.params ?? {}, polarity);
+            bsim4.assertAnalyses([
+              ...this._analyses.map(analysis => analysis.type),
+              ...(this._poleZeroAnalyses.length > 0 ? ['pz'] : []),
+            ]);
+            devices.push(bsim4);
           } else if (level === 49 || level === 8) {
             // #503/#594: VERSION=3.2.x runs the bsim3v32 revisions; 3.0/3.1 (BSIM3v0/v1) are not implemented.
             if (!isSupportedBsim3Version(model.version)) {
@@ -2638,7 +2656,7 @@ export class Circuit {
    * Only devices whose temperature model follows ngspice-47 are accepted:
    * resistors (TC1/TC2 around TNOM), the bounded VBIC (vbictemp.c mapping),
    * B sources (asrctemp.c tc1/tc2 and `temper`), diodes (diotemp.c), the
-   * Gummel-Poon BJT (bjttemp.c), MOS level 1 (mos1temp.c) and BSIM3 (b3temp.c,
+   * Gummel-Poon BJT (bjttemp.c), MOS levels 1/2 (mos1temp.c/mos2temp.c) and BSIM3 (b3temp.c,
    * b3v32temp.c). Every other temperature-dependent element is rejected instead of silently
    * running at 27 C.
    */
@@ -2670,7 +2688,7 @@ export class Circuit {
     for (const device of devices) {
       if (device instanceof Resistor || device instanceof VBIC || device instanceof BehavioralSource
         || device instanceof Diode || device instanceof BJT || device instanceof MOSFET
-        || device instanceof BSIM3v3 || device instanceof EKV26) {
+        || device instanceof MOS2 || device instanceof BSIM3v3 || device instanceof BSIM4 || device instanceof EKV26) {
         device.setTemperature(temperature);
       } else if (device.isNonlinear) {
         throw new UnsupportedTemperatureError(device.name, temperature);
@@ -2699,14 +2717,14 @@ export class Circuit {
       visited.add(name);
       const def = this._subcircuits.get(name);
       if (!def) continue; // Expansion reports the undefined-subcircuit error.
-      for (const { tokens } of tokenizeNetlist(def.body.join('\n'))) {
+      for (const { tokens, raw } of tokenizeNetlist(def.body.join('\n'))) {
         if (tokens[0]?.toUpperCase() === '.GLOBAL') {
           for (const node of tokens.slice(1)) {
             const key = node.toUpperCase();
             if (node !== GROUND_NODE && !globals.has(key)) globals.set(key, node);
           }
         } else if (tokens[0]?.[0].toUpperCase() === 'X') {
-          pending.push(tokens[locateSubcircuitCall(tokens).nameIndex]);
+          pending.push(tokens[locateSubcircuitCall(tokens, raw).nameIndex]);
         }
       }
     }
@@ -2728,6 +2746,10 @@ export class Circuit {
           globalNodes,
           guard,
           1,
+          [],
+          1,
+          this.parameterScope(),
+          this._subcircuitCallCards.get(desc),
         );
         result.push(...expanded);
       } else {
@@ -3041,11 +3063,13 @@ export class Circuit {
           result.push({ ...desc, nodes: [drain, gate, source, bulk] });
           continue;
         }
-        if (model && (level === undefined || level === 1)) {
-          // MOS1 (mos1set.c/mos1temp.c): RD/RS in front of the drain/source prime nodes, or
+        if (model && (level === undefined || level === 1 || level === 2)) {
+          // MOS1/MOS2 (mos1set.c/mos2set.c and temperature preprocessing): RD/RS in front of prime nodes, or
           // RSH*NRD / RSH*NRS (one square by default) when RD/RS are not given (#719). An open
           // terminal (#757) keeps its prime node but gets no resistor.
-          const series = mos1SeriesResistances(model.params, desc.params);
+          const series = level === 2
+            ? mos2SeriesResistances(model.params, desc.params)
+            : mos1SeriesResistances(model.params, desc.params);
           let [drain, gate, source] = desc.nodes;
           const bulk = desc.nodes[3] ?? source;
           if (series.drain === 0 && series.source === 0) {
@@ -3247,6 +3271,20 @@ export class Circuit {
   private requireModel(kind: string, desc: DeviceDescriptor): ModelParams {
     const model = this._models.get(desc.modelName ?? '');
     if (!model) {
+      // A declared BSIM4 bin family is not a typo or an implicit default model.
+      // Fail closed until native L/W bin selection is implemented.
+      if (desc.type === 'M' && desc.modelName) {
+        const prefix = `${desc.modelName.toLowerCase()}.`;
+        for (const candidate of this._models.values()) {
+          const suffix = candidate.name.toLowerCase().slice(prefix.length);
+          if (candidate.name.toLowerCase().startsWith(prefix) && /^\d+$/.test(suffix)
+            && (candidate.type === 'NMOS' || candidate.type === 'PMOS')
+            && (candidate.params.LEVEL === 14 || candidate.params.LEVEL === 54)) {
+            throw new UnsupportedBsim4Model(desc.name, 'model-binning',
+              'BSIM4 L/W model-bin selection is not implemented', { model: desc.modelName });
+          }
+        }
+      }
       throw new InvalidCircuitError(`${kind} '${desc.name}' references unknown model '${desc.modelName}'`);
     }
     return model;
@@ -3327,6 +3365,7 @@ export class Circuit {
     scopes: readonly SubcircuitScope[] = [],
     inheritedMultiplicity = 1,
     callerParams: Record<string, number> = this.parameterScope(),
+    rawCall?: string,
   ): DeviceDescriptor[] {
     guard?.maximum('maxSubcircuitDepth', depth, 'compile');
     const key = subcktName.toUpperCase();
@@ -3344,6 +3383,7 @@ export class Circuit {
     if (!def) {
       throw new Error(`Undefined subcircuit '${subcktName}'`);
     }
+    if (rawCall !== undefined) validateSubcircuitCallCommas(rawCall, def.params);
 
     if (connectedPorts.length !== def.ports.length) {
       throw new Error(
@@ -3745,11 +3785,10 @@ export class Circuit {
         }
         case 'X': {
           // Nested subcircuit instance — recursively expand
-          const call = locateSubcircuitCall(tokens);
+          const call = locateSubcircuitCall(tokens, raw);
           const nestedSubcktName = tokens[call.nameIndex];
           const nestedPorts = call.ports.map(mapNode);
-          const evaluatedTokens = tokens.map(t => evalToken(t));
-          const nestedParams = parseInstanceParams(evaluatedTokens, call.paramStart);
+          const nestedParams = parseSubcircuitCallParams(raw, evalToken);
 
           const newVisited = new Set(visited);
           newVisited.add(key);
@@ -3766,6 +3805,7 @@ export class Circuit {
             bodyScopes,
             multiplicity,
             localParams,
+            raw,
           );
           result.push(...nested);
           break;
