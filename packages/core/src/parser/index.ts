@@ -1294,6 +1294,9 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number, raw
       break;
     }
     case 'M': {
+      if (tokens.length < 5 || tokens.slice(1, 5).some(token => token.includes('='))) {
+        throw new ParseError(`MOSFET '${name}' requires D G S [B] and a model name`, lineNumber, raw);
+      }
       // SPICE MOSFET: M name D G S [B] modelName [W=x L=y ...]
       // tokens[4] is either the body node (4-terminal) or the model name (3-terminal).
       // Heuristic: if tokens[5] exists and does not contain '=', then tokens[4] is the

@@ -45,6 +45,14 @@ jobs:
 
       - run: pnpm lint
 
+      # Keep all 1M deterministic #749/#806 patterns in each required test job.
+      # V8 coverage makes this long sweep host-load sensitive (#1054); the
+      # coverage suite below retains a 20k prefix and the 20k subnormal sweep.
+      - name: Full number-format fuzz (without coverage)
+        env:
+          SPICE_FULL_NUMBER_FUZZ: '1'
+        run: pnpm -C packages/core exec vitest run src/parser/inpevaluate-749.test.ts
+
       - run: pnpm -r run test:coverage
 
       - name: Upload core coverage

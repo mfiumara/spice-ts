@@ -1,4 +1,5 @@
 import { ParseError } from '../errors.js';
+import { endOfLineCommentStart } from './end-of-line-comment.js';
 import { translatePolySource } from './controlled-source.js';
 import { assertNoControlledTable } from './controlled-table.js';
 
@@ -198,11 +199,6 @@ export function tokenizeLine(text: string): string[] {
 }
 
 function stripEndOfLineComment(line: string): string {
-  let commentStart = line.indexOf('$');
-  if (commentStart < 0) commentStart = line.length;
-  const semicolon = line.indexOf(';');
-  if (semicolon >= 0 && semicolon < commentStart) commentStart = semicolon;
-  const slashes = line.indexOf('//');
-  if (slashes >= 0 && slashes < commentStart) commentStart = slashes;
+  const commentStart = endOfLineCommentStart(line);
   return commentStart === line.length ? line : line.slice(0, commentStart);
 }

@@ -12,6 +12,21 @@ from corpus-l commit `66d67caff2f10e4d6a36d2e59898cc52d661b98d`, whose
 Commands, source links and before/after evidence are in
 [issue-1057](results/issue-1057/README.md). No corpus tolerances or outcomes change.
 
+## #1049 weak-node OP root cause
+
+The one-source `results/issue-1049/shunt-control.cir` and generic two-diode
+`weak-diode.cir` are original MIT-licensed spice-ts project work, not copied
+vendor models. Source context: https://github.com/mfiumara/spice-ts/issues/1049.
+The numeric/hash-only rootcause receipt uses the unchanged fetch-only #737
+archive and deck pins under the existing ngspice-bugs provenance below.
+No vendor bytes are redistributed. The official ngspice-47 source archive
+(https://downloads.sourceforge.net/project/ngspice/ng-spice-rework/47/ngspice-47.tar.gz,
+SHA256 `894e649651f1838a14095e5a5439e7d3aa63e87ede14d283173fda4fcdef675f`)
+is inspected and cited, not copied into the repository. See
+[ROOTCAUSE.md](results/issue-1049/ROOTCAUSE.md) for identical-byte comparisons,
+the native option-narrowing evidence and the unchanged original benchmark loss.
+
+
 ## SINE after DC/AC expressions (#994)
 
 The minimal V/I source probes in `reference/xyce.test.ts` and

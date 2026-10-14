@@ -1,0 +1,130 @@
+{
+  "command": "spice-heavy pnpm exec tsx evidence/1019/experiments/run.ts e1",
+  "pump": {
+    "error": 0.063,
+    "points": {
+      "spiceTs": 867,
+      "native": 868
+    },
+    "firstGridDifferenceOver1as": {
+      "index": 37,
+      "spiceTs": 5.027387875826269e-09,
+      "native": 5.027387877402101e-09,
+      "deltaSeconds": -1.5758320064727211e-18
+    },
+    "firstAcceptedVgsDifferenceOver1nV": {
+      "time": 5.0185195890911405e-09,
+      "spiceTsVgs": 0.4487750594998694,
+      "nativeVgs": 0.448775742809802,
+      "deltaVgs": -6.833099325809222e-07,
+      "spiceTsQgb": 4.3386728941889116e-15,
+      "nativeQgb": 4.33866837650366e-15,
+      "deltaQgb": 4.517685251731772e-21
+    },
+    "peak": 0.0003101259607419718,
+    "maxAbs": 1.9539446179088065e-05,
+    "normalized": 0.06300487109283025,
+    "worstTime": 4.502373230181537e-08,
+    "firstOnePercent": {
+      "index": 133,
+      "time": 1.5208922042773343e-08,
+      "error": 3.6502048935892987e-06
+    },
+    "early15_2nsMaxAbs": 3.6502048935892987e-06
+  },
+  "guards": {
+    "mosamp2": {
+      "maxAbsAtStop": 2.7059435190324166e-06,
+      "bound": 5e-06,
+      "passed": true,
+      "points": 2429
+    },
+    "k-10": {
+      "normalized": 0.00014821670590837676,
+      "signals": {
+        "v(1)": 0.0,
+        "v(21)": 1.5543202524485384e-15,
+        "v(20)": 9.262499046782489e-09,
+        "v(2)": 2.119078414197849e-06,
+        "v(3)": 2.2871137157548753e-06,
+        "v(4)": 2.416658619144824e-06,
+        "i(l2)": 0.00014821670590837676,
+        "i(l1)": 8.315851202324064e-09,
+        "i(vin)": 8.315851202324062e-09,
+        "i(vdd)": 0.00013765290336423467
+      },
+      "points": 1008,
+      "sharedScorer": 0.000148
+    },
+    "k-15": {
+      "normalized": 0.0001157572486297565,
+      "signals": {
+        "v(1)": 0.0,
+        "v(3)": 7.621097864620721e-05,
+        "v(2)": 5.749034113580754e-05,
+        "v(4)": 3.913265265268707e-05,
+        "v(5)": 6.102906267519168e-05,
+        "v(6)": 8.294531282600086e-05,
+        "v(7)": 0.0001157572486297565,
+        "v(8)": 8.34665028181046e-05,
+        "v(9)": 0.0001013233460861275,
+        "v(10)": 6.91714905778735e-05,
+        "v(11)": 0.00010439800569581423,
+        "v(12)": 7.333199415617754e-05,
+        "v(13)": 8.57635898858962e-05,
+        "v(14)": 8.369788391849917e-05,
+        "v(15)": 7.036851047363553e-05,
+        "v(16)": 7.790318108599185e-05,
+        "v(17)": 4.235364722935801e-05,
+        "v(18)": 2.2633578717237745e-05,
+        "i(vdd)": 7.263533237832464e-05
+      },
+      "points": 1010,
+      "sharedScorer": 0.000116
+    },
+    "maxordRC": {
+      "rc-trap-1": {
+        "outcome": "matched",
+        "normalized": 1.24e-15,
+        "points": [
+          "tran:97"
+        ]
+      },
+      "rc-trap-2": {
+        "outcome": "matched",
+        "normalized": 2.99e-15,
+        "points": [
+          "tran:67"
+        ]
+      },
+      "rc-gear-1": {
+        "outcome": "matched",
+        "normalized": 1.24e-15,
+        "points": [
+          "tran:97"
+        ]
+      },
+      "rc-gear-2": {
+        "outcome": "matched",
+        "normalized": 2.01e-07,
+        "points": [
+          "tran:67"
+        ]
+      }
+    }
+  },
+  "conclusion": "does not attribute",
+  "exactChange": "MOS2 bypass condition additionally requires MOS2_NO_BYPASS environment variable absent; e1 sets it to 1.",
+  "nativeConfiguredBypass": [
+    0
+  ],
+  "forcedOffFlags": [
+    1
+  ],
+  "nativeWaveformExactlyUnchanged": true,
+  "tsEquivalentSkip": "none in MOS2 stamp/stampTransientCharge or nonlinear transient solve; no TS skip to disable",
+  "nativeBypassHits": {
+    "baseline": 0,
+    "e1": 0
+  }
+}
