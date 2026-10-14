@@ -41,6 +41,7 @@ import {
   type BehavioralSourceKind,
 } from './parser/behavioral-expression.js';
 import { BSIM3v3 } from './devices/bsim3v3.js';
+import { BSIM4 } from './devices/bsim4/device.js';
 import { bsim3SeriesResistances, isSupportedBsim3Version, SUPPORTED_BSIM3_VERSIONS } from './devices/bsim3v3-params.js';
 import { VCCS } from './devices/vccs.js';
 import { VCVS } from './devices/vcvs.js';
@@ -112,9 +113,9 @@ import { CaseFoldedNameSet, CaseInsensitiveMap } from './case-fold.js';
 
 /**
  * MOSFET model levels with a spice-ts implementation: MOS1, MOS2, MOS3, BSIM1 (4), BSIM2 (5), MOS6,
- * BSIM3v3 (8/49) and MOS9.
+ * BSIM3v3 (8/49), MOS9 and the static BSIM4 subset (14/54).
  */
-const SUPPORTED_MOSFET_LEVELS: readonly number[] = [1, 2, 3, 4, 5, 6, 8, 9, 49];
+const SUPPORTED_MOSFET_LEVELS: readonly number[] = [1, 2, 3, 4, 5, 6, 8, 9, 14, 49, 54];
 /** ngspice's default circuit temperature (and TNOM) in degrees Celsius. */
 const NOMINAL_TEMPERATURE_C = 27;
 /** ngspice CONSTCtoK. */
@@ -2395,7 +2396,18 @@ export class Circuit {
           const polarity = model.type === 'PMOS' ? -1 : 1;
           const level = modelParams.LEVEL ?? 1;
 
-          if (level === 49 || level === 8) {
+          if (level === 14 || level === 54) {
+            const bulkNode = desc.nodes[3] ?? desc.nodes[2];
+            const bsim4 = new BSIM4(desc.name,
+              [resolveNode(desc.nodes[0]), resolveNode(desc.nodes[1]), resolveNode(desc.nodes[2]), resolveNode(bulkNode)],
+              { ...modelParams, ...(model.version !== undefined ? { VERSION: model.version } : {}) },
+              desc.params ?? {}, polarity);
+            bsim4.assertAnalyses([
+              ...this._analyses.map(analysis => analysis.type),
+              ...(this._poleZeroAnalyses.length > 0 ? ['pz'] : []),
+            ]);
+            devices.push(bsim4);
+          } else if (level === 49 || level === 8) {
             // #503/#594: VERSION=3.2.x runs the bsim3v32 revisions; 3.0/3.1 (BSIM3v0/v1) are not implemented.
             if (!isSupportedBsim3Version(model.version)) {
               throw new UnsupportedModelVersionError(
@@ -2659,7 +2671,7 @@ export class Circuit {
     for (const device of devices) {
       if (device instanceof Resistor || device instanceof VBIC || device instanceof BehavioralSource
         || device instanceof Diode || device instanceof BJT || device instanceof MOSFET
-        || device instanceof BSIM3v3) {
+        || device instanceof BSIM3v3 || device instanceof BSIM4) {
         device.setTemperature(temperature);
       } else if (device.isNonlinear) {
         throw new UnsupportedTemperatureError(device.name, temperature);

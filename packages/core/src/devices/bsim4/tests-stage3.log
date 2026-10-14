@@ -1,0 +1,15 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_23810bad/packages/core
+
+ ✓ src/devices/bsim4-junction.test.ts (43 tests) 12ms
+ ✓ src/devices/bsim4/setup.test.ts (124 tests) 267ms
+ ✓ src/devices/bsim4/load.test.ts (9 tests) 230ms
+ ✓ src/devices/bsim4/temp.test.ts (28 tests) 267ms
+ ✓ src/devices/bsim4/device.test.ts (43 tests) 380ms
+
+ Test Files  5 passed (5)
+      Tests  247 passed (247)
+   Start at  03:39:56
+   Duration  1.87s (transform 1.67s, setup 0ms, import 2.09s, tests 1.16s, environment 0ms)
+
+JUNIT report written to /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_23810bad/packages/core/test-results.xml

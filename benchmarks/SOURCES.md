@@ -3,16 +3,17 @@
 This file records the provenance and redistribution decision for benchmark fixtures.
 The machine-readable catalogue is `benchmarks/corpus/ngspice/manifest.json`.
 
-## BSIM4 implementation source (#3), partial junction port
+## BSIM4 implementation source (#3), static OP/DC subset
 
 | Port destination / upstream subset | Pinned upstream revision | Licence / notices |
 | --- | --- | --- |
-| `packages/core/src/devices/bsim4-junction.ts`: default DIOMOD=1 junction defaults from `src/spicelib/devices/bsim4/b4set.c`, silicon junction temperature scaling/forward limiting from `b4temp.c`, and source/drain DC junction current/conductance from `b4ld.c`. Not a complete or registered transistor model. | [ngspice-47 bsim4/](https://github.com/imr/ngspice/tree/a80f6e3e95d51534905b1f23410a951802666656/src/spicelib/devices/bsim4), SHA `a80f6e3e95d51534905b1f23410a951802666656` | ECL-2.0, Copyright (c) 2025 University of California. Original per-file notices retained verbatim in the port, with a TypeScript modification notice. Full licence in `packages/core/src/devices/bsim4/LICENSE-ECL-2.0`, obtained from [SPDX licence text](https://github.com/spdx/license-list-data/blob/main/text/ECL-2.0.txt). The per-file ECL notice overrides ngspice's project-level BSD default for these files. |
+| `packages/core/src/devices/bsim4/` and `bsim4-junction.ts`: full ordered model defaults/instance setup from `src/spicelib/devices/bsim4/b4set.c`, baseline silicon size/binning/TEMPMOD=0 preprocessing from `b4temp.c`, GEOMOD=0 junction geometry from `b4geo.c:28-88`, relevant DC fatal checks and rejection of unported PARAMCHK correction domains from `b4check.c`, DIOMOD=1 junction currents and channel Ids/gm/gds/gmbs including substrate current from `b4ld.c:1004-2189,5413-5431`. Registered LEVEL=14/54 static subset, not full BSIM4 or dynamic support. Detailed inventories in SETUP.md, TEMPERATURE.md and LOAD.md. | [ngspice-47 bsim4/](https://github.com/imr/ngspice/tree/a80f6e3e95d51534905b1f23410a951802666656/src/spicelib/devices/bsim4), SHA `a80f6e3e95d51534905b1f23410a951802666656` | ECL-2.0, Copyright (c) 2025 University of California. Original per-file notices retained in generated ports and `NOTICE-BSIM4.txt`, with a TypeScript modification notice. Full licence in `packages/core/src/devices/bsim4/LICENSE-ECL-2.0`, obtained from [SPDX licence text](https://github.com/spdx/license-list-data/blob/main/text/ECL-2.0.txt). The per-file ECL notice overrides ngspice's project-level BSD default for these files. |
 
-This intermediate port is not imported by the simulator or shipped in its bundle.
-Any future integration must include the full ECL-2.0 licence in the distributed
-artifact before publication. Package licence metadata and npm publication remain
-owner-gated. Unit tests are not whole-transistor ngspice parity or speed evidence.
+The channel kernel embeds the full ECL-2.0 licence and upstream notice contents
+in a bundler-preserved legal comment. Package licence metadata and npm publication
+remain owner-gated and unchanged. Targeted oracle tests are not corpus-wide
+parity or speed evidence. This extends the existing single provenance row;
+it does not relabel these files BSD-3-Clause or add a duplicate source entry.
 
 ## Xyce second-reference bootstrap (#948)
 

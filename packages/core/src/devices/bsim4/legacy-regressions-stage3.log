@@ -1,0 +1,101 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_23810bad/packages/core
+
+ ❯ src/devices/mosfet-body-effect.test.ts (14 tests | 3 failed) 52ms
+     ✓ raises the threshold with reverse body bias (GAMMA/PHI, saturation) 17ms
+     ✓ applies the body effect in the linear region 5ms
+     ✓ lowers the threshold with forward body bias (vbs > 0 branch of mos1load.c) 3ms
+     ✓ uses vbd for the body effect when drain and source swap 1ms
+     ✓ conducts at vgs = 0 for an NMOS depletion device (VTO < 0) 1ms
+     ✓ conducts at vgs = 0 for a PMOS depletion device (VTO > 0) 1ms
+     ✓ applies the PMOS body effect with the bulk above the source 1ms
+     ✓ shortens the channel by 2*LD 1ms
+     ✓ derives GAMMA from TOX/NSUB and linearises gmbs for AC (source follower) 6ms
+     ✓ uses L - 2*LD for drain current and flicker noise (mos1noi.c) 2ms
+     × rejects LEVEL=7 with a typed error 7ms
+     × rejects LEVEL=14 with a typed error 4ms
+     × rejects LEVEL=54 with a typed error 1ms
+     ✓ still accepts LEVEL=1 explicitly and by default 1ms
+ ❯ src/parser/bsim-model-version.test.ts (10 tests | 1 failed) 67ms
+     ✓ parses a dotted VERSION= string instead of failing as a number 5ms
+     ✓ accepts the spaced VERSION = form of ngspice decks 1ms
+     ✓ runs LEVEL=8/49 VERSION=3.3.x exactly like the default BSIM3 3.3.0 model 35ms
+     ✓ runs LEVEL=8/49 VERSION=3.2.x as the ngspice bsim3v32 revisions (#594) 7ms
+     ✓ rejects BSIM3 versions spice-ts does not implement with a typed error, not a parse error 6ms
+     × reports BSIM4 cards with a dotted VERSION= as an unsupported LEVEL, not a parse error 6ms
+     ✓ preserves unsupported revisions through a netlist round trip 1ms
+     ✓ preserves 3.2.x revisions through a netlist round trip 2ms
+     ✓ checks revisions on models local to subcircuits 2ms
+     ✓ still rejects malformed numeric parameters 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/devices/mosfet-body-effect.test.ts > unimplemented MOSFET levels are rejected (issue #530) > rejects LEVEL=7 with a typed error
+AssertionError: expected UnsupportedModelLevelError: MOSFET 'M1' (… { …(5) } to match object { …(5) }
+(1 matching property omitted from actual)
+
+- Expected
++ Received
+
+@@ -1,6 +1,6 @@
+- {
++ UnsupportedModelLevelError {
+    "code": "UNSUPPORTED_MODEL_LEVEL",
+    "deviceName": "M1",
+    "level": 7,
+    "modelName": "NX",
+    "supportedLevels": [
+@@ -10,8 +10,10 @@
+      4,
+      5,
+      6,
+      8,
+      9,
++     14,
+      49,
++     54,
+    ],
+  }
+
+ ❯ src/devices/mosfet-body-effect.test.ts:135:20
+    133|     expect(caught).toBeInstanceOf(UnsupportedModelLevelError);
+    134|     expect(caught).toBeInstanceOf(InvalidCircuitError);
+    135|     expect(caught).toMatchObject({
+       |                    ^
+    136|       code: 'UNSUPPORTED_MODEL_LEVEL',
+    137|       deviceName: 'M1',
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  src/devices/mosfet-body-effect.test.ts > unimplemented MOSFET levels are rejected (issue #530) > rejects LEVEL=14 with a typed error
+ FAIL  src/devices/mosfet-body-effect.test.ts > unimplemented MOSFET levels are rejected (issue #530) > rejects LEVEL=54 with a typed error
+AssertionError: expected UnsupportedModelParameterError: BSIM4 sta… { …(6) } to be an instance of UnsupportedModelLevelError
+ ❯ src/devices/mosfet-body-effect.test.ts:133:20
+    131|       caught = error;
+    132|     }
+    133|     expect(caught).toBeInstanceOf(UnsupportedModelLevelError);
+       |                    ^
+    134|     expect(caught).toBeInstanceOf(InvalidCircuitError);
+    135|     expect(caught).toMatchObject({
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  src/parser/bsim-model-version.test.ts > BSIM model cards with dotted VERSION= values (#503) > reports BSIM4 cards with a dotted VERSION= as an unsupported LEVEL, not a parse error
+AssertionError: expected UnsupportedModelParameterError: BSIM4 sta… { …(6) } to be an instance of UnsupportedModelLevelError
+ ❯ src/parser/bsim-model-version.test.ts:72:38
+     70|     for (const [level, version] of [[14, '4.5.0'], [54, '4.8.2']] as c…
+     71|       const netlist = inverter(`.model n1 nmos level=${level} version=…
+     72|       await expect(simulate(netlist)).rejects.toBeInstanceOf(Unsupport…
+       |                                      ^
+     73|       await expect(simulate(netlist)).rejects.toMatchObject({ code: 'U…
+     74|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  4 failed | 20 passed (24)
+   Start at  03:38:09
+   Duration  1.35s (transform 1.93s, setup 0ms, import 2.34s, tests 119ms, environment 0ms)
+
+JUNIT report written to /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_23810bad/packages/core/test-results.xml
