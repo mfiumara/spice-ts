@@ -164,7 +164,7 @@ export function compareInBatches(spiceTs: PackedExecution, ngspice: PackedExecut
       const reference = pair.right ? unpackAnalysis(pair.right, batch) : undefined;
       // Occurrence was resolved against the full raw list, not this singleton
       // subset. Carry that resolved identity through the inner comparison.
-      if (reference && pair.left?.plotId?.startsWith('dot:')) reference.plotId = pair.left.plotId;
+      if (reference && pair.left?.plotId !== undefined) reference.plotId = pair.left.plotId;
       const [receipt] = compareExecutions(
         { status: 'success', convergence: 'converged', analyses: pair.left ? [unpackAnalysis(pair.left, batch)] : [] },
         { status: 'success', convergence: 'converged', analyses: reference ? [reference] : [] },
