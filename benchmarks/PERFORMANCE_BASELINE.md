@@ -372,3 +372,20 @@ Wall clock, median of 5 interleaved rounds (in-process `simulate()` for spice-ts
 | cmos-chain-50k OP | 12.88 s | 9.08 s | 1.42x (pairs 1.38-1.49) | 50.2 s | 1110 / 2360 |
 
 After the change, device load is the largest category (31.6% / 46.9% at 10k / 50k), then sparse LU (18.9% / 20.1%) and GC (11.5% / 13.1%). spice-ts reads faster than ngspice-47 on these two OP decks, mostly because it takes 2-3x fewer Newton iterations. Per iteration at 10k the engines are about even. This is not claimed as an engine-level win (shared host, different stepping schedules, two decks). The cmos-chain-tran 10k control is 1.06x faster, from its initial OP. Replacing the array destructuring in `convergenceTest` with indexed reads was measured and not kept (no change within noise). Profiles, JSONL, ngspice acct output, mutants and remaining scope are in `benchmarks/performance/results/issue-830/README.md`.
+
+## Current-main inverter transient attribution ([#1053](https://github.com/mfiumara/spice-ts/issues/1053))
+
+Evidence-only refresh at `08072804291785b2ca9213f3689551eb325fc5f6`. The historical 7.15x / 671-output-point result above is not the current step schedule. On the same SHA-256-identical 1k/10k decks, spice-ts takes 213 accepted advances plus the initial point, ngspice-47 KLU reports 214 accepted timepoints, and both return 214 output rows. Both reject zero trials; spice-ts takes 466 transient Newton iterations against native's 483. No redundant step-count bucket remains to remove.
+
+Ten serial cold-process rounds, alternating engine order, via `spice-heavy`; medians [Q1,Q3] in ms:
+
+| Deck | spice-ts parse+simulate API | ngspice CLI wall | API/native wall |
+|---|---:|---:|---:|
+| CMOS chain 1k | 423.40 [412.10,429.53] | 298.78 [279.62,311.74] | 1.42x slower |
+| CMOS chain 10k | 3375.36 [3279.21,3514.12] | 6297.05 [5618.46,6817.31] | 0.54x |
+| RC ladder 10k | 512.53 [492.02,560.18] | 309.16 [294.71,330.92] | 1.66x slower |
+| resistor mesh OP 10k | 352.86 [340.89,365.92] | 147.79 [142.52,163.85] | 2.39x slower |
+
+All losses and outliers are retained. Shared host load was 10.47–21.43; the CMOS 10k API maximum was 13.11 s. Native uses binary raw output; spice-ts records public result columns. This is an embedding comparison, not equal startup/output paths or engine superiority. No candidate A/B or new >=25% cut is claimed, and runtime bytes are unchanged, so this is not a before/after regression measurement.
+
+Independent uninstrumented V8 sampling puts MOS batch stamping first at 10k (26.8% self / 29.8% inclusive of whole-worker samples), followed by device convergence (10.2% self). The separate exclusive-phase diagnostics expose device load+stamp, factor, solve, step control and output but have substantial instrumentation overhead. Native acct cannot split device evaluation from stamping, step control or output; those unavailable clocks are not fabricated. Probe v(s20) max/RMS native-peak-relative error is 0.00112467 / 0.000120498 at both sizes. No tolerances, models, corpus or solver code change. The step-count hypothesis is rejected, not the possibility of a future general device-load optimization. Full deck hashes, exact medians/IQR, raw native plots/acct, all 82 samples, profile, limitations and runnable offline checks are in `benchmarks/results/issue-1053/README.md`. Refs #1053; this receipt does not close it.

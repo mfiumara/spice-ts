@@ -1,0 +1,4162 @@
+{
+  "schema": 1,
+  "rows": [
+    {
+      "ticket": 158,
+      "deck": "dot.cir",
+      "expectedSha256": "7e943e7c63cfbb2a5724ab5d01f2d91591d9f78a60e2966ecd91d62f92cd9b35",
+      "source": "amp3/amp3.net",
+      "sourceSha256": "cd0ae942d7748b2df1dd7bfbddc2b987b09fab95a12fd26a02df418a24a66c53",
+      "status": "provenance-gap",
+      "matches": [],
+      "attemptCount": 3024,
+      "attemptedHashSetSha256": "64cfb621c7409ad2c7bf06d9ec933fb87076f2b811033b1fd9a66a607d994b3e",
+      "examples": [
+        {
+          "sha256": "88487a8fa4a3dfbdce9149b8bf7e95f54b5cefd5858729bcd9b93e63aecdef9d",
+          "bytes": 2594,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".pz",
+              ".print pz all"
+            ],
+            "blank": 0,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "ef96e3bb14a5084cc91d54d8bb48f9392492e25444f734631955f5f92f8a473c",
+          "bytes": 2660,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".pz",
+              ".print pz all"
+            ],
+            "blank": 0,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "46309d398b78a4229876611c55d20ee9fc659f7cfa320a09da21254d28b9b29d",
+          "bytes": 2594,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".pz",
+              ".print pz all"
+            ],
+            "blank": 0,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "64337b0d648103702cc4ec15d8e8021ffa37805eff7b86a66d645a1e57b6cb0a",
+          "bytes": 2660,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".pz",
+              ".print pz all"
+            ],
+            "blank": 0,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "89329c224e0680422a02cbf9d47d8842d2da634e655eb8448f3385d9120ce026",
+          "bytes": 2596,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".pz",
+              ".print pz all"
+            ],
+            "blank": 1,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "df463567b52417da544bf49b9ef7755dd0945f69c5871f5dd4ab994c6da0c6d5",
+          "bytes": 2664,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".pz",
+              ".print pz all"
+            ],
+            "blank": 1,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "4b026562cc4f0731a36d5e010d7cefd91dead7cbfb9da3428422fb70f3ca6e1e",
+          "bytes": 2596,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".pz",
+              ".print pz all"
+            ],
+            "blank": 1,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "1679f2aa3e661bc53356dc37e0d450b8194c60a6614cac1ca7df3fe531045848",
+          "bytes": 2664,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".pz",
+              ".print pz all"
+            ],
+            "blank": 1,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "1c8dbab57da3ce6c5718453e29e68bddc8e064ef039387463d25b3127c7404be",
+          "bytes": 2594,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".pz",
+              ".print PZ all"
+            ],
+            "blank": 0,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "3203ce634e5dd5d0b4bcf7acbdb57c22ae22dfde17fc64bce4271e9313d10613",
+          "bytes": 2660,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".pz",
+              ".print PZ all"
+            ],
+            "blank": 0,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "2565ad2b6ea2c3a045c46ec13b47dc4f072044b158cc803d57cc7c423d2c3f5e",
+          "bytes": 2594,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".pz",
+              ".print PZ all"
+            ],
+            "blank": 0,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "ad9d10eb00f60a4f1bd5f6e9f4d44565743207f913f5a0b02554e6ee685ae613",
+          "bytes": 2660,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".pz",
+              ".print PZ all"
+            ],
+            "blank": 0,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "90e83a21236b79781d66ee5ffa5cb3d41e0e7093478ff513bbfd4f96a183c4f1",
+          "bytes": 2596,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".pz",
+              ".print PZ all"
+            ],
+            "blank": 1,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "52196f220dd9b735e3d23555d2b7555a39f93d6f7ef9be5ba0b17560fbf75156",
+          "bytes": 2664,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".pz",
+              ".print PZ all"
+            ],
+            "blank": 1,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "134d6e77946a0ffcf235104ba6193af61c45a1ad9fdf0ae5eb448aec1c050b23",
+          "bytes": 2596,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".pz",
+              ".print PZ all"
+            ],
+            "blank": 1,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "8647cf59aa52f61b4868eb0b7fb1714341205c341daf2d9d07074f8b529c73ad",
+          "bytes": 2664,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".pz",
+              ".print PZ all"
+            ],
+            "blank": 1,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "8155224bc12f1166e4108928e12bb8790847414d2e0800169223b8e459f846a2",
+          "bytes": 2594,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".pz",
+              ".PRINT PZ ALL"
+            ],
+            "blank": 0,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "62542565abb20bc6aaca1abb4c44daa734e57d0fa559812a4bd42fff421b0e4e",
+          "bytes": 2660,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".pz",
+              ".PRINT PZ ALL"
+            ],
+            "blank": 0,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "cc4f77c9c347b9b552e2810e0a5e5031c5b78bb60b1fa5971b64e6a5e0a8db40",
+          "bytes": 2594,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".pz",
+              ".PRINT PZ ALL"
+            ],
+            "blank": 0,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "c82ffe20b903b45c2bde99429aedcc0a3b09b3e5d1538a02f62bdba4c27054ec",
+          "bytes": 2660,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".pz",
+              ".PRINT PZ ALL"
+            ],
+            "blank": 0,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "2ebb26ea278fbb1acf3fc57c38b7de1bdb84a381c33fede8ac3e9a57103a54fa",
+          "bytes": 2596,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".pz",
+              ".PRINT PZ ALL"
+            ],
+            "blank": 1,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "2a299136eee7a73cc02d5a1337b8af3bfd29868546aa04eb3058519656b7ba26",
+          "bytes": 2664,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".pz",
+              ".PRINT PZ ALL"
+            ],
+            "blank": 1,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "a6580a5e9ed02df968f680e2a59026508058bb5ca891c5fb7cfa944e55459fcc",
+          "bytes": 2596,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".pz",
+              ".PRINT PZ ALL"
+            ],
+            "blank": 1,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "8093d58c74679f515f1b2958a585f5ac29d8938b702f1175c5fb14a18cdd8d20",
+          "bytes": 2664,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".pz",
+              ".PRINT PZ ALL"
+            ],
+            "blank": 1,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "e9cc1047e896bae288dce79a5d9874f01f978c4d0fd15e144a183a9f39682cd9",
+          "bytes": 2594,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".PZ",
+              ".print pz all"
+            ],
+            "blank": 0,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "838d19516f7def3e54e0893e79f64f31c3e215401e0e2dd8804584cfd5c9ef5a",
+          "bytes": 2660,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".PZ",
+              ".print pz all"
+            ],
+            "blank": 0,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "a40d1549190793818737b1145dad861c82aa041b37e2e543a13571f964baec88",
+          "bytes": 2594,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".PZ",
+              ".print pz all"
+            ],
+            "blank": 0,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "6fdbc646e456fd672103b8c03cc1d9ec9a5f726c98fff7ecb92f8bf454cd597a",
+          "bytes": 2660,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".PZ",
+              ".print pz all"
+            ],
+            "blank": 0,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "0b71cbe9e637a7275eddc113a2839bf365df9a0c739f49c25db84f32910cf8c0",
+          "bytes": 2596,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".PZ",
+              ".print pz all"
+            ],
+            "blank": 1,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "cef7efa882b92a714fc3c1d9125dd31a14cd2871127e981992f8ca6bf2da1f0e",
+          "bytes": 2664,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".PZ",
+              ".print pz all"
+            ],
+            "blank": 1,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "86cecc36c2b3631428b7cee7cb4ad292f9256d220a3a34ed3bdb31087a171c3f",
+          "bytes": 2596,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".PZ",
+              ".print pz all"
+            ],
+            "blank": 1,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "5eb0ae8b8bd31ac196d8eef06a4866de03b31819e00af27cd607fa9a70e45b15",
+          "bytes": 2664,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".PZ",
+              ".print pz all"
+            ],
+            "blank": 1,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "e6049aaa3d6d23a3693035c5d8d115f04cffcd0d3953d5530292ed9f87dc7171",
+          "bytes": 2594,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".PZ",
+              ".print PZ all"
+            ],
+            "blank": 0,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "1c45a4b85c4181d132f37b34e2760e509d8f27cf3a5791fcb1d7576b90905447",
+          "bytes": 2660,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".PZ",
+              ".print PZ all"
+            ],
+            "blank": 0,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "d202c3be21474d506857a86650dbcbc8de031e24891f166972cd9847602c2fa6",
+          "bytes": 2594,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".PZ",
+              ".print PZ all"
+            ],
+            "blank": 0,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "97b0e6f7e8664d9cbd669cd6215398c287cd59536ffcf346f653980860a99f27",
+          "bytes": 2660,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".PZ",
+              ".print PZ all"
+            ],
+            "blank": 0,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "ab89d280088fa43af6ca3b62357ad3333b829420d36fd648345b5ea96bdb36de",
+          "bytes": 2596,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".PZ",
+              ".print PZ all"
+            ],
+            "blank": 1,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "0709edd4f805fc1added9e5f11759ea6374dda2e3a3918de5feec629b79499ba",
+          "bytes": 2664,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".PZ",
+              ".print PZ all"
+            ],
+            "blank": 1,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "e74bfd8439c15244014ffb9bcd6d14f15b8410f83af945ce1b7cbdd1bd66a02a",
+          "bytes": 2596,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".PZ",
+              ".print PZ all"
+            ],
+            "blank": 1,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "7070fd57259052153e29854fbb1dce4e9640b7db30b1ae9f837dc182286716c4",
+          "bytes": 2664,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".PZ",
+              ".print PZ all"
+            ],
+            "blank": 1,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "a4e684058ba093676a2b6510c220c86aaa615c8a80b1620657b1d36deedf82d0",
+          "bytes": 2594,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".PZ",
+              ".PRINT PZ ALL"
+            ],
+            "blank": 0,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "72d100c89a75438d391ed8f35387fbd6226c00a18bf3b8a00bca3a4b3c7fa3c0",
+          "bytes": 2660,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".PZ",
+              ".PRINT PZ ALL"
+            ],
+            "blank": 0,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "8440044e6714cdba141aa3081faa3934d3c10eb6036d227b9b18f73efe5bf3e9",
+          "bytes": 2594,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".PZ",
+              ".PRINT PZ ALL"
+            ],
+            "blank": 0,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "b141d89e8d53c51300bcea22b0128f9a03fe65bf61d2cabdf081e4ff13c2f298",
+          "bytes": 2660,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".PZ",
+              ".PRINT PZ ALL"
+            ],
+            "blank": 0,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "9ac7ca8f0d7cc739b4e1b88d2d7b2020a48f8d1f0de643c37dcd1b46886213bd",
+          "bytes": 2596,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".PZ",
+              ".PRINT PZ ALL"
+            ],
+            "blank": 1,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "a82c2141e81330abeb44c5ebc7b11503acf317c53d498a6e75d75d4c684cc1b7",
+          "bytes": 2664,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".PZ",
+              ".PRINT PZ ALL"
+            ],
+            "blank": 1,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "96109e41644820cb67602a71a51820084f73224832612582f089cad2d30cc0f5",
+          "bytes": 2596,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".PZ",
+              ".PRINT PZ ALL"
+            ],
+            "blank": 1,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "17ff371d1a0ac66647fdd0f097e53f559a2d3288b5a8e6a6286043c0973bf961",
+          "bytes": 2664,
+          "recipe": {
+            "control": [
+              ".tf",
+              ".PZ",
+              ".PRINT PZ ALL"
+            ],
+            "blank": 1,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "146f4397e82307fa7856528353bb57595b79d5e117d6dd23c7e850dd76399145",
+          "bytes": 2594,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".pz",
+              ".print pz all"
+            ],
+            "blank": 0,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "71012436e7acb7a286d25524b9e0002dbfedcd5c5bec76dd4ab8b968746594bd",
+          "bytes": 2660,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".pz",
+              ".print pz all"
+            ],
+            "blank": 0,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "30826d7c2ee8de5992eb8d5beb96f858d0eaf4ce5b7ed6c23c5962dad43a14fd",
+          "bytes": 2594,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".pz",
+              ".print pz all"
+            ],
+            "blank": 0,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "3f8b9ce1d58090bdb2018cd0d5ae94b9ee6efd002e006129034995dcd1e63df1",
+          "bytes": 2660,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".pz",
+              ".print pz all"
+            ],
+            "blank": 0,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "065ac352e6dcaa7fd1c820c8e39825fc7d652f22d981ca81b57834667104c7bc",
+          "bytes": 2596,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".pz",
+              ".print pz all"
+            ],
+            "blank": 1,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "5038198dda42ecfc3069107e48d6108510ef64d82291f856305a02d04e46c3a6",
+          "bytes": 2664,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".pz",
+              ".print pz all"
+            ],
+            "blank": 1,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "e6257158f2fe65a9655b3e0c773d75808e387bece27cdb2a714b933aad9a67fd",
+          "bytes": 2596,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".pz",
+              ".print pz all"
+            ],
+            "blank": 1,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "d61a54b73e345877f92c77be62992d434edc61ba755c48f3822f1d6c982672fd",
+          "bytes": 2664,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".pz",
+              ".print pz all"
+            ],
+            "blank": 1,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "de4c7914ce85857e0da89a4a476d5909ff5646973d4cb7a4686bc5e99ee6283d",
+          "bytes": 2594,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".pz",
+              ".print PZ all"
+            ],
+            "blank": 0,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "b9a3230c0998882d106ac7e4130b3176a10bf6cc4a840748e65cfb934a996ab2",
+          "bytes": 2660,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".pz",
+              ".print PZ all"
+            ],
+            "blank": 0,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "c266ade715973bdcd7fd50e0bc1d70c307d9c3b49c14094b7756c2fe9a476e51",
+          "bytes": 2594,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".pz",
+              ".print PZ all"
+            ],
+            "blank": 0,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "699b35a3ba0b1966cffb40d2e49c6a5f6c85bcdd9025b9227c4efdb07e552818",
+          "bytes": 2660,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".pz",
+              ".print PZ all"
+            ],
+            "blank": 0,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "216d647eb02189a06733a39ee787384dc2ae13e83f4d00609a7877b9575cfcd3",
+          "bytes": 2596,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".pz",
+              ".print PZ all"
+            ],
+            "blank": 1,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "e204bf99a20a8ffd0527b4886e68369554a3e1dddad3c4c2252a52f203a1d027",
+          "bytes": 2664,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".pz",
+              ".print PZ all"
+            ],
+            "blank": 1,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "ea21ca54669a86cd2a7e651c5baea27c31e7f00d20ef7a6d0c4a2d45b9a2a51b",
+          "bytes": 2596,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".pz",
+              ".print PZ all"
+            ],
+            "blank": 1,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "9019f45f72e41f46d635cfe80be6adca9b962489e98092d80926dc54d86446c2",
+          "bytes": 2664,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".pz",
+              ".print PZ all"
+            ],
+            "blank": 1,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "9c5b3b5d248502d685ca953e5440b4f4bce93ff4a39edf1c29cf69a2dcd3925a",
+          "bytes": 2594,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".pz",
+              ".PRINT PZ ALL"
+            ],
+            "blank": 0,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "e6dd489b0005a6e54c5acba46882496d10526c48da08d09f663171a054c280ae",
+          "bytes": 2660,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".pz",
+              ".PRINT PZ ALL"
+            ],
+            "blank": 0,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "318a2f9542ee01ab17a83ad9b49468f469c64f41f72d8b569a988cc9ab723653",
+          "bytes": 2594,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".pz",
+              ".PRINT PZ ALL"
+            ],
+            "blank": 0,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "823b924eefe2e7c5a184150abc4802c10a65e00d828613d7c65fb2c5ee1bdc19",
+          "bytes": 2660,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".pz",
+              ".PRINT PZ ALL"
+            ],
+            "blank": 0,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "3ada417d18e75515370654d269aec37b3ee2c9e81b93fbaa411fc4511a714d80",
+          "bytes": 2596,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".pz",
+              ".PRINT PZ ALL"
+            ],
+            "blank": 1,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "c9f5527da81d277b79c4a702043c6b954c2d0fc375c5c3840b2aa415a2c2177e",
+          "bytes": 2664,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".pz",
+              ".PRINT PZ ALL"
+            ],
+            "blank": 1,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "5dd92891eed77fcdcd2d43ac710162781ad09409b17a61592e1dda2a329a6803",
+          "bytes": 2596,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".pz",
+              ".PRINT PZ ALL"
+            ],
+            "blank": 1,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "ede4c0d520215360a76bad2a64f4d229c357723fb08bc2ebec7a691a7657979a",
+          "bytes": 2664,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".pz",
+              ".PRINT PZ ALL"
+            ],
+            "blank": 1,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "3fa5efd7c5c074ee261b999b5d182d0ea6a7e758111eed52dea27aad1f45dc22",
+          "bytes": 2594,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".PZ",
+              ".print pz all"
+            ],
+            "blank": 0,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "95e4b0151a592ab1ba308492586148d4a65ba5b58db5a9894ee047ff33c9ed8a",
+          "bytes": 2660,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".PZ",
+              ".print pz all"
+            ],
+            "blank": 0,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "e5f1012b83de74ab32d324e9150f84e6baf8d3bf405997f9d841f789f8026956",
+          "bytes": 2594,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".PZ",
+              ".print pz all"
+            ],
+            "blank": 0,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "3e51134146a2a2f373ca2a26d3ee4693952e6815b81dc4f5bfbda2d1e5eb4bad",
+          "bytes": 2660,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".PZ",
+              ".print pz all"
+            ],
+            "blank": 0,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "f6862cdea2e4f4f37349d20c5414ea8fdbdd832295d76df5d065677b3245d8af",
+          "bytes": 2596,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".PZ",
+              ".print pz all"
+            ],
+            "blank": 1,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "a013ad173b579bb5baa98a2762c5a8f49983d2ae5207e970f39c8ffd69a0f9cc",
+          "bytes": 2664,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".PZ",
+              ".print pz all"
+            ],
+            "blank": 1,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "a5f4271e535d39a2df3ba8ca64517e00047dbb8be5b41534363cbafdc6b88b81",
+          "bytes": 2596,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".PZ",
+              ".print pz all"
+            ],
+            "blank": 1,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "f15a7040d82c2bada33b26842a9ffc19436cc808a1c16dde4848cb8537e07e8f",
+          "bytes": 2664,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".PZ",
+              ".print pz all"
+            ],
+            "blank": 1,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "a430b666af2ebc2b1e322adcfae2e1e3dbeabee9aa4728ba867707e22e8dab84",
+          "bytes": 2594,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".PZ",
+              ".print PZ all"
+            ],
+            "blank": 0,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "6ebbb206c1514bfc1d7ad95fc269c28f44919e3d9aa9776160056f2db18e86c1",
+          "bytes": 2660,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".PZ",
+              ".print PZ all"
+            ],
+            "blank": 0,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "00ae81d0414f003e87bdf38c5a88b24227eb8432279d95c78765b89ba217ab33",
+          "bytes": 2594,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".PZ",
+              ".print PZ all"
+            ],
+            "blank": 0,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "9ebc8d65316bec6db889986918d273a8bf394d989042dad1d955e8fedcd1e5d3",
+          "bytes": 2660,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".PZ",
+              ".print PZ all"
+            ],
+            "blank": 0,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "9440ad31bc137dda5cc6f5f0cd81ed4945503c00b72f87eef9d5586d6da94502",
+          "bytes": 2596,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".PZ",
+              ".print PZ all"
+            ],
+            "blank": 1,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "82986920da1b31488a3e0707affc3efcc571f050d2d641f7d15cd914c135d4c4",
+          "bytes": 2664,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".PZ",
+              ".print PZ all"
+            ],
+            "blank": 1,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "ea97a21268c77237631d6bd50779c1005b0379d480dea48ff9d988177116d985",
+          "bytes": 2596,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".PZ",
+              ".print PZ all"
+            ],
+            "blank": 1,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "7d54f5231287bc0851e885eb68fe706905ad836cecb6ddfc8138b3c73d497a7c",
+          "bytes": 2664,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".PZ",
+              ".print PZ all"
+            ],
+            "blank": 1,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "00dfb7aee3693b9a08e1e2425e47c5829b5f17cd746e318f37bda586355d0f68",
+          "bytes": 2594,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".PZ",
+              ".PRINT PZ ALL"
+            ],
+            "blank": 0,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "c2390f169ef8eba12236e7a9c0579fc61a3d16f78f066d608f2ccc9b09ec7a08",
+          "bytes": 2660,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".PZ",
+              ".PRINT PZ ALL"
+            ],
+            "blank": 0,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "9270db2b30a2ab9c94caa9eb81632c2e2f556277bc9ad92f98e4dcd26176376e",
+          "bytes": 2594,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".PZ",
+              ".PRINT PZ ALL"
+            ],
+            "blank": 0,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "8931a9da5c57970b5f855848186242d2e24cc9c8ce804d2b8ad1487e3fe239c2",
+          "bytes": 2660,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".PZ",
+              ".PRINT PZ ALL"
+            ],
+            "blank": 0,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "e31584fa0e3de3a86aa4c3df6c169c4e0af63d1ffb6042338bc11ca351ac23ee",
+          "bytes": 2596,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".PZ",
+              ".PRINT PZ ALL"
+            ],
+            "blank": 1,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "9692de13baf57a2f67f37265195ece8bf6a92afbe3486c43dfb5b06bc4c3ecff",
+          "bytes": 2664,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".PZ",
+              ".PRINT PZ ALL"
+            ],
+            "blank": 1,
+            "location": "in-place",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "08496594c7a5aeb7033b131c44512a71c805ec408a6c6748c30b52756ff95fd1",
+          "bytes": 2596,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".PZ",
+              ".PRINT PZ ALL"
+            ],
+            "blank": 1,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "6cf9e2b8ce8027f488c6e66879da2c7f518c10b0538a327145402ffe808565e9",
+          "bytes": 2664,
+          "recipe": {
+            "control": [
+              ".TF",
+              ".PZ",
+              ".PRINT PZ ALL"
+            ],
+            "blank": 1,
+            "location": "before-end",
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "86497e8abcf07d09d589ac167e7a3eb3d253622eb01200a4a86b803db81fa60e",
+          "bytes": 2591,
+          "recipe": {
+            "control-output": "v(VOUT)",
+            "blank-after": 0,
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "8ed2c69b8a81227521f63ed12ce04fd3fd326f0b2ac07c3f70b0fde0af81b75c",
+          "bytes": 2656,
+          "recipe": {
+            "control-output": "v(VOUT)",
+            "blank-after": 0,
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "e1ce54429baf985034972f1424548d05f8bada6b9947371228f6c85134acfcfb",
+          "bytes": 2592,
+          "recipe": {
+            "control-output": "v(VOUT)",
+            "blank-after": 1,
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "f331971f4374f8512d468941276dac966808f0656b9808ba1e62c6b28bae414f",
+          "bytes": 2658,
+          "recipe": {
+            "control-output": "v(VOUT)",
+            "blank-after": 1,
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "7819a44c2617292908e63e2fb18b480205e1e01de7e0a0b9b01f664876f86d46",
+          "bytes": 2593,
+          "recipe": {
+            "control-output": "v(VOUT)",
+            "blank-after": 2,
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "3de733a1afb62e3f858689d78035d87c72156843a9e20545398cd69da0c1bed6",
+          "bytes": 2660,
+          "recipe": {
+            "control-output": "v(VOUT)",
+            "blank-after": 2,
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "d291b12251ae17fe3f0a00902acae402822b4e49f91704a5192f0cc9c7ae2cdc",
+          "bytes": 2594,
+          "recipe": {
+            "control-output": "v(VOUT)",
+            "blank-after": 3,
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "db77bbf264058872976433baaa89010a351d620d1580ac940f15bb9e92fd7410",
+          "bytes": 2662,
+          "recipe": {
+            "control-output": "v(VOUT)",
+            "blank-after": 3,
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "3f6e623e65d8718da99e257508056146c19d7c6a5b696850d7f083755cf2cb9c",
+          "bytes": 2591,
+          "recipe": {
+            "control-output": "v(vout)",
+            "blank-after": 0,
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "4fc5c1381884cba109ba52c65f60c7147496babaf212911e72516acb573cfa65",
+          "bytes": 2656,
+          "recipe": {
+            "control-output": "v(vout)",
+            "blank-after": 0,
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "7c5cdde2f471b7c960d2845e70ef8fe481f82159a61095b4c04b6cec6cae95d0",
+          "bytes": 2592,
+          "recipe": {
+            "control-output": "v(vout)",
+            "blank-after": 1,
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "880bcfe16e61b9b92f949a44752065adfe98bacf734c7c2d986b8573604a7ce4",
+          "bytes": 2658,
+          "recipe": {
+            "control-output": "v(vout)",
+            "blank-after": 1,
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "119cebb13cda370b71600585b3c74e8480f4cc0c2244ddfcff2e8dc111b5342b",
+          "bytes": 2593,
+          "recipe": {
+            "control-output": "v(vout)",
+            "blank-after": 2,
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "ae7acfe41f9ff96a1a392d6243a1e5864cdf97ce7f5b3799808d003aede7484b",
+          "bytes": 2660,
+          "recipe": {
+            "control-output": "v(vout)",
+            "blank-after": 2,
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "e1926ef2774e384974d52f3990efcc725230197ff5ac3f99d75f51af754580df",
+          "bytes": 2594,
+          "recipe": {
+            "control-output": "v(vout)",
+            "blank-after": 3,
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "bafac89d4859f7b9880644601d7b1926b531e03460a7d828f684503337047679",
+          "bytes": 2662,
+          "recipe": {
+            "control-output": "v(vout)",
+            "blank-after": 3,
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "66d591fe67cf2dc9f1ad42772ed8e88dd22229ed2914d4504b7c944f5919a5ca",
+          "bytes": 2591,
+          "recipe": {
+            "control-output": "V(VOUT)",
+            "blank-after": 0,
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "4739514d7de9b66c360a3a7f1c2383f4eeee8246e4f587cc62084f783ab7f174",
+          "bytes": 2656,
+          "recipe": {
+            "control-output": "V(VOUT)",
+            "blank-after": 0,
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "393d11e8c6dbb4795f330da4d96b6aa5a02eadfe1f81e1c11a2dfbdd3d434902",
+          "bytes": 2592,
+          "recipe": {
+            "control-output": "V(VOUT)",
+            "blank-after": 1,
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "5bc162849e7456301633a4eaca584cbce52122908c03442ba0f04e6f44c935ac",
+          "bytes": 2658,
+          "recipe": {
+            "control-output": "V(VOUT)",
+            "blank-after": 1,
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "cd4e54611582b597e9720b92f8f0008c46e56a421a81084b11b1626c6ad1daba",
+          "bytes": 2593,
+          "recipe": {
+            "control-output": "V(VOUT)",
+            "blank-after": 2,
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "6b17ca2687dfc88a798d9cf6b0dbf8221ee965cc3c390ddaa4211df5b746409d",
+          "bytes": 2660,
+          "recipe": {
+            "control-output": "V(VOUT)",
+            "blank-after": 2,
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "df26a9aa8ceb52408a06cee666d0eb935720852bf91c32beb87a1f3a37ac290f",
+          "bytes": 2594,
+          "recipe": {
+            "control-output": "V(VOUT)",
+            "blank-after": 3,
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "9f2bfc623b6b2cd675bdc78834e34881bc28b516c0af5ea6d85e941e762d6055",
+          "bytes": 2662,
+          "recipe": {
+            "control-output": "V(VOUT)",
+            "blank-after": 3,
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "8b6cd557543c5ea86e4bf597d1471dd9104a5de6204732c493037bec180ddd5a",
+          "bytes": 2593,
+          "recipe": {
+            "control-output": "v(VOUT,0)",
+            "blank-after": 0,
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "7f4c98651c490734b4b094de7a25c536febd8e1fdface184d6328eeabfe5267f",
+          "bytes": 2658,
+          "recipe": {
+            "control-output": "v(VOUT,0)",
+            "blank-after": 0,
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "4b0c541150b4cfe76d2de450cb56de419d52feb48dc66a01012b724b8d2d0452",
+          "bytes": 2595,
+          "recipe": {
+            "control-output": "v(VOUT,0)",
+            "blank-after": 2,
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "396ab79250d59b941b2ec6ad576b85ebc06a9b23de2d4b044728f65356eecbda",
+          "bytes": 2662,
+          "recipe": {
+            "control-output": "v(VOUT,0)",
+            "blank-after": 2,
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "904bc993601a5b2d4759227d5a1a299a8d723b212097559eab348b687ddaea86",
+          "bytes": 2596,
+          "recipe": {
+            "control-output": "v(VOUT,0)",
+            "blank-after": 3,
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "4e1038feb119e12a3d91ba841f6596924340228d9214958fb5712077890f90a0",
+          "bytes": 2664,
+          "recipe": {
+            "control-output": "v(VOUT,0)",
+            "blank-after": 3,
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        }
+      ]
+    },
+    {
+      "ticket": 738,
+      "deck": "OP1177ARM_OPA818.local.cir",
+      "expectedSha256": "ade3ace7fd9c3649d7f1f4fa2590748bc33fed2b7526679472af831a9d89d02d",
+      "source": "OP1177ARM_OPA818.cir",
+      "sourceSha256": "a07c2f51f847e351c3668b4e8f6544ba82a42043b952e877b5abcfc264d748c8",
+      "status": "provenance-gap",
+      "matches": [],
+      "attemptCount": 32256,
+      "attemptedHashSetSha256": "7886a2cdf430ab330f5103e5baa72a5f87e41ead0886d0b5da37794f80e2f903",
+      "examples": [
+        {
+          "sha256": "b55ff8ff080ff5f9b907d327a55d90f9102ed51d2bd80261a407aca1474f50e7",
+          "bytes": 1134,
+          "recipe": {
+            "paths": "original",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "5e7e7112af6289df564c16116be9c18c1b8f98675318d4ffaf88bd55d8af7f87",
+          "bytes": 1165,
+          "recipe": {
+            "paths": "original",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "bbc4fbf48c6222d279fc7a19dad0617a83b6470208abcfb08bde3137297fe9c9",
+          "bytes": 1142,
+          "recipe": {
+            "paths": "original",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "a07c2f51f847e351c3668b4e8f6544ba82a42043b952e877b5abcfc264d748c8",
+          "bytes": 1173,
+          "recipe": {
+            "paths": "original",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "cbe95d092897db7b081ba2b96d37114040a1f236b40b5153be240efe8f73cdfe",
+          "bytes": 1122,
+          "recipe": {
+            "paths": "relative",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "81e7868e08e0aea5fb3058088b10e5853c0b60830ae6149af11df37faa11751e",
+          "bytes": 1153,
+          "recipe": {
+            "paths": "relative",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "7ff3306f912bdf7d0be759f6414826b4c61098b6dd9f293dc9e02afe9b1fc571",
+          "bytes": 1130,
+          "recipe": {
+            "paths": "relative",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "330e3231b91a039c1f62b00bfb4ef607146ab495818ec3b877a45db94117a6ac",
+          "bytes": 1161,
+          "recipe": {
+            "paths": "relative",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "6b2f05e328448fd35c185651d9d54b8c6ce197c6e528c795185ff1e9ff1ba385",
+          "bytes": 1130,
+          "recipe": {
+            "paths": "dot-relative",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "5c956b0899a0cb4fdfa0ceaba199959eb3ccb7ec8976bb2d46424f46b7229b68",
+          "bytes": 1161,
+          "recipe": {
+            "paths": "dot-relative",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "5808a261fb4796a36838cd03829a9e5ab68479096ebde399ef1eda46f5a6be23",
+          "bytes": 1138,
+          "recipe": {
+            "paths": "dot-relative",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "94657c1092a4ad9a3754b6e84d742e03297bc2574807a6be5e35d6bd1243f409",
+          "bytes": 1169,
+          "recipe": {
+            "paths": "dot-relative",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "36bd83b43a082c1c11ea2d36e43c9290acea686cd9cf6044bce51f4bfbf51d64",
+          "bytes": 1134,
+          "recipe": {
+            "paths": "parent-relative",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "fc59a3a4fccf48346ccbaf644e0e0e98a7fa66a21bd952c7d05975780654fd66",
+          "bytes": 1165,
+          "recipe": {
+            "paths": "parent-relative",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "2e3a299d917d1bbc4717a5d26b695add00b02c296d1a0cc167e4b7facc219d14",
+          "bytes": 1142,
+          "recipe": {
+            "paths": "parent-relative",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "cdfd397ac3e2904c7459556b7721ac4482ba5c74935a5c451721be65f9c20542",
+          "bytes": 1173,
+          "recipe": {
+            "paths": "parent-relative",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "9b303322cc0731fe0bdb0eb973ff1c71ee56ef890fd50dcd27871b25959d553b",
+          "bytes": 1008,
+          "recipe": {
+            "paths": "basename",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "9c9f069b454fe4e5db99c1eac833150a8a828e75bc9c26b895a963b01e7c2860",
+          "bytes": 1039,
+          "recipe": {
+            "paths": "basename",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "b88fb040b07a6efab6dc764fb4297a47563ae722ed7e490849a6d2d602e07a8f",
+          "bytes": 1016,
+          "recipe": {
+            "paths": "basename",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "fb589b1938cd0526082cda47dcc24b0357fe2910607fa4f55feb799673b54cab",
+          "bytes": 1047,
+          "recipe": {
+            "paths": "basename",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "991e05f61971848979ee7e059ce2c1e1042d2a9122cadd5c50f139777d41f369",
+          "bytes": 1016,
+          "recipe": {
+            "paths": "dot-basename",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "25e9c123bf7b167df5aa3b8d8246b4f812ce092a481a04c6cb644365395e7859",
+          "bytes": 1047,
+          "recipe": {
+            "paths": "dot-basename",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "e44cd360f5e08563f666d8689ebc78265d40d39afe0961ede4ddfdbc61b22919",
+          "bytes": 1024,
+          "recipe": {
+            "paths": "dot-basename",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "293f6e64dd5b9b187b6f0eb2166ddec14dfe4a0c2bd4c72ad5090a7223bad20f",
+          "bytes": 1055,
+          "recipe": {
+            "paths": "dot-basename",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "a2100c178dde3d6ba6c4e63ce7efc3713920dc035e8e0d6cbd0b6ce937124dab",
+          "bytes": 1122,
+          "recipe": {
+            "paths": "backslash-relative",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "c3ab09ffcc2c98ea380a25ac70ccae3f9aabec6a997c25416e288392620ea50b",
+          "bytes": 1153,
+          "recipe": {
+            "paths": "backslash-relative",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "4bc8d452799ea5ddd61214932e72dc10e94ea70ef3646707f1c215e8fc3b502e",
+          "bytes": 1130,
+          "recipe": {
+            "paths": "backslash-relative",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "989f0760df13e7ac725a4f4e62d903d290d615f140ad7029a7a5f2c5848974b7",
+          "bytes": 1161,
+          "recipe": {
+            "paths": "backslash-relative",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        }
+      ]
+    },
+    {
+      "ticket": 791,
+      "deck": "variant_62.local.cir",
+      "expectedSha256": "c973882f1606dd1c3f4c1d837d30b16de11863713e729a58ded40232dd70d464",
+      "source": "variant_62.cir",
+      "sourceSha256": "df716de56c0b4b191c7012c2514865108c366120d7c9793d7d6fcc2d16acfcc3",
+      "status": "provenance-gap",
+      "matches": [],
+      "attemptCount": 64512,
+      "attemptedHashSetSha256": "2d4264759ecbc1c6378af6bae7c45ebd04aefdfc33bfdacd945123528a8e7f60",
+      "examples": [
+        {
+          "sha256": "3207007fea5df71cad79c4f5c4db3d6600a360159bd3fb49e32a63af50ba3bf2",
+          "bytes": 1564,
+          "recipe": {
+            "paths": "original",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "43d09d53ad30da2cade359173cf962d9be3946017344340b5468f07f8082857e",
+          "bytes": 1601,
+          "recipe": {
+            "paths": "original",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "4004f319eefc7108a77ed4a84792c59a06d25123f1c440e262a6f36ce01a5de2",
+          "bytes": 1574,
+          "recipe": {
+            "paths": "original",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "df716de56c0b4b191c7012c2514865108c366120d7c9793d7d6fcc2d16acfcc3",
+          "bytes": 1611,
+          "recipe": {
+            "paths": "original",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "62bbfadcd9be8eeb489ca26dda48594b6bd1168c13fd3244195e16374439af1e",
+          "bytes": 1549,
+          "recipe": {
+            "paths": "relative",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "24e44fc755de04e3070c7e9237b06c3d0c92dcccd364dafc30f6c2034ebac0ef",
+          "bytes": 1586,
+          "recipe": {
+            "paths": "relative",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "5c2892aa576847fe39df87317241cdb5a49563fb55ec0309f5f13c6a55b73a32",
+          "bytes": 1559,
+          "recipe": {
+            "paths": "relative",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "1a42bc1add21eabe0c9cc71e77018526b3a4b0cb2cdf94dde11fbd6afad36e9c",
+          "bytes": 1596,
+          "recipe": {
+            "paths": "relative",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "649053a9a67f65cf9227d28783bea5858c89249a904a332d1b08a4e056510d80",
+          "bytes": 1559,
+          "recipe": {
+            "paths": "dot-relative",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "63f7df2b3bb61e52a19e2725f9fdc60637265eea5a442b2dedbd56add23c513d",
+          "bytes": 1596,
+          "recipe": {
+            "paths": "dot-relative",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "068a9bec4023ac9ac48c179bbf942cc7cc7b4fc12d4cb6ae47ad47825ed8dc1e",
+          "bytes": 1569,
+          "recipe": {
+            "paths": "dot-relative",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "ca6fd36900e35e9399923866ba062db3dd5d9cdcbcd853377d198ffd710bd8c8",
+          "bytes": 1606,
+          "recipe": {
+            "paths": "dot-relative",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "1b57e8d4f951e7f961f64c595577353b9fd2f64e4af914db3785129c8f6dd759",
+          "bytes": 1564,
+          "recipe": {
+            "paths": "parent-relative",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "626313dc9e149362274edc4a3c53fdb476ea7e38f450a5f8add0e2228fcec99f",
+          "bytes": 1601,
+          "recipe": {
+            "paths": "parent-relative",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "eae401bfc06faa9a2ad9fd53aaf87459bdca6213a108e196791f767e7a47b5a2",
+          "bytes": 1574,
+          "recipe": {
+            "paths": "parent-relative",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "005284b584dabe0ede84d042033680e028a7f94f8acaf767c0890464ba6a11f2",
+          "bytes": 1611,
+          "recipe": {
+            "paths": "parent-relative",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "e747040f0416a92bfd68b0ee8598a145701a72cb5c9a330a76733493eac209c5",
+          "bytes": 1400,
+          "recipe": {
+            "paths": "basename",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "9069c71deebb301f94c964b81dc540bf2d96de8108cf3b9cdce1b9a424566248",
+          "bytes": 1437,
+          "recipe": {
+            "paths": "basename",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "464d242b49a9ad0f4d8543931bfabda605c4195c2e8f39618cc45c25cd6a8adb",
+          "bytes": 1410,
+          "recipe": {
+            "paths": "basename",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "90bdeefc1c1378bf14c4643487b119e7b9f94d476b03bf5947c5a5dde1454dfb",
+          "bytes": 1447,
+          "recipe": {
+            "paths": "basename",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "fd87b71091de0eff9ddfe1ba45a903e46fd2b7d164e40d83b60856326be8322c",
+          "bytes": 1410,
+          "recipe": {
+            "paths": "dot-basename",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "87e2667e0b2a7ce51adc4c8d8df8fa3e22dea6a47aec688076b9ffe5a20eeb71",
+          "bytes": 1447,
+          "recipe": {
+            "paths": "dot-basename",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "9525d6377b58df01964f3a8e3f766db151f1d7ffc790021a754a8a016ef37ea4",
+          "bytes": 1420,
+          "recipe": {
+            "paths": "dot-basename",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "833a3aae63302fca917c7ad56df6e02b72a4e92c7f65c1900d99538fc26280d0",
+          "bytes": 1457,
+          "recipe": {
+            "paths": "dot-basename",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "bf2fa102da2db608ff695f814a7b2bc360d600e7359b34cc5bd90a4e2b1543c3",
+          "bytes": 1549,
+          "recipe": {
+            "paths": "backslash-relative",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "b509ec71adfb9fc4db6ef4882bcfa59f06a5c1c14545d9e4fde519e1fbdf6dbe",
+          "bytes": 1586,
+          "recipe": {
+            "paths": "backslash-relative",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "51cd960c4ba40f62a122ee8a3d0749741d4eb93e00e38e908ca9e9150b846990",
+          "bytes": 1559,
+          "recipe": {
+            "paths": "backslash-relative",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "2ab3d98f752bc39aeb02bf64d8f12f0db6c80008672fca819f7a22d3697aa6a8",
+          "bytes": 1596,
+          "recipe": {
+            "paths": "backslash-relative",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        }
+      ]
+    },
+    {
+      "ticket": 794,
+      "deck": "NGspice/06101.local.cir",
+      "expectedSha256": "5fcebb2af191add8dae40125f927d24e2d05fbbd36a0a54a08c39e9a87fc210a",
+      "source": "NGspice/06101.cir",
+      "sourceSha256": "93d787f4b0709cec7d74c27f6101a687ed35f1e3a8c6bef4a0199104b8ec1946",
+      "status": "provenance-gap",
+      "matches": [],
+      "attemptCount": 64512,
+      "attemptedHashSetSha256": "b8f33a836bd4febf2ac0acef0f45be40d011464bce730cb7a00fe6d85f4172df",
+      "examples": [
+        {
+          "sha256": "02a4f419abbe9f24989ace72c36e981ea14c219cda96a7e4ff0920ce34033313",
+          "bytes": 1386,
+          "recipe": {
+            "paths": "original",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "a59b394ce774e3a0085da7f8fb8e618b257f9c1e0f67344da44805223b291baf",
+          "bytes": 1423,
+          "recipe": {
+            "paths": "original",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "a86336f09b936f7d5b806d717be068b14541be544c09d90984d11f50116ee4a3",
+          "bytes": 1396,
+          "recipe": {
+            "paths": "original",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "93d787f4b0709cec7d74c27f6101a687ed35f1e3a8c6bef4a0199104b8ec1946",
+          "bytes": 1433,
+          "recipe": {
+            "paths": "original",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "167817c2fe196931720eee62cbe49287534040e6c53e4c70298171536a5309ec",
+          "bytes": 1371,
+          "recipe": {
+            "paths": "relative",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "a615b6a235fef27451e1ea19cbb45fecf8abd23b65595257b16adff08ebfdaeb",
+          "bytes": 1408,
+          "recipe": {
+            "paths": "relative",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "12bc5dfaf01f566e4b9e8c620bdcdbaa3499c7d9f2dc8135b0732d7862fb7c59",
+          "bytes": 1381,
+          "recipe": {
+            "paths": "relative",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "f2350f41afd8356aab0d1a115033702411d21c03ac426330c36618963532a780",
+          "bytes": 1418,
+          "recipe": {
+            "paths": "relative",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "d6aaa42c7769a70c9e03b1870fbae5936bfdfc174aea70c6c9ac61165dca9ab9",
+          "bytes": 1381,
+          "recipe": {
+            "paths": "dot-relative",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "f1792e7ea893c03ad01f55618f17c0f6cd0e6d061f38dc5cf4c424e5ae798e6a",
+          "bytes": 1418,
+          "recipe": {
+            "paths": "dot-relative",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "6b3382ab02be798a185df78d1f0cf0007d3f16140a8deadf5d93feb6a33b0275",
+          "bytes": 1391,
+          "recipe": {
+            "paths": "dot-relative",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "e1934716684e30485fca037265077ec8b3a0f35cd71c2a4ffd3ccf3410ca7ba2",
+          "bytes": 1428,
+          "recipe": {
+            "paths": "dot-relative",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "40e1f37e2707abf3a558672c0e1f68b4e140d1c405461bd290a44e85b9b07d99",
+          "bytes": 1386,
+          "recipe": {
+            "paths": "parent-relative",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "a913ff90cafadc033508f075505ee414adfdd0f9367083b43b57bbba19d002ca",
+          "bytes": 1423,
+          "recipe": {
+            "paths": "parent-relative",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "437967d408a8eccc8507b0a06917ea35a83c7f3cd84d5078af5676bab4e3dc8d",
+          "bytes": 1396,
+          "recipe": {
+            "paths": "parent-relative",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "cf91081324bd2aadc75ee7128b18ff8d61dc4532cf65aa8852a3ce2ce5126230",
+          "bytes": 1433,
+          "recipe": {
+            "paths": "parent-relative",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "e8ad55bc61a2e05587092c0f41f30a982ccdf85ec93381febfa3e82cfef998f3",
+          "bytes": 1222,
+          "recipe": {
+            "paths": "basename",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "3cf702097d9821551be316624dd89c4641ff92fca5512b16874eae98a6f6962d",
+          "bytes": 1259,
+          "recipe": {
+            "paths": "basename",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "ec2e3f14b23b00c6e14c3682d660ffe339b5653d52491c7daeb335395bce1b85",
+          "bytes": 1232,
+          "recipe": {
+            "paths": "basename",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "fb082e4abd566dee47bd1661008fe90589e55b92c785874301b562ba611f6506",
+          "bytes": 1269,
+          "recipe": {
+            "paths": "basename",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "7aaef2d4d0edd42f07c10c9a5e55d7aeb7b6650dc87e37495fa243d8887606bc",
+          "bytes": 1232,
+          "recipe": {
+            "paths": "dot-basename",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "ed61da9f94fa7b6ae3a8fafdda45ecfe2e1933ac84ca36200cd9073c0e03ada9",
+          "bytes": 1269,
+          "recipe": {
+            "paths": "dot-basename",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "b88ac58c65d659452714c901932b792381acef2b8db56ed5c71fd44f0f37703d",
+          "bytes": 1242,
+          "recipe": {
+            "paths": "dot-basename",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "91c40c37085fe1e02e55d52faf208462a59c43b803e881aab3494c29b3a74288",
+          "bytes": 1279,
+          "recipe": {
+            "paths": "dot-basename",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "c7091ba3beccc24f4f7a3cbca93624c6097fad051641933164a403e09dfc0a23",
+          "bytes": 1371,
+          "recipe": {
+            "paths": "backslash-relative",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "ee8eada0cb5f28cea067ea7f42d88eb60b8f28815d0b00989c0cf3710d31628d",
+          "bytes": 1408,
+          "recipe": {
+            "paths": "backslash-relative",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "b5baf0acd6a0e801e5a3bd2817e39d6e5b58f3b1801d8bf5820b326357af0340",
+          "bytes": 1381,
+          "recipe": {
+            "paths": "backslash-relative",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "a91b97cb8188957eddda8ece5bde9bf3ab51fb4aa4c93bbd0b2d8472fd3fb989",
+          "bytes": 1418,
+          "recipe": {
+            "paths": "backslash-relative",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        }
+      ]
+    },
+    {
+      "ticket": 794,
+      "deck": "KiCad/06101/06101.local.cir",
+      "expectedSha256": "688b77c210b7cb33aa5bad84bb8ecd4f8f8013cb08e5b83f1221feb034243357",
+      "source": "KiCad/06101/06101.cir",
+      "sourceSha256": "93d787f4b0709cec7d74c27f6101a687ed35f1e3a8c6bef4a0199104b8ec1946",
+      "status": "provenance-gap",
+      "matches": [],
+      "attemptCount": 64512,
+      "attemptedHashSetSha256": "b8f33a836bd4febf2ac0acef0f45be40d011464bce730cb7a00fe6d85f4172df",
+      "examples": [
+        {
+          "sha256": "02a4f419abbe9f24989ace72c36e981ea14c219cda96a7e4ff0920ce34033313",
+          "bytes": 1386,
+          "recipe": {
+            "paths": "original",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "a59b394ce774e3a0085da7f8fb8e618b257f9c1e0f67344da44805223b291baf",
+          "bytes": 1423,
+          "recipe": {
+            "paths": "original",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "a86336f09b936f7d5b806d717be068b14541be544c09d90984d11f50116ee4a3",
+          "bytes": 1396,
+          "recipe": {
+            "paths": "original",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "93d787f4b0709cec7d74c27f6101a687ed35f1e3a8c6bef4a0199104b8ec1946",
+          "bytes": 1433,
+          "recipe": {
+            "paths": "original",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "167817c2fe196931720eee62cbe49287534040e6c53e4c70298171536a5309ec",
+          "bytes": 1371,
+          "recipe": {
+            "paths": "relative",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "a615b6a235fef27451e1ea19cbb45fecf8abd23b65595257b16adff08ebfdaeb",
+          "bytes": 1408,
+          "recipe": {
+            "paths": "relative",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "12bc5dfaf01f566e4b9e8c620bdcdbaa3499c7d9f2dc8135b0732d7862fb7c59",
+          "bytes": 1381,
+          "recipe": {
+            "paths": "relative",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "f2350f41afd8356aab0d1a115033702411d21c03ac426330c36618963532a780",
+          "bytes": 1418,
+          "recipe": {
+            "paths": "relative",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "d6aaa42c7769a70c9e03b1870fbae5936bfdfc174aea70c6c9ac61165dca9ab9",
+          "bytes": 1381,
+          "recipe": {
+            "paths": "dot-relative",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "f1792e7ea893c03ad01f55618f17c0f6cd0e6d061f38dc5cf4c424e5ae798e6a",
+          "bytes": 1418,
+          "recipe": {
+            "paths": "dot-relative",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "6b3382ab02be798a185df78d1f0cf0007d3f16140a8deadf5d93feb6a33b0275",
+          "bytes": 1391,
+          "recipe": {
+            "paths": "dot-relative",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "e1934716684e30485fca037265077ec8b3a0f35cd71c2a4ffd3ccf3410ca7ba2",
+          "bytes": 1428,
+          "recipe": {
+            "paths": "dot-relative",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "40e1f37e2707abf3a558672c0e1f68b4e140d1c405461bd290a44e85b9b07d99",
+          "bytes": 1386,
+          "recipe": {
+            "paths": "parent-relative",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "a913ff90cafadc033508f075505ee414adfdd0f9367083b43b57bbba19d002ca",
+          "bytes": 1423,
+          "recipe": {
+            "paths": "parent-relative",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "437967d408a8eccc8507b0a06917ea35a83c7f3cd84d5078af5676bab4e3dc8d",
+          "bytes": 1396,
+          "recipe": {
+            "paths": "parent-relative",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "cf91081324bd2aadc75ee7128b18ff8d61dc4532cf65aa8852a3ce2ce5126230",
+          "bytes": 1433,
+          "recipe": {
+            "paths": "parent-relative",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "e8ad55bc61a2e05587092c0f41f30a982ccdf85ec93381febfa3e82cfef998f3",
+          "bytes": 1222,
+          "recipe": {
+            "paths": "basename",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "3cf702097d9821551be316624dd89c4641ff92fca5512b16874eae98a6f6962d",
+          "bytes": 1259,
+          "recipe": {
+            "paths": "basename",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "ec2e3f14b23b00c6e14c3682d660ffe339b5653d52491c7daeb335395bce1b85",
+          "bytes": 1232,
+          "recipe": {
+            "paths": "basename",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "fb082e4abd566dee47bd1661008fe90589e55b92c785874301b562ba611f6506",
+          "bytes": 1269,
+          "recipe": {
+            "paths": "basename",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "7aaef2d4d0edd42f07c10c9a5e55d7aeb7b6650dc87e37495fa243d8887606bc",
+          "bytes": 1232,
+          "recipe": {
+            "paths": "dot-basename",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "ed61da9f94fa7b6ae3a8fafdda45ecfe2e1933ac84ca36200cd9073c0e03ada9",
+          "bytes": 1269,
+          "recipe": {
+            "paths": "dot-basename",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "b88ac58c65d659452714c901932b792381acef2b8db56ed5c71fd44f0f37703d",
+          "bytes": 1242,
+          "recipe": {
+            "paths": "dot-basename",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "91c40c37085fe1e02e55d52faf208462a59c43b803e881aab3494c29b3a74288",
+          "bytes": 1279,
+          "recipe": {
+            "paths": "dot-basename",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "c7091ba3beccc24f4f7a3cbca93624c6097fad051641933164a403e09dfc0a23",
+          "bytes": 1371,
+          "recipe": {
+            "paths": "backslash-relative",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "ee8eada0cb5f28cea067ea7f42d88eb60b8f28815d0b00989c0cf3710d31628d",
+          "bytes": 1408,
+          "recipe": {
+            "paths": "backslash-relative",
+            "case": "retain",
+            "quotes": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "b5baf0acd6a0e801e5a3bd2817e39d6e5b58f3b1801d8bf5820b326357af0340",
+          "bytes": 1381,
+          "recipe": {
+            "paths": "backslash-relative",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "LF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        },
+        {
+          "sha256": "a91b97cb8188957eddda8ece5bde9bf3ab51fb4aa4c93bbd0b2d8472fd3fb989",
+          "bytes": 1418,
+          "recipe": {
+            "paths": "backslash-relative",
+            "case": "retain",
+            "quotes": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            "spaces": "retain",
+            "ending": "CRLF",
+            "trailing": 1,
+            "encoding": "utf-8"
+          }
+        }
+      ]
+    }
+  ]
+}

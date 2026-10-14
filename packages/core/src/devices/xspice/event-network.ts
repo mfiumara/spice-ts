@@ -46,6 +46,8 @@ export interface EventOutput {
   state: number;
   strength: number;
   delay: number;
+  /** LOAD(out): reset each call, accumulated in the node total only at INIT. */
+  load: number;
 }
 
 /** One EVENT call of a code model (ngspice cm_<model>(ARGS) with CALL_TYPE == EVENT). */
@@ -148,6 +150,7 @@ interface NodeInfo {
 /** rhsold of a node: the resolved value, one value per driver, the inverted value. */
 interface NodeData {
   value: DigitalValue;
+  totalLoad: number;
   drivers: DigitalValue[];
   inverted: DigitalValue;
 }
@@ -283,6 +286,11 @@ export class XspiceEventNetwork implements DeviceModel, EventDrivenNetwork {
     return this.nodeInfo.map(info => info.name);
   }
 
+  /** EVTload's total_load, in farads; digital load is metadata, not an analog capacitor. */
+  nodeLoads(): Map<string, number> {
+    return new Map(this.nodeInfo.map((info, index) => [info.name, this.data.nodes[index].totalLoad]));
+  }
+
   /** Accepted value changes of every digital node, starting with its operating-point value. */
   nodeHistories(): Map<string, DigitalNodeEvent[]> {
     const histories = new Map<string, DigitalNodeEvent[]>();
@@ -388,6 +396,7 @@ export class XspiceEventNetwork implements DeviceModel, EventDrivenNetwork {
     this.data = {
       nodes: this.nodeInfo.map(info => ({
         value: initialValue(),
+        totalLoad: 0,
         drivers: Array.from({ length: info.drivers }, initialValue),
         inverted: initialValue(),
       })),
@@ -507,7 +516,7 @@ export class XspiceEventNetwork implements DeviceModel, EventDrivenNetwork {
     const outputs: EventOutput[] = instance.outputs.map((output, k) => {
       const node = this.data.nodes[output.node];
       const current = this.nodeInfo[output.node].drivers > 1 ? node.drivers[output.sub] : node.value;
-      return { changed: true, state: current.state, strength: current.strength, delay: data.delays[k] };
+      return { changed: true, state: current.state, strength: current.strength, delay: data.delays[k], load: 0 };
     });
     const tran = this.analysis === 'tran';
     instance.behavior.event({
@@ -526,6 +535,7 @@ export class XspiceEventNetwork implements DeviceModel, EventDrivenNetwork {
       },
     });
     outputs.forEach((result, k) => {
+      if (init) this.data.nodes[instance.outputs[k].node].totalLoad += result.load;
       data.delays[k] = result.delay;
       if (!result.changed) return;
       const output = instance.outputs[k];

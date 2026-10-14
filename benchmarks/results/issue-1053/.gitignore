@@ -1,0 +1,7 @@
+run/control/*.js
+run/instrumented/*.js
+run/*.cir
+*.cpuprofile
+*.log
+.check-*/
+__pycache__/

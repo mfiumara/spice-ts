@@ -5,7 +5,7 @@ import { newtonRaphson } from './newton-raphson.js';
 import { DCResult } from '../results.js';
 import { createConvergenceTelemetry, snapshotConvergenceTelemetry } from '../convergence-telemetry.js';
 import { ConvergenceError, SingularMatrixError } from '../errors.js';
-import { createNodeStateSolution, initialConditionHolds } from './initial-state.js';
+import { createNodeStateSolution, initialConditionHolds, nodeSetHolds } from './initial-state.js';
 import { DEVICE_GMIN } from '../devices/device.js';
 import { Capacitor } from '../devices/capacitor.js';
 import { Resistor } from '../devices/resistor.js';
@@ -40,6 +40,7 @@ export function solveDCOperatingPoint(
   }
 
   for (const device of devices) device.beginOperatingPoint?.();
+  assembler.nodeSetHolds = nodeSetHolds(compiled);
 
   if (initialSolution) {
     assembler.solution.set(initialSolution);
@@ -55,6 +56,10 @@ export function solveDCOperatingPoint(
   const hasNonlinear = devices.some(d => d.isNonlinear);
   const initialGuess = new Float64Array(assembler.solution);
   const solveOperatingPoint = (): void => {
+    // Models opt in once they implement the device-local INITJCT load.
+    // Do not add a second convergence/stopping phase to unrelated models.
+    assembler.operatingPointPhase = devices.some(device => device.initializesOperatingPoint)
+      || assembler.nodeSetHolds.length > 0 ? 'junction' : undefined;
     try {
       newtonRaphson(assembler, devices, options, options.maxIterations, nodeNames, convergence.dc, guard);
     } catch (err) {
@@ -105,6 +110,8 @@ export function solveDCOperatingPoint(
   } else {
     solveOperatingPoint();
   }
+  // Do not leak DC load modes into the transient or small-signal restamp.
+  assembler.operatingPointPhase = undefined;
 
   const voltageMap = new Map<string, number>();
   for (let i = 0; i < nodeNames.length; i++) {
@@ -257,6 +264,7 @@ function sourceStepping(
   guard?: ProtocolExecutionGuard,
 ): boolean {
   assembler.solution.set(initialGuess);
+  if (assembler.operatingPointPhase) assembler.operatingPointPhase = 'junction';
   try {
     for (const scale of SOURCE_STEPS) {
       convergence.dc.sourceStepAttempts++;
@@ -361,6 +369,7 @@ function stepGmin(
   solveAt: (gmin: number) => number,
 ): boolean {
   assembler.solution.fill(0, 0, assembler.numNodes);
+  if (assembler.operatingPointPhase) assembler.operatingPointPhase = 'junction';
   const lastGood = new Float64Array(assembler.solution);
   let factor = GMIN_FACTOR;
   let oldGmin = 1e-2;

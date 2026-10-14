@@ -1,0 +1,92 @@
+{
+  "baseSha": "a28f245712fe9a69d034245b3d58c18901833d0f",
+  "counts": {},
+  "hashes": {
+    "control/chunk-EXZ5BDPM.js": "f43d3d770699b57daa62db4243ec38ff5e46618f227bdaae7d18cd16afd9dbf0",
+    "control/chunk-I3XRFWTT.js": "6e0bfc4cc5787a9c4182546b3e249183dc6204e4d2edbfe089655b9e9b857ba6",
+    "control/index.js": "f642984b0fff493e52254ace816c6da221f576bea8753507ea11092b331c809d",
+    "control/step-worker-browser.js": "587a560734095b25fc6a1b234ed7618c4aec2e15d08649f18747cfe77a996342",
+    "control/step-worker.js": "880bdd43d14aec043a1f2371275c28acde19a40750dd84fef713d4bba4eba033",
+    "candidate/chunk-FNP6LKA4.js": "4ab98eace17816914e80efb40c5f8d459969a45488a484b0fbc8def6bb113036",
+    "candidate/chunk-S3S6YARQ.js": "9edcb91494c781bead306e66e426e43540c102c963b6e8cd3983e4c5c1cd9f05",
+    "candidate/index.js": "3118c6eec5340e82e8abea893d37d9912257ad137b8fc63904bf3fcec0313508",
+    "candidate/step-worker-browser.js": "b3dd2e91209386ff6db0e90c811acd8e6bb3c49a74b477f71fef3b5ea9fc13ee",
+    "candidate/step-worker.js": "37e578b9f2307caaac1a9fceaa00bbe16f4abc6e58afc034c57ffcfbbca6e16f"
+  },
+  "decks": [
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 1000,
+      "file": "rc-ladder-tran-1000.cir",
+      "deckSha256": "0944ed6b76f64f56c8e04b48919f1e12b9de19df4e5a08708c4be314fa7a91b7",
+      "actualNodes": 1000,
+      "probe": "n10"
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 1000,
+      "file": "resistor-mesh-op-1000.cir",
+      "deckSha256": "6c6d5adb109cdde9ac844c3346135f4e7ffc352626b2f3c430598c0ebd9d8d40",
+      "actualNodes": 1024,
+      "probe": "n31_31"
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 10000,
+      "file": "rc-ladder-tran-10000.cir",
+      "deckSha256": "eb21933fd99fcbc32276816a4f389ba216dcdddc29683551a67f606f352dfca7",
+      "actualNodes": 10000,
+      "probe": "n10"
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "file": "resistor-mesh-op-10000.cir",
+      "deckSha256": "c88e6076daf2523437e3da014d7a3c329f679a7405f789530c5c805f447ed0dc",
+      "actualNodes": 10000,
+      "probe": "n99_99"
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 50000,
+      "file": "rc-ladder-tran-50000.cir",
+      "deckSha256": "2fd0c2090d17dddf80980eb3391440a3e4f99e1a77d1158360ffedc4246a7ada",
+      "actualNodes": 50000,
+      "probe": "n10"
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "file": "resistor-mesh-op-50000.cir",
+      "deckSha256": "f81ed198f7ba67068138846b12fe93b9ec957e6bb3a89300d2c7c50e30d47329",
+      "actualNodes": 50176,
+      "probe": "n223_223"
+    }
+  ],
+  "targets": {
+    "preprocessDeck": "preprocess",
+    "expandFunctionCalls": "numparam.expandFunctionCalls",
+    "braceBareParameters": "numparam.braceBareParameters",
+    "createParamScopes": "numparam.createParamScopes",
+    "circuitTemperature": "numparam.circuitTemperature",
+    "substituteStatement": "numparam.substituteStatement",
+    "measureName": "numparam.measureName",
+    "tokenizeNetlist": "tokenize",
+    "parseNetlist": "cardParse",
+    "Circuit.addResistor": "assembly",
+    "Circuit.addCapacitor": "assembly",
+    "Circuit.addInductor": "assembly",
+    "Circuit.addVoltageSource": "assembly",
+    "Circuit.addCurrentSource": "assembly",
+    "Circuit.addAnalysis": "assembly",
+    "Circuit.setParameters": "assembly"
+  },
+  "attribution": "parse",
+  "comparison": true,
+  "before": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_c5fff23f/benchmarks/performance/results/parse-1000-combined/baseline-refreshed",
+  "runSizes": [
+    1000,
+    10000,
+    50000
+  ]
+}

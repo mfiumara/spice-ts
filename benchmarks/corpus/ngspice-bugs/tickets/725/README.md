@@ -39,12 +39,12 @@ The switch connects ground to ground, so its branch voltage/current are zero irr
 |---|---|---|
 | ngspice-47 | error | Control original KLU op exits0; equivalent dot .op KLU reports internal error -- bus error (exit1). Sparse dot .op exits0 with controls0 and V(1)=1. |
 | ngspice master | right | Fixed on master: the KLU switch_original deck exits 0 with an OP result; ngspice-47 segfaults (exit 139) on the same command. [ngspice pre-master-48 HEAD 3ef069fb (2026-10-09), built in scratch] |
-| spice-ts | unsupported | All run decks explicitly select klu/sparse; Unsupported .options field errors. |
+| spice-ts | unsupported | #812 refresh d8ab9d33: both pinned solver variants first fail at ParseError line 2, Unsupported .options field klu/sparse. Native ngspice-47 completes both OP variants. Execution loss; no spice-ts metrics. Existing #812 solver-selection bucket. |
 
 Reproduces on ngspice-47: partially. Check: The dot-card klu.cir reports internal error -- bus error; command-based switch_original.cir does not on this build.
 
 Candidate upstream fix: Safely handle absent/floating switch-control matrix entries in KLU setup/loading; do not dereference missing bindings.
 
-Notes: Primary supplied netlist has malformed/missing models and floating internal subcircuits; developer provided this valid minimal crash-focused case. No physical output exists for floating control potentials.
+Notes: #803 recovery: fetched discussion 20241114182415.log is 2314 bytes, SHA256 bfc5ea49f206bda2371c50aa21cdc7af986dcce6f02f20d7dbddd8d958d4b7e4, versus authoritative recorded 2205 bytes / 04222eadf797543fe313672e070e214c4f690463eedfe20e621c6e85836a84a2. Not an executed input; no re-pin. The primary same-named attachment and -klu.log still match; fetch exits 1. Primary supplied netlist has malformed/missing models and floating internal subcircuits; developer provided this valid minimal crash-focused case. No physical output exists for floating control potentials.
 
 Engines: ngspice-47 = ngspice-47 (Homebrew build, KLU), `ngspice -b [-r out.raw] <deck>`; master = ngspice pre-master-48 HEAD 3ef069fb1f04177a153f342a32d941fc20ff047e (2026-10-09, "Fixes bug 876"), configure --with-x=no --disable-debug --enable-xspice --enable-osdi --with-readline=no --disable-openmp; spice-ts = @spice-ts/core 0.3.0 at main 45d6ea73, simulate(<deck>) with a filesystem include resolver.

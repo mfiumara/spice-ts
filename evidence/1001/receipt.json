@@ -1,0 +1,1373 @@
+{
+  "schema": "spice-ts-1001-op-startup/v1",
+  "baseHead": "bfca023f3983b4967cf3530d872e411dff97692a",
+  "workingTreeCodePatchSha256": "d2c777dd48ad455fd4da255a07bd991ba4ecb5f67d836d304575f0ca8cb55b78",
+  "historicalBaseline": "evidence/996/runs (main 43aefef1)",
+  "environment": {
+    "arch": "arm64",
+    "platform": "darwin",
+    "release": "27.0.0",
+    "cpu": "Apple M5 Pro",
+    "node": "v22.23.1",
+    "ngspice": 47
+  },
+  "metric": "Offline #996 diagnostic interpolation and uniform peak floors, not an aggregate refresh",
+  "rows": [
+    {
+      "control": "k-10-fine",
+      "deckSha256": "7ec30ddc41e48b990379eb07cfab77163eaa52658336eb640edc85b15c9df63d",
+      "before": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "tran:10005"
+        ],
+        "ngspicePoints": [
+          "tran:10005"
+        ],
+        "worst": {
+          "type": "tran",
+          "name": "i(l2)",
+          "maxAbs": 3.5682844330422e-9,
+          "normalized": 0.00012928327240343206,
+          "initialAbs": 2.7575321700624997e-22
+        },
+        "matchedDiagnostic": true,
+        "opValues": []
+      },
+      "after": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "tran:10005"
+        ],
+        "ngspicePoints": [
+          "tran:10005"
+        ],
+        "worst": {
+          "type": "tran",
+          "name": "i(l2)",
+          "maxAbs": 3.5656271338415724e-9,
+          "normalized": 0.00012918699523078547,
+          "initialAbs": 3.7525200590978004e-23
+        },
+        "matchedDiagnostic": true,
+        "opValues": []
+      }
+    },
+    {
+      "control": "k-10-op",
+      "deckSha256": "8f37811ea62e8c8582702541c0cd2a14324e2041ecca505f4ad233d9ef6d175f",
+      "before": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "op:1"
+        ],
+        "ngspicePoints": [
+          "op:1"
+        ],
+        "worst": {
+          "type": "op",
+          "name": "v(4)",
+          "maxAbs": 1.1709967365214347e-7,
+          "normalized": 6.908484522068893e-7,
+          "initialAbs": 1.1709967365214347e-7
+        },
+        "matchedDiagnostic": true,
+        "opValues": [
+          {
+            "v(1)": 10,
+            "v(2)": 0.5245652291686894,
+            "v(20)": 0,
+            "v(21)": 1,
+            "v(3)": 0.5245652291686894,
+            "v(4)": 0.16950112919837185,
+            "i(l1)": 0.1,
+            "i(l2)": 2.514629062161204e-22,
+            "i(vdd)": -0.000001695032381121564,
+            "i(vin)": -0.1
+          }
+        ]
+      },
+      "after": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "op:1"
+        ],
+        "ngspicePoints": [
+          "op:1"
+        ],
+        "worst": {
+          "type": "op",
+          "name": "i(vdd)",
+          "maxAbs": 8.472551826957484e-12,
+          "normalized": 0.000004998456707317607,
+          "initialAbs": 8.472551826957484e-12
+        },
+        "matchedDiagnostic": true,
+        "opValues": [
+          {
+            "v(1)": 10,
+            "v(2)": 0.5245659842862108,
+            "v(20)": 0,
+            "v(21)": 1,
+            "v(3)": 0.5245659842862108,
+            "v(4)": 0.16950209353897355,
+            "v(md1.drain)": 9.999999451475436,
+            "v(md1.source)": 0.5245665321781006,
+            "v(md2.drain)": 9.999949697263828,
+            "v(md2.source)": 0.16955294416703523,
+            "v(md3.drain)": 9.999999451475436,
+            "v(md3.source)": 0.5245665321781006,
+            "v(md4.drain)": 9.99994969726383,
+            "v(md4.source)": 0.16955294416703526,
+            "i(l1)": 0.1,
+            "i(l2)": 1.3234889800848443e-23,
+            "i(vdd)": -0.0000016950420245187559,
+            "i(vin)": -0.1
+          }
+        ]
+      }
+    },
+    {
+      "control": "k-10-original",
+      "deckSha256": "edad518d693e1771f5a70bedaa4a23ad88e1cca0a21b9bf37f978da7c91ce801",
+      "before": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "tran:1008"
+        ],
+        "ngspicePoints": [
+          "tran:1008"
+        ],
+        "worst": {
+          "type": "tran",
+          "name": "i(vdd)",
+          "maxAbs": 4.3471429206585513e-7,
+          "normalized": 0.015832540193349596,
+          "initialAbs": 1.1708453649366258e-12
+        },
+        "matchedDiagnostic": false,
+        "opValues": []
+      },
+      "after": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "tran:1008"
+        ],
+        "ngspicePoints": [
+          "tran:1008"
+        ],
+        "worst": {
+          "type": "tran",
+          "name": "i(vdd)",
+          "maxAbs": 4.3471429206585513e-7,
+          "normalized": 0.015832540193349596,
+          "initialAbs": 8.472551826957484e-12
+        },
+        "matchedDiagnostic": false,
+        "opValues": []
+      }
+    },
+    {
+      "control": "k-10-reduced",
+      "deckSha256": "ba04c523e997223db54c0794c9f8db0246a56afe4b3c3bffda2b9b5c3453e9db",
+      "before": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "tran:1008"
+        ],
+        "ngspicePoints": [
+          "tran:1008"
+        ],
+        "worst": {
+          "type": "tran",
+          "name": "i(vdd)",
+          "maxAbs": 4.3471429206585513e-7,
+          "normalized": 0.015832540193349596,
+          "initialAbs": 1.1708453649366258e-12
+        },
+        "matchedDiagnostic": false,
+        "opValues": []
+      },
+      "after": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "tran:1008"
+        ],
+        "ngspicePoints": [
+          "tran:1008"
+        ],
+        "worst": {
+          "type": "tran",
+          "name": "i(vdd)",
+          "maxAbs": 4.3471429206585513e-7,
+          "normalized": 0.015832540193349596,
+          "initialAbs": 8.472551826957484e-12
+        },
+        "matchedDiagnostic": false,
+        "opValues": []
+      }
+    },
+    {
+      "control": "k-10-tight",
+      "deckSha256": "e49572bc1acdd8a9004123b8a4270fad929e53f11592b41c73b7d4694383c303",
+      "before": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "tran:1451"
+        ],
+        "ngspicePoints": [
+          "tran:1450"
+        ],
+        "worst": {
+          "type": "tran",
+          "name": "i(l2)",
+          "maxAbs": 1.0565338822716789e-7,
+          "normalized": 0.0038279877796307546,
+          "initialAbs": 9.099922885310827e-24
+        },
+        "matchedDiagnostic": true,
+        "opValues": []
+      },
+      "after": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "tran:1451"
+        ],
+        "ngspicePoints": [
+          "tran:1450"
+        ],
+        "worst": {
+          "type": "tran",
+          "name": "i(l2)",
+          "maxAbs": 1.0631299820570457e-7,
+          "normalized": 0.0038518864825453445,
+          "initialAbs": 3.06047465172345e-23
+        },
+        "matchedDiagnostic": true,
+        "opValues": []
+      }
+    },
+    {
+      "control": "k-15-fine",
+      "deckSha256": "7db9ea84c4b47c4ad8cb419afd946e04571899894aae4bc6beae00441c4c6a04",
+      "before": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "tran:10005"
+        ],
+        "ngspicePoints": [
+          "tran:10005"
+        ],
+        "worst": {
+          "type": "tran",
+          "name": "v(16)",
+          "maxAbs": 0.009290872205463208,
+          "normalized": 0.002955114117608488,
+          "initialAbs": 0
+        },
+        "matchedDiagnostic": true,
+        "opValues": []
+      },
+      "after": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "tran:10005"
+        ],
+        "ngspicePoints": [
+          "tran:10005"
+        ],
+        "worst": {
+          "type": "tran",
+          "name": "v(16)",
+          "maxAbs": 0.009290895605752025,
+          "normalized": 0.0029551215604537145,
+          "initialAbs": 0
+        },
+        "matchedDiagnostic": true,
+        "opValues": []
+      }
+    },
+    {
+      "control": "k-15-no-ic-op",
+      "deckSha256": "a1394a9f60f66913901b3af66c5e521791c01c0c0d821975f0d2aa8a9e2a37bb",
+      "before": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "op:1"
+        ],
+        "ngspicePoints": [
+          "op:1"
+        ],
+        "worst": {
+          "type": "op",
+          "name": "v(17)",
+          "maxAbs": 1.9997501432555964e-9,
+          "normalized": 1.5429625263245378e-9,
+          "initialAbs": 1.9997501432555964e-9
+        },
+        "matchedDiagnostic": true,
+        "opValues": [
+          {
+            "v(1)": 3,
+            "v(10)": 1.2960458248675857,
+            "v(11)": 1.2960458248675848,
+            "v(12)": 1.2960458248675857,
+            "v(13)": 1.296045824867584,
+            "v(14)": 1.2960458248675857,
+            "v(15)": 1.296045824867584,
+            "v(16)": 1.2960458248675857,
+            "v(17)": 1.296045824867584,
+            "v(18)": 1.2960458248675857,
+            "v(2)": 1.296045824867584,
+            "v(3)": 1.2960458248675857,
+            "v(4)": 1.296045824867584,
+            "v(5)": 1.2960458248675857,
+            "v(6)": 1.296045824867584,
+            "v(7)": 1.2960458248675857,
+            "v(8)": 1.296045824867584,
+            "v(9)": 1.296045824867586,
+            "i(vdd)": -0.0009556970687379027
+          }
+        ]
+      },
+      "after": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "op:1"
+        ],
+        "ngspicePoints": [
+          "op:1"
+        ],
+        "worst": {
+          "type": "op",
+          "name": "v(17)",
+          "maxAbs": 5.2301716291225375e-9,
+          "normalized": 4.035483561383288e-9,
+          "initialAbs": 5.2301716291225375e-9
+        },
+        "matchedDiagnostic": true,
+        "opValues": [
+          {
+            "v(1)": 3,
+            "v(10)": 1.2960458216371646,
+            "v(11)": 1.2960458216371626,
+            "v(12)": 1.2960458216371624,
+            "v(13)": 1.2960458216371624,
+            "v(14)": 1.2960458216371624,
+            "v(15)": 1.2960458216371624,
+            "v(16)": 1.2960458216371624,
+            "v(17)": 1.2960458216371624,
+            "v(18)": 1.2960458216371624,
+            "v(2)": 1.2960458216371624,
+            "v(3)": 1.2960458216371624,
+            "v(4)": 1.2960458216371624,
+            "v(5)": 1.2960458216371624,
+            "v(6)": 1.2960458216371624,
+            "v(7)": 1.2960458216371624,
+            "v(8)": 1.2960458216371624,
+            "v(9)": 1.2960458216371609,
+            "v(mn1.drain)": 1.2926727731482444,
+            "v(mn1.source)": 0.0033730484104820707,
+            "v(mn10.drain)": 1.2926727731482444,
+            "v(mn10.source)": 0.0033730484104820733,
+            "v(mn11.drain)": 1.2926727731482444,
+            "v(mn11.source)": 0.0033730484104820707,
+            "v(mn12.drain)": 1.2926727731482444,
+            "v(mn12.source)": 0.0033730484104820707,
+            "v(mn13.drain)": 1.2926727731482444,
+            "v(mn13.source)": 0.0033730484104820707,
+            "v(mn14.drain)": 1.2926727731482444,
+            "v(mn14.source)": 0.0033730484104820707,
+            "v(mn15.drain)": 1.2926727731482444,
+            "v(mn15.source)": 0.0033730484104820707,
+            "v(mn16.drain)": 1.2926727731482444,
+            "v(mn16.source)": 0.0033730484104820707,
+            "v(mn17.drain)": 1.2926727731482444,
+            "v(mn17.source)": 0.0033730484104820707,
+            "v(mn2.drain)": 1.2926727731482444,
+            "v(mn2.source)": 0.0033730484104820707,
+            "v(mn3.drain)": 1.2926727731482444,
+            "v(mn3.source)": 0.0033730484104820707,
+            "v(mn4.drain)": 1.2926727731482444,
+            "v(mn4.source)": 0.0033730484104820707,
+            "v(mn5.drain)": 1.2926727731482444,
+            "v(mn5.source)": 0.0033730484104820707,
+            "v(mn6.drain)": 1.2926727731482444,
+            "v(mn6.source)": 0.0033730484104820707,
+            "v(mn7.drain)": 1.2926727731482428,
+            "v(mn7.source)": 0.00337304841048207,
+            "v(mn8.drain)": 1.2926727731482466,
+            "v(mn8.source)": 0.0033730484104820624,
+            "v(mn9.drain)": 1.2926727731482446,
+            "v(mn9.source)": 0.0033730484104820906,
+            "v(mp1.drain)": 1.3044784428594576,
+            "v(mp1.source)": 2.9915673790352155,
+            "v(mp10.drain)": 1.3044784428594576,
+            "v(mp10.source)": 2.9915673790352155,
+            "v(mp11.drain)": 1.3044784428594576,
+            "v(mp11.source)": 2.9915673790352155,
+            "v(mp12.drain)": 1.3044784428594576,
+            "v(mp12.source)": 2.9915673790352155,
+            "v(mp13.drain)": 1.3044784428594576,
+            "v(mp13.source)": 2.9915673790352155,
+            "v(mp14.drain)": 1.3044784428594576,
+            "v(mp14.source)": 2.9915673790352155,
+            "v(mp15.drain)": 1.3044784428594576,
+            "v(mp15.source)": 2.9915673790352155,
+            "v(mp16.drain)": 1.3044784428594576,
+            "v(mp16.source)": 2.9915673790352155,
+            "v(mp17.drain)": 1.3044784428594576,
+            "v(mp17.source)": 2.9915673790352155,
+            "v(mp2.drain)": 1.3044784428594576,
+            "v(mp2.source)": 2.9915673790352155,
+            "v(mp3.drain)": 1.3044784428594576,
+            "v(mp3.source)": 2.9915673790352155,
+            "v(mp4.drain)": 1.3044784428594576,
+            "v(mp4.source)": 2.9915673790352155,
+            "v(mp5.drain)": 1.3044784428594576,
+            "v(mp5.source)": 2.9915673790352155,
+            "v(mp6.drain)": 1.3044784428594576,
+            "v(mp6.source)": 2.9915673790352155,
+            "v(mp7.drain)": 1.304478442859456,
+            "v(mp7.source)": 2.9915673790352155,
+            "v(mp8.drain)": 1.30447844285946,
+            "v(mp8.source)": 2.9915673790352155,
+            "v(mp9.drain)": 1.304478442859458,
+            "v(mp9.source)": 2.9915673790352146,
+            "i(vdd)": -0.0009556970718602384
+          }
+        ]
+      }
+    },
+    {
+      "control": "k-15-op",
+      "deckSha256": "4b13738a6f9928d614918c9ec264fe92917f8af166150db7baa6ab68679d39ca",
+      "before": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "op:1"
+        ],
+        "ngspicePoints": [
+          "op:1"
+        ],
+        "worst": {
+          "type": "op",
+          "name": "v(17)",
+          "maxAbs": 9.709105963651155e-9,
+          "normalized": 7.491329212578067e-9,
+          "initialAbs": 9.709105963651155e-9
+        },
+        "matchedDiagnostic": true,
+        "opValues": [
+          {
+            "v(1)": 3,
+            "v(10)": 1.2960458216383812,
+            "v(11)": 1.2960458216449005,
+            "v(12)": 1.296045821631921,
+            "v(13)": 1.2960458216246789,
+            "v(14)": 1.2960458218993465,
+            "v(15)": 1.2960458195421465,
+            "v(16)": 1.2960458317821246,
+            "v(17)": 1.296045817158228,
+            "v(18)": 1.2960458216587911,
+            "v(2)": 1.2960458216324775,
+            "v(3)": 1.2960458216323592,
+            "v(4)": 1.2960458216435062,
+            "v(5)": 1.2960458216251276,
+            "v(6)": 1.2960458216422426,
+            "v(7)": 1.2960458216524993,
+            "v(8)": 1.296045821624275,
+            "v(9)": 1.296045821638942,
+            "i(vdd)": -0.0009556970716432696
+          }
+        ]
+      },
+      "after": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "op:1"
+        ],
+        "ngspicePoints": [
+          "op:1"
+        ],
+        "worst": {
+          "type": "op",
+          "name": "v(17)",
+          "maxAbs": 5.2301716291225375e-9,
+          "normalized": 4.035483561383288e-9,
+          "initialAbs": 5.2301716291225375e-9
+        },
+        "matchedDiagnostic": true,
+        "opValues": [
+          {
+            "v(1)": 3,
+            "v(10)": 1.2960458216371646,
+            "v(11)": 1.2960458216371626,
+            "v(12)": 1.2960458216371624,
+            "v(13)": 1.2960458216371624,
+            "v(14)": 1.2960458216371624,
+            "v(15)": 1.2960458216371624,
+            "v(16)": 1.2960458216371624,
+            "v(17)": 1.2960458216371624,
+            "v(18)": 1.2960458216371624,
+            "v(2)": 1.2960458216371624,
+            "v(3)": 1.2960458216371624,
+            "v(4)": 1.2960458216371624,
+            "v(5)": 1.2960458216371624,
+            "v(6)": 1.2960458216371624,
+            "v(7)": 1.2960458216371624,
+            "v(8)": 1.2960458216371624,
+            "v(9)": 1.2960458216371609,
+            "v(mn1.drain)": 1.2926727731482444,
+            "v(mn1.source)": 0.0033730484104820707,
+            "v(mn10.drain)": 1.2926727731482444,
+            "v(mn10.source)": 0.0033730484104820733,
+            "v(mn11.drain)": 1.2926727731482444,
+            "v(mn11.source)": 0.0033730484104820707,
+            "v(mn12.drain)": 1.2926727731482444,
+            "v(mn12.source)": 0.0033730484104820707,
+            "v(mn13.drain)": 1.2926727731482444,
+            "v(mn13.source)": 0.0033730484104820707,
+            "v(mn14.drain)": 1.2926727731482444,
+            "v(mn14.source)": 0.0033730484104820707,
+            "v(mn15.drain)": 1.2926727731482444,
+            "v(mn15.source)": 0.0033730484104820707,
+            "v(mn16.drain)": 1.2926727731482444,
+            "v(mn16.source)": 0.0033730484104820707,
+            "v(mn17.drain)": 1.2926727731482444,
+            "v(mn17.source)": 0.0033730484104820707,
+            "v(mn2.drain)": 1.2926727731482444,
+            "v(mn2.source)": 0.0033730484104820707,
+            "v(mn3.drain)": 1.2926727731482444,
+            "v(mn3.source)": 0.0033730484104820707,
+            "v(mn4.drain)": 1.2926727731482444,
+            "v(mn4.source)": 0.0033730484104820707,
+            "v(mn5.drain)": 1.2926727731482444,
+            "v(mn5.source)": 0.0033730484104820707,
+            "v(mn6.drain)": 1.2926727731482444,
+            "v(mn6.source)": 0.0033730484104820707,
+            "v(mn7.drain)": 1.2926727731482428,
+            "v(mn7.source)": 0.00337304841048207,
+            "v(mn8.drain)": 1.2926727731482466,
+            "v(mn8.source)": 0.0033730484104820624,
+            "v(mn9.drain)": 1.2926727731482446,
+            "v(mn9.source)": 0.0033730484104820906,
+            "v(mp1.drain)": 1.3044784428594576,
+            "v(mp1.source)": 2.9915673790352155,
+            "v(mp10.drain)": 1.3044784428594576,
+            "v(mp10.source)": 2.9915673790352155,
+            "v(mp11.drain)": 1.3044784428594576,
+            "v(mp11.source)": 2.9915673790352155,
+            "v(mp12.drain)": 1.3044784428594576,
+            "v(mp12.source)": 2.9915673790352155,
+            "v(mp13.drain)": 1.3044784428594576,
+            "v(mp13.source)": 2.9915673790352155,
+            "v(mp14.drain)": 1.3044784428594576,
+            "v(mp14.source)": 2.9915673790352155,
+            "v(mp15.drain)": 1.3044784428594576,
+            "v(mp15.source)": 2.9915673790352155,
+            "v(mp16.drain)": 1.3044784428594576,
+            "v(mp16.source)": 2.9915673790352155,
+            "v(mp17.drain)": 1.3044784428594576,
+            "v(mp17.source)": 2.9915673790352155,
+            "v(mp2.drain)": 1.3044784428594576,
+            "v(mp2.source)": 2.9915673790352155,
+            "v(mp3.drain)": 1.3044784428594576,
+            "v(mp3.source)": 2.9915673790352155,
+            "v(mp4.drain)": 1.3044784428594576,
+            "v(mp4.source)": 2.9915673790352155,
+            "v(mp5.drain)": 1.3044784428594576,
+            "v(mp5.source)": 2.9915673790352155,
+            "v(mp6.drain)": 1.3044784428594576,
+            "v(mp6.source)": 2.9915673790352155,
+            "v(mp7.drain)": 1.304478442859456,
+            "v(mp7.source)": 2.9915673790352155,
+            "v(mp8.drain)": 1.30447844285946,
+            "v(mp8.source)": 2.9915673790352155,
+            "v(mp9.drain)": 1.304478442859458,
+            "v(mp9.source)": 2.9915673790352146,
+            "i(vdd)": -0.0009556970718602384
+          }
+        ]
+      }
+    },
+    {
+      "control": "k-15-original",
+      "deckSha256": "42c2b03804914eeadade29b6bbaea94d9bae575a2eba165e3a8d4a806ae23475",
+      "before": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "tran:1010"
+        ],
+        "ngspicePoints": [
+          "tran:1010"
+        ],
+        "worst": {
+          "type": "tran",
+          "name": "v(6)",
+          "maxAbs": 1.0137233926069993,
+          "normalized": 0.32446133275386674,
+          "initialAbs": 0
+        },
+        "matchedDiagnostic": false,
+        "opValues": []
+      },
+      "after": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "tran:1010"
+        ],
+        "ngspicePoints": [
+          "tran:1010"
+        ],
+        "worst": {
+          "type": "tran",
+          "name": "v(6)",
+          "maxAbs": 1.0137233870874478,
+          "normalized": 0.32446133098722996,
+          "initialAbs": 0
+        },
+        "matchedDiagnostic": false,
+        "opValues": []
+      }
+    },
+    {
+      "control": "k-15-reduced",
+      "deckSha256": "d1c1fc0e94ac4752c0e68486248513b8fef13daa8d9bdc4d4eb3b95c16084cf1",
+      "before": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "tran:1008"
+        ],
+        "ngspicePoints": [
+          "tran:1008"
+        ],
+        "worst": {
+          "type": "tran",
+          "name": "i(vdd)",
+          "maxAbs": 1.2968334178492958e-7,
+          "normalized": 0.00041133592219710837,
+          "initialAbs": 2.1073913795120226e-9
+        },
+        "matchedDiagnostic": true,
+        "opValues": []
+      },
+      "after": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "tran:1008"
+        ],
+        "ngspicePoints": [
+          "tran:1008"
+        ],
+        "worst": {
+          "type": "tran",
+          "name": "i(vdd)",
+          "maxAbs": 1.2968477245176675e-7,
+          "normalized": 0.00041134046005567005,
+          "initialAbs": 1.2356777580866708e-9
+        },
+        "matchedDiagnostic": true,
+        "opValues": []
+      }
+    },
+    {
+      "control": "k-15-stages-13",
+      "deckSha256": "a6ad6f1954d5262454e576d2bc15aaeb83f8e68a9971ced00a7cba669c2c2498",
+      "before": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "tran:1010"
+        ],
+        "ngspicePoints": [
+          "tran:1010"
+        ],
+        "worst": {
+          "type": "tran",
+          "name": "v(13)",
+          "maxAbs": 0.0014780066449677776,
+          "normalized": 0.0004728314985935132,
+          "initialAbs": 0
+        },
+        "matchedDiagnostic": true,
+        "opValues": []
+      },
+      "after": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "tran:1010"
+        ],
+        "ngspicePoints": [
+          "tran:1010"
+        ],
+        "worst": {
+          "type": "tran",
+          "name": "v(13)",
+          "maxAbs": 0.0014780059514776234,
+          "normalized": 0.0004728312767379553,
+          "initialAbs": 0
+        },
+        "matchedDiagnostic": true,
+        "opValues": []
+      }
+    },
+    {
+      "control": "k-15-stages-3",
+      "deckSha256": "0fe953e747cb39b78acf615d82097be0fc33dc4a24f354eafd68c5b1cd21fc09",
+      "before": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "tran:1008"
+        ],
+        "ngspicePoints": [
+          "tran:1008"
+        ],
+        "worst": {
+          "type": "tran",
+          "name": "i(vdd)",
+          "maxAbs": 1.7495602387944831e-7,
+          "normalized": 0.0005539810791651625,
+          "initialAbs": 2.1073913795120226e-9
+        },
+        "matchedDiagnostic": true,
+        "opValues": []
+      },
+      "after": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "tran:1008"
+        ],
+        "ngspicePoints": [
+          "tran:1008"
+        ],
+        "worst": {
+          "type": "tran",
+          "name": "i(vdd)",
+          "maxAbs": 1.7495565737748065e-7,
+          "normalized": 0.000553979918672651,
+          "initialAbs": 1.2356777580866708e-9
+        },
+        "matchedDiagnostic": true,
+        "opValues": []
+      }
+    },
+    {
+      "control": "k-15-stages-5",
+      "deckSha256": "2738cd225d0fb531a673c1d2af0d596f2c8f079b3a2b155bae010bd8e67210c4",
+      "before": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "tran:1010"
+        ],
+        "ngspicePoints": [
+          "tran:1009"
+        ],
+        "worst": {
+          "type": "tran",
+          "name": "i(vdd)",
+          "maxAbs": 0.000009282439501652245,
+          "normalized": 0.023707941789326253,
+          "initialAbs": 4.214782750838319e-9
+        },
+        "matchedDiagnostic": false,
+        "opValues": []
+      },
+      "after": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "tran:1010"
+        ],
+        "ngspicePoints": [
+          "tran:1009"
+        ],
+        "worst": {
+          "type": "tran",
+          "name": "i(vdd)",
+          "maxAbs": 0.000009282438099548064,
+          "normalized": 0.023707938208262856,
+          "initialAbs": 2.471355518395956e-9
+        },
+        "matchedDiagnostic": false,
+        "opValues": []
+      }
+    },
+    {
+      "control": "k-15-stages-9",
+      "deckSha256": "ddd226a83fb61be514333aeb71fea2c781a116c591531120cb4674be3b552de1",
+      "before": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "tran:1009"
+        ],
+        "ngspicePoints": [
+          "tran:1009"
+        ],
+        "worst": {
+          "type": "tran",
+          "name": "v(8)",
+          "maxAbs": 0.001222174815021182,
+          "normalized": 0.00039106674130006785,
+          "initialAbs": 0
+        },
+        "matchedDiagnostic": true,
+        "opValues": []
+      },
+      "after": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "tran:1009"
+        ],
+        "ngspicePoints": [
+          "tran:1009"
+        ],
+        "worst": {
+          "type": "tran",
+          "name": "v(8)",
+          "maxAbs": 0.001222172699582913,
+          "normalized": 0.0003910660644103626,
+          "initialAbs": 0
+        },
+        "matchedDiagnostic": true,
+        "opValues": []
+      }
+    },
+    {
+      "control": "k-15-tight",
+      "deckSha256": "daf70bbc31744c8b65f74b0836368b435bfd853bef5eadf1f595182193ce6e30",
+      "before": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "tran:14285"
+        ],
+        "ngspicePoints": [
+          "tran:14270"
+        ],
+        "worst": {
+          "type": "tran",
+          "name": "i(vdd)",
+          "maxAbs": 0.000004530175815694562,
+          "normalized": 0.0029343869121771092,
+          "initialAbs": 7.2666404143939545e-12
+        },
+        "matchedDiagnostic": true,
+        "opValues": []
+      },
+      "after": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "tran:14280"
+        ],
+        "ngspicePoints": [
+          "tran:14270"
+        ],
+        "worst": {
+          "type": "tran",
+          "name": "i(vdd)",
+          "maxAbs": 0.000005410059583078398,
+          "normalized": 0.003504324927011608,
+          "initialAbs": 4.2607636169256224e-12
+        },
+        "matchedDiagnostic": true,
+        "opValues": []
+      }
+    },
+    {
+      "control": "k-5-fine",
+      "deckSha256": "01691a4caecd6e33a4c8aba64826dbb07bd4c7e5c23c721b431cd8347ea9addd",
+      "before": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "tran:8143"
+        ],
+        "ngspicePoints": [
+          "tran:8143"
+        ],
+        "worst": {
+          "type": "tran",
+          "name": "v(xi40.13)",
+          "maxAbs": 5.0024448811880085,
+          "normalized": 3.150747535067848,
+          "initialAbs": 4.999999878516051
+        },
+        "matchedDiagnostic": false,
+        "opValues": []
+      },
+      "after": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "tran:8143"
+        ],
+        "ngspicePoints": [
+          "tran:8143"
+        ],
+        "worst": {
+          "type": "tran",
+          "name": "i(vvdd)",
+          "maxAbs": 1.4755909939258034e-7,
+          "normalized": 0.00013482368972306027,
+          "initialAbs": 2.866581969679659e-16
+        },
+        "matchedDiagnostic": true,
+        "opValues": []
+      }
+    },
+    {
+      "control": "k-5-latch-op",
+      "deckSha256": "4872c915b6411dbb11787d183463c87c65ae8d05ce5ba644c11ec23cc63bce09",
+      "before": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "op:1"
+        ],
+        "ngspicePoints": [
+          "op:1"
+        ],
+        "worst": {
+          "type": "op",
+          "name": "i(vdd)",
+          "maxAbs": 0.00012531708542004412,
+          "normalized": 1253170.8542004412,
+          "initialAbs": 0.00012531708542004412
+        },
+        "matchedDiagnostic": false,
+        "opValues": [
+          {
+            "v(1)": 5,
+            "v(12)": 1.8426336725256554,
+            "v(13)": 1.8426336725257213,
+            "i(vdd)": -0.0001253170959929356
+          }
+        ]
+      },
+      "after": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "op:1"
+        ],
+        "ngspicePoints": [
+          "op:1"
+        ],
+        "worst": {
+          "type": "op",
+          "name": "i(vdd)",
+          "maxAbs": 3.641503942147546e-17,
+          "normalized": 3.6415039421475455e-7,
+          "initialAbs": 3.641503942147546e-17
+        },
+        "matchedDiagnostic": true,
+        "opValues": [
+          {
+            "v(1)": 5,
+            "v(12)": 4.999999946097095,
+            "v(13)": 1.3677625588866668e-8,
+            "v(m3.drain)": 1.3552375588301564e-8,
+            "v(m3.source)": 1.2525000009096152e-10,
+            "v(m4.drain)": 1.3821942157128205e-11,
+            "v(m4.source)": 4.999999945958023,
+            "v(m5.drain)": 1.4153575591014065e-8,
+            "v(m5.source)": 5.000000000000001,
+            "v(m6.drain)": 4.999999999471528,
+            "v(m6.source)": 4.999999946625566,
+            "i(vdd)": -1.0572855091428579e-11
+          }
+        ]
+      }
+    },
+    {
+      "control": "k-5-op",
+      "deckSha256": "1b8fefd43026a343bad581efc0799345ac006e972b65ef31272c9ff30f23ba1c",
+      "before": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "op:1"
+        ],
+        "ngspicePoints": [
+          "op:1"
+        ],
+        "worst": {
+          "type": "op",
+          "name": "v(xi10.10)",
+          "maxAbs": 4.9999998785166415,
+          "normalized": 49999.99878516641,
+          "initialAbs": 4.9999998785166415
+        },
+        "matchedDiagnostic": false,
+        "opValues": [
+          {
+            "v(1)": 5,
+            "v(10)": 0,
+            "v(11)": 5,
+            "v(16)": 4.999999865478908,
+            "v(17)": 1.6976276820551e-8,
+            "v(18)": 5,
+            "v(19)": 0,
+            "v(24)": 0,
+            "v(25)": 0,
+            "v(3)": 4.999999865478908,
+            "v(4)": 1.6976276820551e-8,
+            "v(5)": 5,
+            "v(6)": 0,
+            "v(7)": 0,
+            "v(8)": 0,
+            "v(9)": 5,
+            "v(xi10.10)": 4.999999892194268,
+            "v(xi10.7)": 1.518701643248619e-8,
+            "v(xi10.8)": 4.999999892194301,
+            "v(xi10.9)": 1.518701643682752e-8,
+            "v(xi20.10)": 4.999999892194268,
+            "v(xi20.7)": 1.518701643248619e-8,
+            "v(xi20.8)": 4.999999892194301,
+            "v(xi20.9)": 1.518701643682752e-8,
+            "v(xi30.12)": 1.5187016410112664e-8,
+            "v(xi30.13)": 4.999999892193677,
+            "v(xi30.14)": 1.518701641011265e-8,
+            "v(xi30.15)": 4.999999892193677,
+            "v(xi40.12)": 1.5187016410112664e-8,
+            "v(xi40.13)": 4.999999892193677,
+            "v(xi40.14)": 1.518701641011265e-8,
+            "v(xi40.15)": 4.999999892193677,
+            "i(vd)": 1.724150862254174e-11,
+            "i(vd1)": 1.724150862254174e-11,
+            "i(vdbar)": -3.227162981289666e-11,
+            "i(vdbar1)": -3.227162981289666e-11,
+            "i(vprecharg)": 0,
+            "i(vselect1)": 0,
+            "i(vselect2)": 0,
+            "i(vselect3)": 0,
+            "i(vselect4)": 0,
+            "i(vvdd)": -1.5914625173252261e-10,
+            "i(vwrite)": 0,
+            "i(vwritebar)": 0
+          }
+        ]
+      },
+      "after": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "op:1"
+        ],
+        "ngspicePoints": [
+          "op:1"
+        ],
+        "worst": {
+          "type": "op",
+          "name": "i(vvdd)",
+          "maxAbs": 2.866581969679659e-16,
+          "normalized": 0.0000018266062192895974,
+          "initialAbs": 2.866581969679659e-16
+        },
+        "matchedDiagnostic": true,
+        "opValues": [
+          {
+            "v(1)": 5,
+            "v(10)": 0,
+            "v(11)": 5,
+            "v(16)": 4.999999870935388,
+            "v(17)": 1.544158541248663e-8,
+            "v(18)": 5,
+            "v(19)": 0,
+            "v(24)": 0,
+            "v(25)": 0,
+            "v(3)": 4.999999870935388,
+            "v(4)": 1.544158541248663e-8,
+            "v(5)": 5,
+            "v(6)": 0,
+            "v(7)": 0,
+            "v(8)": 0,
+            "v(9)": 5,
+            "v(xi10.10)": 1.3677625731530439e-8,
+            "v(xi10.7)": 1.518701643875985e-8,
+            "v(xi10.8)": 4.9999998921946,
+            "v(xi10.9)": 4.999999897551812,
+            "v(xi10.m11.drain)": 5.000000000000001,
+            "v(xi10.m11.source)": 1.5662966440763863e-8,
+            "v(xi10.m12.drain)": 4.99999989325154,
+            "v(xi10.m12.source)": 4.999999998943061,
+            "v(xi10.m13.drain)": 1.5047944508523994e-8,
+            "v(xi10.m13.source)": 1.3907192970939036e-10,
+            "v(xi10.m14.drain)": 1.3821942322494122e-11,
+            "v(xi10.m14.source)": 4.999999892055528,
+            "v(xi10.m15.drain)": 4.999999892055528,
+            "v(xi10.m15.source)": 1.5455407342153406e-8,
+            "v(xi10.m16.drain)": 1.520083836846833e-8,
+            "v(xi10.m16.source)": 4.999999870796316,
+            "v(xi10.m17.drain)": 4.999999998995584,
+            "v(xi10.m17.source)": 4.999999898556229,
+            "v(xi10.m18.drain)": 1.4153575733677844e-8,
+            "v(xi10.m18.source)": 5,
+            "v(xi10.m19.drain)": 1.3821941932877433e-11,
+            "v(xi10.m19.source)": 4.99999989741274,
+            "v(xi10.m20.drain)": 1.355237573141843e-8,
+            "v(xi10.m20.source)": 1.2524999963786636e-10,
+            "v(xi10.m21.drain)": 1.3677625731077341e-8,
+            "v(xi10.m21.source)": 1.544158541193029e-8,
+            "v(xi10.m22.drain)": 4.999999897426562,
+            "v(xi10.m22.source)": 4.999999870810138,
+            "v(xi20.10)": 1.3677625731530439e-8,
+            "v(xi20.7)": 1.518701643875985e-8,
+            "v(xi20.8)": 4.9999998921946,
+            "v(xi20.9)": 4.999999897551812,
+            "v(xi20.m11.drain)": 5.000000000000001,
+            "v(xi20.m11.source)": 1.5662966440763863e-8,
+            "v(xi20.m12.drain)": 4.99999989325154,
+            "v(xi20.m12.source)": 4.999999998943061,
+            "v(xi20.m13.drain)": 1.5047944508523994e-8,
+            "v(xi20.m13.source)": 1.3907192970939036e-10,
+            "v(xi20.m14.drain)": 1.3821942322494122e-11,
+            "v(xi20.m14.source)": 4.999999892055528,
+            "v(xi20.m15.drain)": 4.999999892055528,
+            "v(xi20.m15.source)": 1.5455407342153406e-8,
+            "v(xi20.m16.drain)": 1.520083836846833e-8,
+            "v(xi20.m16.source)": 4.999999870796316,
+            "v(xi20.m17.drain)": 4.999999998995584,
+            "v(xi20.m17.source)": 4.999999898556229,
+            "v(xi20.m18.drain)": 1.4153575733677844e-8,
+            "v(xi20.m18.source)": 5,
+            "v(xi20.m19.drain)": 1.3821941932877433e-11,
+            "v(xi20.m19.source)": 4.99999989741274,
+            "v(xi20.m20.drain)": 1.355237573141843e-8,
+            "v(xi20.m20.source)": 1.2524999963786636e-10,
+            "v(xi20.m21.drain)": 1.3677625731077341e-8,
+            "v(xi20.m21.source)": 1.544158541193029e-8,
+            "v(xi20.m22.drain)": 4.999999897426562,
+            "v(xi20.m22.source)": 4.999999870810138,
+            "v(xi30.12)": 4.9999998975509214,
+            "v(xi30.13)": 1.3677625731532343e-8,
+            "v(xi30.14)": 1.5187016438762508e-8,
+            "v(xi30.15)": 4.999999892193652,
+            "v(xi30.m1.drain)": 4.999999897425672,
+            "v(xi30.m1.source)": 4.999999870810138,
+            "v(xi30.m10.drain)": 1.5047944508526655e-8,
+            "v(xi30.m10.source)": 1.390719297093855e-10,
+            "v(xi30.m2.drain)": 1.3677625731079243e-8,
+            "v(xi30.m2.source)": 1.544158541193029e-8,
+            "v(xi30.m3.drain)": 1.3552375731420342e-8,
+            "v(xi30.m3.source)": 1.252499996378588e-10,
+            "v(xi30.m4.drain)": 1.3821941932873201e-11,
+            "v(xi30.m4.source)": 4.9999998974118505,
+            "v(xi30.m5.drain)": 1.4153575733679747e-8,
+            "v(xi30.m5.source)": 5,
+            "v(xi30.m6.drain)": 4.999999998995575,
+            "v(xi30.m6.source)": 4.999999898555346,
+            "v(xi30.m7.drain)": 1.520083836847099e-8,
+            "v(xi30.m7.source)": 4.999999870796316,
+            "v(xi30.m8.drain)": 4.99999989205458,
+            "v(xi30.m8.source)": 1.5455407342153403e-8,
+            "v(xi30.m9.drain)": 1.3821942322488922e-11,
+            "v(xi30.m9.source)": 4.99999989205458,
+            "v(xi30.md1.drain)": 4.9999998932506005,
+            "v(xi30.md1.source)": 4.999999998943052,
+            "v(xi30.md11.drain)": 1.5917535410974465e-8,
+            "v(xi30.md11.source)": 4.759499999547848e-10,
+            "v(xi30.md12.drain)": 1.5163441553275042e-8,
+            "v(xi30.md12.source)": 2.7814385867629566e-10,
+            "v(xi30.md13.drain)": 4.999999997515195,
+            "v(xi30.md13.source)": 4.999999873420192,
+            "v(xi30.md14.drain)": 4.999999999874751,
+            "v(xi30.md14.source)": 4.999999870810138,
+            "v(xi30.md2.drain)": 5.000000000000001,
+            "v(xi30.md2.source)": 1.566296644076652e-8,
+            "v(xi30.md3.drain)": 5,
+            "v(xi30.md3.source)": 1.5917535417763473e-8,
+            "v(xi30.md6.drain)": 5,
+            "v(xi30.md6.source)": 4.999999870935389,
+            "v(xi40.12)": 4.9999998975509214,
+            "v(xi40.13)": 1.3677625731532343e-8,
+            "v(xi40.14)": 1.5187016438762508e-8,
+            "v(xi40.15)": 4.999999892193652,
+            "v(xi40.m1.drain)": 4.999999897425672,
+            "v(xi40.m1.source)": 4.999999870810138,
+            "v(xi40.m10.drain)": 1.5047944508526655e-8,
+            "v(xi40.m10.source)": 1.390719297093855e-10,
+            "v(xi40.m2.drain)": 1.3677625731079243e-8,
+            "v(xi40.m2.source)": 1.544158541193029e-8,
+            "v(xi40.m3.drain)": 1.3552375731420342e-8,
+            "v(xi40.m3.source)": 1.252499996378588e-10,
+            "v(xi40.m4.drain)": 1.3821941932873201e-11,
+            "v(xi40.m4.source)": 4.9999998974118505,
+            "v(xi40.m5.drain)": 1.4153575733679747e-8,
+            "v(xi40.m5.source)": 5,
+            "v(xi40.m6.drain)": 4.999999998995575,
+            "v(xi40.m6.source)": 4.999999898555346,
+            "v(xi40.m7.drain)": 1.520083836847099e-8,
+            "v(xi40.m7.source)": 4.999999870796316,
+            "v(xi40.m8.drain)": 4.99999989205458,
+            "v(xi40.m8.source)": 1.5455407342153403e-8,
+            "v(xi40.m9.drain)": 1.3821942322488922e-11,
+            "v(xi40.m9.source)": 4.99999989205458,
+            "v(xi40.md1.drain)": 4.9999998932506005,
+            "v(xi40.md1.source)": 4.999999998943052,
+            "v(xi40.md11.drain)": 1.5917535410974465e-8,
+            "v(xi40.md11.source)": 4.759499999547848e-10,
+            "v(xi40.md12.drain)": 1.5163441553275042e-8,
+            "v(xi40.md12.source)": 2.7814385867629566e-10,
+            "v(xi40.md13.drain)": 4.999999997515195,
+            "v(xi40.md13.source)": 4.999999873420192,
+            "v(xi40.md14.drain)": 4.999999999874751,
+            "v(xi40.md14.source)": 4.999999870810138,
+            "v(xi40.md2.drain)": 5.000000000000001,
+            "v(xi40.md2.source)": 1.566296644076652e-8,
+            "v(xi40.md3.drain)": 5,
+            "v(xi40.md3.source)": 1.5917535417763473e-8,
+            "v(xi40.md6.drain)": 5,
+            "v(xi40.md6.source)": 4.999999870935389,
+            "i(vd)": 1.6135754346575875e-11,
+            "i(vd1)": 1.6135754346575875e-11,
+            "i(vdbar)": -3.1165792169218776e-11,
+            "i(vdbar1)": -3.1165792169218776e-11,
+            "i(vprecharg)": 0,
+            "i(vselect1)": 0,
+            "i(vselect2)": 0,
+            "i(vselect3)": 0,
+            "i(vselect4)": 0,
+            "i(vvdd)": -1.5693457644516684e-10,
+            "i(vwrite)": 0,
+            "i(vwritebar)": 0
+          }
+        ]
+      }
+    },
+    {
+      "control": "k-5-original",
+      "deckSha256": "60e91211c78a3becfe8f3765872af9f715e2db5e79bf94268e69729356636d0e",
+      "before": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "tran:1132"
+        ],
+        "ngspicePoints": [
+          "tran:1122"
+        ],
+        "worst": {
+          "type": "tran",
+          "name": "v(xi30.13)",
+          "maxAbs": 5.002054114849925,
+          "normalized": 3.137159738608177,
+          "initialAbs": 4.999999878516051
+        },
+        "matchedDiagnostic": false,
+        "opValues": []
+      },
+      "after": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "tran:1122"
+        ],
+        "ngspicePoints": [
+          "tran:1122"
+        ],
+        "worst": {
+          "type": "tran",
+          "name": "i(vselect1)",
+          "maxAbs": 4.875703353142652e-7,
+          "normalized": 0.0010298802750966184,
+          "initialAbs": 0
+        },
+        "matchedDiagnostic": true,
+        "opValues": []
+      }
+    },
+    {
+      "control": "k-5-seeded",
+      "deckSha256": "be16f8980a7218990002178656515226d93fd35c53b9fcbf3853bb001fc31cb1",
+      "before": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "tran:1132"
+        ],
+        "ngspicePoints": [
+          "tran:1119"
+        ],
+        "worst": {
+          "type": "tran",
+          "name": "v(xi40.13)",
+          "maxAbs": 5.00205411486121,
+          "normalized": 3.144052165774383,
+          "initialAbs": 4.999999878516052
+        },
+        "matchedDiagnostic": false,
+        "opValues": []
+      },
+      "after": {
+        "spiceTsStatus": "success",
+        "ngspiceStatus": "success",
+        "spiceTsPoints": [
+          "tran:1119"
+        ],
+        "ngspicePoints": [
+          "tran:1119"
+        ],
+        "worst": {
+          "type": "tran",
+          "name": "i(vselect4)",
+          "maxAbs": 3.5475395968905107e-7,
+          "normalized": 0.0007491129587609451,
+          "initialAbs": 0
+        },
+        "matchedDiagnostic": true,
+        "opValues": []
+      }
+    },
+    {
+      "control": "k-5-tight",
+      "deckSha256": "92459ed80cfe89d58ba5e60541d5ea8443a84a3dc6aee614aea2045c5695be12",
+      "before": {
+        "spiceTsStatus": "failed",
+        "ngspiceStatus": "failed",
+        "spiceTsPoints": [],
+        "ngspicePoints": [],
+        "worst": null,
+        "matchedDiagnostic": false,
+        "opValues": []
+      },
+      "after": {
+        "spiceTsStatus": "failed",
+        "ngspiceStatus": "failed",
+        "spiceTsPoints": [],
+        "ngspicePoints": [],
+        "worst": null,
+        "matchedDiagnostic": false,
+        "opValues": []
+      }
+    }
+  ]
+}

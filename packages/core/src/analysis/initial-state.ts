@@ -27,17 +27,21 @@ export function createNodeStateSolution(
  * hold is released at t=0 because only the operating-point solve sets them
  * (#531).
  *
- * `.nodeset` stays a Newton initial guess only. ngspice-47 also forces
- * nodeset rows the same way, but only in MODEINITJCT / MODEINITFIX — the
- * first, junction-initialising iterations of an operating point — and
- * releases them in MODEINITFLOAT, so the converged operating point is not
- * held. spice-ts has no global MODEINITJCT/MODEINITFIX phase, so the nodeset
- * hold is not modelled; it can only steer which solution a multistable
- * circuit converges to.
+ * `.nodeset` holds are separate: held only during junction/fixed loads and
+ * released before the floating operating-point solve can converge.
  */
 export function initialConditionHolds(compiled: CompiledCircuit): NodeHold[] {
+  return nodeStateHolds(compiled, compiled.initialConditions);
+}
+
+/** ngspice MODEINITJCT / MODEINITFIX nodeset row holds. */
+export function nodeSetHolds(compiled: CompiledCircuit): NodeHold[] {
+  return nodeStateHolds(compiled, compiled.nodeSets);
+}
+
+function nodeStateHolds(compiled: CompiledCircuit, states: readonly NodeInitialState[]): NodeHold[] {
   const holds: NodeHold[] = [];
-  for (const state of compiled.initialConditions) {
+  for (const state of states) {
     const node = resolveNodeState(compiled, state);
     if (node >= 0) holds.push({ node, value: state.value });
   }

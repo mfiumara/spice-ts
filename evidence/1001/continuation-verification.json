@@ -1,0 +1,38 @@
+{
+  "baseline": "c97498eb5de80ba55ebc75744b2dba5ef31efc28",
+  "red": {
+    "command": "pnpm -C packages/core exec vitest run src/devices/mos2-inverse-limiting-1001.test.ts src/analysis/latch-op-selection-1001.test.ts",
+    "exit": 1,
+    "failed": 3,
+    "passed": 2,
+    "inverseBodyBiasV": { "expected": -0.5, "actual": -1.5 },
+    "cramXi40Node14V": { "expected": 1.518701644464528e-8, "actual": 1.8426326966768551 }
+  },
+  "green": {
+    "install": { "command": "pnpm install --frozen-lockfile", "exit": 0 },
+    "build": { "command": "pnpm build", "exit": 0 },
+    "lint": { "command": "pnpm lint", "exit": 0 },
+    "focused": {
+      "command": "pnpm -C packages/core exec vitest run src/devices/mos2-inverse-limiting-1001.test.ts src/analysis/latch-op-selection-1001.test.ts src/devices/mos2.test.ts src/devices/mos2-convergence-799.test.ts src/devices/mos2-temperature-995.test.ts src/devices/mos2-series-resistance-982.test.ts src/initial-state.test.ts",
+      "exit": 0,
+      "passed": 94
+    },
+    "mosamp2Guards": {
+      "command": "pnpm -C packages/core exec vitest run src/classic-mos-convergence.test.ts src/analysis/transient-nr-retry-804.test.ts",
+      "exit": 0,
+      "passed": 6
+    },
+    "controls": { "command": "spice-heavy pnpm exec tsx evidence/1001/run.ts", "exit": 0, "count": 21, "matched": 16, "losses": 4, "bothFailed": 1 },
+    "offline": { "command": "spice-heavy python3 evidence/1001/check.py", "exit": 0 },
+    "diff": { "command": "git diff --check", "exit": 0 },
+    "tableAndPatchHash": { "description": "Python assertions verify all 21 README before/after rows against JSON and final working-tree code-patch hash against receipt", "exit": 0 }
+  },
+  "rootCause": "mos2load.c:236 retains raw vbd across gate/drain limiting; inverse-mode :358-360 limits raw vbd and reconstructs vbs",
+  "ngspiceSource": "a80f6e3e95d51534905b1f23410a951802666656",
+  "issue1001Resolved": false,
+  "remainingLosses": ["k-10-original", "k-10-reduced", "k-15-original", "k-15-stages-5"],
+  "noToleranceChanges": true,
+  "noAggregateRefresh": true,
+  "localFullSuite": "Not run: card requests focused tests only; required full CI is authoritative",
+  "ciAndReview": "Exact PR head required; recorded in Kanban handoff"
+}

@@ -37,6 +37,8 @@ export interface StampContext {
    * stepping raises it temporarily.
    */
   gmin?: number;
+  /** Operating-point load phase, absent outside DC initialization. */
+  operatingPointPhase?: 'junction' | 'fixed' | 'floating';
 }
 
 /**
@@ -240,6 +242,8 @@ export interface DeviceModel {
    * flag) re-initialises it here.
    */
   beginOperatingPoint?(): void;
+  /** Uses device-local junction initialization via StampContext.operatingPointPhase. */
+  readonly initializesOperatingPoint?: boolean;
   /**
    * Receive the transient TSTEP and TSTOP (ngspice CKTstep/CKTfinalTime) used
    * by SPICE waveform defaults (e.g. zero PULSE TR/TF, SFFM/AM frequencies).

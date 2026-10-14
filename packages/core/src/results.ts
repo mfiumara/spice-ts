@@ -344,6 +344,7 @@ export class SensitivityResult {
     public readonly mode: 'dc' | 'ac',
     public readonly frequencies: number[],
     public readonly entries: SensitivityEntry[],
+    public readonly outputReferenceNode?: string,
   ) {}
 }
 
@@ -427,6 +428,14 @@ export interface StepResult {
  * in the netlist. For example, `.op` populates `dc`, `.tran` populates `transient`.
  */
 export interface SimulationResult {
+  /**
+   * Every native analysis run when a non-stepped, non-interpreted-control deck
+   * executes at least two analyses. Includes straight-line `.control` commands
+   * lowered onto analysis cards. Absent for a single analysis and `.step`.
+   * Order is native source order of dot cards, followed by `.pz` cards;
+   * legacy top-level fields still contain the last run of each type.
+   */
+  analyses?: DotAnalysisRun[];
   /** DC operating point result (from `.op`) */
   dc?: DCResult;
   /** DC sweep result (from `.dc`) */
@@ -467,6 +476,22 @@ export interface SimulationResult {
   warnings: SimulationWarning[];
   /** Native-solver convergence counters. External adapters may omit them. */
   convergence?: ConvergenceTelemetry;
+}
+
+/** One retained native dot-card (or lowered straight-line control) analysis. */
+export interface DotAnalysisRun {
+  /** Zero-based native execution order: analysis cards first, then `.pz`. */
+  index: number;
+  analysis: 'op' | 'dc' | 'ac' | 'tran' | 'noise' | 'sp' | 'disto' | 'tf' | 'sens' | 'pz';
+  /**
+   * Only this run's analysis field (`op` -> `dc`, `dc` -> `dcSweep`,
+   * `tran` -> `transient`, `sp` -> `sParameters`, `disto` -> `distortion`,
+   * `tf` -> `transferFunction`, `sens` -> `sensitivity`, `pz` -> `poleZero`)
+   * and any `.meas` results evaluated immediately after it. Measurements are
+   * omitted when none were evaluated. Warnings are empty; convergence,
+   * analyses, steps and control are absent. No analysis is rerun for retention.
+   */
+  result: SimulationResult;
 }
 
 /** One evaluated `.meas` card. Names follow ngspice: lower-cased as in the deck. */

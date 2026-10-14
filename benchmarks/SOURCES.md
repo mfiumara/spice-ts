@@ -12,6 +12,17 @@ from corpus-l commit `66d67caff2f10e4d6a36d2e59898cc52d661b98d`, whose
 Commands, source links and before/after evidence are in
 [issue-1057](results/issue-1057/README.md). No corpus tolerances or outcomes change.
 
+## SINE after DC/AC expressions (#994)
+
+The minimal V/I source probes in `reference/xyce.test.ts` and
+[sine-expressions-994.md](reference/investigations/974/sine-expressions-994.md)
+are original spice-ts project work under the repository MIT licence, not
+third-party decks. Source: https://github.com/mfiumara/spice-ts/issues/994.
+ngspice-47 and Xyce 7.10 receive identical source values; only the native
+SINE/SIN alias and output cards differ. Native-grid extrema are reported,
+including the pre-fix flat-output loss. No corpus tolerance is changed.
+
+
 ## MAXORD order-cap regression (#983)
 
 [maxord-983](reference/maxord-983/README.md) reruns unchanged corpus-k k-13
@@ -161,6 +172,28 @@ the same pinned ECL-2.0 `b4check.c:797-806` source recorded above.
   unchanged, retains every failure and does not refresh the aggregate ledger.
 - LEVEL=260 is EKV 2.6 in this upstream suite. spice-ts/ngspice MOS1 fallback
   results are losses against EKV, not EKV parity. No simulator superiority claim.
+
+## Xyce bare BJT assignment syntax (#990)
+
+The Xyce-only reference adapter now rewrites bare numeric `name value` pairs
+on NPN/PNP `.model` cards to explicit assignments, with ngspice BJT aliases
+canonicalised (for example `va 50` becomes `VAF=50`). Values and numeric suffixes
+are retained, not evaluated or tuned. Explicit assignments, non-BJT models,
+and ngspice-47 headline inputs remain unchanged. Bare expression/symbol values
+are reported as unsupported rather than guessed. Every rewrite is recorded in
+the adapter's changes list. This supersedes the output-only rule above for new
+Xyce BJT runs, not for the preserved historical #948 receipts.
+
+`benchmarks/reference/investigations/990/` contains a separate RCA3040 AC
+before/after reference receipt and runner. The source is the existing licensed
+classic RCA3040 fixture (same source/licence as the classic corpus entry below).
+No new upstream deck or model is imported. Project-authored runner/test/report
+code is MIT; the generated Xyce deck retains the original fixture's licence.
+The historical #948 decks, outputs, losses and source hashes remain unchanged;
+their tests pin the historical adapter hash instead of asserting it is today's
+adapter. See the [reference report](reference/investigations/990/README.md) for
+commands, original input hashes and the remaining ngspice/Xyce model residual.
+No aggregate refresh, solver tolerance change, perfect-parity or speed claim.
 
 ## corpus-j partial novel source survey (#940)
 
@@ -996,7 +1029,25 @@ directives differ. Selection never uses spice-ts results. Every native warning
 and execution/export/parse failure is retained; export failure is not evidence
 of nonconvergence. Runs require `spice-heavy`; no model-equivalence claim is made.
 
+## MOS2 pump residual investigation (#1019)
+
+- Original k-13 pump input is the unmodified corpus-k Xyce_Regression GPL-3.0-or-later fixture. Its manifest source, licence and SHA-256 remain authoritative; no derived netlist is added.
+- Observation-only native tracing uses [ngspice ngspice-47](https://github.com/ngspice/ngspice/tree/a80f6e3e95d51534905b1f23410a951802666656), commit `a80f6e3e95d51534905b1f23410a951802666656`, under its upstream mixed BSD-style licences. Source/build/executable are not redistributed. `evidence/1019/instrument-native.py` records the instrumentation; its output waveform is verified identical to the installed ngspice-47 reference on all 868 points and four common signals.
+- `evidence/1019/` contains project-authored MIT scripts and measured diagnostics. The regenerated maxord-983 report retains the unresolved current loss (0.063 normalized, formerly 0.0585); no tolerance, deck, scoring or production change is claimed as a fix.
+
 ## Known ngspice bugs corpus (issue #803)
+
+Solver-selection follow-up (#812): `benchmarks/solver-selection/` reuses the
+existing manifest hashes and licence restrictions for tickets 645, 690, 691,
+718, 720, 725 and 852. `prepare.py` retrieves 718 from
+https://sourceforge.net/rest/p/ngspice/bugs/718 and 720 from
+https://raw.githubusercontent.com/ngspice/ngspice/master/examples/tclspice/tcl/diffpair.cir,
+reconstructs only the previously documented solver variants, and requires the
+existing SHA-256 pins before writing ignored fetched inputs. No complete third-party
+deck/model library is redistributed here; native diagnostics retain small error excerpts. The RC regression in
+`packages/core/src/parser/solver-selection.test.ts` is self-written under the
+repository MIT licence. The report retains singular-network, sensitivity,
+missing-plot and native-reference failures, not just completed comparisons.
 
 - Source: the open ngspice bug tickets (status `open` or `open-accepted`, 134 tickets on 2026-10-12) at https://sourceforge.net/p/ngspice/bugs/, harvested read-only through the SourceForge REST API (`https://sourceforge.net/rest/p/ngspice/bugs/search?q=status:open+OR+status:open-accepted`). Every deck records its ticket URL, attachment URL and SHA-256 in `benchmarks/corpus/ngspice-bugs/manifest.json`.
 - Licence: decks were posted publicly on the tracker by their authors without an explicit licence. Redistribution decision: only small (at most 3 KB) user-authored decks are committed, quoted to reproduce the bug reports, plus dot-card variants derived from them; #877/#878 decks were written by the spice-ts owner. Vendor model libraries, PDK files, archives and large attachments are not committed; `benchmarks/corpus/ngspice-bugs/fetch.ts` downloads them from the tracker into the git-ignored `fetched/` directory and verifies their hashes.
@@ -1014,3 +1065,34 @@ of nonconvergence. Runs require `spice-heavy`; no model-equivalence claim is mad
 - Public corpus inputs are read without alteration from corpus-k at accepted commit `e05f5f1748bb7aaada478e9c3378ec4dfb45e17c`, not copied into this implementation branch. Canonical source is [Xyce_Regression](https://github.com/Xyce/Xyce_Regression/tree/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2), revision `7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2`, GPL-3.0-or-later. The pinned corpus-k manifest and licence receipts retain the upstream notices and per-deck hashes.
 - `evidence/982/parity.ts` runs the 13 reference-successful MOS2 resistance-gap fixtures plus e1480 (both-engine failure) through unchanged corpus-f runners and corpus-j metrics. Before results come from the accepted corpus-k receipt; after results use the implementation build. Original-byte hashes are checked, uniform 1% thresholds are unchanged, and all outcomes remain in `evidence/982/parity.json`. No aggregate refresh or speed-superiority claim.
 
+
+## corpus-l original MOS3, gain-stage and Sandler batch (#1045)
+
+Twenty novel unchanged decks from https://github.com/Xyce/Xyce_Regression at pinned revision `7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2`, SPDX `GPL-3.0-or-later`. The repository README Copyright and license grants GPL version 3 or later; selected files have no separate notice or external dependencies. Byte-identical README and full GPL text are retained under corpus-l/licenses/xyce. Hash dedupe covers all previous corpora, including d-k, and terminal-newline variants. No fixture adaptation, engine-success filter or per-circuit tolerance tuning. Every result, including losses, is published in corpus-l/README.md and outcomes.json. No aggregate refresh.
+
+Selection is fixed before engine execution: ten CircuitSim90/MOS3 decks, four ACtests/mos gain stages, four ACtests/SANDLER decks, and the first two ACtests/diffpair_spiceMan decks. Survey covers these families only; other families are batch-deferred, not engine failures or licence rejections. MOS2_LARGE is deferred to a separately budgeted large-circuit batch. No vendor/app-note licences or KiCad schematic exports are inferred.
+
+Every row uses the pinned revision above and GPL-3.0-or-later under the retained Xyce README grant.
+
+| ID | Pinned source URL | SHA-256 | SPDX licence |
+|---|---|---|---|
+| l-1 | [Netlists/ACtests/SANDLER16/sandler16.cir](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/ACtests/SANDLER16/sandler16.cir) | 4559c5a5df102c1f471dab8b5b77d6d0856cc78c632586b1c4b46305f223344a | GPL-3.0-or-later |
+| l-2 | [Netlists/ACtests/SANDLER7/sandler7.cir](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/ACtests/SANDLER7/sandler7.cir) | 9ca67ca3b7eef3c1322936b9e4c6794f200237f781b714ec161dab1c35ab42f6 | GPL-3.0-or-later |
+| l-3 | [Netlists/ACtests/SANDLER8/sandler8.cir](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/ACtests/SANDLER8/sandler8.cir) | 4bb0a1cea94ce0b097771edb78c5bd47234606ffad529b1aef2254cc0f864a7e | GPL-3.0-or-later |
+| l-4 | [Netlists/ACtests/SANDLER9/sandler9.cir](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/ACtests/SANDLER9/sandler9.cir) | 149ddd0a2d8b17106f791647236db84732d45bda01145284b8d0c85974171817 | GPL-3.0-or-later |
+| l-5 | [Netlists/ACtests/diffpair_spiceMan.cir](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/ACtests/diffpair_spiceMan.cir) | 0780e3374389beeb6754c3423f43fa609c46f3d35537b7206e7e2014301038c1 | GPL-3.0-or-later |
+| l-6 | [Netlists/ACtests/diffpair_spiceManLIN.cir](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/ACtests/diffpair_spiceManLIN.cir) | 70af53508eda159fac01125533814f6dab74ceacb885be6a9d42ed0b776c045f | GPL-3.0-or-later |
+| l-7 | [Netlists/ACtests/mos/gain-stage1.cir](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/ACtests/mos/gain-stage1.cir) | e184d407df6a9fb6bb8992fb050aa7e7f28ce0d5717c4ee6cd36db59105a5203 | GPL-3.0-or-later |
+| l-8 | [Netlists/ACtests/mos/gain-stage2.cir](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/ACtests/mos/gain-stage2.cir) | 5a5f3da6d8f18bb865059acbc34b1fc464c52deda5f5e0d5eb039da8973b4deb | GPL-3.0-or-later |
+| l-9 | [Netlists/ACtests/mos/gain-stage3.cir](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/ACtests/mos/gain-stage3.cir) | 9294b82b1e587d14937b75e89067454f57c056a1a54ebaed666117a884b7f0ae | GPL-3.0-or-later |
+| l-10 | [Netlists/ACtests/mos/gain-stage6.cir](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/ACtests/mos/gain-stage6.cir) | 1a8f881f5687036ab790a47ea24e56a8a1afc6dd42c1966eab92a4a36d657b3d | GPL-3.0-or-later |
+| l-11 | [Netlists/CircuitSim90/MOS3/arom.cir](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS3/arom.cir) | 4db593d3133a5929e7efdcb26921d3fce15e6c6c17e8bcef2fa2a08c4f7d062c | GPL-3.0-or-later |
+| l-12 | [Netlists/CircuitSim90/MOS3/gm1.cir](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS3/gm1.cir) | 417d4fe8629398295bb317ad236781f36b34eebb58e74c7b63757263f55c338c | GPL-3.0-or-later |
+| l-13 | [Netlists/CircuitSim90/MOS3/gm17.cir](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS3/gm17.cir) | 43fc842bd3c7bfbbe285a5d83b4eb08fa6acc1a3c8a5da9ae62c605bd32324a9 | GPL-3.0-or-later |
+| l-14 | [Netlists/CircuitSim90/MOS3/gm19.cir](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS3/gm19.cir) | 0b94a01a96dd0ae19e93fe78b5fc7397411815d350ee13ee118c49548bb62c08 | GPL-3.0-or-later |
+| l-15 | [Netlists/CircuitSim90/MOS3/gm2.cir](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS3/gm2.cir) | ad4261e8c85a1f0376b24c0bad6f42fa4046a0fa669b84853236ef558fa417fc | GPL-3.0-or-later |
+| l-16 | [Netlists/CircuitSim90/MOS3/gm3.cir](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS3/gm3.cir) | 90ee65bd24818d09d008de93e92f5a398f3422ae2a4a663e5889834e2c1fe071 | GPL-3.0-or-later |
+| l-17 | [Netlists/CircuitSim90/MOS3/jge.cir](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS3/jge.cir) | c0da4a46792a27496530ea1a57b1253dd980d17380db58ffd6e6434f0156babf | GPL-3.0-or-later |
+| l-18 | [Netlists/CircuitSim90/MOS3/mike2.cir](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS3/mike2.cir) | 99cf3671f37b401548a991f679ceaeb6ab502c97ac7c98de81b5adbddb4df013 | GPL-3.0-or-later |
+| l-19 | [Netlists/CircuitSim90/MOS3/rich3.cir](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS3/rich3.cir) | 5cf5ebcafb990907419d4844249ed6c8a53e47be8faf06f8e16fd08a5ef353ae | GPL-3.0-or-later |
+| l-20 | [Netlists/CircuitSim90/MOS3/todd3.cir](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS3/todd3.cir) | adecd1aec7ea465065ee828bea3db6a4f675a9e8abf0e8931137593bb338b57f | GPL-3.0-or-later |

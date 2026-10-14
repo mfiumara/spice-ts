@@ -1,0 +1,120 @@
+STR6600 Quasi-Resonant Discontinuous Flyback Circuit
+********************************************************************************
+* Tier No.: 3
+* Directory/Circuit Name:SANDLER16/sandler16.cir
+* Description:  The STR6600 circuit netlist was developed by Steve Sandler to 
+*       compare the validity of simulations using 3 different circuit simulation
+*       tools.  The results were compared to measured data.
+* Input: V4=V(17)
+* Output: VDB(15), VP(15)
+********************************************************************************
+*
+* MAIN CIRCUIT DEFINITION
+*
+R  15 0 250
+R2 4 0 .131
+R3 6 0 .14
+R4 5 6 680
+R5 7 5 3300
+R6 3 9 1K
+R7 16 14 100K
+R8 14 0 13K
+R9 12 2 1K
+C1 15 4 200U IC=110
+C2 2 0 .1U
+C3 16 17 1
+L1 15 16 1
+D1 0 13 Z04AZ13
+Q1 12 14 13 QN2222A
+X1 8 1 5 6 STR65#0SS
+X2 1 0 15 0 XFMR#0
+X3 1 0 3 0 XFMR#1
+X6 9 12 11 10 7 O66092
+VIN 8 0 110
+V3 11 0 15
+V4 17 0 AC 1
+I1 0 15
+*
+* ANALYSIS AND OPTION STATEMENTS
+.AC DEC 20 100 100K
+.NODESET V(1)=150
+.PRINT AC  VDB(15) VP(15)
+*.OPTION ACCT
+*
+* MODEL DEFINITIONS
+*
+.MODEL Z04AZ13 D (IS=245F RS=19.8 N=1 BV=12.90 IBV=5M
++ CJO=44.2P VJ=1 M=.33 TT=50.1N)
+* TOSHIBA 13 VOLT  .4 WATT  ZENER DIODE  11-08-1993
+.MODEL QN2222A NPN (IS=81.1F NF=1 BF=205 VAF=113 IKF=.5
++ ISE=10.6P NE=2 BR=4 NR=1 VAR=24 IKR=.225 RE=.343 RB=1.37
++ RC=.137 XTB=1.5 CJE=29.5P CJC=15.2P TF=397P TR=85N)
+*   MOTOROLA 40 VOLT  .8 AMP  400 MHZ  SINPN  TRANSISTOR  04-11-1991
+********************************
+* SUBCIRCUIT DEFINITIONS
+*
+*********************************
+.SUBCKT XFMR#0 1 2 3 4
+*       
+*  1_______   _______3
+*    +     ) (     +
+*          ) (      
+*    V1    ) (     V2
+*          ) (
+*    -     ) (     -
+*  2_______) (_______4
+*
+*         1 : RATIO
+*
+RP 1 2 1MEG
+E 5 4 1 2 738.00M
+F 1 2 VM 738.00M
+RS 6 3 1U
+VM 5 6 
+.ENDS
+**********************************
+.SUBCKT XFMR#1 1 2 3 4
+*       
+*  1_______   _______3
+*    +     ) (     +
+*          ) (      
+*    V1    ) (     V2
+*          ) (
+*    -     ) (     -
+*  2_______) (_______4
+*
+*         1 : RATIO
+*
+RP 1 2 1MEG
+E 5 4 1 2 119.00M
+F 1 2 VM 119.00M
+RS 6 3 1U
+VM 5 6 
+.ENDS
+***********************************
+.SUBCKT O66092 1 2 3 4 5
+*CUSTOM MICROPAC ISOLATOR ANODE CATHODE COL BASE EMITTER
+VM 1 6
+D1 6 2 LED
+H1 7 0 VM .0055
+R1 7 8 1K
+C1 8 0 150P
+G1 3 4 8 0 1
+Q1 3 4 5 MPSA18
+.MODEL LED D(N=1.9 RS=.1 CJO=40P IS=3.4E-14)
+.MODEL MPSA18 NPN (IS=86.4F NF=1 BF=468 VAF=120 IKF=.12
++ ISE=8.94P NE=2 BR=4 NR=1 VAR=26 IKR=.18 RE=.515 RB=2.06
++ RC=.206 XTB=1.5 CJE=7.50P CJC=6.77P TF=20N TR=87.4N)
+.ENDS
+***********************************
+.SUBCKT STR65#0SS 7 3 11 13
+B2 3 0
++ I={if (V(10)==0, 0, -(V(10)**2/(2*V(10)*(1+V(3)/V(7))+(3.1415*2*V(3)*(3.0864U)**.5))))}
+V3 8 0 .73
+G1 0 12 8 11 10000
+V_ISNS 12 13 
+H1 10 0 V_ISNS 1
+.ENDS
+***********************************
+.END
+

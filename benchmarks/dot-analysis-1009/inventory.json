@@ -1,0 +1,1988 @@
+{
+  "baseline": "169d683d89b77c8ccb5a9459bc3888c4ec0aba62",
+  "node": "v22.23.1",
+  "ngspice": "ngspice-47",
+  "threshold": 0.01,
+  "rows": [
+    {
+      "key": "corpus-e/bjt-diffpair-current-source",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_bjt-diffpair-ccs.ckt",
+      "inputSha256": "7060377579bdb6bfef87225ee4710b81744462af1548ccff755adf061f14f37c",
+      "simulationCalls": 1,
+      "rawSha256": "bc0b4d5c9ed1774b1abde7711dd41c101e2d3576f4abeb2bc095c5f347497053",
+      "before": {
+        "engineStatus": "success",
+        "referenceStatus": "success",
+        "alignedPoints": 81,
+        "excludedPoints": 1,
+        "normalizedMismatch": 0.00021586733734461037,
+        "plotsPaired": 3,
+        "plotsUnmatched": 2,
+        "groupsUnmatched": 0,
+        "missing": 2,
+        "matched": false,
+        "signalErrors": [
+          {
+            "analysis": "ac",
+            "signal": "i(vcc)",
+            "absoluteMax": 6.975078602963037e-12,
+            "ngspicePeak": 0.0000492221995136914,
+            "normalized": 1.417059512146117e-7
+          },
+          {
+            "analysis": "ac",
+            "signal": "i(vee)",
+            "absoluteMax": 1.5980284610920097e-12,
+            "ngspicePeak": 0.000011312936386873537,
+            "normalized": 1.4125673533762738e-7
+          },
+          {
+            "analysis": "ac",
+            "signal": "i(vin)",
+            "absoluteMax": 4.732533164276139e-11,
+            "ngspicePeak": 0.00021557812429408974,
+            "normalized": 2.195275230162064e-7
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(1)",
+            "absoluteMax": 0,
+            "ngspicePeak": 1,
+            "normalized": 0
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(2)",
+            "absoluteMax": 4.7325331649151166e-8,
+            "ngspicePeak": 0.8881569350634595,
+            "normalized": 5.3284875432256504e-8
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(3)",
+            "absoluteMax": 3.9008346779004666e-8,
+            "ngspicePeak": 0.11156426010259489,
+            "normalized": 3.4964913264456247e-7
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(4)",
+            "absoluteMax": 0.000022777376300536154,
+            "ngspicePeak": 87.9577262154704,
+            "normalized": 2.589582209610367e-7
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(5)",
+            "absoluteMax": 0.00002277797484752518,
+            "ngspicePeak": 87.84738489994567,
+            "normalized": 2.592903007126313e-7
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(6)",
+            "absoluteMax": 7.053995889585774e-8,
+            "ngspicePeak": 0.4993760183045678,
+            "normalized": 1.412562003584955e-7
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(7)",
+            "absoluteMax": 1.3189570710837478e-18,
+            "ngspicePeak": 1.1111264558194097e-11,
+            "normalized": 1.3189570710837477e-14
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(8)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0,
+            "normalized": 0
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(9)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "i(vcc)",
+            "absoluteMax": 3.8784730635454956e-12,
+            "ngspicePeak": 0.002515234759389357,
+            "normalized": 1.541992471703557e-9
+          },
+          {
+            "analysis": "op",
+            "signal": "i(vee)",
+            "absoluteMax": 4.118489837362516e-12,
+            "ngspicePeak": 0.002530556974437721,
+            "normalized": 1.627503304199514e-9
+          },
+          {
+            "analysis": "op",
+            "signal": "i(vin)",
+            "absoluteMax": 1.6947858725137668e-15,
+            "ngspicePeak": 0.000007661102757631412,
+            "normalized": 2.2121957192462262e-10
+          },
+          {
+            "analysis": "op",
+            "signal": "v(1)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(2)",
+            "absoluteMax": 1.694786672112869e-12,
+            "ngspicePeak": 0.007661102757631412,
+            "normalized": 2.2121967629590278e-10
+          },
+          {
+            "analysis": "op",
+            "signal": "v(3)",
+            "absoluteMax": 1.695164841830632e-12,
+            "ngspicePeak": 0.007661102757631038,
+            "normalized": 2.2126903860441235e-10
+          },
+          {
+            "analysis": "op",
+            "signal": "v(4)",
+            "absoluteMax": 1.9380346216735234e-8,
+            "ngspicePeak": 5.2291089140684,
+            "normalized": 3.706242599880513e-9
+          },
+          {
+            "analysis": "op",
+            "signal": "v(5)",
+            "absoluteMax": 1.9380897775533867e-8,
+            "ngspicePeak": 5.22910891406833,
+            "normalized": 3.7063480784253205e-9
+          },
+          {
+            "analysis": "op",
+            "signal": "v(6)",
+            "absoluteMax": 1.0385663551382152e-8,
+            "ngspicePeak": 0.7699947214015761,
+            "normalized": 1.3487967206421545e-8
+          },
+          {
+            "analysis": "op",
+            "signal": "v(7)",
+            "absoluteMax": 4.696154576322442e-11,
+            "ngspicePeak": 11.2211308440606,
+            "normalized": 4.185099203979196e-12
+          },
+          {
+            "analysis": "op",
+            "signal": "v(8)",
+            "absoluteMax": 0,
+            "ngspicePeak": 12,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(9)",
+            "absoluteMax": 0,
+            "ngspicePeak": 12,
+            "normalized": 0
+          },
+          {
+            "analysis": "tran",
+            "signal": "i(vcc)",
+            "absoluteMax": 2.637566238767458e-9,
+            "ngspicePeak": 0.002518634653529744,
+            "normalized": 0.000001047220657855651
+          },
+          {
+            "analysis": "tran",
+            "signal": "i(vee)",
+            "absoluteMax": 9.996708591128445e-10,
+            "ngspicePeak": 0.002532178179999758,
+            "normalized": 3.947869336402464e-7
+          },
+          {
+            "analysis": "tran",
+            "signal": "i(vin)",
+            "absoluteMax": 3.4579932866719794e-9,
+            "ngspicePeak": 0.0000161265485173349,
+            "normalized": 0.00021442860404722566
+          },
+          {
+            "analysis": "tran",
+            "signal": "v(1)",
+            "absoluteMax": 1.457167719820518e-16,
+            "ngspicePeak": 0.0998089348006235,
+            "normalized": 1.4599571899362812e-15
+          },
+          {
+            "analysis": "tran",
+            "signal": "v(2)",
+            "absoluteMax": 0.0000034579932867186136,
+            "ngspicePeak": 0.1002762981017032,
+            "normalized": 0.00003448465242715097
+          },
+          {
+            "analysis": "tran",
+            "signal": "v(3)",
+            "absoluteMax": 0.0000034580106163060315,
+            "ngspicePeak": 0.01601914703189055,
+            "normalized": 0.00021586733734461037
+          },
+          {
+            "analysis": "tran",
+            "signal": "v(4)",
+            "absoluteMax": 0.000635431572686862,
+            "ngspicePeak": 10.73485271683836,
+            "normalized": 0.00005919332006205764
+          },
+          {
+            "analysis": "tran",
+            "signal": "v(5)",
+            "absoluteMax": 0.0006263310869627503,
+            "ngspicePeak": 10.80741656247853,
+            "normalized": 0.0000579538211876891
+          },
+          {
+            "analysis": "tran",
+            "signal": "v(6)",
+            "absoluteMax": 0.00004412768045836124,
+            "ngspicePeak": 0.7982672511181098,
+            "normalized": 0.00005527933207400514
+          },
+          {
+            "analysis": "tran",
+            "signal": "v(7)",
+            "absoluteMax": 4.696154576322442e-11,
+            "ngspicePeak": 11.22113084410823,
+            "normalized": 4.185099203961432e-12
+          },
+          {
+            "analysis": "tran",
+            "signal": "v(8)",
+            "absoluteMax": 0,
+            "ngspicePeak": 12,
+            "normalized": 0
+          },
+          {
+            "analysis": "tran",
+            "signal": "v(9)",
+            "absoluteMax": 0,
+            "ngspicePeak": 12,
+            "normalized": 0
+          }
+        ],
+        "ordinalAligned": false,
+        "metricSha256": "426d03a211514db4f02c5ce05ebb3fbea05d7af6d753beb00fdd0e06e8bb6ec3"
+      },
+      "after": {
+        "engineStatus": "success",
+        "referenceStatus": "success",
+        "alignedPoints": 103,
+        "excludedPoints": 2,
+        "normalizedMismatch": 0.00021586733734461037,
+        "plotsPaired": 5,
+        "plotsUnmatched": 0,
+        "groupsUnmatched": 0,
+        "missing": 0,
+        "matched": true,
+        "signalErrors": [
+          {
+            "analysis": "ac",
+            "signal": "i(vcc)",
+            "absoluteMax": 6.981505526731633e-12,
+            "ngspicePeak": 0.00004922219951391863,
+            "normalized": 1.4183652083157037e-7
+          },
+          {
+            "analysis": "ac",
+            "signal": "i(vee)",
+            "absoluteMax": 1.6085712036078668e-12,
+            "ngspicePeak": 0.000011312936406329428,
+            "normalized": 1.4218865428324109e-7
+          },
+          {
+            "analysis": "ac",
+            "signal": "i(vin)",
+            "absoluteMax": 4.730612450012483e-11,
+            "ngspicePeak": 0.00021557812427924032,
+            "normalized": 2.1943842705880851e-7
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(1)",
+            "absoluteMax": 0,
+            "ngspicePeak": 1,
+            "normalized": 0
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(2)",
+            "absoluteMax": 4.7306124540405055e-8,
+            "ngspicePeak": 0.8881569350690144,
+            "normalized": 5.3263249626856905e-8
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(3)",
+            "absoluteMax": 3.9015429681118566e-8,
+            "ngspicePeak": 0.11156426009689309,
+            "normalized": 3.4971261985902857e-7
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(4)",
+            "absoluteMax": 0.000022802690622002826,
+            "ngspicePeak": 87.95772624078472,
+            "normalized": 2.5924602188533553e-7
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(5)",
+            "absoluteMax": 0.0000228030960008423,
+            "ngspicePeak": 87.84738492506682,
+            "normalized": 2.595762642256588e-7
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(6)",
+            "absoluteMax": 7.060420282409026e-8,
+            "ngspicePeak": 0.49937601830423506,
+            "normalized": 1.4138484876355443e-7
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(7)",
+            "absoluteMax": 1.319500846344358e-18,
+            "ngspicePeak": 1.1111264539089737e-11,
+            "normalized": 1.3195008463443579e-14
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(8)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0,
+            "normalized": 0
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(9)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0,
+            "normalized": 0
+          },
+          {
+            "analysis": "ac",
+            "signal": "i(vcc)",
+            "absoluteMax": 6.975078602963037e-12,
+            "ngspicePeak": 0.0000492221995136914,
+            "normalized": 1.417059512146117e-7
+          },
+          {
+            "analysis": "ac",
+            "signal": "i(vee)",
+            "absoluteMax": 1.5980284610920097e-12,
+            "ngspicePeak": 0.000011312936386873537,
+            "normalized": 1.4125673533762738e-7
+          },
+          {
+            "analysis": "ac",
+            "signal": "i(vin)",
+            "absoluteMax": 4.732533164276139e-11,
+            "ngspicePeak": 0.00021557812429408974,
+            "normalized": 2.195275230162064e-7
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(1)",
+            "absoluteMax": 0,
+            "ngspicePeak": 1,
+            "normalized": 0
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(2)",
+            "absoluteMax": 4.7325331649151166e-8,
+            "ngspicePeak": 0.8881569350634595,
+            "normalized": 5.3284875432256504e-8
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(3)",
+            "absoluteMax": 3.9008346779004666e-8,
+            "ngspicePeak": 0.11156426010259489,
+            "normalized": 3.4964913264456247e-7
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(4)",
+            "absoluteMax": 0.000022777376300536154,
+            "ngspicePeak": 87.9577262154704,
+            "normalized": 2.589582209610367e-7
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(5)",
+            "absoluteMax": 0.00002277797484752518,
+            "ngspicePeak": 87.84738489994567,
+            "normalized": 2.592903007126313e-7
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(6)",
+            "absoluteMax": 7.053995889585774e-8,
+            "ngspicePeak": 0.4993760183045678,
+            "normalized": 1.412562003584955e-7
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(7)",
+            "absoluteMax": 1.3189570710837478e-18,
+            "ngspicePeak": 1.1111264558194097e-11,
+            "normalized": 1.3189570710837477e-14
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(8)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0,
+            "normalized": 0
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(9)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "i(vcc)",
+            "absoluteMax": 3.8784730635454956e-12,
+            "ngspicePeak": 0.002515234759389357,
+            "normalized": 1.541992471703557e-9
+          },
+          {
+            "analysis": "op",
+            "signal": "i(vee)",
+            "absoluteMax": 4.118489837362516e-12,
+            "ngspicePeak": 0.002530556974437721,
+            "normalized": 1.627503304199514e-9
+          },
+          {
+            "analysis": "op",
+            "signal": "i(vin)",
+            "absoluteMax": 1.6947858725137668e-15,
+            "ngspicePeak": 0.000007661102757631412,
+            "normalized": 2.2121957192462262e-10
+          },
+          {
+            "analysis": "op",
+            "signal": "v(1)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(2)",
+            "absoluteMax": 1.694786672112869e-12,
+            "ngspicePeak": 0.007661102757631412,
+            "normalized": 2.2121967629590278e-10
+          },
+          {
+            "analysis": "op",
+            "signal": "v(3)",
+            "absoluteMax": 1.695164841830632e-12,
+            "ngspicePeak": 0.007661102757631038,
+            "normalized": 2.2126903860441235e-10
+          },
+          {
+            "analysis": "op",
+            "signal": "v(4)",
+            "absoluteMax": 1.9380346216735234e-8,
+            "ngspicePeak": 5.2291089140684,
+            "normalized": 3.706242599880513e-9
+          },
+          {
+            "analysis": "op",
+            "signal": "v(5)",
+            "absoluteMax": 1.9380897775533867e-8,
+            "ngspicePeak": 5.22910891406833,
+            "normalized": 3.7063480784253205e-9
+          },
+          {
+            "analysis": "op",
+            "signal": "v(6)",
+            "absoluteMax": 1.0385663551382152e-8,
+            "ngspicePeak": 0.7699947214015761,
+            "normalized": 1.3487967206421545e-8
+          },
+          {
+            "analysis": "op",
+            "signal": "v(7)",
+            "absoluteMax": 4.696154576322442e-11,
+            "ngspicePeak": 11.2211308440606,
+            "normalized": 4.185099203979196e-12
+          },
+          {
+            "analysis": "op",
+            "signal": "v(8)",
+            "absoluteMax": 0,
+            "ngspicePeak": 12,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(9)",
+            "absoluteMax": 0,
+            "ngspicePeak": 12,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "i(vcc)",
+            "absoluteMax": 3.8784730635454956e-12,
+            "ngspicePeak": 0.002515234759389357,
+            "normalized": 1.541992471703557e-9
+          },
+          {
+            "analysis": "op",
+            "signal": "i(vee)",
+            "absoluteMax": 4.118489837362516e-12,
+            "ngspicePeak": 0.002530556974437721,
+            "normalized": 1.627503304199514e-9
+          },
+          {
+            "analysis": "op",
+            "signal": "i(vin)",
+            "absoluteMax": 1.6947858725137668e-15,
+            "ngspicePeak": 0.000007661102757631412,
+            "normalized": 2.2121957192462262e-10
+          },
+          {
+            "analysis": "op",
+            "signal": "v(1)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(2)",
+            "absoluteMax": 1.694786672112869e-12,
+            "ngspicePeak": 0.007661102757631412,
+            "normalized": 2.2121967629590278e-10
+          },
+          {
+            "analysis": "op",
+            "signal": "v(3)",
+            "absoluteMax": 1.695164841830632e-12,
+            "ngspicePeak": 0.007661102757631038,
+            "normalized": 2.2126903860441235e-10
+          },
+          {
+            "analysis": "op",
+            "signal": "v(4)",
+            "absoluteMax": 1.9380346216735234e-8,
+            "ngspicePeak": 5.2291089140684,
+            "normalized": 3.706242599880513e-9
+          },
+          {
+            "analysis": "op",
+            "signal": "v(5)",
+            "absoluteMax": 1.9380897775533867e-8,
+            "ngspicePeak": 5.22910891406833,
+            "normalized": 3.7063480784253205e-9
+          },
+          {
+            "analysis": "op",
+            "signal": "v(6)",
+            "absoluteMax": 1.0385663551382152e-8,
+            "ngspicePeak": 0.7699947214015761,
+            "normalized": 1.3487967206421545e-8
+          },
+          {
+            "analysis": "op",
+            "signal": "v(7)",
+            "absoluteMax": 4.696154576322442e-11,
+            "ngspicePeak": 11.2211308440606,
+            "normalized": 4.185099203979196e-12
+          },
+          {
+            "analysis": "op",
+            "signal": "v(8)",
+            "absoluteMax": 0,
+            "ngspicePeak": 12,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(9)",
+            "absoluteMax": 0,
+            "ngspicePeak": 12,
+            "normalized": 0
+          },
+          {
+            "analysis": "tran",
+            "signal": "i(vcc)",
+            "absoluteMax": 2.637566238767458e-9,
+            "ngspicePeak": 0.002518634653529744,
+            "normalized": 0.000001047220657855651
+          },
+          {
+            "analysis": "tran",
+            "signal": "i(vee)",
+            "absoluteMax": 9.996708591128445e-10,
+            "ngspicePeak": 0.002532178179999758,
+            "normalized": 3.947869336402464e-7
+          },
+          {
+            "analysis": "tran",
+            "signal": "i(vin)",
+            "absoluteMax": 3.4579932866719794e-9,
+            "ngspicePeak": 0.0000161265485173349,
+            "normalized": 0.00021442860404722566
+          },
+          {
+            "analysis": "tran",
+            "signal": "v(1)",
+            "absoluteMax": 1.457167719820518e-16,
+            "ngspicePeak": 0.0998089348006235,
+            "normalized": 1.4599571899362812e-15
+          },
+          {
+            "analysis": "tran",
+            "signal": "v(2)",
+            "absoluteMax": 0.0000034579932867186136,
+            "ngspicePeak": 0.1002762981017032,
+            "normalized": 0.00003448465242715097
+          },
+          {
+            "analysis": "tran",
+            "signal": "v(3)",
+            "absoluteMax": 0.0000034580106163060315,
+            "ngspicePeak": 0.01601914703189055,
+            "normalized": 0.00021586733734461037
+          },
+          {
+            "analysis": "tran",
+            "signal": "v(4)",
+            "absoluteMax": 0.000635431572686862,
+            "ngspicePeak": 10.73485271683836,
+            "normalized": 0.00005919332006205764
+          },
+          {
+            "analysis": "tran",
+            "signal": "v(5)",
+            "absoluteMax": 0.0006263310869627503,
+            "ngspicePeak": 10.80741656247853,
+            "normalized": 0.0000579538211876891
+          },
+          {
+            "analysis": "tran",
+            "signal": "v(6)",
+            "absoluteMax": 0.00004412768045836124,
+            "ngspicePeak": 0.7982672511181098,
+            "normalized": 0.00005527933207400514
+          },
+          {
+            "analysis": "tran",
+            "signal": "v(7)",
+            "absoluteMax": 4.696154576322442e-11,
+            "ngspicePeak": 11.22113084410823,
+            "normalized": 4.185099203961432e-12
+          },
+          {
+            "analysis": "tran",
+            "signal": "v(8)",
+            "absoluteMax": 0,
+            "ngspicePeak": 12,
+            "normalized": 0
+          },
+          {
+            "analysis": "tran",
+            "signal": "v(9)",
+            "absoluteMax": 0,
+            "ngspicePeak": 12,
+            "normalized": 0
+          }
+        ],
+        "ordinalAligned": false,
+        "metricSha256": "cd22dcfe13e2c84bc66e2371e3092c6ee6c1e4128cc54d6f5d4dfbb4f6d8a5cc"
+      },
+      "newlyPaired": [
+        {
+          "analysis": "ac",
+          "plot": {
+            "spiceTs": "dot:ac:2",
+            "ngspice": "AC Analysis",
+            "ngspiceIndex": 1
+          },
+          "worst": {
+            "analysis": "ac",
+            "signal": "v(3)",
+            "absoluteMax": 3.9015429681118566e-8,
+            "ngspicePeak": 0.11156426009689309,
+            "normalized": 3.4971261985902857e-7
+          },
+          "missing": 0,
+          "mismatch": false
+        },
+        {
+          "analysis": "op",
+          "plot": {
+            "spiceTs": "dot:op:2",
+            "ngspice": "Operating Point",
+            "ngspiceIndex": 3
+          },
+          "worst": {
+            "analysis": "op",
+            "signal": "v(6)",
+            "absoluteMax": 1.0385663551382152e-8,
+            "ngspicePeak": 0.7699947214015761,
+            "normalized": 1.3487967206421545e-8
+          },
+          "missing": 0,
+          "mismatch": false
+        }
+      ]
+    },
+    {
+      "key": "corpus-e-spice3/vcvs-operating-point",
+      "localPath": "benchmarks/corpus/corpus-e-spice3/fixtures/d_vcvs.1.cir",
+      "inputSha256": "00d220af322f4cfb9ffe032617ee46c0295d1ad336a488b177e2e712553e7b73",
+      "simulationCalls": 1,
+      "rawSha256": "d70df8378dcd8dd437543aad79066ee3d9b6291b512f7b272a356983cf228e7c",
+      "before": {
+        "engineStatus": "success",
+        "referenceStatus": "success",
+        "alignedPoints": 2,
+        "excludedPoints": 0,
+        "normalizedMismatch": 1.670996555883932e-16,
+        "plotsPaired": 2,
+        "plotsUnmatched": 4,
+        "groupsUnmatched": 0,
+        "missing": 4,
+        "matched": false,
+        "signalErrors": [
+          {
+            "analysis": "ac",
+            "signal": "i(e1)",
+            "absoluteMax": 2.4492935982947063e-19,
+            "ngspicePeak": 0.002,
+            "normalized": 1.2246467991473532e-16
+          },
+          {
+            "analysis": "ac",
+            "signal": "i(v1)",
+            "absoluteMax": 6.123233995736766e-20,
+            "ngspicePeak": 0.0005,
+            "normalized": 1.2246467991473532e-16
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(1)",
+            "absoluteMax": 0,
+            "ngspicePeak": 1,
+            "normalized": 0
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(2)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0.5,
+            "normalized": 0
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(3)",
+            "absoluteMax": 0,
+            "ngspicePeak": 2,
+            "normalized": 0
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(4)",
+            "absoluteMax": 3.341993111767864e-13,
+            "ngspicePeak": 2000,
+            "normalized": 1.670996555883932e-16
+          },
+          {
+            "analysis": "op",
+            "signal": "i(e1)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0.002,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "i(v1)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0.0005,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(1)",
+            "absoluteMax": 0,
+            "ngspicePeak": 1,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(2)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0.5,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(3)",
+            "absoluteMax": 0,
+            "ngspicePeak": 2,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(4)",
+            "absoluteMax": 0,
+            "ngspicePeak": 2000,
+            "normalized": 0
+          }
+        ],
+        "ordinalAligned": false,
+        "metricSha256": "bfe26a2c5e5b6587052f3b25475bad5b20fa8f7b0eb82856390af7f2fcbbcf33"
+      },
+      "after": {
+        "engineStatus": "success",
+        "referenceStatus": "success",
+        "alignedPoints": 6,
+        "excludedPoints": 0,
+        "normalizedMismatch": 1.670996555883932e-16,
+        "plotsPaired": 6,
+        "plotsUnmatched": 0,
+        "groupsUnmatched": 0,
+        "missing": 0,
+        "matched": true,
+        "signalErrors": [
+          {
+            "analysis": "ac",
+            "signal": "i(e1)",
+            "absoluteMax": 2.4492935982947063e-19,
+            "ngspicePeak": 0.002,
+            "normalized": 1.2246467991473532e-16
+          },
+          {
+            "analysis": "ac",
+            "signal": "i(v1)",
+            "absoluteMax": 6.123233995736766e-20,
+            "ngspicePeak": 0.0005,
+            "normalized": 1.2246467991473532e-16
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(1)",
+            "absoluteMax": 0,
+            "ngspicePeak": 1,
+            "normalized": 0
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(2)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0.5,
+            "normalized": 0
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(3)",
+            "absoluteMax": 0,
+            "ngspicePeak": 2,
+            "normalized": 0
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(4)",
+            "absoluteMax": 3.341993111767864e-13,
+            "ngspicePeak": 2000,
+            "normalized": 1.670996555883932e-16
+          },
+          {
+            "analysis": "ac",
+            "signal": "i(e1)",
+            "absoluteMax": 2.4492935982947063e-19,
+            "ngspicePeak": 0.002,
+            "normalized": 1.2246467991473532e-16
+          },
+          {
+            "analysis": "ac",
+            "signal": "i(v1)",
+            "absoluteMax": 6.123233995736766e-20,
+            "ngspicePeak": 0.0005,
+            "normalized": 1.2246467991473532e-16
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(1)",
+            "absoluteMax": 0,
+            "ngspicePeak": 1,
+            "normalized": 0
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(2)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0.5,
+            "normalized": 0
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(3)",
+            "absoluteMax": 0,
+            "ngspicePeak": 2,
+            "normalized": 0
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(4)",
+            "absoluteMax": 3.341993111767864e-13,
+            "ngspicePeak": 2000,
+            "normalized": 1.670996555883932e-16
+          },
+          {
+            "analysis": "ac",
+            "signal": "i(e1)",
+            "absoluteMax": 2.4492935982947063e-19,
+            "ngspicePeak": 0.002,
+            "normalized": 1.2246467991473532e-16
+          },
+          {
+            "analysis": "ac",
+            "signal": "i(v1)",
+            "absoluteMax": 6.123233995736766e-20,
+            "ngspicePeak": 0.0005,
+            "normalized": 1.2246467991473532e-16
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(1)",
+            "absoluteMax": 0,
+            "ngspicePeak": 1,
+            "normalized": 0
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(2)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0.5,
+            "normalized": 0
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(3)",
+            "absoluteMax": 0,
+            "ngspicePeak": 2,
+            "normalized": 0
+          },
+          {
+            "analysis": "ac",
+            "signal": "v(4)",
+            "absoluteMax": 3.341993111767864e-13,
+            "ngspicePeak": 2000,
+            "normalized": 1.670996555883932e-16
+          },
+          {
+            "analysis": "op",
+            "signal": "i(e1)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0.002,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "i(v1)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0.0005,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(1)",
+            "absoluteMax": 0,
+            "ngspicePeak": 1,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(2)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0.5,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(3)",
+            "absoluteMax": 0,
+            "ngspicePeak": 2,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(4)",
+            "absoluteMax": 0,
+            "ngspicePeak": 2000,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "i(e1)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0.002,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "i(v1)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0.0005,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(1)",
+            "absoluteMax": 0,
+            "ngspicePeak": 1,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(2)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0.5,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(3)",
+            "absoluteMax": 0,
+            "ngspicePeak": 2,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(4)",
+            "absoluteMax": 0,
+            "ngspicePeak": 2000,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "i(e1)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0.002,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "i(v1)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0.0005,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(1)",
+            "absoluteMax": 0,
+            "ngspicePeak": 1,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(2)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0.5,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(3)",
+            "absoluteMax": 0,
+            "ngspicePeak": 2,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(4)",
+            "absoluteMax": 0,
+            "ngspicePeak": 2000,
+            "normalized": 0
+          }
+        ],
+        "ordinalAligned": false,
+        "metricSha256": "756d568428621b65a28dbbb3767b2aefb8c7f34961bc707cde56816da465d995"
+      },
+      "newlyPaired": [
+        {
+          "analysis": "ac",
+          "plot": {
+            "spiceTs": "dot:ac:3",
+            "ngspice": "AC Analysis",
+            "ngspiceIndex": 2
+          },
+          "worst": {
+            "analysis": "ac",
+            "signal": "v(4)",
+            "absoluteMax": 3.341993111767864e-13,
+            "ngspicePeak": 2000,
+            "normalized": 1.670996555883932e-16
+          },
+          "missing": 0,
+          "mismatch": false
+        },
+        {
+          "analysis": "ac",
+          "plot": {
+            "spiceTs": "dot:ac:2",
+            "ngspice": "AC Analysis",
+            "ngspiceIndex": 1
+          },
+          "worst": {
+            "analysis": "ac",
+            "signal": "v(4)",
+            "absoluteMax": 3.341993111767864e-13,
+            "ngspicePeak": 2000,
+            "normalized": 1.670996555883932e-16
+          },
+          "missing": 0,
+          "mismatch": false
+        },
+        {
+          "analysis": "op",
+          "plot": {
+            "spiceTs": "dot:op:3",
+            "ngspice": "Operating Point",
+            "ngspiceIndex": 5
+          },
+          "worst": {
+            "analysis": "op",
+            "signal": "i(e1)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0.002,
+            "normalized": 0
+          },
+          "missing": 0,
+          "mismatch": false
+        },
+        {
+          "analysis": "op",
+          "plot": {
+            "spiceTs": "dot:op:2",
+            "ngspice": "Operating Point",
+            "ngspiceIndex": 4
+          },
+          "worst": {
+            "analysis": "op",
+            "signal": "i(e1)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0.002,
+            "normalized": 0
+          },
+          "missing": 0,
+          "mismatch": false
+        }
+      ]
+    },
+    {
+      "key": "corpus-e-spice3/diode-temperature-sweep",
+      "localPath": "benchmarks/corpus/corpus-e-spice3/fixtures/d_diode.6.cir",
+      "inputSha256": "208068d2573391e75c75987d0c19f87f988073c80e9bd991ec35fdf78fa12274",
+      "simulationCalls": 1,
+      "rawSha256": "bdd29ec930e4f70ecf4d8f85f98be3ab6b8226d4994f1c0f8b63dd6d660665c4",
+      "before": {
+        "engineStatus": "success",
+        "referenceStatus": "success",
+        "alignedPoints": 4,
+        "excludedPoints": 0,
+        "normalizedMismatch": 9.551216565610037e-8,
+        "plotsPaired": 2,
+        "plotsUnmatched": 2,
+        "groupsUnmatched": 0,
+        "missing": 2,
+        "matched": false,
+        "signalErrors": [
+          {
+            "analysis": "dc",
+            "signal": "i(v1)",
+            "absoluteMax": 5.50247063082869e-13,
+            "ngspicePeak": 0.00009424898453470257,
+            "normalized": 5.838228027595009e-9
+          },
+          {
+            "analysis": "dc",
+            "signal": "v(1)",
+            "absoluteMax": 0,
+            "ngspicePeak": 10.001,
+            "normalized": 0
+          },
+          {
+            "analysis": "dc",
+            "signal": "v(2)",
+            "absoluteMax": 5.50247063468845e-8,
+            "ngspicePeak": 0.5761015465297438,
+            "normalized": 9.551216565610037e-8
+          },
+          {
+            "analysis": "op",
+            "signal": "i(v1)",
+            "absoluteMax": 4.874981847239127e-13,
+            "ngspicePeak": 0.00009423898347370718,
+            "normalized": 5.172999185203705e-9
+          },
+          {
+            "analysis": "op",
+            "signal": "v(1)",
+            "absoluteMax": 0,
+            "ngspicePeak": 10,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(2)",
+            "absoluteMax": 4.874981796021416e-8,
+            "ngspicePeak": 0.5761016526292833,
+            "normalized": 8.462016683639732e-8
+          }
+        ],
+        "ordinalAligned": false,
+        "metricSha256": "eab13ca02b2adc14356fc6f55fb144363c02495cb418f207497030c75374da01"
+      },
+      "after": {
+        "engineStatus": "success",
+        "referenceStatus": "success",
+        "alignedPoints": 16,
+        "excludedPoints": 0,
+        "normalizedMismatch": 0.000026144031411652687,
+        "plotsPaired": 4,
+        "plotsUnmatched": 0,
+        "groupsUnmatched": 0,
+        "missing": 0,
+        "matched": true,
+        "signalErrors": [
+          {
+            "analysis": "dc",
+            "signal": "i(v1)",
+            "absoluteMax": 2.4637606803074464e-9,
+            "ngspicePeak": 0.00009423797889140084,
+            "normalized": 0.000026144031411652687
+          },
+          {
+            "analysis": "dc",
+            "signal": "v(1)",
+            "absoluteMax": 0,
+            "ngspicePeak": 10,
+            "normalized": 0
+          },
+          {
+            "analysis": "dc",
+            "signal": "v(2)",
+            "absoluteMax": 0.0002463760680311289,
+            "ngspicePeak": 9.9999989980001,
+            "normalized": 0.00002463760927180109
+          },
+          {
+            "analysis": "dc",
+            "signal": "i(v1)",
+            "absoluteMax": 5.50247063082869e-13,
+            "ngspicePeak": 0.00009424898453470257,
+            "normalized": 5.838228027595009e-9
+          },
+          {
+            "analysis": "dc",
+            "signal": "v(1)",
+            "absoluteMax": 0,
+            "ngspicePeak": 10.001,
+            "normalized": 0
+          },
+          {
+            "analysis": "dc",
+            "signal": "v(2)",
+            "absoluteMax": 5.50247063468845e-8,
+            "ngspicePeak": 0.5761015465297438,
+            "normalized": 9.551216565610037e-8
+          },
+          {
+            "analysis": "op",
+            "signal": "i(v1)",
+            "absoluteMax": 4.874981847239127e-13,
+            "ngspicePeak": 0.00009423898347370718,
+            "normalized": 5.172999185203705e-9
+          },
+          {
+            "analysis": "op",
+            "signal": "v(1)",
+            "absoluteMax": 0,
+            "ngspicePeak": 10,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(2)",
+            "absoluteMax": 4.874981796021416e-8,
+            "ngspicePeak": 0.5761016526292833,
+            "normalized": 8.462016683639732e-8
+          },
+          {
+            "analysis": "op",
+            "signal": "i(v1)",
+            "absoluteMax": 4.874981847239127e-13,
+            "ngspicePeak": 0.00009423898347370718,
+            "normalized": 5.172999185203705e-9
+          },
+          {
+            "analysis": "op",
+            "signal": "v(1)",
+            "absoluteMax": 0,
+            "ngspicePeak": 10,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(2)",
+            "absoluteMax": 4.874981796021416e-8,
+            "ngspicePeak": 0.5761016526292833,
+            "normalized": 8.462016683639732e-8
+          }
+        ],
+        "ordinalAligned": false,
+        "metricSha256": "285ca65dea627fa844c9e5fe9ce382a1fd140322bf8db114af32d3f88a44f620"
+      },
+      "newlyPaired": [
+        {
+          "analysis": "dc",
+          "plot": {
+            "spiceTs": "dot:dc:2",
+            "ngspice": "DC transfer characteristic",
+            "ngspiceIndex": 1
+          },
+          "worst": {
+            "analysis": "dc",
+            "signal": "i(v1)",
+            "absoluteMax": 2.4637606803074464e-9,
+            "ngspicePeak": 0.00009423797889140084,
+            "normalized": 0.000026144031411652687
+          },
+          "missing": 0,
+          "mismatch": false
+        },
+        {
+          "analysis": "op",
+          "plot": {
+            "spiceTs": "dot:op:2",
+            "ngspice": "Operating Point",
+            "ngspiceIndex": 3
+          },
+          "worst": {
+            "analysis": "op",
+            "signal": "v(2)",
+            "absoluteMax": 4.874981796021416e-8,
+            "ngspicePeak": 0.5761016526292833,
+            "normalized": 8.462016683639732e-8
+          },
+          "missing": 0,
+          "mismatch": false
+        }
+      ]
+    },
+    {
+      "key": "corpus-e-spice3/mos1-nand-transient",
+      "localPath": "benchmarks/corpus/corpus-e-spice3/fixtures/d_mos1.nand1.cir",
+      "inputSha256": "57de959ed069f9436f2dffdbc6fc975458996e3dca131774b40b7d41b18e5ef6",
+      "simulationCalls": 1,
+      "rawSha256": "80d5d9dcfe7eae82f101a085252d5242a029e754c3dc8c9115c975bf52673fcb",
+      "before": {
+        "engineStatus": "success",
+        "referenceStatus": "success",
+        "alignedPoints": 115,
+        "excludedPoints": 0,
+        "normalizedMismatch": 0.0037937190314439066,
+        "plotsPaired": 2,
+        "plotsUnmatched": 4,
+        "groupsUnmatched": 0,
+        "missing": 4,
+        "matched": false,
+        "signalErrors": [
+          {
+            "analysis": "op",
+            "signal": "i(vdd)",
+            "absoluteMax": 5.984284548447506e-18,
+            "ngspicePeak": 5.010003609378458e-12,
+            "normalized": 5.984284548447506e-8
+          },
+          {
+            "analysis": "op",
+            "signal": "i(vin)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(1)",
+            "absoluteMax": 0,
+            "ngspicePeak": 5,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(2)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(4)",
+            "absoluteMax": 1.7763568394002505e-15,
+            "ngspicePeak": 4.999999997815406,
+            "normalized": 3.552713680352748e-16
+          },
+          {
+            "analysis": "op",
+            "signal": "v(5)",
+            "absoluteMax": 3.793719031443907e-7,
+            "ngspicePeak": 2.079588073436261e-19,
+            "normalized": 0.0037937190314439066
+          },
+          {
+            "analysis": "tran",
+            "signal": "i(vdd)",
+            "absoluteMax": 3.1536098037009315e-8,
+            "ngspicePeak": 0.00006470957686606325,
+            "normalized": 0.000487348234439597
+          },
+          {
+            "analysis": "tran",
+            "signal": "i(vin)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0,
+            "normalized": 0
+          },
+          {
+            "analysis": "tran",
+            "signal": "v(1)",
+            "absoluteMax": 0,
+            "ngspicePeak": 5,
+            "normalized": 0
+          },
+          {
+            "analysis": "tran",
+            "signal": "v(2)",
+            "absoluteMax": 1.3322676295501878e-15,
+            "ngspicePeak": 5,
+            "normalized": 2.6645352591003756e-16
+          },
+          {
+            "analysis": "tran",
+            "signal": "v(4)",
+            "absoluteMax": 0.000010235905600453066,
+            "ngspicePeak": 4.999999997815407,
+            "normalized": 0.0000020471811209850648
+          },
+          {
+            "analysis": "tran",
+            "signal": "v(5)",
+            "absoluteMax": 0.0000076245231988014694,
+            "ngspicePeak": 1.259448463845772,
+            "normalized": 0.000006053858826044941
+          }
+        ],
+        "ordinalAligned": false,
+        "metricSha256": "1de619bea8ef633cdf2d667553517762d29b7cd97e0d9c2c46289c9913849f9c"
+      },
+      "after": {
+        "engineStatus": "success",
+        "referenceStatus": "success",
+        "alignedPoints": 119,
+        "excludedPoints": 0,
+        "normalizedMismatch": 0.0037937190314439066,
+        "plotsPaired": 6,
+        "plotsUnmatched": 0,
+        "groupsUnmatched": 0,
+        "missing": 0,
+        "matched": true,
+        "signalErrors": [
+          {
+            "analysis": "op",
+            "signal": "i(vdd)",
+            "absoluteMax": 5.984284548447506e-18,
+            "ngspicePeak": 5.010003609378458e-12,
+            "normalized": 5.984284548447506e-8
+          },
+          {
+            "analysis": "op",
+            "signal": "i(vin)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(1)",
+            "absoluteMax": 0,
+            "ngspicePeak": 5,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(2)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(4)",
+            "absoluteMax": 1.7763568394002505e-15,
+            "ngspicePeak": 4.999999997815406,
+            "normalized": 3.552713680352748e-16
+          },
+          {
+            "analysis": "op",
+            "signal": "v(5)",
+            "absoluteMax": 3.793719031443907e-7,
+            "ngspicePeak": 2.079588073436261e-19,
+            "normalized": 0.0037937190314439066
+          },
+          {
+            "analysis": "op",
+            "signal": "i(vdd)",
+            "absoluteMax": 5.984284548447506e-18,
+            "ngspicePeak": 5.010003609378458e-12,
+            "normalized": 5.984284548447506e-8
+          },
+          {
+            "analysis": "op",
+            "signal": "i(vin)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(1)",
+            "absoluteMax": 0,
+            "ngspicePeak": 5,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(2)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(4)",
+            "absoluteMax": 1.7763568394002505e-15,
+            "ngspicePeak": 4.999999997815406,
+            "normalized": 3.552713680352748e-16
+          },
+          {
+            "analysis": "op",
+            "signal": "v(5)",
+            "absoluteMax": 3.793719031443907e-7,
+            "ngspicePeak": 2.079588073436261e-19,
+            "normalized": 0.0037937190314439066
+          },
+          {
+            "analysis": "op",
+            "signal": "i(vdd)",
+            "absoluteMax": 5.984284548447506e-18,
+            "ngspicePeak": 5.010003609378458e-12,
+            "normalized": 5.984284548447506e-8
+          },
+          {
+            "analysis": "op",
+            "signal": "i(vin)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(1)",
+            "absoluteMax": 0,
+            "ngspicePeak": 5,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(2)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(4)",
+            "absoluteMax": 1.7763568394002505e-15,
+            "ngspicePeak": 4.999999997815406,
+            "normalized": 3.552713680352748e-16
+          },
+          {
+            "analysis": "op",
+            "signal": "v(5)",
+            "absoluteMax": 3.793719031443907e-7,
+            "ngspicePeak": 2.079588073436261e-19,
+            "normalized": 0.0037937190314439066
+          },
+          {
+            "analysis": "op",
+            "signal": "i(vdd)",
+            "absoluteMax": 5.984284548447506e-18,
+            "ngspicePeak": 5.010003609378458e-12,
+            "normalized": 5.984284548447506e-8
+          },
+          {
+            "analysis": "op",
+            "signal": "i(vin)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(1)",
+            "absoluteMax": 0,
+            "ngspicePeak": 5,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(2)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(4)",
+            "absoluteMax": 1.7763568394002505e-15,
+            "ngspicePeak": 4.999999997815406,
+            "normalized": 3.552713680352748e-16
+          },
+          {
+            "analysis": "op",
+            "signal": "v(5)",
+            "absoluteMax": 3.793719031443907e-7,
+            "ngspicePeak": 2.079588073436261e-19,
+            "normalized": 0.0037937190314439066
+          },
+          {
+            "analysis": "op",
+            "signal": "i(vdd)",
+            "absoluteMax": 5.984284548447506e-18,
+            "ngspicePeak": 5.010003609378458e-12,
+            "normalized": 5.984284548447506e-8
+          },
+          {
+            "analysis": "op",
+            "signal": "i(vin)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(1)",
+            "absoluteMax": 0,
+            "ngspicePeak": 5,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(2)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0,
+            "normalized": 0
+          },
+          {
+            "analysis": "op",
+            "signal": "v(4)",
+            "absoluteMax": 1.7763568394002505e-15,
+            "ngspicePeak": 4.999999997815406,
+            "normalized": 3.552713680352748e-16
+          },
+          {
+            "analysis": "op",
+            "signal": "v(5)",
+            "absoluteMax": 3.793719031443907e-7,
+            "ngspicePeak": 2.079588073436261e-19,
+            "normalized": 0.0037937190314439066
+          },
+          {
+            "analysis": "tran",
+            "signal": "i(vdd)",
+            "absoluteMax": 3.1536098037009315e-8,
+            "ngspicePeak": 0.00006470957686606325,
+            "normalized": 0.000487348234439597
+          },
+          {
+            "analysis": "tran",
+            "signal": "i(vin)",
+            "absoluteMax": 0,
+            "ngspicePeak": 0,
+            "normalized": 0
+          },
+          {
+            "analysis": "tran",
+            "signal": "v(1)",
+            "absoluteMax": 0,
+            "ngspicePeak": 5,
+            "normalized": 0
+          },
+          {
+            "analysis": "tran",
+            "signal": "v(2)",
+            "absoluteMax": 1.3322676295501878e-15,
+            "ngspicePeak": 5,
+            "normalized": 2.6645352591003756e-16
+          },
+          {
+            "analysis": "tran",
+            "signal": "v(4)",
+            "absoluteMax": 0.000010235905600453066,
+            "ngspicePeak": 4.999999997815407,
+            "normalized": 0.0000020471811209850648
+          },
+          {
+            "analysis": "tran",
+            "signal": "v(5)",
+            "absoluteMax": 0.0000076245231988014694,
+            "ngspicePeak": 1.259448463845772,
+            "normalized": 0.000006053858826044941
+          }
+        ],
+        "ordinalAligned": false,
+        "metricSha256": "286d87891b96ddfea6562e5b9de639db10fe815246be14d5fac3815f0d7a777e"
+      },
+      "newlyPaired": [
+        {
+          "analysis": "op",
+          "plot": {
+            "spiceTs": "dot:op:5",
+            "ngspice": "Operating Point",
+            "ngspiceIndex": 4
+          },
+          "worst": {
+            "analysis": "op",
+            "signal": "v(5)",
+            "absoluteMax": 3.793719031443907e-7,
+            "ngspicePeak": 2.079588073436261e-19,
+            "normalized": 0.0037937190314439066
+          },
+          "missing": 0,
+          "mismatch": false
+        },
+        {
+          "analysis": "op",
+          "plot": {
+            "spiceTs": "dot:op:4",
+            "ngspice": "Operating Point",
+            "ngspiceIndex": 3
+          },
+          "worst": {
+            "analysis": "op",
+            "signal": "v(5)",
+            "absoluteMax": 3.793719031443907e-7,
+            "ngspicePeak": 2.079588073436261e-19,
+            "normalized": 0.0037937190314439066
+          },
+          "missing": 0,
+          "mismatch": false
+        },
+        {
+          "analysis": "op",
+          "plot": {
+            "spiceTs": "dot:op:3",
+            "ngspice": "Operating Point",
+            "ngspiceIndex": 2
+          },
+          "worst": {
+            "analysis": "op",
+            "signal": "v(5)",
+            "absoluteMax": 3.793719031443907e-7,
+            "ngspicePeak": 2.079588073436261e-19,
+            "normalized": 0.0037937190314439066
+          },
+          "missing": 0,
+          "mismatch": false
+        },
+        {
+          "analysis": "op",
+          "plot": {
+            "spiceTs": "dot:op:2",
+            "ngspice": "Operating Point",
+            "ngspiceIndex": 1
+          },
+          "worst": {
+            "analysis": "op",
+            "signal": "v(5)",
+            "absoluteMax": 3.793719031443907e-7,
+            "ngspicePeak": 2.079588073436261e-19,
+            "normalized": 0.0037937190314439066
+          },
+          "missing": 0,
+          "mismatch": false
+        }
+      ]
+    },
+    {
+      "key": "corpus-e-spice3/dual-lc-uic-rejection",
+      "localPath": "benchmarks/corpus/corpus-e-spice3/fixtures/oscillator.7.cir",
+      "inputSha256": "0d9459725ec0fbfc07cddbd7999b0f193fc1e187d8b7586ad090cc3f1832e515",
+      "simulationCalls": 1,
+      "rawSha256": "4d23e26e7e7c8e05c44eee8736bb8fc3dfb4601afa11c3b1826dbe3ee162a3bc",
+      "before": {
+        "engineStatus": "success",
+        "referenceStatus": "success",
+        "alignedPoints": 1011,
+        "excludedPoints": 0,
+        "normalizedMismatch": 2.238263241193752e-14,
+        "plotsPaired": 1,
+        "plotsUnmatched": 1,
+        "groupsUnmatched": 0,
+        "missing": 1,
+        "matched": false,
+        "signalErrors": [
+          {
+            "analysis": "tran",
+            "signal": "i(l1)",
+            "absoluteMax": 1.1191048088221578e-13,
+            "ngspicePeak": 4.99988021170064,
+            "normalized": 2.238263241193752e-14
+          },
+          {
+            "analysis": "tran",
+            "signal": "i(l2)",
+            "absoluteMax": 1.056932319443149e-13,
+            "ngspicePeak": 4.999995000005,
+            "normalized": 2.113866752750937e-14
+          },
+          {
+            "analysis": "tran",
+            "signal": "v(1)",
+            "absoluteMax": 1.1013412404281553e-13,
+            "ngspicePeak": 4.999995000005,
+            "normalized": 2.2026846835387917e-14
+          },
+          {
+            "analysis": "tran",
+            "signal": "v(2)",
+            "absoluteMax": 1.1102230246251565e-13,
+            "ngspicePeak": 4.999880211700638,
+            "normalized": 2.220499247216025e-14
+          }
+        ],
+        "ordinalAligned": false,
+        "metricSha256": "200f9d8419c49b015443beea8cf3173d3beb54d04e480d806be5dad26676be7e"
+      },
+      "after": {
+        "engineStatus": "success",
+        "referenceStatus": "success",
+        "alignedPoints": 2022,
+        "excludedPoints": 0,
+        "normalizedMismatch": 2.238263241193752e-14,
+        "plotsPaired": 2,
+        "plotsUnmatched": 0,
+        "groupsUnmatched": 0,
+        "missing": 0,
+        "matched": true,
+        "signalErrors": [
+          {
+            "analysis": "tran",
+            "signal": "i(l1)",
+            "absoluteMax": 1.1191048088221578e-13,
+            "ngspicePeak": 4.99988021170064,
+            "normalized": 2.238263241193752e-14
+          },
+          {
+            "analysis": "tran",
+            "signal": "i(l2)",
+            "absoluteMax": 1.056932319443149e-13,
+            "ngspicePeak": 4.999995000005,
+            "normalized": 2.113866752750937e-14
+          },
+          {
+            "analysis": "tran",
+            "signal": "v(1)",
+            "absoluteMax": 1.1013412404281553e-13,
+            "ngspicePeak": 4.999995000005,
+            "normalized": 2.2026846835387917e-14
+          },
+          {
+            "analysis": "tran",
+            "signal": "v(2)",
+            "absoluteMax": 1.1102230246251565e-13,
+            "ngspicePeak": 4.999880211700638,
+            "normalized": 2.220499247216025e-14
+          },
+          {
+            "analysis": "tran",
+            "signal": "i(l1)",
+            "absoluteMax": 1.1191048088221578e-13,
+            "ngspicePeak": 4.99988021170064,
+            "normalized": 2.238263241193752e-14
+          },
+          {
+            "analysis": "tran",
+            "signal": "i(l2)",
+            "absoluteMax": 1.056932319443149e-13,
+            "ngspicePeak": 4.999995000005,
+            "normalized": 2.113866752750937e-14
+          },
+          {
+            "analysis": "tran",
+            "signal": "v(1)",
+            "absoluteMax": 1.1013412404281553e-13,
+            "ngspicePeak": 4.999995000005,
+            "normalized": 2.2026846835387917e-14
+          },
+          {
+            "analysis": "tran",
+            "signal": "v(2)",
+            "absoluteMax": 1.1102230246251565e-13,
+            "ngspicePeak": 4.999880211700638,
+            "normalized": 2.220499247216025e-14
+          }
+        ],
+        "ordinalAligned": false,
+        "metricSha256": "c9d45ecd375ba640eef40a8a5644f7203b992f987dc8bb506486bca8321275ae"
+      },
+      "newlyPaired": [
+        {
+          "analysis": "tran",
+          "plot": {
+            "spiceTs": "dot:tran:2",
+            "ngspice": "Transient Analysis",
+            "ngspiceIndex": 1
+          },
+          "worst": {
+            "analysis": "tran",
+            "signal": "i(l1)",
+            "absoluteMax": 1.1191048088221578e-13,
+            "ngspicePeak": 4.99988021170064,
+            "normalized": 2.238263241193752e-14
+          },
+          "missing": 0,
+          "mismatch": false
+        }
+      ]
+    }
+  ]
+}
