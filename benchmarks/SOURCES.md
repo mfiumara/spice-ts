@@ -1,5 +1,15 @@
 # Benchmark sources
 
+## MAXORD order-cap regression (#983)
+
+[maxord-983](reference/maxord-983/README.md) reruns unchanged corpus-k k-13
+`Netlists/CircuitSim90/MOS2/pump.cir` at Xyce_Regression revision
+`7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2` (GPL-3.0-or-later, existing
+corpus-k licence/provenance below). The four RC method/order probes in
+`reference/maxord-983/run.ts` are original MIT-licensed spice-ts project work.
+Both engines receive identical bytes per case. This scoped receipt publishes
+the residual pump mismatch; no fixture, corpus outcome or tolerance is changed.
+
 ## Repeated dot-card semantics (#1009)
 
 [repeated-dot-1009](repeated-dot-1009/README.md) reruns five unchanged corpus-e /
