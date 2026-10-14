@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "kind": "historical-scalar-receipts",
+  "provenance": {
+    "issue": 995,
+    "pullRequest": "https://github.com/mfiumara/spice-ts/pull/998",
+    "sourceCommit": "57920d6243539ef151459fc7ba6e838b58ed00ae",
+    "baselineCommit": "e56f1c55324170b6b2103c7cdc3c9c5834e2e0b4",
+    "fixture": "benchmarks/corpus/corpus-k/fixtures/xyce/Netlists/CircuitSim90/MOS2/gm6.cir",
+    "fixtureSha256": "e0a5f86b6d1daebb364f3a156d2d2f411c9383bd61dbaca33bc2fae2692b3e70",
+    "upstreamCommit": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+    "fixtureLicense": "GPL-3.0-or-later",
+    "engine": "ngspice-47",
+    "solver": "SPARSE 1.3",
+    "limitations": "Extracted scalar evidence, not renamed raw logs. Historical native exit codes were not stored in the logs and are null. Model/device diagnostic tables can be regenerated with probe.py; timing is diagnostic only, not a performance comparison. before.json, after.json and reference.json are unchanged."
+  },
+  "temperatureProbes": [
+    {
+      "name": "device125",
+      "sourceFile": "gm6-device125.log",
+      "sourceSha256": "9e73d4db265eedfd533cc64a89d6d981f843027689950b5817f945c3b374d09c",
+      "option": ".options device temp=125",
+      "ngspiceExitCode": null,
+      "temperatureC": 125,
+      "nominalTemperatureC": 27,
+      "deviceTemperatureC": {"mp2": 125, "mn3": 125},
+      "opVoltageV": {"7": 4.999999843316562, "11": 4.999999986533661, "12": 4.999999914925119, "13": -1.34346452429970e-16, "5": 0, "2": 0, "10": 5},
+      "opSourceCurrentA": {"vdd": -5.59509271639642e-12, "vnen": 0, "vin": 0},
+      "dataRows": [1, 1, 223],
+      "analysisSeconds": 0.002112,
+      "elapsedSeconds": 0.008,
+      "dynamicGminCompletions": 3,
+      "diagnosticErrors": ["no such function as {v,", "or {v(2) is not available."]
+    },
+    {
+      "name": "plain125",
+      "sourceFile": "gm6-plain125.log",
+      "sourceSha256": "d5b32219007829d17cd26745aa736a208deb84147e24805755df4b80668d49aa",
+      "option": ".options temp=125",
+      "ngspiceExitCode": null,
+      "temperatureC": 125,
+      "nominalTemperatureC": 27,
+      "deviceTemperatureC": {"mp2": 125, "mn3": 125},
+      "opVoltageV": {"7": 4.999999843316562, "11": 4.999999986533661, "12": 4.999999914925119, "13": -1.34346452429970e-16, "5": 0, "2": 0, "10": 5},
+      "opSourceCurrentA": {"vdd": -5.59509271639642e-12, "vnen": 0, "vin": 0},
+      "dataRows": [1, 1, 223],
+      "analysisSeconds": 0.002061,
+      "elapsedSeconds": 0.006,
+      "dynamicGminCompletions": 3,
+      "diagnosticErrors": ["no such function as {v,", "or {v(2) is not available."]
+    },
+    {
+      "name": "plain27",
+      "sourceFile": "gm6-plain27.log",
+      "sourceSha256": "fab76d723b0685cd4e3202d6d5220c620d3085216135a6f405c88de49411997d",
+      "option": ".options temp=27",
+      "ngspiceExitCode": null,
+      "temperatureC": 27,
+      "nominalTemperatureC": 27,
+      "deviceTemperatureC": {"mp2": 27, "mn3": 27},
+      "opVoltageV": {"7": 4.999999906448007, "11": 4.999999991948594, "12": 4.999999949198284, "13": -6.29999768170984e-06, "5": 0, "2": 0, "10": 5},
+      "opSourceCurrentA": {"vdd": -4.99984072903386e-12, "vnen": 0, "vin": 0},
+      "dataRows": [1, 1, 224],
+      "analysisSeconds": 0.001657,
+      "elapsedSeconds": 0.005,
+      "dynamicGminCompletions": 0,
+      "diagnosticErrors": ["no such function as {v,", "or {v(2) is not available."]
+    }
+  ],
+  "tests": {
+    "runner": "vitest 4.1.4",
+    "red": {
+      "sourceFile": "red.log",
+      "sourceSha256": "f3621c2aee56e9abbdde82eb5233d3ae2c0cce9426ce3acf36b57c48f684af90",
+      "command": "pnpm -C packages/core exec vitest run src/devices/mos2-temperature-995.test.ts",
+      "filesFailed": 1,
+      "testsFailed": 12,
+      "testsPassed": 24,
+      "testsTotal": 36,
+      "directDeviceLawTestsPassed": 18,
+      "failureClass": "UnsupportedTemperatureError",
+      "failureDevice": "M1",
+      "failureTemperaturesC": [50, 125],
+      "durationMs": 888,
+      "testMs": 151,
+      "note": "Corrected behavioral reproduction before the MOS2 circuit guard edit, not the initial result-property authoring error."
+    },
+    "green": {
+      "sourceFile": "green.log",
+      "sourceSha256": "30315a89d7f7f27169ba52559eb0b06e476ce32a1d2ddb03b913d4cb5007a661",
+      "command": "pnpm -C packages/core exec vitest run src/devices/mos2-temperature-995.test.ts src/devices/mos2.test.ts src/devices/mos2-series-resistance-982.test.ts src/options-temp.test.ts src/temperature-ngspice-parity.test.ts",
+      "filesPassed": 5,
+      "testsPassed": 123,
+      "testsFailed": 0,
+      "durationMs": 1220,
+      "testMs": 855,
+      "files": [
+        {"file": "src/devices/mos2-series-resistance-982.test.ts", "testsPassed": 23, "durationMs": 74},
+        {"file": "src/temperature-ngspice-parity.test.ts", "testsPassed": 38, "durationMs": 76},
+        {"file": "src/devices/mos2.test.ts", "testsPassed": 9, "durationMs": 100},
+        {"file": "src/options-temp.test.ts", "testsPassed": 15, "durationMs": 274},
+        {"file": "src/devices/mos2-temperature-995.test.ts", "testsPassed": 38, "durationMs": 330}
+      ]
+    }
+  }
+}
