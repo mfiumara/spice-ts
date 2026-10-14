@@ -1,0 +1,15 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: simple 1r 1v test
+
+
+Error in netlist line no. 4, new internal line no. 3:
+
+Undefined parameter [vdc]
+Error in netlist line no. 4, new internal line no. 3:
+
+Cannot compute substitute
+
+ERROR: fatal error in ngspice, exit(1)

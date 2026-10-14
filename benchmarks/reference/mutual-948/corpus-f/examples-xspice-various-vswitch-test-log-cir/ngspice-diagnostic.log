@@ -1,0 +1,94 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: * sw ring-oscillators
+
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+vdd2                                         3
+outa                                       1.5
+outb                                       1.5
+outc                                         3
+outd                                         2
+dgnda                                        0
+dgndb                                        0
+dgndc                                        0
+dgndd                                        0
+in                                           0
+vin#branch                                   0
+vmeasured#branch                         0.001
+vmeasurec#branch                       1.5e-09
+vmeasureb#branch                        0.0015
+vmeasurea#branch                        0.0015
+vdd#branch                              -0.004
+
+
+No. of Data Rows : 1008
+
+Total analysis time (seconds) = 0.003486
+
+Total elapsed time (seconds) = 0.007 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13254.797 MB.
+Maximum ngspice program size =   10.469 MB.
+Current ngspice program size =   10.469 MB.
+ASCII raw file "output.raw"
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 17  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+vdd2                                         3
+outa                                       1.5
+outb                                       1.5
+outc                                         3
+outd                                         2
+dgnda                                        0
+dgndb                                        0
+dgndc                                        0
+dgndd                                        0
+in                                           0
+vin#branch                                   0
+vmeasured#branch                         0.001
+vmeasurec#branch                       1.5e-09
+vmeasureb#branch                        0.0015
+vmeasurea#branch                        0.0015
+vdd#branch                              -0.004
+
+
+No. of Data Rows : 1008
+
+Total analysis time (seconds) = 0.012667
+
+Total elapsed time (seconds) = 0.017 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13254.797 MB.
+Maximum ngspice program size =   10.500 MB.
+Current ngspice program size =   10.500 MB.
+
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+

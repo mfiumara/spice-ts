@@ -1,0 +1,36 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: mosdriver -- lossy line ltra model -- c load 
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 9  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+168                                          0
+2                                            5
+1                                            5
+3                                            5
+vs#branch                                    0
+vdd#branch                           -5.01e-12
+
+
+No. of Data Rows : 497
+
+Total analysis time (seconds) = 0.007065
+
+Total elapsed time (seconds) = 0.012 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 15118.891 MB.
+Maximum ngspice program size =   10.297 MB.
+Current ngspice program size =   10.297 MB.
+

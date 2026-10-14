@@ -1,0 +1,27 @@
+TAP version 13
+# Subtest: bounded series hashing matches JSON serialization without dropping samples
+not ok 1 - bounded series hashing matches JSON serialization without dropping samples
+  ---
+  duration_ms: 2.297833
+  type: 'test'
+  location: '/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_84a6a757/benchmarks/reference/subset.test.ts:2:1177'
+  failureType: 'testCodeFailure'
+  error: '(0 , import_subset_runner.hashSeries) is not a function'
+  code: 'ERR_TEST_FAILURE'
+  name: 'TypeError'
+  stack: |-
+    TestContext.<anonymous> (/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_84a6a757/benchmarks/reference/subset.test.ts:11:16)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.start (node:internal/test_runner/test:944:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 779.04625

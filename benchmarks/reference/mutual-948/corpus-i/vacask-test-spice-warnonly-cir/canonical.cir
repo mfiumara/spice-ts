@@ -1,0 +1,17 @@
+* An unsupported SPICE device is warned about and skipped.
+* K1 (mutual inductor) has no VACASK adapter equivalent; the two R/L dividers
+* around it must still solve. Test asserts: WARNING appears in output AND exit
+* code 0.
+Vin vin 0 DC 5
+R1 vin mid 1k
+L1 mid out 1n
+R2 out 0 1k
+
+Vin2 vin2 0 DC 5
+R3 vin2 mid2 1k
+L2 mid2 out2 1n
+R4 out2 0 1k
+
+K1 L1 L2 0.5
+.tran 1u 10m
+.end

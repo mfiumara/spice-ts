@@ -1,0 +1,24 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: ltspice a-device non-ground-common latch example
+
+
+
+Total elapsed time (seconds) = 0.003 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 12655.438 MB.
+Maximum ngspice program size =    9.797 MB.
+Current ngspice program size =    9.797 MB.
+
+
+Error on line 8 or its substitute:
+  asr set reset common common common common q common srflop vhigh=5 vlow=0 td=1n rout=1
+MIF-ERROR - unable to find definition of model 1
+    Simulation interrupted due to error!
+
+Error: circuit not parsed.
+Note: no resource usage information for 'time',
+	or no active circuit available

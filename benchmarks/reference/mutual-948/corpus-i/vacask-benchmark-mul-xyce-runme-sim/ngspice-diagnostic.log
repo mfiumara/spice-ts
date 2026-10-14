@@ -1,0 +1,37 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: diode cascade
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 8  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+a                                            0
+1                                            0
+2                                  -8.4595e-15
+10                                -1.69119e-14
+3                                 -2.53693e-14
+20                                -3.38285e-14
+vs#branch                                    0
+
+ Reference value :  4.85392e-04 Reference value :  9.66252e-04 Reference value :  1.45491e-03 Reference value :  1.95254e-03 Reference value :  2.44954e-03 Reference value :  2.95534e-03 Reference value :  3.45532e-03 Reference value :  3.96100e-03 Reference value :  4.46222e-03 Reference value :  4.96452e-03
+No. of Data Rows : 500017
+
+Total analysis time (seconds) = 2.52283
+
+Total elapsed time (seconds) = 2.527 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13018.641 MB.
+Maximum ngspice program size =   10.125 MB.
+Current ngspice program size =   10.125 MB.
+

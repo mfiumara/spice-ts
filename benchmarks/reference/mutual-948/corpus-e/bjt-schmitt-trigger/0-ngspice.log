@@ -1,0 +1,24 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: schmitt ckt - ecl compatible schmitt trigger
+
+
+
+Total elapsed time (seconds) = 0.005 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 14358.297 MB.
+Maximum ngspice program size =    9.812 MB.
+Current ngspice program size =    9.812 MB.
+
+
+Error on line 15 or its substitute:
+  q1 3 2 4 0 qstd off=1
+  unknown parameter (1) 
+    Simulation interrupted due to error!
+
+Error: circuit not parsed.
+Note: no resource usage information for 'time',
+	or no active circuit available

@@ -1,0 +1,83 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: *** ndinv * 4
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 45  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+11                                           5
+100                                          5
+1                                            0
+xndinv1.12                             3.61293
+xndinv1.13                             3.61293
+xndinv1.14                             3.61293
+xndinv1.23                                   5
+xndinv1.22                             1.59002
+12                                 1.43643e-08
+13                                           5
+xndinv1.32                        7.91919e-262
+2                                  6.07304e-09
+21                                           5
+xndinv2.12                             3.61293
+xndinv2.13                             3.61293
+xndinv2.14                             3.61293
+xndinv2.23                                   5
+xndinv2.22                             1.59002
+22                                 1.43643e-08
+23                                           5
+xndinv2.32                         1.5321e-263
+3                                  6.07304e-09
+31                                           5
+xndinv3.12                             3.61293
+xndinv3.13                             3.61293
+xndinv3.14                             3.61293
+xndinv3.23                                   5
+xndinv3.22                             1.59002
+32                                 1.43643e-08
+33                                           5
+xndinv3.32                       -1.10314e-171
+4                                  6.07304e-09
+41                                           5
+xndinv4.12                             3.61293
+xndinv4.13                             3.61293
+xndinv4.14                             3.61293
+xndinv4.23                                   5
+xndinv4.22                             1.59002
+42                                 1.43643e-08
+43                                           5
+xndinv4.32                       -9.47821e-144
+5                                  6.07304e-09
+vin#branch                                   0
+vdd#branch                         -1.9447e-10
+
+
+No. of Data Rows : 315
+
+Total analysis time (seconds) = 0.016195
+
+Total elapsed time (seconds) = 0.022 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 15118.891 MB.
+Maximum ngspice program size =   10.516 MB.
+Current ngspice program size =   10.516 MB.
+
+
+Warning: Model issue on line 85 :
+  .model n10l5 nmos level=6 tpg=1 kc=3.8921e-05 nc=1.1739 kv=0.91602 nv=0. ...
+unrecognized parameter (xj) - ignored
+
+Warning: Model issue on line 95 :
+  .model p12l5 pmos level=6 tpg=-1 kc=6.42696e-06 nc=1.6536 kv=0.92145 nv= ...
+unrecognized parameter (xj) - ignored
+

@@ -1,0 +1,12 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: simple phase-locked loop using ltspice a-device functional models
+
+
+Error: no such function 'if' at line 19
+from file
+  input.cir
+
+ERROR: fatal error in ngspice, exit(1)

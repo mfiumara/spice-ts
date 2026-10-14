@@ -1,0 +1,52 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: test if conditions
+
+expect Error: missing if condition
+nonetheless evaluated as FALSE
+
+expect |false|
+|false|
+
+expect testvar_c=|TRUE|
+testvar_c=|TRUE|
+
+expect Error: testvar_d: no such variable.
+nonetheless evaluated as FALSE
+
+expect Error(parse.c--checkvalid): testvar_e: no such vector.
+nonetheless evaluated as FALSE
+
+expect |false|
+|false|
+
+expect |true|
+|true|
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+v(1) = 4.200000e+01
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+OP information in rawfile.
+
+Total analysis time (seconds) = 0.000499
+
+Total elapsed time (seconds) = 0.004 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13328.812 MB.
+Maximum ngspice program size =   10.062 MB.
+Current ngspice program size =   10.062 MB.
+
+
+Error: missing if condition.
+Error: testvar_d: no such variable.
+Warning from checkvalid: vector testvar_e is not available or has zero length.

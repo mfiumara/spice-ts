@@ -1,0 +1,110 @@
+
+*****
+***** Welcome to the Xyce(TM) Parallel Electronic Simulator
+*****
+***** This is version XyceNF Release 7.10.0
+***** Date: Wed Oct 14 02:03:28 CEST 2026
+
+
+***** Executing netlist input.cir
+
+***** Reading and parsing netlist...
+***** Setting up topology...
+
+Netlist warning: Voltage Node (GND) does not have a DC path to ground
+Netlist warning: Voltage Node (NET-_C1-PAD2_) does not have a DC path to
+ ground
+Netlist warning: Voltage Node (IN) does not have a DC path to ground
+Netlist warning: Voltage Node (OUT) does not have a DC path to ground
+***** Device Count Summary ...
+       C level 1 (Capacitor)                  1
+       L level 1 (Inductor)                   1
+       R level 1 (Resistor)                   1
+       V level 1 (Independent Voltage Source) 1
+       ----------------------------------------
+       Total Devices                          4
+***** Setting up matrix structure...
+***** Number of Unknowns = 6
+***** Initializing...
+
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+
+***** Solution Summary *****
+	Number Successful Steps Taken:		0
+	Number Failed Steps Attempted:		20
+	Number Jacobians Evaluated:		1
+	Number Linear Solves:			1
+	Number Failed Linear Solves:		0
+	Number Residual Evaluations:		3
+	Number Nonlinear Convergence Failures:	0
+	Total Residual Load Time:		7.15256e-06 seconds
+	Total Jacobian Load Time:		3.09944e-06 seconds
+	Total Linear Solution Time:		3.00407e-05 seconds
+
+
+***** Total Simulation Solvers Run Time: 0.000430107 seconds
+***** Total Elapsed Run Time:            0.00155592 seconds
+*****
+***** End of Xyce(TM) Simulation
+*****
+
+Timing summary of 1 processor
+                 Stats                   Count       CPU Time              Wall Time
+---------------------------------------- ----- --------------------- ---------------------
+Xyce                                         1        0.001 (100.0%)        0.002 (100.0%)
+  Analysis                                   1        0.000 (21.81%)        0.000 (20.16%)
+    AC                                       1        0.000 (21.54%)        0.000 (20.07%)
+      DC Nonlinear Solve                     1        0.000 ( 9.44%)        0.000 (10.60%)
+        Residual                             3        0.000 ( 0.64%)        0.000 ( 0.40%)
+        Jacobian                             1        0.000 ( 0.18%)        0.000 ( 0.20%)
+        Linear Solve                         1        0.000 ( 2.02%)        0.000 ( 1.48%)
+      AC Linear Solve                       20        0.000 ( 7.24%)        0.000 ( 6.35%)
+        Linear Solve                        20        0.000 ( 7.06%)        0.000 ( 5.76%)
+  Netlist Import                             1        0.000 (26.12%)        0.000 (22.88%)
+    Parse Context                            1        0.000 ( 4.12%)        0.000 ( 3.75%)
+    Distribute Devices                       1        0.000 ( 6.78%)        0.000 ( 4.39%)
+    Verify Devices                           1        0.000 ( 0.18%)        0.000 ( 0.29%)
+    Instantiate                              1        0.000 ( 2.47%)        0.000 ( 1.47%)
+  Late Initialization                        1        0.000 (18.79%)        0.000 (14.80%)
+    Global Indices                           1        0.000 ( 2.02%)        0.000 ( 1.53%)
+  Setup Matrix Structure                     1        0.000 ( 3.21%)        0.000 ( 3.84%)
+

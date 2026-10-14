@@ -1,0 +1,195 @@
+
+*****
+***** Welcome to the Xyce(TM) Parallel Electronic Simulator
+*****
+***** This is version XyceNF Release 7.10.0
+***** Date: Wed Oct 14 02:03:18 CEST 2026
+
+
+***** Executing netlist input.cir
+
+***** Reading and parsing netlist...
+***** Setting up topology...
+
+Netlist warning: Voltage Node (GND) does not have a DC path to ground
+Netlist warning: Voltage Node (IN) does not have a DC path to ground
+Netlist warning: Voltage Node (OUT) does not have a DC path to ground
+***** Device Count Summary ...
+       C level 1 (Capacitor)                  1
+       R level 1 (Resistor)                   2
+       V level 1 (Independent Voltage Source) 1
+       ----------------------------------------
+       Total Devices                          4
+***** Setting up matrix structure...
+***** Number of Unknowns = 4
+***** Initializing...
+
+***** Beginning DC Operating Point Calculation...
+
+***** Beginning Transient Calculation...
+
+***** Percent complete: 1.4 %
+***** Current system time: Wed Oct 14 02:03:18 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 3 %
+***** Current system time: Wed Oct 14 02:03:18 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 5 %
+***** Current system time: Wed Oct 14 02:03:18 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 7 %
+***** Current system time: Wed Oct 14 02:03:18 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 9 %
+***** Current system time: Wed Oct 14 02:03:18 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 11 %
+***** Current system time: Wed Oct 14 02:03:18 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 13 %
+***** Current system time: Wed Oct 14 02:03:18 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 15 %
+***** Current system time: Wed Oct 14 02:03:18 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 17 %
+***** Current system time: Wed Oct 14 02:03:18 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 19 %
+***** Current system time: Wed Oct 14 02:03:18 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 21 %
+***** Current system time: Wed Oct 14 02:03:18 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 23 %
+***** Current system time: Wed Oct 14 02:03:18 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 25 %
+***** Current system time: Wed Oct 14 02:03:18 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 27 %
+***** Current system time: Wed Oct 14 02:03:18 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 29 %
+***** Current system time: Wed Oct 14 02:03:18 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 31 %
+***** Current system time: Wed Oct 14 02:03:18 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 33 %
+***** Current system time: Wed Oct 14 02:03:18 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 35 %
+***** Current system time: Wed Oct 14 02:03:18 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 37 %
+***** Current system time: Wed Oct 14 02:03:18 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 39 %
+***** Current system time: Wed Oct 14 02:03:18 2026
+***** Estimated time to completion:  0 sec.
+
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+***** Percent complete: 40 %
+***** Current system time: Wed Oct 14 02:03:18 2026
+***** Estimated time to completion:  0 sec.
+
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+ *** Transient failure history: 
+Time        Time      Step   EstErr       Non-Linear Solver       node     node
+(sec)       Step     Status  OverTol    Status    Iters  ||F||    index    name
+ 2.001e-02  2.017e-09  fail  3.421e+00  P:normal   6  1.031e-03      0    OUT
+ 2.001e-02  7.711e-10  pass  8.168e-02  P:normal   2  6.120e-04      0    OUT
+ 2.001e-02  7.711e-10  pass  1.196e-01  P:normal   2  1.266e-03      0    OUT
+ 2.001e-02  7.711e-10  pass  2.039e-01  P:normal   3  1.174e-03      2    IN
+ 2.001e-02  7.711e-10  pass  1.643e-01  P:normal   4  4.558e-03      0    OUT
+ 2.001e-02  7.711e-10  pass  2.938e-02  P:normal   3  2.120e-03      2    IN
+ 2.001e-02  1.542e-09  pass  4.021e-01  P:normal   3  1.762e-03      0    OUT
+ 2.001e-02  1.542e-09  pass  5.762e-01  P:normal   5  4.763e-03      2    IN
+ 2.001e-02  1.388e-09  pass  9.561e-01  P:normal   2  6.051e-03      2    IN
+ 2.001e-02  1.118e-09  pass  5.096e-01  P:normal   6  8.318e-03      2    IN
+ 2.001e-02  1.006e-09  pass  6.423e-02  P:normal  11  7.381e-03      2    IN
+ 2.001e-02  1.006e-09  pass  1.090e-01  P:normal   4  3.530e-03      0    OUT
+ 2.001e-02  1.006e-09  pass  1.329e-01  P:normal   3  6.115e-03      0    OUT
+ 2.001e-02  1.006e-09  pass  6.261e-01  P:normal  19  4.265e-03      2    IN
+ 2.001e-02  9.058e-10  pass  2.075e-01  P:normal   2  2.259e-03      0    OUT
+ 2.001e-02  9.058e-10  pass  3.389e-01  P:normal   3  3.172e-03      2    IN
+ 2.001e-02  9.058e-10  pass  2.617e-01  P:normal   5  3.660e-03      2    IN
+ 2.001e-02  9.058e-10  fail  2.617e-01  F:max s   20  1.689e-02      2    IN
+ 2.001e-02  1.132e-10  fail  2.617e-01  F:max s   20  7.905e-02      0    OUT
+ 2.001e-02  1.415e-11  fail  2.617e-01  F:max s   20  6.704e-01      0    OUT
+ 2.001e-02  1.769e-12  fail  2.617e-01  F:max s   20  6.381e+00      2    IN
+ 2.001e-02  2.211e-13  fail  2.617e-01  F:max s   20  7.057e+01      0    OUT
+ 2.001e-02  2.764e-14  fail  2.617e-01  F:max s   20  1.672e+02      2    IN
+ 2.001e-02  3.455e-15  fail  2.617e-01  F:max s   20  1.898e+03      0    OUT
+ 2.001e-02  4.319e-16  fail  2.617e-01  F:max s   20  2.579e+03      0    OUT
+Time step too small near step number: 2855  Exiting transient loop.
+
+
+***** Solution Summary *****
+	Number Successful Steps Taken:		2856
+	Number Failed Steps Attempted:		535
+	Number Jacobians Evaluated:		8478
+	Number Linear Solves:			8478
+	Number Failed Linear Solves:		4
+	Number Residual Evaluations:		11870
+	Number Nonlinear Convergence Failures:	188
+	Total Residual Load Time:		0.006 seconds
+	Total Jacobian Load Time:		0.002 seconds
+	Total Linear Solution Time:		0.011 seconds
+
+
+***** Total Simulation Solvers Run Time: 0.083 seconds
+***** Total Elapsed Run Time:            0.084 seconds
+*****
+***** End of Xyce(TM) Simulation
+*****
+
+Timing summary of 1 processor
+                 Stats                   Count       CPU Time              Wall Time
+---------------------------------------- ----- --------------------- ---------------------
+Xyce                                         1        0.047 (100.0%)        0.085 (100.0%)
+  Analysis                                   1        0.047 (98.22%)        0.083 (97.99%)
+    Transient                                1        0.047 (98.22%)        0.083 (97.98%)
+      Nonlinear Solve                     3391        0.034 (72.39%)        0.058 (68.60%)
+        Residual                         11870        0.008 (17.23%)        0.013 (14.98%)
+        Jacobian                          8478        0.003 ( 6.01%)        0.006 ( 7.24%)
+        Linear Solve                      8478        0.012 (24.98%)        0.015 (17.95%)
+      Successful DCOP Steps                  1        0.000 ( 0.08%)        0.000 ( 0.19%)
+      Successful Step                     2855        0.008 (17.54%)        0.016 (18.43%)
+      Failed Steps                         535        0.000 ( 0.41%)        0.003 ( 3.31%)
+        Nonlinear Failure                  188        0.000 ( 0.05%)        0.000 ( 0.11%)
+  Netlist Import                             1        0.000 ( 0.60%)        0.000 ( 0.55%)
+    Parse Context                            1        0.000 ( 0.08%)        0.000 ( 0.09%)
+    Distribute Devices                       1        0.000 ( 0.16%)        0.000 ( 0.11%)
+    Verify Devices                           1        0.000 (<0.01%)        0.000 (<0.01%)
+    Instantiate                              1        0.000 ( 0.06%)        0.000 ( 0.04%)
+  Late Initialization                        1        0.000 ( 0.38%)        0.000 ( 0.33%)
+    Global Indices                           1        0.000 ( 0.04%)        0.000 ( 0.03%)
+  Setup Matrix Structure                     1        0.000 ( 0.08%)        0.000 ( 0.09%)
+

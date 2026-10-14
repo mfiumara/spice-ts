@@ -1,0 +1,112 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: two-dimensional pin-diode circuit
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 10  
+TWObiasSolve: No Convergence
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+1                                          0.8
+2                                          0.8
+3                                          0.8
+4                                          0.8
+5                                          0.8
+l1#branch                             0.418083
+vrc#branch                                   0
+vd#branch                             0.418083
+vin#branch                           -0.418083
+
+ Reference value :  0.00000e+00 Reference value :  2.96000e-09 Reference value :  9.96000e-09 Reference value :  1.10850e-08 Reference value :  1.13975e-08 Reference value :  1.19547e-08 Reference value :  1.19692e-08 Reference value :  1.20703e-08 Reference value :  1.23258e-08 Reference value :  1.25473e-08 Reference value :  1.28557e-08 Reference value :  1.30578e-08 Reference value :  1.32838e-08 Reference value :  1.33626e-08 Reference value :  1.35252e-08 Reference value :  1.36114e-08 Reference value :  1.37803e-08 Reference value :  1.38637e-08 Reference value :  1.40305e-08 Reference value :  1.41104e-08 Reference value :  1.42748e-08 Reference value :  1.43512e-08 Reference value :  1.45116e-08 Reference value :  1.45847e-08 Reference value :  1.47374e-08 Reference value :  1.47401e-08 Reference value :  1.48660e-08 Reference value :  1.49646e-08 Reference value :  1.50294e-08 Reference value :  1.50501e-08 Reference value :  1.51874e-08 Reference value :  1.52534e-08 Reference value :  1.52736e-08 Reference value :  1.54032e-08 Reference value :  1.54585e-08 Reference value :  1.54776e-08 Reference value :  1.56029e-08 Reference value :  1.56056e-08 Reference value :  1.57425e-08 Reference value :  1.57445e-08 Reference value :  1.57757e-08 Reference value :  1.59323e-08 Reference value :  1.59739e-08 Reference value :  1.60154e-08 Reference value :  1.62047e-08 Reference value :  1.62794e-08 Reference value :  1.63053e-08 Reference value :  1.63415e-08 Reference value :  1.63544e-08 Reference value :  1.64379e-08 Reference value :  1.64782e-08 Reference value :  1.64921e-08 Reference value :  1.65114e-08 Reference value :  1.65308e-08 Reference value :  1.65683e-08 Reference value :  1.65863e-08 Reference value :  1.66043e-08 Reference value :  1.66223e-08 Reference value :  1.66403e-08 Reference value :  1.67098e-08 Reference value :  1.67770e-08 Reference value :  1.67811e-08 Reference value :  1.68103e-08 Reference value :  1.68395e-08 Reference value :  1.68406e-08 Reference value :  1.69720e-08 Reference value :  1.73175e-08 Reference value :  1.83161e-08 Reference value :  1.91385e-08 Reference value :  1.99608e-08 Reference value :  2.07832e-08 Reference value :  2.16055e-08 Reference value :  2.24279e-08 Reference value :  2.70726e-08 Reference value :  3.70726e-08 Reference value :  5.00726e-08 Reference value :  6.30726e-08 Reference value :  7.50726e-08 Reference value :  8.70726e-08 Reference value :  9.90726e-08
+No. of Data Rows : 335
+.print line ignored since rawfile was produced.
+.plot line ignored since rawfile was produced.
+Total elapsed time (seconds) = 82.037 
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 14050.484 MB.
+Maximum ngspice program size =   15.516 MB.
+Current ngspice program size =   15.516 MB.
+24 page faults, 0 vol + 11207 invol = 11207 context switches.
+
+Number of lines in the deck = 13
+Netlist loading time = 0.000202
+Subckt and Param expansion time = 0.000218
+Netlist parsing time = 0.000192
+
+Nominal temperature = 27
+Operating temperature = 27
+Total iterations = 7653
+Transient iterations = 7644
+Circuit Equations = 10
+Circuit original non-zeroes = 20
+Circuit fill-in non-zeroes = 3
+Circuit total non-zeroes = 0
+Transient timepoints = 411
+Accepted timepoints = 335
+Rejected timepoints = 76
+Total analysis time (seconds) = 82.0326
+Matrix load time = 82.0093
+Matrix synchronize time = 0
+Matrix reorder time = 1.2E-05
+Matrix factor time = 0.003088
+Matrix solve time = 0.000851
+Transient analysis time = 81.3589
+Transient load time = 81.3364
+Transient sync time = 0
+Transient factor time = 0.003084
+Transient solve time = 0.00085
+Transient trunc time = 0.003152
+Transient iterations for the last time point = 0
+AC analysis time = 0
+AC load time = 0
+AC sync time = 0
+AC factor time = 0
+AC solve time = 0
+----------------------------------------
+Device d1 Memory Usage:
+Item                     Count     Bytes
+----------------------------------------
+Device                       1       240
+Elements                   396    161568
+Nodes                      442    505648
+Edges                      837    167400
+Misc Mesh                  n/a      7664
+Equil Orig NZ             2023     80920
+Equil Fill NZ             5018    200720
+Equil Tot  NZ             7041    281640
+Equil Vectors              424     13568
+Bias Orig NZ             11807    472280
+Bias Fill NZ             78521   3140840
+Bias Tot  NZ             90328   3613120
+Bias Vectors              1270     50800
+State Vector              3884     31072
+----------------------------------------------------------------------
+Device d1 Time Usage:
+Item                     SETUP        DC      TRAN        AC     TOTAL
+----------------------------------------------------------------------
+Setup Time             5.6e-05  0.000363  0.000286         0  0.000705
+Load Time             0.000238  0.023848   3.76094         0   3.78502
+Order Time            0.001602  0.131927         0         0  0.133529
+Factor Time           0.000684  0.461751   70.2494         0   70.7118
+Solve Time             9.9e-05  0.031535   4.34562         0   4.37726
+Update Time         2.00002e-06  0.002206  0.004871         0  0.007079
+Check Time             3.9e-05  0.000818  0.021575         0  0.022432
+Misc Time           7.00001e-06  0.000296  0.077486         0  0.000705
+LTE Time                                  0.002669            0.002669
+Total Time            0.002893  0.670101   81.3179         0   81.9909
+Iterations                   8        38      7640         0      7686
+
+ngspice-47 done
+
+Note: vin: dc value used for op instead of transient time=0 value.
+Pre-Pin-Diode-OP.0.d1: No such file or directory
+NUMD2load: trouble reading state-file Pre-Pin-Diode-OP.0.d1

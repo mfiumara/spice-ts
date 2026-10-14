@@ -1,0 +1,61 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: * 1-to-1/16th down-scaling current mirror
+
+
+warning, can't find model 'nch' from line
+    m0 inc inc 0 0 nch w=1u l=1u
+warning, can't find model 'nch' from line
+    m16 out inc n1 0 nch w=1u l=1u
+warning, can't find model 'nch' from line
+    m15 n1 inc n2 0 nch w=1u l=1u
+warning, can't find model 'nch' from line
+    m14 n2 inc n3 0 nch w=1u l=1u
+warning, can't find model 'nch' from line
+    m13 n3 inc n4 0 nch w=1u l=1u
+warning, can't find model 'nch' from line
+    m12 n4 inc n5 0 nch w=1u l=1u
+warning, can't find model 'nch' from line
+    m11 n5 inc n6 0 nch w=1u l=1u
+warning, can't find model 'nch' from line
+    m10 n6 inc n7 0 nch w=1u l=1u
+warning, can't find model 'nch' from line
+    m9 n7 inc n8 0 nch w=1u l=1u
+warning, can't find model 'nch' from line
+    m8 n8 inc n9 0 nch w=1u l=1u
+warning, can't find model 'nch' from line
+    m7 n9 inc n10 0 nch w=1u l=1u
+warning, can't find model 'nch' from line
+    m6 n10 inc n11 0 nch w=1u l=1u
+warning, can't find model 'nch' from line
+    m5 n11 inc n12 0 nch w=1u l=1u
+warning, can't find model 'nch' from line
+    m4 n12 inc n13 0 nch w=1u l=1u
+warning, can't find model 'nch' from line
+    m3 n13 inc n14 0 nch w=1u l=1u
+warning, can't find model 'nch' from line
+    m2 n14 inc n15 0 nch w=1u l=1u
+warning, can't find model 'nch' from line
+    m1 n15 inc 0 0 nch w=1u l=1u
+Error in netlist line no. 20, new internal line no. 22:
+
+Undefined parameter [idc]
+Error in netlist line no. 20, new internal line no. 22:
+
+Cannot compute substitute
+Error in netlist line no. 21, new internal line no. 23:
+
+Undefined parameter [vdc]
+Error in netlist line no. 21, new internal line no. 23:
+
+Cannot compute substitute
+Error in netlist line no. 24, new internal line no. 28:
+
+Undefined parameter [i1]
+Error in netlist line no. 24, new internal line no. 28:
+
+Cannot compute substitute
+
+ERROR: fatal error in ngspice, exit(1)

@@ -1,0 +1,154 @@
+TAP version 13
+# Subtest: bounded series hashing matches JSON serialization without dropping samples
+ok 1 - bounded series hashing matches JSON serialization without dropping samples
+  ---
+  duration_ms: 7.445791
+  type: 'test'
+  ...
+# Subtest: candidate order starts with all 100 originals and grows through original F..J manifests
+ok 2 - candidate order starts with all 100 originals and grows through original F..J manifests
+  ---
+  duration_ms: 21.106791
+  type: 'test'
+  ...
+# Subtest: selection uses reference eligibility only, retains exclusions and stops accepting at target
+ok 3 - selection uses reference eligibility only, retains exclusions and stops accepting at target
+  ---
+  duration_ms: 0.426709
+  type: 'test'
+  ...
+# Subtest: buckets do not call empty or missing comparisons agreement
+ok 4 - buckets do not call empty or missing comparisons agreement
+  ---
+  duration_ms: 0.173833
+  type: 'test'
+  ...
+# Subtest: published mutual subset retains every outcome, hash, warning and deterministic choice
+ok 5 - published mutual subset retains every outcome, hash, warning and deterministic choice
+  ---
+  duration_ms: 136.119958
+  type: 'test'
+  ...
+# Subtest: canonical transform Vitest cases run in the existing offline CI gate
+ok 6 - canonical transform Vitest cases run in the existing offline CI gate
+  ---
+  duration_ms: 573.852
+  type: 'test'
+  ...
+# Subtest: canonical evidence retains all 100 rows, exact shared inputs, outputs and losses
+ok 7 - canonical evidence retains all 100 rows, exact shared inputs, outputs and losses
+  ---
+  duration_ms: 63.99175
+  type: 'test'
+  ...
+# Subtest: 100 unique hash-pinned aggregate fixtures retain every attempted outcome
+ok 8 - 100 unique hash-pinned aggregate fixtures retain every attempted outcome
+  ---
+  duration_ms: 4.625333
+  type: 'test'
+  ...
+# Subtest: EKV evidence uses published decks and never labels MOS1 fallback as parity
+ok 9 - EKV evidence uses published decks and never labels MOS1 fallback as parity
+  ---
+  duration_ms: 26.563417
+  type: 'test'
+  ...
+# Subtest: mixed-case requested names use canonical lower-case series keys like ngspice
+ok 10 - mixed-case requested names use canonical lower-case series keys like ngspice
+  ---
+  duration_ms: 1.18525
+  type: 'test'
+  ...
+# Subtest: live ngspice quit terminates later control blocks; canonical projections are rejected
+ok 11 - live ngspice quit terminates later control blocks; canonical projections are rejected # SKIP
+  ---
+  duration_ms: 0.049417
+  type: 'test'
+  ...
+# Subtest: live shared DEVICE options preserve ngspice settings and are recognized by Xyce
+ok 12 - live shared DEVICE options preserve ngspice settings and are recognized by Xyce # SKIP
+  ---
+  duration_ms: 0.03125
+  type: 'test'
+  ...
+# Subtest: DC CSV uses explicit primary sweep and preserves flattened nested rows
+ok 13 - DC CSV uses explicit primary sweep and preserves flattened nested rows
+  ---
+  duration_ms: 0.193916
+  type: 'test'
+  ...
+# Subtest: TRAN and AC CSV match case-insensitive headers, quoted differential voltage
+ok 14 - TRAN and AC CSV match case-insensitive headers, quoted differential voltage
+  ---
+  duration_ms: 0.261959
+  type: 'test'
+  ...
+# Subtest: CSV rejects absent, duplicate, malformed, blank, nonfinite and truncated fields
+ok 15 - CSV rejects absent, duplicate, malformed, blank, nonfinite and truncated fields
+  ---
+  duration_ms: 0.361375
+  type: 'test'
+  ...
+# Subtest: translation replaces output continuations, preserves qualified options and LEVEL=260
+ok 16 - translation replaces output continuations, preserves qualified options and LEVEL=260
+  ---
+  duration_ms: 0.810792
+  type: 'test'
+  ...
+# Subtest: translation limitations return unsupported before launching executable
+ok 17 - translation limitations return unsupported before launching executable
+  ---
+  duration_ms: 0.446083
+  type: 'test'
+  ...
+# Subtest: missing executable, execution failure, absent output and timeout fail and clean cwd
+ok 18 - missing executable, execution failure, absent output and timeout fail and clean cwd
+  ---
+  duration_ms: 186.60425
+  type: 'test'
+  ...
+# Subtest: live Xyce op
+ok 19 - live Xyce op # SKIP
+  ---
+  duration_ms: 0.274875
+  type: 'test'
+  ...
+# Subtest: live Xyce dc
+ok 20 - live Xyce dc # SKIP
+  ---
+  duration_ms: 0.045042
+  type: 'test'
+  ...
+# Subtest: live Xyce tran
+ok 21 - live Xyce tran # SKIP
+  ---
+  duration_ms: 0.037583
+  type: 'test'
+  ...
+# Subtest: live Xyce ac
+ok 22 - live Xyce ac # SKIP
+  ---
+  duration_ms: 0.020125
+  type: 'test'
+  ...
+# Subtest: live Xyce nested DC retains primary sweep restarts
+ok 23 - live Xyce nested DC retains primary sweep restarts # SKIP
+  ---
+  duration_ms: 0.0225
+  type: 'test'
+  ...
+# Subtest: live Xyce AC preserves nonzero imaginary voltage and current
+ok 24 - live Xyce AC preserves nonzero imaginary voltage and current # SKIP
+  ---
+  duration_ms: 0.017333
+  type: 'test'
+  ...
+1..24
+# tests 24
+# suites 0
+# pass 16
+# fail 0
+# cancelled 0
+# skipped 8
+# todo 0
+# duration_ms 1162.612791

@@ -1,0 +1,15 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: test for transresitances
+
+
+Error in netlist line no. 3, new internal line no. 2:
+
+Undefined parameter [vdc]
+Error in netlist line no. 3, new internal line no. 2:
+
+Cannot compute substitute
+
+ERROR: fatal error in ngspice, exit(1)

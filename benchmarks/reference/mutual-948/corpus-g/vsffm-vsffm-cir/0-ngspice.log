@@ -1,0 +1,32 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: voltage single frequency fm source (vsffm) circuit
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 3  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+1                                            0
+vssfm#branch                                 0
+
+
+No. of Data Rows : 1008
+
+Total analysis time (seconds) = 0.003281
+
+Total elapsed time (seconds) = 0.007 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13510.516 MB.
+Maximum ngspice program size =   10.062 MB.
+Current ngspice program size =   10.062 MB.
+

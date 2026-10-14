@@ -1,0 +1,199 @@
+
+*****
+***** Welcome to the Xyce(TM) Parallel Electronic Simulator
+*****
+***** This is version XyceNF Release 7.10.0
+***** Date: Wed Oct 14 01:40:35 CEST 2026
+
+
+***** Executing netlist input.cir
+
+***** Reading and parsing netlist...
+***** Setting up topology...
+
+***** Device Count Summary ...
+       D level 1,2 (Diode)                    1
+       R level 1 (Resistor)                   1
+       V level 1 (Independent Voltage Source) 1
+       ----------------------------------------
+       Total Devices                          3
+***** Setting up matrix structure...
+***** Number of Unknowns = 3
+***** Initializing...
+
+------------------------------------------------------------
+Operating point information:
+Number of Diode models: 1
+          name             DDD
+          type               D
+         level               1
+           TNOM             27
+             KF              0
+           NBVL              1
+           IBVL              0
+            IBV          0.001
+             AF              1
+             BV          1e+99
+
+            FCS            0.5
+             FC            0.5
+           TRS2              0
+            TRS              0
+           TBV1              0
+             NR              2
+            XTI              3
+             CJ          1e-12
+
+           MJSW           0.33
+             EG           1.11
+           VJSW              1
+            PHP              1
+            CJP              0
+            IKF              0
+           CJSW              0
+              M            0.5
+
+            JSW              0
+            CJ0          1e-12
+             TT              0
+              N              1
+             VJ              1
+           TRS1              0
+            ISR              0
+           TIKF              0
+
+            NBV              1
+             NS              1
+             IS          1e-14
+             VB          1e+99
+            CJO          1e-12
+             JS          1e-14
+           TBV2              0
+             RS              0
+
+Number of Diode instances: 1
+          name              D1
+         model             DDD
+          DTEMP              0
+            OFF              0
+           TEMP             27
+             IC              0
+             PJ              0
+              M              2
+           AREA              1
+
+
+Number of Independent Voltage Source models: 1
+          name V level 1 (Independent Voltage Source)
+          type                
+         level               1
+
+Number of Independent Voltage Source instances: 1
+          name              V1
+         model V level 1 (Independent Voltage Source)
+           PORT              0
+            NUM              0
+   DCSOURCETYPE              6
+TRANSIENTSOURCETYPE              6
+        TSAMPLE              0
+            VLO              0
+              R              0
+   ACSOURCETYPE              7
+          ACMAG              0
+            VHI              0
+           TAU1              0
+        ACPHASE              0
+             PW              0
+           TAU2              0
+            TD1              0
+          PHASE              0
+           FREQ              0
+             Z0             50
+             V0              0
+             VA              0
+             TF              0
+            PER              0
+             V2              0
+            TD2              0
+             FC              0
+             RB              1
+             TR              0
+          THETA              0
+           DCV0             10
+             TD              0
+           DATA               
+            MDI              0
+              T              0
+             FS              0
+              V              0
+             V1              0
+
+
+Number of Resistor models: 1
+          name R level 1 (Resistor)
+          type                
+         level               1
+           TNOM             27
+           DEFW          1e-05
+         NARROW              0
+              R              1
+            RSH              0
+            TC2              0
+            TCE              0
+
+            TC1              0
+
+Number of Resistor instances: 1
+          name              R1
+         model R level 1 (Resistor)
+            TCE              0
+            TC2              0
+            TC1              0
+           TEMP             27
+          DTEMP              0
+              L              0
+              W          1e-05
+              M              1
+              R         100000
+
+------------------------------------------------------------
+
+***** Solution Summary *****
+	Number Successful Steps Taken:		1
+	Number Failed Steps Attempted:		0
+	Number Jacobians Evaluated:		827
+	Number Linear Solves:			827
+	Number Failed Linear Solves:		0
+	Number Residual Evaluations:		850
+	Number Nonlinear Convergence Failures:	0
+	Total Residual Load Time:		0.000399351 seconds
+	Total Jacobian Load Time:		0.000147343 seconds
+	Total Linear Solution Time:		0.00112987 seconds
+
+
+***** Total Simulation Solvers Run Time: 0.0107062 seconds
+***** Total Elapsed Run Time:            0.0121601 seconds
+*****
+***** End of Xyce(TM) Simulation
+*****
+
+Timing summary of 1 processor
+                 Stats                   Count       CPU Time              Wall Time
+---------------------------------------- ----- --------------------- ---------------------
+Xyce                                         1        0.009 (100.0%)        0.013 (100.0%)
+  Analysis                                   1        0.008 (88.24%)        0.011 (83.13%)
+    DC Sweep                                 1        0.008 (88.20%)        0.011 (83.10%)
+      Solve                                  1        0.008 (86.64%)        0.010 (79.11%)
+        Residual                           850        0.001 ( 6.60%)        0.001 ( 7.30%)
+        Jacobian                           827        0.000 ( 3.43%)        0.001 ( 5.22%)
+        Linear Solve                       827        0.001 (14.61%)        0.002 (12.91%)
+      Successful Step                        1        0.000 ( 1.35%)        0.000 ( 3.47%)
+  Netlist Import                             1        0.000 ( 4.12%)        0.001 ( 4.89%)
+    Parse Context                            1        0.000 ( 0.68%)        0.000 ( 0.96%)
+    Distribute Devices                       1        0.000 ( 1.33%)        0.000 ( 1.11%)
+    Verify Devices                           1        0.000 ( 0.02%)        0.000 ( 0.05%)
+    Instantiate                              1        0.000 ( 0.31%)        0.000 ( 0.24%)
+  Late Initialization                        1        0.000 ( 2.34%)        0.000 ( 2.55%)
+    Global Indices                           1        0.000 ( 0.16%)        0.000 ( 0.13%)
+  Setup Matrix Structure                     1        0.000 ( 0.48%)        0.000 ( 0.81%)
+

@@ -1,0 +1,115 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: * ffm and am, independen voltage or current source
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+1                                            0
+20                                           0
+10                                           0
+2                                 -7.39851e-25
+3                                            0
+v2#branch                                    0
+v3#branch                                    0
+v1#branch                          7.39851e-29
+
+ Reference value :  5.64461e-02
+No. of Data Rows : 128008
+
+Total analysis time (seconds) = 0.269967
+
+Total elapsed time (seconds) = 0.274 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13357.266 MB.
+Maximum ngspice program size =   19.047 MB.
+Current ngspice program size =   19.047 MB.
+FFT: Time span: 0.0640005 s, input length: 128001
+FFT: Frequency resolution: 15.6249 Hz, output length: 64001
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 9  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+1                                            0
+20                                           0
+10                                           0
+2                                 -7.39851e-25
+3                                            0
+v2#branch                                    0
+v3#branch                                    0
+v1#branch                          7.39851e-29
+
+ Reference value :  2.62231e-02 Reference value :  5.29246e-02
+No. of Data Rows : 128008
+
+Total analysis time (seconds) = 0.881732
+
+Total elapsed time (seconds) = 0.933 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13554.578 MB.
+Maximum ngspice program size =   44.250 MB.
+Current ngspice program size =   44.250 MB.
+
+
+Warning: MDI in v2 limited to FC/FM
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+

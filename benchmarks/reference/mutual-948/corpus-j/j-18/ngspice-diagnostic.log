@@ -1,0 +1,26 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: * step test file for ngspice with some constructions that may be helpful
+
+
+
+Total elapsed time (seconds) = 0.003 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 12655.438 MB.
+Maximum ngspice program size =    9.781 MB.
+Current ngspice program size =    9.781 MB.
+
+
+warning, can't find model 'rval' from line
+    r1 in out rval
+Error on line 44 or its substitute:
+  .backanno
+ unimplemented dot command '.backanno'
+    Simulation interrupted due to error!
+
+Error: circuit not parsed.
+Note: no resource usage information for 'time',
+	or no active circuit available

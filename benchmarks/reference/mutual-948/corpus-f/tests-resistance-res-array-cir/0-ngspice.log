@@ -1,0 +1,25 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: a paralled resistor array
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 12  
+
+No. of Data Rows : 1
+
+Total analysis time (seconds) = 0.000536
+
+Total elapsed time (seconds) = 0.004 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 14893.594 MB.
+Maximum ngspice program size =   10.047 MB.
+Current ngspice program size =   10.047 MB.
+
+
+Note: vin: dc value used for op instead of transient time=0 value.

@@ -1,0 +1,11 @@
+dd test
+
+V1 1 0 dc 0 pulse 0 2 0 1 1 1 4
+
+B2 2 0 v = ddt(V(1))
+
+.tran 1m 8
+
+
+.print TRAN format=csv file=output.csv precision=17 I(b2) I(v1) V(1) V(2)
+.end
