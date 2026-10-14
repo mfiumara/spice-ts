@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "sourceHead": "760833b948280918f6abcfaa0d051a4f4d865ae9",
+  "command": "pnpm exec tsx packages/core/src/devices/__fixtures__/bsim4/baseline.ts",
+  "note": "Fresh spice-ts run on unchanged inputs. Native statuses are historical outcomes, not new executions. No numerical comparison exists.",
+  "fixtures": [
+    {
+      "corpus": "f",
+      "id": "examples-mos-nmos-pmos-bsim482-sp",
+      "path": "benchmarks/corpus/corpus-f/fixtures/examples/mos/nmos_pmos_BSIM482.sp",
+      "sha256": "817b8ed1a1879fce346a1750268fbca0005e759a68fa1d41204fcbf3c3f38ecb",
+      "recordedNgspiceStatus": "success",
+      "status": "unsupported",
+      "errorName": "UnsupportedModelLevelError",
+      "errorCode": "UNSUPPORTED_MODEL_LEVEL",
+      "message": "MOSFET 'M1' (model 'n1') uses unsupported model LEVEL=54 (supported MOSFET levels: 1, 2, 3, 4, 5, 6, 8, 9, 49)",
+      "comparedSignals": 0,
+      "maxAbsError": null,
+      "rmsError": null
+    },
+    {
+      "corpus": "f",
+      "id": "examples-various-gain-stage-cir",
+      "path": "benchmarks/corpus/corpus-f/fixtures/examples/various/gain_stage.cir",
+      "sha256": "6b46e806f7dc963f45a87ab33e1ce0a667624f362f0e3166fea6425a3bc81d79",
+      "recordedNgspiceStatus": "success",
+      "status": "unsupported",
+      "errorName": "UnsupportedModelLevelError",
+      "errorCode": "UNSUPPORTED_MODEL_LEVEL",
+      "message": "MOSFET 'M1' (model 'N1') uses unsupported model LEVEL=14 (supported MOSFET levels: 1, 2, 3, 4, 5, 6, 8, 9, 49)",
+      "comparedSignals": 0,
+      "maxAbsError": null,
+      "rmsError": null
+    },
+    {
+      "corpus": "f",
+      "id": "tests-regression-model-binning-1-cir",
+      "path": "benchmarks/corpus/corpus-f/fixtures/tests/regression/model/binning-1.cir",
+      "sha256": "a255d905b57819f5a8f500362322bbb8039a742a8b4ed527eb4b07c256307e55",
+      "recordedNgspiceStatus": "success",
+      "status": "unsupported",
+      "errorName": "UnsupportedModelLevelError",
+      "errorCode": "UNSUPPORTED_MODEL_LEVEL",
+      "message": "MOSFET 'mx1' (model 'nmos0v7') uses unsupported model LEVEL=54 (supported MOSFET levels: 1, 2, 3, 4, 5, 6, 8, 9, 49)",
+      "comparedSignals": 0,
+      "maxAbsError": null,
+      "rmsError": null
+    },
+    {
+      "corpus": "g",
+      "id": "sens-bsim4-issue694-fd-cir",
+      "path": "benchmarks/corpus/corpus-g/fixtures/SENS/bsim4_issue694_FD.cir",
+      "sha256": "389855a2c201ca9c67578051bb074cabc015c4b3c2942ac9ee149f7934156bbb",
+      "recordedNgspiceStatus": "success",
+      "status": "unsupported",
+      "errorName": "UnsupportedModelLevelError",
+      "errorCode": "UNSUPPORTED_MODEL_LEVEL",
+      "message": "MOSFET 'm_nfet' (model 'nfet_model') uses unsupported model LEVEL=54 (supported MOSFET levels: 1, 2, 3, 4, 5, 6, 8, 9, 49)",
+      "comparedSignals": 0,
+      "maxAbsError": null,
+      "rmsError": null
+    }
+  ]
+}

@@ -1,5 +1,13 @@
 # Benchmark sources
 
+## Repeated dot-card semantics (#1009)
+
+[repeated-dot-1009](repeated-dot-1009/README.md) reruns five unchanged corpus-e /
+corpus-e-spice3 Gnucap regression decks with their existing GPL-3.0-or-later
+provenance below. The synthetic interleaved order and native execution probes
+are original MIT-licensed spice-ts project work. This is an evidence-only
+investigation, not a corpus or comparison-tolerance change.
+
 ## MOS2 temperature admission (#995)
 
 The 18 synthetic NMOS/PMOS temperature probes in [reference.ts](results/issue-995/reference.ts)
@@ -44,6 +52,28 @@ Every row below is GPL-3.0-or-later, under the same retained Xyce README grant. 
 This file records the provenance and redistribution decision for benchmark fixtures.
 The machine-readable catalogue is `benchmarks/corpus/ngspice/manifest.json`.
 
+## BSIM4 implementation source (#3), static OP/DC subset
+
+| Port destination / upstream subset | Pinned upstream revision | Licence / notices |
+| --- | --- | --- |
+| `packages/core/src/devices/bsim4/` and `bsim4-junction.ts`: full ordered model defaults/instance setup from `src/spicelib/devices/bsim4/b4set.c`, baseline silicon size/binning/TEMPMOD=0 preprocessing from `b4temp.c`, GEOMOD=0 junction geometry from `b4geo.c:28-88`, relevant DC fatal checks and rejection of unported PARAMCHK correction domains from `b4check.c`, DIOMOD=1 junction currents and channel Ids/gm/gds/gmbs including substrate current from `b4ld.c:1004-2189,5413-5431`. Registered LEVEL=14/54 static subset, not full BSIM4 or dynamic support. Detailed inventories in SETUP.md, TEMPERATURE.md and LOAD.md. | [ngspice-47 bsim4/](https://github.com/imr/ngspice/tree/a80f6e3e95d51534905b1f23410a951802666656/src/spicelib/devices/bsim4), SHA `a80f6e3e95d51534905b1f23410a951802666656` | ECL-2.0, Copyright (c) 2025 University of California. Original per-file notices retained in generated ports and `NOTICE-BSIM4.txt`, with a TypeScript modification notice. Full licence in `packages/core/src/devices/bsim4/LICENSE-ECL-2.0`, obtained from [SPDX licence text](https://github.com/spdx/license-list-data/blob/main/text/ECL-2.0.txt). The per-file ECL notice overrides ngspice's project-level BSD default for these files. |
+
+The channel kernel embeds the full ECL-2.0 licence and upstream notice contents
+in a bundler-preserved legal comment. Package licence metadata and npm publication
+remain owner-gated and unchanged. Targeted oracle tests are not corpus-wide
+parity or speed evidence. This extends the existing single provenance row;
+it does not relabel these files BSD-3-Clause or add a duplicate source entry.
+
+PR999 PARAMCHK correction-domain regression probes in
+`benchmarks/bsim4-validation-3/paramchk-native.py` are original MIT project-authored
+netlists, reproducing the review at
+https://github.com/mfiumara/spice-ts/pull/999#pullrequestreview-5512569635.
+No new third-party source is copied. Both engines receive identical recorded
+deck bytes. Scalar references and before/after errors retain the unsupported
+correction domains and the supported-domain global-gmin current residual;
+these probes are not corpus expansion or speed evidence. Native semantics are
+the same pinned ECL-2.0 `b4check.c:797-806` source recorded above.
+
 ## Title-continuation regression probes (#957 / PR #976)
 
 - Source: original project-authored minimal netlists in `benchmarks/title-directive/continuations.ts`, MIT (repository `LICENSE`), reproducing https://github.com/mfiumara/spice-ts/pull/976#pullrequestreview-5511583515. No third-party fixture or source code is redistributed.
@@ -55,6 +85,7 @@ The machine-readable catalogue is `benchmarks/corpus/ngspice/manifest.json`.
 
 - `benchmarks/controlled-table-917/{e,g-subckt,ac}.cir` are original project-authored MIT netlists (repository `LICENSE`), not vendor extracts. Issue https://github.com/mfiumara/spice-ts/issues/917. Both engines receive identical bytes, with ngspice-47 `ngbehavior=ltps`; all 81 DC rows retain endpoint clamping and smoothed corners, and the one-row AC probe verifies the smoothed derivative. Receipts publish native values and max/RMS errors where available, and unsupported/failed outcomes with null metrics otherwise.
 - `vendor.py` reuses the fetch-only pinned attachment/hash/path-relocation policy of `benchmarks/vendor-expanded-node-917/run.py` for https://sourceforge.net/p/ngspice/bugs/784/. No vendor deck, model, expanded expression or raw log is redistributed. New before/after scalar receipts preserve identical relocated bytes and include hashes; both native runs remain non-completing while ngspice completes 141 AC rows per original. Existing #939 receipts are unchanged.
+
 
 ## X-call RHS continuation remediation (#797 / PR955)
 

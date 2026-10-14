@@ -1,0 +1,124 @@
+{
+  "version": "******\n** ngspice-47 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2026, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n******",
+  "cases": [
+    {
+      "name": "source",
+      "deck": "BSIM4 PARAMCHK regression\n.model DUT NMOS LEVEL=54 NJS=0.05 NJD=1 PARAMCHK=1\nM1 d g 0 b DUT L=1u W=2u AS=1p AD=1p\nVd d 0 0.5\nVg g 0 1\nVb b 0 0.02\n.temp 27\n.options gmin=1e-12\n.op\n.control\nset numdgt=17\nop\nprint @m1[gbs] @m1[gbd] i(Vb)\n.endc\n.end\n",
+      "native": {
+        "@m1[gbs]": 8.922063566058626e-11,
+        "@m1[gbd]": 1.0000000000336864e-12,
+        "i(vb)": 2.3202450146045394e-13
+      },
+      "warnings": [
+        "Warning: Njs = 0.05 is less than 0.1. Setting Njs to 0.1."
+      ],
+      "exitCode": 0
+    },
+    {
+      "name": "drain",
+      "deck": "BSIM4 PARAMCHK regression\n.model DUT NMOS LEVEL=54 NJS=1 NJD=0.05 PARAMCHK=1\nM1 d g 0 b DUT L=1u W=2u AS=1p AD=1p\nVd d 0 0.5\nVg g 0 1\nVb b 0 0.02\n.temp 27\n.options gmin=1e-12\n.op\n.control\nset numdgt=17\nop\nprint @m1[gbs] @m1[gbd] i(Vb)\n.endc\n.end\n",
+      "native": {
+        "@m1[gbs]": 1.0083777630974259e-12,
+        "@m1[gbd]": 1e-12,
+        "i(vb)": 4.59983315971702e-13
+      },
+      "warnings": [
+        "Warning: Njd = 0.05 is less than 0.1. Setting Njd to 0.1."
+      ],
+      "exitCode": 0
+    },
+    {
+      "name": "inherited-drain",
+      "deck": "BSIM4 PARAMCHK regression\n.model DUT NMOS LEVEL=54 NJS=0.05 PARAMCHK=1\nM1 d g 0 b DUT L=1u W=2u AS=1p AD=1p\nVd d 0 0.5\nVg g 0 1\nVb b 0 0.02\n.temp 27\n.options gmin=1e-12\n.op\n.control\nset numdgt=17\nop\nprint @m1[gbs] @m1[gbd] i(Vb)\n.endc\n.end\n",
+      "native": {
+        "@m1[gbs]": 8.922063566058626e-11,
+        "@m1[gbd]": 1e-12,
+        "i(vb)": 2.3202450146132525e-13
+      },
+      "warnings": [
+        "Warning: Njs = 0.05 is less than 0.1. Setting Njs to 0.1.",
+        "Warning: Njd = 0.05 is less than 0.1. Setting Njd to 0.1."
+      ],
+      "exitCode": 0
+    },
+    {
+      "name": "default-paramchk",
+      "deck": "BSIM4 PARAMCHK regression\n.model DUT NMOS LEVEL=54 NJS=0.05 NJD=1\nM1 d g 0 b DUT L=1u W=2u AS=1p AD=1p\nVd d 0 0.5\nVg g 0 1\nVb b 0 0.02\n.temp 27\n.options gmin=1e-12\n.op\n.control\nset numdgt=17\nop\nprint @m1[gbs] @m1[gbd] i(Vb)\n.endc\n.end\n",
+      "native": {
+        "@m1[gbs]": 8.922063566058626e-11,
+        "@m1[gbd]": 1.0000000000336864e-12,
+        "i(vb)": 2.3202450146045394e-13
+      },
+      "warnings": [
+        "Warning: Njs = 0.05 is less than 0.1. Setting Njs to 0.1."
+      ],
+      "exitCode": 0
+    },
+    {
+      "name": "source-boundary",
+      "deck": "BSIM4 PARAMCHK regression\n.model DUT NMOS LEVEL=54 NJS=0.1 NJD=1 PARAMCHK=1\nM1 d g 0 b DUT L=1u W=2u AS=1p AD=1p\nVd d 0 0.5\nVg g 0 1\nVb b 0 0.02\n.temp 27\n.options gmin=1e-12\n.op\n.control\nset numdgt=17\nop\nprint @m1[gbs] @m1[gbd] i(Vb)\n.endc\n.end\n",
+      "native": {
+        "@m1[gbs]": 8.922063566058626e-11,
+        "@m1[gbd]": 1.0000000000336864e-12,
+        "i(vb)": 2.3202450146045394e-13
+      },
+      "warnings": [],
+      "exitCode": 0
+    },
+    {
+      "name": "drain-boundary",
+      "deck": "BSIM4 PARAMCHK regression\n.model DUT NMOS LEVEL=54 NJS=1 NJD=0.1 PARAMCHK=1\nM1 d g 0 b DUT L=1u W=2u AS=1p AD=1p\nVd d 0 0.5\nVg g 0 1\nVb b 0 0.02\n.temp 27\n.options gmin=1e-12\n.op\n.control\nset numdgt=17\nop\nprint @m1[gbs] @m1[gbd] i(Vb)\n.endc\n.end\n",
+      "native": {
+        "@m1[gbs]": 1.0083777630974259e-12,
+        "@m1[gbd]": 1e-12,
+        "i(vb)": 4.59983315971702e-13
+      },
+      "warnings": [],
+      "exitCode": 0
+    },
+    {
+      "name": "inherited-boundary",
+      "deck": "BSIM4 PARAMCHK regression\n.model DUT NMOS LEVEL=54 NJS=0.1 PARAMCHK=1\nM1 d g 0 b DUT L=1u W=2u AS=1p AD=1p\nVd d 0 0.5\nVg g 0 1\nVb b 0 0.02\n.temp 27\n.options gmin=1e-12\n.op\n.control\nset numdgt=17\nop\nprint @m1[gbs] @m1[gbd] i(Vb)\n.endc\n.end\n",
+      "native": {
+        "@m1[gbs]": 8.922063566058626e-11,
+        "@m1[gbd]": 1e-12,
+        "i(vb)": 2.3202450146132525e-13
+      },
+      "warnings": [],
+      "exitCode": 0
+    },
+    {
+      "name": "source-unchecked",
+      "deck": "BSIM4 PARAMCHK regression\n.model DUT NMOS LEVEL=54 NJS=0.05 NJD=1 PARAMCHK=0\nM1 d g 0 b DUT L=1u W=2u AS=1p AD=1p\nVd d 0 0.5\nVg g 0 1\nVb b 0 0.02\n.temp 27\n.options gmin=1e-12\n.op\n.control\nset numdgt=17\nop\nprint @m1[gbs] @m1[gbd] i(Vb)\n.endc\n.end\n",
+      "native": {
+        "@m1[gbs]": 4.025967504650611e-07,
+        "@m1[gbd]": 1.0000000000336864e-12,
+        "i(vb)": -5.201803813337284e-10
+      },
+      "warnings": [],
+      "exitCode": 0
+    },
+    {
+      "name": "drain-unchecked",
+      "deck": "BSIM4 PARAMCHK regression\n.model DUT NMOS LEVEL=54 NJS=1 NJD=0.05 PARAMCHK=0\nM1 d g 0 b DUT L=1u W=2u AS=1p AD=1p\nVd d 0 0.5\nVg g 0 1\nVb b 0 0.02\n.temp 27\n.options gmin=1e-12\n.op\n.control\nset numdgt=17\nop\nprint @m1[gbs] @m1[gbd] i(Vb)\n.endc\n.end\n",
+      "native": {
+        "@m1[gbs]": 1.0083777630974259e-12,
+        "@m1[gbd]": 1e-12,
+        "i(vb)": 4.59983315971702e-13
+      },
+      "warnings": [],
+      "exitCode": 0
+    },
+    {
+      "name": "inherited-unchecked",
+      "deck": "BSIM4 PARAMCHK regression\n.model DUT NMOS LEVEL=54 NJS=0.05 PARAMCHK=0\nM1 d g 0 b DUT L=1u W=2u AS=1p AD=1p\nVd d 0 0.5\nVg g 0 1\nVb b 0 0.02\n.temp 27\n.options gmin=1e-12\n.op\n.control\nset numdgt=17\nop\nprint @m1[gbs] @m1[gbd] i(Vb)\n.endc\n.end\n",
+      "native": {
+        "@m1[gbs]": 4.025967504650611e-07,
+        "@m1[gbd]": 1e-12,
+        "i(vb)": -5.201803813337275e-10
+      },
+      "warnings": [],
+      "exitCode": 0
+    }
+  ]
+}

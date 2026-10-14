@@ -6,6 +6,7 @@
  */
 import { type ClassicAnalysisType, type EngineAnalysis, findMatchingAnalysis } from '../classic/report.js';
 import type { ComparisonMetrics, SampleSeries } from '../../comparison-harness.js';
+import { pairPlots } from '../../plot-pairing.js';
 
 export const CORPUS_ROOT = 'benchmarks/corpus/corpus-f';
 export const NGSPICE_REPOSITORY = 'https://sourceforge.net/p/ngspice/ngspice/ci/master/tree/';
@@ -320,10 +321,13 @@ export interface SignalError {
  * them by the absolute floor. This resolves the same pairing per signal.
  */
 export function pairedReferenceSeries(
-  spiceTs: { analyses: ReadonlyArray<Pick<EngineAnalysis, 'type' | 'plotName' | 'series'>> },
+  spiceTs: { analyses: ReadonlyArray<EngineAnalysis> },
   ngspice: { analyses: ReadonlyArray<EngineAnalysis> },
-): (analysis: string, signal: string) => SampleSeries | undefined {
-  return (analysis, signal) => {
+): (analysis: string, signal: string, plot?: { ngspice?: string; ngspiceIndex?: number }) => SampleSeries | undefined {
+  const pairs = pairPlots(spiceTs.analyses, ngspice.analyses);
+  return (analysis, signal, plot) => {
+    if (plot?.ngspiceIndex !== undefined) return ngspice.analyses[plot.ngspiceIndex]?.series;
+    if (plot?.ngspice !== undefined) return pairs.find(pair => pair.right?.type === analysis && (pair.right.plotId ?? pair.right.plotName) === plot.ngspice)?.right?.series;
     const own = spiceTs.analyses.find(candidate => candidate.type === analysis && Object.hasOwn(candidate.series.signals, signal));
     const paired = own ? findMatchingAnalysis(ngspice.analyses, own) : undefined;
     return (paired ?? ngspice.analyses.find(candidate => candidate.type === analysis))?.series;
@@ -337,15 +341,19 @@ export function pairedReferenceSeries(
  * against (see `pairedReferenceSeries`).
  */
 export function normalizedSignalErrors(
-  comparisons: ReadonlyArray<{ analysis: string; metrics: ComparisonMetrics }>,
-  ngspiceSeries: (analysis: string, signal: string) => SampleSeries | undefined,
+  comparisons: ReadonlyArray<{ analysis: string; metrics: ComparisonMetrics; plot?: { ngspice?: string }; unmatched?: string }>,
+  ngspiceSeries: (analysis: string, signal: string, plot?: { ngspice?: string }) => SampleSeries | undefined,
 ): { errors: SignalError[]; missing: number } {
   const errors: SignalError[] = [];
   let missing = 0;
   for (const comparison of comparisons) {
+    if (comparison.unmatched) { missing += 1; continue; }
+    // Even a paired plot with no named vectors is one missing coverage unit.
+    if (Object.keys(comparison.metrics.signals).length === 0) missing += 1;
+    missing += comparison.metrics.sweepGroups?.filter(group => group.unmatched).length ?? 0;
     for (const [signal, metric] of Object.entries(comparison.metrics.signals)) {
-      if (metric.status !== 'compared') { missing += 1; continue; }
-      const reference = ngspiceSeries(comparison.analysis, signal);
+      if (metric.status !== 'compared' || metric.sampleCount === 0) { missing += 1; continue; }
+      const reference = ngspiceSeries(comparison.analysis, signal, comparison.plot);
       const ngspicePeak = reference?.signals[signal] ? peak(reference.signals[signal]) : 0;
       errors.push({
         analysis: comparison.analysis,

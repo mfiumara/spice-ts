@@ -20,6 +20,7 @@ import {
   type ComplexValue,
   type SampleSeries,
 } from '../../comparison-harness.js';
+import { pairPlots } from '../../plot-pairing.js';
 
 export const CLASSIC_REPORT_SCHEMA = 'spice-ts-classic-comparison/v1' as const;
 export type ClassicAnalysisType = ComparisonAnalysisType | 'pz' | 'noise' | 'disto';
@@ -52,6 +53,7 @@ export interface ClassicManifest {
 export interface EngineAnalysis {
   type: ClassicAnalysisType;
   plotName: string;
+  plotId?: string;
   series: SampleSeries;
 }
 
@@ -79,6 +81,8 @@ interface EngineReport {
 
 export interface AnalysisComparison {
   analysis: ClassicAnalysisType;
+  plot?: { spiceTs?: string; ngspice?: string };
+  unmatched?: 'spice-ts' | 'ngspice';
   signals: string[];
   metrics: ComparisonMetrics;
 }
@@ -191,14 +195,20 @@ export function findMatchingAnalysis(
 
 function compareExecutions(spiceTs: EngineExecution, ngspice: EngineExecution): AnalysisComparison[] {
   const comparisons: AnalysisComparison[] = [];
-  for (const spiceAnalysis of spiceTs.analyses) {
-    const ngspiceAnalysis = findMatchingAnalysis(ngspice.analyses, spiceAnalysis);
-    if (!ngspiceAnalysis) continue;
-    const signals = sortedSignals(spiceAnalysis.series)
+  for (const { left: spiceAnalysis, right: ngspiceAnalysis } of pairPlots(spiceTs.analyses, ngspice.analyses)) {
+    if (!spiceAnalysis || !ngspiceAnalysis) {
+      const own = (spiceAnalysis ?? ngspiceAnalysis)!;
+      const signals = sortedSignals(own.series);
+      const empty = { grid: [], signals: {} };
+      comparisons.push({ analysis: own.type, plot: { spiceTs: spiceAnalysis?.plotId ?? spiceAnalysis?.plotName, ngspice: ngspiceAnalysis?.plotId ?? ngspiceAnalysis?.plotName }, unmatched: spiceAnalysis ? 'ngspice' : 'spice-ts', signals, metrics: alignAndMeasure(spiceAnalysis?.series ?? empty, ngspiceAnalysis?.series ?? empty, signals) });
+      continue;
+    }
+    const common = sortedSignals(spiceAnalysis.series)
       .filter(signal => ngspiceAnalysis.series.signals[signal] !== undefined);
-    if (signals.length === 0) continue;
+    const signals = common.length ? common : [...new Set([...sortedSignals(spiceAnalysis.series), ...sortedSignals(ngspiceAnalysis.series)])].sort();
     comparisons.push({
       analysis: spiceAnalysis.type,
+      ...(spiceAnalysis.plotId === undefined && ngspiceAnalysis.plotId === undefined && spiceTs.analyses.filter(a => a.type === spiceAnalysis.type).length === 1 ? {} : { plot: { spiceTs: spiceAnalysis.plotId ?? spiceAnalysis.plotName, ngspice: ngspiceAnalysis.plotId ?? ngspiceAnalysis.plotName } }),
       signals,
       metrics: alignAndMeasure(spiceAnalysis.series, ngspiceAnalysis.series, signals),
     });
@@ -374,7 +384,8 @@ export interface SampleEncoding<S> {
 export interface EncodedAnalysis<S> {
   type: ClassicAnalysisType;
   plotName: string;
-  series: { grid: number[]; signals: Record<string, S> };
+  plotId?: string;
+  series: { grid: number[]; signals: Record<string, S>; secondaryGrid?: number[] };
 }
 
 export interface EncodedExecution<S> extends Omit<EngineExecution, 'analyses'> {
@@ -387,8 +398,10 @@ export function encodeAnalysis<S>(analysis: EngineAnalysis, encoding: SampleEnco
   return {
     type: analysis.type,
     plotName: analysis.plotName,
+    ...(analysis.plotId === undefined ? {} : { plotId: analysis.plotId }),
     series: {
       grid: analysis.series.grid,
+      ...(analysis.series.secondaryGrid ? { secondaryGrid: analysis.series.secondaryGrid } : {}),
       signals: Object.fromEntries(Object.entries(analysis.series.signals).map(([name, values]) => [name, encoding.complex(values)])),
     },
   };
@@ -549,55 +562,69 @@ export async function runNativeSpiceTsEncoded<S>(
   try {
     const core = await import(pathToFileURL(resolve('packages/core/dist/index.js')).href);
     if (options.parseFirst ?? true) core.parse(text);
-    const result = await core.simulate(text);
+    const simulated = await core.simulate(text);
     const analyses: EncodedAnalysis<S>[] = [];
-    for (const type of circuit.analyses) {
-      if (type === 'op' && result.dc) {
-        const voltages = new Map([...result.dc.voltages].map(([name, value]: [string, number]) => [name, [value]]));
-        const currents = new Map([...result.dc.currents].map(([name, value]: [string, number]) => [name, [value]]));
-        analyses.push({ type, plotName: 'Operating Point', series: { grid: [0], signals: mapSignals(voltages, currents, encoding.real) } });
-      } else if (type === 'tran' && result.transient) {
-        analyses.push({
-          type,
-          plotName: 'Transient Analysis',
-          series: {
-            grid: result.transient.time,
-            signals: mapSignals(result.transient.voltages, result.transient.currents, encoding.real),
-          },
-        });
-      } else if (type === 'ac' && result.ac) {
-        analyses.push({
-          type,
-          plotName: 'AC Analysis',
-          series: {
-            grid: result.ac.frequencies,
-            signals: mapSignals(result.ac.voltages, result.ac.currents, (values: Iterable<{ magnitude: number; phase: number }>) => encoding.complex(phasors(values))),
-          },
-        });
-      } else if (type === 'dc' && result.dcSweep) {
-        const internal = result.dcSweep as unknown as {
-          sweepValues: Float64Array;
-          voltageArrays: Map<string, Float64Array>;
-          currentArrays: Map<string, Float64Array>;
-        };
-        analyses.push({
-          type,
-          plotName: 'DC transfer characteristic',
-          series: {
-            grid: Array.from(internal.sweepValues),
-            signals: mapSignals(internal.voltageArrays, internal.currentArrays, encoding.real),
-          },
-        });
-      } else if (type === 'pz' && result.poleZero) {
-        analyses.push(encodeAnalysis({
-          type,
-          plotName: 'Pole-Zero Analysis',
-          series: { grid: [0], signals: poleZeroSignals(result.poleZero) },
-        }, encoding));
-      } else if (type === 'noise' && result.noise) {
-        analyses.push(...noiseAnalyses(result.noise).map(analysis => encodeAnalysis(analysis, encoding)));
-      } else if (type === 'disto' && result.distortion) {
-        analyses.push(...distortionAnalyses(result.distortion).map(analysis => encodeAnalysis(analysis, encoding)));
+    const runs = simulated.control?.runs ?? [];
+    const results = runs.length > 0 ? runs : [{ plot: undefined, analysis: undefined, result: simulated }];
+    for (const run of results) {
+      const result = run.result;
+      const first = analyses.length;
+      for (const type of circuit.analyses) {
+        if (run.analysis !== undefined && run.analysis !== type) continue;
+        if (type === 'op' && result.dc) {
+          const voltages = new Map([...result.dc.voltages].map(([name, value]: [string, number]) => [name, [value]]));
+          const currents = new Map([...result.dc.currents].map(([name, value]: [string, number]) => [name, [value]]));
+          analyses.push({ type, plotName: 'Operating Point', series: { grid: [0], signals: mapSignals(voltages, currents, encoding.real) } });
+        } else if (type === 'tran' && result.transient) {
+          analyses.push({
+            type,
+            plotName: 'Transient Analysis',
+            series: {
+              grid: result.transient.time,
+              signals: mapSignals(result.transient.voltages, result.transient.currents, encoding.real),
+            },
+          });
+        } else if (type === 'ac' && result.ac) {
+          analyses.push({
+            type,
+            plotName: 'AC Analysis',
+            series: {
+              grid: result.ac.frequencies,
+              signals: mapSignals(result.ac.voltages, result.ac.currents, (values: Iterable<{ magnitude: number; phase: number }>) => encoding.complex(phasors(values))),
+            },
+          });
+        } else if (type === 'dc' && result.dcSweep) {
+          const internal = result.dcSweep as unknown as {
+            sweepValues: Float64Array;
+            voltageArrays: Map<string, Float64Array>;
+            currentArrays: Map<string, Float64Array>;
+            secondarySweepValues?: Float64Array;
+          };
+          analyses.push({
+            type,
+            plotName: 'DC transfer characteristic',
+            series: {
+              grid: Array.from(internal.sweepValues),
+              ...(internal.secondarySweepValues ? { secondaryGrid: Array.from(internal.secondarySweepValues) } : {}),
+              signals: mapSignals(internal.voltageArrays, internal.currentArrays, encoding.real),
+            },
+          });
+        } else if (type === 'pz' && result.poleZero) {
+          analyses.push(encodeAnalysis({
+            type,
+            plotName: 'Pole-Zero Analysis',
+            series: { grid: [0], signals: poleZeroSignals(result.poleZero) },
+          }, encoding));
+        } else if (type === 'noise' && result.noise) {
+          analyses.push(...noiseAnalyses(result.noise).map(analysis => encodeAnalysis(analysis, encoding)));
+        } else if (type === 'disto' && result.distortion) {
+          analyses.push(...distortionAnalyses(result.distortion).map(analysis => encodeAnalysis(analysis, encoding)));
+        }
+      }
+      if (run.plot !== undefined) for (const [index, analysis] of analyses.slice(first).entries()) {
+        // Noise/disto can produce two raw plots from one analysis command.
+        analysis.plotId = analyses.length - first > 1 && /\d+$/.test(run.plot)
+          ? run.plot.replace(/\d+$/, String(Number(run.plot.match(/\d+$/)![0]) + index)) : run.plot;
       }
     }
     const missing = circuit.analyses.filter(type => !analyses.some(analysis => analysis.type === type));

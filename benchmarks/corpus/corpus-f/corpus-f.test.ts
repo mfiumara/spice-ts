@@ -45,8 +45,8 @@ const HAS_NGSPICE = spawnSync('ngspice', ['--version'], { encoding: 'utf8' }).st
 const HAS_CORE_DIST = existsSync('packages/core/dist/index.js');
 
 describe('corpus-f control wrapper (#521)', () => {
-  it('sources a separate unchanged fixture and exports each declared type once', () => {
-    assert.equal(controlWrapperDeck(['dc', 'dc', 'ac']), '* corpus-f unmodified-fixture export wrapper\n.control\nalias quit echo corpus-f: deck quit deferred until export\nalias exit echo corpus-f: deck exit deferred until export\nsource fixture.cir\nsetplot dc1\nwrite dc.raw all\nsetplot ac1\nwrite ac.raw all\n.endc\n.end\n');
+  it('sources a separate unchanged fixture and exports every retained plot', () => {
+    assert.equal(controlWrapperDeck(['dc', 'dc', 'ac']), '* corpus-f unmodified-fixture export wrapper\n.control\nalias quit echo corpus-f: deck quit deferred until export\nalias exit echo corpus-f: deck exit deferred until export\nsource fixture.cir\nforeach exported_plot $plots\nsetplot $exported_plot\nwrite {$exported_plot}.raw all\nend\n.endc\n.end\n');
     assert.equal(hasControlBlock('.control in title\n.op\n.end\n'), false);
     assert.equal(hasControlBlock('title\n .CONTROL\nop\n.endc\n'), true);
   });
@@ -79,9 +79,9 @@ describe('corpus-f control wrapper (#521)', () => {
     const circuit = { localPath: 'toy.cir', analyses: ['op'] } as CorpusFManifest['circuits'][number];
     const result = await runControlReference(Buffer.from('destroy toy\nV1 1 0 1\nR1 1 0 1k\n.control\nop\ndestroy op1\n.endc\n.end\n'), circuit);
     assert.deepEqual(result.execution.analyses, []);
-    assert.notEqual(result.status, 'success');
-    assert.match(result.firstErrorLine ?? '', /no such plot named op1/);
-    assert.equal(outcome({ ngspice: result.status, spiceTs: 'success', comparedAnalyses: 0, spiceTsAnalyses: 1, worstNormalized: null, missingSignals: 0 }), 'ngspice-failed');
+    assert.equal(result.status, 'success');
+    assert.match(result.note ?? '', /no plot of a declared analysis type/);
+    assert.equal(outcome({ ngspice: result.status, spiceTs: 'success', comparedAnalyses: 0, spiceTsAnalyses: 1, worstNormalized: null, missingSignals: 0 }), 'not-compared');
   });
   it('names why a successful ngspice run left no reference (#528)', () => {
     assert.match(noReferenceNote({ analyses: [], unmappedAnalyses: ['sens', 'sens'] }), /runs only sens analyses, which the comparison adapter does not map/);
@@ -424,7 +424,7 @@ describe('corpus-f sp/sens plots and streamed references (#694)', () => {
     assert.equal(issue("Parse error at line 9: XSPICE code model 'cpline' (.model 'CPLINE1') is not supported"), '553');
   });
 
-  it('names spice-ts sp/sens vectors as ngspice writes them and takes the first control run', () => {
+  it('names spice-ts sp/sens vectors as ngspice writes them and retains every control run', () => {
     const c = (real: number, imaginary = 0) => ({ real, imaginary });
     const first = { sParameters: { frequencies: [1e6], vectors: new Map([['S_1_1', [c(0.5, -0.25)]], ['Cy_1_1', [c(1e-20)]], ['NF', [c(3)]]]) } };
     const later = { sParameters: { frequencies: [2e6], vectors: new Map([['S_1_1', [c(0.1)]]]) } };
@@ -434,7 +434,10 @@ describe('corpus-f sp/sens plots and streamed references (#694)', () => {
       { device: 'E1', parameter: 'gain' as const, dc: 2 },
     ] };
     const result = { ...later, sensitivity: sens, control: { runs: [{ plot: 'sp1', analysis: 'sp', result: first }, { plot: 'sp2', analysis: 'sp', result: later }] } };
-    const [sp, sensitivity] = controlPlotAnalyses(result, ['sp', 'sens']);
+    const [sp, laterSp, sensitivity] = controlPlotAnalyses(result, ['sp', 'sens']);
+    assert.equal(sp.plotId, 'sp1');
+    assert.equal(laterSp.plotId, 'sp2');
+    assert.deepEqual(laterSp.series.grid, [2e6]);
     assert.deepEqual(sp.series, { grid: [1e6], signals: { s_1_1: [{ re: 0.5, im: -0.25 }], 'i(cy_1_1)': [{ re: 1e-20, im: 0 }], nf: [{ re: 3, im: 0 }] } });
     assert.deepEqual(sensitivity.series, { grid: [0], signals: { 'v(r1)': [{ re: 0.042, im: 0 }], 'v(i1)': [{ re: 1000, im: 0 }], 'v(e1_gain)': [{ re: 2, im: 0 }] } });
     assert.equal(sensitivitySignalName({ device: 'R1', parameter: 'resistance' }, 'ac'), 'v(r1_ac)');

@@ -1,0 +1,6973 @@
+{
+  "k-10-fine": {
+    "worst": {
+      "node": "i(l2)",
+      "peak": 2.760051139413666e-05,
+      "maxAbs": 3.5682844330422e-09,
+      "normalized": 0.00012928327240343206,
+      "worstTime": 3.27600000000001e-08,
+      "initial": {
+        "t": 0,
+        "spiceTs": 2.514629062161204e-22,
+        "ngspice": -2.429031079012956e-23,
+        "magnitude": 2.7575321700624997e-22
+      },
+      "first": null
+    },
+    "first": null,
+    "signals": [
+      {
+        "node": "i(l1)",
+        "peak": 0.4467477831591938,
+        "maxAbs": 3.2332124755285463e-09,
+        "normalized": 7.237221084041565e-09,
+        "worstTime": 3.27600000000001e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0.1,
+          "ngspice": 0.1,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "i(l2)",
+        "peak": 2.760051139413666e-05,
+        "maxAbs": 3.5682844330422e-09,
+        "normalized": 0.00012928327240343206,
+        "worstTime": 3.27600000000001e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2.514629062161204e-22,
+          "ngspice": -2.429031079012956e-23,
+          "magnitude": 2.7575321700624997e-22
+        },
+        "first": null
+      },
+      {
+        "node": "i(vdd)",
+        "peak": 2.745738299216917e-05,
+        "maxAbs": 1.3917538681705957e-09,
+        "normalized": 5.068778290223519e-05,
+        "worstTime": 1.4959999999999947e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": -1.695032381121564e-06,
+          "ngspice": -1.695033551966929e-06,
+          "magnitude": 1.1708453649366258e-12
+        },
+        "first": null
+      },
+      {
+        "node": "i(vin)",
+        "peak": 0.4467477831591938,
+        "maxAbs": 3.233212489406334e-09,
+        "normalized": 7.2372211151055975e-09,
+        "worstTime": 3.27600000000001e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": -0.1,
+          "ngspice": -0.1,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(1)",
+        "peak": 10,
+        "maxAbs": 0.0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 10,
+          "ngspice": 10.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(2)",
+        "peak": 3.160481951198702,
+        "maxAbs": 1.0772933042968447e-05,
+        "normalized": 3.408636154015215e-06,
+        "worstTime": 1.755999999999997e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0.5245652291686894,
+          "ngspice": 0.5245654795923013,
+          "magnitude": 2.5042361184723916e-07
+        },
+        "first": null
+      },
+      {
+        "node": "v(20)",
+        "peak": 4.010879880626054,
+        "maxAbs": 3.233212542141928e-08,
+        "normalized": 8.061105389267501e-09,
+        "worstTime": 3.27600000000001e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": -5.551115123125783e-17,
+          "magnitude": 5.551115123125783e-17
+        },
+        "first": null
+      },
+      {
+        "node": "v(21)",
+        "peak": 5.999999368345333,
+        "maxAbs": 9.325873406851315e-15,
+        "normalized": 1.554312398106666e-15,
+        "worstTime": 7.324600000000429e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1,
+          "ngspice": 1.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(3)",
+        "peak": 3.252526955750898,
+        "maxAbs": 1.0420000239930172e-05,
+        "normalized": 3.203662992402333e-06,
+        "worstTime": 1.7159999999999966e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0.5245652291686894,
+          "ngspice": 0.5245654795923013,
+          "magnitude": 2.5042361184723916e-07
+        },
+        "first": null
+      },
+      {
+        "node": "v(4)",
+        "peak": 2.689322231762971,
+        "maxAbs": 2.7941388006991197e-05,
+        "normalized": 1.0389750873652047e-05,
+        "worstTime": 1.3859999999999955e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0.16950112919837185,
+          "ngspice": 0.1695012462980455,
+          "magnitude": 1.1709967365214347e-07
+        },
+        "first": null
+      }
+    ],
+    "points": {
+      "spiceTs": 10005,
+      "ngspice": 10005
+    }
+  },
+  "k-10-op": {
+    "worst": {
+      "node": "v(4)",
+      "peak": 0.1695012462980455,
+      "maxAbs": 1.1709967365214347e-07,
+      "normalized": 6.908484522068893e-07,
+      "worstTime": 0,
+      "initial": {
+        "t": 0,
+        "spiceTs": 0.16950112919837185,
+        "ngspice": 0.1695012462980455,
+        "magnitude": 1.1709967365214347e-07
+      },
+      "first": null
+    },
+    "first": null,
+    "signals": [
+      {
+        "node": "i(l1)",
+        "peak": 0.1,
+        "maxAbs": 0.0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0.1,
+          "ngspice": 0.1,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "i(l2)",
+        "peak": 1e-10,
+        "maxAbs": 2.7575321700624997e-22,
+        "normalized": 2.7575321700624995e-12,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2.514629062161204e-22,
+          "ngspice": -2.429031079012956e-23,
+          "magnitude": 2.7575321700624997e-22
+        },
+        "first": null
+      },
+      {
+        "node": "i(vdd)",
+        "peak": 1.695033551966929e-06,
+        "maxAbs": 1.1708453649366258e-12,
+        "normalized": 6.907505539214658e-07,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": -1.695032381121564e-06,
+          "ngspice": -1.695033551966929e-06,
+          "magnitude": 1.1708453649366258e-12
+        },
+        "first": null
+      },
+      {
+        "node": "i(vin)",
+        "peak": 0.1,
+        "maxAbs": 0.0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": -0.1,
+          "ngspice": -0.1,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(1)",
+        "peak": 10,
+        "maxAbs": 0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 10,
+          "ngspice": 10,
+          "magnitude": 0
+        },
+        "first": null
+      },
+      {
+        "node": "v(2)",
+        "peak": 0.5245654795923013,
+        "maxAbs": 2.5042361184723916e-07,
+        "normalized": 4.773924735609203e-07,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0.5245652291686894,
+          "ngspice": 0.5245654795923013,
+          "magnitude": 2.5042361184723916e-07
+        },
+        "first": null
+      },
+      {
+        "node": "v(20)",
+        "peak": 0.0001,
+        "maxAbs": 5.551115123125783e-17,
+        "normalized": 5.551115123125783e-13,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": -5.551115123125783e-17,
+          "magnitude": 5.551115123125783e-17
+        },
+        "first": null
+      },
+      {
+        "node": "v(21)",
+        "peak": 1,
+        "maxAbs": 0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1,
+          "ngspice": 1,
+          "magnitude": 0
+        },
+        "first": null
+      },
+      {
+        "node": "v(3)",
+        "peak": 0.5245654795923013,
+        "maxAbs": 2.5042361184723916e-07,
+        "normalized": 4.773924735609203e-07,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0.5245652291686894,
+          "ngspice": 0.5245654795923013,
+          "magnitude": 2.5042361184723916e-07
+        },
+        "first": null
+      },
+      {
+        "node": "v(4)",
+        "peak": 0.1695012462980455,
+        "maxAbs": 1.1709967365214347e-07,
+        "normalized": 6.908484522068893e-07,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0.16950112919837185,
+          "ngspice": 0.1695012462980455,
+          "magnitude": 1.1709967365214347e-07
+        },
+        "first": null
+      }
+    ],
+    "points": {
+      "spiceTs": 1,
+      "ngspice": 1
+    }
+  },
+  "k-10-original": {
+    "worst": {
+      "node": "i(vdd)",
+      "peak": 2.745701490456063e-05,
+      "maxAbs": 4.3471429206585513e-07,
+      "normalized": 0.015832540193349596,
+      "worstTime": 7.342799999999967e-07,
+      "initial": {
+        "t": 0,
+        "spiceTs": -1.695032381121564e-06,
+        "ngspice": -1.695033551966929e-06,
+        "magnitude": 1.1708453649366258e-12
+      },
+      "first": {
+        "t": 4.822800000000044e-07,
+        "spiceTs": -5.60844952407491e-06,
+        "ngspice": -5.911230941547015e-06,
+        "magnitude": 3.027814174721054e-07
+      }
+    },
+    "first": {
+      "node": "i(vdd)",
+      "t": 4.822800000000044e-07,
+      "spiceTs": -5.60844952407491e-06,
+      "ngspice": -5.911230941547015e-06,
+      "magnitude": 3.027814174721054e-07
+    },
+    "signals": [
+      {
+        "node": "i(l1)",
+        "peak": 0.4467439158261695,
+        "maxAbs": 0.001545398576798862,
+        "normalized": 0.0034592492970854137,
+        "worstTime": 7.772799999999954e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0.1,
+          "ngspice": 0.1,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "i(l2)",
+        "peak": 2.760634034865145e-05,
+        "maxAbs": 2.58874051797768e-07,
+        "normalized": 0.009377340441664656,
+        "worstTime": 7.352799999999967e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2.514629062161204e-22,
+          "ngspice": -2.429031079012956e-23,
+          "magnitude": 2.7575321700624997e-22
+        },
+        "first": null
+      },
+      {
+        "node": "i(vdd)",
+        "peak": 2.745701490456063e-05,
+        "maxAbs": 4.3471429206585513e-07,
+        "normalized": 0.015832540193349596,
+        "worstTime": 7.342799999999967e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": -1.695032381121564e-06,
+          "ngspice": -1.695033551966929e-06,
+          "magnitude": 1.1708453649366258e-12
+        },
+        "first": {
+          "t": 4.822800000000044e-07,
+          "spiceTs": -5.60844952407491e-06,
+          "ngspice": -5.911230941547015e-06,
+          "magnitude": 3.027814174721054e-07
+        }
+      },
+      {
+        "node": "i(vin)",
+        "peak": 0.4467439158261696,
+        "maxAbs": 0.001545398576798862,
+        "normalized": 0.003459249297085413,
+        "worstTime": 7.772799999999954e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": -0.1,
+          "ngspice": -0.1,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(1)",
+        "peak": 10,
+        "maxAbs": 0.0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 10,
+          "ngspice": 10.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(2)",
+        "peak": 3.160499058039992,
+        "maxAbs": 0.011745130822116145,
+        "normalized": 0.003716226648521762,
+        "worstTime": 9.991399999999968e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0.5245652291686894,
+          "ngspice": 0.5245654795923013,
+          "magnitude": 2.5042361184723916e-07
+        },
+        "first": null
+      },
+      {
+        "node": "v(20)",
+        "peak": 4.010856873035519,
+        "maxAbs": 0.01545398576799828,
+        "normalized": 0.003853038454673729,
+        "worstTime": 7.772799999999954e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": -5.551115123125783e-17,
+          "magnitude": 5.551115123125783e-17
+        },
+        "first": null
+      },
+      {
+        "node": "v(21)",
+        "peak": 5.999969048952531,
+        "maxAbs": 9.325873406851315e-15,
+        "normalized": 1.5543202524485384e-15,
+        "worstTime": 7.592799999999959e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1,
+          "ngspice": 1.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(3)",
+        "peak": 3.252526974963148,
+        "maxAbs": 0.013390194898109442,
+        "normalized": 0.00411685898416297,
+        "worstTime": 7.812799999999953e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0.5245652291686894,
+          "ngspice": 0.5245654795923013,
+          "magnitude": 2.5042361184723916e-07
+        },
+        "first": null
+      },
+      {
+        "node": "v(4)",
+        "peak": 2.689317194413817,
+        "maxAbs": 0.013226146541837958,
+        "normalized": 0.0049180314502547265,
+        "worstTime": 7.812799999999953e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0.16950112919837185,
+          "ngspice": 0.1695012462980455,
+          "magnitude": 1.1709967365214347e-07
+        },
+        "first": null
+      }
+    ],
+    "points": {
+      "spiceTs": 1008,
+      "ngspice": 1008
+    }
+  },
+  "k-10-reduced": {
+    "worst": {
+      "node": "i(vdd)",
+      "peak": 2.745701490456063e-05,
+      "maxAbs": 4.3471429206585513e-07,
+      "normalized": 0.015832540193349596,
+      "worstTime": 7.342799999999967e-07,
+      "initial": {
+        "t": 0,
+        "spiceTs": -1.695032381121564e-06,
+        "ngspice": -1.695033551966929e-06,
+        "magnitude": 1.1708453649366258e-12
+      },
+      "first": {
+        "t": 4.822800000000044e-07,
+        "spiceTs": -5.60844952407491e-06,
+        "ngspice": -5.911230941547015e-06,
+        "magnitude": 3.027814174721054e-07
+      }
+    },
+    "first": {
+      "node": "i(vdd)",
+      "t": 4.822800000000044e-07,
+      "spiceTs": -5.60844952407491e-06,
+      "ngspice": -5.911230941547015e-06,
+      "magnitude": 3.027814174721054e-07
+    },
+    "signals": [
+      {
+        "node": "i(l1)",
+        "peak": 0.4467439158261695,
+        "maxAbs": 0.001545398576798862,
+        "normalized": 0.0034592492970854137,
+        "worstTime": 7.772799999999954e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0.1,
+          "ngspice": 0.1,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "i(l2)",
+        "peak": 2.760634034865145e-05,
+        "maxAbs": 2.58874051797768e-07,
+        "normalized": 0.009377340441664656,
+        "worstTime": 7.352799999999967e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2.514629062161204e-22,
+          "ngspice": -2.429031079012956e-23,
+          "magnitude": 2.7575321700624997e-22
+        },
+        "first": null
+      },
+      {
+        "node": "i(vdd)",
+        "peak": 2.745701490456063e-05,
+        "maxAbs": 4.3471429206585513e-07,
+        "normalized": 0.015832540193349596,
+        "worstTime": 7.342799999999967e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": -1.695032381121564e-06,
+          "ngspice": -1.695033551966929e-06,
+          "magnitude": 1.1708453649366258e-12
+        },
+        "first": {
+          "t": 4.822800000000044e-07,
+          "spiceTs": -5.60844952407491e-06,
+          "ngspice": -5.911230941547015e-06,
+          "magnitude": 3.027814174721054e-07
+        }
+      },
+      {
+        "node": "i(vin)",
+        "peak": 0.4467439158261696,
+        "maxAbs": 0.001545398576798862,
+        "normalized": 0.003459249297085413,
+        "worstTime": 7.772799999999954e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": -0.1,
+          "ngspice": -0.1,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(1)",
+        "peak": 10,
+        "maxAbs": 0.0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 10,
+          "ngspice": 10.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(2)",
+        "peak": 3.160499058039992,
+        "maxAbs": 0.011745130822116145,
+        "normalized": 0.003716226648521762,
+        "worstTime": 9.991399999999968e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0.5245652291686894,
+          "ngspice": 0.5245654795923013,
+          "magnitude": 2.5042361184723916e-07
+        },
+        "first": null
+      },
+      {
+        "node": "v(20)",
+        "peak": 4.010856873035519,
+        "maxAbs": 0.01545398576799828,
+        "normalized": 0.003853038454673729,
+        "worstTime": 7.772799999999954e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": -5.551115123125783e-17,
+          "magnitude": 5.551115123125783e-17
+        },
+        "first": null
+      },
+      {
+        "node": "v(21)",
+        "peak": 5.999969048952531,
+        "maxAbs": 9.325873406851315e-15,
+        "normalized": 1.5543202524485384e-15,
+        "worstTime": 7.592799999999959e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1,
+          "ngspice": 1.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(3)",
+        "peak": 3.252526974963148,
+        "maxAbs": 0.013390194898109442,
+        "normalized": 0.00411685898416297,
+        "worstTime": 7.812799999999953e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0.5245652291686894,
+          "ngspice": 0.5245654795923013,
+          "magnitude": 2.5042361184723916e-07
+        },
+        "first": null
+      },
+      {
+        "node": "v(4)",
+        "peak": 2.689317194413817,
+        "maxAbs": 0.013226146541837958,
+        "normalized": 0.0049180314502547265,
+        "worstTime": 7.812799999999953e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0.16950112919837185,
+          "ngspice": 0.1695012462980455,
+          "magnitude": 1.1709967365214347e-07
+        },
+        "first": null
+      }
+    ],
+    "points": {
+      "spiceTs": 1008,
+      "ngspice": 1008
+    }
+  },
+  "k-10-tight": {
+    "worst": {
+      "node": "i(l2)",
+      "peak": 2.76002417743766e-05,
+      "maxAbs": 1.0565338822716789e-07,
+      "normalized": 0.0038279877796307546,
+      "worstTime": 1.687921835645228e-08,
+      "initial": {
+        "t": 0,
+        "spiceTs": -3.970466940254533e-23,
+        "ngspice": -3.06047465172345e-23,
+        "magnitude": 9.099922885310827e-24
+      },
+      "first": null
+    },
+    "first": null,
+    "signals": [
+      {
+        "node": "i(l1)",
+        "peak": 0.4467442908336566,
+        "maxAbs": 1.1459968021765299e-07,
+        "normalized": 2.565218684805168e-07,
+        "worstTime": 1.808035808006918e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0.1,
+          "ngspice": 0.1,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "i(l2)",
+        "peak": 2.76002417743766e-05,
+        "maxAbs": 1.0565338822716789e-07,
+        "normalized": 0.0038279877796307546,
+        "worstTime": 1.687921835645228e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": -3.970466940254533e-23,
+          "ngspice": -3.06047465172345e-23,
+          "magnitude": 9.099922885310827e-24
+        },
+        "first": null
+      },
+      {
+        "node": "i(vdd)",
+        "peak": 2.745726671876716e-05,
+        "maxAbs": 1.3858159508412824e-09,
+        "normalized": 5.047173722845731e-05,
+        "worstTime": 1.618524421375831e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": -1.6950414423178017e-06,
+          "ngspice": -1.695041442272005e-06,
+          "magnitude": 4.579674211743507e-17
+        },
+        "first": null
+      },
+      {
+        "node": "i(vin)",
+        "peak": 0.4467442908336566,
+        "maxAbs": 1.1459968021765299e-07,
+        "normalized": 2.565218684805168e-07,
+        "worstTime": 1.808035808006918e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": -0.1,
+          "ngspice": -0.1,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(1)",
+        "peak": 10,
+        "maxAbs": 0.0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 10,
+          "ngspice": 10.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(2)",
+        "peak": 3.160490867195851,
+        "maxAbs": 6.809266199547803e-05,
+        "normalized": 2.1544964012471052e-05,
+        "worstTime": 1.687921835645228e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0.5245659376775171,
+          "ngspice": 0.5245659376717198,
+          "magnitude": 5.7973625899876424e-12
+        },
+        "first": null
+      },
+      {
+        "node": "v(20)",
+        "peak": 4.010889480173956,
+        "maxAbs": 1.2027409296844205e-06,
+        "normalized": 2.998688783696569e-07,
+        "worstTime": 1.808035808006918e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": -5.551115123125783e-17,
+          "magnitude": 5.551115123125783e-17
+        },
+        "first": null
+      },
+      {
+        "node": "v(21)",
+        "peak": 5.999980732519345,
+        "maxAbs": 3.41011808124847e-07,
+        "normalized": 5.683548386690549e-08,
+        "worstTime": 4.847013287256084e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1,
+          "ngspice": 1.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(3)",
+        "peak": 3.252528635635009,
+        "maxAbs": 7.382724722415634e-05,
+        "normalized": 2.2698415754222145e-05,
+        "worstTime": 1.687921835645228e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0.5245659376775171,
+          "ngspice": 0.5245659376717198,
+          "magnitude": 5.7973625899876424e-12
+        },
+        "first": null
+      },
+      {
+        "node": "v(4)",
+        "peak": 2.689327453482927,
+        "maxAbs": 2.259635021048534e-05,
+        "normalized": 8.402230892791052e-06,
+        "worstTime": 1.687921835645228e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0.16950203533315758,
+          "ngspice": 0.1695020353194099,
+          "magnitude": 1.3747669669328388e-11
+        },
+        "first": null
+      }
+    ],
+    "points": {
+      "spiceTs": 1451,
+      "ngspice": 1450
+    }
+  },
+  "k-15-fine": {
+    "worst": {
+      "node": "v(16)",
+      "peak": 3.14399777325084,
+      "maxAbs": 0.009290872205463208,
+      "normalized": 0.002955114117608488,
+      "worstTime": 7.786599999999275e-08,
+      "initial": {
+        "t": 0,
+        "spiceTs": 2,
+        "ngspice": 2.0,
+        "magnitude": 0.0
+      },
+      "first": null
+    },
+    "first": null,
+    "signals": [
+      {
+        "node": "i(vdd)",
+        "peak": 0.001543833707400752,
+        "maxAbs": 1.7868468288960546e-06,
+        "normalized": 0.001157408871389683,
+        "worstTime": 9.744599999998904e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": -0.0015438168482697426,
+          "ngspice": -0.001543833707400752,
+          "magnitude": 1.6859131009424808e-08
+        },
+        "first": null
+      },
+      {
+        "node": "v(1)",
+        "peak": 3,
+        "maxAbs": 0.0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 3,
+          "ngspice": 3.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(10)",
+        "peak": 3.143974838197087,
+        "maxAbs": 0.009055744434601776,
+        "normalized": 0.0028803488897496377,
+        "worstTime": 9.735599999998906e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(11)",
+        "peak": 3.143973652757143,
+        "maxAbs": 0.00865068738817043,
+        "normalized": 0.0027515139576898533,
+        "worstTime": 8.162599999999204e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(12)",
+        "peak": 3.14397338131287,
+        "maxAbs": 0.0079756923871519,
+        "normalized": 0.002536819311053259,
+        "worstTime": 6.620599999999496e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(13)",
+        "peak": 3.143975042917128,
+        "maxAbs": 0.008823018394897852,
+        "normalized": 0.002806325837342348,
+        "worstTime": 8.217599999999193e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(14)",
+        "peak": 3.143972350751151,
+        "maxAbs": 0.007567108792371879,
+        "normalized": 0.0024068623855944414,
+        "worstTime": 7.731599999999286e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(15)",
+        "peak": 3.143974857356454,
+        "maxAbs": 0.008112885747203924,
+        "normalized": 0.002580455033926536,
+        "worstTime": 7.215599999999383e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(16)",
+        "peak": 3.14399777325084,
+        "maxAbs": 0.009290872205463208,
+        "normalized": 0.002955114117608488,
+        "worstTime": 7.786599999999275e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(17)",
+        "peak": 3.144187383842592,
+        "maxAbs": 0.008017920368928788,
+        "normalized": 0.0025500771392097765,
+        "worstTime": 7.271599999999373e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(18)",
+        "peak": 3.05020348406658,
+        "maxAbs": 0.0029342353646355512,
+        "normalized": 0.0009619802022924654,
+        "worstTime": 9.97559999999886e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(2)",
+        "peak": 3.05664182938141,
+        "maxAbs": 0.004374450763513282,
+        "normalized": 0.0014311296539439705,
+        "worstTime": 7.405599999999347e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(3)",
+        "peak": 3.105768309008288,
+        "maxAbs": 0.007691225302348448,
+        "normalized": 0.0024764324112780825,
+        "worstTime": 7.943599999999245e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(4)",
+        "peak": 3.129945024182236,
+        "maxAbs": 0.008260953501102897,
+        "normalized": 0.0026393286263106954,
+        "worstTime": 7.457599999999337e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(5)",
+        "peak": 3.142858633029194,
+        "maxAbs": 0.007489445578605647,
+        "normalized": 0.0023830042814834036,
+        "worstTime": 6.941599999999435e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(6)",
+        "peak": 3.143762621196184,
+        "maxAbs": 0.007867132275065414,
+        "normalized": 0.002502457476281086,
+        "worstTime": 7.512599999999327e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(7)",
+        "peak": 3.143960795124904,
+        "maxAbs": 0.008110150825215046,
+        "normalized": 0.002579596678747021,
+        "worstTime": 6.996599999999425e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(8)",
+        "peak": 3.143970361844591,
+        "maxAbs": 0.008757338859028518,
+        "normalized": 0.002785439381143059,
+        "worstTime": 9.680599999998916e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(9)",
+        "peak": 3.143974634057115,
+        "maxAbs": 0.007450694357331145,
+        "normalized": 0.002369832846811636,
+        "worstTime": 5.994599999999615e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      }
+    ],
+    "points": {
+      "spiceTs": 10005,
+      "ngspice": 10005
+    },
+    "crossingNode": "v(6)",
+    "crossings": {
+      "spiceTs": {
+        "edges": [
+          2.7467102556750326e-08,
+          3.8033473149427176e-08,
+          4.8599940907931955e-08,
+          5.916579810132183e-08,
+          6.973243925570791e-08,
+          8.029893404223225e-08,
+          9.086484322139656e-08
+        ],
+        "periods": [
+          1.056637059267685e-08,
+          1.056646775850478e-08,
+          1.0565857193389872e-08,
+          1.0566641154386087e-08,
+          1.0566494786524337e-08,
+          1.0565909179164307e-08
+        ],
+        "meanPeriod": 1.0566290110774372e-08
+      },
+      "ngspice": {
+        "edges": [
+          2.746731162538534e-08,
+          3.8033707216275474e-08,
+          4.8600201304600704e-08,
+          5.916646262089544e-08,
+          6.973302962028611e-08,
+          8.029951737665469e-08,
+          9.086536069600602e-08
+        ],
+        "periods": [
+          1.0566395590890135e-08,
+          1.056649408832523e-08,
+          1.0566261316294739e-08,
+          1.0566566999390668e-08,
+          1.0566487756368575e-08,
+          1.056584331935133e-08
+        ],
+        "meanPeriod": 1.0566341511770112e-08
+      }
+    }
+  },
+  "k-15-no-ic-op": {
+    "worst": {
+      "node": "v(17)",
+      "peak": 1.296045826867334,
+      "maxAbs": 1.9997501432555964e-09,
+      "normalized": 1.5429625263245378e-09,
+      "worstTime": 0,
+      "initial": {
+        "t": 0,
+        "spiceTs": 1.296045824867584,
+        "ngspice": 1.296045826867334,
+        "magnitude": 1.9997501432555964e-09
+      },
+      "first": null
+    },
+    "first": null,
+    "signals": [
+      {
+        "node": "i(vdd)",
+        "peak": 0.0009556970681281031,
+        "maxAbs": 6.097995372544851e-13,
+        "normalized": 6.380678120619144e-10,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": -0.0009556970687379027,
+          "ngspice": -0.0009556970681281031,
+          "magnitude": 6.097995372544851e-13
+        },
+        "first": null
+      },
+      {
+        "node": "v(1)",
+        "peak": 3,
+        "maxAbs": 0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 3,
+          "ngspice": 3,
+          "magnitude": 0
+        },
+        "first": null
+      },
+      {
+        "node": "v(10)",
+        "peak": 1.29604582532419,
+        "maxAbs": 4.5660430991745216e-10,
+        "normalized": 3.5230568317539095e-10,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.2960458248675857,
+          "ngspice": 1.29604582532419,
+          "magnitude": 4.5660430991745216e-10
+        },
+        "first": null
+      },
+      {
+        "node": "v(11)",
+        "peak": 1.296045825324193,
+        "maxAbs": 4.566083067203408e-10,
+        "normalized": 3.523087670191945e-10,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.2960458248675848,
+          "ngspice": 1.296045825324193,
+          "magnitude": 4.566083067203408e-10
+        },
+        "first": null
+      },
+      {
+        "node": "v(12)",
+        "peak": 1.296045825324078,
+        "maxAbs": 4.5649239943656994e-10,
+        "normalized": 3.52219335548898e-10,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.2960458248675857,
+          "ngspice": 1.296045825324078,
+          "magnitude": 4.5649239943656994e-10
+        },
+        "first": null
+      },
+      {
+        "node": "v(13)",
+        "peak": 1.296045825324843,
+        "maxAbs": 4.5725911945737607e-10,
+        "normalized": 3.5281091958516816e-10,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.296045824867584,
+          "ngspice": 1.296045825324843,
+          "magnitude": 4.5725911945737607e-10
+        },
+        "first": null
+      },
+      {
+        "node": "v(14)",
+        "peak": 1.296045825338022,
+        "maxAbs": 4.704363565366521e-10,
+        "normalized": 3.6297818127993847e-10,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.2960458248675857,
+          "ngspice": 1.296045825338022,
+          "magnitude": 4.704363565366521e-10
+        },
+        "first": null
+      },
+      {
+        "node": "v(15)",
+        "peak": 1.296045825430378,
+        "maxAbs": 5.627940335983794e-10,
+        "normalized": 4.342393012311061e-10,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.296045824867584,
+          "ngspice": 1.296045825430378,
+          "magnitude": 5.627940335983794e-10
+        },
+        "first": null
+      },
+      {
+        "node": "v(16)",
+        "peak": 1.296045825878933,
+        "maxAbs": 1.0113472281858549e-09,
+        "normalized": 7.803329234134098e-10,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.2960458248675857,
+          "ngspice": 1.296045825878933,
+          "magnitude": 1.0113472281858549e-09
+        },
+        "first": null
+      },
+      {
+        "node": "v(17)",
+        "peak": 1.296045826867334,
+        "maxAbs": 1.9997501432555964e-09,
+        "normalized": 1.5429625263245378e-09,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.296045824867584,
+          "ngspice": 1.296045826867334,
+          "magnitude": 1.9997501432555964e-09
+        },
+        "first": null
+      },
+      {
+        "node": "v(18)",
+        "peak": 1.29604582532419,
+        "maxAbs": 4.5660430991745216e-10,
+        "normalized": 3.5230568317539095e-10,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.2960458248675857,
+          "ngspice": 1.29604582532419,
+          "magnitude": 4.5660430991745216e-10
+        },
+        "first": null
+      },
+      {
+        "node": "v(2)",
+        "peak": 1.296045825324181,
+        "maxAbs": 4.5659698244548963e-10,
+        "normalized": 3.52300029461752e-10,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.296045824867584,
+          "ngspice": 1.296045825324181,
+          "magnitude": 4.5659698244548963e-10
+        },
+        "first": null
+      },
+      {
+        "node": "v(3)",
+        "peak": 1.29604582532424,
+        "maxAbs": 4.566542699535603e-10,
+        "normalized": 3.5234423122293243e-10,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.2960458248675857,
+          "ngspice": 1.29604582532424,
+          "magnitude": 4.566542699535603e-10
+        },
+        "first": null
+      },
+      {
+        "node": "v(4)",
+        "peak": 1.296045825323645,
+        "maxAbs": 4.5606118881380553e-10,
+        "normalized": 3.5188662306745144e-10,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.296045824867584,
+          "ngspice": 1.296045825323645,
+          "magnitude": 4.5606118881380553e-10
+        },
+        "first": null
+      },
+      {
+        "node": "v(5)",
+        "peak": 1.296045825324186,
+        "maxAbs": 4.566003131145635e-10,
+        "normalized": 3.523025993315876e-10,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.2960458248675857,
+          "ngspice": 1.296045825324186,
+          "magnitude": 4.566003131145635e-10
+        },
+        "first": null
+      },
+      {
+        "node": "v(6)",
+        "peak": 1.296045825324185,
+        "maxAbs": 4.566012012929832e-10,
+        "normalized": 3.523032846302111e-10,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.296045824867584,
+          "ngspice": 1.296045825324185,
+          "magnitude": 4.566012012929832e-10
+        },
+        "first": null
+      },
+      {
+        "node": "v(7)",
+        "peak": 1.296045825324211,
+        "maxAbs": 4.5662540415492003e-10,
+        "normalized": 3.5232195901768624e-10,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.2960458248675857,
+          "ngspice": 1.296045825324211,
+          "magnitude": 4.5662540415492003e-10
+        },
+        "first": null
+      },
+      {
+        "node": "v(8)",
+        "peak": 1.296045825324582,
+        "maxAbs": 4.5699799500198424e-10,
+        "normalized": 3.526094417900182e-10,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.296045824867584,
+          "ngspice": 1.296045825324582,
+          "magnitude": 4.5699799500198424e-10
+        },
+        "first": null
+      },
+      {
+        "node": "v(9)",
+        "peak": 1.296045825294153,
+        "maxAbs": 4.265670039416136e-10,
+        "normalized": 3.291295690449828e-10,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.296045824867586,
+          "ngspice": 1.296045825294153,
+          "magnitude": 4.265670039416136e-10
+        },
+        "first": null
+      }
+    ],
+    "points": {
+      "spiceTs": 1,
+      "ngspice": 1
+    }
+  },
+  "k-15-op": {
+    "worst": {
+      "node": "v(17)",
+      "peak": 1.296045826867334,
+      "maxAbs": 9.709105963651155e-09,
+      "normalized": 7.491329212578067e-09,
+      "worstTime": 0,
+      "initial": {
+        "t": 0,
+        "spiceTs": 1.296045817158228,
+        "ngspice": 1.296045826867334,
+        "magnitude": 9.709105963651155e-09
+      },
+      "first": null
+    },
+    "first": null,
+    "signals": [
+      {
+        "node": "i(vdd)",
+        "peak": 0.0009556970681281031,
+        "maxAbs": 3.515166456524721e-12,
+        "normalized": 3.6781178615623234e-09,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": -0.0009556970716432696,
+          "ngspice": -0.0009556970681281031,
+          "magnitude": 3.515166456524721e-12
+        },
+        "first": null
+      },
+      {
+        "node": "v(1)",
+        "peak": 3,
+        "maxAbs": 0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 3,
+          "ngspice": 3,
+          "magnitude": 0
+        },
+        "first": null
+      },
+      {
+        "node": "v(10)",
+        "peak": 1.29604582532419,
+        "maxAbs": 3.685808769304799e-09,
+        "normalized": 2.8438876907634336e-09,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.2960458216383812,
+          "ngspice": 1.29604582532419,
+          "magnitude": 3.685808769304799e-09
+        },
+        "first": null
+      },
+      {
+        "node": "v(11)",
+        "peak": 1.296045825324193,
+        "maxAbs": 3.679292648328669e-09,
+        "normalized": 2.8388599974143123e-09,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.2960458216449005,
+          "ngspice": 1.296045825324193,
+          "magnitude": 3.679292648328669e-09
+        },
+        "first": null
+      },
+      {
+        "node": "v(12)",
+        "peak": 1.296045825324078,
+        "maxAbs": 3.692157024559606e-09,
+        "normalized": 2.848785862673009e-09,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.296045821631921,
+          "ngspice": 1.296045825324078,
+          "magnitude": 3.692157024559606e-09
+        },
+        "first": null
+      },
+      {
+        "node": "v(13)",
+        "peak": 1.296045825324843,
+        "maxAbs": 3.7001641750578074e-09,
+        "normalized": 2.854964001084138e-09,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.2960458216246789,
+          "ngspice": 1.296045825324843,
+          "magnitude": 3.7001641750578074e-09
+        },
+        "first": null
+      },
+      {
+        "node": "v(14)",
+        "peak": 1.296045825338022,
+        "maxAbs": 3.4386755665138935e-09,
+        "normalized": 2.653205233400641e-09,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.2960458218993465,
+          "ngspice": 1.296045825338022,
+          "magnitude": 3.4386755665138935e-09
+        },
+        "first": null
+      },
+      {
+        "node": "v(15)",
+        "peak": 1.296045825430378,
+        "maxAbs": 5.8882314579733475e-09,
+        "normalized": 4.543227826082494e-09,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.2960458195421465,
+          "ngspice": 1.296045825430378,
+          "magnitude": 5.8882314579733475e-09
+        },
+        "first": null
+      },
+      {
+        "node": "v(16)",
+        "peak": 1.296045825878933,
+        "maxAbs": 5.9031917132301714e-09,
+        "normalized": 4.554770823189707e-09,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.2960458317821246,
+          "ngspice": 1.296045825878933,
+          "magnitude": 5.9031917132301714e-09
+        },
+        "first": null
+      },
+      {
+        "node": "v(17)",
+        "peak": 1.296045826867334,
+        "maxAbs": 9.709105963651155e-09,
+        "normalized": 7.491329212578067e-09,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.296045817158228,
+          "ngspice": 1.296045826867334,
+          "magnitude": 9.709105963651155e-09
+        },
+        "first": null
+      },
+      {
+        "node": "v(18)",
+        "peak": 1.29604582532419,
+        "maxAbs": 3.6653988733093e-09,
+        "normalized": 2.8281398710515854e-09,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.2960458216587911,
+          "ngspice": 1.29604582532419,
+          "magnitude": 3.6653988733093e-09
+        },
+        "first": null
+      },
+      {
+        "node": "v(2)",
+        "peak": 1.296045825324181,
+        "maxAbs": 3.691703387431744e-09,
+        "normalized": 2.848435846400983e-09,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.2960458216324775,
+          "ngspice": 1.296045825324181,
+          "magnitude": 3.691703387431744e-09
+        },
+        "first": null
+      },
+      {
+        "node": "v(3)",
+        "peak": 1.29604582532424,
+        "maxAbs": 3.691880801071079e-09,
+        "normalized": 2.8485727348008378e-09,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.2960458216323592,
+          "ngspice": 1.29604582532424,
+          "magnitude": 3.691880801071079e-09
+        },
+        "first": null
+      },
+      {
+        "node": "v(4)",
+        "peak": 1.296045825323645,
+        "maxAbs": 3.6801388603180385e-09,
+        "normalized": 2.839512915678768e-09,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.2960458216435062,
+          "ngspice": 1.296045825323645,
+          "magnitude": 3.6801388603180385e-09
+        },
+        "first": null
+      },
+      {
+        "node": "v(5)",
+        "peak": 1.296045825324186,
+        "maxAbs": 3.6990583929252807e-09,
+        "normalized": 2.8541108042996997e-09,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.2960458216251276,
+          "ngspice": 1.296045825324186,
+          "magnitude": 3.6990583929252807e-09
+        },
+        "first": null
+      },
+      {
+        "node": "v(6)",
+        "peak": 1.296045825324185,
+        "maxAbs": 3.6819425286438445e-09,
+        "normalized": 2.84090458585665e-09,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.2960458216422426,
+          "ngspice": 1.296045825324185,
+          "magnitude": 3.6819425286438445e-09
+        },
+        "first": null
+      },
+      {
+        "node": "v(7)",
+        "peak": 1.296045825324211,
+        "maxAbs": 3.6717118234719237e-09,
+        "normalized": 2.8330108023405962e-09,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.2960458216524993,
+          "ngspice": 1.296045825324211,
+          "magnitude": 3.6717118234719237e-09
+        },
+        "first": null
+      },
+      {
+        "node": "v(8)",
+        "peak": 1.296045825324582,
+        "maxAbs": 3.700306949738774e-09,
+        "normalized": 2.8550741628383926e-09,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.296045821624275,
+          "ngspice": 1.296045825324582,
+          "magnitude": 3.700306949738774e-09
+        },
+        "first": null
+      },
+      {
+        "node": "v(9)",
+        "peak": 1.296045825294153,
+        "maxAbs": 3.655210800701525e-09,
+        "normalized": 2.8202789819348645e-09,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.296045821638942,
+          "ngspice": 1.296045825294153,
+          "magnitude": 3.655210800701525e-09
+        },
+        "first": null
+      }
+    ],
+    "points": {
+      "spiceTs": 1,
+      "ngspice": 1
+    }
+  },
+  "k-15-original": {
+    "worst": {
+      "node": "v(6)",
+      "peak": 3.124327278085861,
+      "maxAbs": 1.0137233926069993,
+      "normalized": 0.32446133275386674,
+      "worstTime": 7.585543818890348e-08,
+      "initial": {
+        "t": 0,
+        "spiceTs": 2,
+        "ngspice": 2.0,
+        "magnitude": 0.0
+      },
+      "first": {
+        "t": 6.007405840540403e-09,
+        "spiceTs": -0.11509056108152034,
+        "ngspice": -0.08220008215205483,
+        "magnitude": 0.032890478929465505
+      }
+    },
+    "first": {
+      "node": "v(13)",
+      "t": 2.9137595656308023e-09,
+      "spiceTs": 0.0020602477586428897,
+      "ngspice": -0.05355995220815478,
+      "magnitude": 0.05562019996679767
+    },
+    "signals": [
+      {
+        "node": "i(vdd)",
+        "peak": 0.001543833707400752,
+        "maxAbs": 0.0001103412162602325,
+        "normalized": 0.07147221603679486,
+        "worstTime": 2.4852031019916448e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": -0.0015438168482697426,
+          "ngspice": -0.001543833707400752,
+          "magnitude": 1.6859131009424808e-08
+        },
+        "first": {
+          "t": 3.2137595656308025e-09,
+          "spiceTs": -0.00021573027518187807,
+          "ngspice": -0.0001970387439192859,
+          "magnitude": 1.8691531262592174e-05
+        }
+      },
+      {
+        "node": "v(1)",
+        "peak": 3,
+        "maxAbs": 0.0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 3,
+          "ngspice": 3.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(10)",
+        "peak": 3.126313537773404,
+        "maxAbs": 0.9968362944831397,
+        "normalized": 0.31885358983958395,
+        "worstTime": 9.831663878165469e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": {
+          "t": 7.103869835508122e-09,
+          "spiceTs": -0.11076788635058396,
+          "ngspice": -0.0735497217972054,
+          "magnitude": 0.03721816455337856
+        }
+      },
+      {
+        "node": "v(11)",
+        "peak": 3.109878730744508,
+        "maxAbs": 0.9778883801968207,
+        "normalized": 0.31444582405395377,
+        "worstTime": 2.9052031019916485e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": {
+          "t": 7.601141362232381e-09,
+          "spiceTs": 2.5644502167024448,
+          "ngspice": 2.7634310711239296,
+          "magnitude": 0.19898085442148483
+        }
+      },
+      {
+        "node": "v(12)",
+        "peak": 3.124247559554114,
+        "maxAbs": 0.9453854063082989,
+        "normalized": 0.30259618941439526,
+        "worstTime": 4.551352078730035e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": {
+          "t": 7.80114136223238e-09,
+          "spiceTs": 0.011326288232524878,
+          "ngspice": -0.10195628499329015,
+          "magnitude": 0.11328257322581503
+        }
+      },
+      {
+        "node": "v(13)",
+        "peak": 3.126090323341181,
+        "maxAbs": 0.9796918829777403,
+        "normalized": 0.3133920589762873,
+        "worstTime": 8.295543818890307e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": {
+          "t": 2.9137595656308023e-09,
+          "spiceTs": 0.0020602477586428897,
+          "ngspice": -0.05355995220815478,
+          "magnitude": 0.05562019996679767
+        }
+      },
+      {
+        "node": "v(14)",
+        "peak": 3.126364012443362,
+        "maxAbs": 0.99067568736441,
+        "normalized": 0.31687790782563496,
+        "worstTime": 9.941663878165462e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": {
+          "t": 3.2137595656308025e-09,
+          "spiceTs": 2.858810498335978,
+          "ngspice": 2.969718649574643,
+          "magnitude": 0.11090815123866493
+        }
+      },
+      {
+        "node": "v(15)",
+        "peak": 3.113873017725471,
+        "maxAbs": 0.9951469828144303,
+        "normalized": 0.31958495967871403,
+        "worstTime": 3.0152031019916495e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": {
+          "t": 3.5137595656308027e-09,
+          "spiceTs": 0.18386707617480716,
+          "ngspice": 0.10290683202327996,
+          "magnitude": 0.0809602441515272
+        }
+      },
+      {
+        "node": "v(16)",
+        "peak": 3.110852306814296,
+        "maxAbs": 0.9778609871392522,
+        "normalized": 0.3143386090677644,
+        "worstTime": 2.525203101991645e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": {
+          "t": 3.8074058405404015e-09,
+          "spiceTs": 2.612100174264311,
+          "ngspice": 2.7347676052514034,
+          "magnitude": 0.12266743098709254
+        }
+      },
+      {
+        "node": "v(17)",
+        "peak": 3.125426203134637,
+        "maxAbs": 0.963979806900205,
+        "normalized": 0.30843147278069927,
+        "worstTime": 8.4055438188903e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": {
+          "t": 4.007405840540402e-09,
+          "spiceTs": -0.0670107221111176,
+          "ngspice": -0.10308864839623631,
+          "magnitude": 0.03607792628511872
+        }
+      },
+      {
+        "node": "v(18)",
+        "peak": 3.04152049947067,
+        "maxAbs": 0.34305618548169914,
+        "normalized": 0.11279101539555719,
+        "worstTime": 7.945543818890327e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": {
+          "t": 4.407405840540402e-09,
+          "spiceTs": 2.856461697472475,
+          "ngspice": 2.890180715150528,
+          "magnitude": 0.0337190176780533
+        }
+      },
+      {
+        "node": "v(2)",
+        "peak": 3.054423502426696,
+        "maxAbs": 0.5624942144214256,
+        "normalized": 0.18415724406734427,
+        "worstTime": 5.339425184124201e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": {
+          "t": 5.007405840540402e-09,
+          "spiceTs": 0.25463434508847654,
+          "ngspice": 0.19881900350489917,
+          "magnitude": 0.05581534158357737
+        }
+      },
+      {
+        "node": "v(3)",
+        "peak": 3.096252283680391,
+        "maxAbs": 0.875617594216392,
+        "normalized": 0.2827991759042259,
+        "worstTime": 2.6852031019916465e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": {
+          "t": 5.3074058405404025e-09,
+          "spiceTs": 2.9338570494900655,
+          "ngspice": 2.9804996660360596,
+          "magnitude": 0.04664261654599411
+        }
+      },
+      {
+        "node": "v(4)",
+        "peak": 3.112198603941466,
+        "maxAbs": 0.9367559944295223,
+        "normalized": 0.30099492790825144,
+        "worstTime": 5.389425184124201e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": {
+          "t": 5.607405840540403e-09,
+          "spiceTs": 0.0600480968767125,
+          "ngspice": -0.05054217982404723,
+          "magnitude": 0.11059027670075974
+        }
+      },
+      {
+        "node": "v(5)",
+        "peak": 3.124922735010762,
+        "maxAbs": 1.000642174802892,
+        "normalized": 0.3202134131484201,
+        "worstTime": 8.07554381889032e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": {
+          "t": 5.707405840540403e-09,
+          "spiceTs": 3.1059982958717454,
+          "ngspice": 3.0693992406825528,
+          "magnitude": 0.0365990551891926
+        }
+      },
+      {
+        "node": "v(6)",
+        "peak": 3.124327278085861,
+        "maxAbs": 1.0137233926069993,
+        "normalized": 0.32446133275386674,
+        "worstTime": 7.585543818890348e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": {
+          "t": 6.007405840540403e-09,
+          "spiceTs": -0.11509056108152034,
+          "ngspice": -0.08220008215205483,
+          "magnitude": 0.032890478929465505
+        }
+      },
+      {
+        "node": "v(7)",
+        "peak": 3.112074815675534,
+        "maxAbs": 0.9445813021338426,
+        "normalized": 0.30352139909232984,
+        "worstTime": 2.7952031019916475e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": {
+          "t": 6.406542434480714e-09,
+          "spiceTs": 3.045869854899993,
+          "ngspice": 3.077890070547472,
+          "magnitude": 0.0320202156474787
+        }
+      },
+      {
+        "node": "v(8)",
+        "peak": 3.125412682479316,
+        "maxAbs": 0.927240670634514,
+        "normalized": 0.2966778358046963,
+        "worstTime": 4.441352078730034e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": {
+          "t": 6.706542434480714e-09,
+          "spiceTs": 0.03998568874522788,
+          "ngspice": -0.0888321578546122,
+          "magnitude": 0.12881784659984008
+        }
+      },
+      {
+        "node": "v(9)",
+        "peak": 3.1262767257106,
+        "maxAbs": 0.9920338889586346,
+        "normalized": 0.3173212021828126,
+        "worstTime": 8.185543818890313e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": {
+          "t": 6.8038698355081215e-09,
+          "spiceTs": 3.1028699265368305,
+          "ngspice": 3.056760808499478,
+          "magnitude": 0.04610911803735229
+        }
+      }
+    ],
+    "points": {
+      "spiceTs": 1010,
+      "ngspice": 1010
+    },
+    "crossingNode": "v(6)",
+    "crossings": {
+      "spiceTs": {
+        "edges": [
+          2.7670435603598757e-08,
+          3.834883131150713e-08,
+          4.9029181826993494e-08,
+          5.970989502942165e-08,
+          7.039042750633926e-08,
+          8.107108151026321e-08,
+          9.175164010635862e-08
+        ],
+        "periods": [
+          1.0678395707908373e-08,
+          1.0680350515486364e-08,
+          1.0680713202428155e-08,
+          1.068053247691761e-08,
+          1.068065400392395e-08,
+          1.0680558596095413e-08
+        ],
+        "meanPeriod": 1.0680200750459978e-08
+      },
+      "ngspice": {
+        "edges": [
+          2.7765066540802858e-08,
+          3.844367995765966e-08,
+          4.912415590967225e-08,
+          5.980486414562713e-08,
+          7.048535822504396e-08,
+          8.116606960008083e-08,
+          9.184656412643123e-08
+        ],
+        "periods": [
+          1.0678613416856804e-08,
+          1.0680475952012586e-08,
+          1.0680708235954879e-08,
+          1.0680494079416835e-08,
+          1.0680711375036872e-08,
+          1.0680494526350395e-08
+        ],
+        "meanPeriod": 1.0680249597604729e-08
+      }
+    },
+    "phaseDiagnostic": {
+      "offsets": [
+        9.463093720410075e-11,
+        9.484864615253225e-11,
+        9.49740826787538e-11,
+        9.496911620547763e-11,
+        9.493071870470227e-11,
+        9.498808981762474e-11,
+        9.492402007260706e-11
+      ],
+      "meanShift": 9.489508726225693e-11,
+      "window": [
+        2e-08,
+        9.9e-08
+      ],
+      "maxAbsRaw": 1.0137233926069993,
+      "maxAbsShifted": 0.06547410626273864,
+      "periodRelativeDifference": -4.573595804540657e-06
+    }
+  },
+  "k-15-reduced": {
+    "worst": {
+      "node": "i(vdd)",
+      "peak": 0.0003152735630096185,
+      "maxAbs": 1.2968334178492958e-07,
+      "normalized": 0.00041133592219710837,
+      "worstTime": 3.201801334539798e-08,
+      "initial": {
+        "t": 0,
+        "spiceTs": -0.00019948067279725729,
+        "ngspice": -0.0001994827801886368,
+        "magnitude": 2.1073913795120226e-09
+      },
+      "first": null
+    },
+    "first": null,
+    "signals": [
+      {
+        "node": "i(vdd)",
+        "peak": 0.0003152735630096185,
+        "maxAbs": 1.2968334178492958e-07,
+        "normalized": 0.00041133592219710837,
+        "worstTime": 3.201801334539798e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": -0.00019948067279725729,
+          "ngspice": -0.0001994827801886368,
+          "magnitude": 2.1073913795120226e-09
+        },
+        "first": null
+      },
+      {
+        "node": "v(1)",
+        "peak": 3,
+        "maxAbs": 0.0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 3,
+          "ngspice": 3.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(2)",
+        "peak": 2.251948048502177,
+        "maxAbs": 0.0003597705494000625,
+        "normalized": 0.00015975970211184678,
+        "worstTime": 2.7180133453978794e-09,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(3)",
+        "peak": 2.977290315175909,
+        "maxAbs": 0.0007638802050613513,
+        "normalized": 0.00025656893490288285,
+        "worstTime": 4.61801334539788e-09,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(4)",
+        "peak": 3.00318036952483,
+        "maxAbs": 0.0009706658343047181,
+        "normalized": 0.00032321263289900205,
+        "worstTime": 3.41801334539788e-09,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      }
+    ],
+    "points": {
+      "spiceTs": 1008,
+      "ngspice": 1008
+    },
+    "crossingNode": "v(2)",
+    "crossings": {
+      "spiceTs": {
+        "edges": [
+          2.1776785483271377e-08,
+          2.427677994346885e-08,
+          2.6776784973526263e-08,
+          2.9276780503776426e-08,
+          3.1776784435166444e-08,
+          3.4276780883942705e-08,
+          3.677678424097076e-08,
+          3.927678105848425e-08,
+          4.177678417671632e-08,
+          4.4276781167432294e-08,
+          4.677678410789565e-08,
+          4.9276781222848656e-08,
+          5.177678406604818e-08,
+          5.427678115638969e-08,
+          5.67767838751751e-08,
+          5.927678113944445e-08,
+          6.177678385140457e-08,
+          6.427678115013561e-08,
+          6.677678384101444e-08,
+          6.927678115810416e-08,
+          7.177678394830278e-08,
+          7.427678119013575e-08,
+          7.677678394974893e-08,
+          7.927678119504961e-08,
+          8.177678394705355e-08,
+          8.427678119756892e-08,
+          8.677678394503265e-08,
+          8.927678119925758e-08,
+          9.177678394363064e-08,
+          9.427678120042395e-08,
+          9.677678394265687e-08,
+          9.927678120123556e-08
+        ],
+        "periods": [
+          2.4999944601974743e-09,
+          2.5000050300574116e-09,
+          2.499995530250163e-09,
+          2.5000039313900174e-09,
+          2.4999964487762613e-09,
+          2.5000033570280535e-09,
+          2.499996817513493e-09,
+          2.5000031182320684e-09,
+          2.4999969907159745e-09,
+          2.500002940463358e-09,
+          2.4999971149530034e-09,
+          2.500002843199524e-09,
+          2.4999970903415083e-09,
+          2.5000027187854124e-09,
+          2.499997264269348e-09,
+          2.50000271196012e-09,
+          2.499997298731042e-09,
+          2.5000026908788333e-09,
+          2.4999973170897136e-09,
+          2.5000027901986212e-09,
+          2.499997241832967e-09,
+          2.500002759613188e-09,
+          2.4999972453006802e-09,
+          2.5000027520039336e-09,
+          2.4999972505153724e-09,
+          2.500002747463731e-09,
+          2.4999972542249267e-09,
+          2.5000027443730668e-09,
+          2.4999972567933027e-09,
+          2.500002742232919e-09,
+          2.4999972585786893e-09
+        ],
+        "meanPeriod": 2.4999998618698123e-09
+      },
+      "ngspice": {
+        "edges": [
+          2.1776789570673022e-08,
+          2.427683385851948e-08,
+          2.6776789481093288e-08,
+          2.9276834138166732e-08,
+          3.1776793174681504e-08,
+          3.427683484059194e-08,
+          3.6776793073274e-08,
+          3.927683504119053e-08,
+          4.177679990326249e-08,
+          4.427683658797106e-08,
+          4.677680017942514e-08,
+          4.927683697386969e-08,
+          5.177680022471678e-08,
+          5.427683629716641e-08,
+          5.67767988722164e-08,
+          5.927683602264787e-08,
+          6.177679879138993e-08,
+          6.427683602082195e-08,
+          6.677679877947148e-08,
+          6.927683602840421e-08,
+          7.177679877375813e-08,
+          7.427683603381572e-08,
+          7.677679877005845e-08,
+          7.927683603744933e-08,
+          8.177679879694064e-08,
+          8.427683603989141e-08,
+          8.67767987658041e-08,
+          8.927683604160033e-08,
+          9.177679876463302e-08,
+          9.427683604276736e-08,
+          9.677679876380116e-08,
+          9.927683604357689e-08
+        ],
+        "periods": [
+          2.5000442878464587e-09,
+          2.499955622573807e-09,
+          2.500044657073444e-09,
+          2.4999590365147725e-09,
+          2.5000416659104354e-09,
+          2.4999582326820573e-09,
+          2.500041967916532e-09,
+          2.499964862071962e-09,
+          2.5000366847085665e-09,
+          2.4999635914540836e-09,
+          2.50003679444455e-09,
+          2.4999632508470875e-09,
+          2.500036072449634e-09,
+          2.49996257504999e-09,
+          2.5000371504314676e-09,
+          2.4999627687420596e-09,
+          2.5000372294320204e-09,
+          2.4999627586495296e-09,
+          2.5000372489327306e-09,
+          2.499962745353918e-09,
+          2.500037260057595e-09,
+          2.499962736242729e-09,
+          2.5000372673908755e-09,
+          2.4999627594913083e-09,
+          2.500037242950772e-09,
+          2.4999627259126856e-09,
+          2.500037275796235e-09,
+          2.499962723032694e-09,
+          2.500037278134337e-09,
+          2.4999627210338023e-09,
+          2.500037279775728e-09
+        ],
+        "meanPeriod": 2.5000014991259316e-09
+      }
+    }
+  },
+  "k-15-stages-13": {
+    "worst": {
+      "node": "v(13)",
+      "peak": 3.12586333474877,
+      "maxAbs": 0.0014780066449677776,
+      "normalized": 0.0004728314985935132,
+      "worstTime": 3.2448813071417244e-08,
+      "initial": {
+        "t": 0,
+        "spiceTs": 0,
+        "ngspice": 0.0,
+        "magnitude": 0.0
+      },
+      "first": null
+    },
+    "first": null,
+    "signals": [
+      {
+        "node": "i(vdd)",
+        "peak": 0.001159733442483045,
+        "maxAbs": 1.6686314393616524e-07,
+        "normalized": 0.00014388060033769762,
+        "worstTime": 3.2548813071417245e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": -0.0011597207981347488,
+          "ngspice": -0.001159733442483045,
+          "magnitude": 1.2644348296262514e-08
+        },
+        "first": null
+      },
+      {
+        "node": "v(1)",
+        "peak": 3,
+        "maxAbs": 0.0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 3,
+          "ngspice": 3.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(10)",
+        "peak": 3.126229199087331,
+        "maxAbs": 0.0007633112070029036,
+        "normalized": 0.00024416354604638203,
+        "worstTime": 2.76488130714172e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(11)",
+        "peak": 3.124765112609532,
+        "maxAbs": 0.0013229346457197533,
+        "normalized": 0.00042337090886647585,
+        "worstTime": 2.3469597783271167e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(12)",
+        "peak": 3.124219230324305,
+        "maxAbs": 0.001237643123644272,
+        "normalized": 0.00039614477487093637,
+        "worstTime": 1.9669597783271133e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(13)",
+        "peak": 3.12586333474877,
+        "maxAbs": 0.0014780066449677776,
+        "normalized": 0.0004728314985935132,
+        "worstTime": 3.2448813071417244e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(14)",
+        "peak": 3.038239927546415,
+        "maxAbs": 0.0003800783085203818,
+        "normalized": 0.00012509818762974418,
+        "worstTime": 2.046959778327114e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(2)",
+        "peak": 3.056220122552286,
+        "maxAbs": 0.0010061602979185569,
+        "normalized": 0.000329217221787775,
+        "worstTime": 2.0969597783271145e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(3)",
+        "peak": 3.095893466071018,
+        "maxAbs": 0.0014260318523349191,
+        "normalized": 0.0004606204535018088,
+        "worstTime": 2.1269597783271148e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(4)",
+        "peak": 3.112638241056966,
+        "maxAbs": 0.0009090629898806935,
+        "normalized": 0.0002920554588997148,
+        "worstTime": 3.434603117264789e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(5)",
+        "peak": 3.125093368512893,
+        "maxAbs": 0.0010985811742640905,
+        "normalized": 0.00035153547261433063,
+        "worstTime": 9.775722230260348e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(6)",
+        "peak": 3.126257899371777,
+        "maxAbs": 0.00118447149972023,
+        "normalized": 0.00037887837083378504,
+        "worstTime": 2.654881307141719e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(7)",
+        "peak": 3.125513404486779,
+        "maxAbs": 0.0007959254071481237,
+        "normalized": 0.0002546542932772408,
+        "worstTime": 2.2369597783271157e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(8)",
+        "peak": 3.125412656624722,
+        "maxAbs": 0.0010126042353801878,
+        "normalized": 0.00032399057232773416,
+        "worstTime": 6.919961089798972e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(9)",
+        "peak": 3.126261695687978,
+        "maxAbs": 0.0012077886646855163,
+        "normalized": 0.000386336392232105,
+        "worstTime": 9.885722230260341e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      }
+    ],
+    "points": {
+      "spiceTs": 1010,
+      "ngspice": 1010
+    },
+    "crossingNode": "v(6)",
+    "crossings": {
+      "spiceTs": {
+        "edges": [
+          2.2184279687348226e-08,
+          3.0637419237727654e-08,
+          3.906275715272834e-08,
+          4.7515397226705294e-08,
+          5.593976244583834e-08,
+          6.439217788704958e-08,
+          7.281641485974469e-08,
+          8.126865257326334e-08,
+          8.969327394565129e-08,
+          9.814580996158953e-08
+        ],
+        "periods": [
+          8.453139550379428e-09,
+          8.425337915000687e-09,
+          8.452640073976953e-09,
+          8.424365219133045e-09,
+          8.452415441211242e-09,
+          8.424236972695108e-09,
+          8.452237713518652e-09,
+          8.42462137238795e-09,
+          8.452536015938236e-09
+        ],
+        "meanPeriod": 8.440170030471257e-09
+      },
+      "ngspice": {
+        "edges": [
+          2.2184330469432242e-08,
+          3.063748906944892e-08,
+          3.9062756626307264e-08,
+          4.751539896539262e-08,
+          5.593979306037502e-08,
+          6.439220331092488e-08,
+          7.281641880503589e-08,
+          8.126862311966324e-08,
+          8.969331069370118e-08,
+          9.814587081444049e-08
+        ],
+        "periods": [
+          8.453158600016677e-09,
+          8.425267556858346e-09,
+          8.452642339085356e-09,
+          8.4243940949824e-09,
+          8.452410250549858e-09,
+          8.424215494111014e-09,
+          8.452204314627345e-09,
+          8.424687574037948e-09,
+          8.4525601207393e-09
+        ],
+        "meanPeriod": 8.440171149445361e-09
+      }
+    }
+  },
+  "k-15-stages-3": {
+    "worst": {
+      "node": "i(vdd)",
+      "peak": 0.0003158158833567082,
+      "maxAbs": 1.7495602387944831e-07,
+      "normalized": 0.0005539810791651625,
+      "worstTime": 5.028000000000002e-09,
+      "initial": {
+        "t": 0,
+        "spiceTs": -0.00019948067279725729,
+        "ngspice": -0.0001994827801886368,
+        "magnitude": 2.1073913795120226e-09
+      },
+      "first": null
+    },
+    "first": null,
+    "signals": [
+      {
+        "node": "i(vdd)",
+        "peak": 0.0003158158833567082,
+        "maxAbs": 1.7495602387944831e-07,
+        "normalized": 0.0005539810791651625,
+        "worstTime": 5.028000000000002e-09,
+        "initial": {
+          "t": 0,
+          "spiceTs": -0.00019948067279725729,
+          "ngspice": -0.0001994827801886368,
+          "magnitude": 2.1073913795120226e-09
+        },
+        "first": null
+      },
+      {
+        "node": "v(1)",
+        "peak": 3,
+        "maxAbs": 0.0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 3,
+          "ngspice": 3.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(2)",
+        "peak": 2.973338200897576,
+        "maxAbs": 0.0009044080047648784,
+        "normalized": 0.00030417259782014046,
+        "worstTime": 7.628000000000002e-09,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(3)",
+        "peak": 3.013949902531306,
+        "maxAbs": 0.001320480928242107,
+        "normalized": 0.00043812305145917775,
+        "worstTime": 6.428000000000003e-09,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(4)",
+        "peak": 2.345314265301924,
+        "maxAbs": 0.00034227456062607686,
+        "normalized": 0.0001459397427841143,
+        "worstTime": 8.327999999999997e-09,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      }
+    ],
+    "points": {
+      "spiceTs": 1008,
+      "ngspice": 1008
+    },
+    "crossingNode": "v(2)",
+    "crossings": {
+      "spiceTs": {
+        "edges": [
+          2.120560787279481e-08,
+          2.37056122855756e-08,
+          2.6205608256189678e-08,
+          2.8705610460551805e-08,
+          3.120560888065645e-08,
+          3.370561211227039e-08,
+          3.620560978150571e-08,
+          3.870561191582483e-08,
+          4.120561003082356e-08,
+          4.370561175240583e-08,
+          4.6205610208084653e-08,
+          4.870561166676154e-08,
+          5.120561028485674e-08,
+          5.3705611609641895e-08,
+          5.6205610330158436e-08,
+          5.870561157391735e-08,
+          6.120561035872175e-08,
+          6.370561155089435e-08,
+          6.620561037743233e-08,
+          6.870561153556142e-08,
+          7.120561039007879e-08,
+          7.370561152505762e-08,
+          7.620561039884663e-08,
+          7.870561151769767e-08,
+          8.120561040504752e-08,
+          8.370561150793632e-08,
+          8.620561040813881e-08,
+          8.870561150384404e-08,
+          9.12056104113041e-08,
+          9.370561150106562e-08,
+          9.620561041366703e-08,
+          9.870561149903436e-08
+        ],
+        "periods": [
+          2.500004412780788e-09,
+          2.499995970614079e-09,
+          2.500002204362127e-09,
+          2.4999984201046467e-09,
+          2.50000323161394e-09,
+          2.499997669235317e-09,
+          2.5000021343191197e-09,
+          2.4999981149987336e-09,
+          2.5000017215822653e-09,
+          2.499998455678826e-09,
+          2.5000014586768836e-09,
+          2.4999986180952033e-09,
+          2.5000013247851548e-09,
+          2.4999987205165413e-09,
+          2.500001243758916e-09,
+          2.4999987848043965e-09,
+          2.5000011921726045e-09,
+          2.4999988265379745e-09,
+          2.500001158129093e-09,
+          2.4999988545173654e-09,
+          2.5000011349788356e-09,
+          2.499998873789006e-09,
+          2.500001118851037e-09,
+          2.499998887349858e-09,
+          2.500001102888794e-09,
+          2.4999989002024977e-09,
+          2.5000010957052266e-09,
+          2.4999989074600612e-09,
+          2.500001089761517e-09,
+          2.4999989126014056e-09,
+          2.500001085367335e-09
+        ],
+        "meanPeriod": 2.5000001169754693e-09
+      },
+      "ngspice": {
+        "edges": [
+          2.1205634325814407e-08,
+          2.370563636327104e-08,
+          2.6205636197713203e-08,
+          2.8705643650587274e-08,
+          3.120563842871019e-08,
+          3.3705643402302136e-08,
+          3.6205638920463667e-08,
+          3.870564315065402e-08,
+          4.120563916596901e-08,
+          4.3705642982236935e-08,
+          4.620563929658938e-08,
+          4.870564284143489e-08,
+          5.1205638934207645e-08,
+          5.370564290753319e-08,
+          5.62056390081482e-08,
+          5.8705642546503105e-08,
+          6.120563896499688e-08,
+          6.370564250612609e-08,
+          6.620563898102971e-08,
+          6.870564248929565e-08,
+          7.12056389940915e-08,
+          7.37056424782716e-08,
+          7.620563900326081e-08,
+          7.870564247056918e-08,
+          8.120563900975419e-08,
+          8.37056424650755e-08,
+          8.62056351060229e-08,
+          8.870564153387038e-08,
+          9.120563490201768e-08,
+          9.370564148648472e-08,
+          9.620563489389865e-08,
+          9.870564148256689e-08
+        ],
+        "periods": [
+          2.500002037456634e-09,
+          2.499999834442162e-09,
+          2.5000074528740712e-09,
+          2.4999947781229133e-09,
+          2.5000049735919487e-09,
+          2.4999955181615307e-09,
+          2.5000042301903525e-09,
+          2.4999960153149922e-09,
+          2.5000038162679233e-09,
+          2.4999963143524436e-09,
+          2.500003544845513e-09,
+          2.499996092772754e-09,
+          2.5000039733255466e-09,
+          2.4999961006150084e-09,
+          2.5000035383549045e-09,
+          2.4999964184937746e-09,
+          2.5000035411292088e-09,
+          2.4999964749036212e-09,
+          2.500003508265945e-09,
+          2.4999965047958507e-09,
+          2.5000034841801e-09,
+          2.4999965249892088e-09,
+          2.5000034673083683e-09,
+          2.4999965391850045e-09,
+          2.500003455321317e-09,
+          2.499992640947396e-09,
+          2.5000064278474833e-09,
+          2.4999933681472967e-09,
+          2.5000065844670384e-09,
+          2.499993407413931e-09,
+          2.5000065886682424e-09
+        ],
+        "meanPeriod": 2.5000002308629835e-09
+      }
+    }
+  },
+  "k-15-stages-5": {
+    "worst": {
+      "node": "i(vdd)",
+      "peak": 0.0003915329126474981,
+      "maxAbs": 9.282439501652245e-06,
+      "normalized": 0.023707941789326253,
+      "worstTime": 9.994999210372878e-08,
+      "initial": {
+        "t": 0,
+        "spiceTs": -0.00039152869786474725,
+        "ngspice": -0.0003915329126474981,
+        "magnitude": 4.214782750838319e-09
+      },
+      "first": {
+        "t": 9.994999210372878e-08,
+        "spiceTs": -0.000218361222013852,
+        "ngspice": -0.00022764366151550424,
+        "magnitude": 9.282439501652245e-06
+      }
+    },
+    "first": {
+      "node": "i(vdd)",
+      "t": 9.994999210372878e-08,
+      "spiceTs": -0.000218361222013852,
+      "ngspice": -0.00022764366151550424,
+      "magnitude": 9.282439501652245e-06
+    },
+    "signals": [
+      {
+        "node": "i(vdd)",
+        "peak": 0.0003915329126474981,
+        "maxAbs": 9.282439501652245e-06,
+        "normalized": 0.023707941789326253,
+        "worstTime": 9.994999210372878e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": -0.00039152869786474725,
+          "ngspice": -0.0003915329126474981,
+          "magnitude": 4.214782750838319e-09
+        },
+        "first": {
+          "t": 9.994999210372878e-08,
+          "spiceTs": -0.000218361222013852,
+          "ngspice": -0.00022764366151550424,
+          "magnitude": 9.282439501652245e-06
+        }
+      },
+      {
+        "node": "v(1)",
+        "peak": 3,
+        "maxAbs": 0.0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 3,
+          "ngspice": 3.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(2)",
+        "peak": 3.05040731398628,
+        "maxAbs": 0.0020589845746727953,
+        "normalized": 0.00067498676823657,
+        "worstTime": 9.994999210372878e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(3)",
+        "peak": 3.087325586355957,
+        "maxAbs": 0.0019099854534836008,
+        "normalized": 0.0006186537182617016,
+        "worstTime": 9.994999210372878e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(4)",
+        "peak": 3.113030518046655,
+        "maxAbs": 0.029950725500723863,
+        "normalized": 0.009621083162241903,
+        "worstTime": 9.994999210372878e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(5)",
+        "peak": 3.098377014678531,
+        "maxAbs": 0.03523009173300018,
+        "normalized": 0.011370498672723803,
+        "worstTime": 9.994999210372878e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": {
+          "t": 9.994999210372878e-08,
+          "spiceTs": 2.2372960596087887,
+          "ngspice": 2.2020659678757886,
+          "magnitude": 0.03523009173300018
+        }
+      },
+      {
+        "node": "v(6)",
+        "peak": 2.758967506282308,
+        "maxAbs": 0.002641173317934717,
+        "normalized": 0.0009573049743864805,
+        "worstTime": 9.994999210372878e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      }
+    ],
+    "points": {
+      "spiceTs": 1010,
+      "ngspice": 1009
+    },
+    "crossingNode": "v(6)",
+    "crossings": {
+      "spiceTs": {
+        "edges": [
+          2.3111000410883825e-08,
+          2.7006075028404374e-08,
+          3.090113175101399e-08,
+          3.4796203880130394e-08,
+          3.86912637407156e-08,
+          4.258633249120622e-08,
+          4.64813946900612e-08,
+          5.03764617902457e-08,
+          5.427152540342039e-08,
+          5.816659191629038e-08,
+          6.20616556779446e-08,
+          6.595672191384245e-08,
+          6.985178601459729e-08,
+          7.374685202240778e-08,
+          7.764191633645208e-08,
+          8.153698223657303e-08,
+          8.543204661975361e-08,
+          8.932711244963893e-08,
+          9.322217679826548e-08,
+          9.711724260877761e-08
+        ],
+        "periods": [
+          3.895074617520549e-09,
+          3.895056722609618e-09,
+          3.895072129116401e-09,
+          3.895059860585208e-09,
+          3.895068750490618e-09,
+          3.895062198854983e-09,
+          3.895067100184497e-09,
+          3.8950636131746875e-09,
+          3.89506651286999e-09,
+          3.895063761654223e-09,
+          3.895066235897853e-09,
+          3.895064100754837e-09,
+          3.895066007810488e-09,
+          3.895064314044298e-09,
+          3.895065900120956e-09,
+          3.895064383180583e-09,
+          3.895065829885315e-09,
+          3.895064348626549e-09,
+          3.895065810512136e-09
+        ],
+        "meanPeriod": 3.895065378836515e-09
+      },
+      "ngspice": {
+        "edges": [
+          2.3111009930083082e-08,
+          2.7006080667667827e-08,
+          3.090115409950295e-08,
+          3.479622183825424e-08,
+          3.8691297149723513e-08,
+          4.2586364923914096e-08,
+          4.648144124171996e-08,
+          5.037650668560411e-08,
+          5.427158761137489e-08,
+          5.8166651113922284e-08,
+          6.206173123287963e-08,
+          6.595679488545458e-08,
+          6.985187533221247e-08,
+          7.374693768764865e-08,
+          7.764201885294284e-08,
+          8.153708110604714e-08,
+          8.543216236768674e-08,
+          8.932722292916188e-08,
+          9.322230492459879e-08,
+          9.711736544544051e-08
+        ],
+        "periods": [
+          3.895070737584745e-09,
+          3.895073431835121e-09,
+          3.895067738751294e-09,
+          3.8950753114692714e-09,
+          3.895067774190583e-09,
+          3.895076317805862e-09,
+          3.895065443884149e-09,
+          3.895080925770783e-09,
+          3.8950635025473936e-09,
+          3.895080118957349e-09,
+          3.895063652574948e-09,
+          3.895080446757888e-09,
+          3.895062355436183e-09,
+          3.89508116529419e-09,
+          3.895062253104293e-09,
+          3.895081261639609e-09,
+          3.8950605614751406e-09,
+          3.895081995436904e-09,
+          3.895060520841726e-09
+        ],
+        "meanPeriod": 3.895071342913549e-09
+      }
+    }
+  },
+  "k-15-stages-9": {
+    "worst": {
+      "node": "v(8)",
+      "peak": 3.125233332188175,
+      "maxAbs": 0.001222174815021182,
+      "normalized": 0.00039106674130006785,
+      "worstTime": 1.4098088915164137e-08,
+      "initial": {
+        "t": 0,
+        "spiceTs": 2,
+        "ngspice": 2.0,
+        "magnitude": 0.0
+      },
+      "first": null
+    },
+    "first": null,
+    "signals": [
+      {
+        "node": "i(vdd)",
+        "peak": 0.0007756331775652442,
+        "maxAbs": 2.1673835645327506e-07,
+        "normalized": 0.0002794340968415364,
+        "worstTime": 9.989756724322002e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": -0.0007756247479997272,
+          "ngspice": -0.0007756331775652442,
+          "magnitude": 8.429565516963888e-09
+        },
+        "first": null
+      },
+      {
+        "node": "v(1)",
+        "peak": 3,
+        "maxAbs": 0.0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 3,
+          "ngspice": 3.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(10)",
+        "peak": 3.001479908314095,
+        "maxAbs": 0.00027182103194367535,
+        "normalized": 9.05623359965634e-05,
+        "worstTime": 2.1198088915164185e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(2)",
+        "peak": 3.05582251811866,
+        "maxAbs": 0.00032581821767130315,
+        "normalized": 0.00010662210116571023,
+        "worstTime": 2.169808891516419e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(3)",
+        "peak": 3.092222190068731,
+        "maxAbs": 0.0005073247713607287,
+        "normalized": 0.00016406478583269347,
+        "worstTime": 2.189808891516419e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(4)",
+        "peak": 3.107677874029521,
+        "maxAbs": 0.0006174680571047197,
+        "normalized": 0.00019869113921517536,
+        "worstTime": 2.2098088915164193e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(5)",
+        "peak": 3.118552560917746,
+        "maxAbs": 0.0008532491736694681,
+        "normalized": 0.0002736042304890218,
+        "worstTime": 2.2398088915164196e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(6)",
+        "peak": 3.12594168090192,
+        "maxAbs": 0.00039678494118533525,
+        "normalized": 0.00012693293147774014,
+        "worstTime": 2.26980889151642e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(7)",
+        "peak": 3.126003281115807,
+        "maxAbs": 0.0007327527974525516,
+        "normalized": 0.00023440563926439647,
+        "worstTime": 9.119808891516273e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(8)",
+        "peak": 3.125233332188175,
+        "maxAbs": 0.001222174815021182,
+        "normalized": 0.00039106674130006785,
+        "worstTime": 1.4098088915164137e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(9)",
+        "peak": 3.110961781887774,
+        "maxAbs": 0.0007402111682868195,
+        "normalized": 0.00023793643901264813,
+        "worstTime": 1.729808891516415e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      }
+    ],
+    "points": {
+      "spiceTs": 1009,
+      "ngspice": 1009
+    },
+    "crossingNode": "v(6)",
+    "crossings": {
+      "spiceTs": {
+        "edges": [
+          2.2784816355109417e-08,
+          2.8983268222506494e-08,
+          3.5183237017188467e-08,
+          4.138322936071212e-08,
+          4.758323115235014e-08,
+          5.378322540685213e-08,
+          5.998323126768055e-08,
+          6.618324223070504e-08,
+          7.238324221406611e-08,
+          7.85832423171706e-08,
+          8.47832437038718e-08,
+          9.098324380204098e-08,
+          9.718321232602567e-08
+        ],
+        "periods": [
+          6.198451867397077e-09,
+          6.199968794681972e-09,
+          6.199992343523655e-09,
+          6.200001791638018e-09,
+          6.199994254501988e-09,
+          6.2000058608284215e-09,
+          6.200010963024487e-09,
+          6.199999983361073e-09,
+          6.2000001031044925e-09,
+          6.200001386701199e-09,
+          6.200000098169176e-09,
+          6.199968523984698e-09
+        ],
+        "meanPeriod": 6.1998663309096886e-09
+      },
+      "ngspice": {
+        "edges": [
+          2.2784763470645674e-08,
+          2.8983283102969987e-08,
+          3.5183248394930486e-08,
+          4.138322036135107e-08,
+          4.7583208248860474e-08,
+          5.378320283755461e-08,
+          5.998323842137801e-08,
+          6.618327176603421e-08,
+          7.238326266238665e-08,
+          7.858326225985322e-08,
+          8.47832709091046e-08,
+          9.098327316119836e-08,
+          9.718322861986478e-08
+        ],
+        "periods": [
+          6.198519632324313e-09,
+          6.199965291960499e-09,
+          6.1999719664205835e-09,
+          6.199987887509404e-09,
+          6.199994588694139e-09,
+          6.2000355838233986e-09,
+          6.200033344656201e-09,
+          6.199990896352439e-09,
+          6.199999597466573e-09,
+          6.200008649251381e-09,
+          6.200002252093757e-09,
+          6.19995545866642e-09
+        ],
+        "meanPeriod": 6.19987209576826e-09
+      }
+    }
+  },
+  "k-15-tight": {
+    "worst": {
+      "node": "i(vdd)",
+      "peak": 0.001543823616747762,
+      "maxAbs": 4.530175815694562e-06,
+      "normalized": 0.0029343869121771092,
+      "worstTime": 6.880743689429636e-08,
+      "initial": {
+        "t": 0,
+        "spiceTs": -0.0015438236094811215,
+        "ngspice": -0.001543823616747762,
+        "magnitude": 7.2666404143939545e-12
+      },
+      "first": null
+    },
+    "first": null,
+    "signals": [
+      {
+        "node": "i(vdd)",
+        "peak": 0.001543823616747762,
+        "maxAbs": 4.530175815694562e-06,
+        "normalized": 0.0029343869121771092,
+        "worstTime": 6.880743689429636e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": -0.0015438236094811215,
+          "ngspice": -0.001543823616747762,
+          "magnitude": 7.2666404143939545e-12
+        },
+        "first": null
+      },
+      {
+        "node": "v(1)",
+        "peak": 3,
+        "maxAbs": 0.0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 3,
+          "ngspice": 3.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(10)",
+        "peak": 3.143994763246028,
+        "maxAbs": 0.003452921654411689,
+        "normalized": 0.0010982593529661954,
+        "worstTime": 6.564170464046055e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(11)",
+        "peak": 3.144002093362262,
+        "maxAbs": 0.005009501689736684,
+        "normalized": 0.0015933518938530406,
+        "worstTime": 6.046057070906813e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(12)",
+        "peak": 3.144001190997074,
+        "maxAbs": 0.003523804191734925,
+        "normalized": 0.0011208024353888371,
+        "worstTime": 6.616636964349167e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(13)",
+        "peak": 3.144004682447936,
+        "maxAbs": 0.004210893453069797,
+        "normalized": 0.001339340706640162,
+        "worstTime": 6.096391858343816e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(14)",
+        "peak": 3.144003961157375,
+        "maxAbs": 0.004418703163433957,
+        "normalized": 0.0014054381667532433,
+        "worstTime": 8.785304756518788e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(15)",
+        "peak": 3.144005528996982,
+        "maxAbs": 0.003710324623694472,
+        "normalized": 0.0011801266217487092,
+        "worstTime": 6.150710011996517e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(16)",
+        "peak": 3.144001175216702,
+        "maxAbs": 0.004153538400900381,
+        "normalized": 0.0013210995064637963,
+        "worstTime": 6.722702796724678e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(17)",
+        "peak": 3.144218936459855,
+        "maxAbs": 0.0034318182095631755,
+        "normalized": 0.0010914692261942596,
+        "worstTime": 6.211923728366865e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(18)",
+        "peak": 3.050157800711314,
+        "maxAbs": 0.0014442796478846276,
+        "normalized": 0.00047350981236046654,
+        "worstTime": 6.79723430138992e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(2)",
+        "peak": 3.056640543803555,
+        "maxAbs": 0.002202748481063832,
+        "normalized": 0.0007206436116700934,
+        "worstTime": 6.871261452226563e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(3)",
+        "peak": 3.105761176434496,
+        "maxAbs": 0.004805466568726269,
+        "normalized": 0.0015472749821166492,
+        "worstTime": 6.885681781276664e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(4)",
+        "peak": 3.129945185226773,
+        "maxAbs": 0.004061534375721321,
+        "normalized": 0.0012976375416705746,
+        "worstTime": 6.397268748859734e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(5)",
+        "peak": 3.142887686913484,
+        "maxAbs": 0.005010078901442894,
+        "normalized": 0.0015941005217285098,
+        "worstTime": 6.938631852265956e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(6)",
+        "peak": 3.143762400626725,
+        "maxAbs": 0.003436999340509894,
+        "normalized": 0.0010932757958504468,
+        "worstTime": 6.958672172295187e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(7)",
+        "peak": 3.143992062363222,
+        "maxAbs": 0.0053068838789731565,
+        "normalized": 0.0016879444266103424,
+        "worstTime": 6.993409596827103e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(8)",
+        "peak": 3.143986799584107,
+        "maxAbs": 0.003554926274541459,
+        "normalized": 0.0011307064886569218,
+        "worstTime": 7.013086571614805e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 2,
+          "ngspice": 2.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(9)",
+        "peak": 3.143998068409531,
+        "maxAbs": 0.004711246940410696,
+        "normalized": 0.0014984891332309235,
+        "worstTime": 7.047814227172047e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      }
+    ],
+    "points": {
+      "spiceTs": 14285,
+      "ngspice": 14270
+    },
+    "crossingNode": "v(6)",
+    "crossings": {
+      "spiceTs": {
+        "edges": [
+          2.7460183982628984e-08,
+          3.8024385719068395e-08,
+          4.8589066009857307e-08,
+          5.915367505249403e-08,
+          6.97185748321354e-08,
+          8.028295689598866e-08,
+          9.084743795333532e-08
+        ],
+        "periods": [
+          1.0564201736439411e-08,
+          1.0564680290788912e-08,
+          1.056460904263672e-08,
+          1.0564899779641378e-08,
+          1.0564382063853258e-08,
+          1.0564481057346657e-08
+        ],
+        "meanPeriod": 1.0564542328451056e-08
+      },
+      "ngspice": {
+        "edges": [
+          2.746013236308145e-08,
+          3.802430641942254e-08,
+          4.858891468815708e-08,
+          5.915341028359237e-08,
+          6.971812880196648e-08,
+          8.028282517132863e-08,
+          9.084719488201254e-08
+        ],
+        "periods": [
+          1.0564174056341092e-08,
+          1.056460826873454e-08,
+          1.0564495595435287e-08,
+          1.0564718518374117e-08,
+          1.0564696369362148e-08,
+          1.0564369710683913e-08
+        ],
+        "meanPeriod": 1.0564510419821848e-08
+      }
+    }
+  },
+  "k-5-fine": {
+    "worst": {
+      "node": "v(xi40.13)",
+      "peak": 1.587700958426771,
+      "maxAbs": 5.0024448811880085,
+      "normalized": 3.150747535067848,
+      "worstTime": 2.5150000000000004e-08,
+      "initial": {
+        "t": 0,
+        "spiceTs": 4.999999892193677,
+        "ngspice": 1.367762573151736e-08,
+        "magnitude": 4.999999878516051
+      },
+      "first": {
+        "t": 0,
+        "spiceTs": 4.999999892193677,
+        "ngspice": 1.367762573151736e-08,
+        "magnitude": 4.999999878516051
+      }
+    },
+    "first": {
+      "node": "v(xi10.10)",
+      "t": 0,
+      "spiceTs": 4.999999892194268,
+      "ngspice": 1.36776257315173e-08,
+      "magnitude": 4.9999998785166415
+    },
+    "signals": [
+      {
+        "node": "i(vd)",
+        "peak": 0.002156161428328472,
+        "maxAbs": 0.00031996919110082643,
+        "normalized": 0.14839760460276724,
+        "worstTime": 2.6070000000000004e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.724150862254174e-11,
+          "ngspice": 1.613575434657521e-11,
+          "magnitude": 1.1057542759665305e-12
+        },
+        "first": {
+          "t": 2.5250000000000004e-08,
+          "spiceTs": 3.8097658610492184e-05,
+          "ngspice": 1.53577492669137e-05,
+          "magnitude": 2.2739909343578485e-05
+        }
+      },
+      {
+        "node": "i(vd1)",
+        "peak": 0.001341893169025128,
+        "maxAbs": 0.0003199691911008277,
+        "normalized": 0.23844609875559775,
+        "worstTime": 2.6070000000000004e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.724150862254174e-11,
+          "ngspice": 1.613575434657525e-11,
+          "magnitude": 1.1057542759664885e-12
+        },
+        "first": {
+          "t": 2.5250000000000004e-08,
+          "spiceTs": 3.8097658610492184e-05,
+          "ngspice": 1.535774926691306e-05,
+          "magnitude": 2.2739909343579125e-05
+        }
+      },
+      {
+        "node": "i(vdbar)",
+        "peak": 0.002142769514677886,
+        "maxAbs": 0.00015509315030946632,
+        "normalized": 0.07237976331429227,
+        "worstTime": 2.6250000000000007e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": -3.227162981289666e-11,
+          "ngspice": -3.116589125662373e-11,
+          "magnitude": 1.1057385562729311e-12
+        },
+        "first": {
+          "t": 2.5350000000000005e-08,
+          "spiceTs": -1.982321662946651e-05,
+          "ngspice": 3.981586234697817e-06,
+          "magnitude": 2.380480286416433e-05
+        }
+      },
+      {
+        "node": "i(vdbar1)",
+        "peak": 0.002142769515746853,
+        "maxAbs": 0.0003183267253465993,
+        "normalized": 0.14855854678128924,
+        "worstTime": 2.2606999999999999e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": -3.227162981289666e-11,
+          "ngspice": -3.116594676777496e-11,
+          "magnitude": 1.1056830451216998e-12
+        },
+        "first": {
+          "t": 2.5350000000000005e-08,
+          "spiceTs": -1.982321662946651e-05,
+          "ngspice": 3.981586234670062e-06,
+          "magnitude": 2.3804802864136574e-05
+        }
+      },
+      {
+        "node": "i(vprecharg)",
+        "peak": 0.0008179736511889341,
+        "maxAbs": 1.1885201725545118e-05,
+        "normalized": 0.01453005449291654,
+        "worstTime": 2.5650000000000008e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": {
+          "t": 2.5550000000000007e-08,
+          "spiceTs": -7.311352332934609e-06,
+          "ngspice": 1.376709360278906e-06,
+          "magnitude": 8.688061693213515e-06
+        }
+      },
+      {
+        "node": "i(vselect1)",
+        "peak": 0.0004696681254392262,
+        "maxAbs": 0.00014347204144793142,
+        "normalized": 0.3054753637236051,
+        "worstTime": 2.5550000000000007e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": {
+          "t": 2.5070000000000002e-08,
+          "spiceTs": -0.00040186893439448995,
+          "ngspice": -0.00043639451142855694,
+          "magnitude": 3.4525577034067e-05
+        }
+      },
+      {
+        "node": "i(vselect2)",
+        "peak": 0.0004696177032024137,
+        "maxAbs": 7.594131419661427e-06,
+        "normalized": 0.016170879777051804,
+        "worstTime": 2.5650000000000008e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": {
+          "t": 2.5550000000000007e-08,
+          "spiceTs": -4.830926460732452e-06,
+          "ngspice": 8.935113665156914e-07,
+          "magnitude": 5.724437827248143e-06
+        }
+      },
+      {
+        "node": "i(vselect3)",
+        "peak": 0.0004696177029091262,
+        "maxAbs": 7.594131397392899e-06,
+        "normalized": 0.016170879739732486,
+        "worstTime": 2.5650000000000008e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": {
+          "t": 2.5550000000000007e-08,
+          "spiceTs": -4.830926460734145e-06,
+          "ngspice": 8.935113430690706e-07,
+          "magnitude": 5.724437803803216e-06
+        }
+      },
+      {
+        "node": "i(vselect4)",
+        "peak": 0.0004696630706325743,
+        "maxAbs": 7.5941314196630544e-06,
+        "normalized": 0.016169317739703825,
+        "worstTime": 2.5650000000000008e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": {
+          "t": 2.5550000000000007e-08,
+          "spiceTs": -4.8309264607329525e-06,
+          "ngspice": 8.935113665203128e-07,
+          "magnitude": 5.724437827253265e-06
+        }
+      },
+      {
+        "node": "i(vvdd)",
+        "peak": 0.001094459732526826,
+        "maxAbs": 0.00043510751575446583,
+        "normalized": 0.39755461331584535,
+        "worstTime": 2.5450000000000006e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": -1.5914625173252261e-10,
+          "ngspice": -1.569348631033638e-10,
+          "magnitude": 2.2113886291588064e-12
+        },
+        "first": {
+          "t": 2.5250000000000004e-08,
+          "spiceTs": -0.00010538034339434288,
+          "ngspice": 4.523315604729283e-05,
+          "magnitude": 0.00015061349944163572
+        }
+      },
+      {
+        "node": "i(vwrite)",
+        "peak": 0.001102143734261219,
+        "maxAbs": 3.8860747136537585e-05,
+        "normalized": 0.03525923700195641,
+        "worstTime": 2.5350000000000005e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": {
+          "t": 2.5250000000000004e-08,
+          "spiceTs": 2.2879570093393753e-05,
+          "ngspice": 5.374821304854383e-06,
+          "magnitude": 1.750474878853937e-05
+        }
+      },
+      {
+        "node": "i(vwritebar)",
+        "peak": 0.0009602603819995615,
+        "maxAbs": 4.5372413794241356e-05,
+        "normalized": 0.04725011532784664,
+        "worstTime": 2.5550000000000007e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": {
+          "t": 2.5250000000000004e-08,
+          "spiceTs": -9.102958292598576e-06,
+          "ngspice": 3.0296689819994447e-06,
+          "magnitude": 1.213262727459802e-05
+        }
+      },
+      {
+        "node": "v(1)",
+        "peak": 5,
+        "maxAbs": 0.0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 5,
+          "ngspice": 5.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(10)",
+        "peak": 5,
+        "maxAbs": 2.6489921367556235e-13,
+        "normalized": 5.297984273511247e-14,
+        "worstTime": 4.00304294150288e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(11)",
+        "peak": 5,
+        "maxAbs": 2.6556534749033744e-13,
+        "normalized": 5.3113069498067486e-14,
+        "worstTime": 4.0000879116092975e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 5,
+          "ngspice": 5.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(16)",
+        "peak": 5.332311453645088,
+        "maxAbs": 0.8662159978082036,
+        "normalized": 0.16244662475896288,
+        "worstTime": 2.6250000000000007e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999865478908,
+          "ngspice": 4.999999870935095,
+          "magnitude": 5.456186613628233e-09
+        },
+        "first": {
+          "t": 2.5350000000000005e-08,
+          "spiceTs": 4.886770789326707,
+          "ngspice": 5.02009957024536,
+          "magnitude": 0.13332878091865297
+        }
+      },
+      {
+        "node": "v(17)",
+        "peak": 5.336924485050118,
+        "maxAbs": 0.5004075816257014,
+        "normalized": 0.09376328689443733,
+        "worstTime": 2.2606999999999999e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.6976276820551e-08,
+          "ngspice": 1.544158541181191e-08,
+          "magnitude": 1.5346914087390881e-09
+        },
+        "first": {
+          "t": 2.5350000000000005e-08,
+          "spiceTs": 0.17354847374396284,
+          "ngspice": 0.03234829294511557,
+          "magnitude": 0.14120018079884727
+        }
+      },
+      {
+        "node": "v(18)",
+        "peak": 5,
+        "maxAbs": 2.651212582804874e-13,
+        "normalized": 5.302425165609748e-14,
+        "worstTime": 3.0024999999999995e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 5,
+          "ngspice": 5.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(19)",
+        "peak": 5,
+        "maxAbs": 2.6556534749033744e-13,
+        "normalized": 5.3113069498067486e-14,
+        "worstTime": 4.0000879116092975e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(24)",
+        "peak": 5,
+        "maxAbs": 2.651212582804874e-13,
+        "normalized": 5.302425165609748e-14,
+        "worstTime": 2.2555000000000006e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(25)",
+        "peak": 5,
+        "maxAbs": 2.651212582804874e-13,
+        "normalized": 5.302425165609748e-14,
+        "worstTime": 3.2535000000000004e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(3)",
+        "peak": 5.332311453645034,
+        "maxAbs": 0.8662159978082364,
+        "normalized": 0.1624466247589707,
+        "worstTime": 2.6250000000000007e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999865478908,
+          "ngspice": 4.999999870934839,
+          "magnitude": 5.45593081824336e-09
+        },
+        "first": {
+          "t": 2.5350000000000005e-08,
+          "spiceTs": 4.886770789326707,
+          "ngspice": 5.020099570245256,
+          "magnitude": 0.13332878091854905
+        }
+      },
+      {
+        "node": "v(4)",
+        "peak": 5.336924690605271,
+        "maxAbs": 0.8758096439379193,
+        "normalized": 0.16410380410269418,
+        "worstTime": 2.2625e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.6976276820551e-08,
+          "ngspice": 1.544158541181196e-08,
+          "magnitude": 1.5346914087390385e-09
+        },
+        "first": {
+          "t": 2.5350000000000005e-08,
+          "spiceTs": 0.17354847374396284,
+          "ngspice": 0.03234829294511452,
+          "magnitude": 0.14120018079884833
+        }
+      },
+      {
+        "node": "v(5)",
+        "peak": 5,
+        "maxAbs": 2.651212582804874e-13,
+        "normalized": 5.302425165609748e-14,
+        "worstTime": 2.0085000000000005e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 5,
+          "ngspice": 5.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(6)",
+        "peak": 5,
+        "maxAbs": 2.6556534749033744e-13,
+        "normalized": 5.3113069498067486e-14,
+        "worstTime": 4.0000879116092975e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(7)",
+        "peak": 5,
+        "maxAbs": 2.651212582804874e-13,
+        "normalized": 5.302425165609748e-14,
+        "worstTime": 1.7555000000000006e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(8)",
+        "peak": 5,
+        "maxAbs": 2.651212582804874e-13,
+        "normalized": 5.302425165609748e-14,
+        "worstTime": 4.2535000000000003e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(9)",
+        "peak": 5,
+        "maxAbs": 2.6556534749033744e-13,
+        "normalized": 5.3113069498067486e-14,
+        "worstTime": 4.0000879116092975e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 5,
+          "ngspice": 5.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(xi10.10)",
+        "peak": 1.587705108380559,
+        "maxAbs": 5.002444912018991,
+        "normalized": 3.15073931904233,
+        "worstTime": 2.2515000000000003e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999892194268,
+          "ngspice": 1.36776257315173e-08,
+          "magnitude": 4.9999998785166415
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 4.999999892194268,
+          "ngspice": 1.36776257315173e-08,
+          "magnitude": 4.9999998785166415
+        }
+      },
+      {
+        "node": "v(xi10.7)",
+        "peak": 1.601097415318697,
+        "maxAbs": 7.987606832760008e-05,
+        "normalized": 4.98883250721511e-05,
+        "worstTime": 7.323500000000006e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.518701643248619e-08,
+          "ngspice": 1.518701644464565e-08,
+          "magnitude": 1.215945905157845e-17
+        },
+        "first": null
+      },
+      {
+        "node": "v(xi10.8)",
+        "peak": 5.21636763183472,
+        "maxAbs": 6.348835691172283e-05,
+        "normalized": 1.2170989737046674e-05,
+        "worstTime": 7.325500000000006e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999892194301,
+          "ngspice": 4.99999989219357,
+          "magnitude": 7.309708394132031e-13
+        },
+        "first": null
+      },
+      {
+        "node": "v(xi10.9)",
+        "peak": 5.21762976226805,
+        "maxAbs": 5.002453030316057,
+        "normalized": 0.9587596779081432,
+        "worstTime": 2.2507000000000002e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.518701643682752e-08,
+          "ngspice": 4.999999897550828,
+          "magnitude": 4.999999882363812
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 1.518701643682752e-08,
+          "ngspice": 4.999999897550828,
+          "magnitude": 4.999999882363812
+        }
+      },
+      {
+        "node": "v(xi20.10)",
+        "peak": 5.216367631834296,
+        "maxAbs": 5.002412940985047,
+        "normalized": 0.9589839700822594,
+        "worstTime": 2.2507000000000002e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999892194268,
+          "ngspice": 1.367762573151725e-08,
+          "magnitude": 4.9999998785166415
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 4.999999892194268,
+          "ngspice": 1.367762573151725e-08,
+          "magnitude": 4.9999998785166415
+        }
+      },
+      {
+        "node": "v(xi20.7)",
+        "peak": 1.601097242059761,
+        "maxAbs": 7.987596352554416e-05,
+        "normalized": 4.988826501430123e-05,
+        "worstTime": 7.323500000000006e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.518701643248619e-08,
+          "ngspice": 1.518701644464543e-08,
+          "magnitude": 1.2159240675896737e-17
+        },
+        "first": null
+      },
+      {
+        "node": "v(xi20.8)",
+        "peak": 5.21636762890126,
+        "maxAbs": 6.348818833723513e-05,
+        "normalized": 1.2170957427440337e-05,
+        "worstTime": 7.325500000000006e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999892194301,
+          "ngspice": 4.999999892193617,
+          "magnitude": 6.847855615887966e-13
+        },
+        "first": null
+      },
+      {
+        "node": "v(xi20.9)",
+        "peak": 5.027727466245382,
+        "maxAbs": 5.002533167290572,
+        "normalized": 0.9949889290690561,
+        "worstTime": 2.2515000000000003e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.518701643682752e-08,
+          "ngspice": 4.999999897550895,
+          "magnitude": 4.999999882363879
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 1.518701643682752e-08,
+          "ngspice": 4.999999897550895,
+          "magnitude": 4.999999882363879
+        }
+      },
+      {
+        "node": "v(xi30.12)",
+        "peak": 5.217629762277402,
+        "maxAbs": 5.002453030315822,
+        "normalized": 0.9587596779063796,
+        "worstTime": 2.5070000000000002e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.5187016410112664e-08,
+          "ngspice": 4.999999897550886,
+          "magnitude": 4.99999988236387
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 1.5187016410112664e-08,
+          "ngspice": 4.999999897550886,
+          "magnitude": 4.99999988236387
+        }
+      },
+      {
+        "node": "v(xi30.13)",
+        "peak": 1.587700958426777,
+        "maxAbs": 5.002444881188,
+        "normalized": 3.1507475350678305,
+        "worstTime": 2.5150000000000004e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999892193677,
+          "ngspice": 1.367762573151726e-08,
+          "magnitude": 4.999999878516051
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 4.999999892193677,
+          "ngspice": 1.367762573151726e-08,
+          "magnitude": 4.999999878516051
+        }
+      },
+      {
+        "node": "v(xi30.14)",
+        "peak": 1.601101381899437,
+        "maxAbs": 7.16023453132264e-05,
+        "normalized": 4.472068172740085e-05,
+        "worstTime": 5.323500000000006e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.518701641011265e-08,
+          "ngspice": 1.518701644464543e-08,
+          "magnitude": 3.4532778870839176e-17
+        },
+        "first": null
+      },
+      {
+        "node": "v(xi30.15)",
+        "peak": 5.216367631834284,
+        "maxAbs": 4.405850484401341e-05,
+        "normalized": 8.446203939909172e-06,
+        "worstTime": 5.327500000000006e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999892193677,
+          "ngspice": 4.999999892193609,
+          "magnitude": 6.838973831690964e-14
+        },
+        "first": null
+      },
+      {
+        "node": "v(xi40.12)",
+        "peak": 5.21762976227751,
+        "maxAbs": 5.002453030315948,
+        "normalized": 0.958759677906384,
+        "worstTime": 2.5070000000000002e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.5187016410112664e-08,
+          "ngspice": 4.999999897550873,
+          "magnitude": 4.9999998823638565
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 1.5187016410112664e-08,
+          "ngspice": 4.999999897550873,
+          "magnitude": 4.9999998823638565
+        }
+      },
+      {
+        "node": "v(xi40.13)",
+        "peak": 1.587700958426771,
+        "maxAbs": 5.0024448811880085,
+        "normalized": 3.150747535067848,
+        "worstTime": 2.5150000000000004e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999892193677,
+          "ngspice": 1.367762573151736e-08,
+          "magnitude": 4.999999878516051
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 4.999999892193677,
+          "ngspice": 1.367762573151736e-08,
+          "magnitude": 4.999999878516051
+        }
+      },
+      {
+        "node": "v(xi40.14)",
+        "peak": 5.21762975995736,
+        "maxAbs": 4.2935330145432715e-05,
+        "normalized": 8.228895517834442e-06,
+        "worstTime": 5.325500000000006e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.518701641011265e-08,
+          "ngspice": 1.518701644464528e-08,
+          "magnitude": 3.4532629978328917e-17
+        },
+        "first": null
+      },
+      {
+        "node": "v(xi40.15)",
+        "peak": 5.027552051832517,
+        "maxAbs": 6.749425814056575e-05,
+        "normalized": 1.342487505742769e-05,
+        "worstTime": 5.322500000000006e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999892193677,
+          "ngspice": 4.999999892193608,
+          "magnitude": 6.927791673660977e-14
+        },
+        "first": null
+      }
+    ],
+    "points": {
+      "spiceTs": 8143,
+      "ngspice": 8143
+    }
+  },
+  "k-5-latch-op": {
+    "worst": {
+      "node": "i(vdd)",
+      "peak": 1e-10,
+      "maxAbs": 0.00012531708542004412,
+      "normalized": 1253170.8542004412,
+      "worstTime": 0,
+      "initial": {
+        "t": 0,
+        "spiceTs": -0.0001253170959929356,
+        "ngspice": -1.0572891506468e-11,
+        "magnitude": 0.00012531708542004412
+      },
+      "first": {
+        "t": 0,
+        "spiceTs": -0.0001253170959929356,
+        "ngspice": -1.0572891506468e-11,
+        "magnitude": 0.00012531708542004412
+      }
+    },
+    "first": {
+      "node": "i(vdd)",
+      "t": 0,
+      "spiceTs": -0.0001253170959929356,
+      "ngspice": -1.0572891506468e-11,
+      "magnitude": 0.00012531708542004412
+    },
+    "signals": [
+      {
+        "node": "i(vdd)",
+        "peak": 1e-10,
+        "maxAbs": 0.00012531708542004412,
+        "normalized": 1253170.8542004412,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": -0.0001253170959929356,
+          "ngspice": -1.0572891506468e-11,
+          "magnitude": 0.00012531708542004412
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": -0.0001253170959929356,
+          "ngspice": -1.0572891506468e-11,
+          "magnitude": 0.00012531708542004412
+        }
+      },
+      {
+        "node": "v(1)",
+        "peak": 5,
+        "maxAbs": 0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 5,
+          "ngspice": 5,
+          "magnitude": 0
+        },
+        "first": null
+      },
+      {
+        "node": "v(12)",
+        "peak": 4.999999946096958,
+        "maxAbs": 3.1573662735713026,
+        "normalized": 0.6314732615219265,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.8426336725256554,
+          "ngspice": 4.999999946096958,
+          "magnitude": 3.1573662735713026
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 1.8426336725256554,
+          "ngspice": 4.999999946096958,
+          "magnitude": 3.1573662735713026
+        }
+      },
+      {
+        "node": "v(13)",
+        "peak": 0.0001,
+        "maxAbs": 1.8426336588480956,
+        "normalized": 18426.336588480954,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.8426336725257213,
+          "ngspice": 1.367762560720779e-08,
+          "magnitude": 1.8426336588480956
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 1.8426336725257213,
+          "ngspice": 1.367762560720779e-08,
+          "magnitude": 1.8426336588480956
+        }
+      }
+    ],
+    "points": {
+      "spiceTs": 1,
+      "ngspice": 1
+    }
+  },
+  "k-5-op": {
+    "worst": {
+      "node": "v(xi10.10)",
+      "peak": 0.0001,
+      "maxAbs": 4.9999998785166415,
+      "normalized": 49999.99878516641,
+      "worstTime": 0,
+      "initial": {
+        "t": 0,
+        "spiceTs": 4.999999892194268,
+        "ngspice": 1.36776257315173e-08,
+        "magnitude": 4.9999998785166415
+      },
+      "first": {
+        "t": 0,
+        "spiceTs": 4.999999892194268,
+        "ngspice": 1.36776257315173e-08,
+        "magnitude": 4.9999998785166415
+      }
+    },
+    "first": {
+      "node": "i(vd)",
+      "t": 0,
+      "spiceTs": 1.724150862254174e-11,
+      "ngspice": 1.613575434657521e-11,
+      "magnitude": 1.1057542759665305e-12
+    },
+    "signals": [
+      {
+        "node": "i(vd)",
+        "peak": 1e-10,
+        "maxAbs": 1.1057542759665305e-12,
+        "normalized": 0.011057542759665305,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.724150862254174e-11,
+          "ngspice": 1.613575434657521e-11,
+          "magnitude": 1.1057542759665305e-12
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 1.724150862254174e-11,
+          "ngspice": 1.613575434657521e-11,
+          "magnitude": 1.1057542759665305e-12
+        }
+      },
+      {
+        "node": "i(vd1)",
+        "peak": 1e-10,
+        "maxAbs": 1.1057542759664885e-12,
+        "normalized": 0.011057542759664885,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.724150862254174e-11,
+          "ngspice": 1.613575434657525e-11,
+          "magnitude": 1.1057542759664885e-12
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 1.724150862254174e-11,
+          "ngspice": 1.613575434657525e-11,
+          "magnitude": 1.1057542759664885e-12
+        }
+      },
+      {
+        "node": "i(vdbar)",
+        "peak": 1e-10,
+        "maxAbs": 1.1057385562729311e-12,
+        "normalized": 0.01105738556272931,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": -3.227162981289666e-11,
+          "ngspice": -3.116589125662373e-11,
+          "magnitude": 1.1057385562729311e-12
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": -3.227162981289666e-11,
+          "ngspice": -3.116589125662373e-11,
+          "magnitude": 1.1057385562729311e-12
+        }
+      },
+      {
+        "node": "i(vdbar1)",
+        "peak": 1e-10,
+        "maxAbs": 1.1056830451216998e-12,
+        "normalized": 0.011056830451216998,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": -3.227162981289666e-11,
+          "ngspice": -3.116594676777496e-11,
+          "magnitude": 1.1056830451216998e-12
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": -3.227162981289666e-11,
+          "ngspice": -3.116594676777496e-11,
+          "magnitude": 1.1056830451216998e-12
+        }
+      },
+      {
+        "node": "i(vprecharg)",
+        "peak": 1e-10,
+        "maxAbs": 0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0,
+          "magnitude": 0
+        },
+        "first": null
+      },
+      {
+        "node": "i(vselect1)",
+        "peak": 1e-10,
+        "maxAbs": 0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0,
+          "magnitude": 0
+        },
+        "first": null
+      },
+      {
+        "node": "i(vselect2)",
+        "peak": 1e-10,
+        "maxAbs": 0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0,
+          "magnitude": 0
+        },
+        "first": null
+      },
+      {
+        "node": "i(vselect3)",
+        "peak": 1e-10,
+        "maxAbs": 0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0,
+          "magnitude": 0
+        },
+        "first": null
+      },
+      {
+        "node": "i(vselect4)",
+        "peak": 1e-10,
+        "maxAbs": 0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0,
+          "magnitude": 0
+        },
+        "first": null
+      },
+      {
+        "node": "i(vvdd)",
+        "peak": 1.569348631033638e-10,
+        "maxAbs": 2.2113886291588064e-12,
+        "normalized": 0.014091124084406242,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": -1.5914625173252261e-10,
+          "ngspice": -1.569348631033638e-10,
+          "magnitude": 2.2113886291588064e-12
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": -1.5914625173252261e-10,
+          "ngspice": -1.569348631033638e-10,
+          "magnitude": 2.2113886291588064e-12
+        }
+      },
+      {
+        "node": "i(vwrite)",
+        "peak": 1e-10,
+        "maxAbs": 0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0,
+          "magnitude": 0
+        },
+        "first": null
+      },
+      {
+        "node": "i(vwritebar)",
+        "peak": 1e-10,
+        "maxAbs": 0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0,
+          "magnitude": 0
+        },
+        "first": null
+      },
+      {
+        "node": "v(1)",
+        "peak": 5,
+        "maxAbs": 0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 5,
+          "ngspice": 5,
+          "magnitude": 0
+        },
+        "first": null
+      },
+      {
+        "node": "v(10)",
+        "peak": 0.0001,
+        "maxAbs": 0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0,
+          "magnitude": 0
+        },
+        "first": null
+      },
+      {
+        "node": "v(11)",
+        "peak": 5,
+        "maxAbs": 0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 5,
+          "ngspice": 5,
+          "magnitude": 0
+        },
+        "first": null
+      },
+      {
+        "node": "v(16)",
+        "peak": 4.999999870935095,
+        "maxAbs": 5.456186613628233e-09,
+        "normalized": 1.0912373508937358e-09,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999865478908,
+          "ngspice": 4.999999870935095,
+          "magnitude": 5.456186613628233e-09
+        },
+        "first": null
+      },
+      {
+        "node": "v(17)",
+        "peak": 0.0001,
+        "maxAbs": 1.5346914087390881e-09,
+        "normalized": 1.534691408739088e-05,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.6976276820551e-08,
+          "ngspice": 1.544158541181191e-08,
+          "magnitude": 1.5346914087390881e-09
+        },
+        "first": null
+      },
+      {
+        "node": "v(18)",
+        "peak": 5,
+        "maxAbs": 0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 5,
+          "ngspice": 5,
+          "magnitude": 0
+        },
+        "first": null
+      },
+      {
+        "node": "v(19)",
+        "peak": 0.0001,
+        "maxAbs": 0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0,
+          "magnitude": 0
+        },
+        "first": null
+      },
+      {
+        "node": "v(24)",
+        "peak": 0.0001,
+        "maxAbs": 0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0,
+          "magnitude": 0
+        },
+        "first": null
+      },
+      {
+        "node": "v(25)",
+        "peak": 0.0001,
+        "maxAbs": 0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0,
+          "magnitude": 0
+        },
+        "first": null
+      },
+      {
+        "node": "v(3)",
+        "peak": 4.999999870934839,
+        "maxAbs": 5.45593081824336e-09,
+        "normalized": 1.0911861918154962e-09,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999865478908,
+          "ngspice": 4.999999870934839,
+          "magnitude": 5.45593081824336e-09
+        },
+        "first": null
+      },
+      {
+        "node": "v(4)",
+        "peak": 0.0001,
+        "maxAbs": 1.5346914087390385e-09,
+        "normalized": 1.5346914087390383e-05,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.6976276820551e-08,
+          "ngspice": 1.544158541181196e-08,
+          "magnitude": 1.5346914087390385e-09
+        },
+        "first": null
+      },
+      {
+        "node": "v(5)",
+        "peak": 5,
+        "maxAbs": 0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 5,
+          "ngspice": 5,
+          "magnitude": 0
+        },
+        "first": null
+      },
+      {
+        "node": "v(6)",
+        "peak": 0.0001,
+        "maxAbs": 0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0,
+          "magnitude": 0
+        },
+        "first": null
+      },
+      {
+        "node": "v(7)",
+        "peak": 0.0001,
+        "maxAbs": 0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0,
+          "magnitude": 0
+        },
+        "first": null
+      },
+      {
+        "node": "v(8)",
+        "peak": 0.0001,
+        "maxAbs": 0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0,
+          "magnitude": 0
+        },
+        "first": null
+      },
+      {
+        "node": "v(9)",
+        "peak": 5,
+        "maxAbs": 0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 5,
+          "ngspice": 5,
+          "magnitude": 0
+        },
+        "first": null
+      },
+      {
+        "node": "v(xi10.10)",
+        "peak": 0.0001,
+        "maxAbs": 4.9999998785166415,
+        "normalized": 49999.99878516641,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999892194268,
+          "ngspice": 1.36776257315173e-08,
+          "magnitude": 4.9999998785166415
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 4.999999892194268,
+          "ngspice": 1.36776257315173e-08,
+          "magnitude": 4.9999998785166415
+        }
+      },
+      {
+        "node": "v(xi10.7)",
+        "peak": 0.0001,
+        "maxAbs": 1.215945905157845e-17,
+        "normalized": 1.215945905157845e-13,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.518701643248619e-08,
+          "ngspice": 1.518701644464565e-08,
+          "magnitude": 1.215945905157845e-17
+        },
+        "first": null
+      },
+      {
+        "node": "v(xi10.8)",
+        "peak": 4.99999989219357,
+        "maxAbs": 7.309708394132031e-13,
+        "normalized": 1.4619417103477493e-13,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999892194301,
+          "ngspice": 4.99999989219357,
+          "magnitude": 7.309708394132031e-13
+        },
+        "first": null
+      },
+      {
+        "node": "v(xi10.9)",
+        "peak": 4.999999897550828,
+        "maxAbs": 4.999999882363812,
+        "normalized": 0.9999999969625967,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.518701643682752e-08,
+          "ngspice": 4.999999897550828,
+          "magnitude": 4.999999882363812
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 1.518701643682752e-08,
+          "ngspice": 4.999999897550828,
+          "magnitude": 4.999999882363812
+        }
+      },
+      {
+        "node": "v(xi20.10)",
+        "peak": 0.0001,
+        "maxAbs": 4.9999998785166415,
+        "normalized": 49999.99878516641,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999892194268,
+          "ngspice": 1.367762573151725e-08,
+          "magnitude": 4.9999998785166415
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 4.999999892194268,
+          "ngspice": 1.367762573151725e-08,
+          "magnitude": 4.9999998785166415
+        }
+      },
+      {
+        "node": "v(xi20.7)",
+        "peak": 0.0001,
+        "maxAbs": 1.2159240675896737e-17,
+        "normalized": 1.2159240675896737e-13,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.518701643248619e-08,
+          "ngspice": 1.518701644464543e-08,
+          "magnitude": 1.2159240675896737e-17
+        },
+        "first": null
+      },
+      {
+        "node": "v(xi20.8)",
+        "peak": 4.999999892193617,
+        "maxAbs": 6.847855615887966e-13,
+        "normalized": 1.3695711527072957e-13,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999892194301,
+          "ngspice": 4.999999892193617,
+          "magnitude": 6.847855615887966e-13
+        },
+        "first": null
+      },
+      {
+        "node": "v(xi20.9)",
+        "peak": 4.999999897550895,
+        "maxAbs": 4.999999882363879,
+        "normalized": 0.9999999969625967,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.518701643682752e-08,
+          "ngspice": 4.999999897550895,
+          "magnitude": 4.999999882363879
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 1.518701643682752e-08,
+          "ngspice": 4.999999897550895,
+          "magnitude": 4.999999882363879
+        }
+      },
+      {
+        "node": "v(xi30.12)",
+        "peak": 4.999999897550886,
+        "maxAbs": 4.99999988236387,
+        "normalized": 0.9999999969625967,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.5187016410112664e-08,
+          "ngspice": 4.999999897550886,
+          "magnitude": 4.99999988236387
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 1.5187016410112664e-08,
+          "ngspice": 4.999999897550886,
+          "magnitude": 4.99999988236387
+        }
+      },
+      {
+        "node": "v(xi30.13)",
+        "peak": 0.0001,
+        "maxAbs": 4.999999878516051,
+        "normalized": 49999.998785160504,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999892193677,
+          "ngspice": 1.367762573151726e-08,
+          "magnitude": 4.999999878516051
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 4.999999892193677,
+          "ngspice": 1.367762573151726e-08,
+          "magnitude": 4.999999878516051
+        }
+      },
+      {
+        "node": "v(xi30.14)",
+        "peak": 0.0001,
+        "maxAbs": 3.4532778870839176e-17,
+        "normalized": 3.4532778870839176e-13,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.518701641011265e-08,
+          "ngspice": 1.518701644464543e-08,
+          "magnitude": 3.4532778870839176e-17
+        },
+        "first": null
+      },
+      {
+        "node": "v(xi30.15)",
+        "peak": 4.999999892193609,
+        "maxAbs": 6.838973831690964e-14,
+        "normalized": 1.367794795829597e-14,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999892193677,
+          "ngspice": 4.999999892193609,
+          "magnitude": 6.838973831690964e-14
+        },
+        "first": null
+      },
+      {
+        "node": "v(xi40.12)",
+        "peak": 4.999999897550873,
+        "maxAbs": 4.9999998823638565,
+        "normalized": 0.9999999969625967,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.5187016410112664e-08,
+          "ngspice": 4.999999897550873,
+          "magnitude": 4.9999998823638565
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 1.5187016410112664e-08,
+          "ngspice": 4.999999897550873,
+          "magnitude": 4.9999998823638565
+        }
+      },
+      {
+        "node": "v(xi40.13)",
+        "peak": 0.0001,
+        "maxAbs": 4.999999878516051,
+        "normalized": 49999.998785160504,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999892193677,
+          "ngspice": 1.367762573151736e-08,
+          "magnitude": 4.999999878516051
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 4.999999892193677,
+          "ngspice": 1.367762573151736e-08,
+          "magnitude": 4.999999878516051
+        }
+      },
+      {
+        "node": "v(xi40.14)",
+        "peak": 0.0001,
+        "maxAbs": 3.4532629978328917e-17,
+        "normalized": 3.4532629978328917e-13,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.518701641011265e-08,
+          "ngspice": 1.518701644464528e-08,
+          "magnitude": 3.4532629978328917e-17
+        },
+        "first": null
+      },
+      {
+        "node": "v(xi40.15)",
+        "peak": 4.999999892193608,
+        "maxAbs": 6.927791673660977e-14,
+        "normalized": 1.385558364606605e-14,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999892193677,
+          "ngspice": 4.999999892193608,
+          "magnitude": 6.927791673660977e-14
+        },
+        "first": null
+      }
+    ],
+    "points": {
+      "spiceTs": 1,
+      "ngspice": 1
+    }
+  },
+  "k-5-original": {
+    "worst": {
+      "node": "v(xi30.13)",
+      "peak": 1.594453114162788,
+      "maxAbs": 5.002054114849925,
+      "normalized": 3.137159738608177,
+      "worstTime": 2.507801390543776e-08,
+      "initial": {
+        "t": 0,
+        "spiceTs": 4.999999892193677,
+        "ngspice": 1.367762573151726e-08,
+        "magnitude": 4.999999878516051
+      },
+      "first": {
+        "t": 0,
+        "spiceTs": 4.999999892193677,
+        "ngspice": 1.367762573151726e-08,
+        "magnitude": 4.999999878516051
+      }
+    },
+    "first": {
+      "node": "v(xi10.10)",
+      "t": 0,
+      "spiceTs": 4.999999892194268,
+      "ngspice": 1.36776257315173e-08,
+      "magnitude": 4.9999998785166415
+    },
+    "signals": [
+      {
+        "node": "i(vd)",
+        "peak": 0.002188930280316133,
+        "maxAbs": 0.0003197994463836829,
+        "normalized": 0.1460985072295205,
+        "worstTime": 2.2606080440415018e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.724150862254174e-11,
+          "ngspice": 1.613575434657521e-11,
+          "magnitude": 1.1057542759665305e-12
+        },
+        "first": {
+          "t": 2.5285642614399498e-08,
+          "spiceTs": 5.9651591383209596e-05,
+          "ngspice": 1.7530993823262465e-05,
+          "magnitude": 4.212059755994713e-05
+        }
+      },
+      {
+        "node": "i(vd1)",
+        "peak": 0.001386695345119476,
+        "maxAbs": 0.0003197065602164156,
+        "normalized": 0.23055284734432424,
+        "worstTime": 2.6060433237409864e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.724150862254174e-11,
+          "ngspice": 1.613575434657525e-11,
+          "magnitude": 1.1057542759664885e-12
+        },
+        "first": {
+          "t": 2.5285642614399498e-08,
+          "spiceTs": 5.9651591383209596e-05,
+          "ngspice": 1.753099382326266e-05,
+          "magnitude": 4.2120597559946935e-05
+        }
+      },
+      {
+        "node": "i(vdbar)",
+        "peak": 0.002176309344741017,
+        "maxAbs": 0.0001877190224303308,
+        "normalized": 0.08625567081442163,
+        "worstTime": 4.000087106326144e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": -3.227162981289666e-11,
+          "ngspice": -3.116589125662373e-11,
+          "magnitude": 1.1057385562729311e-12
+        },
+        "first": {
+          "t": 2.5427210741898752e-08,
+          "spiceTs": -4.082936999366682e-05,
+          "ngspice": 4.743152069806267e-06,
+          "magnitude": 4.557252206347309e-05
+        }
+      },
+      {
+        "node": "i(vdbar1)",
+        "peak": 0.002175602313896278,
+        "maxAbs": 0.00031816510936067235,
+        "normalized": 0.14624231061368548,
+        "worstTime": 2.2606080440415018e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": -3.227162981289666e-11,
+          "ngspice": -3.116594676777496e-11,
+          "magnitude": 1.1056830451216998e-12
+        },
+        "first": {
+          "t": 2.5427210741898752e-08,
+          "spiceTs": -4.082936999366682e-05,
+          "ngspice": 4.743152069762632e-06,
+          "magnitude": 4.557252206342945e-05
+        }
+      },
+      {
+        "node": "i(vprecharg)",
+        "peak": 0.0008251391723963991,
+        "maxAbs": 0.00032508851887232126,
+        "normalized": 0.3939802275150595,
+        "worstTime": 4.000087106326144e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": {
+          "t": 2.5561319695494053e-08,
+          "spiceTs": -7.86967527353883e-06,
+          "ngspice": 1.356341740078586e-06,
+          "magnitude": 9.226017013617416e-06
+        }
+      },
+      {
+        "node": "i(vselect1)",
+        "peak": 0.0004734242873702224,
+        "maxAbs": 0.00034034332085101774,
+        "normalized": 0.7188970442170534,
+        "worstTime": 7.501725421888956e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": {
+          "t": 2.507801390543776e-08,
+          "spiceTs": -0.00038556176160824823,
+          "ngspice": -0.00044529358618068513,
+          "magnitude": 5.97318245724369e-05
+        }
+      },
+      {
+        "node": "i(vselect2)",
+        "peak": 0.0004722956365076169,
+        "maxAbs": 6.803695342866379e-06,
+        "normalized": 0.014405585859687807,
+        "worstTime": 2.5685431558202014e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": {
+          "t": 2.5561319695494053e-08,
+          "spiceTs": -5.260848482148776e-06,
+          "ngspice": 8.629130197201091e-07,
+          "magnitude": 6.123761501868885e-06
+        }
+      },
+      {
+        "node": "i(vselect3)",
+        "peak": 0.0004694047655252117,
+        "maxAbs": 0.0001613528757744237,
+        "normalized": 0.34373932184921,
+        "worstTime": 6.750145985572087e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": {
+          "t": 2.5561319695494053e-08,
+          "spiceTs": -5.260848482147386e-06,
+          "ngspice": 8.629129966249128e-07,
+          "magnitude": 6.123761478772299e-06
+        }
+      },
+      {
+        "node": "i(vselect4)",
+        "peak": 0.0004731849473135263,
+        "maxAbs": 5.442891414765712e-05,
+        "normalized": 0.11502672360283941,
+        "worstTime": 3.2501812655420086e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": {
+          "t": 2.5561319695494053e-08,
+          "spiceTs": -5.260848482146519e-06,
+          "ngspice": 8.6291301972398e-07,
+          "magnitude": 6.123761501870499e-06
+        }
+      },
+      {
+        "node": "i(vvdd)",
+        "peak": 0.001107618519712831,
+        "maxAbs": 0.00045577522779291176,
+        "normalized": 0.4114911584460318,
+        "worstTime": 2.5427210741898752e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": -1.5914625173252261e-10,
+          "ngspice": -1.569348631033638e-10,
+          "magnitude": 2.2113886291588064e-12
+        },
+        "first": {
+          "t": 2.5285642614399498e-08,
+          "spiceTs": -0.00020145144535273912,
+          "ngspice": 4.6366679553208867e-05,
+          "magnitude": 0.000247818124905948
+        }
+      },
+      {
+        "node": "i(vwrite)",
+        "peak": 0.00109678204810367,
+        "maxAbs": 0.000420225079057492,
+        "normalized": 0.38314365172557185,
+        "worstTime": 4.000087106326144e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": {
+          "t": 2.5285642614399498e-08,
+          "spiceTs": 3.2104534246598e-05,
+          "ngspice": 5.3596125027178944e-06,
+          "magnitude": 2.6744921743880105e-05
+        }
+      },
+      {
+        "node": "i(vwritebar)",
+        "peak": 0.0009681943103831967,
+        "maxAbs": 0.00033761478812546807,
+        "normalized": 0.348705610542005,
+        "worstTime": 4.000087106326144e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": {
+          "t": 2.5285642614399498e-08,
+          "spiceTs": -1.7296371050721644e-05,
+          "ngspice": 3.150810147151708e-06,
+          "magnitude": 2.0447181197873352e-05
+        }
+      },
+      {
+        "node": "v(1)",
+        "peak": 5,
+        "maxAbs": 0.0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 5,
+          "ngspice": 5.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(10)",
+        "peak": 5,
+        "maxAbs": 2.6469779601511845e-13,
+        "normalized": 5.293955920302369e-14,
+        "worstTime": 3.9999999999999993e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(11)",
+        "peak": 5,
+        "maxAbs": 2.6470492464625295e-13,
+        "normalized": 5.294098492925059e-14,
+        "worstTime": 4.250212291771097e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 5,
+          "ngspice": 5.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(16)",
+        "peak": 5.331935235119926,
+        "maxAbs": 0.863278042707309,
+        "normalized": 0.1619070758814069,
+        "worstTime": 2.2630402202075094e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999865478908,
+          "ngspice": 4.999999870935095,
+          "magnitude": 5.456186613628233e-09
+        },
+        "first": {
+          "t": 2.5285642614399498e-08,
+          "spiceTs": 4.960981761531639,
+          "ngspice": 5.016726528249506,
+          "magnitude": 0.05574476671786677
+        }
+      },
+      {
+        "node": "v(17)",
+        "peak": 5.338770468556221,
+        "maxAbs": 0.5004117885879972,
+        "normalized": 0.0937316544202967,
+        "worstTime": 2.2606080440415018e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.6976276820551e-08,
+          "ngspice": 1.544158541181191e-08,
+          "magnitude": 1.5346914087390881e-09
+        },
+        "first": {
+          "t": 2.5285642614399498e-08,
+          "spiceTs": 0.08816935188366767,
+          "ngspice": 0.02486586780427511,
+          "magnitude": 0.06330348407939257
+        }
+      },
+      {
+        "node": "v(18)",
+        "peak": 5,
+        "maxAbs": 2.6469779601511845e-13,
+        "normalized": 5.293955920302369e-14,
+        "worstTime": 3.9999999999999993e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 5,
+          "ngspice": 5.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(19)",
+        "peak": 5,
+        "maxAbs": 2.646977960160333e-13,
+        "normalized": 5.2939559203206653e-14,
+        "worstTime": 2.9999999999999993e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(24)",
+        "peak": 5,
+        "maxAbs": 2.646771690706373e-13,
+        "normalized": 5.2935433814127465e-14,
+        "worstTime": 2.75121173770367e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(25)",
+        "peak": 5,
+        "maxAbs": 2.645661467681748e-13,
+        "normalized": 5.2913229353634963e-14,
+        "worstTime": 3.758908949189313e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(3)",
+        "peak": 5.331935235119682,
+        "maxAbs": 0.8629341441999969,
+        "normalized": 0.16184257800359936,
+        "worstTime": 2.6302166187049306e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999865478908,
+          "ngspice": 4.999999870934839,
+          "magnitude": 5.45593081824336e-09
+        },
+        "first": {
+          "t": 2.5285642614399498e-08,
+          "spiceTs": 4.960981761531639,
+          "ngspice": 5.0167265282493565,
+          "magnitude": 0.05574476671771755
+        }
+      },
+      {
+        "node": "v(4)",
+        "peak": 5.338770561669389,
+        "maxAbs": 0.8698017194657037,
+        "normalized": 0.16292172690667645,
+        "worstTime": 2.261418769430171e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.6976276820551e-08,
+          "ngspice": 1.544158541181196e-08,
+          "magnitude": 1.5346914087390385e-09
+        },
+        "first": {
+          "t": 2.5285642614399498e-08,
+          "spiceTs": 0.08816935188366767,
+          "ngspice": 0.02486586780427541,
+          "magnitude": 0.06330348407939226
+        }
+      },
+      {
+        "node": "v(5)",
+        "peak": 5,
+        "maxAbs": 2.6469779601511845e-13,
+        "normalized": 5.293955920302369e-14,
+        "worstTime": 3.9999999999999993e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 5,
+          "ngspice": 5.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(6)",
+        "peak": 5,
+        "maxAbs": 2.646771690706373e-13,
+        "normalized": 5.2935433814127465e-14,
+        "worstTime": 3.9999999999999993e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(7)",
+        "peak": 5,
+        "maxAbs": 2.646771690706373e-13,
+        "normalized": 5.2935433814127465e-14,
+        "worstTime": 1.7501685960278584e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(8)",
+        "peak": 5,
+        "maxAbs": 2.6470492464625295e-13,
+        "normalized": 5.294098492925059e-14,
+        "worstTime": 4.250212291771097e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(9)",
+        "peak": 5,
+        "maxAbs": 2.646771690706373e-13,
+        "normalized": 5.2935433814127465e-14,
+        "worstTime": 3.9999999999999993e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 5,
+          "ngspice": 5.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(xi10.10)",
+        "peak": 1.597450554265979,
+        "maxAbs": 5.003191317010268,
+        "normalized": 3.1319850893971557,
+        "worstTime": 2.2508836257460058e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999892194268,
+          "ngspice": 1.36776257315173e-08,
+          "magnitude": 4.9999998785166415
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 4.999999892194268,
+          "ngspice": 1.36776257315173e-08,
+          "magnitude": 4.9999998785166415
+        }
+      },
+      {
+        "node": "v(xi10.7)",
+        "peak": 1.602038793382449,
+        "maxAbs": 0.02033835633482073,
+        "normalized": 0.012695295781121217,
+        "worstTime": 7.311707978510736e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.518701643248619e-08,
+          "ngspice": 1.518701644464565e-08,
+          "magnitude": 1.215945905157845e-17
+        },
+        "first": {
+          "t": 7.256188860049264e-07,
+          "spiceTs": 0.973997732770645,
+          "ngspice": 0.9541934195490556,
+          "magnitude": 0.019804313221589487
+        }
+      },
+      {
+        "node": "v(xi10.8)",
+        "peak": 5.216088864668563,
+        "maxAbs": 0.0440732176239238,
+        "normalized": 0.008449475990038424,
+        "worstTime": 7.321707978510736e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999892194301,
+          "ngspice": 4.99999989219357,
+          "magnitude": 7.309708394132031e-13
+        },
+        "first": null
+      },
+      {
+        "node": "v(xi10.9)",
+        "peak": 5.182603994774849,
+        "maxAbs": 5.003192402184147,
+        "normalized": 0.9653819599622918,
+        "worstTime": 2.2508836257460058e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.518701643682752e-08,
+          "ngspice": 4.999999897550828,
+          "magnitude": 4.999999882363812
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 1.518701643682752e-08,
+          "ngspice": 4.999999897550828,
+          "magnitude": 4.999999882363812
+        }
+      },
+      {
+        "node": "v(xi20.10)",
+        "peak": 5.180645204534042,
+        "maxAbs": 5.003191547951907,
+        "normalized": 0.9657468038099135,
+        "worstTime": 2.2508836257460058e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999892194268,
+          "ngspice": 1.367762573151725e-08,
+          "magnitude": 4.9999998785166415
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 4.999999892194268,
+          "ngspice": 1.367762573151725e-08,
+          "magnitude": 4.9999998785166415
+        }
+      },
+      {
+        "node": "v(xi20.7)",
+        "peak": 1.602038480810335,
+        "maxAbs": 0.020338087710424002,
+        "normalized": 0.012695130581468114,
+        "worstTime": 7.311707978510736e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.518701643248619e-08,
+          "ngspice": 1.518701644464543e-08,
+          "magnitude": 1.2159240675896737e-17
+        },
+        "first": {
+          "t": 7.256188860049264e-07,
+          "spiceTs": 0.973997798500382,
+          "ngspice": 0.9541933246781744,
+          "magnitude": 0.019804473822207624
+        }
+      },
+      {
+        "node": "v(xi20.8)",
+        "peak": 5.216088865487603,
+        "maxAbs": 0.04407259969278865,
+        "normalized": 0.008449357522337518,
+        "worstTime": 7.321707978510736e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999892194301,
+          "ngspice": 4.999999892193617,
+          "magnitude": 6.847855615887966e-13
+        },
+        "first": null
+      },
+      {
+        "node": "v(xi20.9)",
+        "peak": 5.02442144170071,
+        "maxAbs": 5.003191885379733,
+        "normalized": 0.9957747261914018,
+        "worstTime": 2.2508836257460058e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.518701643682752e-08,
+          "ngspice": 4.999999897550895,
+          "magnitude": 4.999999882363879
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 1.518701643682752e-08,
+          "ngspice": 4.999999897550895,
+          "magnitude": 4.999999882363879
+        }
+      },
+      {
+        "node": "v(xi30.12)",
+        "peak": 5.190381931444372,
+        "maxAbs": 5.0029138285046235,
+        "normalized": 0.9638816361848,
+        "worstTime": 2.507801390543776e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.5187016410112664e-08,
+          "ngspice": 4.999999897550886,
+          "magnitude": 4.99999988236387
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 1.5187016410112664e-08,
+          "ngspice": 4.999999897550886,
+          "magnitude": 4.99999988236387
+        }
+      },
+      {
+        "node": "v(xi30.13)",
+        "peak": 1.594453114162788,
+        "maxAbs": 5.002054114849925,
+        "normalized": 3.137159738608177,
+        "worstTime": 2.507801390543776e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999892193677,
+          "ngspice": 1.367762573151726e-08,
+          "magnitude": 4.999999878516051
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 4.999999892193677,
+          "ngspice": 1.367762573151726e-08,
+          "magnitude": 4.999999878516051
+        }
+      },
+      {
+        "node": "v(xi30.14)",
+        "peak": 1.611880997766639,
+        "maxAbs": 0.00043090596290774885,
+        "normalized": 0.00026733112649432293,
+        "worstTime": 1.76e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.518701641011265e-08,
+          "ngspice": 1.518701644464543e-08,
+          "magnitude": 3.4532778870839176e-17
+        },
+        "first": null
+      },
+      {
+        "node": "v(xi30.15)",
+        "peak": 5.174995813408763,
+        "maxAbs": 0.00040057237857471506,
+        "normalized": 7.740535316701224e-05,
+        "worstTime": 5.340248451996818e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999892193677,
+          "ngspice": 4.999999892193609,
+          "magnitude": 6.838973831690964e-14
+        },
+        "first": null
+      },
+      {
+        "node": "v(xi40.12)",
+        "peak": 5.190381931444415,
+        "maxAbs": 5.002913828504716,
+        "normalized": 0.9638816361848097,
+        "worstTime": 2.507801390543776e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.5187016410112664e-08,
+          "ngspice": 4.999999897550873,
+          "magnitude": 4.9999998823638565
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 1.5187016410112664e-08,
+          "ngspice": 4.999999897550873,
+          "magnitude": 4.9999998823638565
+        }
+      },
+      {
+        "node": "v(xi40.13)",
+        "peak": 1.594453114162824,
+        "maxAbs": 5.00205411484992,
+        "normalized": 3.1371597386081027,
+        "worstTime": 2.507801390543776e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999892193677,
+          "ngspice": 1.367762573151736e-08,
+          "magnitude": 4.999999878516051
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 4.999999892193677,
+          "ngspice": 1.367762573151736e-08,
+          "magnitude": 4.999999878516051
+        }
+      },
+      {
+        "node": "v(xi40.14)",
+        "peak": 5.175940568406947,
+        "maxAbs": 0.00042436764361575285,
+        "normalized": 8.198850779045265e-05,
+        "worstTime": 5.310248451996819e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.518701641011265e-08,
+          "ngspice": 1.518701644464528e-08,
+          "magnitude": 3.4532629978328917e-17
+        },
+        "first": null
+      },
+      {
+        "node": "v(xi40.15)",
+        "peak": 5.027735386810387,
+        "maxAbs": 0.0006672704016530417,
+        "normalized": 0.00013271788396094578,
+        "worstTime": 1.2525534503840463e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999892193677,
+          "ngspice": 4.999999892193608,
+          "magnitude": 6.927791673660977e-14
+        },
+        "first": null
+      }
+    ],
+    "points": {
+      "spiceTs": 1132,
+      "ngspice": 1122
+    }
+  },
+  "k-5-seeded": {
+    "worst": {
+      "node": "v(xi40.13)",
+      "peak": 1.590957735788458,
+      "maxAbs": 5.00205411486121,
+      "normalized": 3.144052165774383,
+      "worstTime": 2.507801390543776e-08,
+      "initial": {
+        "t": 0,
+        "spiceTs": 4.999999892193677,
+        "ngspice": 1.367762567013572e-08,
+        "magnitude": 4.999999878516052
+      },
+      "first": {
+        "t": 0,
+        "spiceTs": 4.999999892193677,
+        "ngspice": 1.367762567013572e-08,
+        "magnitude": 4.999999878516052
+      }
+    },
+    "first": {
+      "node": "v(xi10.10)",
+      "t": 0,
+      "spiceTs": 4.999999892194268,
+      "ngspice": 1.367762567013647e-08,
+      "magnitude": 4.999999878516642
+    },
+    "signals": [
+      {
+        "node": "i(vd)",
+        "peak": 0.002189705320876657,
+        "maxAbs": 0.0003197065603297082,
+        "normalized": 0.14600437660795035,
+        "worstTime": 2.6060433237409864e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.724150862254174e-11,
+          "ngspice": 1.558287716140906e-11,
+          "magnitude": 1.6586314611326787e-12
+        },
+        "first": {
+          "t": 2.5285642614399498e-08,
+          "spiceTs": 5.9651591383209596e-05,
+          "ngspice": 1.753099339862198e-05,
+          "magnitude": 4.212059798458762e-05
+        }
+      },
+      {
+        "node": "i(vd1)",
+        "peak": 0.001387588245409131,
+        "maxAbs": 0.00032014856861959355,
+        "normalized": 0.2307230330602848,
+        "worstTime": 1.2606629001928165e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.724150862254174e-11,
+          "ngspice": 1.558287716140917e-11,
+          "magnitude": 1.6586314611325689e-12
+        },
+        "first": {
+          "t": 2.5285642614399498e-08,
+          "spiceTs": 5.9651591383209596e-05,
+          "ngspice": 1.753099339862208e-05,
+          "magnitude": 4.2120597984587516e-05
+        }
+      },
+      {
+        "node": "i(vdbar)",
+        "peak": 0.00217630934591449,
+        "maxAbs": 0.00031845143550363,
+        "normalized": 0.1463263649083012,
+        "worstTime": 1.2606629001928165e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": -3.227162981289666e-11,
+          "ngspice": -3.061297243478478e-11,
+          "magnitude": 1.6586573781118812e-12
+        },
+        "first": {
+          "t": 2.5427210741898752e-08,
+          "spiceTs": -4.082936999366682e-05,
+          "ngspice": 4.7431526267152664e-06,
+          "magnitude": 4.557252262038209e-05
+        }
+      },
+      {
+        "node": "i(vdbar1)",
+        "peak": 0.002176383738308431,
+        "maxAbs": 0.00031840162731786747,
+        "normalized": 0.14629847747591673,
+        "worstTime": 2.2606080440415018e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": -3.227162981289666e-11,
+          "ngspice": -3.061305570151163e-11,
+          "magnitude": 1.6585741113850343e-12
+        },
+        "first": {
+          "t": 2.5427210741898752e-08,
+          "spiceTs": -4.082936999366682e-05,
+          "ngspice": 4.743152626699388e-06,
+          "magnitude": 4.557252262036621e-05
+        }
+      },
+      {
+        "node": "i(vprecharg)",
+        "peak": 0.0008253857588985426,
+        "maxAbs": 0.00017011729889127025,
+        "normalized": 0.20610641394914261,
+        "worstTime": 4.0101292767891956e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": {
+          "t": 2.5561319695494053e-08,
+          "spiceTs": -7.86967527353883e-06,
+          "ngspice": 1.3563417486894362e-06,
+          "magnitude": 9.226017022228266e-06
+        }
+      },
+      {
+        "node": "i(vselect1)",
+        "peak": 0.0004734242873665497,
+        "maxAbs": 0.00034420930165429133,
+        "normalized": 0.7270630401515219,
+        "worstTime": 4.750209661118539e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": {
+          "t": 2.507801390543776e-08,
+          "spiceTs": -0.00038556176160824823,
+          "ngspice": -0.00044529358595972945,
+          "magnitude": 5.9731824351481216e-05
+        }
+      },
+      {
+        "node": "i(vselect2)",
+        "peak": 0.0004722962844565717,
+        "maxAbs": 6.8036953256711055e-06,
+        "normalized": 0.014405566060083445,
+        "worstTime": 2.5685431558202014e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": {
+          "t": 2.5561319695494053e-08,
+          "spiceTs": -5.260848482148776e-06,
+          "ngspice": 8.629130016834371e-07,
+          "magnitude": 6.123761483832213e-06
+        }
+      },
+      {
+        "node": "i(vselect3)",
+        "peak": 0.000472297104311088,
+        "maxAbs": 0.00020537248589326708,
+        "normalized": 0.43483748686715296,
+        "worstTime": 2.2501262322494295e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": {
+          "t": 2.5561319695494053e-08,
+          "spiceTs": -5.260848482147386e-06,
+          "ngspice": 8.629130016819376e-07,
+          "magnitude": 6.123761483829324e-06
+        }
+      },
+      {
+        "node": "i(vselect4)",
+        "peak": 0.0004735653756088061,
+        "maxAbs": 8.777432006346861e-05,
+        "normalized": 0.18534784125766735,
+        "worstTime": 3.2501812655420086e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": {
+          "t": 2.5561319695494053e-08,
+          "spiceTs": -5.260848482146519e-06,
+          "ngspice": 8.629130247796061e-07,
+          "magnitude": 6.123761506926125e-06
+        }
+      },
+      {
+        "node": "i(vvdd)",
+        "peak": 0.001107034810625556,
+        "maxAbs": 0.00045577522855394113,
+        "normalized": 0.4117081271332332,
+        "worstTime": 2.5427210741898752e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": -1.5914625173252261e-10,
+          "ngspice": -1.558294333726218e-10,
+          "magnitude": 3.3168183599008106e-12
+        },
+        "first": {
+          "t": 2.5285642614399498e-08,
+          "spiceTs": -0.00020145144535273912,
+          "ngspice": 4.6366680453694316e-05,
+          "magnitude": 0.00024781812580643343
+        }
+      },
+      {
+        "node": "i(vwrite)",
+        "peak": 0.001100614189602385,
+        "maxAbs": 0.0002674884152299694,
+        "normalized": 0.24303558663604366,
+        "worstTime": 4.0101292767891956e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": {
+          "t": 2.5285642614399498e-08,
+          "spiceTs": 3.2104534246598e-05,
+          "ngspice": 5.359612532510059e-06,
+          "magnitude": 2.674492171408794e-05
+        }
+      },
+      {
+        "node": "i(vwritebar)",
+        "peak": 0.0009651422168251137,
+        "maxAbs": 0.00023180328761665309,
+        "normalized": 0.24017526492539332,
+        "worstTime": 4.0101292767891956e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": {
+          "t": 2.5285642614399498e-08,
+          "spiceTs": -1.7296371050721644e-05,
+          "ngspice": 3.150810156226208e-06,
+          "magnitude": 2.0447181206947853e-05
+        }
+      },
+      {
+        "node": "v(1)",
+        "peak": 5,
+        "maxAbs": 0.0,
+        "normalized": 0.0,
+        "worstTime": 0,
+        "initial": {
+          "t": 0,
+          "spiceTs": 5,
+          "ngspice": 5.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(10)",
+        "peak": 5,
+        "maxAbs": 2.6469779601433666e-13,
+        "normalized": 5.293955920286733e-14,
+        "worstTime": 3.9999999999999993e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(11)",
+        "peak": 5,
+        "maxAbs": 2.646771690706373e-13,
+        "normalized": 5.2935433814127465e-14,
+        "worstTime": 3.9999999999999993e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 5,
+          "ngspice": 5.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(16)",
+        "peak": 5.332577372953242,
+        "maxAbs": 0.8632557349228067,
+        "normalized": 0.16188339606683022,
+        "worstTime": 2.2630402202075094e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999865478908,
+          "ngspice": 4.99999987366344,
+          "magnitude": 8.184532163113545e-09
+        },
+        "first": {
+          "t": 2.5285642614399498e-08,
+          "spiceTs": 4.960981761531639,
+          "ngspice": 5.016726530972389,
+          "magnitude": 0.05574476944075002
+        }
+      },
+      {
+        "node": "v(17)",
+        "peak": 5.339063566205533,
+        "maxAbs": 0.8722538952115713,
+        "normalized": 0.16337207534531778,
+        "worstTime": 1.2615467671165717e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.6976276820551e-08,
+          "ngspice": 1.467423968074065e-08,
+          "magnitude": 2.30203713981035e-09
+        },
+        "first": {
+          "t": 2.5285642614399498e-08,
+          "spiceTs": 0.08816935188366767,
+          "ngspice": 0.02486586721242074,
+          "magnitude": 0.06330348467124694
+        }
+      },
+      {
+        "node": "v(18)",
+        "peak": 5,
+        "maxAbs": 2.6469779601433666e-13,
+        "normalized": 5.293955920286733e-14,
+        "worstTime": 3.9999999999999993e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 5,
+          "ngspice": 5.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(19)",
+        "peak": 5,
+        "maxAbs": 2.6469779601521786e-13,
+        "normalized": 5.2939559203043574e-14,
+        "worstTime": 2.9999999999999993e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(24)",
+        "peak": 5,
+        "maxAbs": 2.645661467681748e-13,
+        "normalized": 5.2913229353634963e-14,
+        "worstTime": 2.7586724395944295e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(25)",
+        "peak": 5,
+        "maxAbs": 2.646771690706373e-13,
+        "normalized": 5.2935433814127465e-14,
+        "worstTime": 3.2566123999465085e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(3)",
+        "peak": 5.332577372953218,
+        "maxAbs": 0.862934146921364,
+        "normalized": 0.16182308976859067,
+        "worstTime": 2.6302166187049306e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999865478908,
+          "ngspice": 4.999999873663098,
+          "magnitude": 8.18419021442196e-09
+        },
+        "first": {
+          "t": 2.5285642614399498e-08,
+          "spiceTs": 4.960981761531639,
+          "ngspice": 5.016726530972243,
+          "magnitude": 0.05574476944060436
+        }
+      },
+      {
+        "node": "v(4)",
+        "peak": 5.339063666174738,
+        "maxAbs": 0.8701353488109307,
+        "normalized": 0.1629752711741596,
+        "worstTime": 2.2630402202075094e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.6976276820551e-08,
+          "ngspice": 1.46742396807408e-08,
+          "magnitude": 2.3020371398101994e-09
+        },
+        "first": {
+          "t": 2.5285642614399498e-08,
+          "spiceTs": 0.08816935188366767,
+          "ngspice": 0.024865867212420897,
+          "magnitude": 0.06330348467124677
+        }
+      },
+      {
+        "node": "v(5)",
+        "peak": 5,
+        "maxAbs": 2.6469779601433666e-13,
+        "normalized": 5.293955920286733e-14,
+        "worstTime": 3.9999999999999993e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 5,
+          "ngspice": 5.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(6)",
+        "peak": 5,
+        "maxAbs": 2.646771690706373e-13,
+        "normalized": 5.2935433814127465e-14,
+        "worstTime": 3.9999999999999993e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(7)",
+        "peak": 5,
+        "maxAbs": 2.6413593534613256e-13,
+        "normalized": 5.282718706922651e-14,
+        "worstTime": 1.250216047118242e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(8)",
+        "peak": 5,
+        "maxAbs": 2.6453839119255917e-13,
+        "normalized": 5.2907678238511836e-14,
+        "worstTime": 4.7596342181911697e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 0,
+          "ngspice": 0.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(9)",
+        "peak": 5,
+        "maxAbs": 2.646771690706373e-13,
+        "normalized": 5.2935433814127465e-14,
+        "worstTime": 3.9999999999999993e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 5,
+          "ngspice": 5.0,
+          "magnitude": 0.0
+        },
+        "first": null
+      },
+      {
+        "node": "v(xi10.10)",
+        "peak": 1.59744890768056,
+        "maxAbs": 5.002060138342471,
+        "normalized": 3.1312802020098958,
+        "worstTime": 2.2508836257460058e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999892194268,
+          "ngspice": 1.367762567013647e-08,
+          "magnitude": 4.999999878516642
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 4.999999892194268,
+          "ngspice": 1.367762567013647e-08,
+          "magnitude": 4.999999878516642
+        }
+      },
+      {
+        "node": "v(xi10.7)",
+        "peak": 1.603543452084756,
+        "maxAbs": 0.018604756281782375,
+        "normalized": 0.011602277604385747,
+        "worstTime": 7.256188860049264e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.518701643248619e-08,
+          "ngspice": 1.518701644236156e-08,
+          "magnitude": 9.875371843580676e-18
+        },
+        "first": {
+          "t": 7.256188860049264e-07,
+          "spiceTs": 0.973997732770645,
+          "ngspice": 0.9553929764888627,
+          "magnitude": 0.018604756281782375
+        }
+      },
+      {
+        "node": "v(xi10.8)",
+        "peak": 5.215817840773038,
+        "maxAbs": 0.04045422675462884,
+        "normalized": 0.007756065873004704,
+        "worstTime": 7.321707978510736e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999892194301,
+          "ngspice": 4.999999892193578,
+          "magnitude": 7.229772336359019e-13
+        },
+        "first": null
+      },
+      {
+        "node": "v(xi10.9)",
+        "peak": 5.182619220277315,
+        "maxAbs": 5.003317352825126,
+        "normalized": 0.9654032334170606,
+        "worstTime": 2.2508836257460058e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.518701643682752e-08,
+          "ngspice": 4.999999897550682,
+          "magnitude": 4.9999998823636655
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 1.518701643682752e-08,
+          "ngspice": 4.999999897550682,
+          "magnitude": 4.9999998823636655
+        }
+      },
+      {
+        "node": "v(xi20.10)",
+        "peak": 5.180660589374437,
+        "maxAbs": 5.001431775425633,
+        "normalized": 0.9654042547553872,
+        "worstTime": 2.2503786967482883e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999892194268,
+          "ngspice": 1.367762567013574e-08,
+          "magnitude": 4.999999878516642
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 4.999999892194268,
+          "ngspice": 1.367762567013574e-08,
+          "magnitude": 4.999999878516642
+        }
+      },
+      {
+        "node": "v(xi20.7)",
+        "peak": 1.603543113093965,
+        "maxAbs": 0.018604908897902117,
+        "normalized": 0.011602375231436575,
+        "worstTime": 7.256188860049264e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.518701643248619e-08,
+          "ngspice": 1.518701644236131e-08,
+          "magnitude": 9.87512038067446e-18
+        },
+        "first": {
+          "t": 7.256188860049264e-07,
+          "spiceTs": 0.973997798500382,
+          "ngspice": 0.9553928896024799,
+          "magnitude": 0.018604908897902117
+        }
+      },
+      {
+        "node": "v(xi20.8)",
+        "peak": 5.215817840876919,
+        "maxAbs": 0.04045373942227304,
+        "normalized": 0.007755972439304299,
+        "worstTime": 7.321707978510736e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999892194301,
+          "ngspice": 4.999999892193602,
+          "magnitude": 6.989964163039986e-13
+        },
+        "first": null
+      },
+      {
+        "node": "v(xi20.9)",
+        "peak": 5.028963001037251,
+        "maxAbs": 5.003328854218304,
+        "normalized": 0.9949026972730441,
+        "worstTime": 2.2508836257460058e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.518701643682752e-08,
+          "ngspice": 4.999999897550991,
+          "magnitude": 4.999999882363975
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 1.518701643682752e-08,
+          "ngspice": 4.999999897550991,
+          "magnitude": 4.999999882363975
+        }
+      },
+      {
+        "node": "v(xi30.12)",
+        "peak": 5.200098330811411,
+        "maxAbs": 5.002913828502297,
+        "normalized": 0.9620806204488934,
+        "worstTime": 2.507801390543776e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.5187016410112664e-08,
+          "ngspice": 4.999999897550991,
+          "magnitude": 4.999999882363975
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 1.5187016410112664e-08,
+          "ngspice": 4.999999897550991,
+          "magnitude": 4.999999882363975
+        }
+      },
+      {
+        "node": "v(xi30.13)",
+        "peak": 1.590957735788467,
+        "maxAbs": 5.002054114861211,
+        "normalized": 3.144052165774366,
+        "worstTime": 2.507801390543776e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999892193677,
+          "ngspice": 1.367762567013574e-08,
+          "magnitude": 4.999999878516052
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 4.999999892193677,
+          "ngspice": 1.367762567013574e-08,
+          "magnitude": 4.999999878516052
+        }
+      },
+      {
+        "node": "v(xi30.14)",
+        "peak": 5.027910832727255,
+        "maxAbs": 5.002291932772067,
+        "normalized": 0.9949046630285424,
+        "worstTime": 1.2506481413547255e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.518701641011265e-08,
+          "ngspice": 4.999999897550959,
+          "magnitude": 4.999999882363943
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 1.518701641011265e-08,
+          "ngspice": 4.999999897550959,
+          "magnitude": 4.999999882363943
+        }
+      },
+      {
+        "node": "v(xi30.15)",
+        "peak": 5.175002100319685,
+        "maxAbs": 5.002242106832387,
+        "normalized": 0.9666164399282803,
+        "worstTime": 1.2506481413547255e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999892193677,
+          "ngspice": 1.367762567013567e-08,
+          "magnitude": 4.999999878516052
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 4.999999892193677,
+          "ngspice": 1.367762567013567e-08,
+          "magnitude": 4.999999878516052
+        }
+      },
+      {
+        "node": "v(xi40.12)",
+        "peak": 5.200098330811666,
+        "maxAbs": 5.002913828502314,
+        "normalized": 0.9620806204488496,
+        "worstTime": 2.507801390543776e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.5187016410112664e-08,
+          "ngspice": 4.999999897550991,
+          "magnitude": 4.999999882363975
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 1.5187016410112664e-08,
+          "ngspice": 4.999999897550991,
+          "magnitude": 4.999999882363975
+        }
+      },
+      {
+        "node": "v(xi40.13)",
+        "peak": 1.590957735788458,
+        "maxAbs": 5.00205411486121,
+        "normalized": 3.144052165774383,
+        "worstTime": 2.507801390543776e-08,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999892193677,
+          "ngspice": 1.367762567013572e-08,
+          "magnitude": 4.999999878516052
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 4.999999892193677,
+          "ngspice": 1.367762567013572e-08,
+          "magnitude": 4.999999878516052
+        }
+      },
+      {
+        "node": "v(xi40.14)",
+        "peak": 5.175946884872181,
+        "maxAbs": 5.002291444537691,
+        "normalized": 0.9664495319992492,
+        "worstTime": 1.2506481413547255e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 1.518701641011265e-08,
+          "ngspice": 4.999999897550959,
+          "magnitude": 4.999999882363943
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 1.518701641011265e-08,
+          "ngspice": 4.999999897550959,
+          "magnitude": 4.999999882363943
+        }
+      },
+      {
+        "node": "v(xi40.15)",
+        "peak": 1.597903807211795,
+        "maxAbs": 5.002247874501407,
+        "normalized": 3.130506261969486,
+        "worstTime": 1.2506481413547255e-07,
+        "initial": {
+          "t": 0,
+          "spiceTs": 4.999999892193677,
+          "ngspice": 1.367762567013567e-08,
+          "magnitude": 4.999999878516052
+        },
+        "first": {
+          "t": 0,
+          "spiceTs": 4.999999892193677,
+          "ngspice": 1.367762567013567e-08,
+          "magnitude": 4.999999878516052
+        }
+      }
+    ],
+    "points": {
+      "spiceTs": 1132,
+      "ngspice": 1119
+    }
+  },
+  "k-5-tight": {
+    "status": "not-compared",
+    "spiceTs": {
+      "status": "failed",
+      "convergence": "failed",
+      "analyses": [],
+      "error": "Timestep too small at t=2.5000000000000002e-8: dt=4.063224241414773e-16"
+    },
+    "ngspice": {
+      "execution": {
+        "status": "failed",
+        "convergence": "failed",
+        "analyses": [],
+        "error": "doAnalyses: TRAN: Timestep too small; time = 2.5e-08, timestep = 1.25e-21: trouble with node \"vvdd#branch\""
+      },
+      "firstErrorLine": "doAnalyses: TRAN: Timestep too small; time = 2.5e-08, timestep = 1.25e-21: trouble with node \"vvdd#branch\"",
+      "status": "failed"
+    }
+  }
+}

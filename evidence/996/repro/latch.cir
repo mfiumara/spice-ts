@@ -1,0 +1,39 @@
+cram.sp SPICE FILE
+.model nenh nmos
++ level = 2
++   vto = 0.779   kp = 3.52e-05   gamma = 1.04
++   phi = 0.6
++
++   cgso = 5.2e-10   cgdo = 5.2e-10
++   rsh = 25   cj = 0.00042
++   mj = 0.5   cjsw = 9e-10   mjsw = 0.33
++   tox = 5e-08   nsub = 1e+16
++   nss = 0   nfs = 1.306e+11   tpg = 1
++   xj = 3.85e-08   ld = 1e-07   uo = 400
++   ucrit = 999000   uexp = 0.001001
++   vmax = 32585.3   neff = 0.01001
++
++   delta = 1.33
+.model penh pmos
++ level = 2
++   vto = -0.988   kp = 1.206e-05   gamma = 0.619
++   phi = 0.6
++
++   cgso = 4e-10   cgdo = 4e-10
++   rsh = 95   cj = 0.00032
++   mj = 0.5   cjsw = 5.5e-10   mjsw = 0.33
++   tox = 5e-08   nsub = 8.158e+14
++   nss = 0   nfs = 5.55e+09   tpg = -1
++   xj = 1.46e-07   ld = 2.52e-07   uo = 150
++   ucrit = 54941   uexp = 0.17
++   vmax = 100000   neff = 0.01001
++
++   delta = 1.129
+
+VDD 1 0 5
+M3 13 12 0 0 nenh l=3u w=7u as=28p ad=28p ps=22u pd=22u
+M4 0 13 12 0 nenh l=3u w=7u as=28p ad=28p ps=22u pd=22u
+M5 13 12 1 1 penh l=3u w=7u as=28p ad=28p ps=22u pd=22u
+M6 1 13 12 1 penh l=3u w=7u as=28p ad=28p ps=22u pd=22u
+.op
+.end
