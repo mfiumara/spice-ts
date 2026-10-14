@@ -1,0 +1,286 @@
+{
+  "phase": "after",
+  "coreTree": "f186afcefda3ff46ce0c1cb410fb628e56a1ad85",
+  "tools": {
+    "node": "v22.23.1",
+    "ngspice": "ngspice-47"
+  },
+  "environment": {
+    "platform": "darwin",
+    "release": "27.0.0",
+    "arch": "arm64",
+    "cpu": "Apple M5 Pro"
+  },
+  "command": "spice-heavy pnpm exec tsx benchmarks/title-directive/compare.ts after",
+  "policy": {
+    "input": "unchanged corpus-j j-16 bytes",
+    "fixtureAdaptation": "none",
+    "perCircuitToleranceTuning": false,
+    "matchThreshold": 0.01,
+    "adapters": "unchanged corpus-j part2.ts --engine",
+    "runtimeBoundary": "cold child wall including pnpm/tsx, adapter, parse/solve and export; no speed claim"
+  },
+  "sha256": "5a124dc0286910a59a8782d0094a9bf8a57507a9c864090b6745ef4230b88f7f",
+  "wallMs": {
+    "ngspice": 536.654125,
+    "spiceTs": 945.315
+  },
+  "row": {
+    "id": "j-16",
+    "sourcePath": "spicelib/examples/testfiles/test_kicad_nets.cir",
+    "sha256": "5a124dc0286910a59a8782d0094a9bf8a57507a9c864090b6745ef4230b88f7f",
+    "analyses": [
+      "op"
+    ],
+    "unmappedAnalyses": [],
+    "sameNameAs": [],
+    "ngspice": {
+      "status": "success",
+      "analyses": [
+        "op:1"
+      ]
+    },
+    "spiceTs": {
+      "status": "success",
+      "analyses": [
+        "op:1"
+      ]
+    },
+    "comparedAnalyses": 1,
+    "comparedSignals": 7,
+    "worstNormalizedError": 0,
+    "worstSignal": "op i(v1)",
+    "outcome": "matched",
+    "gapBucket": null,
+    "comparisons": [
+      {
+        "analysis": "op",
+        "signals": [
+          "i(v1)",
+          "i(v2)",
+          "v(/sub/vin_p)",
+          "v(/vin_n)",
+          "v(/vout)",
+          "v(vcc)",
+          "v(vee)"
+        ],
+        "metrics": {
+          "grid": {
+            "spiceTsPoints": 1,
+            "ngspicePoints": 1,
+            "alignedPoints": 1,
+            "excludedOutOfRange": 0
+          },
+          "signals": {
+            "i(v1)": {
+              "status": "compared",
+              "sampleCount": 1,
+              "absoluteError": {
+                "max": 0,
+                "rms": 0
+              },
+              "relativeError": {
+                "max": null,
+                "rms": null,
+                "sampleCount": 0,
+                "excludedZeroReferences": 1
+              }
+            },
+            "i(v2)": {
+              "status": "compared",
+              "sampleCount": 1,
+              "absoluteError": {
+                "max": 0,
+                "rms": 0
+              },
+              "relativeError": {
+                "max": null,
+                "rms": null,
+                "sampleCount": 0,
+                "excludedZeroReferences": 1
+              }
+            },
+            "v(/sub/vin_p)": {
+              "status": "compared",
+              "sampleCount": 1,
+              "absoluteError": {
+                "max": 0,
+                "rms": 0
+              },
+              "relativeError": {
+                "max": null,
+                "rms": null,
+                "sampleCount": 0,
+                "excludedZeroReferences": 1
+              }
+            },
+            "v(/vin_n)": {
+              "status": "compared",
+              "sampleCount": 1,
+              "absoluteError": {
+                "max": 0,
+                "rms": 0
+              },
+              "relativeError": {
+                "max": null,
+                "rms": null,
+                "sampleCount": 0,
+                "excludedZeroReferences": 1
+              }
+            },
+            "v(/vout)": {
+              "status": "compared",
+              "sampleCount": 1,
+              "absoluteError": {
+                "max": 0,
+                "rms": 0
+              },
+              "relativeError": {
+                "max": null,
+                "rms": null,
+                "sampleCount": 0,
+                "excludedZeroReferences": 1
+              }
+            },
+            "v(vcc)": {
+              "status": "compared",
+              "sampleCount": 1,
+              "absoluteError": {
+                "max": 0,
+                "rms": 0
+              },
+              "relativeError": {
+                "max": 0,
+                "rms": 0,
+                "sampleCount": 1,
+                "excludedZeroReferences": 0
+              }
+            },
+            "v(vee)": {
+              "status": "compared",
+              "sampleCount": 1,
+              "absoluteError": {
+                "max": 0,
+                "rms": 0
+              },
+              "relativeError": {
+                "max": 0,
+                "rms": 0,
+                "sampleCount": 1,
+                "excludedZeroReferences": 0
+              }
+            }
+          }
+        },
+        "linearMetrics": {
+          "grid": {
+            "spiceTsPoints": 1,
+            "ngspicePoints": 1,
+            "alignedPoints": 1,
+            "excludedOutOfRange": 0
+          },
+          "signals": {
+            "i(v1)": {
+              "status": "compared",
+              "sampleCount": 1,
+              "absoluteError": {
+                "max": 0,
+                "rms": 0
+              },
+              "relativeError": {
+                "max": null,
+                "rms": null,
+                "sampleCount": 0,
+                "excludedZeroReferences": 1
+              }
+            },
+            "i(v2)": {
+              "status": "compared",
+              "sampleCount": 1,
+              "absoluteError": {
+                "max": 0,
+                "rms": 0
+              },
+              "relativeError": {
+                "max": null,
+                "rms": null,
+                "sampleCount": 0,
+                "excludedZeroReferences": 1
+              }
+            },
+            "v(/sub/vin_p)": {
+              "status": "compared",
+              "sampleCount": 1,
+              "absoluteError": {
+                "max": 0,
+                "rms": 0
+              },
+              "relativeError": {
+                "max": null,
+                "rms": null,
+                "sampleCount": 0,
+                "excludedZeroReferences": 1
+              }
+            },
+            "v(/vin_n)": {
+              "status": "compared",
+              "sampleCount": 1,
+              "absoluteError": {
+                "max": 0,
+                "rms": 0
+              },
+              "relativeError": {
+                "max": null,
+                "rms": null,
+                "sampleCount": 0,
+                "excludedZeroReferences": 1
+              }
+            },
+            "v(/vout)": {
+              "status": "compared",
+              "sampleCount": 1,
+              "absoluteError": {
+                "max": 0,
+                "rms": 0
+              },
+              "relativeError": {
+                "max": null,
+                "rms": null,
+                "sampleCount": 0,
+                "excludedZeroReferences": 1
+              }
+            },
+            "v(vcc)": {
+              "status": "compared",
+              "sampleCount": 1,
+              "absoluteError": {
+                "max": 0,
+                "rms": 0
+              },
+              "relativeError": {
+                "max": 0,
+                "rms": 0,
+                "sampleCount": 1,
+                "excludedZeroReferences": 0
+              }
+            },
+            "v(vee)": {
+              "status": "compared",
+              "sampleCount": 1,
+              "absoluteError": {
+                "max": 0,
+                "rms": 0
+              },
+              "relativeError": {
+                "max": 0,
+                "rms": 0,
+                "sampleCount": 1,
+                "excludedZeroReferences": 0
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

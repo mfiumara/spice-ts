@@ -44,6 +44,13 @@ Every row below is GPL-3.0-or-later, under the same retained Xyce README grant. 
 This file records the provenance and redistribution decision for benchmark fixtures.
 The machine-readable catalogue is `benchmarks/corpus/ngspice/manifest.json`.
 
+## Title-continuation regression probes (#957 / PR #976)
+
+- Source: original project-authored minimal netlists in `benchmarks/title-directive/continuations.ts`, MIT (repository `LICENSE`), reproducing https://github.com/mfiumara/spice-ts/pull/976#pullrequestreview-5511583515. No third-party fixture or source code is redistributed.
+- Both engines receive identical bytes. `continuations-before.json` and `continuations-after.json` retain input SHA-256, native ngspice-47 output/exit codes and spice-ts results, including the previous input loss and hidden parameter error. These are semantic regression probes, not novel public-corpus fixtures or speed evidence.
+- Reference semantics: https://github.com/imr/ngspice/blob/ngspice-47/src/frontend/inpcom.c lines 1442-1456 turn `.title` into a comment before continuation stitching at 1958; lines 694-702 preserve the preceding card across comments.
+- `benchmarks/title-directive/x-continuations.ts` adds original MIT numeric/bare/braced/quoted X RHS probes at top-level and nested scope. `x-continuations-{before,after}.json` retain same-byte hashes and raw ngspice-47 output (R=2000 ohms, i(v1)=-5e-4 A). Before is the uncommitted PR955/main merge; after includes the metadata-skip scanner fix. No corpus or speed claim.
+
 ## Controlled E/G TABLE fail-closed probes (#917)
 
 - `benchmarks/controlled-table-917/{e,g-subckt}.cir` are original project-authored MIT netlists (repository `LICENSE`), not vendor extracts. Issue https://github.com/mfiumara/spice-ts/issues/917. Both engines receive identical bytes, with ngspice-47 `ngbehavior=ltps`; all 81 DC rows retain endpoint clamping and smoothed corners. Native unsupported results and null comparison metrics are published, not counted as parity wins.
@@ -53,6 +60,7 @@ The machine-readable catalogue is `benchmarks/corpus/ngspice/manifest.json`.
 
 - `benchmarks/comma-numparam-fix-797/rhs-continuation/*.cir` are original project-authored OP probes, MIT (repository `LICENSE`), for https://github.com/mfiumara/spice-ts/issues/797 and https://github.com/mfiumara/spice-ts/pull/955. No third-party decks are copied.
 - `run.py before` / `run.py after`, under `spice-heavy`, retain same-byte SHA-256 hashes, ngspice-47 raw OP data, native values/errors and fixed shared-node error metrics. The after phase also reruns all 20 unchanged legacy inputs with their existing provenance. Earlier receipts are immutable; no speed claim or per-circuit settings.
+
 
 ## Xyce second-reference bootstrap (#948)
 
