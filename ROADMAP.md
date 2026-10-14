@@ -31,20 +31,26 @@ is live but private, so viewing it requires repository-owner access.
 
 ### Benchmark evidence boundary
 
-**The aggregate is stale until the nightly refresh in [#855](https://github.com/mfiumara/spice-ts/issues/855).**
+**Aggregate evidence updated after the frozen snapshot:** the nightly refresh in
+[#855](https://github.com/mfiumara/spice-ts/issues/855) merged in
+[PR #979](https://github.com/mfiumara/spice-ts/pull/979), main `160a4479`.
 The committed [aggregate JSON](benchmarks/aggregate-report.json) and
 [parity report](benchmarks/AGGREGATE_PARITY.md) cover only A–E, not all 641 collected fixtures.
-Their provenance pins predate the current source/fixture tree and the #592 fine-reference work.
-This roadmap neither regenerates them nor describes their values as newly measured main parity.
-The nightly must re-pin provenance and publish the status/metric transition ledger after intervening
-merged changes, including losses and the HFET upstream-bug explanation. No daytime refresh here.
+The refresh re-pins provenance and publishes the status/metric transition ledger, including losses
+and the HFET upstream-bug explanation. This roadmap copies that receipt without regenerating
+benchmarks or changing the frozen issue inventory below.
 
-For reference, that **historical aggregate artifact**, not this snapshot's simulator execution,
-records 100 fixtures, ngspice 52 success / 9 failed / 39 unsupported, spice-ts 61 success / 1 failed /
-38 unsupported, and 48 compared fixtures / 67 analyses / 879 signals. Its maximum absolute and
-absolute RMS errors are both 7853.15771484375; maximum relative error is 975815.5539797375 and
-relative RMS 203361.3440880642. Runtime totals are 6554.499 ms ngspice and 27822.473 ms spice-ts.
-These heterogeneous totals are not a speed ranking or a parity claim.
+The refreshed aggregate records 100 fixtures, ngspice 52 success / 9 failed / 39 unsupported,
+spice-ts 68 success / 1 failed / 31 unsupported, and 71 analyses across 52 compared fixtures,
+with 975 absolute / 939 relative signals. Its worst-per-signal envelope is absolute max
+7018.333251953125, absolute RMS 7018.333251953125, relative max 436128.09132992564 and
+relative RMS 243438.5559477603. Wins versus the previous accepted report: spice-ts success
+61 → 68, analyses 67 → 71, absolute max 7853.15771484375 → 7018.333251953125 and relative max
+975815.5539797375 → 436128.09132992564 decreased. **Published LOSS:** the relative RMS envelope
+worsened 203361.3440880642 → 243438.5559477603 (203361 → 243438); tolerances are unchanged.
+Execution success is not a numerical match; `not-compared` is not a win. Runtime sums are
+7831.268 ms ngspice and 43216.837 ms spice-ts: heterogeneous, loaded-host single samples,
+not a speed ranking or a parity claim. No speed or superiority claim is made.
 
 The F–I outcome files below are also **committed receipts**, not fresh runs of the frozen main.
 Later fixes can make their first-error buckets obsolete. In particular I still records digital AC

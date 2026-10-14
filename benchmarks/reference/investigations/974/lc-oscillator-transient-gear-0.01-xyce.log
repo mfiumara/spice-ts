@@ -1,0 +1,36 @@
+
+*****
+***** Welcome to the Xyce(TM) Parallel Electronic Simulator
+*****
+***** This is version XyceNF Release 7.10.0
+***** Date: Wed Oct 14 03:04:58 CEST 2026
+
+
+***** Executing netlist input.cir
+
+***** Reading and parsing netlist...
+***** Setting up topology...
+
+***** Device Count Summary ...
+       C level 1 (Capacitor)                  1
+       I level 1 (Independent Current Source) 1
+       L level 1 (Inductor)                   1
+       ----------------------------------------
+       Total Devices                          3
+***** Setting up matrix structure...
+***** Number of Unknowns = 2
+***** Initializing...
+
+***** Beginning DC Operating Point Calculation...
+
+***** Beginning Transient Calculation...
+
+function WorkingIntegrationMethod::createTimeIntegMethod:
+ Invalid integration method 2 specified
+*** Xyce Abort ***
+
+function WorkingIntegrationMethod::createTimeIntegMethod:
+ Invalid integration method 2 specified
+
+
+*** Xyce Abort ***

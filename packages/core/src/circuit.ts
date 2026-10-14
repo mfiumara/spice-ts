@@ -18,7 +18,7 @@ import { Diode, canonicalDiodeModelParams, diodeZeroBiasCapacitance } from './de
 import { BJT, hasBiasDependentBaseResistance } from './devices/bjt.js';
 import { VBIC, resolveVBICParams, vbicNodeCount } from './devices/vbic.js';
 import { MOSFET } from './devices/mosfet.js';
-import { MOS2, resolveMOS2Model } from './devices/mos2.js';
+import { MOS2, mos2SeriesResistances, resolveMOS2Model } from './devices/mos2.js';
 import { MOS3, mos3SeriesResistances, resolveMOS3Model } from './devices/mos3.js';
 import { MOS6, resolveMOS6Model } from './devices/mos6.js';
 import { createBSIM1, resolveBSIM1Model } from './devices/bsim1.js';
@@ -3052,11 +3052,13 @@ export class Circuit {
           result.push({ ...desc, nodes: [drain, gate, source, bulk] });
           continue;
         }
-        if (model && (level === undefined || level === 1)) {
-          // MOS1 (mos1set.c/mos1temp.c): RD/RS in front of the drain/source prime nodes, or
+        if (model && (level === undefined || level === 1 || level === 2)) {
+          // MOS1/MOS2 (mos1set.c/mos2set.c and temperature preprocessing): RD/RS in front of prime nodes, or
           // RSH*NRD / RSH*NRS (one square by default) when RD/RS are not given (#719). An open
           // terminal (#757) keeps its prime node but gets no resistor.
-          const series = mos1SeriesResistances(model.params, desc.params);
+          const series = level === 2
+            ? mos2SeriesResistances(model.params, desc.params)
+            : mos1SeriesResistances(model.params, desc.params);
           let [drain, gate, source] = desc.nodes;
           const bulk = desc.nodes[3] ?? source;
           if (series.drain === 0 && series.source === 0) {

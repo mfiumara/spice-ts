@@ -215,7 +215,7 @@ M1 d g 0 b N W=10U L=3U
     }
   });
 
-  it('rejects series resistances and reports the ngspice fatal model errors', async () => {
+  it('reports the ngspice fatal model errors', async () => {
     const deck = (model: string) => `MOS2 errors
 VD d 0 DC 1
 VG g 0 DC 1
@@ -223,8 +223,7 @@ M1 d g 0 0 N W=10U L=2U
 .MODEL N NMOS LEVEL=2 ${model}
 .OP
 .END`;
-    await expect(simulate(deck('RD=10'))).rejects.toThrow(/level 2 .*RD is not supported/);
-    await expect(simulate(deck('RSH=5'))).rejects.toThrow(/level 2 .*RSH is not supported/);
+
     await expect(simulate(deck('NSUB=1E9'))).rejects.toThrow(/Nsub < Ni/);
     await expect(simulate(deck('PHI=0'))).rejects.toBeInstanceOf(InvalidCircuitError);
   });
