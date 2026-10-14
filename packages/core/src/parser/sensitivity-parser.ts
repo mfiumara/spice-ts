@@ -6,30 +6,37 @@ import {
 } from '../validation/sensitivity.js';
 import { parseNumber } from './tokenizer.js';
 
-/** Parse the bounded single-ended DC or DEC/OCT/LIN AC `.sens` forms. */
+/** Parse bounded single-ended/differential DC or DEC/OCT/LIN AC `.sens` forms. */
 export function parseSensitivity(tokens: string[], lineNumber: number): SensitivityAnalysis {
+  // The shared tokenizer treats commas as whitespace, as in other node lists.
+  const close = tokens.indexOf(')', 3);
   const isVoltageOutput = tokens[1]?.toUpperCase() === 'V'
     && tokens[2] === '('
-    && tokens[4] === ')';
+    && (close === 4 || close === 5);
   if (!isVoltageOutput) throw unsupported(tokens, lineNumber);
+  const output = {
+    outputNode: tokens[3],
+    ...(close === 5 ? { outputReferenceNode: tokens[4] } : {}),
+  };
+  const rest = tokens.slice(close + 1);
 
   let analysis: SensitivityAnalysis;
   // `.sens v(node) dc` (the control-language form) is the same DC analysis.
-  if (tokens.length === 5 || (tokens.length === 6 && tokens[5]?.toUpperCase() === 'DC')) {
-    analysis = { type: 'sens', outputNode: tokens[3], mode: 'dc' };
+  if (rest.length === 0 || (rest.length === 1 && rest[0]?.toUpperCase() === 'DC')) {
+    analysis = { type: 'sens', ...output, mode: 'dc' };
   } else if (
-    tokens.length === 10
-    && tokens[5]?.toUpperCase() === 'AC'
-    && ['DEC', 'OCT', 'LIN'].includes(tokens[6]?.toUpperCase())
+    rest.length === 5
+    && rest[0]?.toUpperCase() === 'AC'
+    && ['DEC', 'OCT', 'LIN'].includes(rest[1]?.toUpperCase())
   ) {
     analysis = {
       type: 'sens',
-      outputNode: tokens[3],
+      ...output,
       mode: 'ac',
-      variation: tokens[6].toLowerCase() as 'dec' | 'oct' | 'lin',
-      points: Number.parseInt(tokens[7], 10),
-      startFreq: parseNumber(tokens[8]),
-      stopFreq: parseNumber(tokens[9]),
+      variation: rest[1].toLowerCase() as 'dec' | 'oct' | 'lin',
+      points: Number.parseInt(rest[2], 10),
+      startFreq: parseNumber(rest[3]),
+      stopFreq: parseNumber(rest[4]),
     };
   } else {
     throw unsupported(tokens, lineNumber);

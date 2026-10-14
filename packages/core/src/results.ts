@@ -344,6 +344,7 @@ export class SensitivityResult {
     public readonly mode: 'dc' | 'ac',
     public readonly frequencies: number[],
     public readonly entries: SensitivityEntry[],
+    public readonly outputReferenceNode?: string,
   ) {}
 }
 

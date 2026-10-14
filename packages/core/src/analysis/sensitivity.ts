@@ -42,6 +42,8 @@ export function solveSensitivity(
   convergence?: ConvergenceTelemetry,
 ): SensitivityResult {
   const outputIndex = findOutputIndex(compiled, analysis.outputNode);
+  const referenceIndex = analysis.outputReferenceNode === undefined
+    ? -1 : findOutputIndex(compiled, analysis.outputReferenceNode);
   const targets = collectTargets(compiled, analysis.mode);
 
   if (analysis.mode === 'ac') assertSingleACExcitation(compiled);
@@ -52,11 +54,12 @@ export function solveSensitivity(
       parameter: target.parameter,
       dc: differentiateScalar(target, value => {
         target.set(value);
-        return solveDCOperatingPoint(compiled, options, undefined, convergence)
-          .assembler.solution[outputIndex];
+        const solution = solveDCOperatingPoint(compiled, options, undefined, convergence)
+          .assembler.solution;
+        return voltageDifference(solution, outputIndex, referenceIndex);
       }),
     }));
-    return new SensitivityResult(analysis.outputNode, 'dc', [], entries);
+    return new SensitivityResult(analysis.outputNode, 'dc', [], entries, analysis.outputReferenceNode);
   }
 
   // ngspice `.sens ac` steps its own grid (cktsens.c), not the stretched `.ac` grid.
@@ -66,10 +69,10 @@ export function solveSensitivity(
     parameter: target.parameter,
     ac: differentiateComplex(target, value => {
       target.set(value);
-      return solveACAtOutput(compiled, frequencies, options, outputIndex, convergence);
+      return solveACAtOutput(compiled, frequencies, options, outputIndex, referenceIndex, convergence);
     }),
   }));
-  return new SensitivityResult(analysis.outputNode, 'ac', frequencies, entries);
+  return new SensitivityResult(analysis.outputNode, 'ac', frequencies, entries, analysis.outputReferenceNode);
 }
 
 function assertSingleACExcitation(compiled: CompiledCircuit): void {
@@ -291,6 +294,7 @@ function solveACAtOutput(
   frequencies: readonly number[],
   options: ResolvedOptions,
   outputIndex: number,
+  referenceIndex: number,
   convergence?: ConvergenceTelemetry,
 ): ComplexSensitivityValue[] {
   const dc = solveDCOperatingPoint(compiled, options, undefined, convergence).assembler.solution;
@@ -298,11 +302,19 @@ function solveACAtOutput(
   const rhs = buildACRHS(compiled);
   return frequencies.map(frequency => {
     const { real, imaginary } = system.solve(2 * Math.PI * frequency, rhs);
-    return { real: real[outputIndex], imaginary: imaginary[outputIndex] };
+    return {
+      real: voltageDifference(real, outputIndex, referenceIndex),
+      imaginary: voltageDifference(imaginary, outputIndex, referenceIndex),
+    };
   });
 }
 
+function voltageDifference(solution: Float64Array, positive: number, negative: number): number {
+  return (positive < 0 ? 0 : solution[positive]) - (negative < 0 ? 0 : solution[negative]);
+}
+
 function findOutputIndex(compiled: CompiledCircuit, name: string): number {
+  if (name === '0' || name.toLowerCase() === 'gnd') return -1;
   for (const [nodeName, index] of compiled.nodeIndexMap) {
     if (nodeName.toLowerCase() === name.toLowerCase() && index >= 0) return index;
   }

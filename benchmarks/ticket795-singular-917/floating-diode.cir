@@ -1,0 +1,10 @@
+Floating diode island, self-written MIT diagnosis reduction
+* SPDX-License-Identifier: MIT
+V1 supply 0 1
+R1 supply 0 1k
+C1 a 0 3
+C2 k 0 4
+D1 k a ordinary
+.model ordinary D(IS=1e-14)
+.op
+.end
