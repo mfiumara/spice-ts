@@ -1,0 +1,270 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_832f6221/packages/core
+
+ ❯ src/parser/comma-numparam-797.test.ts (23 tests | 14 failed) 65ms
+     × normalizes comma-separated formal defaults without changing expressions 5ms
+     × ignores unmatched comma words before positional validation, including nested calls 9ms
+     × issue-1 8ms
+     × issue-2 3ms
+     × issue-3 3ms
+     × issue-4 2ms
+     × issue-5 4ms
+     × issue-6 1ms
+     × issue-7 1ms
+     ✓ defaults 2ms
+     ✓ plain-whitespace 2ms
+     ✓ braced-whitespace 1ms
+     ✓ braced-comma-space 1ms
+     ✓ braced-comma-tab 1ms
+     ✓ explicit-first 1ms
+     × reordered-glued 1ms
+     ✓ function-comma 1ms
+     × unbraced-trailing 2ms
+     × example01 9ms
+     ✓ example01_stringwriter 3ms
+     ✓ example01_without_params 2ms
+     × uses arbitrary names and caller expressions in a nested call 1ms
+     × does not evaluate comma-prefixed ignored expressions 2ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 14 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/parser/comma-numparam-797.test.ts > #797 source-derived X-card assignment boundaries > normalizes comma-separated formal defaults without changing expressions
+AssertionError: expected { ALPHA: '1,', BETA: 'alpha*2', …(1) } to deeply equal { ALPHA: 1, BETA: 'alpha*2', GAMMA: 3 }
+
+- Expected
++ Received
+
+  {
+-   "ALPHA": 1,
++   "ALPHA": "1,",
+    "BETA": "alpha*2",
+    "GAMMA": 3,
+  }
+
+ ❯ src/parser/comma-numparam-797.test.ts:16:8
+     14|   it('normalizes comma-separated formal defaults without changing expr…
+     15|     expect(parseSubcircuitHeader('.subckt cell o params: alpha=1, beta…
+     16|       .toEqual({ ALPHA: 1, BETA: 'alpha*2', GAMMA: 3 });
+       |        ^
+     17|   });
+     18|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/14]⎯
+
+ FAIL  src/parser/comma-numparam-797.test.ts > #797 source-derived X-card assignment boundaries > ignores unmatched comma words before positional validation, including nested calls
+Error: Undefined subcircuit '3'
+ ❯ Circuit.expandSubcircuit src/circuit.ts:3334:13
+    3332|     const definitionScopes = scopeIndex >= 0 ? scopes.slice(scopeIndex…
+    3333|     if (!def) {
+    3334|       throw new Error(`Undefined subcircuit '${subcktName}'`);
+       |             ^
+    3335|     }
+    3336|
+ ❯ Circuit.expandSubcircuit src/circuit.ts:3746:31
+ ❯ Circuit.expandAllSubcircuits src/circuit.ts:2711:31
+ ❯ Circuit.compile src/circuit.ts:2016:34
+ ❯ simulate src/simulate.ts:132:28
+ ❯ src/parser/comma-numparam-797.test.ts:20:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/14]⎯
+
+ FAIL  src/parser/comma-numparam-797.test.ts > #797 source-derived X-card assignment boundaries > issue-1
+ FAIL  src/parser/comma-numparam-797.test.ts > #797 source-derived X-card assignment boundaries > issue-3
+ FAIL  src/parser/comma-numparam-797.test.ts > #797 source-derived X-card assignment boundaries > issue-5
+AssertionError: promise resolved "{ warnings: [], …(2) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "convergence": {
++     "dc": {
++       "acceptedSolves": 1,
++       "failure": null,
++       "gminStepAttempts": 0,
++       "gminStepFailures": 0,
++       "newtonIterations": 2,
++       "rejectedSolves": 0,
++       "sourceStepAttempts": 0,
++       "sourceStepFailures": 0,
++     },
++     "transient": {
++       "acceptedSteps": 0,
++       "failure": null,
++       "lteRetries": 0,
++       "minimumAcceptedTimestep": null,
++       "newtonIterations": 0,
++       "nrRetries": 0,
++       "rejectedSteps": 0,
++     },
++   },
++   "dc": DCResult {
++     "currentMap": Map {},
++     "voltageMap": Map {
++       "o" => 234,
++     },
++   },
++   "warnings": [],
+  }
+
+ ❯ src/parser/comma-numparam-797.test.ts:39:37
+     37|       const values = reference.rows.find(row => row.id === entry.id)!.…
+     38|       if (values === null) {
+     39|         await expect(simulate(deck)).rejects.toThrow();
+       |                                     ^
+     40|       } else {
+     41|         const dc = (await simulate(deck)).dc!;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/14]⎯
+
+ FAIL  src/parser/comma-numparam-797.test.ts > #797 source-derived X-card assignment boundaries > issue-2
+AssertionError: expected 234 to be close to 211, received difference is 23, but expected 5e-7
+ ❯ src/parser/comma-numparam-797.test.ts:43:49
+     41|         const dc = (await simulate(deck)).dc!;
+     42|         for (const [name, value] of Object.entries(values)) {
+     43|           expect(dc.voltage(name.slice(2, -1))).toBeCloseTo(value, 6);
+       |                                                 ^
+     44|         }
+     45|       }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/14]⎯
+
+ FAIL  src/parser/comma-numparam-797.test.ts > #797 source-derived X-card assignment boundaries > issue-4
+AssertionError: expected 234 to be close to 231, received difference is 3, but expected 5e-7
+ ❯ src/parser/comma-numparam-797.test.ts:43:49
+     41|         const dc = (await simulate(deck)).dc!;
+     42|         for (const [name, value] of Object.entries(values)) {
+     43|           expect(dc.voltage(name.slice(2, -1))).toBeCloseTo(value, 6);
+       |                                                 ^
+     44|         }
+     45|       }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/14]⎯
+
+ FAIL  src/parser/comma-numparam-797.test.ts > #797 source-derived X-card assignment boundaries > issue-6
+ FAIL  src/parser/comma-numparam-797.test.ts > #797 source-derived X-card assignment boundaries > issue-7
+AssertionError: expected 231 to be close to 211, received difference is 20, but expected 5e-7
+ ❯ src/parser/comma-numparam-797.test.ts:43:49
+     41|         const dc = (await simulate(deck)).dc!;
+     42|         for (const [name, value] of Object.entries(values)) {
+     43|           expect(dc.voltage(name.slice(2, -1))).toBeCloseTo(value, 6);
+       |                                                 ^
+     44|         }
+     45|       }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/14]⎯
+
+ FAIL  src/parser/comma-numparam-797.test.ts > #797 source-derived X-card assignment boundaries > reordered-glued
+AssertionError: expected 234 to be close to 114, received difference is 120, but expected 5e-7
+ ❯ src/parser/comma-numparam-797.test.ts:43:49
+     41|         const dc = (await simulate(deck)).dc!;
+     42|         for (const [name, value] of Object.entries(values)) {
+     43|           expect(dc.voltage(name.slice(2, -1))).toBeCloseTo(value, 6);
+       |                                                 ^
+     44|         }
+     45|       }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/14]⎯
+
+ FAIL  src/parser/comma-numparam-797.test.ts > #797 source-derived X-card assignment boundaries > unbraced-trailing
+AssertionError: promise resolved "{ warnings: [], …(2) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "convergence": {
++     "dc": {
++       "acceptedSolves": 1,
++       "failure": null,
++       "gminStepAttempts": 0,
++       "gminStepFailures": 0,
++       "newtonIterations": 2,
++       "rejectedSolves": 0,
++       "sourceStepAttempts": 0,
++       "sourceStepFailures": 0,
++     },
++     "transient": {
++       "acceptedSteps": 0,
++       "failure": null,
++       "lteRetries": 0,
++       "minimumAcceptedTimestep": null,
++       "newtonIterations": 0,
++       "nrRetries": 0,
++       "rejectedSteps": 0,
++     },
++   },
++   "dc": DCResult {
++     "currentMap": Map {},
++     "voltageMap": Map {
++       "o" => 211,
++     },
++   },
++   "warnings": [],
+  }
+
+ ❯ src/parser/comma-numparam-797.test.ts:39:37
+     37|       const values = reference.rows.find(row => row.id === entry.id)!.…
+     38|       if (values === null) {
+     39|         await expect(simulate(deck)).rejects.toThrow();
+       |                                     ^
+     40|       } else {
+     41|         const dc = (await simulate(deck)).dc!;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/14]⎯
+
+ FAIL  src/parser/comma-numparam-797.test.ts > #797 source-derived X-card assignment boundaries > example01
+AssertionError: expected 1.097091928994553 to be close to -7.232339954481557, received difference is 8.329431883476111, but expected 5e-7
+ ❯ src/parser/comma-numparam-797.test.ts:43:49
+     41|         const dc = (await simulate(deck)).dc!;
+     42|         for (const [name, value] of Object.entries(values)) {
+     43|           expect(dc.voltage(name.slice(2, -1))).toBeCloseTo(value, 6);
+       |                                                 ^
+     44|         }
+     45|       }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/14]⎯
+
+ FAIL  src/parser/comma-numparam-797.test.ts > #797 source-derived X-card assignment boundaries > uses arbitrary names and caller expressions in a nested call
+AssertionError: expected 10894 to be close to 114, received difference is 10780, but expected 5e-13
+ ❯ src/parser/comma-numparam-797.test.ts:61:37
+     59| .op
+     60| .end`);
+     61|     expect(result.dc!.voltage('o')).toBeCloseTo(114, 12);
+       |                                     ^
+     62|   });
+     63|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/14]⎯
+
+ FAIL  src/parser/comma-numparam-797.test.ts > #797 source-derived X-card assignment boundaries > does not evaluate comma-prefixed ignored expressions
+ParseError: Parse error at line 6: Undefined parameter 'undefined_name'
+  X1 o cell alpha={2},beta={undefined_name}
+ ❯ toParseError src/parser/preprocessor.ts:772:10
+    770|   const message = (error as Error).message
+    771|     .replace(/^Undefined variable '([^']*)'$/, "Undefined parameter '$…
+    772|   return new ParseError(message, line, context);
+       |          ^
+    773| }
+    774|
+ ❯ substituteStatement src/parser/preprocessor.ts:561:11
+ ❯ src/parser/preprocessor.ts:144:7
+ ❯ preprocessSteps src/parser/preprocessor.ts:143:27
+ ❯ preprocessDeck src/parser/preprocessor.ts:77:20
+ ❯ parseAsync src/parser/index.ts:394:30
+ ❯ simulate src/simulate.ts:124:21
+ ❯ src/parser/comma-numparam-797.test.ts:65:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/14]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  14 failed | 9 passed (23)
+   Start at  23:35:26
+   Duration  891ms (transform 606ms, setup 0ms, import 728ms, tests 65ms, environment 0ms)
+
+JUNIT report written to /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_832f6221/packages/core/test-results.xml

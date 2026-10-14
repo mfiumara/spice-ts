@@ -1,0 +1,135 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/packages/core
+
+ ❯ src/parser/x-call-continuation-797.test.ts (10 tests | 10 failed) 27ms
+     × top-level numeric 13ms
+     × top-level bare expression 2ms
+     × top-level braced expression 2ms
+     × top-level quoted expression 1ms
+     × top-level comments and multiple continuations 1ms
+     × nested numeric 4ms
+     × nested bare expression 1ms
+     × nested braced expression 0ms
+     × nested quoted expression 1ms
+     × nested comments and multiple continuations 1ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 10 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/parser/x-call-continuation-797.test.ts > #797 X-call RHS continuation folding > top-level numeric
+ParseError: Parse error at line 7: Cannot parse number: '{}'
+  Xchild o cell alpha={} 5
+ ❯ parseNetlist src/parser/index.ts:259:13
+    257|     } catch (e) {
+    258|       if (e instanceof ParseError) throw e;
+    259|       throw new ParseError((e as Error).message, lineNumber, raw);
+       |             ^
+    260|     }
+    261|   }
+ ❯ parseAsync src/parser/index.ts:395:10
+ ❯ simulate src/simulate.ts:124:15
+ ❯ src/parser/x-call-continuation-797.test.ts:26:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯
+
+ FAIL  src/parser/x-call-continuation-797.test.ts > #797 X-call RHS continuation folding > top-level bare expression
+ParseError: Parse error at line 7: Cannot parse number: '{}'
+  Xchild o cell alpha={} seed*2
+ ❯ parseNetlist src/parser/index.ts:259:13
+    257|     } catch (e) {
+    258|       if (e instanceof ParseError) throw e;
+    259|       throw new ParseError((e as Error).message, lineNumber, raw);
+       |             ^
+    260|     }
+    261|   }
+ ❯ parseAsync src/parser/index.ts:395:10
+ ❯ simulate src/simulate.ts:124:15
+ ❯ src/parser/x-call-continuation-797.test.ts:26:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/10]⎯
+
+ FAIL  src/parser/x-call-continuation-797.test.ts > #797 X-call RHS continuation folding > top-level braced expression
+ FAIL  src/parser/x-call-continuation-797.test.ts > #797 X-call RHS continuation folding > nested braced expression
+Error: Missing } in subcircuit call
+ ❯ callAssignments src/parser/subcircuit-syntax.ts:116:30
+    114|         end++;
+    115|       } while (end < card.length && depth > 0);
+    116|       if (depth !== 0) throw new Error('Missing } in subcircuit call');
+       |                              ^
+    117|     } else if (card[valueStart] === "'") {
+    118|       const close = card.indexOf("'", valueStart + 1);
+ ❯ bracedSubcircuitCallValues src/parser/subcircuit-syntax.ts:163:23
+ ❯ collectStatements src/parser/preprocessor.ts:843:37
+ ❯ preprocessSteps src/parser/preprocessor.ts:106:10
+ ❯ preprocessDeck src/parser/preprocessor.ts:77:20
+ ❯ parseAsync src/parser/index.ts:394:30
+ ❯ simulate src/simulate.ts:124:21
+ ❯ src/parser/x-call-continuation-797.test.ts:26:30
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/10]⎯
+
+ FAIL  src/parser/x-call-continuation-797.test.ts > #797 X-call RHS continuation folding > top-level quoted expression
+ FAIL  src/parser/x-call-continuation-797.test.ts > #797 X-call RHS continuation folding > nested quoted expression
+Error: Missing quote in subcircuit call
+ ❯ callAssignments src/parser/subcircuit-syntax.ts:119:28
+    117|     } else if (card[valueStart] === "'") {
+    118|       const close = card.indexOf("'", valueStart + 1);
+    119|       if (close < 0) throw new Error('Missing quote in subcircuit call…
+       |                            ^
+    120|       end = close + 1;
+    121|     } else {
+ ❯ bracedSubcircuitCallValues src/parser/subcircuit-syntax.ts:163:23
+ ❯ collectStatements src/parser/preprocessor.ts:843:37
+ ❯ preprocessSteps src/parser/preprocessor.ts:106:10
+ ❯ preprocessDeck src/parser/preprocessor.ts:77:20
+ ❯ parseAsync src/parser/index.ts:394:30
+ ❯ simulate src/simulate.ts:124:21
+ ❯ src/parser/x-call-continuation-797.test.ts:26:30
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/10]⎯
+
+ FAIL  src/parser/x-call-continuation-797.test.ts > #797 X-call RHS continuation folding > top-level comments and multiple continuations
+ParseError: Parse error at line 7: Cannot parse number: '{}'
+  Xchild o cell alpha={} {seed *2}
+ ❯ parseNetlist src/parser/index.ts:259:13
+    257|     } catch (e) {
+    258|       if (e instanceof ParseError) throw e;
+    259|       throw new ParseError((e as Error).message, lineNumber, raw);
+       |             ^
+    260|     }
+    261|   }
+ ❯ parseAsync src/parser/index.ts:395:10
+ ❯ simulate src/simulate.ts:124:15
+ ❯ src/parser/x-call-continuation-797.test.ts:26:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/10]⎯
+
+ FAIL  src/parser/x-call-continuation-797.test.ts > #797 X-call RHS continuation folding > nested numeric
+ FAIL  src/parser/x-call-continuation-797.test.ts > #797 X-call RHS continuation folding > nested bare expression
+ FAIL  src/parser/x-call-continuation-797.test.ts > #797 X-call RHS continuation folding > nested comments and multiple continuations
+Error: Unexpected character 'EOF' at position 0
+ ❯ ExprParser.parsePrimary src/parser/expression.ts:316:11
+    314|     }
+    315|
+    316|     throw new Error(`Unexpected character '${this.src[this.pos] ?? 'EO…
+       |           ^
+    317|   }
+    318|
+ ❯ ExprParser.parseCall src/parser/expression.ts:282:17
+ ❯ ExprParser.parseUnary src/parser/expression.ts:253:17
+ ❯ ExprParser.parseExp src/parser/expression.ts:221:21
+ ❯ ExprParser.parseTerm src/parser/expression.ts:205:21
+ ❯ ExprParser.parseExpr src/parser/expression.ts:193:79
+ ❯ ExprParser.parseRelation src/parser/expression.ts:177:21
+ ❯ ExprParser.parseEquality src/parser/expression.ts:168:21
+ ❯ ExprParser.parseAnd src/parser/expression.ts:159:21
+ ❯ ExprParser.parseOr src/parser/expression.ts:150:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/10]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  10 failed (10)
+   Start at  00:10:46
+   Duration  4.47s (transform 3.88s, setup 0ms, import 4.18s, tests 27ms, environment 0ms)
+
+JUNIT report written to /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/packages/core/test-results.xml

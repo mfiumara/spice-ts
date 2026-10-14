@@ -3,6 +3,11 @@
 This file records the provenance and redistribution decision for benchmark fixtures.
 The machine-readable catalogue is `benchmarks/corpus/ngspice/manifest.json`.
 
+## X-call RHS continuation remediation (#797 / PR955)
+
+- `benchmarks/comma-numparam-fix-797/rhs-continuation/*.cir` are original project-authored OP probes, MIT (repository `LICENSE`), for https://github.com/mfiumara/spice-ts/issues/797 and https://github.com/mfiumara/spice-ts/pull/955. No third-party decks are copied.
+- `run.py before` / `run.py after`, under `spice-heavy`, retain same-byte SHA-256 hashes, ngspice-47 raw OP data, native values/errors and fixed shared-node error metrics. The after phase also reruns all 20 unchanged legacy inputs with their existing provenance. Earlier receipts are immutable; no speed claim or per-circuit settings.
+
 ## Xyce second-reference bootstrap (#948)
 
 - `benchmarks/reference/ekv/fixtures/*.cir` are byte-identical copies of the three
@@ -37,6 +42,7 @@ The current ngspice COPYING explicitly covers examples/tests outside listed exce
 - Original paths at that revision: `circuits/a-devices/{clock-divider,controlled-clamp-varistor,edge-capture-dff,fm-modulator,non-ground-common-latch,ota-current-limiter,phase-detector,sample-and-hold-sensor}.cir`; `circuits/cookbook/custom-components/simple-pll/simple-pll.cir`; `src/SpiceSharpParser.IntegrationTests/Examples/Circuits/{band-pass_1,band-pass_2}.cir`. Every fixture is standalone (include closure empty), no vendor model redistribution. These are existing original upstream decks, never generated derivatives.
 - eSim survey only: https://github.com/FOSSEE/eSim at `1a25a46ce15e0ccc35296dd513f40249c089a5a7`, `GPL-3.0-only`; licence retained in corpus-j. All 65 explicitly surveyed paths were duplicate/no-analysis/include-dependent; no eSim deck, PDK or vendor companion is committed. PWL-file sources are also excluded. Exact inspected exclusions and input hashes are retained in the manifest.
 - Both engines receive unchanged bytes through existing corpus-f runners, with a scoped serial 19 s execution deadline/20 s owned process-group bound and <=900 s persisted cumulative child-wall budget. No source-success filtering or per-circuit tolerance tuning. Published losses: all 11 both-failed; ngspice 8 failed/3 unsupported, spice-ts 11 unsupported. Nine cross-dialect LTspice A-device inputs and two `mc()` filters have no ngspice reference. Empty/null waveform metrics are unavailable, never zero errors. This is a partial survey receipt, not expanded measured parity or a speed win. No daytime aggregate refresh; nightly #855 owns incorporation.
+
 
 ## B-source finite-Jacobian overflow probes (#899)
 
