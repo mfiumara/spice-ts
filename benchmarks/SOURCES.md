@@ -1,5 +1,36 @@
 # Benchmark sources
 
+## corpus-k CMOS/textbook/oscillator batch (#980)
+
+20 novel original Xyce_Regression decks at `7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2`, SPDX `GPL-3.0-or-later`. Redistribution basis is the repository README GPLv3-or-later grant. Notice and full GPL text are retained in corpus-k/licenses/xyce. All selected files have no separate copyright/licence notice and no external dependencies. Per-file bytes/hashes/include closures are in [manifest.json](corpus/corpus-k/manifest.json), selection and exclusions in [SOURCES.md](corpus/corpus-k/SOURCES.md). No fixture adaptation or engine-success filter. 19 ngspice-47 successes; 5 matches, 14 spice-ts losses, 1 both-engine failure. All results are in [README.md](corpus/corpus-k/README.md) and outcomes.json; gaps #982 and #983. No aggregate refresh.
+
+Fresh ngspice SourceForge survey at `36fb6f51ff125f19ea8b36bda6ebe47dcc87a263` contributes zero decks: all 509 candidates are duplicate/static exclusions. Analog Devices, Symmetry Design and David Zan notices are not assumed covered by repository BSD. Xyce survey has 4,133 candidates, 20 selected, 4,113 duplicate/static/batch-deferred exclusions. Deferred candidates are not engine failures or licence rejections.
+
+Every row below is GPL-3.0-or-later, under the same retained Xyce README grant. URLs resolve relative to the [pinned source tree](https://github.com/Xyce/Xyce_Regression/tree/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2); exact per-file source URLs are in the manifest.
+
+| ID | Original upstream path | Licence / redistribution basis |
+|---|---|---|
+| k-1 | Netlists/ACtests/mos/opamp-ol.cir | GPL-3.0-or-later; Xyce README grant |
+| k-2 | Netlists/CircuitSim90/MOS2/ab_ac.cir | GPL-3.0-or-later; Xyce README grant |
+| k-3 | Netlists/CircuitSim90/MOS2/ab_integ.cir | GPL-3.0-or-later; Xyce README grant |
+| k-4 | Netlists/CircuitSim90/MOS2/ab_opamp.cir | GPL-3.0-or-later; Xyce README grant |
+| k-5 | Netlists/CircuitSim90/MOS2/cram.cir | GPL-3.0-or-later; Xyce README grant |
+| k-6 | Netlists/CircuitSim90/MOS2/e1480.cir | GPL-3.0-or-later; Xyce README grant |
+| k-7 | Netlists/CircuitSim90/MOS2/g1310.cir | GPL-3.0-or-later; Xyce README grant |
+| k-8 | Netlists/CircuitSim90/MOS2/gm6.cir | GPL-3.0-or-later; Xyce README grant |
+| k-9 | Netlists/CircuitSim90/MOS2/hussamp.cir | GPL-3.0-or-later; Xyce README grant |
+| k-10 | Netlists/CircuitSim90/MOS2/mosrect.cir | GPL-3.0-or-later; Xyce README grant |
+| k-11 | Netlists/CircuitSim90/MOS2/mux8.cir | GPL-3.0-or-later; Xyce README grant |
+| k-12 | Netlists/CircuitSim90/MOS2/nand.cir | GPL-3.0-or-later; Xyce README grant |
+| k-13 | Netlists/CircuitSim90/MOS2/pump.cir | GPL-3.0-or-later; Xyce README grant |
+| k-14 | Netlists/CircuitSim90/MOS2/reg0.cir | GPL-3.0-or-later; Xyce README grant |
+| k-15 | Netlists/CircuitSim90/MOS2/ring.cir | GPL-3.0-or-later; Xyce README grant |
+| k-16 | Netlists/CircuitSim90/MOS2/schmitfast.cir | GPL-3.0-or-later; Xyce README grant |
+| k-17 | Netlists/CircuitSim90/MOS2/schmitslow.cir | GPL-3.0-or-later; Xyce README grant |
+| k-18 | Netlists/CircuitSim90/MOS2/slowlatch.cir | GPL-3.0-or-later; Xyce README grant |
+| k-19 | Netlists/CircuitSim90/MOS2/toronto.cir | GPL-3.0-or-later; Xyce README grant |
+| k-20 | Netlists/WAMPDE/HARTLEY/hartley.cir | GPL-3.0-or-later; Xyce README grant |
+
 This file records the provenance and redistribution decision for benchmark fixtures.
 The machine-readable catalogue is `benchmarks/corpus/ngspice/manifest.json`.
 
