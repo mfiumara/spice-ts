@@ -86,6 +86,7 @@ export function newtonRaphson(
     : undefined;
   // The iterate two solves back, to recognise a rounding-floor two-cycle.
   const twoBack = convergenceTested.length > 0 ? new Float64Array(assembler.solution.length) : undefined;
+  let releasedNodeset = false;
 
   for (let iter = 0; iter < maxIter; iter++) {
     guard?.checkpoint('solve:newton-iteration');
@@ -107,6 +108,9 @@ export function newtonRaphson(
     }
 
     // ngspice cktload.c forces held node rows after the device load.
+    if (assembler.operatingPointPhase === 'junction' || assembler.operatingPointPhase === 'fixed') {
+      assembler.applyNodeHolds(assembler.nodeSetHolds, false);
+    }
     assembler.applyNodeHolds();
 
     if (!assembler.isFastPath) {
@@ -141,14 +145,30 @@ export function newtonRaphson(
 
     // ngspice CKTnoncon: an iterate a device had to limit was linearised at a
     // junction voltage the solution does not have, so it is not converged.
-    if (
+    const converged = (
       isConverged(assembler.solution, assembler.prevSolution, assembler.numNodes, options)
       && !selfLimiting.some(device => device.limitedLastStamp!())
       && (
         convergenceTested.every(device => device.convergenceTest!(assembler.solution, options))
         || (iter >= 2 && isRoundingFloorCycle(assembler.solution, assembler.prevSolution, twoBack!, assembler.numNodes))
       )
-    ) {
+    );
+    if (assembler.operatingPointPhase === 'junction') {
+      assembler.operatingPointPhase = 'fixed';
+      continue;
+    }
+    if (assembler.operatingPointPhase === 'fixed') {
+      if (converged) {
+        assembler.operatingPointPhase = 'floating';
+        releasedNodeset = assembler.nodeSetHolds.length > 0;
+      }
+      continue;
+    }
+    if (releasedNodeset) {
+      releasedNodeset = false;
+      continue;
+    }
+    if (converged) {
       // A certified infinite expression yields inf - inf in the next affine
       // stamp. ngspice reports CKTrhsOld (the linearisation point), not that
       // NaN solve (#847). Keep that certified point only on this exceptional

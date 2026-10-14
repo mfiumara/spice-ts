@@ -10,6 +10,21 @@ export function pairPlots<T extends PlotIdentity>(left: readonly T[], right: rea
   for (const own of left) {
     const candidates = [...remaining].filter(candidate => candidate.type === own.type);
     const id = identity(own);
+    if (id?.startsWith('dot:')) {
+      // ngspice-47 batch raw order reverses source rank within each ac/dc/op/tran
+      // type. Plotname is not unique. Evidence: repeated-dot-1009/README.md.
+      const occurrence = id.match(/^dot:(ac|dc|op|tran):([1-9]\d*)$/);
+      const target = occurrence?.[1] === own.type
+        ? right.filter(candidate => candidate.type === own.type)[Number(occurrence[2]) - 1]
+        : undefined;
+      const paired = occurrence?.[1] === own.type
+        ? candidates.find(candidate => identity(candidate) === id)
+          ?? (target && remaining.has(target) && identity(target) === undefined ? target : undefined)
+        : undefined;
+      if (paired) remaining.delete(paired);
+      pairs.push({ left: own, right: paired });
+      continue;
+    }
     const reference = id !== undefined
       ? candidates.find(candidate => identity(candidate)?.toLowerCase() === id.toLowerCase())
       : candidates.find(candidate => candidate.plotName.toLowerCase() === own.plotName.toLowerCase());

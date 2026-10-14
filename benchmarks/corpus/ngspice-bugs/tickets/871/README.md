@@ -4,7 +4,7 @@ Generated from `../../manifest.json` by `render.ts`; do not edit by hand.
 
 - Ticket: https://sourceforge.net/p/ngspice/bugs/871/ (status `open`, opened 2026-10-03)
 - Category: parser
-- Outcome: ngspice defective, spice-ts cannot run the deck (feature unsupported)
+- Outcome: ngspice defective, spice-ts correct
 - spice-ts issue: https://github.com/mfiumara/spice-ts/issues/871
 
 ## Decks
@@ -36,7 +36,7 @@ Formal arguments lexically shadow globals. choose_res(1e-7,2e-7) selects 1 ohm s
 |---|---|---|
 | ngspice-47 | wrong | temper_capture -i(v1)=1.785714e-02 (1/56), expected 1/6; random trial R=1 ohm. |
 | ngspice master | wrong | temper_capture identical to 47 (-i(v1)=1.785714e-02 = 1/56, expected 1/6); arg_capture drew R1=2 ohm on the master run (47 run drew 1 ohm): the random global still captures the formal argument. [ngspice pre-master-48 HEAD 3ef069fb (2026-10-09), built in scratch] |
-| spice-ts | unsupported | Since #870 `.param f(args) = expr` defines a function (ngspice-47 inpcom.c .param -> .func) whose formal arguments lexically shadow globals: arg_capture_cards.cir runs, R1=choose_res(1e-7,2e-7)=1 ohm, i(V1)=-1 A (deterministic; the agauss global is never read). temper_capture_cards.cir still stops at `Unsupported dot command: '.temp'` (https://github.com/mfiumara/spice-ts/issues/871); the same cards without `.temp 27` (27 C is the default) give -i(V1)=1/6 A, the expected answer, where ngspice-47 gives 1/56 (pinned in packages/core/src/parser/param-functions-870.test.ts). Before #870: ParseError Unknown function 'choose_res' / Unknown function 'twice'. |
+| spice-ts | right | #812 refresh d8ab9d33: both pinned cards now succeed since .temp fix. arg_capture i(V1)=-1 A and temper_capture i(V1)=-0.16666666666666666 A match independent 1-ohm/6-ohm oracle. Native ngspice gives -0.5 A on this random arg trial and -0.01785714285714286 A (1/56) on temper; those are defective outputs, not parity references. Diagnostic differences are not correctness errors; no ngspice-relative win claimed. Historical evidence: Since #870 `.param f(args) = expr` defines a function (ngspice-47 inpcom.c .param -> .func) whose formal arguments lexically shadow globals: arg_capture_cards.cir runs, R1=choose_res(1e-7,2e-7)=1 ohm, i(V1)=-1 A (deterministic; the agauss global is never read). temper_capture_cards.cir still stops at `Unsupported dot command: '.temp'` (https://github.com/mfiumara/spice-ts/issues/871); the same cards without `.temp 27` (27 C is the default) give -i(V1)=1/6 A, the expected answer, where ngspice-47 gives 1/56 (pinned in packages/core/src/parser/param-functions-870.test.ts). Before #870: ParseError Unknown function 'choose_res' / Unknown function 'twice'. |
 
 Reproduces on ngspice-47: yes. Check: temper_capture.cir prints -i(v1)=0.01785714A rather than 1/6A.
 

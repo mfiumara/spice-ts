@@ -1,0 +1,11 @@
+{
+  "01-resistor-mesh-op-10000-ngspice": "0679872644209d256616ba1d632887b183aabf4f9009abcffb126d4d9ad083c9",
+  "01-rc-ladder-tran-1000-ngspice": "4306adf35e65862390fc03cef8bfb256402b38b0959910f3155048965f46d989",
+  "01-cmos-inverter-chain-tran-1000-ngspice": "9dbfacc114fb19175e3ba83689ecd7991b5eea88171835e8a85bc0d2580756c9",
+  "01-cmos-inverter-chain-tran-10000-ngspice": "1d027c1bc832b239db34c24c837f26b6194d88743420d9992b3de62fbb2bb2c6",
+  "01-resistor-mesh-op-1000-ngspice": "1c1af4926790d3d94cba9586b828b23647640376a8552f193a12b5142cc7e842",
+  "01-rc-ladder-tran-10000-ngspice": "3f0b5bbed338740bb1294837c564aa9ec682fe87ba6a06753efe3019efc56d9a",
+  "01-resistor-mesh-op-50000-ngspice": "b0c1199ccb6bd530fb7328c1f84febbe527d8cff382aadeb9ba46b8477a5cb9b",
+  "01-cmos-inverter-chain-tran-50000-ngspice": "8e56185e479e1c40e6c5284674b9cef2dafac475fa2d78b6e1170d9c8c148ce7",
+  "01-rc-ladder-tran-50000-ngspice": "2be0767134cb4d388219d3089d0eb86db02958b213988ee90434b9ebcd818811"
+}

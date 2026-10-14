@@ -163,6 +163,41 @@ test('straight-line literal DC metadata refuses dynamic scripts', () => {
   assert.equal(declaredSecondaryGrid('title\n.control\nrepeat 2\ndc V1 0 1 1 TEMP -40 0 40\nend\n.endc', 'dc1', [0, 1, 0, 1]), undefined);
 });
 
+test('literal nested dot-card DC declares secondary coordinates for raw plot names', () => {
+  const text = 'title\n.DC V1 0 1 1 V2 700M 800M 100M\n.end';
+  for (const id of ['dc1', 'DC transfer characteristic']) {
+    assert.deepEqual(declaredSecondaryGrid(text, id, [0, 1, 0, 1]), [0.7000000000000001, 0.7000000000000001, 0.8, 0.8]);
+  }
+});
+
+test('literal control DC descriptive names require a unique declaration', () => {
+  const command = 'dc V1 0 1 1 V2 1 -1 -1';
+  assert.deepEqual(declaredSecondaryGrid(`title\n.control\n${command}\n.endc`, 'DC transfer characteristic', [0, 1, 0, 1, 0, 1]), [1, 1, 0, 0, -1, -1]);
+  const multiple = `title\n.control\ndc V1 0 1 1\n${command}\n.endc`;
+  assert.equal(declaredSecondaryGrid(multiple, 'DC transfer characteristic', [0, 1, 0, 1, 0, 1]), undefined);
+  assert.deepEqual(declaredSecondaryGrid(multiple, 'dc2', [0, 1, 0, 1, 0, 1]), [1, 1, 0, 0, -1, -1]);
+});
+
+test('literal DC rejects dynamic, ambiguous and nonliteral provenance', () => {
+  const card = '.dc V1 0 1 1 V2 0 1 1';
+  for (const command of ['run', 'reset', 'source other.cir', 'repeat 2', 'foreach x 1 2', 'while 1', 'dowhile 1', 'if 1', 'goto label', '.if 1']) {
+    assert.equal(declaredSecondaryGrid(`title\n${card}\n.control\n${command}\n.endc`, 'dc1', [0, 1, 0, 1]), undefined);
+  }
+  for (const text of [
+    `title\n${card}\n${card}`,
+    `title\n${card}\n.control\ndc V1 0 1 1 V2 0 1 1\n.endc`,
+    'title\ndc V1 0 1 1 V2 0 1 1',
+    'title\n.dc V1 {start} 1 1 V2 0 1 1',
+    'title\n.dc V1 0 1 1 V2 $start 1 1',
+    'title\n.dc V1 0 1 1 V2 0 1 0',
+    'title\n.dc V1 0 1 1 V2 0 1 -1',
+  ]) assert.equal(declaredSecondaryGrid(text, 'dc1', [0, 1, 0, 1]), undefined);
+  assert.equal(declaredSecondaryGrid(`title\n${card}`, 'dc1', [0, 1]), undefined);
+  assert.equal(declaredSecondaryGrid(`title\n${card}`, 'dc1', [0, 1, 0, 1, 0, 1]), undefined);
+  assert.equal(declaredSecondaryGrid(`title\n${card}`, 'dc2', [0, 1, 0, 1]), undefined);
+  assert.equal(declaredSecondaryGrid(`title\n${card}`, 'tran1', [0, 1, 0, 1]), undefined);
+});
+
 test('normalization reads each paired reference peak, not the first plot peak', () => {
   const a = plot('DC transfer characteristic', [0, 1], [1, 2]);
   const b = plot('DC transfer characteristic', [0, 1], [10, 20]);

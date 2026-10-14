@@ -1,0 +1,2 @@
+# Unified diff context markers include a space on empty context lines.
+rejected-candidate.patch -whitespace

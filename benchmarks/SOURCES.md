@@ -1,5 +1,15 @@
 # Benchmark sources
 
+## SINE after DC/AC expressions (#994)
+
+The minimal V/I source probes in `reference/xyce.test.ts` and
+[sine-expressions-994.md](reference/investigations/974/sine-expressions-994.md)
+are original spice-ts project work under the repository MIT licence, not
+third-party decks. Source: https://github.com/mfiumara/spice-ts/issues/994.
+ngspice-47 and Xyce 7.10 receive identical source values; only the native
+SINE/SIN alias and output cards differ. Native-grid extrema are reported,
+including the pre-fix flat-output loss. No corpus tolerance is changed.
+
 ## MAXORD order-cap regression (#983)
 
 [maxord-983](reference/maxord-983/README.md) reruns unchanged corpus-k k-13
@@ -149,6 +159,28 @@ the same pinned ECL-2.0 `b4check.c:797-806` source recorded above.
   unchanged, retains every failure and does not refresh the aggregate ledger.
 - LEVEL=260 is EKV 2.6 in this upstream suite. spice-ts/ngspice MOS1 fallback
   results are losses against EKV, not EKV parity. No simulator superiority claim.
+
+## Xyce bare BJT assignment syntax (#990)
+
+The Xyce-only reference adapter now rewrites bare numeric `name value` pairs
+on NPN/PNP `.model` cards to explicit assignments, with ngspice BJT aliases
+canonicalised (for example `va 50` becomes `VAF=50`). Values and numeric suffixes
+are retained, not evaluated or tuned. Explicit assignments, non-BJT models,
+and ngspice-47 headline inputs remain unchanged. Bare expression/symbol values
+are reported as unsupported rather than guessed. Every rewrite is recorded in
+the adapter's changes list. This supersedes the output-only rule above for new
+Xyce BJT runs, not for the preserved historical #948 receipts.
+
+`benchmarks/reference/investigations/990/` contains a separate RCA3040 AC
+before/after reference receipt and runner. The source is the existing licensed
+classic RCA3040 fixture (same source/licence as the classic corpus entry below).
+No new upstream deck or model is imported. Project-authored runner/test/report
+code is MIT; the generated Xyce deck retains the original fixture's licence.
+The historical #948 decks, outputs, losses and source hashes remain unchanged;
+their tests pin the historical adapter hash instead of asserting it is today's
+adapter. See the [reference report](reference/investigations/990/README.md) for
+commands, original input hashes and the remaining ngspice/Xyce model residual.
+No aggregate refresh, solver tolerance change, perfect-parity or speed claim.
 
 ## corpus-j partial novel source survey (#940)
 
