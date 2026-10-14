@@ -12,6 +12,22 @@ from corpus-l commit `66d67caff2f10e4d6a36d2e59898cc52d661b98d`, whose
 Commands, source links and before/after evidence are in
 [issue-1057](results/issue-1057/README.md). No corpus tolerances or outcomes change.
 
+## MOS3 transient diagnosis (#1059)
+
+[issue-1059](results/issue-1059/report.md) reruns unchanged corpus-l MOS3
+gm17, gm19, gm2, mike2 and contrast gm1/gm3/todd3 from Xyce_Regression
+`7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2`, `Netlists/CircuitSim90/MOS3/`.
+Source URL is https://github.com/Xyce/Xyce_Regression/tree/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS3.
+Original bytes come from corpus-l PR #1050 commit
+`66d67caff2f10e4d6a36d2e59898cc52d661b98d`. Licence is GPL-3.0-or-later;
+upstream README grant and full GPL text are retained under
+`results/issue-1059/licenses/xyce/`. The two reduced gm2 decks are derived
+from those model cards and retain GPL-3.0-or-later. Diagnostic scripts are
+original project work. Every paired run uses identical input bytes. Separate
+OP/fine-step/control variants are labelled, not used to change corpus scores.
+No fixture, harness, tolerance or aggregate is changed; losses remain losses.
+
+
 ## #1049 weak-node OP root cause
 
 The one-source `results/issue-1049/shunt-control.cir` and generic two-diode

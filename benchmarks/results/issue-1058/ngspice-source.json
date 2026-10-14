@@ -1,0 +1,32 @@
+{
+  "url": "https://downloads.sourceforge.net/project/ngspice/ng-spice-rework/47/ngspice-47.tar.gz",
+  "archiveSha256": "894e649651f1838a14095e5a5439e7d3aa63e87ede14d283173fda4fcdef675f",
+  "checksumBasis": "Homebrew ngspice stable-47 formula (brew info ngspice --json=v2)",
+  "files": [
+    {
+      "path": "ngspice-47/src/spicelib/devices/mos6/mos6init.c",
+      "sha256": "4f854e144e56320e2131466c2f41fffdad3dbdb61192bf171043fea8984c6c4f",
+      "evidence": [
+        {
+          "line": 43,
+          "text": ".DEVacLoad = NULL,"
+        }
+      ]
+    },
+    {
+      "path": "ngspice-47/src/spicelib/analysis/acan.c",
+      "sha256": "6e7390eb5b1b18a0be66c07711834b25c5662a70d9bf94909d7f1d48e97f303d",
+      "evidence": [
+        {
+          "line": 430,
+          "text": "SMPcClear(ckt->CKTmatrix);"
+        },
+        {
+          "line": 433,
+          "text": "if (DEVices[i] && DEVices[i]->DEVacLoad && ckt->CKThead[i]) {"
+        }
+      ]
+    }
+  ],
+  "conclusion": "AC clears the matrix and invokes only non-null DEVacLoad callbacks. MOS6 has none, so its entire AC stamp is omitted."
+}

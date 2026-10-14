@@ -1,0 +1,25 @@
+Reduced gm2 inverter, GPL-3.0-or-later Xyce-derived
+.model nn4a nmos level=3
++ vto=9.25e-01  uo=6.34e+02  kappa=2.00e-02
++ eta=1.45e+00  theta=6.96e-02  vmax=3.66e+05
++ delta=7.23e+00  nsub=3.43e+16  tox=4.50e-08
++ tpg=1         xj=6.00e-07  js=1.000e-07
++ cj=4.000e-04     pb=0.920e-00
++ rs=4.750e+00     rd=4.750e+00    
+
+.model pn4a pmos    level=3
++ vto=-1.26e+00  uo=1.68e+02  kappa=2.00e-02
++ eta=2.02e+00  theta=7.77e-02  vmax=7.95e+05
++ delta=7.03e-01  nsub=2.39e+15  tox=4.50e-08
++ tpg=-1         xj=6.00e-07  js=1.000e-07
++ cj=1.300e-04     pb=0.900e-00
++ rs=6.920e+00     rd=6.920e+00
+
+
+vdd 1 0 10
+vp 2 0 pulse(0 10 10n 1n 1n 30n 100n)
+mp1 3 2 1 1 pn4a w=56u l=3u as=504p ad=504p
+mn1 3 2 0 0 nn4a w=23u l=3u as=207p ad=207p
+c3 3 0 .084p
+.tran 1n 200n
+.end

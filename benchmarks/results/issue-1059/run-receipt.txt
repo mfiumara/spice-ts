@@ -1,0 +1,571 @@
+gm17 OP [
+  {
+    signal: 'v(7)',
+    peak: 1.999976986689034,
+    worst: 0.0000025620322767807323,
+    worstTime: 0,
+    first: null
+  },
+  {
+    signal: 'v(x23.4)',
+    peak: 2.593566427918718,
+    worst: 6.13652788820922e-7,
+    worstTime: 0,
+    first: null
+  },
+  {
+    signal: 'v(x15.4)',
+    peak: 2.593566424826852,
+    worst: 6.128679244843112e-7,
+    worstTime: 0,
+    first: null
+  }
+] default [
+  {
+    signal: 'i(vdi)',
+    peak: 1e-10,
+    worst: 0.07367900254433163,
+    worstTime: 1.6000000000000003e-12,
+    first: {
+      time: 1.6000000000000003e-12,
+      actual: -5.551115123125783e-17,
+      reference: -7.367955765584395e-12,
+      normalized: 0.07367900254433163
+    }
+  },
+  {
+    signal: 'i(vwr)',
+    peak: 1e-10,
+    worst: 0.055980963167251284,
+    worstTime: 1.6000000000000003e-12,
+    first: {
+      time: 1.6000000000000003e-12,
+      actual: 2.220446049250313e-16,
+      reference: -5.597874272120203e-12,
+      normalized: 0.055980963167251284
+    }
+  }
+] fine [
+  {
+    signal: 'i(vdi)',
+    peak: 1e-10,
+    worst: 0.07807116078044488,
+    worstTime: 1.2500000000000001e-12,
+    first: {
+      time: 1.2500000000000001e-12,
+      actual: 5.551115123125783e-17,
+      reference: -7.807060566893257e-12,
+      normalized: 0.07807116078044488
+    }
+  },
+  {
+    signal: 'i(vwr)',
+    peak: 1e-10,
+    worst: 0.06148134937295432,
+    worstTime: 1.2500000000000001e-12,
+    first: {
+      time: 1.2500000000000001e-12,
+      actual: 2.7755575615628914e-17,
+      reference: -6.148107181719816e-12,
+      normalized: 0.06148134937295432
+    }
+  }
+]
+gm19 OP [
+  {
+    signal: 'i(vix11)',
+    peak: 1e-10,
+    worst: 0.00010221728355974857,
+    worstTime: 0,
+    first: null
+  },
+  {
+    signal: 'i(vix6)',
+    peak: 1e-10,
+    worst: 0.00007827032108128073,
+    worstTime: 0,
+    first: null
+  },
+  {
+    signal: 'i(vix16)',
+    peak: 1.299985776926423e-10,
+    worst: 0.000026396173797807867,
+    worstTime: 0,
+    first: null
+  }
+] default [
+  {
+    signal: 'i(vin)',
+    peak: 0.00005016706884296918,
+    worst: 0.17164594259599314,
+    worstTime: 6.646947009877448e-8,
+    first: {
+      time: 2.9181658418938905e-8,
+      actual: -0.000046235144101118564,
+      reference: -0.000045471840926377624,
+      normalized: 0.015215223698442483
+    }
+  },
+  {
+    signal: 'i(vix3)',
+    peak: 0.006435752056607544,
+    worst: 0.14641100756537498,
+    worstTime: 5.801041174030749e-7,
+    first: {
+      time: 3.44061721337746e-8,
+      actual: 0.005733379784069292,
+      reference: 0.005636155818562882,
+      normalized: 0.01510685381463559
+    }
+  }
+] fine [
+  {
+    signal: 'i(vin)',
+    peak: 0.00004496887453488934,
+    worst: 0.00047649687396585934,
+    worstTime: 1.9740704399658202e-8,
+    first: null
+  },
+  {
+    signal: 'i(vix3)',
+    peak: 0.006349624306359838,
+    worst: 0.00016987822723324474,
+    worstTime: 4.89041549686778e-7,
+    first: null
+  }
+]
+gm2 OP [
+  {
+    signal: 'i(vdd)',
+    peak: 1e-10,
+    worst: 0.000013322676295469566,
+    worstTime: 0,
+    first: null
+  },
+  {
+    signal: 'v(3)',
+    peak: 9.999999995950116,
+    worst: 2.3092638921555507e-15,
+    worstTime: 0,
+    first: null
+  },
+  {
+    signal: 'v(4)',
+    peak: 0.0001,
+    worst: 9.347140921849213e-19,
+    worstTime: 0,
+    first: null
+  }
+] default [
+  {
+    signal: 'i(vdd)',
+    peak: 0.009829353583058099,
+    worst: 0.12871411342972366,
+    worstTime: 1.1087791199536985e-7,
+    first: {
+      time: 4.2659757363983026e-8,
+      actual: -0.0016282418538500142,
+      reference: -0.0017614861781837287,
+      normalized: 0.013555756561995563
+    }
+  },
+  {
+    signal: 'v(4)',
+    peak: 10.20399252881288,
+    worst: 0.06257103009466006,
+    worstTime: 1.1238439379499887e-7,
+    first: {
+      time: 4.241163648308953e-8,
+      actual: 4.406642601093587,
+      reference: 4.53972604797753,
+      normalized: 0.013042291682217256
+    }
+  }
+] fine [
+  {
+    signal: 'i(vp)',
+    peak: 0.009669884998284889,
+    worst: 0.00016742622793022827,
+    worstTime: 1.1000058875360281e-7,
+    first: null
+  },
+  {
+    signal: 'v(4)',
+    peak: 10.22442538302796,
+    worst: 0.00008001295327942715,
+    worstTime: 1.1242500000000011e-7,
+    first: null
+  }
+]
+mike2 OP [
+  {
+    signal: 'i(vdd)',
+    peak: 4.20060396163506e-7,
+    worst: 4.776704888828602e-8,
+    worstTime: 0,
+    first: null
+  },
+  {
+    signal: 'v(14)',
+    peak: 5.499999620878957,
+    worst: 4.037174913287472e-15,
+    worstTime: 0,
+    first: null
+  },
+  {
+    signal: 'v(100)',
+    peak: 0.0001,
+    worst: 3.6676526616111205e-15,
+    worstTime: 0,
+    first: null
+  }
+] default [
+  {
+    signal: 'i(vtest1)',
+    peak: 0.009182984438535723,
+    worst: 0.02045417691011936,
+    worstTime: 1.3888431529430843e-8,
+    first: {
+      time: 1.3688431529430841e-8,
+      actual: 0.009203787469099145,
+      reference: 0.009106665342629622,
+      normalized: 0.010576313955401718
+    }
+  },
+  {
+    signal: 'i(vpulse)',
+    peak: 0.002315289623552924,
+    worst: 0.0121811819466426,
+    worstTime: 1.3008196633303864e-8,
+    first: {
+      time: 1.3008196633303864e-8,
+      actual: 0.0004015915232594078,
+      reference: 0.0004297944874230796,
+      normalized: 0.0121811819466426
+    }
+  }
+] fine [
+  {
+    signal: 'i(vtest1)',
+    peak: 0.009178355149178195,
+    worst: 0.0002713669185805272,
+    worstTime: 1.3841249999999843e-8,
+    first: null
+  },
+  {
+    signal: 'i(vtest3)',
+    peak: 0.07508839903467798,
+    worst: 0.00025761260702742946,
+    worstTime: 1.5131249999999598e-8,
+    first: null
+  }
+]
+gm1 OP [
+  {
+    signal: 'v(x10.73)',
+    peak: 0.0001,
+    worst: 4.931445118197284e-18,
+    worstTime: 0,
+    first: null
+  },
+  {
+    signal: 'v(19)',
+    peak: 0.0001,
+    worst: 4.9314451181972406e-18,
+    worstTime: 0,
+    first: null
+  },
+  {
+    signal: 'v(7)',
+    peak: 0.0001,
+    worst: 4.931445118197222e-18,
+    worstTime: 0,
+    first: null
+  }
+] default [
+  {
+    signal: 'i(vrd1)',
+    peak: 0.001065901609735386,
+    worst: 0.01234245827303613,
+    worstTime: 9.101834735421731e-8,
+    first: {
+      time: 9.101834735421731e-8,
+      actual: -0.000008397215137901329,
+      reference: -0.000021553061279222373,
+      normalized: 0.01234245827303613
+    }
+  },
+  {
+    signal: 'i(vrd2)',
+    peak: 0.001065901609735386,
+    worst: 0.01234245827300565,
+    worstTime: 9.101834735421731e-8,
+    first: {
+      time: 9.101834735421731e-8,
+      actual: -0.000008397215137911523,
+      reference: -0.00002155306127920008,
+      normalized: 0.01234245827300565
+    }
+  }
+] fine [
+  {
+    signal: 'i(vwr)',
+    peak: 0.001043186144674746,
+    worst: 0.00133929234592778,
+    worstTime: 3.100200079562079e-8,
+    first: null
+  },
+  {
+    signal: 'i(vrd2)',
+    peak: 0.001061515476162105,
+    worst: 0.0013185370450009472,
+    worstTime: 3.100200079562079e-8,
+    first: null
+  }
+]
+gm3 OP [
+  {
+    signal: 'i(vcc)',
+    peak: 0.0006348857260813552,
+    worst: 1.979580114523078e-12,
+    worstTime: 0,
+    first: null
+  },
+  {
+    signal: 'v(x2.7)',
+    peak: 0.01130727662964833,
+    worst: 1.8583347832324667e-12,
+    worstTime: 0,
+    first: null
+  },
+  {
+    signal: 'v(x2.8)',
+    peak: 0.01621819420307735,
+    worst: 1.85022119674415e-12,
+    worstTime: 0,
+    first: null
+  }
+] default [
+  {
+    signal: 'i(vin)',
+    peak: 0.004562229685063052,
+    worst: 0.0006080710095511963,
+    worstTime: 2.901354803144511e-8,
+    first: null
+  },
+  {
+    signal: 'i(vcc)',
+    peak: 0.005305759139634153,
+    worst: 0.0002819750327449594,
+    worstTime: 2.901354803144511e-8,
+    first: null
+  }
+] fine [
+  {
+    signal: 'i(vin)',
+    peak: 0.004509268135569999,
+    worst: 0.0006314687342471734,
+    worstTime: 5.0025000000000005e-9,
+    first: null
+  },
+  {
+    signal: 'i(vcc)',
+    peak: 0.005250261027272725,
+    worst: 0.00004276344277461492,
+    worstTime: 6.912500000000017e-9,
+    first: null
+  }
+]
+todd3 OP [
+  {
+    signal: 'v(6)',
+    peak: 0.9499155549283161,
+    worst: 0.000008993679388796265,
+    worstTime: 0,
+    first: null
+  },
+  {
+    signal: 'i(vdd)',
+    peak: 9.87931914189734e-9,
+    worst: 0.0000030905821507466718,
+    worstTime: 0,
+    first: null
+  },
+  {
+    signal: 'v(3)',
+    peak: 0.0001,
+    worst: 5.755621689294095e-7,
+    worstTime: 0,
+    first: null
+  }
+] default [
+  {
+    signal: 'i(vnd)',
+    peak: 1e-10,
+    worst: 0.002379194450977695,
+    worstTime: 2.0000000000000004e-12,
+    first: null
+  },
+  {
+    signal: 'i(vc)',
+    peak: 0.000003902132693839404,
+    worst: 0.0004989797766810451,
+    worstTime: 1.079559253590768e-9,
+    first: null
+  }
+] fine [
+  {
+    signal: 'i(vnd)',
+    peak: 1e-10,
+    worst: 0.0033258051581541775,
+    worstTime: 1.2500000000000001e-12,
+    first: null
+  },
+  {
+    signal: 'i(vc)',
+    peak: 0.000004016400452586016,
+    worst: 0.000945303126980697,
+    worstTime: 1.0442885511295915e-9,
+    first: null
+  }
+]
+inverter [
+  {
+    signal: 'i(vp)',
+    peak: 0.002599751062713873,
+    worst: 0.004092953035492251,
+    worstTime: 1.4202129806522637e-7,
+    first: null
+  },
+  {
+    signal: 'i(vdd)',
+    peak: 0.003832045486031362,
+    worst: 0.0020774923898667533,
+    worstTime: 1.4202129806522637e-7,
+    first: null
+  },
+  {
+    signal: 'v(3)',
+    peak: 10.28588006007774,
+    worst: 0.0009931170872226377,
+    worstTime: 1.4181535713293581e-7,
+    first: null
+  }
+] [
+  {
+    signal: 'i(vp)',
+    peak: 0.002370450285915016,
+    worst: 0.0008225917758957457,
+    worstTime: 1.42e-7,
+    first: null
+  }
+]
+pair [
+  {
+    signal: 'i(vp)',
+    peak: 0.002281858882292133,
+    worst: 0.058076131190992926,
+    worstTime: 1.1095391571190365e-7,
+    first: {
+      time: 4.2010800772761916e-8,
+      actual: 0.0005330899254077301,
+      reference: 0.0005627080129191444,
+      normalized: 0.012979806832604312
+    }
+  },
+  {
+    signal: 'i(vdd)',
+    peak: 0.004769040657204058,
+    worst: 0.03603247201461949,
+    worstTime: 1.1095391571190365e-7,
+    first: {
+      time: 1.1095391571190365e-7,
+      actual: -0.002571285408694183,
+      reference: -0.0023994450846768953,
+      normalized: 0.03603247201461949
+    }
+  },
+  {
+    signal: 'v(4)',
+    peak: 10.21171085564362,
+    worst: 0.006996829528875296,
+    worstTime: 4.2498898578268165e-8,
+    first: null
+  }
+] [
+  {
+    signal: 'i(vp)',
+    peak: 0.002150640791951199,
+    worst: 0.00021783848401732439,
+    worstTime: 1.4222500000000002e-7,
+    first: null
+  }
+]
+bypass-off [
+  {
+    signal: 'i(vdi)',
+    peak: 1e-10,
+    worst: 0.07367900254433163,
+    worstTime: 1.6000000000000003e-12,
+    first: {
+      time: 1.6000000000000003e-12,
+      actual: -5.551115123125783e-17,
+      reference: -7.367955765584395e-12,
+      normalized: 0.07367900254433163
+    }
+  },
+  {
+    signal: 'i(vwr)',
+    peak: 1e-10,
+    worst: 0.055980963167251284,
+    worstTime: 1.6000000000000003e-12,
+    first: {
+      time: 1.6000000000000003e-12,
+      actual: 2.220446049250313e-16,
+      reference: -5.597874272120203e-12,
+      normalized: 0.055980963167251284
+    }
+  },
+  {
+    signal: 'i(vad)',
+    peak: 0.0008293001770481647,
+    worst: 0.0001054211671383927,
+    worstTime: 5.848933068438873e-9,
+    first: null
+  }
+]
+moderate [
+  {
+    signal: 'i(vdi)',
+    peak: 1e-10,
+    worst: 0.07367861825639425,
+    worstTime: 1.6000000000000003e-12,
+    first: {
+      time: 1.6000000000000003e-12,
+      actual: -8.326672684688674e-17,
+      reference: -7.367945092366272e-12,
+      normalized: 0.07367861825639425
+    }
+  },
+  {
+    signal: 'i(vwr)',
+    peak: 1e-10,
+    worst: 0.0559799026090672,
+    worstTime: 1.6000000000000003e-12,
+    first: {
+      time: 1.6000000000000003e-12,
+      actual: 1.6653345369377348e-16,
+      reference: -5.597823727453026e-12,
+      normalized: 0.0559799026090672
+    }
+  },
+  {
+    signal: 'i(vad)',
+    peak: 0.0008252414226200739,
+    worst: 0.00004466466160273416,
+    worstTime: 5.7799613881213146e-9,
+    first: null
+  }
+]
+tight FAILED (recorded)
+tight-bypass-off FAILED (recorded)
