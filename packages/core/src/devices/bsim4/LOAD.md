@@ -120,16 +120,16 @@ unsupported-parameter errors; keep that raw evidence rather than relabel it.
 The receipt's sourceHead is the upstream HEAD on which this uncommitted stage-3
 working tree ran, not a claim of clean-commit execution.
 
-A separate targeted run of the two legacy regression files passes 20 tests and
-fails four stale assertions. `parser/bsim-model-version.test.ts:69-74` expects
-BSIM4 to be unimplemented even for VERSION=4.8.2. The three failures in
-`devices/mosfet-body-effect.test.ts:118-140` expect the old supported-level list
-and unsupported-level errors for 14/54 with MOS1-only KP/VTO parameters. The
-correct new behavior is supported static 4.8 routing and typed rejection of
-unported versions/parameters. The card forbids edits in parser/ and permits
-only new bsim4* files outside the registration/provenance exceptions. These
-files remain untouched pending supervisor authorization for expectation-only
-migration. Do not treat this branch as full-suite-green or release-ready.
+A separate RED run of the two legacy regression files passed 20 tests and
+failed four stale assertions. The supervisor subsequently authorized narrow
+expectation-only migration in `parser/bsim-model-version.test.ts` and
+`devices/mosfet-body-effect.test.ts`. These now assert registered static
+LEVEL=14/54, dotted VERSION=4.8.2 operating points, typed rejection of unported
+4.5.0 revisions and the updated supported-level list. All other assertions
+remain intact. No parser implementation changed. Main was merged before this
+migration, retaining both sides of the additive SOURCES.md conflict. This is
+not a claim of full-suite-green or release readiness; exact-head CI and the
+precreated independent review remain the full gate.
 
 ## Provenance
 
