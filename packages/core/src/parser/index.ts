@@ -34,6 +34,7 @@ import {
   CONTROL_ANALYSIS_COMMANDS, commandName, parseControlScript, type ControlScript, type ControlStatement,
 } from './control/script.js';
 import { UnsupportedControlCommandError } from './control/errors.js';
+import { validatePreSet } from './control/pre-set.js';
 import { parseBehavioralSourceCard } from './behavioral-expression.js';
 import { parseZInstance } from './z-device-parser.js';
 import { locateSubcircuitCall, parseSubcircuitCallParams, parseSubcircuitHeader, type SubcircuitHeader } from './subcircuit-syntax.js';
@@ -129,6 +130,10 @@ function parseNetlist(
   // ngspice control-language lines are not netlist cards; read them from the raw text.
   const extracted = extractControlBlocks(translateMicroSign(netlist, firstLineIsTitle), firstLineIsTitle);
   const controlBlocks = [...extractedBlocks, ...extracted.blocks];
+  // Validate hoisted pre_set loading effects before setting up the circuit.
+  for (const block of controlBlocks) {
+    for (const line of block.lines) if (commandName(line.text) === 'pre_set') validatePreSet(line);
+  }
   const controlStartLine = controlBlocks[0]?.startLine;
   const lines = tokenizeNetlist(extracted.netlist, { firstLineIsTitle }).map(withGndAsGround);
   const circuit = new Circuit();

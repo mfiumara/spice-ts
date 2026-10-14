@@ -7,6 +7,8 @@ import { tokenizeNetlist } from '../tokenizer.js';
 import { ControlScriptError, ControlScriptExitError, UnsupportedControlCommandError } from './errors.js';
 import type { ControlScript, ControlStatement } from './script.js';
 import type { ControlSourceLine } from './source.js';
+import { setArguments, splitWords, unquote } from './set-arguments.js';
+import { validatePreSet } from './pre-set.js';
 import {
   ExpressionError, UnsupportedExpressionFeature, evaluateVectorExpression, parseControlNumber, parseVectorExpression,
   type ExpressionEnvironment, type ExpressionNode,
@@ -164,6 +166,12 @@ class ControlInterpreter {
   constructor(private readonly host: ControlHost) {}
 
   run(script: ControlScript): ControlScriptOutcome {
+    for (const line of script.preSet ?? []) {
+      const expanded = { ...line, text: this.substitute(line.text, line) };
+      // Substitution must not smuggle a loading option through the allowlist.
+      validatePreSet(expanded);
+      this.set(expanded.text.slice('pre_set'.length).trim(), line, true);
+    }
     for (const [name, value] of Object.entries(script.constants ?? {})) {
       this.plots[0].vectors.set(name, scalar(value, name));
     }
@@ -377,15 +385,10 @@ class ControlInterpreter {
     return this.current;
   }
 
-  private set(rest: string, line: ControlSourceLine): void {
-    const normalized = rest.replace(/\s*=\s*/g, '=');
-    for (const word of splitWords(normalized)) {
-      const separator = word.indexOf('=');
-      const name = (separator < 0 ? word : word.slice(0, separator)).toLowerCase();
-      const rawValue = separator < 0 ? undefined : word.slice(separator + 1);
-      if (name === '') throw new ControlScriptError(`invalid set argument '${word}'`, line.lineNumber, line.text);
+  private set(rest: string, line: ControlSourceLine, preSet = false): void {
+    for (const { name, rawValue } of setArguments(rest, line)) {
       const reason = RESULT_AFFECTING_VARIABLES[name];
-      if (reason !== undefined) {
+      if (reason !== undefined && !(preSet && name === 'strict_errorhandling')) {
         throw new UnsupportedControlCommandError('set', `variable '${name}': ${reason}`, line.lineNumber, line.text);
       }
       if (OPTION_VARIABLES.has(name)) {
@@ -1127,7 +1130,6 @@ class ControlInterpreter {
 // ---------------------------------------------------------------------------
 // Word helpers
 
-/** Split on whitespace outside double quotes and parentheses. */
 /**
  * ngspice-47 plot_prefix (frontend/vectors.c): `pre` names `plot` when it is a
  * prefix of it, except that a prefix ending in a digit must match the whole
@@ -1136,30 +1138,6 @@ class ControlInterpreter {
 function plotPrefix(pre: string, plot: string): boolean {
   if (!plot.startsWith(pre)) return false;
   return pre.length === plot.length || !/[0-9]$/.test(pre);
-}
-
-function splitWords(text: string): string[] {
-  const words: string[] = [];
-  let word = '';
-  let quoted = false;
-  let depth = 0;
-  for (const character of text) {
-    if (character === '"') quoted = !quoted;
-    if (!quoted && character === '(') depth++;
-    if (!quoted && character === ')') depth = Math.max(0, depth - 1);
-    if (!quoted && depth === 0 && /\s/.test(character)) {
-      if (word !== '') words.push(word);
-      word = '';
-      continue;
-    }
-    word += character;
-  }
-  if (word !== '') words.push(word);
-  return words;
-}
-
-function unquote(word: string): string {
-  return word.replace(/"/g, '');
 }
 
 function commandWord(text: string): string {
