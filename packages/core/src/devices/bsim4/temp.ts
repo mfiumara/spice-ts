@@ -70,6 +70,14 @@ export function preprocessBsim4(
   positive('operating temperature Kelvin', temperatureK);
   const model = { ...setup.values } as Bsim4TemperatureModel;
   const here = { ...instanceSetup.values } as Bsim4StaticInstance;
+  // b4check.c:797-806 corrects both resolved coefficients when PARAMCHK=1.
+  // Reject before any temperature law: clamping here would change native
+  // b4temp/b4check ordering. NJD inheritance is already resolved by setup.
+  if (model.paramchk === 1) {
+    for (const key of ['njs', 'njd'] as const) {
+      if (model[key] < 0.1) unsupported(key, 'PARAMCHK correction domain is outside the static subset');
+    }
+  }
   // b4temp.c:2227-2261. Default zero density disables TAT; never discard enabled TAT.
   for (const key of ['jtss', 'jtsd', 'jtssws', 'jtsswd', 'jtsswgs', 'jtsswgd'] as const) {
     if (model[key] !== 0) unsupported(key, 'trap-assisted junction leakage temperature/current law is not ported');

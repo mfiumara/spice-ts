@@ -71,13 +71,14 @@ function checkDc(p: Bsim4Preprocessed, given: ReadonlySet<Bsim4ModelParameter>):
     || i.m <= 0 || i.nf < 1 || i.l + m.xl <= m.xgl || i.ngcon < 1) {
     throw new InvalidCircuitError('BSIM4 invalid DC b4check domain');
   }
-  // b4check.c:517-558 and 578-596. PARAMCHK=0 deliberately skips corrections.
+  // b4check.c:517-558,578-596,797-806. PARAMCHK=0 skips corrections.
   if (m.paramchk === 1) {
     for (const [key, bad] of [
       ['a2', s.a2 < 0.01 || s.a2 > 1], ['prwg', s.prwg < 0], ['rdsw', s.rdsw < 0],
       ['rds0', s.rds0 < 0], ['rdswmin', s.rdswmin < 0],
       ['xn', given.has('vtl') && s.vtl > 0 && s.xn < 3],
       ['lc', given.has('vtl') && s.vtl > 0 && m.lc < 0],
+      ['njs', m.njs < 0.1], ['njd', m.njd < 0.1],
     ] as const) {
       if (bad) unsupported(key, 'PARAMCHK correction domain is outside the static subset');
     }

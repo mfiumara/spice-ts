@@ -56,6 +56,16 @@ remain owner-gated and unchanged. Targeted oracle tests are not corpus-wide
 parity or speed evidence. This extends the existing single provenance row;
 it does not relabel these files BSD-3-Clause or add a duplicate source entry.
 
+PR999 PARAMCHK correction-domain regression probes in
+`benchmarks/bsim4-validation-3/paramchk-native.py` are original MIT project-authored
+netlists, reproducing the review at
+https://github.com/mfiumara/spice-ts/pull/999#pullrequestreview-5512569635.
+No new third-party source is copied. Both engines receive identical recorded
+deck bytes. Scalar references and before/after errors retain the unsupported
+correction domains and the supported-domain global-gmin current residual;
+these probes are not corpus expansion or speed evidence. Native semantics are
+the same pinned ECL-2.0 `b4check.c:797-806` source recorded above.
+
 ## Title-continuation regression probes (#957 / PR #976)
 
 - Source: original project-authored minimal netlists in `benchmarks/title-directive/continuations.ts`, MIT (repository `LICENSE`), reproducing https://github.com/mfiumara/spice-ts/pull/976#pullrequestreview-5511583515. No third-party fixture or source code is redistributed.
