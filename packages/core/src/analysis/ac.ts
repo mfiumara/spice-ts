@@ -83,7 +83,7 @@ export function createLinearizedFrequencySystem(
   mode: 'standard' | 'distortion' = 'standard',
 ): LinearizedFrequencySystem {
   const { devices, nodeCount, branchCount, nodeNames, branchNames } = compiled;
-  const assembler = new MNAAssembler(nodeCount, branchCount);
+  const assembler = new MNAAssembler(nodeCount, branchCount, { deviceGmin: options.deviceGmin });
   assembler.solution.set(dcSolution);
   const ctx = assembler.getStampContext();
   for (const device of devices) {
@@ -108,7 +108,7 @@ export function createLinearizedFrequencySystem(
   const dispersive = mode === 'standard' ? devices.filter(isFrequencyDependent) : [];
   const conductanceAt = (omega: number): CscMatrix => {
     if (dispersive.length === 0) return gCsc;
-    const delta = new MNAAssembler(nodeCount, branchCount);
+    const delta = new MNAAssembler(nodeCount, branchCount, { deviceGmin: options.deviceGmin });
     delta.solution.set(dcSolution);
     const deltaCtx = delta.getStampContext();
     for (const device of dispersive) device.stampFrequencyConductance(deltaCtx, omega);

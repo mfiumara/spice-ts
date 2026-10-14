@@ -1,5 +1,15 @@
 # Benchmark sources
 
+## Explicit junction GMIN regression (#1068)
+
+The diode/BJT/MOS1/JFET probes in [results/issue-1068](results/issue-1068/README.md)
+are original spice-ts project work under the repository MIT licence, not vendor
+models. Source context: https://github.com/mfiumara/spice-ts/issues/1068.
+Both simulators receive identical bytes. The scoped comparison also reruns the
+unchanged CC0 convergence fixtures and existing GPL-3.0-or-later Xyce corpus-g /
+xyce fixtures under their provenance below. It retains native failures and
+per-signal regressions. No benchmark input, tolerance, outcome or pin is edited.
+
 ## #1049 weak-node OP root cause
 
 The one-source `results/issue-1049/shunt-control.cir` and generic two-diode

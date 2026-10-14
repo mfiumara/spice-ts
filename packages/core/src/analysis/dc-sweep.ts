@@ -57,6 +57,7 @@ export function solveDCSweep(
   for (const name of branchNames) currentArrays.set(name, new Float64Array(numPoints));
 
   const assembler = new MNAAssembler(nodeCount, branchCount, {
+    deviceGmin: options.deviceGmin,
     variables: createMatrixVariableIdentities(nodeNames, branchNames),
   });
   // ngspice dctrcurv.c solves the first point in MODEINITJCT.

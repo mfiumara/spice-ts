@@ -1,4 +1,5 @@
 import { InvalidCircuitError } from './errors.js';
+import { DEVICE_GMIN } from './devices/device.js';
 
 /** Node identifier — string name from netlist (e.g., '1', 'out', '0' for ground) */
 export type NodeName = string;
@@ -241,8 +242,13 @@ export interface SimulationOptions {
   trtol?: number;
   /** Charge tolerance (C) of the device-charge truncation error (ngspice CHGTOL). Default: 1e-14 */
   chgtol?: number;
-  /** Minimum conductance added to all node diagonals for gmin stepping. Default: 0 (disabled) */
+  /**
+   * Diagonal node-to-ground (gshunt-like) conductance. Default: 0 (disabled).
+   * Netlist `.options gmin` sets deviceGmin instead.
+   */
   gmin?: number;
+  /** Junction conductance (ngspice CKTgmin / `.options gmin`). Default: 1e-12 S. */
+  deviceGmin?: number;
   /**
    * ngspice `.options rshunt=R` (ohms, above 1e-30): a noiseless resistor R
    * from every node, device-internal nodes included, to ground in every
@@ -321,6 +327,7 @@ export interface ResolvedOptions {
   trtol: number;
   chgtol: number;
   gmin: number;
+  deviceGmin: number;
 }
 
 export const DEFAULT_OPTIONS: ResolvedOptions = {
@@ -336,6 +343,7 @@ export const DEFAULT_OPTIONS: ResolvedOptions = {
   trtol: 7,
   chgtol: 1e-14,
   gmin: 0,
+  deviceGmin: DEVICE_GMIN,
 };
 
 /** Netlist `.options` overlaid by caller options; an explicit `undefined` keeps the netlist value. */
@@ -375,6 +383,7 @@ export function resolveOptions(opts?: SimulationOptions, stopTime?: number): Res
     trtol: opts?.trtol ?? DEFAULT_OPTIONS.trtol,
     chgtol: opts?.chgtol ?? DEFAULT_OPTIONS.chgtol,
     gmin: opts?.gmin ?? DEFAULT_OPTIONS.gmin,
+    deviceGmin: opts?.deviceGmin ?? DEFAULT_OPTIONS.deviceGmin,
   };
 }
 

@@ -11,7 +11,7 @@ import { parseTitleless as parse } from './index.js';
  * ignore every other word, including the package keyword.
  */
 const CORPUS_G_PACKAGE_LINES: ReadonlyArray<readonly [string, string, object, number?]> = [
-  ['BJT_ANALYTIC/ramp_test1.cir', '.options device gmin=0 voltlim=0', { gmin: 0 }],
+  ['BJT_ANALYTIC/ramp_test1.cir', '.options device gmin=0 voltlim=0', { deviceGmin: 0 }],
   [
     'BJT_OFF/bjt_off.cir',
     '.options nonlin maxstep=200 reltol=1.0e-2 abstol=1.0e-6 rhstol=1.0e-4',

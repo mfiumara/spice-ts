@@ -1947,7 +1947,7 @@ export class Circuit {
       ['abstol', 'abstol', String],
       ['vntol', 'vntol', String],
       ['reltol', 'reltol', String],
-      ['gmin', 'gmin', String],
+      ['deviceGmin', 'gmin', String],
       ['maxIterations', 'itl1', String],
       ['maxTransientIterations', 'itl4', String],
       ['integrationMethod', 'method', value => {
@@ -2374,7 +2374,7 @@ export class Circuit {
         case 'Z': {
           const model = this.requireModel('Z-card', desc);
           devices.push(createZDevice(
-            desc.name, nodeIndices, resolveZModel(model), desc.params, this._simulationOptions.gmin,
+            desc.name, nodeIndices, resolveZModel(model), desc.params, this._simulationOptions.deviceGmin,
           ));
           break;
         }
@@ -2545,7 +2545,7 @@ export class Circuit {
           const type = desc.type === 'S' ? 'SW' : 'CSW';
           const model = this.requireModel(desc.type === 'S' ? 'Switch' : 'Current switch', desc);
           const { model: switchModel, warnings } = resolveSwitchModel(
-            type, model.params, this._simulationOptions.gmin ?? DEVICE_GMIN,
+            type, model.params, this._simulationOptions.deviceGmin ?? DEVICE_GMIN,
           );
           const initiallyOn = desc.params?.ON === 1;
           if (desc.type === 'S') {

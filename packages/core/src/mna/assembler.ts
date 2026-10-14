@@ -18,6 +18,7 @@ export interface MNAAssemblerOptions {
   solverFactory?: () => SparseSolver;
   variables?: readonly MatrixVariableIdentity[];
   useDcSourceValue?: boolean;
+  deviceGmin?: number;
 }
 
 /**
@@ -112,6 +113,7 @@ export class MNAAssembler {
     public readonly numBranches: number,
     private readonly options: MNAAssemblerOptions = {},
   ) {
+    this.deviceGmin = options.deviceGmin ?? DEVICE_GMIN;
     this.systemSize = numNodes + numBranches;
     this.G = new SparseMatrix(this.systemSize);
     this.C = new SparseMatrix(this.systemSize);

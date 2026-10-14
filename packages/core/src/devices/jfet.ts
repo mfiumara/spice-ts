@@ -1,6 +1,7 @@
 import type {
   ChargeIntegration, ChargeTruncation, DeviceModel, StampContext,
 } from './device.js';
+import { DEVICE_GMIN } from './device.js';
 import { stampChargeBranch, stampChargeCurrent, TransientChargeState } from './charge-state.js';
 
 export interface JFETParams {
@@ -37,7 +38,7 @@ export const NJF_LEVEL2_PARAMETERS = new Set<keyof JFETParams>([
 // const.h CONSTboltz and CHARGE (the old 0.02585 V put a forward-biased gate
 // junction ~1% off ngspice, #717).
 const THERMAL_VOLTAGE = (27 + 273.15) * 1.38064852e-23 / 1.6021766208e-19;
-const GMIN = 1e-12;
+
 
 export function resolveNJFETParams(params: Record<string, number>): JFETParams {
   const level = params.LEVEL ?? 1;
@@ -259,8 +260,9 @@ export class JFET implements DeviceModel {
     voltage: number,
   ): void {
     const exponential = Math.exp(Math.min(voltage / THERMAL_VOLTAGE, 40));
-    const current = this.params.IS * (exponential - 1) + GMIN * voltage;
-    const conductance = this.params.IS * exponential / THERMAL_VOLTAGE + GMIN;
+    const gmin = ctx.gmin ?? DEVICE_GMIN;
+    const current = this.params.IS * (exponential - 1) + gmin * voltage;
+    const conductance = this.params.IS * exponential / THERMAL_VOLTAGE + gmin;
     const ieq = this.polarity * (current - conductance * voltage);
     stampTwoTerminal(ctx, anode, cathode, conductance, ieq);
   }

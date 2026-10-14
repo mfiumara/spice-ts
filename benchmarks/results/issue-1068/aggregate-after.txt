@@ -1,0 +1,5 @@
+aggregate --check: pid 82149; to stop only this run: kill 82149
+Error: aggregate provenance is stale: benchmarks/SOURCES.md SHA-256 pinned d6bb12d27b99cff81ac14244e2871e9d45b6144aedd39ff5340ba6cce55e27d7, actual 24ea8ac54d8d6fb7695029dd5357e3f545e79ce56df5092bf1744b64c45a0678; aggregate fixture tree (benchmarks/corpus/{ngspice,classic,xyce,corpus-d,corpus-e}) SHA-256 pinned 23aaa91cfde358550eec443e8b5aaec134d7a7f930b1810f6e7f7db2532d6307, actual 4d8eff5cf369bd4220611beb91d1396591f271c0c8dec8311167307a6c036504. If the change is intended, refresh with `pnpm exec tsx benchmarks/aggregate-report.ts`, update the pinned hashes in benchmarks/aggregate-report.ts, and commit the regenerated benchmarks/aggregate-report.json and benchmarks/AGGREGATE_PARITY.md.
+    at preflightAggregateInputs (/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/benchmarks/aggregate-report.ts:452:11)
+    at async buildAggregateReport (/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/benchmarks/aggregate-report.ts:877:27)
+    at async main (/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/benchmarks/aggregate-report.ts:1108:18)

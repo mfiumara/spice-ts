@@ -1,0 +1,52 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/packages/core
+
+ ❯ src/options-gmin-1068.test.ts (3 tests | 2 failed) 30ms
+     × matches ngspice-47 on the weak diode, without a diagonal gmin shunt 20ms
+     ✓ preserves the default junction gmin result 5ms
+     × round-trips the junction option independently of the diagonal API option 5ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/options-gmin-1068.test.ts > .options gmin is junction conductance (#1068) > matches ngspice-47 on the weak diode, without a diagonal gmin shunt
+AssertionError: expected 0.9996967499056666 to be less than 0.001
+ ❯ src/options-gmin-1068.test.ts:12:65
+     10|   it('matches ngspice-47 on the weak diode, without a diagonal gmin sh…
+     11|     const result = await simulate(deck);
+     12|     expect(relativeError(result.dc!.voltage('weak'), 2.398806)).toBeLe…
+       |                                                                 ^
+     13|     expect(relativeError(result.dc!.current('Vbias'), -2.60620e-9)).to…
+     14|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/options-gmin-1068.test.ts > .options gmin is junction conductance (#1068) > round-trips the junction option independently of the diagonal API option
+AssertionError: expected { gmin: 1e-9, rshunt: 1000000000000.5 } to match object { deviceGmin: 1e-9 }
+(2 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "deviceGmin": 1e-9,
++   "gmin": 1e-9,
++   "rshunt": 1000000000000.5,
+  }
+
+ ❯ src/options-gmin-1068.test.ts:24:39
+     22|   it('round-trips the junction option independently of the diagonal AP…
+     23|     const circuit = parse(deck);
+     24|     expect(circuit.simulationOptions).toMatchObject({ deviceGmin: 1e-9…
+       |                                       ^
+     25|     expect(circuit.simulationOptions.gmin).toBeUndefined();
+     26|     expect(parse(circuit.toNetlist()).simulationOptions).toMatchObject…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 1 passed (3)
+   Start at  14:43:21
+   Duration  1.69s (transform 1.25s, setup 0ms, import 1.48s, tests 30ms, environment 0ms)
+
+JUNIT report written to /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/packages/core/test-results.xml

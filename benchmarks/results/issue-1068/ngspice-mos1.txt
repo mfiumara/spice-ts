@@ -1,0 +1,141 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: mos1 reverse junction gmin probe
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+	Node                                  Voltage
+	----                                  -------
+	----	-------
+	b                                0.000000e+00
+	s                                0.000000e+00
+	g                                0.000000e+00
+	d                                5.000000e+00
+
+	Source	Current
+	------	-------
+
+	vd#branch                        -5.00000e-09
+	vg#branch                        0.000000e+00
+	vs#branch                        0.000000e+00
+	vb#branch                        5.000000e-09
+
+ Mos1 models (Level 1 MOSfet model with Meyer capacitance model)
+      model                  mmod
+
+       type                  nmos
+        vto                     1
+         kp                 1e-05
+      gamma                     0
+        phi                   0.6
+     lambda                     0
+         rd                     0
+         rs                     0
+        cbd                     0
+        cbs                     0
+         is                 1e-16
+         pb                   0.8
+       cgso                     0
+       cgdo                     0
+       cgbo                     0
+        rsh                     0
+         cj                     0
+         mj                   0.5
+       cjsw                     0
+       mjsw                   0.5
+         js                     0
+        tox                     0
+         ld                     0
+         u0                     0
+         fc                   0.5
+       nsub                     0
+        tpg                     0
+        nss                     0
+       tnom                    27
+         kf                     0
+         af                     1
+       nlev                     2
+     gdsnoi                     1
+
+ Mos1: Level 1 MOSfet model with Meyer capacitance model
+     device                    m1
+      model                  mmod
+         id                 5e-09
+         is                     0
+         ig                     0
+         ib                -5e-09
+        vgs                     0
+        vds                     5
+        vbs                     0
+        von                     1
+      vdsat                     0
+         rs                     0
+         rd                     0
+         gm                     0
+        gds                     0
+        gmb                     0
+        cbd                     0
+        cbs                     0
+        cgs                     0
+        cgd                     0
+        cgb                     0
+       cbd0                     0
+     cbdsw0                     0
+       cbs0                     0
+     cbssw0                     0
+
+ Vsource: Independent voltage source
+     device                    vb                    vs                    vg
+         dc                     0                     0                     0
+      acmag                     0                     0                     0
+      pulse                     -                     -                     -
+        sin                     -                     -                     -
+        exp                     -                     -                     -
+        pwl                     -                     -                     -
+       sffm                     -                     -                     -
+         am                     -                     -                     -
+    trnoise                     -                     -                     -
+   trrandom                     -                     -                     -
+    portnum                     0                     0                     0
+         z0                     0                     0                     0
+        pwr                     0                     0                     0
+       freq                     0                     0                     0
+      phase                     0                     0                     0
+          i                 5e-09                     0                     0
+          p                     0                     0                     0
+
+ Vsource: Independent voltage source
+     device                    vd
+         dc                     5
+      acmag                     0
+      pulse                     -
+        sin                     -
+        exp                     -
+        pwl                     -
+       sffm                     -
+         am                     -
+    trnoise                     -
+   trrandom                     -
+    portnum                     0
+         z0                     0
+        pwr                     0
+       freq                     0
+      phase                     0
+          i                -5e-09
+          p              -2.5e-08
+
+
+Total analysis time (seconds) = 0.000715
+
+Total elapsed time (seconds) = 0.006 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 12912.953 MB.
+Maximum ngspice program size =   10.203 MB.
+Current ngspice program size =   10.203 MB.
+

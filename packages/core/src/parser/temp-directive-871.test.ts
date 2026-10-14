@@ -90,7 +90,7 @@ describe('.temp single circuit temperature (#871)', () => {
   it('preserves options while .temp takes temperature precedence', () => {
     const circuit = parse(deck('.temp 77\n.options temp=127 reltol=1e-4 gmin=1e-12 method=gear'));
     expect(circuit.temperature).toBe(77);
-    expect(circuit.simulationOptions).toEqual({ reltol: 1e-4, gmin: 1e-12, integrationMethod: 'gear2' });
+    expect(circuit.simulationOptions).toEqual({ reltol: 1e-4, deviceGmin: 1e-12, integrationMethod: 'gear2' });
   });
 
   it('reuses existing instance temperature and resistor TC semantics', async () => {

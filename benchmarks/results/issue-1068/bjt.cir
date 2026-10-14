@@ -1,0 +1,9 @@
+BJT reverse junction gmin probe
+Vc c 0 5
+Vb b 0 0
+Ve e 0 0
+Q1 c b e 0 qmod
+.model qmod npn(is=1e-16 bf=100)
+.options gmin=1e-9
+.op
+.end

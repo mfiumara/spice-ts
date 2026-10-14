@@ -83,7 +83,7 @@ R1 in 0 1k
       abstol: 2e-12,
       vntol: 3e-6,
       reltol: 4e-3,
-      gmin: 5e-12,
+      deviceGmin: 5e-12,
       maxIterations: 11,
       maxTransientIterations: 12,
       integrationMethod: 'gear2',

@@ -760,7 +760,7 @@ function* streamAC(
   const { devices, nodeCount, branchCount, nodeNames, branchNames } = compiled;
 
   // Build linearized G and C matrices at DC operating point
-  const assembler = new MNAAssembler(nodeCount, branchCount);
+  const assembler = new MNAAssembler(nodeCount, branchCount, { deviceGmin: options.deviceGmin });
   assembler.solution.set(dcSolution);
   const ctx = assembler.getStampContext();
   for (const device of devices) device.stamp(ctx);

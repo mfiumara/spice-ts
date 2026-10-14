@@ -1,6 +1,7 @@
 import type {
   ChargeIntegration, ChargeTruncation, ConvergenceTolerances, DeviceModel, StampContext,
 } from './device.js';
+import { DEVICE_GMIN } from './device.js';
 import {
   depletionCharge, stampChargeBranch, stampChargeCurrent, TransientChargeState,
 } from './charge-state.js';
@@ -134,7 +135,7 @@ const SUPPORTED_MODEL_PARAMETERS = new Set<string>([
 // ngspice-47 bjttemp.c: vt = BJTtemp * CONSTKoverQ, with const.h CONSTboltz and
 // CHARGE (#525; the old 0.02585 V offset Vbe by ~3e-4 V). The device keeps it
 // per instance, at its temperature (#374).
-const GMIN = 1e-12;
+
 /** ngspice-47 MAX_EXP_ARG: bjtload.c caps the substrate exponent with it. */
 const MAX_EXP_ARG = 709;
 
@@ -250,7 +251,7 @@ function baseResistanceConductance(params: BJTParams, cb: number, qb: number): n
  * with the reverse law below -3*NS*Vt, plus CKTgmin. A gmin current therefore
  * flows through the substrate terminal even when ISS = 0 (#539).
  */
-function substrateJunction(vsub: number, saturationCurrent: number, thermalVoltage: number): {
+function substrateJunction(vsub: number, saturationCurrent: number, thermalVoltage: number, gmin: number): {
   current: number;
   conductance: number;
 } {
@@ -258,14 +259,14 @@ function substrateJunction(vsub: number, saturationCurrent: number, thermalVolta
     const ratio = 3 * thermalVoltage / (vsub * Math.E);
     const cube = ratio * ratio * ratio;
     return {
-      current: -saturationCurrent * (1 + cube) + GMIN * vsub,
-      conductance: saturationCurrent * 3 * cube / vsub + GMIN,
+      current: -saturationCurrent * (1 + cube) + gmin * vsub,
+      conductance: saturationCurrent * 3 * cube / vsub + gmin,
     };
   }
   const exponential = Math.exp(Math.min(MAX_EXP_ARG, vsub / thermalVoltage));
   return {
-    current: saturationCurrent * (exponential - 1) + GMIN * vsub,
-    conductance: saturationCurrent * exponential / thermalVoltage + GMIN,
+    current: saturationCurrent * (exponential - 1) + gmin * vsub,
+    conductance: saturationCurrent * exponential / thermalVoltage + gmin,
   };
 }
 
@@ -984,21 +985,21 @@ export class BJT implements DeviceModel {
    * ngspice, not only in the Jacobian (#551), and the base charge qb of
    * {@link baseCharge}. Writes into a reused object.
    */
-  private evaluateDC(vBE: number, vBC: number): BJTDCPoint {
+  private evaluateDC(vBE: number, vBC: number, gmin: number): BJTDCPoint {
     const { BF, BR, IS, NF, NR, ISE, NE, ISC, NC } = this.params;
     const { current: cbe, conductance: gbe } = junctionLaw(this.junction, vBE, IS, NF * this.vt);
     const { current: cbc, conductance: gbc } = junctionLaw(
       this.junction, vBC, this.baseCollectorSatCur, NR * this.vt,
     );
-    let cben = GMIN * vBE;
-    let gben = GMIN;
+    let cben = gmin * vBE;
+    let gben = gmin;
     if (ISE !== 0) {
       const leakage = junctionLaw(this.junction, vBE, ISE, NE * this.vt);
       cben += leakage.current;
       gben += leakage.conductance;
     }
-    let cbcn = GMIN * vBC;
-    let gbcn = GMIN;
+    let cbcn = gmin * vBC;
+    let gbcn = gmin;
     if (ISC !== 0) {
       const leakage = junctionLaw(this.junction, vBC, ISC, NC * this.vt);
       cbcn += leakage.current;
@@ -1044,7 +1045,7 @@ export class BJT implements DeviceModel {
     return Math.abs(cbhat - cb) <= tolerances.reltol * Math.max(Math.abs(cbhat), Math.abs(cb)) + tolerances.abstol;
   }
 
-  noiseOperatingPoint(solution: Float64Array): {
+  noiseOperatingPoint(solution: Float64Array, gmin = DEVICE_GMIN): {
     collectorNode: number;
     baseNode: number;
     emitterNode: number;
@@ -1057,6 +1058,7 @@ export class BJT implements DeviceModel {
     const { collectorCurrent, baseCurrent } = this.evaluateDC(
       polarity * (voltage(baseNode) - voltage(emitterNode)),
       polarity * (voltage(baseNode) - voltage(collectorNode)),
+      gmin,
     );
     return {
       collectorNode,
@@ -1105,7 +1107,7 @@ export class BJT implements DeviceModel {
       this.chargesAtLimitedJunctions = true;
     }
 
-    const dc = this.evaluateDC(vBE, vBC);
+    const dc = this.evaluateDC(vBE, vBC, ctx.gmin ?? DEVICE_GMIN);
     const IC = dc.collectorCurrent;
     const IB = dc.baseCurrent;
     const gm_f = dc.gmForward;
@@ -1207,7 +1209,7 @@ export class BJT implements DeviceModel {
     const terminalVoltage = this.chargesAtLimitedJunctions
       ? sign * this.limitedJunctions[SUBSTRATE]
       : voltage(substrate) - voltage(substrateConnect);
-    const { current, conductance } = substrateJunction(sign * terminalVoltage, ISS, NS * this.vt);
+    const { current, conductance } = substrateJunction(sign * terminalVoltage, ISS, NS * this.vt, ctx.gmin ?? DEVICE_GMIN);
     // Physical current from the substrate into the substrate-connect node.
     stampChargeBranch(ctx, substrate, substrateConnect, sign * current, conductance, terminalVoltage);
   }

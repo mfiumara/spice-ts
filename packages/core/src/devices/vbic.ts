@@ -1,5 +1,6 @@
 import { InvalidCircuitError } from '../errors.js';
 import type { DeviceModel, StampContext } from './device.js';
+import { DEVICE_GMIN } from './device.js';
 import {
   resolveVBICTemperature, type VBICTemperatureState,
 } from './vbic-temperature.js';
@@ -7,7 +8,7 @@ import { pnjlim } from './devsup.js';
 
 /** ngspice default circuit temperature and VBIC TNOM in degrees Celsius. */
 const NOMINAL_TEMPERATURE_C = 27;
-const GMIN = 1e-12;
+
 const ACTIVE_PARAMETERS = [
   'IS', 'IBEI', 'IBEN', 'IBCI', 'IBCN', 'ISP',
   'RCX', 'RCI', 'RBX', 'RBI', 'RE', 'RS', 'RBP',
@@ -271,6 +272,7 @@ function evaluate(
   params: VBICParams,
   thermal: VBICTemperatureState,
   instanceScale: number,
+  gmin: number,
 ): Evaluation {
   const size = voltages.length;
   const nodeCount = size === BRANCHES.length ? XF1 : XF2 + 1;
@@ -365,15 +367,15 @@ function evaluate(
   // Ibcp and to Irci (via Vrci, Vbci and Vbcx). Ibep/Ibcp diode currents are
   // zero in the bounded subset (IBEIP/IBENP/IBCIP/IBCNP unsupported), leaving
   // only gmin.
-  branch(CX, CI, add(s(irci), scale(add(add(vrci, vbci), vbcx), GMIN)));
+  branch(CX, CI, add(s(irci), scale(add(add(vrci, vbci), vbcx), gmin)));
   branch(BX, BI, s(irbi));
   branch(BP, CX, s(irbp));
-  branch(BI, EI, add(s(ibe), scale(vbei, GMIN)));
-  branch(BX, EI, add(s(ibex), scale(vbex, GMIN)));
+  branch(BI, EI, add(s(ibe), scale(vbei, gmin)));
+  branch(BX, EI, add(s(ibex), scale(vbex, gmin)));
   branch(CI, EI, s(iciei));
-  branch(BI, CI, add(s(ibc), scale(vbci, GMIN)));
-  branch(BX, BP, scale(vbep, GMIN));
-  branch(SI, BP, scale(vbcp, GMIN));
+  branch(BI, CI, add(s(ibc), scale(vbci, gmin)));
+  branch(BX, BP, scale(vbep, gmin));
+  branch(SI, BP, scale(vbcp, gmin));
   branch(BX, SI, s(iccp));
   store(BI, EI, s(qbe));
   store(BI, CI, s(qbc));
@@ -500,7 +502,7 @@ export class VBIC implements DeviceModel {
   stamp(ctx: StampContext): void {
     const voltages = this.branchVoltages(ctx);
     this.limitJunctions(voltages);
-    const { residual } = evaluate(voltages, this.params, this.thermal, this.instanceScale);
+    const { residual } = evaluate(voltages, this.params, this.thermal, this.instanceScale, ctx.gmin ?? DEVICE_GMIN);
     for (let row = 0; row < this.nodes.length; row += 1) {
       const matrixRow = this.nodes[row];
       if (matrixRow < 0) continue;
@@ -526,7 +528,7 @@ export class VBIC implements DeviceModel {
    * linearized AC and pole-zero analyses reach this: transient stays rejected.
    */
   stampDynamic(ctx: StampContext): void {
-    const { charge } = evaluate(this.branchVoltages(ctx), this.params, this.thermal, this.instanceScale);
+    const { charge } = evaluate(this.branchVoltages(ctx), this.params, this.thermal, this.instanceScale, ctx.gmin ?? DEVICE_GMIN);
     for (let row = 0; row < this.nodes.length; row += 1) {
       const matrixRow = this.nodes[row];
       if (matrixRow < 0) continue;

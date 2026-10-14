@@ -1,0 +1,96 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: jfet reverse gate gmin probe
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+	Node                                  Voltage
+	----                                  -------
+	----	-------
+	s                                0.000000e+00
+	g                                -5.00000e+00
+	d                                5.000000e+00
+
+	Source	Current
+	------	-------
+
+	vd#branch                        -1.00000e-08
+	vg#branch                        1.500000e-08
+	vs#branch                        -5.00000e-09
+
+ JFET models (Junction Field effect transistor)
+      model                  jmod
+
+       type                   njf
+        vt0                    -2
+       beta                0.0001
+     lambda                     0
+         rd                     0
+         rs                     0
+        cgs                     0
+        cgd                     0
+         pb                     1
+         is                 1e-16
+          n                     1
+         fc                   0.5
+          b                     1
+        tcv                     0
+      vtotc                     0
+        bex                     0
+    betatce                     0
+        xti                     3
+         eg                  1.11
+         kf                     0
+         af                     1
+       nlev                     2
+     gdsnoi                     1
+
+ JFET: Junction Field effect transistor
+     device                    j1
+      model                  jmod
+        vgs                    -5
+        vgd                   -10
+         ig              -1.5e-08
+         id                 1e-08
+         is                 5e-09
+        igd                -1e-08
+         gm                     0
+        gds                     0
+        ggs                 1e-09
+        ggd                 1e-09
+
+ Vsource: Independent voltage source
+     device                    vs                    vg                    vd
+         dc                     0                    -5                     5
+      acmag                     0                     0                     0
+      pulse                     -                     -                     -
+        sin                     -                     -                     -
+        exp                     -                     -                     -
+        pwl                     -                     -                     -
+       sffm                     -                     -                     -
+         am                     -                     -                     -
+    trnoise                     -                     -                     -
+   trrandom                     -                     -                     -
+    portnum                     0                     0                     0
+         z0                     0                     0                     0
+        pwr                     0                     0                     0
+       freq                     0                     0                     0
+      phase                     0                     0                     0
+          i                -5e-09               1.5e-08                -1e-08
+          p                    -0              -7.5e-08                -5e-08
+
+
+Total analysis time (seconds) = 0.000624
+
+Total elapsed time (seconds) = 0.007 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 12912.953 MB.
+Maximum ngspice program size =   10.109 MB.
+Current ngspice program size =   10.109 MB.
+

@@ -94,7 +94,8 @@ describe('MCP resolvedOptions match what core actually runs (#407)', () => {
       reltol: 5e-3,
       abstol: 1e-12,
       vntol: 2e-6,
-      gmin: 1e-9,
+      // The diagonal API option stays zero; netlist gmin is junction-only (#1068).
+      gmin: 0,
       maxIterations: 150,
       maxTransientIterations: 20,
       trtol: 5,

@@ -1,0 +1,2783 @@
+
+> spice-ts@ test /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8
+> pnpm -r --workspace-concurrency=1 test && tsx --test benchmarks/dot-analysis-pairing.test.ts benchmarks/comparison-harness.test.ts benchmarks/fine-reference.test.ts benchmarks/differential-noise/compare.test.ts benchmarks/performance/scaling-m2.test.ts benchmarks/corpus/corpus-f/corpus-f.test.ts benchmarks/corpus/corpus-f/triage-511.test.ts benchmarks/corpus/corpus-g/corpus-g.test.ts benchmarks/corpus/corpus-h/corpus-h.test.ts benchmarks/corpus/corpus-h/triage-809.test.ts benchmarks/corpus/corpus-h/triage-791.test.ts benchmarks/corpus/corpus-i/corpus-i.test.ts benchmarks/corpus/ngspice-bugs/ngspice-bugs.test.ts benchmarks/results/issue-1049/diagnostics.test.ts
+
+Scope: 9 of 10 workspace projects
+
+> @spice-ts/core@0.3.0 test /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/packages/core
+> vitest run
+
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/packages/core
+
+ ✓ src/analysis/step-browser.smoke.test.ts (1 test) 3291ms
+     ✓ executes a Vite production build in real headless Chrome  3273ms
+ ✓ src/solver/gilbert-peierls-equivalence.test.ts (11 tests) 3981ms
+     ✓ matches the frozen kernel on random nonsymmetric matrices, including refactorization  411ms
+     ✓ matches the frozen kernel when members cancel to exact zeros and pivots move  993ms
+     ✓ re-factorizes on reused pivots after supernode members cancel, bit-identically  2171ms
+stdout | src/solver/complex-sparse-solver-equivalence.test.ts > ComplexSparseSolver AMD ordering equivalence (#740) > matches the frozen natural-order kernel and dense elimination on random MNA systems
+#740 random: 240 systems, 228 with row swaps, max backward error 3.46e-16, max relative difference vs natural order 1.99e-6
+
+stdout | src/solver/complex-sparse-solver-equivalence.test.ts > ComplexSparseSolver on corpus AC systems (#740) > agrees with the frozen natural-order kernel on every system of ngspice/fixtures/tests/filters/lowpass.cir
+#740 ngspice/fixtures/tests/filters/lowpass.cir: 31 solves, max backward error 7.58e-21, max relative difference vs natural order 0.00e+0
+
+stdout | src/solver/complex-sparse-solver-equivalence.test.ts > ComplexSparseSolver on corpus AC systems (#740) > agrees with the frozen natural-order kernel on every system of ngspice/fixtures/tests/vbic/CEamp.cir
+#740 ngspice/fixtures/tests/vbic/CEamp.cir: 501 solves, max backward error 9.03e-16, max relative difference vs natural order 1.71e-14
+
+stdout | src/solver/complex-sparse-solver-equivalence.test.ts > ComplexSparseSolver on corpus AC systems (#740) > agrees with the frozen natural-order kernel on every system of ngspice/fixtures/examples/probe/ac-test.cir
+#740 ngspice/fixtures/examples/probe/ac-test.cir: 16 solves, max backward error 2.17e-19, max relative difference vs natural order 2.22e-16
+
+stdout | src/solver/complex-sparse-solver-equivalence.test.ts > ComplexSparseSolver on corpus AC systems (#740) > agrees with the frozen natural-order kernel on every system of classic/fixtures/spice3f5/rca3040.cir
+#740 classic/fixtures/spice3f5/rca3040.cir: 101 solves, max backward error 2.00e-17, max relative difference vs natural order 1.26e-14
+
+stdout | src/solver/complex-sparse-solver-equivalence.test.ts > ComplexSparseSolver on corpus AC systems (#740) > agrees with the frozen natural-order kernel on every system of corpus-e/fixtures/tests/d_bjt-diffpair-ccs.ckt
+#740 corpus-e/fixtures/tests/d_bjt-diffpair-ccs.ckt: 44 solves, max backward error 3.35e-18, max relative difference vs natural order 1.02e-15
+
+stdout | src/solver/complex-sparse-solver-equivalence.test.ts > ComplexSparseSolver on corpus AC systems (#740) > agrees with the frozen natural-order kernel on every system of corpus-e/fixtures/tests/d_coil.1.ckt
+#740 corpus-e/fixtures/tests/d_coil.1.ckt: 9 solves, max backward error 5.79e-17, max relative difference vs natural order 4.92e-16
+
+stdout | src/solver/complex-sparse-solver-equivalence.test.ts > ComplexSparseSolver on corpus AC systems (#740) > agrees with the frozen natural-order kernel on every system of generated VCVS ladder (200 stages)
+#740 generated VCVS ladder (200 stages): 46 solves, max backward error 4.34e-18, max relative difference vs natural order 3.35e-13
+
+ ✓ src/solver/complex-sparse-solver-equivalence.test.ts (11 tests) 2592ms
+     ✓ matches the frozen natural-order kernel and dense elimination on random MNA systems  1351ms
+ ✓ src/analysis/transient-ring-startup-1003.test.ts (2 tests) 2852ms
+     ✓ matches every k-15 original common signal within the unchanged 1% reference-peak rule  2505ms
+     ✓ matches every k-10 original common signal within the unchanged 1% reference-peak rule  345ms
+ ✓ src/devices/bsim3v3-ngspice-parity.test.ts (49 tests) 2965ms
+     ✓ issue-582-pmos: terminal i(VD) at every operating point  322ms
+ ✓ src/analysis/jimi-fuzz-transient-memory.test.ts (2 tests) 3249ms
+     ✓ bounds the persistent NR retry cycle on the unchanged nonlinear fixture  1354ms
+     ✓ bounds each run when synchronous step analyses share aggregate telemetry  1894ms
+ ✓ src/devices/nonlinear-charge-history.test.ts (6 tests) 3257ms
+     ✓ follows the ngspice-47 NHFET inverter-chain edge on the unchanged fixture  391ms
+     ✓ keeps the BSIM3v3 inverter chain at default tolerances on its converged waveform  2548ms
+ ✓ src/transient-noise-source.test.ts (16 tests) 2510ms
+     ✓ holds the DC value at t=0, samples every TS and interpolates linearly between samples  873ms
+     ✓ is reproducible from run to run  365ms
+     ✓ generates 1/f^alpha noise with the Kasdin filter (spectral slope close to -alpha)  639ms
+     ✓ keeps drawing a new value every TS (ngspice-47 isrcacct.c freezes it here)  378ms
+stdout | src/solver/complex-sparse-solver-reuse.test.ts > ComplexSparseSolver pivot reuse across frequencies (#769) > is bit-identical to a full factorization at every frequency of random MNA sweeps
+#769 random sweeps: 3604 reused, 236 full factorizations, 60/60 systems with a pivot change, 57/60 with row swaps
+
+stderr | src/simulators/simulator-backends.test.ts > swappable simulator backends > maps ngspice WASM DC sweep, transient, and AC result shapes
+Note: v1: has no value, DC 0 assumed
+
+stdout | src/solver/complex-sparse-solver-reuse.test.ts > ComplexSparseSolver pivot reuse on corpus AC systems (#769) > matches a full factorization bit for bit on every system of ngspice/fixtures/tests/filters/lowpass.cir
+#769 ngspice/fixtures/tests/filters/lowpass.cir: 31 solves, 31 factorizations, 30 reused pivots
+
+stdout | src/solver/complex-sparse-solver-reuse.test.ts > ComplexSparseSolver pivot reuse on corpus AC systems (#769) > matches a full factorization bit for bit on every system of ngspice/fixtures/tests/vbic/CEamp.cir
+#769 ngspice/fixtures/tests/vbic/CEamp.cir: 501 solves, 501 factorizations, 498 reused pivots
+
+stdout | src/solver/complex-sparse-solver-reuse.test.ts > ComplexSparseSolver pivot reuse on corpus AC systems (#769) > matches a full factorization bit for bit on every system of ngspice/fixtures/examples/probe/ac-test.cir
+#769 ngspice/fixtures/examples/probe/ac-test.cir: 16 solves, 16 factorizations, 15 reused pivots
+
+stdout | src/solver/complex-sparse-solver-reuse.test.ts > ComplexSparseSolver pivot reuse on corpus AC systems (#769) > matches a full factorization bit for bit on every system of classic/fixtures/spice3f5/rca3040.cir
+#769 classic/fixtures/spice3f5/rca3040.cir: 101 solves, 101 factorizations, 100 reused pivots
+
+stdout | src/solver/complex-sparse-solver-reuse.test.ts > ComplexSparseSolver pivot reuse on corpus AC systems (#769) > matches a full factorization bit for bit on every system of corpus-e/fixtures/tests/d_bjt-diffpair-ccs.ckt
+#769 corpus-e/fixtures/tests/d_bjt-diffpair-ccs.ckt: 44 solves, 44 factorizations, 42 reused pivots
+
+stdout | src/solver/complex-sparse-solver-reuse.test.ts > ComplexSparseSolver pivot reuse on corpus AC systems (#769) > matches a full factorization bit for bit on every system of corpus-e/fixtures/tests/d_coil.1.ckt
+#769 corpus-e/fixtures/tests/d_coil.1.ckt: 9 solves, 9 factorizations, 7 reused pivots
+
+ ✓ src/devices/pspice-iswitch-848.test.ts (8 tests) 1877ms
+     ✓ translates ISWITCH models and W instances inside a subcircuit in transient  1704ms
+stdout | src/solver/complex-sparse-solver-reuse.test.ts > ComplexSparseSolver pivot reuse on corpus AC systems (#769) > matches a full factorization bit for bit on every system of generated VCVS ladder (200 stages)
+#769 generated VCVS ladder (200 stages): 46 solves, 46 factorizations, 43 reused pivots
+
+ ✓ src/solver/complex-sparse-solver-reuse.test.ts (14 tests) 2244ms
+     ✓ is bit-identical to a full factorization at every frequency of random MNA sweeps  1084ms
+     ✓ reuses the first factorization for every later point of an RC mesh sweep  378ms
+ ✓ src/analysis/transient-driver-integration.test.ts (5 tests) 2094ms
+     ✓ buck runs to 2 ms without throwing  1497ms
+ ✓ src/devices/mos1-meyer-gate-drive.test.ts (2 tests) 5834ms
+     ✓ matches i(vs) at the pulse-edge breakpoints of ltra2_2_line.cir with TMAX 10 ps  5420ms
+     ✓ matches i(vs) at the pulse-edge breakpoints of txl1_1_line.cir with TMAX 10 ps  413ms
+ ✓ src/devices/vdmos.test.ts (14 tests) 1876ms
+     ✓ matches the ngspice-47 inverter transient (gate charge through RG, nonlinear CGD) within 1%  411ms
+     ✓ matches the ngspice-47 inverter shoot-through supply current i(vdd) on both edges within 1% (issue #596)  1060ms
+ ✓ src/devices/bjt.test.ts (34 tests) 2100ms
+     ✓ runs the unchanged bounded VBIC forward-output DC fixture  1669ms
+ ✓ src/pulse-omitted-period.test.ts (3 tests) 1796ms
+     ✓ keeps v(3) at default settings within 20 mV of the same deck run to convergence  1552ms
+stderr | src/simulators/simulator-backends.test.ts > swappable simulator backends > streams ngspice WASM .step points with metadata
+Note: v1: has no value, DC 0 assumed
+
+ ✓ src/devices/bsim4/device.test.ts (43 tests) 1146ms
+     ✓ routes LEVEL=14 without a MOS1 fallback  694ms
+stderr | src/simulators/simulator-backends.test.ts > swappable simulator backends > streams ngspice WASM .step points with metadata
+Note: v1: has no value, DC 0 assumed
+
+ ✓ src/devices/lossy-transmission-line.test.ts (12 tests) 1372ms
+     ✓ executes the unchanged classic 24-inch lossy-line fixture  1009ms
+ ✓ src/simulators/simulator-backends.test.ts (9 tests) 7869ms
+     ✓ runs a DC operating point through ngspice WASM  1291ms
+     ✓ runs a programmatic Circuit through ngspice WASM  574ms
+     ✓ preprocesses includes before running ngspice WASM  610ms
+     ✓ maps ngspice WASM DC sweep, transient, and AC result shapes  1814ms
+     ✓ streams result points from external backends  590ms
+     ✓ maps ngspice WASM .step result sets  1357ms
+     ✓ streams ngspice WASM .step points with metadata  1249ms
+ ✓ src/devices/bsim4/parity.test.ts (31 tests) 1251ms
+     ✓ bsim482-nmos: id, all 108 native bias points  683ms
+ ✓ src/devices/mos6-trap-ringing-461.test.ts (3 tests) 1622ms
+     ✓ lets the mos6inv i(vin) ripple decay to the ngspice-47 level  699ms
+     ✓ tracks the ngspice-47 mos6inv i(vin) under the ripple  682ms
+ ✓ src/options-temp.test.ts (15 tests) 1423ms
+     ✓ matches ngspice-47 on the unchanged tests/vbic/temp.cir fixture  387ms
+     ✓ keeps TEMP=27 identical to the nominal circuit  564ms
+ ✓ src/devices/mos2-temperature-995.test.ts (38 tests) 1581ms
+ ✓ src/devices/swec-lines.test.ts (24 tests) 1136ms
+     ✓ four coupled lines (cpl1_4_line model), resistive terminations  338ms
+ ✓ src/parser/inpevaluate-749.test.ts (106 tests) 8783ms
+     ✓ round-trips 20k generated literals (1-4 digit mantissa, optional fraction, every scale factor)  1206ms
+     ✓ round-trips 5k arbitrary doubles between 1e-30 and 1e30 (Circuit API and JSON values)  586ms
+     ✓ round-trips 20000 random bit patterns with 0 ulp drift, except the unreachable values below 1e-297  2318ms
+     ✓ writes every value around the subnormal range within one ulp, exactly when a literal exists  4278ms
+ ✓ src/devices/bsim4/temp.test.ts (28 tests) 931ms
+     ✓ resolves per-finger effective dimensions and L/W/P at TNOM  601ms
+ ✓ src/devices/mos-convergence-test-479.test.ts (5 tests) 971ms
+     ✓ steps the mos6inv deck like ngspice-47 (MOS6trunc, mos6conv.c)  896ms
+ ✓ src/devices/mos3.test.ts (15 tests) 928ms
+ ✓ src/devices/bsim4/paramchk.test.ts (19 tests) 1020ms
+     ✓ rejects native correction domain source at integrated compile and simulate  737ms
+ ✓ src/parser/bsim-model-version.test.ts (10 tests) 991ms
+     ✓ registers BSIM4 dotted VERSION=4.8.2 and rejects unported revisions, not their LEVEL  669ms
+ ✓ src/devices/vbic-substrate.test.ts (7 tests) 887ms
+     ✓ follows ngspice-47 through the substrate latch-up fold (dc-latchup.cir)  335ms
+ ✓ src/devices/bsim3v3-charge-parity.test.ts (64 tests) 9696ms
+     ✓ NAND transient (adder_mos_circ gate): node voltages and supply charge within 1% of ngspice-47  4231ms
+ ✓ src/devices/mosfet-body-effect.test.ts (14 tests) 921ms
+     ✓ registers static BSIM4 LEVEL=14  737ms
+ ✓ src/devices/xspice/xspice-digital.test.ts (6 tests) 1086ms
+     ✓ reproduces every gate output change of d_buffer, d_inverter, d_and, d_nand, d_or, d_nor, d_xor and d_xnor  378ms
+     ✓ applies inertial delay, multi-driver resolution, multi-bit bridges and dac_bridge ramps  694ms
+ ✓ src/devices/bsim3v32-ngspice-parity.test.ts (104 tests) 10073ms
+     ✓ tsmc025-322-nmos: terminal i(VD) at every operating point  722ms
+     ✓ tsmc025-322-pmos: terminal i(VD) at every operating point  353ms
+     ✓ tsmc025-322-nmos-t25: terminal i(VD) at every operating point  442ms
+     ✓ tsmc025-322-pmos-t25: terminal i(VD) at every operating point  457ms
+     ✓ tsmc025-322-nmos-t85: terminal i(VD) at every operating point  347ms
+     ✓ tsmc025-322-nmos: AC terminal capacitance matrix  376ms
+     ✓ tsmc025-322-pmos: AC terminal capacitance matrix  383ms
+     ✓ tsmc025-322-nmos-t25: AC terminal capacitance matrix  378ms
+     ✓ tsmc025-322-pmos-t25: AC terminal capacitance matrix  384ms
+     ✓ TSMC 3.2.2 inverter chain transient: node voltages and supply charge within 1% of ngspice-47  685ms
+ ✓ src/parser/tokenizer.test.ts (38 tests) 922ms
+     ✓ matches the reference implementation on a deterministic fuzz corpus  796ms
+ ✓ src/bjt-schmitt-transient.test.ts (3 tests) 904ms
+     ✓ completes the byte-identical public fixture deterministically with bounded waveforms  402ms
+     ✓ switches when ngspice-47 does once the qstd charge storage is stamped (#385)  463ms
+ ✓ src/devices/bsim4/setup.test.ts (124 tests) 865ms
+     ✓ uses b4set.c minimal NMOS defaults and original given flags  547ms
+ ✓ src/analysis/transient-order-control-742.test.ts (4 tests) 854ms
+     ✓ sets the UIC breakpoint at TSTEP like ngspice-47  422ms
+ ✓ src/devices/ekv.test.ts (17 tests) 767ms
+     ✓ matches the published Xyce 7.10 DC fixture test_ekv26_nmos  382ms
+     ✓ matches the published Xyce 7.10 DC fixture test_ekv26_pmos  302ms
+ ✓ src/mesa-behavioral-integration.test.ts (9 tests) 993ms
+     ✓ simulates the unchanged ngspice mesa-oscillator fixture identically in batch and streaming modes  769ms
+ ✓ src/analysis/trap-history-482.test.ts (2 tests) 787ms
+     ✓ starts the unchanged mesa-oscillator fixture on the ngspice-47 first edge  579ms
+ ✓ src/analysis/transient-diode-multiplier-840.test.ts (2 tests) 970ms
+     ✓ tracks ngspice-47 i(vs) across the steepest diode edges within 1% of peak  880ms
+ ✓ src/devices/mosfet-load-cache-842.test.ts (4 tests) 834ms
+     ✓ never stacks a junction charge fold on the previous fold in a transient  480ms
+ ✓ src/devices/bsim12.test.ts (16 tests) 937ms
+     ✓ classic/bsim1-device-sweep (LEVEL=4)  311ms
+ ✓ src/devices/pspice-vswitch-825.test.ts (7 tests) 872ms
+     ✓ translates VSWITCH models and S instances of an included PSpice library subcircuit in transient  579ms
+ ✓ src/analysis/transient-reactive-truncation-equivalence.test.ts (5 tests) 917ms
+     ✓ acceptAll and truncationTimestepAll equal per-charge accept and truncationTimestep  396ms
+     ✓ returns the pre-#702 bounds and keeps the same accepted history  352ms
+ ✓ src/devices/bsim4/load.test.ts (9 tests) 929ms
+     ✓ matches 108 ngspice-47 oracle points for minimal-nmos  763ms
+ ✓ src/devices/bjt-xcjc-rb-861.test.ts (4 tests) 696ms
+     ✓ operating point  405ms
+ ✓ src/analysis/transient-maxord-983.test.ts (20 tests) 562ms
+     ✓ runs the original MOS charge pump to its stop time with finite results  349ms
+ ✓ src/analysis/transient-convergence.test.ts (2 tests) 12617ms
+     ✓ #25: half-wave rectifier with SIN source should not throw TimestepTooSmallError  11900ms
+     ✓ #24: CMOS inverter should not produce voltage spikes beyond supply rails  714ms
+ ✓ src/analysis/transient-lc-tank-floor.test.ts (2 tests) 604ms
+     ✓ tracks ngspice-47 on the 10 GHz tank with .tran 5e-14 2n UIC  528ms
+ ✓ src/devices/mos2.test.ts (9 tests) 582ms
+ ✓ src/analysis/transient-step-grid-561.test.ts (1 test) 843ms
+     ✓ runs to TSTOP on the ngspice-47 grid and tracks every plotted node  840ms
+ ✓ src/hfet1-integration.test.ts (4 tests) 785ms
+     ✓ simulates the unchanged ngspice fixture in batch and streaming modes  712ms
+ ✓ src/subcircuit-mutual-inductance-739.test.ts (5 tests) 800ms
+     ✓ matches the hand-flattened top-level coupling  387ms
+ ✓ src/parser/control/spectrum-752.test.ts (33 tests) 833ms
+ ✓ src/devices/bsim3v3-reverse-mode.test.ts (4 tests) 644ms
+     ✓ 6T SRAM write-0 flips the cell like ngspice-47  536ms
+ ✓ src/devices/mosfet-capacitance.test.ts (14 tests) 669ms
+     ✓ matches ngspice-47 gate current through cutoff, saturation and linear operation on both ramp directions  450ms
+ ✓ src/mesfet-hfet-500.test.ts (15 tests) 695ms
+ ✓ src/devices/mos2-convergence-799.test.ts (5 tests) 13494ms
+     ✓ tracks ngspice-47 through the mosamp2 slewing edge with a refined step  13478ms
+ ✓ src/solver/amd-ordering-equivalence.test.ts (3 tests) 692ms
+     ✓ returns the same order on random symmetric and nonsymmetric patterns, with dense rows  398ms
+ ✓ src/devices/mos6.test.ts (7 tests) 502ms
+ ✓ src/solver/gilbert-peierls.test.ts (31 tests) 447ms
+       ✓ keeps 2-D grid fill near n·log n with the fill-reducing column ordering (#444)  410ms
+ ✓ src/analysis/transient-node-truncation.test.ts (5 tests) 500ms
+     ✓ takes the ngspice-47 step count on a BSIM3 inverter chain without moving its edges  497ms
+ ✓ src/parser/control/sp-sens-750.test.ts (20 tests) 602ms
+ ✓ src/accuracy.test.ts (4 tests) 524ms
+     ✓ rlc-resonance: oscillation frequency within 10% of 1591.5 Hz  411ms
+ ✓ src/devices/mos2-series-resistance-982.test.ts (23 tests) 446ms
+ ✓ src/analysis/transient-iteration-invariant-710.test.ts (4 tests) 570ms
+ ✓ src/analysis/transient-mos1-predictor-878.test.ts (1 test) 437ms
+     ✓ takes ngspice-47 NIiter iteration counts at every timepoint of the CMOS chain  436ms
+ ✓ src/devices/xspice/xspice.test.ts (19 tests) 596ms
+ ✓ src/analysis/transient-ckttrunc-621.test.ts (2 tests) 510ms
+     ✓ steps over the ltra1_1_line reflection on the ngspice-47 step grid  460ms
+ ✓ src/compile-fast-paths.test.ts (7 tests) 559ms
+ ✓ src/rca3040-convergence.test.ts (1 test) 505ms
+     ✓ runs the unchanged classic fixture through DC, AC, and transient analyses  504ms
+ ✓ src/analysis/transient-driver-tmax.test.ts (5 tests) 435ms
+ ✓ src/analysis/jimi-fuzz-transient-parity.test.ts (1 test) 362ms
+     ✓ tracks the ngspice-47 nonlinear transient on the unchanged fixture  360ms
+ ✓ src/analysis/transient-driver.test.ts (11 tests) 420ms
+ ✓ src/devices/xspice/xspice-analog2.test.ts (10 tests) 453ms
+ ✓ src/analysis/transient-zero-rise-pulse.test.ts (3 tests) 528ms
+     ✓ starts the underdamped RLC at 0 and rings to the ngspice-47 overshoot  309ms
+ ✓ src/analysis/transient-gear2.test.ts (5 tests) 550ms
+ ✓ src/devices/bjt-gummel-poon-params.test.ts (37 tests) 303ms
+ ✓ src/analysis/sensitivity-differential.test.ts (18 tests) 497ms
+ ✓ src/simulate.max-timestep.test.ts (21 tests) 441ms
+ ✓ src/analysis/step.test.ts (57 tests) 569ms
+ ✓ src/devices/mos1-multiplier-731.test.ts (4 tests) 491ms
+ ✓ src/devices/diode-transient-limiter.test.ts (5 tests) 389ms
+ ✓ src/integration.test.ts (4 tests) 416ms
+ ✓ src/devices/behavioral-branch-current.test.ts (7 tests) 411ms
+ ✓ src/devices/diode-cjo-alias.test.ts (7 tests) 320ms
+ ✓ src/parser/spice2poly-845.test.ts (13 tests) 301ms
+ ✓ src/analysis/dc-op-ecl-receiver-622.test.ts (2 tests) 341ms
+ ✓ src/temperature-ngspice-parity.test.ts (38 tests) 323ms
+ ✓ src/measure/measure.test.ts (17 tests) 454ms
+ ✓ src/analysis/transient-ecl-schmitt-818.test.ts (1 test) 313ms
+     ✓ crosses the regenerative edge in ngspice-47's single 10 ns step  312ms
+ ✓ src/parser/control/control-script.test.ts (38 tests) 534ms
+ ✓ src/analysis/sensitivity.test.ts (29 tests) 468ms
+ ✓ src/devices/behavioral-voltage-source.test.ts (12 tests) 459ms
+ ✓ src/analysis/transient-record.test.ts (2 tests) 507ms
+     ✓ advanceSolution() yields the same accepted points as advance() Maps  392ms
+ ✓ src/analysis/noise.test.ts (51 tests) 565ms
+ ✓ src/devices/switch.test.ts (18 tests) 554ms
+ ✓ src/devices/mosfet.test.ts (23 tests) 568ms
+ ✓ src/devices/vbic.test.ts (5 tests) 347ms
+     ✓ runs the unchanged vbic-common-emitter-ac fixture against ngspice-47 AC and PZ results  302ms
+ ✓ src/analysis/ac.test.ts (47 tests) 234ms
+ ✓ src/subcircuit-multiplicity-810.test.ts (14 tests) 396ms
+ ✓ src/source-waveforms-716.test.ts (15 tests) 317ms
+ ✓ src/parser/control/csparam-loop-930.test.ts (9 tests) 269ms
+ ✓ src/devices/diode-junction-charge.test.ts (3 tests) 320ms
+ ✓ src/devices/diode-sidewall-charge.test.ts (2 tests) 298ms
+ ✓ src/devices/resistor-forms.test.ts (16 tests) 279ms
+ ✓ src/analysis/sweep-accumulation.test.ts (18 tests) 177ms
+ ✓ src/parser/options-494.test.ts (36 tests) 243ms
+ ✓ src/parser/poly-trtol-862.test.ts (5 tests) 310ms
+ ✓ src/parser/model-level-limit-747.test.ts (11 tests) 420ms
+ ✓ src/protocol/adapter.test.ts (16 tests) 195ms
+ ✓ src/devices/transmission-line.test.ts (8 tests) 359ms
+ ✓ src/parser/options-directives.test.ts (115 tests) 233ms
+ ✓ src/parser/control/savecurrents-686.test.ts (7 tests) 237ms
+ ✓ src/classic-mos-convergence.test.ts (3 tests) 19024ms
+     ✓ completes the unchanged mos6inv.cir fixture  1058ms
+     ✓ completes the unchanged LEVEL=2 mosamp2.cir fixture with MOS2 and settles at the ngspice-47 v(5)  17831ms
+ ✓ src/parser/controlled-table-917-lowering.test.ts (21 tests) 194ms
+ ✓ src/initial-state.test.ts (14 tests) 257ms
+ ✓ src/parser/numparam-number-782.test.ts (29 tests) 131ms
+ ✓ src/case-folding.test.ts (5 tests) 331ms
+ ✓ src/devices/diode-junction-law.test.ts (14 tests) 380ms
+ ✓ src/mos1-inverter-chain-op.test.ts (6 tests | 2 skipped) 19390ms
+     ✓ matches ngspice-47 node voltages for a 200-stage chain  336ms
+     ✓ matches ngspice-47 node voltages for a 20000-stage chain  8123ms
+     ✓ matches ngspice-47 node voltages for a 6000-stage chain  10674ms
+ ✓ src/simulate.tstart.test.ts (7 tests) 309ms
+ ✓ src/parser/control/setplot-errors-798.test.ts (7 tests) 216ms
+ ✓ src/devices/diode-ngspice-parity.test.ts (46 tests) 291ms
+ ✓ src/parser/xyce-primitive-compatibility.test.ts (38 tests) 334ms
+ ✓ src/parser/bsource-caret-initial-iterate-891.test.ts (4 tests) 109ms
+ ✓ src/parser/param-functions-870.test.ts (6 tests) 102ms
+ ✓ src/devices/xspice/xspice-pull.test.ts (6 tests) 184ms
+ ✓ src/analysis/dc-floating-recovery-917.test.ts (18 tests) 233ms
+ ✓ src/devices/pulse-source.test.ts (8 tests) 190ms
+ ✓ src/subcircuit-params.test.ts (10 tests) 221ms
+ ✓ src/parser/options-612.test.ts (13 tests) 280ms
+ ✓ src/parser/temp-directive-871.test.ts (33 tests) 354ms
+ ✓ src/analysis/transient-savedelta-608.test.ts (1 test) 288ms
+ ✓ src/devices/mos2-charge-history-1003.test.ts (5 tests) 170ms
+ ✓ src/analysis/distortion.test.ts (35 tests) 387ms
+ ✓ src/analysis/sensitivity-multiplier-760.test.ts (6 tests) 195ms
+ ✓ src/analysis/noise-min-gain-767.test.ts (1 test) 99ms
+ ✓ src/devices/bsim3v32-size-reuse.test.ts (5 tests) 197ms
+ ✓ src/devices/jfet-forms-717.test.ts (14 tests) 302ms
+ ✓ src/analysis/transient.test.ts (6 tests) 269ms
+ ✓ src/devices/xspice/xspice-digital-ac.test.ts (3 tests) 147ms
+ ✓ src/parser/gnucap-source-forms.test.ts (10 tests) 167ms
+ ✓ src/analysis/pole-zero.test.ts (26 tests) 217ms
+ ✓ src/analysis/transient-charge-lte.test.ts (2 tests) 227ms
+ ✓ src/analysis/transient-uic-t0-856.test.ts (4 tests) 109ms
+ ✓ src/parser/numparam-extensions.test.ts (34 tests) 138ms
+ ✓ src/parser/control/plot-identity-1010.test.ts (6 tests) 236ms
+ ✓ src/devices/bjt-area.test.ts (8 tests) 181ms
+ ✓ src/parser/ngspice-compatibility.test.ts (49 tests) 117ms
+ ✓ src/simulate-dot-analysis-runs-1009.test.ts (8 tests) 160ms
+ ✓ src/protocol/limits-cancellation.test.ts (22 tests) 76ms
+ ✓ src/parser/control-analysis.test.ts (20 tests) 384ms
+ ✓ src/analysis/transfer-function.test.ts (19 tests) 262ms
+ ✓ src/analysis/transient-adder-bip-611.test.ts (1 test) 21645ms
+     ✓ takes about as many accepted timepoints as ngspice-47 and lands its gate edges  21643ms
+ ✓ src/analysis/pole-zero-active.test.ts (15 tests) 184ms
+ ✓ src/parser/bsource-single-pipe-or-903.test.ts (31 tests) 276ms
+ ✓ src/analysis/dc-sweep.test.ts (11 tests) 141ms
+ ✓ src/devices/bsim3v3-series-resistance.test.ts (10 tests) 222ms
+ ✓ src/classic-noise-summary.test.ts (12 tests) 125ms
+ ✓ src/parser/numparam-quoted-expressions.test.ts (4 tests) 82ms
+ ✓ src/parser/unsupported-model-type.test.ts (28 tests) 146ms
+ ✓ src/devices/current-source-multiplier-690.test.ts (17 tests) 253ms
+ ✓ src/parser/corpus-h-parse-gaps-790.test.ts (13 tests) 240ms
+ ✓ src/controlled-source-value-789.test.ts (12 tests) 169ms
+ ✓ src/parser/title-directive-957.test.ts (25 tests) 199ms
+ ✓ src/parser/unusual-leading-chars-843.test.ts (20 tests) 195ms
+ ✓ src/analysis/noise-bjt-tnom-substrate-767.test.ts (1 test) 150ms
+ ✓ src/devices/diode-commutation.test.ts (2 tests) 169ms
+ ✓ src/devices/xspice/s-xfer.test.ts (16 tests) 310ms
+ ✓ src/parser/waveform-parser.test.ts (22 tests) 172ms
+ ✓ src/parser/subckt-model-expressions-882.test.ts (10 tests) 221ms
+ ✓ src/analysis/s-parameter.test.ts (14 tests) 265ms
+ ✓ src/parser/controlled-table-917.test.ts (15 tests) 176ms
+ ✓ src/analysis/transient-uic-bsource-649.test.ts (2 tests) 137ms
+ ✓ src/parser/bjt-parser.test.ts (42 tests) 123ms
+ ✓ src/parser/micro-sign-508.test.ts (6 tests) 95ms
+ ✓ src/devices/bjt-substrate-ac-767.test.ts (2 tests) 91ms
+ ✓ src/zero-ohm-resistor.test.ts (5 tests) 161ms
+ ✓ src/analysis/ac-pivot-order.test.ts (4 tests) 33ms
+ ✓ src/parser/solver-selection.test.ts (13 tests) 155ms
+ ✓ src/z-device-dispatch.test.ts (3 tests) 97ms
+ ✓ src/analysis/dc-temperature-956.test.ts (6 tests) 157ms
+ ✓ src/analysis/transient-termination.test.ts (5 tests) 172ms
+ ✓ src/analysis/transient-breakpoints.test.ts (6 tests) 168ms
+ ✓ src/model-type-api.test.ts (18 tests) 127ms
+ ✓ src/parser/subckt-param-order-857.test.ts (12 tests) 114ms
+ ✓ src/circuit-tonetlist-maxord-1020.test.ts (16 tests) 147ms
+ ✓ src/convergence-telemetry.test.ts (5 tests) 129ms
+ ✓ src/parser/xcard-bare-params-788.test.ts (4 tests) 111ms
+ ✓ src/parser/comma-numparam-797.test.ts (23 tests) 234ms
+ ✓ src/parser/bjt-unrecognized-model-parameter-767.test.ts (5 tests) 185ms
+ ✓ src/controlled-source-forward-ref-860.test.ts (4 tests) 192ms
+ ✓ src/devices/bsim3v3-integration.test.ts (8 tests) 187ms
+ ✓ src/analysis/transient-cktdelta-708.test.ts (1 test) 240ms
+ ✓ src/parser/parser.test.ts (47 tests) 205ms
+ ✓ src/devices/diode-forward-limiter.test.ts (9 tests) 190ms
+ ✓ src/parser/controlled-table-917-scoped-pwl.test.ts (6 tests) 202ms
+ ✓ src/analysis/latch-op-selection-1001.test.ts (3 tests) 200ms
+ ✓ src/memristor-zero-volt-source.test.ts (2 tests) 239ms
+ ✓ src/global-nodes.test.ts (8 tests) 206ms
+ ✓ src/protocol/envelopes.test.ts (10 tests) 113ms
+ ✓ src/devices/diode.test.ts (27 tests) 151ms
+ ✓ src/devices/transient-noise.test.ts (10 tests) 130ms
+ ✓ src/devices/diode-sidewall-emission.test.ts (10 tests) 158ms
+ ✓ src/analysis/transient-nr-retry-804.test.ts (3 tests) 163ms
+ ✓ src/subcircuit-integration.test.ts (6 tests) 134ms
+ ✓ src/analysis/transient-linear-jump.test.ts (4 tests) 111ms
+ ✓ src/measure/first-interval.test.ts (6 tests) 120ms
+ ✓ src/devices/diode-trs-829.test.ts (13 tests) 118ms
+ ✓ src/devices/bjt-zero-rolloff-844.test.ts (13 tests) 125ms
+ ✓ src/mna/linear-stamp.test.ts (8 tests) 105ms
+ ✓ src/parser/bsource-pow-zero-base-886.test.ts (7 tests) 189ms
+ ✓ src/parser/model-bare-tokens.test.ts (12 tests) 37ms
+ ✓ src/parser/control/edit-comments-787.test.ts (8 tests) 91ms
+ ✓ src/ir/ir.test.ts (21 tests) 12ms
+ ✓ src/parser/bsource-finite-jacobian-overflow-899.test.ts (6 tests) 93ms
+ ✓ src/altermod-alias.test.ts (16 tests) 243ms
+ ✓ src/devices/mos1-terminal-open-757.test.ts (2 tests) 49ms
+ ✓ src/devices/jfet.test.ts (12 tests) 54ms
+ ✓ src/devices/resistor-default.test.ts (7 tests) 51ms
+ ✓ src/devices/bsim3v32.test.ts (4 tests) 179ms
+ ✓ src/solver/complex-sparse-solver.test.ts (9 tests) 164ms
+ ✓ src/subcircuit-port-parens-864.test.ts (4 tests) 159ms
+ ✓ src/unresolved-model.test.ts (7 tests) 152ms
+ ✓ src/controlled-sources-integration.test.ts (6 tests) 114ms
+ ✓ src/devices/resistor-res-model.test.ts (6 tests) 127ms
+ ✓ src/analysis/transient-bjt-rest-1037.test.ts (3 tests) 130ms
+ ✓ src/devices/mos1-series-resistance-719.test.ts (1 test) 182ms
+ ✓ src/simulate.test.ts (5 tests) 80ms
+ ✓ src/parser/preprocessor.test.ts (48 tests) 32ms
+ ✓ src/subcircuit-model-scope-854.test.ts (5 tests) 46ms
+ ✓ src/parser/options-xyce-packages-713.test.ts (47 tests) 111ms
+ ✓ src/devices/behavioral-current-source.test.ts (4 tests) 65ms
+ ✓ src/parser/mos-instance-name-1056.test.ts (13 tests) 143ms
+ ✓ src/parser/gnd-alias-772.test.ts (7 tests) 41ms
+ ✓ src/devices/mosfet-junction-noncon.test.ts (1 test) 156ms
+ ✓ src/mna/companion.test.ts (1 test) 105ms
+ ✓ src/analysis/current-source-polarity.test.ts (4 tests) 188ms
+ ✓ src/devices/mos2-predictor-1003.test.ts (5 tests) 98ms
+ ✓ src/devices/bsim3v3.test.ts (8 tests) 125ms
+ ✓ src/parser/bare-param-rlc-837.test.ts (14 tests) 260ms
+ ✓ src/protocol/validation.test.ts (7 tests) 39ms
+ ✓ src/analysis/transient-step.test.ts (9 tests) 116ms
+ ✓ src/parser/control/misplaced-endc-666.test.ts (6 tests) 174ms
+ ✓ src/devices/mesa-model.test.ts (23 tests) 15ms
+ ✓ src/subcircuit-dynamic-params-888.test.ts (16 tests) 86ms
+ ✓ src/parser/parse-preparation-perf.test.ts (13 tests) 79ms
+ ✓ src/options-rshunt-824.test.ts (12 tests) 167ms
+ ✓ src/solver/amd-ordering.test.ts (6 tests) 7ms
+ ✓ src/devices/mosfet-batch-state.test.ts (3 tests) 108ms
+ ✓ src/analysis/transient-uic-560.test.ts (2 tests) 134ms
+ ✓ src/devices/mosfet-step-limit-830.test.ts (2 tests) 96ms
+ ✓ src/pwl-accept-breakpoints.test.ts (1 test) 95ms
+ ✓ src/parser/parse-preprocess-parity.test.ts (14 tests) 113ms
+ ✓ src/protocol/current-source-multiplier-690.test.ts (4 tests) 104ms
+ ✓ src/circuit.test.ts (39 tests) 90ms
+ ✓ src/devices/mosfet-batch-stamp.test.ts (5 tests) 26ms
+ ✓ src/simulate.stream.test.ts (4 tests) 191ms
+ ✓ src/parser/x-call-continuation-797.test.ts (10 tests) 111ms
+ ✓ src/parser/passive-value-less-733.test.ts (5 tests) 97ms
+ ✓ src/parser/behavioral-expression.test.ts (36 tests) 84ms
+ ✓ src/parser/bsource-pspice-functions-879.test.ts (4 tests) 170ms
+ ✓ src/analysis/real-eigen.test.ts (6 tests) 8ms
+ ✓ src/chua.test.ts (2 tests) 127ms
+ ✓ src/validation/topology-preflight.test.ts (12 tests) 79ms
+ ✓ src/parser/print-brace-714.test.ts (11 tests) 173ms
+ ✓ src/devices/pspice-model-temperature-846.test.ts (9 tests) 155ms
+ ✓ src/subcircuit-nested-definition-826.test.ts (5 tests) 166ms
+ ✓ src/devices/diode-depletion.test.ts (8 tests) 116ms
+ ✓ src/mna/assembler.test.ts (17 tests) 117ms
+ ✓ src/analysis/transient-columns.test.ts (33 tests) 15ms
+ ✓ src/parser/expression.test.ts (166 tests) 64ms
+ ✓ src/solver/csc-matrix.test.ts (6 tests) 6ms
+ ✓ src/case-fold.test.ts (5 tests) 4ms
+ ✓ src/devices/bsim4-junction.test.ts (43 tests) 10ms
+ ✓ src/analysis/step-scheduler.test.ts (5 tests) 8ms
+ ✓ src/analysis/breakpoint-queue.test.ts (10 tests) 21ms
+ ✓ src/parser/transmission-line-parser.test.ts (11 tests) 48ms
+ ✓ src/solver/gilbert-peierls-u-alias-926.test.ts (5 tests) 82ms
+ ✓ src/analysis/transient-first-step.test.ts (3 tests) 118ms
+ ✓ src/devices/bsim3v3-dc.test.ts (6 tests) 18ms
+ ✓ src/parser/controlled-table-917-lowering-prerequisite.test.ts (3 tests) 175ms
+ ✓ src/analysis/transient-progress.test.ts (7 tests) 51ms
+ ✓ src/devices/diode-breakdown-knee-memo.test.ts (2 tests) 55ms
+ ✓ src/pwl-source.test.ts (7 tests) 108ms
+ ✓ src/options-gmin-1068.test.ts (11 tests) 261ms
+ ✓ src/parser/passive-lead-value-719.test.ts (1 test) 124ms
+ ✓ src/devices/bsim3v3-params.test.ts (15 tests) 11ms
+ ✓ src/parser/diode-parser.test.ts (8 tests) 9ms
+ ✓ src/devices/mos2-inverse-limiting-1001.test.ts (2 tests) 26ms
+ ✓ src/errors.test.ts (10 tests) 41ms
+ ✓ src/analysis/dc.test.ts (3 tests) 34ms
+ ✓ src/solver/gilbert-peierls-reuse.test.ts (5 tests) 8ms
+ ✓ src/devices/voltage-source.test.ts (14 tests) 12ms
+ ✓ src/analysis/gmin-baseline-1068.test.ts (3 tests) 28ms
+ ✓ src/devices/controlled-sources.test.ts (16 tests) 25ms
+ ✓ src/analysis/newton-rounding-floor.test.ts (2 tests) 7ms
+ ✓ src/devices/mosfet-predictor-878.test.ts (2 tests) 52ms
+ ✓ src/devices/hfet1-model.test.ts (8 tests) 6ms
+ ✓ src/devices/lossy-transmission-line-trunc.test.ts (6 tests) 12ms
+ ✓ src/devices/devices.test.ts (6 tests) 9ms
+ ✓ src/solver/sparse-matrix.test.ts (6 tests) 6ms
+ ✓ src/devices/passive-model.test.ts (3 tests) 2ms
+ ✓ src/devices/reactive.test.ts (6 tests) 4ms
+ ✓ src/solver/lu-solver.test.ts (5 tests) 6ms
+ ✓ src/devices/charge-truncation.test.ts (5 tests) 4ms
+ ✓ src/devices/current-source.test.ts (2 tests) 13ms
+ ✓ src/analysis/directed-linear-grid.test.ts (2 tests) 3ms
+ ✓ src/subcircuit-unsupported-device.test.ts (2 tests) 67ms
+ ✓ src/transient-driver-exports.test.ts (1 test) 2ms
+ ↓ src/devices/xspice/xspice-pull-reference.test.ts (2 tests | 2 skipped)
+ ✓ src/devices/bsim3v3-adder-mos-604.test.ts (1 test) 35338ms
+     ✓ takes about as many accepted timepoints as ngspice-47 and lands its gate edges  35337ms
+
+ Test Files  314 passed | 1 skipped (315)
+      Tests  4246 passed | 1 expected fail | 4 skipped (4251)
+   Start at  15:18:39
+   Duration  40.23s (transform 57.57s, setup 0ms, import 224.77s, tests 286.42s, environment 40ms)
+
+JUNIT report written to /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/packages/core/test-results.xml
+
+> @spice-ts/protocol@0.3.0 test /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/packages/protocol
+> vitest run
+
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/packages/protocol
+
+
+ Test Files  1 passed (1)
+      Tests  17 passed (17)
+   Start at  15:19:21
+   Duration  721ms (transform 170ms, setup 0ms, import 280ms, tests 164ms, environment 0ms)
+
+
+> @spice-ts/circuit-json@0.3.0 test /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/packages/circuit-json
+> vitest run && pnpm test:packed-consumer
+
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/packages/circuit-json
+
+
+ Test Files  2 passed (2)
+      Tests  11 passed (11)
+   Start at  15:19:22
+   Duration  299ms (transform 188ms, setup 0ms, import 221ms, tests 17ms, environment 0ms)
+
+
+> @spice-ts/circuit-json@0.3.0 test:packed-consumer /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/packages/circuit-json
+> pnpm build && node scripts/packed-consumer.mjs
+
+
+> @spice-ts/circuit-json@0.3.0 build /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/packages/circuit-json
+> tsup
+
+CLI Building entry: src/index.ts
+CLI Using tsconfig: tsconfig.json
+CLI tsup v8.5.1
+CLI Using tsup config: /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/packages/circuit-json/tsup.config.ts
+CLI Target: es2022
+CLI Cleaning output folder
+ESM Build start
+CJS Build start
+ESM dist/index.js     18.88 KB
+ESM dist/index.js.map 33.61 KB
+ESM ⚡️ Build success in 14ms
+CJS dist/index.cjs     19.91 KB
+CJS dist/index.cjs.map 33.66 KB
+CJS ⚡️ Build success in 14ms
+DTS Build start
+DTS ⚡️ Build success in 973ms
+DTS dist/index.d.ts  968.00 B
+DTS dist/index.d.cts 968.00 B
+📦  @spice-ts/core@0.3.0
+Tarball Contents
+dist/chunk-XRFPD5VI.js
+dist/chunk-XRFPD5VI.js.map
+dist/chunk-ZWC34H3M.js
+dist/chunk-ZWC34H3M.js.map
+dist/index.cjs
+dist/index.cjs.map
+dist/index.d.cts
+dist/index.d.ts
+dist/index.js
+dist/index.js.map
+dist/step-worker-browser.cjs
+dist/step-worker-browser.cjs.map
+dist/step-worker-browser.d.cts
+dist/step-worker-browser.d.ts
+dist/step-worker-browser.js
+dist/step-worker-browser.js.map
+dist/step-worker.cjs
+dist/step-worker.cjs.map
+dist/step-worker.d.cts
+dist/step-worker.d.ts
+dist/step-worker.js
+dist/step-worker.js.map
+package.json
+README.md
+Tarball Details
+/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/spice-ts-circuit-json-consumer-g3o501/packs/spice-ts-core-0.3.0.tgz
+📦  @spice-ts/circuit-json@0.3.0
+Tarball Contents
+dist/index.cjs
+dist/index.cjs.map
+dist/index.d.cts
+dist/index.d.ts
+dist/index.js
+dist/index.js.map
+package.json
+README.md
+Tarball Details
+/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/spice-ts-circuit-json-consumer-g3o501/packs/spice-ts-circuit-json-0.3.0.tgz
+Progress: resolved 1, reused 0, downloaded 0, added 0
+Packages: +7
++++++++
+Progress: resolved 7, reused 5, downloaded 2, added 7, done
+
+dependencies:
++ @spice-ts/circuit-json 0.3.0
++ @spice-ts/core 0.3.0
++ typescript 5.9.3 (7.0.2 is available)
+
+Done in 514ms using pnpm v10.28.1
+Packed strict TypeScript consumer compiled successfully.
+
+> @spice-ts/mcp@0.3.0 test /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/packages/mcp
+> vitest run && pnpm test:packed-consumer
+
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/packages/mcp
+
+
+ Test Files  4 passed (4)
+      Tests  76 passed (76)
+   Start at  15:19:31
+   Duration  2.01s (transform 1.87s, setup 0ms, import 2.32s, tests 2.00s, environment 0ms)
+
+
+> @spice-ts/mcp@0.3.0 test:packed-consumer /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/packages/mcp
+> pnpm build && node scripts/packed-consumer.mjs
+
+
+> @spice-ts/mcp@0.3.0 build /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/packages/mcp
+> tsup
+
+CLI Building entry: src/index.ts, src/stdio.ts
+CLI Using tsconfig: tsconfig.json
+CLI tsup v8.5.1
+CLI Using tsup config: /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/packages/mcp/tsup.config.ts
+CLI Target: es2022
+CLI Cleaning output folder
+ESM Build start
+CJS Build start
+
+ WARN  [33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1m"import.meta" is not available with the "cjs" output format and will be empty[0m [empty-import-meta]
+
+    src/server.ts:1103:83:
+[37m      1103 │ ...(typeof __filename === 'string' ? __filename : [32mimport.meta[37m.url);
+           ╵                                                   [32m~~~~~~~~~~~[0m
+
+  You need to set the output format to "esm" for "import.meta" to work correctly.
+
+
+
+ESM dist/stdio.js              336.00 B
+ESM dist/index.js              514.00 B
+ESM dist/chunk-D7EDI3ZK.js     41.72 KB
+ESM dist/stdio.js.map          493.00 B
+ESM dist/index.js.map          71.00 B
+ESM dist/chunk-D7EDI3ZK.js.map 77.13 KB
+ESM ⚡️ Build success in 78ms
+CJS dist/stdio.cjs     41.85 KB
+CJS dist/index.cjs     43.33 KB
+CJS dist/stdio.cjs.map 77.42 KB
+CJS dist/index.cjs.map 77.17 KB
+CJS ⚡️ Build success in 79ms
+DTS Build start
+DTS ⚡️ Build success in 1919ms
+DTS dist/stdio.d.ts  13.00 B
+DTS dist/index.d.ts  3.06 KB
+DTS dist/stdio.d.cts 13.00 B
+DTS dist/index.d.cts 3.06 KB
+Packed MCP consumer and bounded stdio workflow passed.
+
+> @spice-ts/ui@0.3.0 test /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/packages/ui
+> vitest run
+
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/packages/ui
+
+ ✓ src/core/format.test.ts (11 tests) 10ms
+ ✓ src/core/data.test.ts (5 tests) 10ms
+ ✓ src/core/buffer.test.ts (6 tests) 9ms
+ ✓ src/core/theme.test.ts (8 tests) 9ms
+ ✓ src/core/interaction.test.ts (13 tests) 35ms
+ ✓ src/core/streaming.test.ts (14 tests) 42ms
+ ✓ src/schematic/layout.test.ts (41 tests) 48ms
+ ✓ src/core/scales.test.ts (8 tests) 5ms
+ ✓ src/core/renderer.test.ts (22 tests) 26ms
+ ✓ src/core/bode-renderer.test.ts (23 tests) 34ms
+ ✓ src/react/Legend.test.tsx (3 tests) 55ms
+ ✓ src/react/CursorTooltip.test.tsx (8 tests) 59ms
+ ✓ src/react/TransientPlot.test.tsx (10 tests) 35ms
+ ✓ src/react/DCSweepPlot.test.tsx (10 tests) 50ms
+ ✓ src/react/BodePlot.test.tsx (11 tests) 92ms
+ ✓ src/react/ProbeViewer.test.tsx (3 tests) 160ms
+ ✓ src/react/WaveformViewer.test.tsx (13 tests) 209ms
+
+ Test Files  17 passed (17)
+      Tests  209 passed (209)
+   Start at  15:19:40
+   Duration  1.67s (transform 2.03s, setup 385ms, import 4.44s, tests 886ms, environment 15.42s)
+
+JUNIT report written to /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/packages/ui/test-results.xml
+
+> @spice-ts/wasm@0.3.0 pretest /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/packages/wasm
+> pnpm build
+
+
+> @spice-ts/wasm@0.3.0 build /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/packages/wasm
+> tsx scripts/build.ts
+
+CLI Building entry: {"worker":"src/worker.ts"}
+CLI Using tsconfig: tsconfig.json
+CLI tsup v8.5.1
+CLI Target: es2022
+ESM Build start
+ESM dist/worker.js     1.77 MB
+ESM dist/worker.js.map 3.74 MB
+ESM ⚡️ Build success in 214ms
+CLI Building entry: {"index":"src/index.ts"}
+CLI Using tsconfig: tsconfig.json
+CLI tsup v8.5.1
+CLI Target: es2022
+ESM Build start
+ESM dist/index.js     42.34 KB
+ESM dist/index.js.map 90.10 KB
+ESM ⚡️ Build success in 8ms
+DTS Build start
+DTS ⚡️ Build success in 879ms
+DTS dist/index.d.ts 3.57 KB
+
+> @spice-ts/wasm@0.3.0 test /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/packages/wasm
+> vitest run && pnpm test:readme-losses && pnpm test:packed-consumer
+
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/packages/wasm
+
+
+ Test Files  6 passed (6)
+      Tests  64 passed (64)
+   Start at  15:19:45
+   Duration  12.86s (transform 2.01s, setup 0ms, import 2.73s, tests 16.29s, environment 0ms)
+
+
+> @spice-ts/wasm@0.3.0 test:readme-losses /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/packages/wasm
+> tsx --test ../../benchmarks/results/issue-355/readme-losses.test.ts ../../benchmarks/results/issue-362/readme-losses.test.ts
+
+TAP version 13
+# Subtest: the README reports every committed artifact size loss
+ok 1 - the README reports every committed artifact size loss
+  ---
+  duration_ms: 0.4855
+  type: 'test'
+  ...
+# Subtest: every receipt command names an existing @spice-ts/wasm script
+ok 2 - every receipt command names an existing @spice-ts/wasm script
+  ---
+  duration_ms: 0.134917
+  type: 'test'
+  ...
+# Subtest: the README reports every committed artifact size loss
+ok 3 - the README reports every committed artifact size loss
+  ---
+  duration_ms: 0.491542
+  type: 'test'
+  ...
+# Subtest: every receipt command names an existing @spice-ts/wasm script
+ok 4 - every receipt command names an existing @spice-ts/wasm script
+  ---
+  duration_ms: 0.134958
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 537.398375
+
+> @spice-ts/wasm@0.3.0 test:packed-consumer /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/packages/wasm
+> pnpm build && node scripts/packed-consumer.mjs
+
+
+> @spice-ts/wasm@0.3.0 build /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/packages/wasm
+> tsx scripts/build.ts
+
+CLI Building entry: {"worker":"src/worker.ts"}
+CLI Using tsconfig: tsconfig.json
+CLI tsup v8.5.1
+CLI Target: es2022
+ESM Build start
+ESM dist/worker.js     1.77 MB
+ESM dist/worker.js.map 3.74 MB
+ESM ⚡️ Build success in 186ms
+CLI Building entry: {"index":"src/index.ts"}
+CLI Using tsconfig: tsconfig.json
+CLI tsup v8.5.1
+CLI Target: es2022
+ESM Build start
+ESM dist/index.js     42.34 KB
+ESM dist/index.js.map 90.10 KB
+ESM ⚡️ Build success in 8ms
+DTS Build start
+DTS ⚡️ Build success in 560ms
+DTS dist/index.d.ts 3.57 KB
+📦  @spice-ts/core@0.3.0
+Tarball Contents
+dist/chunk-XRFPD5VI.js
+dist/chunk-XRFPD5VI.js.map
+dist/chunk-ZWC34H3M.js
+dist/chunk-ZWC34H3M.js.map
+dist/index.cjs
+dist/index.cjs.map
+dist/index.d.cts
+dist/index.d.ts
+dist/index.js
+dist/index.js.map
+dist/step-worker-browser.cjs
+dist/step-worker-browser.cjs.map
+dist/step-worker-browser.d.cts
+dist/step-worker-browser.d.ts
+dist/step-worker-browser.js
+dist/step-worker-browser.js.map
+dist/step-worker.cjs
+dist/step-worker.cjs.map
+dist/step-worker.d.cts
+dist/step-worker.d.ts
+dist/step-worker.js
+dist/step-worker.js.map
+package.json
+README.md
+Tarball Details
+/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/spice-ts-wasm-consumer-kCCsmc/packs/spice-ts-core-0.3.0.tgz
+📦  @spice-ts/protocol@0.3.0
+Tarball Contents
+dist/index.cjs
+dist/index.cjs.map
+dist/index.d.cts
+dist/index.d.ts
+dist/index.js
+dist/index.js.map
+fixtures/negative-v1.json
+fixtures/positive-v1.json
+package.json
+README.md
+schemas/common.schema.json
+schemas/diagnostic.schema.json
+schemas/failure-envelope.schema.json
+schemas/options.schema.json
+schemas/partial-run-metadata.schema.json
+schemas/partial-simulation-result.schema.json
+schemas/run-metadata.schema.json
+schemas/simulation-event.schema.json
+schemas/simulation-input.schema.json
+schemas/simulation-read-data.schema.json
+schemas/simulation-request.schema.json
+schemas/simulation-result.schema.json
+schemas/spice-ts-document.schema.json
+schemas/stream-point.schema.json
+schemas/stream-terminal.schema.json
+schemas/success-envelope.schema.json
+Tarball Details
+/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/spice-ts-wasm-consumer-kCCsmc/packs/spice-ts-protocol-0.3.0.tgz
+📦  @spice-ts/wasm@0.3.0
+Tarball Contents
+dist/dense-solver.wasm
+dist/index.d.ts
+dist/index.js
+dist/index.js.map
+dist/manifest.json
+dist/worker.js
+dist/worker.js.map
+package.json
+README.md
+Tarball Details
+/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/spice-ts-wasm-consumer-kCCsmc/packs/spice-ts-wasm-0.3.0.tgz
+Progress: resolved 1, reused 0, downloaded 0, added 0
+Packages: +8
+++++++++
+Progress: resolved 8, reused 5, downloaded 3, added 8, done
+
+dependencies:
++ @spice-ts/core 0.3.0
++ @spice-ts/protocol 0.3.0
++ @spice-ts/wasm 0.3.0
++ ajv 8.20.0
+
+Done in 414ms using pnpm v10.28.1
+Packed bounded WebAssembly consumer passed.
+
+> @spice-ts/examples@0.0.0 test /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/examples
+> tsx 01-voltage-divider.ts && tsx 02-rc-step-response.ts && tsx 03-ac-frequency-response.ts && tsx 04-cmos-inverter.ts && tsx 05-programmatic-api.ts && tsx 06-subcircuit-library.ts && tsx 07-streaming.ts && node --test circuit-json-threshold-cancellation/workflow.test.mjs && pnpm test:point-ceiling-recovery && pnpm test:agent-recovery && pnpm test:agent-workflows
+
+V(out) = 2.5000 V
+I(V1)  = -2.5000 mA
+RC Step Response (tau = 1ms)
+  V(out) at t=0:   0.0000 V
+  V(out) at t=tau: 3.1746 V  (expected ~3.16V)
+  V(out) at t=5ms: 4.9663 V
+  Total timepoints: 527
+AC Frequency Response — RC Low-Pass Filter
+  Frequency points: 101
+  |H| at 1 Hz:     1.0000 (-0.0 dB)
+  |H| at 100 Hz:   0.8467
+  f_-3dB:          159.2 Hz (expected ~159 Hz)
+  Phase at f_-3dB: -48.2 deg (expected ~-45 deg)
+CMOS Inverter Transient
+  Timepoints:      2029
+  V(out) midpoint: 3.300 V
+  V(out) final:    3.300 V
+  V(in) final:     0.000 V
+Wheatstone Bridge (Programmatic API)
+  V(a)     = 7.5000 V
+  V(b)     = 7.5000 V
+  V(a-b)   = 0.0000 V
+  Balanced: yes
+Part A: Inline Subcircuit (2-stage inverter)
+  V(in)  = 0.00 V
+  V(n1)  = 3.30 V (inverted)
+  V(out) = 0.00 V (double inverted)
+
+Part B: External Library (.include)
+  V(in)  = 3.30 V
+  V(out) = 0.00 V
+  t = 0.029 ms  V(cap) = 0.0235 V
+  t = 0.079 ms  V(cap) = 0.0650 V
+  t = 0.129 ms  V(cap) = 0.0889 V
+  t = 0.179 ms  V(cap) = 0.0905 V
+  t = 0.229 ms  V(cap) = 0.0703 V
+  t = 0.279 ms  V(cap) = 0.0343 V
+  t = 0.329 ms  V(cap) = -0.0081 V
+  t = 0.379 ms  V(cap) = -0.0465 V
+  t = 0.429 ms  V(cap) = -0.0719 V
+  t = 0.479 ms  V(cap) = -0.0790 V
+  t = 0.529 ms  V(cap) = -0.0668 V
+  t = 0.579 ms  V(cap) = -0.0392 V
+  t = 0.629 ms  V(cap) = -0.0037 V
+  t = 0.679 ms  V(cap) = 0.0310 V
+  t = 0.729 ms  V(cap) = 0.0566 V
+  t = 0.779 ms  V(cap) = 0.0675 V
+  t = 0.829 ms  V(cap) = 0.0617 V
+  t = 0.879 ms  V(cap) = 0.0414 V
+  t = 0.929 ms  V(cap) = 0.0123 V
+  t = 0.979 ms  V(cap) = -0.0184 V
+  t = 1.029 ms  V(cap) = -0.0432 V
+  t = 1.079 ms  V(cap) = -0.0564 V
+  t = 1.129 ms  V(cap) = -0.0555 V
+  t = 1.179 ms  V(cap) = -0.0415 V
+  t = 1.229 ms  V(cap) = -0.0182 V
+  t = 1.279 ms  V(cap) = 0.0083 V
+  t = 1.329 ms  V(cap) = 0.0316 V
+  t = 1.379 ms  V(cap) = 0.0461 V
+  t = 1.429 ms  V(cap) = 0.0489 V
+  t = 1.479 ms  V(cap) = 0.0399 V
+  t = 1.529 ms  V(cap) = 0.0218 V
+  t = 1.579 ms  V(cap) = -0.0006 V
+  t = 1.629 ms  V(cap) = -0.0218 V
+  t = 1.679 ms  V(cap) = -0.0367 V
+  t = 1.729 ms  V(cap) = -0.0422 V
+  t = 1.779 ms  V(cap) = -0.0373 V
+  t = 1.829 ms  V(cap) = -0.0237 V
+  t = 1.879 ms  V(cap) = -0.0052 V
+  t = 1.929 ms  V(cap) = 0.0137 V
+  t = 1.979 ms  V(cap) = 0.0284 V
+  t = 2.029 ms  V(cap) = 0.0356 V
+  t = 2.079 ms  V(cap) = 0.0340 V
+  t = 2.129 ms  V(cap) = 0.0243 V
+  t = 2.179 ms  V(cap) = 0.0093 V
+  t = 2.229 ms  V(cap) = -0.0072 V
+  t = 2.279 ms  V(cap) = -0.0212 V
+  t = 2.329 ms  V(cap) = -0.0294 V
+  t = 2.379 ms  V(cap) = -0.0302 V
+  t = 2.429 ms  V(cap) = -0.0237 V
+  t = 2.479 ms  V(cap) = -0.0119 V
+  t = 2.529 ms  V(cap) = 0.0022 V
+  t = 2.579 ms  V(cap) = 0.0150 V
+  t = 2.629 ms  V(cap) = 0.0237 V
+  t = 2.679 ms  V(cap) = 0.0263 V
+  t = 2.729 ms  V(cap) = 0.0225 V
+  t = 2.779 ms  V(cap) = 0.0135 V
+  t = 2.829 ms  V(cap) = 0.0017 V
+  t = 2.879 ms  V(cap) = -0.0099 V
+  t = 2.929 ms  V(cap) = -0.0186 V
+  t = 2.979 ms  V(cap) = -0.0224 V
+  t = 3.029 ms  V(cap) = -0.0207 V
+  t = 3.079 ms  V(cap) = -0.0141 V
+  t = 3.129 ms  V(cap) = -0.0045 V
+  t = 3.179 ms  V(cap) = 0.0058 V
+  t = 3.229 ms  V(cap) = 0.0141 V
+  t = 3.279 ms  V(cap) = 0.0187 V
+  t = 3.329 ms  V(cap) = 0.0186 V
+  t = 3.379 ms  V(cap) = 0.0140 V
+  t = 3.429 ms  V(cap) = 0.0064 V
+  t = 3.479 ms  V(cap) = -0.0025 V
+  t = 3.529 ms  V(cap) = -0.0102 V
+  t = 3.579 ms  V(cap) = -0.0152 V
+  t = 3.629 ms  V(cap) = -0.0163 V
+  t = 3.679 ms  V(cap) = -0.0135 V
+  t = 3.729 ms  V(cap) = -0.0075 V
+  t = 3.779 ms  V(cap) = -0.0001 V
+  t = 3.829 ms  V(cap) = 0.0070 V
+  t = 3.879 ms  V(cap) = 0.0121 V
+  t = 3.929 ms  V(cap) = 0.0140 V
+  t = 3.979 ms  V(cap) = 0.0125 V
+  t = 4.029 ms  V(cap) = 0.0081 V
+  t = 4.079 ms  V(cap) = 0.0020 V
+  t = 4.129 ms  V(cap) = -0.0043 V
+  t = 4.179 ms  V(cap) = -0.0093 V
+  t = 4.229 ms  V(cap) = -0.0118 V
+  t = 4.279 ms  V(cap) = -0.0114 V
+  t = 4.329 ms  V(cap) = -0.0082 V
+  t = 4.379 ms  V(cap) = -0.0033 V
+  t = 4.429 ms  V(cap) = 0.0022 V
+  t = 4.479 ms  V(cap) = 0.0069 V
+  t = 4.529 ms  V(cap) = 0.0097 V
+  t = 4.579 ms  V(cap) = 0.0101 V
+  t = 4.629 ms  V(cap) = 0.0080 V
+  t = 4.679 ms  V(cap) = 0.0041 V
+  t = 4.729 ms  V(cap) = -0.0005 V
+  t = 4.779 ms  V(cap) = -0.0049 V
+  t = 4.829 ms  V(cap) = -0.0078 V
+  t = 4.879 ms  V(cap) = -0.0087 V
+  t = 4.929 ms  V(cap) = -0.0076 V
+  t = 4.979 ms  V(cap) = -0.0046 V
+  t = 5.029 ms  V(cap) = -0.0007 V
+  t = 5.079 ms  V(cap) = 0.0032 V
+  t = 5.129 ms  V(cap) = 0.0061 V
+  t = 5.179 ms  V(cap) = 0.0074 V
+  t = 5.229 ms  V(cap) = 0.0069 V
+  t = 5.279 ms  V(cap) = 0.0048 V
+  t = 5.329 ms  V(cap) = 0.0016 V
+  t = 5.379 ms  V(cap) = -0.0018 V
+  t = 5.429 ms  V(cap) = -0.0046 V
+  t = 5.479 ms  V(cap) = -0.0062 V
+  t = 5.529 ms  V(cap) = -0.0062 V
+  t = 5.579 ms  V(cap) = -0.0047 V
+  t = 5.629 ms  V(cap) = -0.0022 V
+  t = 5.679 ms  V(cap) = 0.0007 V
+  t = 5.729 ms  V(cap) = 0.0033 V
+  t = 5.779 ms  V(cap) = 0.0050 V
+  t = 5.829 ms  V(cap) = 0.0054 V
+  t = 5.879 ms  V(cap) = 0.0045 V
+  t = 5.929 ms  V(cap) = 0.0026 V
+  t = 5.979 ms  V(cap) = 0.0001 V
+  t = 6.029 ms  V(cap) = -0.0023 V
+  t = 6.079 ms  V(cap) = -0.0040 V
+  t = 6.129 ms  V(cap) = -0.0047 V
+  t = 6.179 ms  V(cap) = -0.0042 V
+  t = 6.229 ms  V(cap) = -0.0028 V
+  t = 6.279 ms  V(cap) = -0.0007 V
+  t = 6.329 ms  V(cap) = 0.0014 V
+  t = 6.379 ms  V(cap) = 0.0030 V
+  t = 6.429 ms  V(cap) = 0.0039 V
+  t = 6.479 ms  V(cap) = 0.0038 V
+  t = 6.529 ms  V(cap) = 0.0028 V
+  t = 6.579 ms  V(cap) = 0.0012 V
+  t = 6.629 ms  V(cap) = -0.0007 V
+  t = 6.679 ms  V(cap) = -0.0022 V
+  t = 6.729 ms  V(cap) = -0.0032 V
+  t = 6.779 ms  V(cap) = -0.0034 V
+  t = 6.829 ms  V(cap) = -0.0027 V
+  t = 6.879 ms  V(cap) = -0.0014 V
+  t = 6.929 ms  V(cap) = 0.0001 V
+  t = 6.979 ms  V(cap) = 0.0016 V
+  t = 7.029 ms  V(cap) = 0.0026 V
+  t = 7.079 ms  V(cap) = 0.0029 V
+  t = 7.129 ms  V(cap) = 0.0025 V
+  t = 7.179 ms  V(cap) = 0.0016 V
+  t = 7.229 ms  V(cap) = 0.0003 V
+  t = 7.279 ms  V(cap) = -0.0010 V
+  t = 7.329 ms  V(cap) = -0.0020 V
+  t = 7.379 ms  V(cap) = -0.0025 V
+  t = 7.429 ms  V(cap) = -0.0023 V
+  t = 7.479 ms  V(cap) = -0.0016 V
+  t = 7.529 ms  V(cap) = -0.0006 V
+  t = 7.579 ms  V(cap) = 0.0006 V
+  t = 7.629 ms  V(cap) = 0.0015 V
+  t = 7.679 ms  V(cap) = 0.0020 V
+  t = 7.729 ms  V(cap) = 0.0021 V
+  t = 7.779 ms  V(cap) = 0.0016 V
+  t = 7.829 ms  V(cap) = 0.0008 V
+  t = 7.879 ms  V(cap) = -0.0002 V
+  t = 7.929 ms  V(cap) = -0.0011 V
+  t = 7.979 ms  V(cap) = -0.0017 V
+  t = 8.029 ms  V(cap) = -0.0018 V
+  t = 8.079 ms  V(cap) = -0.0015 V
+  t = 8.129 ms  V(cap) = -0.0009 V
+  t = 8.179 ms  V(cap) = -0.0001 V
+  t = 8.229 ms  V(cap) = 0.0007 V
+  t = 8.279 ms  V(cap) = 0.0013 V
+  t = 8.329 ms  V(cap) = 0.0015 V
+  t = 8.379 ms  V(cap) = 0.0014 V
+  t = 8.429 ms  V(cap) = 0.0009 V
+  t = 8.479 ms  V(cap) = 0.0003 V
+  t = 8.529 ms  V(cap) = -0.0004 V
+  t = 8.579 ms  V(cap) = -0.0010 V
+  t = 8.629 ms  V(cap) = -0.0013 V
+  t = 8.679 ms  V(cap) = -0.0013 V
+  t = 8.729 ms  V(cap) = -0.0009 V
+  t = 8.779 ms  V(cap) = -0.0004 V
+  t = 8.829 ms  V(cap) = 0.0002 V
+  t = 8.879 ms  V(cap) = 0.0007 V
+  t = 8.929 ms  V(cap) = 0.0011 V
+  t = 8.979 ms  V(cap) = 0.0011 V
+  t = 9.029 ms  V(cap) = 0.0009 V
+  t = 9.079 ms  V(cap) = 0.0005 V
+  t = 9.129 ms  V(cap) = -0.0000 V
+  t = 9.179 ms  V(cap) = -0.0005 V
+  t = 9.229 ms  V(cap) = -0.0008 V
+  t = 9.279 ms  V(cap) = -0.0010 V
+  t = 9.329 ms  V(cap) = -0.0009 V
+  t = 9.379 ms  V(cap) = -0.0005 V
+  t = 9.429 ms  V(cap) = -0.0001 V
+  t = 9.479 ms  V(cap) = 0.0003 V
+  t = 9.529 ms  V(cap) = 0.0007 V
+  t = 9.579 ms  V(cap) = 0.0008 V
+  t = 9.629 ms  V(cap) = 0.0008 V
+  t = 9.679 ms  V(cap) = 0.0006 V
+  t = 9.729 ms  V(cap) = 0.0002 V
+  t = 9.779 ms  V(cap) = -0.0002 V
+  t = 9.829 ms  V(cap) = -0.0005 V
+  t = 9.879 ms  V(cap) = -0.0007 V
+  t = 9.929 ms  V(cap) = -0.0007 V
+  t = 9.979 ms  V(cap) = -0.0005 V
+
+Streaming Results:
+  Total points:  20042
+  Peak voltage:  0.0926 V at t = 157.1 us
+TAP version 13
+# Subtest: runs the circuit-json threshold-cancellation workflow as a packed consumer
+ok 1 - runs the circuit-json threshold-cancellation workflow as a packed consumer
+  ---
+  duration_ms: 2373.700583
+  type: 'test'
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 1
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2415.475334
+
+> @spice-ts/examples@0.0.0 test:point-ceiling-recovery /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/examples
+> node --test point-ceiling-recovery/workflow.test.mjs
+
+TAP version 13
+# Subtest: recovers from a deterministic point ceiling as a packed consumer
+ok 1 - recovers from a deterministic point ceiling as a packed consumer
+  ---
+  duration_ms: 2192.963458
+  type: 'test'
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 1
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2231.136583
+
+> @spice-ts/examples@0.0.0 test:agent-recovery /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/examples
+> node --test agent-recovery/workflow.test.mjs
+
+TAP version 13
+# file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/examples/agent-recovery/workflow.mjs:147
+#         this.rejectAll(new Error(`MCP server exited early (${code ?? signal}): ${this.stderr}`));
+#                        ^
+# Error: MCP server exited early (1): file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/examples/agent-recovery/slow-start-server.mjs:10
+#   throw new Error('Set SPICE_TS_SLOW_START_MS and SPICE_TS_SLOW_START_SERVER');
+#         ^
+# Error: Set SPICE_TS_SLOW_START_MS and SPICE_TS_SLOW_START_SERVER
+#     at file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/examples/agent-recovery/slow-start-server.mjs:10:9
+#     at ModuleJob.run (node:internal/modules/esm/module_job:343:25)
+#     at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)
+#     at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)
+# Node.js v22.23.1
+#     at ChildProcess.<anonymous> (file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/examples/agent-recovery/workflow.mjs:147:24)
+#     at Object.onceWrapper (node:events:634:26)
+#     at ChildProcess.emit (node:events:519:28)
+#     at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+# Node.js v22.23.1
+# Subtest: recovers an invalid file request through built MCP stdio
+ok 1 - recovers an invalid file request through built MCP stdio
+  ---
+  duration_ms: 1280.195292
+  type: 'test'
+  ...
+# Subtest: waits for an MCP server that is slow to start instead of timing out
+ok 2 - waits for an MCP server that is slow to start instead of timing out
+  ---
+  duration_ms: 7244.697292
+  type: 'test'
+  ...
+# Subtest: fails fast with the server stderr when the MCP server exits early
+ok 3 - fails fast with the server stderr when the MCP server exits early
+  ---
+  duration_ms: 102.684084
+  type: 'test'
+  ...
+1..3
+# tests 3
+# suites 0
+# pass 3
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8685.030209
+
+> @spice-ts/examples@0.0.0 test:agent-workflows /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/examples
+> node --test agent-workflows/issue-63/workflow.test.mjs agent-workflows/issue-348/workflow.test.mjs
+
+TAP version 13
+# Subtest: repairs and resumes a multi-analysis request as a packed consumer
+ok 1 - repairs and resumes a multi-analysis request as a packed consumer
+  ---
+  duration_ms: 7794.041541
+  type: 'test'
+  ...
+# Subtest: workflow A: floating node -> INVALID_CIRCUIT -> repair -> OP, solve-only SINGULAR_MATRIX
+ok 2 - workflow A: floating node -> INVALID_CIRCUIT -> repair -> OP, solve-only SINGULAR_MATRIX
+  ---
+  duration_ms: 1809.084833
+  type: 'test'
+  ...
+# Subtest: workflow B: threshold-cancelled circuit-json transient yields a schema-valid partial terminal without resultSha256
+ok 3 - workflow B: threshold-cancelled circuit-json transient yields a schema-valid partial terminal without resultSha256
+  ---
+  duration_ms: 1189.37575
+  type: 'test'
+  ...
+1..3
+# tests 3
+# suites 0
+# pass 3
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 7855.520375
+
+> showcase@0.0.0 test /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/examples/showcase
+> vitest run
+
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/examples/showcase
+
+
+ Test Files  2 passed (2)
+      Tests  20 passed (20)
+   Start at  15:20:30
+   Duration  18.77s (transform 7.30s, setup 0ms, import 8.17s, tests 22.00s, environment 0ms)
+
+TAP version 13
+# Subtest: aggregate retains paired disjoint coverage without a false match
+ok 1 - aggregate retains paired disjoint coverage without a false match
+  ---
+  duration_ms: 9.417208
+  type: 'test'
+  ...
+# Subtest: packed retains paired disjoint coverage without a false match
+ok 2 - packed retains paired disjoint coverage without a false match
+  ---
+  duration_ms: 2.764125
+  type: 'test'
+  ...
+# Subtest: classic retains paired disjoint coverage without a false match
+ok 3 - classic retains paired disjoint coverage without a false match
+  ---
+  duration_ms: 0.807875
+  type: 'test'
+  ...
+# Subtest: aggregate retains paired empty-signals coverage without a false match
+ok 4 - aggregate retains paired empty-signals coverage without a false match
+  ---
+  duration_ms: 1.161959
+  type: 'test'
+  ...
+# Subtest: packed retains paired empty-signals coverage without a false match
+ok 5 - packed retains paired empty-signals coverage without a false match
+  ---
+  duration_ms: 1.2705
+  type: 'test'
+  ...
+# Subtest: classic retains paired empty-signals coverage without a false match
+ok 6 - classic retains paired empty-signals coverage without a false match
+  ---
+  duration_ms: 1.891541
+  type: 'test'
+  ...
+# Subtest: aggregate retains paired one-empty-signals coverage without a false match
+ok 7 - aggregate retains paired one-empty-signals coverage without a false match
+  ---
+  duration_ms: 0.636167
+  type: 'test'
+  ...
+# Subtest: packed retains paired one-empty-signals coverage without a false match
+ok 8 - packed retains paired one-empty-signals coverage without a false match
+  ---
+  duration_ms: 0.45275
+  type: 'test'
+  ...
+# Subtest: classic retains paired one-empty-signals coverage without a false match
+ok 9 - classic retains paired one-empty-signals coverage without a false match
+  ---
+  duration_ms: 0.7655
+  type: 'test'
+  ...
+# Subtest: aggregate retains paired empty-values coverage without a false match
+ok 10 - aggregate retains paired empty-values coverage without a false match
+  ---
+  duration_ms: 0.635792
+  type: 'test'
+  ...
+# Subtest: packed retains paired empty-values coverage without a false match
+ok 11 - packed retains paired empty-values coverage without a false match
+  ---
+  duration_ms: 0.259375
+  type: 'test'
+  ...
+# Subtest: classic retains paired empty-values coverage without a false match
+ok 12 - classic retains paired empty-values coverage without a false match
+  ---
+  duration_ms: 0.173292
+  type: 'test'
+  ...
+# Subtest: aggregate retains paired empty-grid coverage without a false match
+ok 13 - aggregate retains paired empty-grid coverage without a false match
+  ---
+  duration_ms: 0.093708
+  type: 'test'
+  ...
+# Subtest: packed retains paired empty-grid coverage without a false match
+ok 14 - packed retains paired empty-grid coverage without a false match
+  ---
+  duration_ms: 0.129334
+  type: 'test'
+  ...
+# Subtest: classic retains paired empty-grid coverage without a false match
+ok 15 - classic retains paired empty-grid coverage without a false match
+  ---
+  duration_ms: 0.224291
+  type: 'test'
+  ...
+# Subtest: packed batching preserves shared-signal semantics for partially overlapping plots
+ok 16 - packed batching preserves shared-signal semantics for partially overlapping plots
+  ---
+  duration_ms: 0.3675
+  type: 'test'
+  ...
+# Subtest: repeated descriptive plots pair by occurrence without reference reuse
+ok 17 - repeated descriptive plots pair by occurrence without reference reuse
+  ---
+  duration_ms: 0.127875
+  type: 'test'
+  ...
+# Subtest: unmatched reference plots are explicit
+ok 18 - unmatched reference plots are explicit
+  ---
+  duration_ms: 0.110416
+  type: 'test'
+  ...
+# Subtest: nested sweep resets align all points within separate outer groups
+ok 19 - nested sweep resets align all points within separate outer groups
+  ---
+  duration_ms: 1.548125
+  type: 'test'
+  ...
+# Subtest: descending nested primary sweep aligns all points
+ok 20 - descending nested primary sweep aligns all points
+  ---
+  duration_ms: 0.558208
+  type: 'test'
+  ...
+# Subtest: ordinal fallback rejects different primary grids instead of interpolating
+ok 21 - ordinal fallback rejects different primary grids instead of interpolating
+  ---
+  duration_ms: 0.798125
+  type: 'test'
+  ...
+# Subtest: ordinal fallback rejects unequal reset counts visibly
+ok 22 - ordinal fallback rejects unequal reset counts visibly
+  ---
+  duration_ms: 0.203709
+  type: 'test'
+  ...
+# Subtest: ordinal fallback checks coordinates, not merely the grid length
+ok 23 - ordinal fallback checks coordinates, not merely the grid length
+  ---
+  duration_ms: 0.571625
+  type: 'test'
+  ...
+# Subtest: ordinal fallback checks a singleton secondary group with unknown reference coordinates
+ok 24 - ordinal fallback checks a singleton secondary group with unknown reference coordinates
+  ---
+  duration_ms: 0.187916
+  type: 'test'
+  ...
+# Subtest: packed batching preserves repeated plot pairing
+ok 25 - packed batching preserves repeated plot pairing
+  ---
+  duration_ms: 0.920917
+  type: 'test'
+  ...
+# Subtest: secondary coordinates pair reordered groups rather than their ordinals
+ok 26 - secondary coordinates pair reordered groups rather than their ordinals
+  ---
+  duration_ms: 0.461667
+  type: 'test'
+  ...
+# Subtest: unmatched secondary groups cannot masquerade as a match
+ok 27 - unmatched secondary groups cannot masquerade as a match
+  ---
+  duration_ms: 0.161875
+  type: 'test'
+  ...
+# Subtest: nested sweep retains reset identity across the 25k chunk boundary
+ok 28 - nested sweep retains reset identity across the 25k chunk boundary
+  ---
+  duration_ms: 129.907917
+  type: 'test'
+  ...
+# Subtest: straight-line literal DC metadata refuses dynamic scripts
+ok 29 - straight-line literal DC metadata refuses dynamic scripts
+  ---
+  duration_ms: 0.626667
+  type: 'test'
+  ...
+# Subtest: literal nested dot-card DC declares secondary coordinates for raw plot names
+ok 30 - literal nested dot-card DC declares secondary coordinates for raw plot names
+  ---
+  duration_ms: 0.294459
+  type: 'test'
+  ...
+# Subtest: literal control DC descriptive names require a unique declaration
+ok 31 - literal control DC descriptive names require a unique declaration
+  ---
+  duration_ms: 0.244334
+  type: 'test'
+  ...
+# Subtest: literal DC rejects dynamic, ambiguous and nonliteral provenance
+ok 32 - literal DC rejects dynamic, ambiguous and nonliteral provenance
+  ---
+  duration_ms: 0.175792
+  type: 'test'
+  ...
+# Subtest: normalization reads each paired reference peak, not the first plot peak
+ok 33 - normalization reads each paired reference peak, not the first plot peak
+  ---
+  duration_ms: 0.167
+  type: 'test'
+  ...
+# Subtest: classic report uses the same one-to-one pairing rather than reusing its first plot
+ok 34 - classic report uses the same one-to-one pairing rather than reusing its first plot
+  ---
+  duration_ms: 0.150333
+  type: 'test'
+  ...
+# Subtest: j-14 raw receipt reproduces all six comparisons and retains near-zero TEMP residuals
+ok 35 - j-14 raw receipt reproduces all six comparisons and retains near-zero TEMP residuals
+  ---
+  duration_ms: 171.53
+  type: 'test'
+  ...
+# Subtest: classic corpus comparison report
+    # Subtest: feeds the exact same fixture bytes to both engines and records matched-point errors
+    ok 1 - feeds the exact same fixture bytes to both engines and records matched-point errors
+      ---
+      duration_ms: 0.479958
+      type: 'test'
+      ...
+    # Subtest: keeps unsupported and failed losses visible in deterministic totals
+    ok 2 - keeps unsupported and failed losses visible in deterministic totals
+      ---
+      duration_ms: 0.181708
+      type: 'test'
+      ...
+    # Subtest: rejects fixture bytes that differ from the licensed manifest hash
+    ok 3 - rejects fixture bytes that differ from the licensed manifest hash
+      ---
+      duration_ms: 0.350583
+      type: 'test'
+      ...
+    # Subtest: emits native spice-ts pole-zero series for the unchanged classic fixtures
+    ok 4 - emits native spice-ts pole-zero series for the unchanged classic fixtures
+      ---
+      duration_ms: 837.181542
+      type: 'test'
+      ...
+    # Subtest: emits native spice-ts noise spectra and totals with ngspice-47 plot and vector names
+    ok 5 - emits native spice-ts noise spectra and totals with ngspice-47 plot and vector names
+      ---
+      duration_ms: 65.289208
+      type: 'test'
+      ...
+    # Subtest: emits native spice-ts distortion products with ngspice-47 plot and vector names (\#391)
+    ok 6 - emits native spice-ts distortion products with ngspice-47 plot and vector names (\#391)
+      ---
+      duration_ms: 8.892541
+      type: 'test'
+      ...
+    # Subtest: pairs each spice-ts distortion product with the same-named ngspice plot
+    ok 7 - pairs each spice-ts distortion product with the same-named ngspice plot
+      ---
+      duration_ms: 0.584125
+      type: 'test'
+      ...
+    # Subtest: pairs same-type plots by plot name so noise spectra and totals are both compared
+    ok 8 - pairs same-type plots by plot name so noise spectra and totals are both compared
+      ---
+      duration_ms: 0.333875
+      type: 'test'
+      ...
+    # Subtest: programmatically verifies the committed 20-fixture loss totals and input hashes
+    ok 9 - programmatically verifies the committed 20-fixture loss totals and input hashes
+      ---
+      duration_ms: 1.051875
+      type: 'test'
+      ...
+    1..9
+ok 36 - classic corpus comparison report
+  ---
+  duration_ms: 914.772792
+  type: 'suite'
+  ...
+# Subtest: control export and native adapter retain all IDs and pair reordered plots
+ok 37 - control export and native adapter retain all IDs and pair reordered plots
+  ---
+  duration_ms: 150.942583
+  type: 'test'
+  ...
+# Subtest: comparison metrics
+    # Subtest: aligns mismatched grids by interpolating the ngspice reference onto spice-ts points
+    ok 1 - aligns mismatched grids by interpolating the ngspice reference onto spice-ts points
+      ---
+      duration_ms: 0.208
+      type: 'test'
+      ...
+    # Subtest: measures waveforms with more than 200k points without exceeding the call-stack argument limit (\#611)
+    ok 2 - measures waveforms with more than 200k points without exceeding the call-stack argument limit (\#611)
+      ---
+      duration_ms: 248.240083
+      type: 'test'
+      ...
+    # Subtest: aligns a two-source nested DC sweep segment by segment instead of across repeated primary grids
+    ok 3 - aligns a two-source nested DC sweep segment by segment instead of across repeated primary grids
+      ---
+      duration_ms: 0.160916
+      type: 'test'
+      ...
+    # Subtest: interpolates within explicitly identified secondary groups when primary grids differ
+    ok 4 - interpolates within explicitly identified secondary groups when primary grids differ
+      ---
+      duration_ms: 0.073375
+      type: 'test'
+      ...
+    # Subtest: refuses to align nested DC sweeps whose segment counts differ
+    ok 5 - refuses to align nested DC sweeps whose segment counts differ
+      ---
+      duration_ms: 0.035167
+      type: 'test'
+      ...
+    # Subtest: matches the unchanged xyce nmos-level1-dc nested sweep against ngspice (\#384)
+    ok 6 - matches the unchanged xyce nmos-level1-dc nested sweep against ngspice (\#384)
+      ---
+      duration_ms: 91.60025
+      type: 'test'
+      ...
+    # Subtest: charges a step inside an unresolved ngspice interval to linear interpolation on the spice-ts grid
+    ok 7 - charges a step inside an unresolved ngspice interval to linear interpolation on the spice-ts grid
+      ---
+      duration_ms: 0.198666
+      type: 'test'
+      ...
+    # Subtest: compares one-sided across an ngspice interval that opens at a shared breakpoint (\#445)
+    ok 8 - compares one-sided across an ngspice interval that opens at a shared breakpoint (\#445)
+      ---
+      duration_ms: 0.195208
+      type: 'test'
+      ...
+    # Subtest: still charges a post-breakpoint value that matches neither side of the step
+    ok 9 - still charges a post-breakpoint value that matches neither side of the step
+      ---
+      duration_ms: 0.0865
+      type: 'test'
+      ...
+    # Subtest: keeps plain linear interpolation in intervals that do not open at a shared point
+    ok 10 - keeps plain linear interpolation in intervals that do not open at a shared point
+      ---
+      duration_ms: 0.076167
+      type: 'test'
+      ...
+    # Subtest: publishes xyce/inductor-transient breakpoint-aligned with the linear metric retained (\#445)
+    ok 11 - publishes xyce/inductor-transient breakpoint-aligned with the linear metric retained (\#445)
+      ---
+      duration_ms: 52.508625
+      type: 'test'
+      ...
+    # Subtest: reports zero-reference relative error as unavailable instead of Infinity
+    ok 12 - reports zero-reference relative error as unavailable instead of Infinity
+      ---
+      duration_ms: 0.282542
+      type: 'test'
+      ...
+    # Subtest: preserves missing signals in the report
+    ok 13 - preserves missing signals in the report
+      ---
+      duration_ms: 0.095875
+      type: 'test'
+      ...
+    # Subtest: compares a legal descending DC sweep when both engines succeed
+    ok 14 - compares a legal descending DC sweep when both engines succeed
+      ---
+      duration_ms: 1.280208
+      type: 'test'
+      ...
+    1..14
+ok 38 - comparison metrics
+  ---
+  duration_ms: 395.492541
+  type: 'suite'
+  ...
+# Subtest: runner failure handling
+    # Subtest: preserves failed engine runs without dropping the fixture
+    ok 1 - preserves failed engine runs without dropping the fixture
+      ---
+      duration_ms: 4.273667
+      type: 'test'
+      ...
+    # Subtest: turns a thrown runner error into a preserved failed run
+    ok 2 - turns a thrown runner error into a preserved failed run
+      ---
+      duration_ms: 0.456417
+      type: 'test'
+      ...
+    1..2
+ok 39 - runner failure handling
+  ---
+  duration_ms: 5.029208
+  type: 'suite'
+  ...
+# Subtest: ngspice raw parser
+    # Subtest: parses real and complex plots without losing plot boundaries
+    ok 1 - parses real and complex plots without losing plot boundaries
+      ---
+      duration_ms: 0.26625
+      type: 'test'
+      ...
+    1..1
+ok 40 - ngspice raw parser
+  ---
+  duration_ms: 0.326792
+  type: 'suite'
+  ...
+# Subtest: stable JSON schema
+    # Subtest: serializes the v2 schema in a stable key order
+    ok 1 - serializes the v2 schema in a stable key order
+      ---
+      duration_ms: 0.113625
+      type: 'test'
+      ...
+    1..1
+ok 41 - stable JSON schema
+  ---
+  duration_ms: 0.156208
+  type: 'suite'
+  ...
+# Subtest: ngspice initial-state semantics
+    # Subtest: confirms .ic UIC/non-UIC, mixed-case, and .nodeset reference behavior
+    ok 1 - confirms .ic UIC/non-UIC, mixed-case, and .nodeset reference behavior
+      ---
+      duration_ms: 148.805
+      type: 'test'
+      ...
+    1..1
+ok 42 - ngspice initial-state semantics
+  ---
+  duration_ms: 148.8725
+  type: 'suite'
+  ...
+# Subtest: corpus-f control wrapper (\#521)
+    # Subtest: sources a separate unchanged fixture and exports every retained plot
+    ok 1 - sources a separate unchanged fixture and exports every retained plot
+      ---
+      duration_ms: 0.862792
+      type: 'test'
+      ...
+    # Subtest: exports control-only op/DC vectors without changing the fixture
+    ok 2 - exports control-only op/DC vectors without changing the fixture
+      ---
+      duration_ms: 145.314167
+      type: 'test'
+      ...
+    # Subtest: exports vectors from a deck whose control block ends with quit or exit (\#528)
+    ok 3 - exports vectors from a deck whose control block ends with quit or exit (\#528)
+      ---
+      duration_ms: 190.224209
+      type: 'test'
+      ...
+    # Subtest: does not score a deck that leaves no plot of its analysis type as a match
+    ok 4 - does not score a deck that leaves no plot of its analysis type as a match
+      ---
+      duration_ms: 36.536416
+      type: 'test'
+      ...
+    # Subtest: names why a successful ngspice run left no reference (\#528)
+    ok 5 - names why a successful ngspice run left no reference (\#528)
+      ---
+      duration_ms: 0.357417
+      type: 'test'
+      ...
+    # Subtest: reports ngspice source failures rather than inventing a reference
+    ok 6 - reports ngspice source failures rather than inventing a reference
+      ---
+      duration_ms: 37.963625
+      type: 'test'
+      ...
+    1..6
+ok 43 - corpus-f control wrapper (\#521)
+  ---
+  duration_ms: 412.473292
+  type: 'suite'
+  ...
+# Subtest: corpus-f spice-ts child transport
+    # Subtest: round-trips an execution through packed Float64Arrays bit-for-bit
+    ok 1 - round-trips an execution through packed Float64Arrays bit-for-bit
+      ---
+      duration_ms: 1.029667
+      type: 'test'
+      ...
+    1..1
+ok 44 - corpus-f spice-ts child transport
+  ---
+  duration_ms: 1.462667
+  type: 'suite'
+  ...
+# Subtest: corpus-f deck classification
+    # Subtest: reads dot-card and control-block analyses but never the title line
+    ok 1 - reads dot-card and control-block analyses but never the title line
+      ---
+      duration_ms: 1.515083
+      type: 'test'
+      ...
+    # Subtest: defers decks that need companion files or compiled OSDI models
+    ok 2 - defers decks that need companion files or compiled OSDI models
+      ---
+      duration_ms: 1.480584
+      type: 'test'
+      ...
+    # Subtest: flags host commands and third-party notices
+    ok 3 - flags host commands and third-party notices
+      ---
+      duration_ms: 0.71025
+      type: 'test'
+      ...
+    # Subtest: flags (c), (C) and © copyright marks but not a node named c
+    ok 4 - flags (c), (C) and © copyright marks but not a node named c
+      ---
+      duration_ms: 0.137167
+      type: 'test'
+      ...
+    # Subtest: derives stable path ids
+    ok 5 - derives stable path ids
+      ---
+      duration_ms: 0.10725
+      type: 'test'
+      ...
+    # Subtest: selects in path order, deduplicates by content, and keeps exclusions with reasons
+    ok 6 - selects in path order, deduplicates by content, and keeps exclusions with reasons
+      ---
+      duration_ms: 11.361958
+      type: 'test'
+      ...
+    1..6
+ok 45 - corpus-f deck classification
+  ---
+  duration_ms: 15.573583
+  type: 'suite'
+  ...
+# Subtest: corpus-f outcome rules
+    # Subtest: extracts the first ngspice error line and classifies it
+    ok 1 - extracts the first ngspice error line and classifies it
+      ---
+      duration_ms: 0.282333
+      type: 'test'
+      ...
+    # Subtest: buckets spice-ts failures by their own error text
+    ok 2 - buckets spice-ts failures by their own error text
+      ---
+      duration_ms: 2.694958
+      type: 'test'
+      ...
+    # Subtest: normalises errors to the ngspice peak and applies one threshold to every fixture
+    ok 3 - normalises errors to the ngspice peak and applies one threshold to every fixture
+      ---
+      duration_ms: 0.496916
+      type: 'test'
+      ...
+    # Subtest: normalises .noise integrated totals by their own ngspice value, not the floor (\#774)
+    ok 4 - normalises .noise integrated totals by their own ngspice value, not the floor (\#774)
+      ---
+      duration_ms: 11.989083
+      type: 'test'
+      ...
+    # Subtest: scores zero and near-zero ngspice peaks against the ngspice VNTOL/ABSTOL absolute floor (\#593)
+    ok 5 - scores zero and near-zero ngspice peaks against the ngspice VNTOL/ABSTOL absolute floor (\#593)
+      ---
+      duration_ms: 0.378042
+      type: 'test'
+      ...
+    1..5
+ok 46 - corpus-f outcome rules
+  ---
+  duration_ms: 16.095792
+  type: 'suite'
+  ...
+# Subtest: corpus-f committed artifacts
+    # Subtest: pins every fixture byte-for-byte and accounts for every candidate
+    ok 1 - pins every fixture byte-for-byte and accounts for every candidate
+      ---
+      duration_ms: 353.304875
+      type: 'test'
+      ...
+    # Subtest: keeps SOURCES.md generated from the manifest
+    ok 2 - keeps SOURCES.md generated from the manifest
+      ---
+      duration_ms: 3.488917
+      type: 'test'
+      ...
+    # Subtest: keeps README.md and totals generated from outcomes.json
+    ok 3 - keeps README.md and totals generated from outcomes.json
+      ---
+      duration_ms: 92.61425
+      type: 'test'
+      ...
+    # Subtest: regenerating the batch-1 README keeps the control-vector supplement
+    ok 4 - regenerating the batch-1 README keeps the control-vector supplement
+      ---
+      duration_ms: 5.60475
+      type: 'test'
+      ...
+    # Subtest: lists every control deck exactly once in the supplemental table
+    ok 5 - lists every control deck exactly once in the supplemental table
+      ---
+      duration_ms: 133.768208
+      type: 'test'
+      ...
+    1..5
+ok 47 - corpus-f committed artifacts
+  ---
+  duration_ms: 589.201333
+  type: 'suite'
+  ...
+# Subtest: corpus-f sp/sens plots and streamed references (\#694)
+    # Subtest: streams the same plots as parseNgspiceRaw, LF or CRLF
+    ok 1 - streams the same plots as parseNgspiceRaw, LF or CRLF
+      ---
+      duration_ms: 1.258792
+      type: 'test'
+      ...
+    # Subtest: keeps the grid and only the selected signals
+    ok 2 - keeps the grid and only the selected signals
+      ---
+      duration_ms: 0.473708
+      type: 'test'
+      ...
+    # Subtest: selects the union of signals over every spice-ts plot of a type
+    ok 3 - selects the union of signals over every spice-ts plot of a type
+      ---
+      duration_ms: 0.228584
+      type: 'test'
+      ...
+    # Subtest: maps SP and sensitivity plots and scores them on the control decks only
+    ok 4 - maps SP and sensitivity plots and scores them on the control decks only
+      ---
+      duration_ms: 0.130125
+      type: 'test'
+      ...
+    # Subtest: links the new sp/sens/linearize losses to their own issues (reporting only)
+    ok 5 - links the new sp/sens/linearize losses to their own issues (reporting only)
+      ---
+      duration_ms: 0.71375
+      type: 'test'
+      ...
+    # Subtest: names spice-ts sp/sens vectors as ngspice writes them and retains every control run
+    ok 6 - names spice-ts sp/sens vectors as ngspice writes them and retains every control run
+      ---
+      duration_ms: 0.600417
+      type: 'test'
+      ...
+    # Subtest: exports sp and sens plots from .control and keeps only selected signals
+    ok 7 - exports sp and sens plots from .control and keeps only selected signals
+      ---
+      duration_ms: 207.316875
+      type: 'test'
+      ...
+    # Subtest: scores sp and sens control commands against ngspice on identical bytes (\#750)
+    ok 8 - scores sp and sens control commands against ngspice on identical bytes (\#750)
+      ---
+      duration_ms: 2159.112375
+      type: 'test'
+      ...
+    # Subtest: scores a dot-card .sp deck run from .control against ngspice (identical bytes)
+    ok 9 - scores a dot-card .sp deck run from .control against ngspice (identical bytes)
+      ---
+      duration_ms: 1189.2195
+      type: 'test'
+      ...
+    1..9
+ok 48 - corpus-f sp/sens plots and streamed references (\#694)
+  ---
+  duration_ms: 3559.424417
+  type: 'suite'
+  ...
+# Subtest: corpus-f long transients in a bounded heap (\#839)
+    # Subtest: scores packed executions in any batch size exactly like one compareExecutions call
+    ok 1 - scores packed executions in any batch size exactly like one compareExecutions call
+      ---
+      duration_ms: 4.000583
+      type: 'test'
+      ...
+    # Subtest: reads an ngspice raw file into packed columns with the object reader's values
+    ok 2 - reads an ngspice raw file into packed columns with the object reader's values
+      ---
+      duration_ms: 0.515958
+      type: 'test'
+      ...
+    # Subtest: packs the spice-ts adapter result without changing a value
+    ok 3 - packs the spice-ts adapter result without changing a value
+      ---
+      duration_ms: 414.682667
+      type: 'test'
+      ...
+    # Subtest: runs the spice-ts child without per-sample objects
+    ok 4 - runs the spice-ts child without per-sample objects
+      ---
+      duration_ms: 2569.621792
+      type: 'test'
+      ...
+    # Subtest: compares both engines on every signal within the same bound
+    ok 5 - compares both engines on every signal within the same bound
+      ---
+      duration_ms: 139838.349125
+      type: 'test'
+      ...
+    1..5
+ok 49 - corpus-f long transients in a bounded heap (\#839)
+  ---
+  duration_ms: 142827.503208
+  type: 'suite'
+  ...
+# Subtest: corpus-f \#511 triage
+    # Subtest: triages every \#511 row and explicitly tracks newly exposed mismatches
+    ok 1 - triages every \#511 row and explicitly tracks newly exposed mismatches
+      ---
+      duration_ms: 10.484
+      type: 'test'
+      ...
+    # Subtest: records each fixture as it stands in the committed outcomes.json
+    ok 2 - records each fixture as it stands in the committed outcomes.json
+      ---
+      duration_ms: 2.953
+      type: 'test'
+      ...
+    # Subtest: links every unresolved row to a root cause with a GitHub issue
+    ok 3 - links every unresolved row to a root cause with a GitHub issue
+      ---
+      duration_ms: 2.292208
+      type: 'test'
+      ...
+    1..3
+ok 50 - corpus-f \#511 triage
+  ---
+  duration_ms: 31.651416
+  type: 'suite'
+  ...
+# Subtest: triage-detail --tmax rewrite
+    # Subtest: forces TMAX on every .tran form and keeps UIC
+    ok 1 - forces TMAX on every .tran form and keeps UIC
+      ---
+      duration_ms: 0.299417
+      type: 'test'
+      ...
+    1..1
+ok 51 - triage-detail --tmax rewrite
+  ---
+  duration_ms: 0.388417
+  type: 'suite'
+  ...
+# Subtest: unchanged-deck live triage rows (\#590 fixed, ltra2 matches since 3b9c836f, fourbitadder \#698)
+    # Subtest: tests-general-mosmem-cir matches after \#601 (\#590)
+    ok 1 - tests-general-mosmem-cir matches after \#601 (\#590)
+      ---
+      duration_ms: 1926.779333
+      type: 'test'
+      ...
+    # Subtest: tests-transmission-ltra2-2-line-cir matches on main 3b9c836f
+    ok 2 - tests-transmission-ltra2-2-line-cir matches on main 3b9c836f
+      ---
+      duration_ms: 1974.651917
+      type: 'test'
+      ...
+    # Subtest: tests-general-fourbitadder-cir: uV-level NAND nodes within VNTOL of ngspice-47 at default steps (\#698)
+    ok 3 - tests-general-fourbitadder-cir: uV-level NAND nodes within VNTOL of ngspice-47 at default steps (\#698)
+      ---
+      duration_ms: 1606.609958
+      type: 'test'
+      ...
+    # Subtest: tests-general-fourbitadder-cir: every signal within VNTOL with both engines at TMAX 10 ps (\#698)
+    ok 4 - tests-general-fourbitadder-cir: every signal within VNTOL with both engines at TMAX 10 ps (\#698)
+      ---
+      duration_ms: 2760.586917
+      type: 'test'
+      ...
+    1..4
+ok 52 - unchanged-deck live triage rows (\#590 fixed, ltra2 matches since 3b9c836f, fourbitadder \#698)
+  ---
+  duration_ms: 8269.09725
+  type: 'suite'
+  ...
+# Subtest: corpus-g static rules
+    # Subtest: reuses the corpus-f deck rules: notices, companions, analyses
+    ok 1 - reuses the corpus-f deck rules: notices, companions, analyses
+      ---
+      duration_ms: 1.787709
+      type: 'test'
+      ...
+    # Subtest: drops decks already in a corpus by path or by hash (with and without the terminal newline), then duplicates
+    ok 2 - drops decks already in a corpus by path or by hash (with and without the terminal newline), then duplicates
+      ---
+      duration_ms: 11.440625
+      type: 'test'
+      ...
+    1..2
+ok 53 - corpus-g static rules
+  ---
+  duration_ms: 13.901917
+  type: 'suite'
+  ...
+# Subtest: corpus-g reference selection
+    # Subtest: keeps only decks with an ngspice reference and caps each directory in path order
+    ok 1 - keeps only decks with an ngspice reference and caps each directory in path order
+      ---
+      duration_ms: 1.454209
+      type: 'test'
+      ...
+    # Subtest: refuses a probe recorded for different bytes
+    ok 2 - refuses a probe recorded for different bytes
+      ---
+      duration_ms: 0.4035
+      type: 'test'
+      ...
+    1..2
+ok 54 - corpus-g reference selection
+  ---
+  duration_ms: 2.006833
+  type: 'suite'
+  ...
+# Subtest: corpus-g gap buckets
+    # Subtest: leaves BSIM4 levels to the corpus-f BSIM4 bucket and names B3SOI LEVEL=10 on its own (\#747)
+    ok 1 - leaves BSIM4 levels to the corpus-f BSIM4 bucket and names B3SOI LEVEL=10 on its own (\#747)
+      ---
+      duration_ms: 2.419334
+      type: 'test'
+      ...
+    1..1
+ok 55 - corpus-g gap buckets
+  ---
+  duration_ms: 2.505084
+  type: 'suite'
+  ...
+# Subtest: corpus-g match rule
+    # Subtest: describes the per-quantity peak floor that the shared corpus-f metric applies (\#705)
+    ok 1 - describes the per-quantity peak floor that the shared corpus-f metric applies (\#705)
+      ---
+      duration_ms: 0.334958
+      type: 'test'
+      ...
+    # Subtest: publishes that rule in the committed outcomes.json and README.md
+    ok 2 - publishes that rule in the committed outcomes.json and README.md
+      ---
+      duration_ms: 15.018417
+      type: 'test'
+      ...
+    1..2
+ok 56 - corpus-g match rule
+  ---
+  duration_ms: 15.898833
+  type: 'suite'
+  ...
+# Subtest: corpus-g committed artifacts
+    # Subtest: pins every fixture byte-for-byte, accounts for every candidate and never overlaps another corpus
+    ok 1 - pins every fixture byte-for-byte, accounts for every candidate and never overlaps another corpus
+      ---
+      duration_ms: 644.00325
+      type: 'test'
+      ...
+    # Subtest: selects only decks whose recorded ngspice probe produced a reference
+    ok 2 - selects only decks whose recorded ngspice probe produced a reference
+      ---
+      duration_ms: 7.984708
+      type: 'test'
+      ...
+    # Subtest: keeps SOURCES.md generated from the manifest
+    ok 3 - keeps SOURCES.md generated from the manifest
+      ---
+      duration_ms: 63.395708
+      type: 'test'
+      ...
+    # Subtest: keeps README.md and totals generated from outcomes.json
+    ok 4 - keeps README.md and totals generated from outcomes.json
+      ---
+      duration_ms: 21.974958
+      type: 'test'
+      ...
+    # Subtest: links an issue for every gap bucket of three or more fixtures that ngspice runs
+    ok 5 - links an issue for every gap bucket of three or more fixtures that ngspice runs
+      ---
+      duration_ms: 1.324709
+      type: 'test'
+      ...
+    1..5
+ok 57 - corpus-g committed artifacts
+  ---
+  duration_ms: 739.262375
+  type: 'suite'
+  ...
+# Subtest: corpus-h source table
+    # Subtest: pins every source to a full revision and a redistributable licence
+    ok 1 - pins every source to a full revision and a redistributable licence
+      ---
+      duration_ms: 1.362875
+      type: 'test'
+      ...
+    # Subtest: considers deck extensions under the source roots only
+    ok 2 - considers deck extensions under the source roots only
+      ---
+      duration_ms: 0.217167
+      type: 'test'
+      ...
+    1..2
+ok 58 - corpus-h source table
+  ---
+  duration_ms: 2.14325
+  type: 'suite'
+  ...
+# Subtest: corpus-h static rules
+    # Subtest: reuses the corpus-f deck rules: notices, companions, analyses
+    ok 1 - reuses the corpus-f deck rules: notices, companions, analyses
+      ---
+      duration_ms: 0.589291
+      type: 'test'
+      ...
+    # Subtest: drops skipped paths, decks already in a corpus (also without the terminal newline), then duplicates across sources
+    ok 2 - drops skipped paths, decks already in a corpus (also without the terminal newline), then duplicates across sources
+      ---
+      duration_ms: 0.97575
+      type: 'test'
+      ...
+    1..2
+ok 59 - corpus-h static rules
+  ---
+  duration_ms: 1.7495
+  type: 'suite'
+  ...
+# Subtest: corpus-h gap buckets
+    # Subtest: names corpus-h failures from the spice-ts error line alone, then falls back to the corpus-g/f rules
+    ok 1 - names corpus-h failures from the spice-ts error line alone, then falls back to the corpus-g/f rules
+      ---
+      duration_ms: 1.896667
+      type: 'test'
+      ...
+    1..1
+ok 60 - corpus-h gap buckets
+  ---
+  duration_ms: 1.979416
+  type: 'suite'
+  ...
+# Subtest: corpus-h reference selection
+    # Subtest: keeps only decks with an ngspice reference and caps each upstream directory in path order
+    ok 1 - keeps only decks with an ngspice reference and caps each upstream directory in path order
+      ---
+      duration_ms: 0.616583
+      type: 'test'
+      ...
+    # Subtest: refuses a probe recorded for different bytes
+    ok 2 - refuses a probe recorded for different bytes
+      ---
+      duration_ms: 0.310208
+      type: 'test'
+      ...
+    1..2
+ok 61 - corpus-h reference selection
+  ---
+  duration_ms: 1.174958
+  type: 'suite'
+  ...
+# Subtest: corpus-h committed artifacts
+    # Subtest: pins every fixture and licence file byte-for-byte, accounts for every candidate and never overlaps another corpus
+    ok 1 - pins every fixture and licence file byte-for-byte, accounts for every candidate and never overlaps another corpus
+      ---
+      duration_ms: 736.856834
+      type: 'test'
+      ...
+    # Subtest: selects only decks whose recorded ngspice probe produced a reference
+    ok 2 - selects only decks whose recorded ngspice probe produced a reference
+      ---
+      duration_ms: 2.259166
+      type: 'test'
+      ...
+    # Subtest: keeps SOURCES.md generated from the manifest
+    ok 3 - keeps SOURCES.md generated from the manifest
+      ---
+      duration_ms: 4.020208
+      type: 'test'
+      ...
+    # Subtest: keeps README.md and totals generated from outcomes.json
+    ok 4 - keeps README.md and totals generated from outcomes.json
+      ---
+      duration_ms: 22.313041
+      type: 'test'
+      ...
+    # Subtest: links an issue for every gap bucket of three or more fixtures that ngspice runs
+    ok 5 - links an issue for every gap bucket of three or more fixtures that ngspice runs
+      ---
+      duration_ms: 0.555125
+      type: 'test'
+      ...
+    1..5
+ok 62 - corpus-h committed artifacts
+  ---
+  duration_ms: 766.385375
+  type: 'suite'
+  ...
+# Subtest: \#791 transmission-line-termination.cir: lossless T stepped and interpolated like ngspice-47 TRA
+    # Subtest: takes ngspice-47's timepoints and values (was 929 points and 0.0625 on main a2001a93)
+    ok 1 - takes ngspice-47's timepoints and values (was 929 points and 0.0625 on main a2001a93)
+      ---
+      duration_ms: 896.030042
+      type: 'test'
+      ...
+    1..1
+ok 63 - \#791 transmission-line-termination.cir: lossless T stepped and interpolated like ngspice-47 TRA
+  ---
+  duration_ms: 896.657542
+  type: 'suite'
+  ...
+# Subtest: \#791 bjt-relay-driver.cir: the 0.0215 on v(collector) is the \#592 grid artefact on a 60 ns edge
+    # Subtest: spice-ts crosses within 0.2 ns of the TMAX 1 ns reference, closer than ngspice-47's own default run
+    ok 1 - spice-ts crosses within 0.2 ns of the TMAX 1 ns reference, closer than ngspice-47's own default run
+      ---
+      duration_ms: 365.124625
+      type: 'test'
+      ...
+    1..1
+ok 64 - \#791 bjt-relay-driver.cir: the 0.0215 on v(collector) is the \#592 grid artefact on a 60 ns edge
+  ---
+  duration_ms: 365.31625
+  type: 'suite'
+  ...
+# Subtest: \#791 astable-led-flasher.cir: the 1.27 is phase, not waveform
+    # Subtest: spice-ts edges sit within 20 us of ngspice-47 (ngspice moves 430 us with TMAX) and the period agrees to 1e-5
+    ok 1 - spice-ts edges sit within 20 us of ngspice-47 (ngspice moves 430 us with TMAX) and the period agrees to 1e-5
+      ---
+      duration_ms: 1479.64325
+      type: 'test'
+      ...
+    1..1
+ok 65 - \#791 astable-led-flasher.cir: the 1.27 is phase, not waveform
+  ---
+  duration_ms: 1479.902
+  type: 'suite'
+  ...
+# Subtest: \#809 tlines.spice: matched 50 ohm lines are a 25 us delay of the PULSE source
+    # Subtest: spice-ts lossless T and lossless LTRA take ngspice-47's grid and its error at its own points (\#791)
+    ok 1 - spice-ts lossless T and lossless LTRA take ngspice-47's grid and its error at its own points (\#791)
+      ---
+      duration_ms: 1207.916667
+      type: 'test'
+      ...
+    # Subtest: the published 0.045 is ngspice-47 interpolated across the 77 us corner it steps over
+    ok 2 - the published 0.045 is ngspice-47 interpolated across the 77 us corner it steps over
+      ---
+      duration_ms: 9.163041
+      type: 'test'
+      ...
+    1..2
+ok 66 - \#809 tlines.spice: matched 50 ohm lines are a 25 us delay of the PULSE source
+  ---
+  duration_ms: 1217.8375
+  type: 'suite'
+  ...
+# Subtest: \#809 legacy_sources.spice: worst deterministic signal
+    # Subtest: spice-ts V7/I7 damped SIN is exact at its own points
+    ok 1 - spice-ts V7/I7 damped SIN is exact at its own points
+      ---
+      duration_ms: 230.995667
+      type: 'test'
+      ...
+    # Subtest: the published 0.0175 on v(/vsin) is ngspice-47 interpolated across the 23 ps peak rise
+    ok 2 - the published 0.0175 on v(/vsin) is ngspice-47 interpolated across the 23 ps peak rise
+      ---
+      duration_ms: 117.656875
+      type: 'test'
+      ...
+    # Subtest: spice-ts random sources are reproducible run to run (ngspice-47 without a seed is not)
+    ok 3 - spice-ts random sources are reproducible run to run (ngspice-47 without a seed is not)
+      ---
+      duration_ms: 141.846333
+      type: 'test'
+      ...
+    1..3
+ok 67 - \#809 legacy_sources.spice: worst deterministic signal
+  ---
+  duration_ms: 490.982625
+  type: 'suite'
+  ...
+# Subtest: corpus-i source table
+    # Subtest: pins every source to a full revision and a redistributable licence
+    ok 1 - pins every source to a full revision and a redistributable licence
+      ---
+      duration_ms: 1.296583
+      type: 'test'
+      ...
+    # Subtest: considers deck extensions (with .sim and .cir.out) under the source roots only
+    ok 2 - considers deck extensions (with .sim and .cir.out) under the source roots only
+      ---
+      duration_ms: 0.245584
+      type: 'test'
+      ...
+    1..2
+ok 68 - corpus-i source table
+  ---
+  duration_ms: 2.121541
+  type: 'suite'
+  ...
+# Subtest: corpus-i static rules
+    # Subtest: reuses the corpus-f deck rules: notices, companions, analyses
+    ok 1 - reuses the corpus-f deck rules: notices, companions, analyses
+      ---
+      duration_ms: 0.365708
+      type: 'test'
+      ...
+    # Subtest: drops decks already in a corpus (also without the terminal newline), then duplicates across sources
+    ok 2 - drops decks already in a corpus (also without the terminal newline), then duplicates across sources
+      ---
+      duration_ms: 4.93125
+      type: 'test'
+      ...
+    1..2
+ok 69 - corpus-i static rules
+  ---
+  duration_ms: 5.417875
+  type: 'suite'
+  ...
+# Subtest: corpus-i gap buckets
+    # Subtest: names corpus-i failures from the spice-ts error line alone
+    ok 1 - names corpus-i failures from the spice-ts error line alone
+      ---
+      duration_ms: 0.575958
+      type: 'test'
+      ...
+    # Subtest: falls back to the corpus-h (and corpus-g/f) rules from the spice-ts error line alone
+    ok 2 - falls back to the corpus-h (and corpus-g/f) rules from the spice-ts error line alone
+      ---
+      duration_ms: 4.238959
+      type: 'test'
+      ...
+    1..2
+ok 70 - corpus-i gap buckets
+  ---
+  duration_ms: 5.181541
+  type: 'suite'
+  ...
+# Subtest: corpus-i reference selection
+    # Subtest: keeps only decks with an ngspice reference and caps each upstream directory in path order
+    ok 1 - keeps only decks with an ngspice reference and caps each upstream directory in path order
+      ---
+      duration_ms: 0.567917
+      type: 'test'
+      ...
+    # Subtest: refuses a probe recorded for different bytes
+    ok 2 - refuses a probe recorded for different bytes
+      ---
+      duration_ms: 0.349333
+      type: 'test'
+      ...
+    1..2
+ok 71 - corpus-i reference selection
+  ---
+  duration_ms: 1.098416
+  type: 'suite'
+  ...
+# Subtest: corpus-i committed artifacts
+    # Subtest: pins every fixture and licence file byte-for-byte, accounts for every candidate and never overlaps another corpus
+    ok 1 - pins every fixture and licence file byte-for-byte, accounts for every candidate and never overlaps another corpus
+      ---
+      duration_ms: 760.529666
+      type: 'test'
+      ...
+    # Subtest: selects only decks whose recorded ngspice probe produced a reference
+    ok 2 - selects only decks whose recorded ngspice probe produced a reference
+      ---
+      duration_ms: 4.388042
+      type: 'test'
+      ...
+    # Subtest: keeps SOURCES.md generated from the manifest
+    ok 3 - keeps SOURCES.md generated from the manifest
+      ---
+      duration_ms: 3.759584
+      type: 'test'
+      ...
+    # Subtest: keeps README.md and totals generated from outcomes.json
+    ok 4 - keeps README.md and totals generated from outcomes.json
+      ---
+      duration_ms: 3.710458
+      type: 'test'
+      ...
+    # Subtest: links an issue for every gap bucket that ngspice runs (\#834: one issue per new gap bucket)
+    ok 5 - links an issue for every gap bucket that ngspice runs (\#834: one issue per new gap bucket)
+      ---
+      duration_ms: 0.9165
+      type: 'test'
+      ...
+    1..5
+ok 72 - corpus-i committed artifacts
+  ---
+  duration_ms: 773.768542
+  type: 'suite'
+  ...
+# Subtest: ngspice-bugs manifest
+    # Subtest: \#737: source-bearing engine errors are reduced to fixed codes and hashes
+    ok 1 - \#737: source-bearing engine errors are reduced to fixed codes and hashes
+      ---
+      duration_ms: 1.495375
+      type: 'test'
+      ...
+    # Subtest: \#737: committed oracle diagnostics contain only allowlisted metadata, never source text
+    ok 2 - \#737: committed oracle diagnostics contain only allowlisted metadata, never source text
+      ---
+      duration_ms: 7.571583
+      type: 'test'
+      ...
+    # Subtest: \#737: clean-cache receipt retains five gaps and exactly one pinned execution
+    ok 3 - \#737: clean-cache receipt retains five gaps and exactly one pinned execution
+      ---
+      duration_ms: 2.342375
+      type: 'test'
+      ...
+    # Subtest: \#737: fresh archive preparation materializes only the exact derived pin
+    ok 4 - \#737: fresh archive preparation materializes only the exact derived pin
+      ---
+      duration_ms: 128.648875
+      type: 'test'
+      ...
+    # Subtest: \#803: bounded recovery preserves the five original pins and never scores gaps
+    ok 5 - \#803: bounded recovery preserves the five original pins and never scores gaps
+      ---
+      duration_ms: 55.497583
+      type: 'test'
+      ...
+    # Subtest: \#737: partial OP oracle is not a complete transient correctness win
+    ok 6 - \#737: partial OP oracle is not a complete transient correctness win
+      ---
+      duration_ms: 13.660875
+      type: 'test'
+      ...
+    # Subtest: lists every harvested ticket once, sorted, with valid enums
+    ok 7 - lists every harvested ticket once, sorted, with valid enums
+      ---
+      duration_ms: 9.170541
+      type: 'test'
+      ...
+    # Subtest: commits only small decks, byte-identical to the recorded hashes
+    ok 8 - commits only small decks, byte-identical to the recorded hashes
+      ---
+      duration_ms: 67.866708
+      type: 'test'
+      ...
+    # Subtest: generated NGSPICE_BUGS.md and ticket READMEs are up to date
+    ok 9 - generated NGSPICE_BUGS.md and ticket READMEs are up to date
+      ---
+      duration_ms: 108.752292
+      type: 'test'
+      ...
+    1..9
+ok 73 - ngspice-bugs manifest
+  ---
+  duration_ms: 396.560583
+  type: 'suite'
+  ...
+# Subtest: ngspice-bugs spice-ts verdicts
+    # Subtest: \#871: unchanged arg/temper cards match independent lexical-shadowing answers
+    ok 1 - \#871: unchanged arg/temper cards match independent lexical-shadowing answers
+      ---
+      duration_ms: 670.873167
+      type: 'test'
+      ...
+    # Subtest: \#812: receipts cover the original 25 tickets without substituting unpinned decks
+    ok 2 - \#812: receipts cover the original 25 tickets without substituting unpinned decks
+      ---
+      duration_ms: 12.782125
+      type: 'test'
+      ...
+    # Subtest: \#877: drain currents do not depend on the order of the Z cards
+    ok 3 - \#877: drain currents do not depend on the order of the Z cards
+      ---
+      duration_ms: 15.852209
+      type: 'test'
+      ...
+    # Subtest: \#878: drain currents do not depend on the order of the Z cards
+    ok 4 - \#878: drain currents do not depend on the order of the Z cards
+      ---
+      duration_ms: 11.7255
+      type: 'test'
+      ...
+    # Subtest: \#651: VDMOS with a small ksubthres sweeps to the analytic strong-inversion current
+    ok 5 - \#651: VDMOS with a small ksubthres sweeps to the analytic strong-inversion current
+      ---
+      duration_ms: 59.334541
+      type: 'test'
+      ...
+    # Subtest: \#688: an ill-posed topology is diagnosed instead of producing numbers
+    ok 6 - \#688: an ill-posed topology is diagnosed instead of producing numbers
+      ---
+      duration_ms: 5.009375
+      type: 'test'
+      ...
+    # Subtest: \#849: an ill-posed topology is diagnosed instead of producing numbers
+    ok 7 - \#849: an ill-posed topology is diagnosed instead of producing numbers
+      ---
+      duration_ms: 9.867166
+      type: 'test'
+      ...
+    # Subtest: \#685: the DC-source decks complete and hold ngspice-47's operating point
+    ok 8 - \#685: the DC-source decks complete and hold ngspice-47's operating point # SKIP run fetch.ts 685 (and extract its archive) first
+      ---
+      duration_ms: 0.114709
+      type: 'test'
+      ...
+    # Subtest: \#740: the DC-source decks complete and hold ngspice-47's operating point
+    ok 9 - \#740: the DC-source decks complete and hold ngspice-47's operating point # SKIP run fetch.ts 740 (and extract its archive) first
+      ---
+      duration_ms: 0.036542
+      type: 'test'
+      ...
+    # Subtest: \#763: the DC-source decks complete and hold ngspice-47's operating point
+    ok 10 - \#763: the DC-source decks complete and hold ngspice-47's operating point # SKIP run fetch.ts 763 (and extract its archive) first
+      ---
+      duration_ms: 0.025375
+      type: 'test'
+      ...
+    # Subtest: \#505: three-argument limit() clamps the wiper and the transient completes deterministically
+    ok 11 - \#505: three-argument limit() clamps the wiper and the transient completes deterministically # SKIP run fetch.ts 505 first
+      ---
+      duration_ms: 0.024459
+      type: 'test'
+      ...
+    1..11
+ok 74 - ngspice-bugs spice-ts verdicts
+  ---
+  duration_ms: 786.277375
+  type: 'suite'
+  ...
+# Subtest: differential-noise compare.ts smoke
+    # Subtest: runs against ngspice and reports every explicitly rejected form
+    ok 1 - runs against ngspice and reports every explicitly rejected form
+      ---
+      duration_ms: 2064.030709
+      type: 'test'
+      ...
+    1..1
+ok 75 - differential-noise compare.ts smoke
+  ---
+  duration_ms: 2065.038417
+  type: 'suite'
+  ...
+# Subtest: interleaved README source ranks map to reversed same-type raw occurrences
+ok 76 - interleaved README source ranks map to reversed same-type raw occurrences
+  ---
+  duration_ms: 1.65925
+  type: 'test'
+  ...
+# Subtest: identical duplicate cards pair one-to-one without using Plotname
+ok 77 - identical duplicate cards pair one-to-one without using Plotname
+  ---
+  duration_ms: 0.326458
+  type: 'test'
+  ...
+# Subtest: unsupported, absent and control-ID targets stay unmatched
+ok 78 - unsupported, absent and control-ID targets stay unmatched
+  ---
+  duration_ms: 0.390292
+  type: 'test'
+  ...
+# Subtest: packed singleton batches preserve resolved mixed-type occurrence identity
+ok 79 - packed singleton batches preserve resolved mixed-type occurrence identity
+  ---
+  duration_ms: 39.833458
+  type: 'test'
+  ...
+# Subtest: adapter retains distinct 11-point first and 3-point second DC cards with OP duplicates
+ok 80 - adapter retains distinct 11-point first and 3-point second DC cards with OP duplicates
+  ---
+  duration_ms: 729.205083
+  type: 'test'
+  ...
+# Subtest: single analysis, step and control continue to use legacy identities
+ok 81 - single analysis, step and control continue to use legacy identities
+  ---
+  duration_ms: 98.748292
+  type: 'test'
+  ...
+# Subtest: retained runs emit one plot each even with repeated manifest types
+ok 82 - retained runs emit one plot each even with repeated manifest types
+  ---
+  duration_ms: 3.218625
+  type: 'test'
+  ...
+# Subtest: unmeasured native noise type retains legacy aggregate plots
+ok 83 - unmeasured native noise type retains legacy aggregate plots
+  ---
+  duration_ms: 4.754917
+  type: 'test'
+  ...
+# Subtest: parseSpiceNumber
+    # Subtest: reads ngspice scale suffixes and ignores unit letters
+    ok 1 - reads ngspice scale suffixes and ignores unit letters
+      ---
+      duration_ms: 1.051875
+      type: 'test'
+      ...
+    1..1
+ok 84 - parseSpiceNumber
+  ---
+  duration_ms: 1.731167
+  type: 'suite'
+  ...
+# Subtest: fineReferenceDeck: one corpus-wide TMAX rule
+    # Subtest: divides the ngspice default ceiling min(TSTEP, (TSTOP-TSTART)/50, TMAX) by 10
+    ok 1 - divides the ngspice default ceiling min(TSTEP, (TSTOP-TSTART)/50, TMAX) by 10
+      ---
+      duration_ms: 19.040042
+      type: 'test'
+      ...
+    # Subtest: keeps UIC, folds continuation lines and strips inline comments
+    ok 2 - keeps UIC, folds continuation lines and strips inline comments
+      ---
+      duration_ms: 0.184166
+      type: 'test'
+      ...
+    # Subtest: ignores the title line, comments and .control blocks
+    ok 3 - ignores the title line, comments and .control blocks
+      ---
+      duration_ms: 0.198125
+      type: 'test'
+      ...
+    # Subtest: publishes an unavailable reference instead of guessing
+    ok 4 - publishes an unavailable reference instead of guessing
+      ---
+      duration_ms: 0.246333
+      type: 'test'
+      ...
+    1..4
+ok 85 - fineReferenceDeck: one corpus-wide TMAX rule
+  ---
+  duration_ms: 19.878083
+  type: 'suite'
+  ...
+# Subtest: nearSharedPoints
+    # Subtest: matches default-run points to reference points within the tolerance only
+    ok 1 - matches default-run points to reference points within the tolerance only
+      ---
+      duration_ms: 0.2595
+      type: 'test'
+      ...
+    1..1
+ok 86 - nearSharedPoints
+  ---
+  duration_ms: 0.619209
+  type: 'suite'
+  ...
+# Subtest: fineReferenceColumn
+    # Subtest: scores both default runs against the same fine reference; status inputs are untouched
+    ok 1 - scores both default runs against the same fine reference; status inputs are untouched
+      ---
+      duration_ms: 22.5015
+      type: 'test'
+      ...
+    # Subtest: scores a candidate the same whether or not its breakpoint time is bit-identical to the reference
+    ok 2 - scores a candidate the same whether or not its breakpoint time is bit-identical to the reference
+      ---
+      duration_ms: 1.413125
+      type: 'test'
+      ...
+    # Subtest: scores the same in any signal batch size, from a lazy (getter-backed) reference too (\#839)
+    ok 3 - scores the same in any signal batch size, from a lazy (getter-backed) reference too (\#839)
+      ---
+      duration_ms: 65.039458
+      type: 'test'
+      ...
+    # Subtest: records a failed fine run as unavailable and keeps the headline column
+    ok 4 - records a failed fine run as unavailable and keeps the headline column
+      ---
+      duration_ms: 3.622667
+      type: 'test'
+      ...
+    # Subtest: renders every transient row, losses included
+    ok 5 - renders every transient row, losses included
+      ---
+      duration_ms: 0.379667
+      type: 'test'
+      ...
+    1..5
+ok 87 - fineReferenceColumn
+  ---
+  duration_ms: 93.211208
+  type: 'suite'
+  ...
+# Subtest: issue \#426 M2 scaling fixtures
+    # Subtest: is deterministic: every circuit/size yields one byte-identical deck
+    ok 1 - is deterministic: every circuit/size yields one byte-identical deck
+      ---
+      duration_ms: 323.432833
+      type: 'test'
+      ...
+    # Subtest: emits the requested node counts (mesh rounds up to a square)
+    ok 2 - emits the requested node counts (mesh rounds up to a square)
+      ---
+      duration_ms: 88.616959
+      type: 'test'
+      ...
+    # Subtest: keeps ngspice acct output and a printable probe in every transient deck
+    ok 3 - keeps ngspice acct output and a printable probe in every transient deck
+      ---
+      duration_ms: 1.221417
+      type: 'test'
+      ...
+    # Subtest: parses ngspice probe values from .print tran tables and .op listings
+    ok 4 - parses ngspice probe values from .print tran tables and .op listings
+      ---
+      duration_ms: 0.384792
+      type: 'test'
+      ...
+    # Subtest: pins every published deck hash to the generator, the receipt and benchmarks/SOURCES.md (\#480)
+    ok 5 - pins every published deck hash to the generator, the receipt and benchmarks/SOURCES.md (\#480)
+      ---
+      duration_ms: 132.849041
+      type: 'test'
+      ...
+    # Subtest: reports median and nearest-rank p95
+    ok 6 - reports median and nearest-rank p95
+      ---
+      duration_ms: 0.839583
+      type: 'test'
+      ...
+    1..6
+ok 88 - issue \#426 M2 scaling fixtures
+  ---
+  duration_ms: 549.230542
+  type: 'suite'
+  ...
+# Subtest: generated \#1049 receipt contains no fetch-only model-source echoes or continuation lines
+ok 89 - generated \#1049 receipt contains no fetch-only model-source echoes or continuation lines
+  ---
+  duration_ms: 7.962542
+  type: 'test'
+  ...
+# Subtest: ngspice diagnostics retain status and failure times, never arbitrary model source
+ok 90 - ngspice diagnostics retain status and failure times, never arbitrary model source
+  ---
+  duration_ms: 0.819875
+  type: 'test'
+  ...
+1..90
+# tests 202
+# suites 44
+# pass 198
+# fail 0
+# cancelled 0
+# skipped 4
+# todo 0
+# duration_ms 151490.419584

@@ -28,6 +28,13 @@ function evaluate(
 }
 
 describe('behavioral source expressions', () => {
+  it('uses the configured CKTgmin for PTdivide regularization (#1068)', () => {
+    const environment = { time: 0, transient: false, temperature: 27, gmin: 1e-6 };
+    expect(evaluate('1e-20/0', {}, environment).value).toBeCloseTo(1e6, 6);
+    expect(evaluate('1e-20/0').value).toBeCloseTo(1e12, 0);
+    // A separate compiled expression must not inherit another run's gmin.
+    expect(evaluate('1e-20/0', {}, { ...environment, gmin: 1e-9 }).value).toBeCloseTo(1e9, 3);
+  });
   it('evaluates the mesa-oscillator load current and its exact node derivatives', () => {
     const text = '0.00025*tanh(v(1,2)/0.00025/2240)*(1+v(1,2)*0.027)';
     const v12 = 0.37;

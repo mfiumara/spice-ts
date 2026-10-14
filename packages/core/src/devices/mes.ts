@@ -46,7 +46,7 @@ export class MES implements DeviceModel {
   stamp(ctx: StampContext): void {
     const [drain, gate, source] = this.nodes;
     const { vgs, vgd } = this.voltages(ctx);
-    const point = evaluateMES(vgs, vgd, this.model, this.instance, this.junctionGmin);
+    const point = evaluateMES(vgs, vgd, this.model, this.instance, ctx.gmin ?? this.junctionGmin);
     const vds = vgs - vgd;
     stampChannel(ctx, drain, gate, source, point.gm, point.gds,
       point.drainCurrent - point.gm * vgs - point.gds * vds);
