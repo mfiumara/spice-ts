@@ -1068,7 +1068,36 @@ export function formatNumber(value: number): string {
   // ngspice-47 numparam double_to_string uses "% 23.15e". Padding and
   // exponent zero-padding do not affect INPevaluate, but all 16 mantissa
   // digits must survive until the downstream card reader parses the text.
-  return value.toExponential(15);
+  // JS toExponential rounds exact halfway cases away from zero, whereas
+  // printf rounds to even. Expand the binary double exactly before rounding.
+  if (!Number.isFinite(value)) return value.toExponential(15);
+  if (value === 0) return `${Object.is(value, -0) ? '-' : ''}0.000000000000000e+0`;
+  const view = new DataView(new ArrayBuffer(8));
+  view.setFloat64(0, Math.abs(value));
+  const bits = view.getBigUint64(0);
+  const biasedExponent = Number((bits >> 52n) & 0x7ffn);
+  const significand = (bits & ((1n << 52n) - 1n))
+    | (biasedExponent === 0 ? 0n : 1n << 52n);
+  const binaryExponent = (biasedExponent === 0 ? 1 : biasedExponent) - 1023 - 52;
+  // For negative exponents, m / 2^k = (m * 5^k) / 10^k.
+  const scale = Math.max(0, -binaryExponent);
+  const exact = binaryExponent < 0
+    ? significand * 5n ** BigInt(scale)
+    : significand << BigInt(binaryExponent);
+  const digits = exact.toString();
+  let exponent = digits.length - scale - 1;
+  let rounded = BigInt(digits.slice(0, 16).padEnd(16, '0'));
+  if (digits.length > 16) {
+    const remainder = BigInt(digits.slice(16));
+    const halfway = 5n * 10n ** BigInt(digits.length - 17);
+    if (remainder > halfway || (remainder === halfway && rounded % 2n !== 0n)) rounded++;
+  }
+  if (rounded === 10n ** 16n) {
+    rounded /= 10n;
+    exponent++;
+  }
+  const mantissa = rounded.toString();
+  return `${value < 0 ? '-' : ''}${mantissa[0]}.${mantissa.slice(1)}e${exponent < 0 ? '' : '+'}${exponent}`;
 }
 
 function extractLibSection(content: string, section: string): string {
