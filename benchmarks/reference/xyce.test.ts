@@ -6,6 +6,7 @@ import type { ComparisonFixture } from '../comparison-harness.js';
 import { parseXyceCsv, runXyce, translateForXyce } from './xyce.js';
 import { canonicalize, projectAnalysis } from './canonical.js';
 import { runNgspiceReference } from './expanded.js';
+import './investigations/990/receipt.test.js';
 
 test('mixed-case requested names use canonical lower-case series keys like ngspice', () => {
   const result = parseXyceCsv('{V1},V(IN),I(V1)\n0,0,0', 'dc', ['V(IN)', 'I(V1)']);

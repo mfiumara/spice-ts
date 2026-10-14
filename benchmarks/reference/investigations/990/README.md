@@ -13,8 +13,16 @@ cross-engine meaning. Model inline comments are retained as comment lines when
 a model is rewritten. The change list records each assignment conversion.
 
 No simulator/core source, ngspice input, headline comparison, tolerance,
-aggregate ledger, or PR993-owned file changes. This is a second-reference parse
-fix, not a speed improvement or simulator superiority claim.
+or aggregate ledger changes are introduced by this PR. This is a second-reference
+parse fix, not a speed improvement or simulator superiority claim.
+
+PR993 is now merged into main, and the supervisor lifted its file-ownership
+boundary. This branch merges current main without rebasing. The remaining
+`compare.test.ts` change is necessary to pin the historical adapter source hash
+instead of incorrectly comparing old measurements against today's changed
+adapter. PR993's plot-pairing tests remain intact. New #990 receipt wiring lives
+in `xyce.test.ts`, not `compare.test.ts`; the historical deck/output byte checks
+in `compare.test.ts` and `subset.test.ts` remain active.
 
 ## Native before/after evidence
 
@@ -93,3 +101,19 @@ out waiting for a heavy slot after 120 seconds; a queued retry completed.
 No root monorepo suite or corpus batch is run on this card, per its targeted-test
 scope. Required exact-head GitHub test (20), test (22), build and accuracy checks
 are the final authoritative gate and are recorded in the Kanban handoff and PR.
+
+## Ownership remediation verification
+
+After merging main (including PR993), frozen install, build and lint pass.
+The focused offline command still passes 25 tests with 8 live skips. Moving
+receipt wiring into `xyce.test.ts` makes its guarded live entry pass 20 tests
+with no skips (18 adapter tests plus 2 receipt tests). Canonical Vitest passes
+9/9 via `pnpm -C packages/core exec vitest run --config
+../../benchmarks/reference/vitest.config.ts`; root `pnpm exec vitest` is not
+available because Vitest is a core-package dependency.
+
+A fresh guarded native replay with ngspice 47 and Xyce 7.10.0 reproduces every
+committed metric exactly, checked with `assert.deepEqual` against the original
+report. In particular, v(14) max absolute error remains 1.7729424362683022 V
+before and 0.00262028464509035 V after. The generated replay report was restored
+after verification so the original provenance receipt remains immutable.
