@@ -49,6 +49,49 @@ function fixture(analysis: ComparisonFixture['analysis'] = 'dc'): ComparisonFixt
     netlist: `adapter test\nV1 in 0 DC 1 AC 1\nR1 in 0 1k\n${directive}\n.end\n` };
 }
 
+test('SINE sources become native SIN without dropping DC, AC or waveform values', () => {
+  const sources = [
+    ['V1 in 0 dc 2.5 sine(1 .3 440 0 0)', 'V1 in 0 dc 2.5 SIN(1 .3 440 0 0)'],
+    ['I1 in 0 SiNe (1m 2m 1k 2u 3 45) DC 4m AC 5m 90', 'I1 in 0 SIN (1m 2m 1k 2u 3 45) DC 4m AC 5m 90'],
+    ['V1 in 0 2 AC 3 45\n+ sine(1 2 3)', 'V1 in 0 2 AC 3 45  SIN(1 2 3)'],
+  ];
+  for (const [source, expected] of sources) {
+    const f = { ...fixture('tran'), netlist: fixture('tran').netlist.replace('V1 in 0 DC 1 AC 1', source) };
+    const translated = translateForXyce(f);
+    assert.ok(translated.netlist.includes(expected), translated.netlist);
+    assert.ok(translated.changes.some(change => /SINE.*SIN/.test(change)));
+    assert.equal(translateForXyce({ ...f, netlist: translated.netlist }).netlist, translated.netlist);
+  }
+  const netlist = readFileSync('benchmarks/reference/investigations/974/jimi-fuzz-baseline-shared.cir', 'utf8');
+  const translated = translateForXyce({ name: 'jimi', analysis: 'tran', signals: ['v(10)', 'v(3)'], netlist });
+  assert.ok(translated.netlist.includes('V_V2 10 0 dc 0.0 SIN(0.0 0.3 440.0 0 0)'));
+  assert.ok(translated.netlist.includes('V_V1 1 0 dc 9.0'));
+});
+
+test('SIN, DC-only sources, identifiers, expressions and comments remain untouched', () => {
+  const sources = ['V1 sine 0 DC 2', 'Isine in 0 SIN(1 2 3)', 'V1 in 0 DC 2 ; sine(9 9 9)', 'V1 in 0 DC {sine(2)}'];
+  for (const source of sources) {
+    const translated = translateForXyce({ ...fixture('tran'), netlist: fixture('tran').netlist.replace('V1 in 0 DC 1 AC 1', source) });
+    assert.ok(translated.netlist.includes(source));
+  }
+});
+
+test('live Xyce SINE translation retains explicit DC and nonzero transient excitation', { skip: !process.env.XYCE_BIN }, async () => {
+  for (const kind of ['V', 'I']) {
+    const netlist = `source probe\n${kind}1 in 0 DC 2.5 sine(1 .3 440 0 0)\nR1 in 0 1\n.tran 10u 3m\n.end\n`;
+    const f = { name: 'source', netlist, analysis: 'tran' as const, signals: ['v(in)'] };
+    const op = await runXyce({ ...f, analysis: 'op', netlist: netlist.replace('.tran 10u 3m', '.op') });
+    assert.equal(op.status, 'success', JSON.stringify(op));
+    if (op.status === 'success') assert.equal(op.series.signals['v(in)'][0].re, kind === 'V' ? 2.5 : -2.5);
+    const tran = await runXyce(f);
+    assert.equal(tran.status, 'success', JSON.stringify(tran));
+    if (tran.status !== 'success') continue;
+    const values = tran.series.signals['v(in)'].map(value => kind === 'V' ? value.re : -value.re);
+    assert.ok(Math.max(...values) > 1.29);
+    assert.ok(Math.min(...values) < .71);
+  }
+});
+
 test('Xyce adapter assigns bare BJT scalar parameters on model continuations (#990)', () => {
   const netlist = readFileSync('benchmarks/reference/mutual-948/classic/rca3040-wideband-amplifier/0-ac.cir', 'utf8');
   const f = { ...fixture('ac'), netlist };
