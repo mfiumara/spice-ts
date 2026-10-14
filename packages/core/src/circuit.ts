@@ -1964,6 +1964,7 @@ export class Circuit {
       const value = this._simulationOptions[key];
       return value === undefined ? [] : [`${name}=${format(value)}`];
     });
+    if (this._simulationOptions.ngbehavior !== undefined) serializedOptions.push(`ngbehavior=${this._simulationOptions.ngbehavior.mode}`);
     if (this._temperature !== undefined) serializedOptions.push(`temp=${this._temperature}`);
     if (this._xspiceTrtol !== undefined) serializedOptions.push(`xtrtol=${this._xspiceTrtol}`);
     if (serializedOptions.length > 0) lines.push(`.options ${serializedOptions.join(' ')}`);
