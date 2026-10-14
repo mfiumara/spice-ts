@@ -1,0 +1,445 @@
+BSIM4 static oracle minimal-nmos
+.temp 27
+.model DUT NMOS LEVEL=54
+M0 d0 g0 0 b0 DUT L=0.15u W=0.65u
+VD0 d0 0 -0.1
+VG0 g0 0 -0.2
+VB0 b0 0 0
+M1 d1 g1 0 b1 DUT L=0.15u W=0.65u
+VD1 d1 0 0
+VG1 g1 0 -0.2
+VB1 b1 0 0
+M2 d2 g2 0 b2 DUT L=0.15u W=0.65u
+VD2 d2 0 0.05
+VG2 g2 0 -0.2
+VB2 b2 0 0
+M3 d3 g3 0 b3 DUT L=0.15u W=0.65u
+VD3 d3 0 0.4
+VG3 g3 0 -0.2
+VB3 b3 0 0
+M4 d4 g4 0 b4 DUT L=0.15u W=0.65u
+VD4 d4 0 1.2
+VG4 g4 0 -0.2
+VB4 b4 0 0
+M5 d5 g5 0 b5 DUT L=0.15u W=0.65u
+VD5 d5 0 1.8
+VG5 g5 0 -0.2
+VB5 b5 0 0
+M6 d6 g6 0 b6 DUT L=0.15u W=0.65u
+VD6 d6 0 -0.1
+VG6 g6 0 0
+VB6 b6 0 0
+M7 d7 g7 0 b7 DUT L=0.15u W=0.65u
+VD7 d7 0 0
+VG7 g7 0 0
+VB7 b7 0 0
+M8 d8 g8 0 b8 DUT L=0.15u W=0.65u
+VD8 d8 0 0.05
+VG8 g8 0 0
+VB8 b8 0 0
+M9 d9 g9 0 b9 DUT L=0.15u W=0.65u
+VD9 d9 0 0.4
+VG9 g9 0 0
+VB9 b9 0 0
+M10 d10 g10 0 b10 DUT L=0.15u W=0.65u
+VD10 d10 0 1.2
+VG10 g10 0 0
+VB10 b10 0 0
+M11 d11 g11 0 b11 DUT L=0.15u W=0.65u
+VD11 d11 0 1.8
+VG11 g11 0 0
+VB11 b11 0 0
+M12 d12 g12 0 b12 DUT L=0.15u W=0.65u
+VD12 d12 0 -0.1
+VG12 g12 0 0.4
+VB12 b12 0 0
+M13 d13 g13 0 b13 DUT L=0.15u W=0.65u
+VD13 d13 0 0
+VG13 g13 0 0.4
+VB13 b13 0 0
+M14 d14 g14 0 b14 DUT L=0.15u W=0.65u
+VD14 d14 0 0.05
+VG14 g14 0 0.4
+VB14 b14 0 0
+M15 d15 g15 0 b15 DUT L=0.15u W=0.65u
+VD15 d15 0 0.4
+VG15 g15 0 0.4
+VB15 b15 0 0
+M16 d16 g16 0 b16 DUT L=0.15u W=0.65u
+VD16 d16 0 1.2
+VG16 g16 0 0.4
+VB16 b16 0 0
+M17 d17 g17 0 b17 DUT L=0.15u W=0.65u
+VD17 d17 0 1.8
+VG17 g17 0 0.4
+VB17 b17 0 0
+M18 d18 g18 0 b18 DUT L=0.15u W=0.65u
+VD18 d18 0 -0.1
+VG18 g18 0 0.8
+VB18 b18 0 0
+M19 d19 g19 0 b19 DUT L=0.15u W=0.65u
+VD19 d19 0 0
+VG19 g19 0 0.8
+VB19 b19 0 0
+M20 d20 g20 0 b20 DUT L=0.15u W=0.65u
+VD20 d20 0 0.05
+VG20 g20 0 0.8
+VB20 b20 0 0
+M21 d21 g21 0 b21 DUT L=0.15u W=0.65u
+VD21 d21 0 0.4
+VG21 g21 0 0.8
+VB21 b21 0 0
+M22 d22 g22 0 b22 DUT L=0.15u W=0.65u
+VD22 d22 0 1.2
+VG22 g22 0 0.8
+VB22 b22 0 0
+M23 d23 g23 0 b23 DUT L=0.15u W=0.65u
+VD23 d23 0 1.8
+VG23 g23 0 0.8
+VB23 b23 0 0
+M24 d24 g24 0 b24 DUT L=0.15u W=0.65u
+VD24 d24 0 -0.1
+VG24 g24 0 1.2
+VB24 b24 0 0
+M25 d25 g25 0 b25 DUT L=0.15u W=0.65u
+VD25 d25 0 0
+VG25 g25 0 1.2
+VB25 b25 0 0
+M26 d26 g26 0 b26 DUT L=0.15u W=0.65u
+VD26 d26 0 0.05
+VG26 g26 0 1.2
+VB26 b26 0 0
+M27 d27 g27 0 b27 DUT L=0.15u W=0.65u
+VD27 d27 0 0.4
+VG27 g27 0 1.2
+VB27 b27 0 0
+M28 d28 g28 0 b28 DUT L=0.15u W=0.65u
+VD28 d28 0 1.2
+VG28 g28 0 1.2
+VB28 b28 0 0
+M29 d29 g29 0 b29 DUT L=0.15u W=0.65u
+VD29 d29 0 1.8
+VG29 g29 0 1.2
+VB29 b29 0 0
+M30 d30 g30 0 b30 DUT L=0.15u W=0.65u
+VD30 d30 0 -0.1
+VG30 g30 0 1.8
+VB30 b30 0 0
+M31 d31 g31 0 b31 DUT L=0.15u W=0.65u
+VD31 d31 0 0
+VG31 g31 0 1.8
+VB31 b31 0 0
+M32 d32 g32 0 b32 DUT L=0.15u W=0.65u
+VD32 d32 0 0.05
+VG32 g32 0 1.8
+VB32 b32 0 0
+M33 d33 g33 0 b33 DUT L=0.15u W=0.65u
+VD33 d33 0 0.4
+VG33 g33 0 1.8
+VB33 b33 0 0
+M34 d34 g34 0 b34 DUT L=0.15u W=0.65u
+VD34 d34 0 1.2
+VG34 g34 0 1.8
+VB34 b34 0 0
+M35 d35 g35 0 b35 DUT L=0.15u W=0.65u
+VD35 d35 0 1.8
+VG35 g35 0 1.8
+VB35 b35 0 0
+M36 d36 g36 0 b36 DUT L=0.15u W=0.65u
+VD36 d36 0 -0.1
+VG36 g36 0 -0.2
+VB36 b36 0 -0.5
+M37 d37 g37 0 b37 DUT L=0.15u W=0.65u
+VD37 d37 0 0
+VG37 g37 0 -0.2
+VB37 b37 0 -0.5
+M38 d38 g38 0 b38 DUT L=0.15u W=0.65u
+VD38 d38 0 0.05
+VG38 g38 0 -0.2
+VB38 b38 0 -0.5
+M39 d39 g39 0 b39 DUT L=0.15u W=0.65u
+VD39 d39 0 0.4
+VG39 g39 0 -0.2
+VB39 b39 0 -0.5
+M40 d40 g40 0 b40 DUT L=0.15u W=0.65u
+VD40 d40 0 1.2
+VG40 g40 0 -0.2
+VB40 b40 0 -0.5
+M41 d41 g41 0 b41 DUT L=0.15u W=0.65u
+VD41 d41 0 1.8
+VG41 g41 0 -0.2
+VB41 b41 0 -0.5
+M42 d42 g42 0 b42 DUT L=0.15u W=0.65u
+VD42 d42 0 -0.1
+VG42 g42 0 0
+VB42 b42 0 -0.5
+M43 d43 g43 0 b43 DUT L=0.15u W=0.65u
+VD43 d43 0 0
+VG43 g43 0 0
+VB43 b43 0 -0.5
+M44 d44 g44 0 b44 DUT L=0.15u W=0.65u
+VD44 d44 0 0.05
+VG44 g44 0 0
+VB44 b44 0 -0.5
+M45 d45 g45 0 b45 DUT L=0.15u W=0.65u
+VD45 d45 0 0.4
+VG45 g45 0 0
+VB45 b45 0 -0.5
+M46 d46 g46 0 b46 DUT L=0.15u W=0.65u
+VD46 d46 0 1.2
+VG46 g46 0 0
+VB46 b46 0 -0.5
+M47 d47 g47 0 b47 DUT L=0.15u W=0.65u
+VD47 d47 0 1.8
+VG47 g47 0 0
+VB47 b47 0 -0.5
+M48 d48 g48 0 b48 DUT L=0.15u W=0.65u
+VD48 d48 0 -0.1
+VG48 g48 0 0.4
+VB48 b48 0 -0.5
+M49 d49 g49 0 b49 DUT L=0.15u W=0.65u
+VD49 d49 0 0
+VG49 g49 0 0.4
+VB49 b49 0 -0.5
+M50 d50 g50 0 b50 DUT L=0.15u W=0.65u
+VD50 d50 0 0.05
+VG50 g50 0 0.4
+VB50 b50 0 -0.5
+M51 d51 g51 0 b51 DUT L=0.15u W=0.65u
+VD51 d51 0 0.4
+VG51 g51 0 0.4
+VB51 b51 0 -0.5
+M52 d52 g52 0 b52 DUT L=0.15u W=0.65u
+VD52 d52 0 1.2
+VG52 g52 0 0.4
+VB52 b52 0 -0.5
+M53 d53 g53 0 b53 DUT L=0.15u W=0.65u
+VD53 d53 0 1.8
+VG53 g53 0 0.4
+VB53 b53 0 -0.5
+M54 d54 g54 0 b54 DUT L=0.15u W=0.65u
+VD54 d54 0 -0.1
+VG54 g54 0 0.8
+VB54 b54 0 -0.5
+M55 d55 g55 0 b55 DUT L=0.15u W=0.65u
+VD55 d55 0 0
+VG55 g55 0 0.8
+VB55 b55 0 -0.5
+M56 d56 g56 0 b56 DUT L=0.15u W=0.65u
+VD56 d56 0 0.05
+VG56 g56 0 0.8
+VB56 b56 0 -0.5
+M57 d57 g57 0 b57 DUT L=0.15u W=0.65u
+VD57 d57 0 0.4
+VG57 g57 0 0.8
+VB57 b57 0 -0.5
+M58 d58 g58 0 b58 DUT L=0.15u W=0.65u
+VD58 d58 0 1.2
+VG58 g58 0 0.8
+VB58 b58 0 -0.5
+M59 d59 g59 0 b59 DUT L=0.15u W=0.65u
+VD59 d59 0 1.8
+VG59 g59 0 0.8
+VB59 b59 0 -0.5
+M60 d60 g60 0 b60 DUT L=0.15u W=0.65u
+VD60 d60 0 -0.1
+VG60 g60 0 1.2
+VB60 b60 0 -0.5
+M61 d61 g61 0 b61 DUT L=0.15u W=0.65u
+VD61 d61 0 0
+VG61 g61 0 1.2
+VB61 b61 0 -0.5
+M62 d62 g62 0 b62 DUT L=0.15u W=0.65u
+VD62 d62 0 0.05
+VG62 g62 0 1.2
+VB62 b62 0 -0.5
+M63 d63 g63 0 b63 DUT L=0.15u W=0.65u
+VD63 d63 0 0.4
+VG63 g63 0 1.2
+VB63 b63 0 -0.5
+M64 d64 g64 0 b64 DUT L=0.15u W=0.65u
+VD64 d64 0 1.2
+VG64 g64 0 1.2
+VB64 b64 0 -0.5
+M65 d65 g65 0 b65 DUT L=0.15u W=0.65u
+VD65 d65 0 1.8
+VG65 g65 0 1.2
+VB65 b65 0 -0.5
+M66 d66 g66 0 b66 DUT L=0.15u W=0.65u
+VD66 d66 0 -0.1
+VG66 g66 0 1.8
+VB66 b66 0 -0.5
+M67 d67 g67 0 b67 DUT L=0.15u W=0.65u
+VD67 d67 0 0
+VG67 g67 0 1.8
+VB67 b67 0 -0.5
+M68 d68 g68 0 b68 DUT L=0.15u W=0.65u
+VD68 d68 0 0.05
+VG68 g68 0 1.8
+VB68 b68 0 -0.5
+M69 d69 g69 0 b69 DUT L=0.15u W=0.65u
+VD69 d69 0 0.4
+VG69 g69 0 1.8
+VB69 b69 0 -0.5
+M70 d70 g70 0 b70 DUT L=0.15u W=0.65u
+VD70 d70 0 1.2
+VG70 g70 0 1.8
+VB70 b70 0 -0.5
+M71 d71 g71 0 b71 DUT L=0.15u W=0.65u
+VD71 d71 0 1.8
+VG71 g71 0 1.8
+VB71 b71 0 -0.5
+M72 d72 g72 0 b72 DUT L=0.15u W=0.65u
+VD72 d72 0 -0.1
+VG72 g72 0 -0.2
+VB72 b72 0 -1
+M73 d73 g73 0 b73 DUT L=0.15u W=0.65u
+VD73 d73 0 0
+VG73 g73 0 -0.2
+VB73 b73 0 -1
+M74 d74 g74 0 b74 DUT L=0.15u W=0.65u
+VD74 d74 0 0.05
+VG74 g74 0 -0.2
+VB74 b74 0 -1
+M75 d75 g75 0 b75 DUT L=0.15u W=0.65u
+VD75 d75 0 0.4
+VG75 g75 0 -0.2
+VB75 b75 0 -1
+M76 d76 g76 0 b76 DUT L=0.15u W=0.65u
+VD76 d76 0 1.2
+VG76 g76 0 -0.2
+VB76 b76 0 -1
+M77 d77 g77 0 b77 DUT L=0.15u W=0.65u
+VD77 d77 0 1.8
+VG77 g77 0 -0.2
+VB77 b77 0 -1
+M78 d78 g78 0 b78 DUT L=0.15u W=0.65u
+VD78 d78 0 -0.1
+VG78 g78 0 0
+VB78 b78 0 -1
+M79 d79 g79 0 b79 DUT L=0.15u W=0.65u
+VD79 d79 0 0
+VG79 g79 0 0
+VB79 b79 0 -1
+M80 d80 g80 0 b80 DUT L=0.15u W=0.65u
+VD80 d80 0 0.05
+VG80 g80 0 0
+VB80 b80 0 -1
+M81 d81 g81 0 b81 DUT L=0.15u W=0.65u
+VD81 d81 0 0.4
+VG81 g81 0 0
+VB81 b81 0 -1
+M82 d82 g82 0 b82 DUT L=0.15u W=0.65u
+VD82 d82 0 1.2
+VG82 g82 0 0
+VB82 b82 0 -1
+M83 d83 g83 0 b83 DUT L=0.15u W=0.65u
+VD83 d83 0 1.8
+VG83 g83 0 0
+VB83 b83 0 -1
+M84 d84 g84 0 b84 DUT L=0.15u W=0.65u
+VD84 d84 0 -0.1
+VG84 g84 0 0.4
+VB84 b84 0 -1
+M85 d85 g85 0 b85 DUT L=0.15u W=0.65u
+VD85 d85 0 0
+VG85 g85 0 0.4
+VB85 b85 0 -1
+M86 d86 g86 0 b86 DUT L=0.15u W=0.65u
+VD86 d86 0 0.05
+VG86 g86 0 0.4
+VB86 b86 0 -1
+M87 d87 g87 0 b87 DUT L=0.15u W=0.65u
+VD87 d87 0 0.4
+VG87 g87 0 0.4
+VB87 b87 0 -1
+M88 d88 g88 0 b88 DUT L=0.15u W=0.65u
+VD88 d88 0 1.2
+VG88 g88 0 0.4
+VB88 b88 0 -1
+M89 d89 g89 0 b89 DUT L=0.15u W=0.65u
+VD89 d89 0 1.8
+VG89 g89 0 0.4
+VB89 b89 0 -1
+M90 d90 g90 0 b90 DUT L=0.15u W=0.65u
+VD90 d90 0 -0.1
+VG90 g90 0 0.8
+VB90 b90 0 -1
+M91 d91 g91 0 b91 DUT L=0.15u W=0.65u
+VD91 d91 0 0
+VG91 g91 0 0.8
+VB91 b91 0 -1
+M92 d92 g92 0 b92 DUT L=0.15u W=0.65u
+VD92 d92 0 0.05
+VG92 g92 0 0.8
+VB92 b92 0 -1
+M93 d93 g93 0 b93 DUT L=0.15u W=0.65u
+VD93 d93 0 0.4
+VG93 g93 0 0.8
+VB93 b93 0 -1
+M94 d94 g94 0 b94 DUT L=0.15u W=0.65u
+VD94 d94 0 1.2
+VG94 g94 0 0.8
+VB94 b94 0 -1
+M95 d95 g95 0 b95 DUT L=0.15u W=0.65u
+VD95 d95 0 1.8
+VG95 g95 0 0.8
+VB95 b95 0 -1
+M96 d96 g96 0 b96 DUT L=0.15u W=0.65u
+VD96 d96 0 -0.1
+VG96 g96 0 1.2
+VB96 b96 0 -1
+M97 d97 g97 0 b97 DUT L=0.15u W=0.65u
+VD97 d97 0 0
+VG97 g97 0 1.2
+VB97 b97 0 -1
+M98 d98 g98 0 b98 DUT L=0.15u W=0.65u
+VD98 d98 0 0.05
+VG98 g98 0 1.2
+VB98 b98 0 -1
+M99 d99 g99 0 b99 DUT L=0.15u W=0.65u
+VD99 d99 0 0.4
+VG99 g99 0 1.2
+VB99 b99 0 -1
+M100 d100 g100 0 b100 DUT L=0.15u W=0.65u
+VD100 d100 0 1.2
+VG100 g100 0 1.2
+VB100 b100 0 -1
+M101 d101 g101 0 b101 DUT L=0.15u W=0.65u
+VD101 d101 0 1.8
+VG101 g101 0 1.2
+VB101 b101 0 -1
+M102 d102 g102 0 b102 DUT L=0.15u W=0.65u
+VD102 d102 0 -0.1
+VG102 g102 0 1.8
+VB102 b102 0 -1
+M103 d103 g103 0 b103 DUT L=0.15u W=0.65u
+VD103 d103 0 0
+VG103 g103 0 1.8
+VB103 b103 0 -1
+M104 d104 g104 0 b104 DUT L=0.15u W=0.65u
+VD104 d104 0 0.05
+VG104 g104 0 1.8
+VB104 b104 0 -1
+M105 d105 g105 0 b105 DUT L=0.15u W=0.65u
+VD105 d105 0 0.4
+VG105 g105 0 1.8
+VB105 b105 0 -1
+M106 d106 g106 0 b106 DUT L=0.15u W=0.65u
+VD106 d106 0 1.2
+VG106 g106 0 1.8
+VB106 b106 0 -1
+M107 d107 g107 0 b107 DUT L=0.15u W=0.65u
+VD107 d107 0 1.8
+VG107 g107 0 1.8
+VB107 b107 0 -1
+.control
+set filetype=ascii
+set numdgt=17
+save @m0[id] @m0[gm] @m0[gds] @m0[gmbs] @m1[id] @m1[gm] @m1[gds] @m1[gmbs] @m2[id] @m2[gm] @m2[gds] @m2[gmbs] @m3[id] @m3[gm] @m3[gds] @m3[gmbs] @m4[id] @m4[gm] @m4[gds] @m4[gmbs] @m5[id] @m5[gm] @m5[gds] @m5[gmbs] @m6[id] @m6[gm] @m6[gds] @m6[gmbs] @m7[id] @m7[gm] @m7[gds] @m7[gmbs] @m8[id] @m8[gm] @m8[gds] @m8[gmbs] @m9[id] @m9[gm] @m9[gds] @m9[gmbs] @m10[id] @m10[gm] @m10[gds] @m10[gmbs] @m11[id] @m11[gm] @m11[gds] @m11[gmbs] @m12[id] @m12[gm] @m12[gds] @m12[gmbs] @m13[id] @m13[gm] @m13[gds] @m13[gmbs] @m14[id] @m14[gm] @m14[gds] @m14[gmbs] @m15[id] @m15[gm] @m15[gds] @m15[gmbs] @m16[id] @m16[gm] @m16[gds] @m16[gmbs] @m17[id] @m17[gm] @m17[gds] @m17[gmbs] @m18[id] @m18[gm] @m18[gds] @m18[gmbs] @m19[id] @m19[gm] @m19[gds] @m19[gmbs] @m20[id] @m20[gm] @m20[gds] @m20[gmbs] @m21[id] @m21[gm] @m21[gds] @m21[gmbs] @m22[id] @m22[gm] @m22[gds] @m22[gmbs] @m23[id] @m23[gm] @m23[gds] @m23[gmbs] @m24[id] @m24[gm] @m24[gds] @m24[gmbs] @m25[id] @m25[gm] @m25[gds] @m25[gmbs] @m26[id] @m26[gm] @m26[gds] @m26[gmbs] @m27[id] @m27[gm] @m27[gds] @m27[gmbs] @m28[id] @m28[gm] @m28[gds] @m28[gmbs] @m29[id] @m29[gm] @m29[gds] @m29[gmbs] @m30[id] @m30[gm] @m30[gds] @m30[gmbs] @m31[id] @m31[gm] @m31[gds] @m31[gmbs] @m32[id] @m32[gm] @m32[gds] @m32[gmbs] @m33[id] @m33[gm] @m33[gds] @m33[gmbs] @m34[id] @m34[gm] @m34[gds] @m34[gmbs] @m35[id] @m35[gm] @m35[gds] @m35[gmbs] @m36[id] @m36[gm] @m36[gds] @m36[gmbs] @m37[id] @m37[gm] @m37[gds] @m37[gmbs] @m38[id] @m38[gm] @m38[gds] @m38[gmbs] @m39[id] @m39[gm] @m39[gds] @m39[gmbs] @m40[id] @m40[gm] @m40[gds] @m40[gmbs] @m41[id] @m41[gm] @m41[gds] @m41[gmbs] @m42[id] @m42[gm] @m42[gds] @m42[gmbs] @m43[id] @m43[gm] @m43[gds] @m43[gmbs] @m44[id] @m44[gm] @m44[gds] @m44[gmbs] @m45[id] @m45[gm] @m45[gds] @m45[gmbs] @m46[id] @m46[gm] @m46[gds] @m46[gmbs] @m47[id] @m47[gm] @m47[gds] @m47[gmbs] @m48[id] @m48[gm] @m48[gds] @m48[gmbs] @m49[id] @m49[gm] @m49[gds] @m49[gmbs] @m50[id] @m50[gm] @m50[gds] @m50[gmbs] @m51[id] @m51[gm] @m51[gds] @m51[gmbs] @m52[id] @m52[gm] @m52[gds] @m52[gmbs] @m53[id] @m53[gm] @m53[gds] @m53[gmbs] @m54[id] @m54[gm] @m54[gds] @m54[gmbs] @m55[id] @m55[gm] @m55[gds] @m55[gmbs] @m56[id] @m56[gm] @m56[gds] @m56[gmbs] @m57[id] @m57[gm] @m57[gds] @m57[gmbs] @m58[id] @m58[gm] @m58[gds] @m58[gmbs] @m59[id] @m59[gm] @m59[gds] @m59[gmbs] @m60[id] @m60[gm] @m60[gds] @m60[gmbs] @m61[id] @m61[gm] @m61[gds] @m61[gmbs] @m62[id] @m62[gm] @m62[gds] @m62[gmbs] @m63[id] @m63[gm] @m63[gds] @m63[gmbs] @m64[id] @m64[gm] @m64[gds] @m64[gmbs] @m65[id] @m65[gm] @m65[gds] @m65[gmbs] @m66[id] @m66[gm] @m66[gds] @m66[gmbs] @m67[id] @m67[gm] @m67[gds] @m67[gmbs] @m68[id] @m68[gm] @m68[gds] @m68[gmbs] @m69[id] @m69[gm] @m69[gds] @m69[gmbs] @m70[id] @m70[gm] @m70[gds] @m70[gmbs] @m71[id] @m71[gm] @m71[gds] @m71[gmbs] @m72[id] @m72[gm] @m72[gds] @m72[gmbs] @m73[id] @m73[gm] @m73[gds] @m73[gmbs] @m74[id] @m74[gm] @m74[gds] @m74[gmbs] @m75[id] @m75[gm] @m75[gds] @m75[gmbs] @m76[id] @m76[gm] @m76[gds] @m76[gmbs] @m77[id] @m77[gm] @m77[gds] @m77[gmbs] @m78[id] @m78[gm] @m78[gds] @m78[gmbs] @m79[id] @m79[gm] @m79[gds] @m79[gmbs] @m80[id] @m80[gm] @m80[gds] @m80[gmbs] @m81[id] @m81[gm] @m81[gds] @m81[gmbs] @m82[id] @m82[gm] @m82[gds] @m82[gmbs] @m83[id] @m83[gm] @m83[gds] @m83[gmbs] @m84[id] @m84[gm] @m84[gds] @m84[gmbs] @m85[id] @m85[gm] @m85[gds] @m85[gmbs] @m86[id] @m86[gm] @m86[gds] @m86[gmbs] @m87[id] @m87[gm] @m87[gds] @m87[gmbs] @m88[id] @m88[gm] @m88[gds] @m88[gmbs] @m89[id] @m89[gm] @m89[gds] @m89[gmbs] @m90[id] @m90[gm] @m90[gds] @m90[gmbs] @m91[id] @m91[gm] @m91[gds] @m91[gmbs] @m92[id] @m92[gm] @m92[gds] @m92[gmbs] @m93[id] @m93[gm] @m93[gds] @m93[gmbs] @m94[id] @m94[gm] @m94[gds] @m94[gmbs] @m95[id] @m95[gm] @m95[gds] @m95[gmbs] @m96[id] @m96[gm] @m96[gds] @m96[gmbs] @m97[id] @m97[gm] @m97[gds] @m97[gmbs] @m98[id] @m98[gm] @m98[gds] @m98[gmbs] @m99[id] @m99[gm] @m99[gds] @m99[gmbs] @m100[id] @m100[gm] @m100[gds] @m100[gmbs] @m101[id] @m101[gm] @m101[gds] @m101[gmbs] @m102[id] @m102[gm] @m102[gds] @m102[gmbs] @m103[id] @m103[gm] @m103[gds] @m103[gmbs] @m104[id] @m104[gm] @m104[gds] @m104[gmbs] @m105[id] @m105[gm] @m105[gds] @m105[gmbs] @m106[id] @m106[gm] @m106[gds] @m106[gmbs] @m107[id] @m107[gm] @m107[gds] @m107[gmbs]
+save i(vd0) i(vd1) i(vd2) i(vd3) i(vd4) i(vd5) i(vd6) i(vd7) i(vd8) i(vd9) i(vd10) i(vd11) i(vd12) i(vd13) i(vd14) i(vd15) i(vd16) i(vd17) i(vd18) i(vd19) i(vd20) i(vd21) i(vd22) i(vd23) i(vd24) i(vd25) i(vd26) i(vd27) i(vd28) i(vd29) i(vd30) i(vd31) i(vd32) i(vd33) i(vd34) i(vd35) i(vd36) i(vd37) i(vd38) i(vd39) i(vd40) i(vd41) i(vd42) i(vd43) i(vd44) i(vd45) i(vd46) i(vd47) i(vd48) i(vd49) i(vd50) i(vd51) i(vd52) i(vd53) i(vd54) i(vd55) i(vd56) i(vd57) i(vd58) i(vd59) i(vd60) i(vd61) i(vd62) i(vd63) i(vd64) i(vd65) i(vd66) i(vd67) i(vd68) i(vd69) i(vd70) i(vd71) i(vd72) i(vd73) i(vd74) i(vd75) i(vd76) i(vd77) i(vd78) i(vd79) i(vd80) i(vd81) i(vd82) i(vd83) i(vd84) i(vd85) i(vd86) i(vd87) i(vd88) i(vd89) i(vd90) i(vd91) i(vd92) i(vd93) i(vd94) i(vd95) i(vd96) i(vd97) i(vd98) i(vd99) i(vd100) i(vd101) i(vd102) i(vd103) i(vd104) i(vd105) i(vd106) i(vd107)
+op
+write op.raw all
+quit
+.endc
+.end
