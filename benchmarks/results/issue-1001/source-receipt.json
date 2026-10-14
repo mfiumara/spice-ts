@@ -1,0 +1,22 @@
+[
+  {
+    "url": "https://raw.githubusercontent.com/ngspice/ngspice/a80f6e3e95d51534905b1f23410a951802666656/src/spicelib/devices/mos2/mos2load.c",
+    "sha256": "4c0a943eb7de5a0a3749f58c365ce3fa3ed5ad717254af0faf7b15539abc0823",
+    "lines": 1392
+  },
+  {
+    "url": "https://raw.githubusercontent.com/ngspice/ngspice/a80f6e3e95d51534905b1f23410a951802666656/src/spicelib/devices/mos2/mos2trun.c",
+    "sha256": "8dd6903ea8c9cde513c98a8a3eff16eb21f69deb979e41a5de6e1619e47c7a77",
+    "lines": 30
+  },
+  {
+    "url": "https://raw.githubusercontent.com/ngspice/ngspice/a80f6e3e95d51534905b1f23410a951802666656/src/maths/ni/niinteg.c",
+    "sha256": "b0925c863b3778ae9d581505bbd2d467a9382dfcb87c28657a911c6c650599c2",
+    "lines": 80
+  },
+  {
+    "url": "https://raw.githubusercontent.com/ngspice/ngspice/a80f6e3e95d51534905b1f23410a951802666656/src/spicelib/analysis/ckttrunc.c",
+    "sha256": "1ae5c196a7e4b672da62be20624f6bbafc3fca713b0ab12aa69ac22d6a1b4757",
+    "lines": 227
+  }
+]

@@ -15,9 +15,12 @@ uses the existing native engine runners and linear-alignment harness. Both
 engines receive the same input Buffer; no fixture or tolerance is adapted.
 
 The implementation branch subsequently merged main at
-`9b14263187c37864758321ef4d80962b339bb949`. Only the additive SOURCES conflict
-needed resolution; the probe section is appended to avoid the shared prepend
-hotspot. The scoped delta and targeted run were repeated after integration.
+`9b14263187c37864758321ef4d80962b339bb949`, then incorporated the evidence-only
+`ce86105c8fde8421e33ce57285242b39431ed7bc`. Only additive SOURCES conflicts
+needed resolution. The probe section sits beside #1049 to avoid the shared
+prepend/append hotspots. The scoped delta and targeted run were repeated after
+the first integration; the second adds benchmark receipts and one regression
+test, not simulator logic.
 
 Measured on darwin 27.0.0 / arm64 / Apple M5 Pro, Node v22.23.1,
 pnpm 10.28.1, `/opt/homebrew/bin/ngspice` version 47. Timings are not a speed claim.
