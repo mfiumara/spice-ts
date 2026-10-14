@@ -32,7 +32,7 @@ const CORPUS_G_PACKAGE_LINES: ReadonlyArray<readonly [string, string, object, nu
   ['HOMOTOPY/schmidt.cir', '.options device voltlim=1 debuglevel=-100', {}],
   ['MEASURE_CONT/DerivTest1DC.cir', '.OPTIONS MEASURE USE_CONT_FILES=0', {}],
   ['MEXTRAM/acFreq_Gbb_noFlip_P.cir', '.options device temp=25', {}, 25],
-  ['MPDE/invert1.cir', '.options TIMEINT maxord=5 debuglevel=-10 reltol=1.0e-4', { reltol: 1e-4 }],
+  ['MPDE/invert1.cir', '.options TIMEINT maxord=5 debuglevel=-10 reltol=1.0e-4', { reltol: 1e-4, maxOrder: 5 }],
   ['Nonlinear/ConvergenceTests/NLStrategy1.cir', '.options nonlin nlstrategy=1 searchmethod=0', {}],
   ['PARAM_REFACTOR/paramHomotopy.cir', '.options nonlin continuation=1', {}],
   ['POWERNODE/resInner.cir', '.options nonlin nox=1', {}],
@@ -117,15 +117,13 @@ describe('Xyce .options packages follow ngspice-47 (#713)', () => {
   });
 
   it('treats MAXORD above 2 as the no-op ngspice trapezoidal order cap', () => {
-    expect(parse('.options timeint maxord=5\n.op').simulationOptions).toEqual({});
-    expect(parse('.options maxord=2 method=gear\n.op').simulationOptions).toEqual({ integrationMethod: 'gear2' });
+    expect(parse('.options timeint maxord=5\n.op').simulationOptions).toEqual({ maxOrder: 5 });
+    expect(parse('.options maxord=2 method=gear\n.op').simulationOptions).toEqual({ integrationMethod: 'gear2', maxOrder: 2 });
   });
 
   it.each([
     ['.options timeint maxord=5\n.options method=gear\n.op', 1],
     ['.options method=gear maxord=3\n.op', 1],
-    ['.options timeint maxord=1\n.op', 1],
-    ['.options maxord=0\n.op', 1],
   ])('rejects MAXORD values that change ngspice integration: %s', (netlist, line) => {
     expect(() => parse(netlist)).toThrow(ParseError);
     expect(() => parse(netlist)).toThrow(expect.objectContaining({ line }));

@@ -1,0 +1,117 @@
+{
+  "baseSha": "43aefef1a1105696cdce74acbfd3144e5cff3b7d",
+  "factorComparison": true,
+  "sourceHashes": {
+    "chunk-JIIO3IHD.js": "ec3c908289c78c515dad19f88f0e9605eef5e8d5a67e1f4ba677b600e36f45f5",
+    "chunk-X7V2XUEC.js": "f87e954d3c8b08ccda54d472dd6052da2b3922aaaeb6783039df4a89a9ce5d75",
+    "index.js": "3fade5d7c0affa37527f0611cbd6cc0c64cd0ffcffe5890899bc15f5b79023af",
+    "step-worker-browser.js": "b47ca5fb540811921df4b785e0af35e846ea08bce2f6d570642d5c37041fe01e",
+    "step-worker.js": "c7c3ebc099bffbae72a186addc74977676dd6963be2040c22c84c09f32df4f44"
+  },
+  "provenance": {
+    "benchmarks/performance/solver-growth-991.py": "7ad946cab0f80ce199ba6b43b93bbb35592e4b2fbf12d178c961e2f066e67f5d",
+    "benchmarks/performance/solver-growth-991-prepare.mjs": "7ac5c72a99e1ddc565d520cbebdbc37d23d345d0fc3ffd0333946322457482af",
+    "benchmarks/performance/linear-10k-worker.mjs": "fe78ce92a804b5ce85d6ac43332fd02ce655fbce25bfb0fd9a2a03c8ea535060",
+    "benchmarks/performance/scaling-m2-fixture.mjs": "376c0c34b65c0000d8cf484cb1df19e2f14f696e50878797808ff9985b903869",
+    "benchmarks/performance/results/elapsed-controls-951/controls.py": "ac88efe4b72f8fc33f4cf18073d310153671620ee6178c01d9bfd35a65a8d6d4",
+    "packages/core/src/solver/gilbert-peierls.ts": "7dcbee98ae9a88a98548bba6af24ac31a3bd3b87531f81f30b0206f5669f728d"
+  },
+  "hashes": {
+    "control/chunk-JIIO3IHD.js": "ec3c908289c78c515dad19f88f0e9605eef5e8d5a67e1f4ba677b600e36f45f5",
+    "control/chunk-X7V2XUEC.js": "accdc80d9b8266ac3cfc7d60cda7a1a7a92243e04f7974c7a5bbd7c72256b01b",
+    "control/index.js": "3fade5d7c0affa37527f0611cbd6cc0c64cd0ffcffe5890899bc15f5b79023af",
+    "control/step-worker-browser.js": "b47ca5fb540811921df4b785e0af35e846ea08bce2f6d570642d5c37041fe01e",
+    "control/step-worker.js": "c7c3ebc099bffbae72a186addc74977676dd6963be2040c22c84c09f32df4f44",
+    "candidate/chunk-JIIO3IHD.js": "ec3c908289c78c515dad19f88f0e9605eef5e8d5a67e1f4ba677b600e36f45f5",
+    "candidate/chunk-X7V2XUEC.js": "d52c488747133d866fe36d010f737ee3b5635d177affc94896f74a91a82abed1",
+    "candidate/index.js": "3fade5d7c0affa37527f0611cbd6cc0c64cd0ffcffe5890899bc15f5b79023af",
+    "candidate/step-worker-browser.js": "b47ca5fb540811921df4b785e0af35e846ea08bce2f6d570642d5c37041fe01e",
+    "candidate/step-worker.js": "c7c3ebc099bffbae72a186addc74977676dd6963be2040c22c84c09f32df4f44"
+  },
+  "counts": {
+    "control": {
+      "GilbertPeierlsSolver.factorize": 1,
+      "GilbertPeierlsSolver.growLFactors": 1,
+      "GilbertPeierlsSolver.growUFactors": 1
+    },
+    "candidate": {
+      "GilbertPeierlsSolver.factorize": 1,
+      "GilbertPeierlsSolver.growLFactors": 1,
+      "GilbertPeierlsSolver.growUFactors": 1
+    }
+  },
+  "replacements": {
+    "lValues": 1,
+    "uValues": 1
+  },
+  "decks": [
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 1000,
+      "file": "rc-ladder-tran-1000.cir",
+      "deckSha256": "0944ed6b76f64f56c8e04b48919f1e12b9de19df4e5a08708c4be314fa7a91b7",
+      "actualNodes": 1000
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 1000,
+      "file": "resistor-mesh-op-1000.cir",
+      "deckSha256": "6c6d5adb109cdde9ac844c3346135f4e7ffc352626b2f3c430598c0ebd9d8d40",
+      "actualNodes": 1024
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 1000,
+      "file": "cmos-inverter-chain-tran-1000.cir",
+      "deckSha256": "1a9866593c778a9fa26e23c1916c7b00b1bdb1adc2e7a246d9e3f4aa4f1ca1e1",
+      "actualNodes": 1000
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 10000,
+      "file": "rc-ladder-tran-10000.cir",
+      "deckSha256": "eb21933fd99fcbc32276816a4f389ba216dcdddc29683551a67f606f352dfca7",
+      "actualNodes": 10000
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "file": "resistor-mesh-op-10000.cir",
+      "deckSha256": "c88e6076daf2523437e3da014d7a3c329f679a7405f789530c5c805f447ed0dc",
+      "actualNodes": 10000
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 10000,
+      "file": "cmos-inverter-chain-tran-10000.cir",
+      "deckSha256": "2ce663326238609299d8628016b1211632f1474e9d40b6c39747fff964999a18",
+      "actualNodes": 10000
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 50000,
+      "file": "rc-ladder-tran-50000.cir",
+      "deckSha256": "2fd0c2090d17dddf80980eb3391440a3e4f99e1a77d1158360ffedc4246a7ada",
+      "actualNodes": 50000
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "file": "resistor-mesh-op-50000.cir",
+      "deckSha256": "f81ed198f7ba67068138846b12fe93b9ec957e6bb3a89300d2c7c50e30d47329",
+      "actualNodes": 50176
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 50000,
+      "file": "cmos-inverter-chain-tran-50000.cir",
+      "deckSha256": "d680f1054eb14002980a7a65eb68a5dddae8063a871050fde025e8f5080bc543",
+      "actualNodes": 50000
+    }
+  ],
+  "targets": {
+    "GilbertPeierlsSolver.factorize": "factor",
+    "GilbertPeierlsSolver.growLFactors": "growth",
+    "GilbertPeierlsSolver.growUFactors": "growth"
+  }
+}
