@@ -7,7 +7,7 @@ import {
   branchVoltage, meyerHalfCapacitances, stampCapacitance,
 } from './mos6.js';
 import { fetlim, limvds, pnjlim, stepScale } from './devsup.js';
-import { InvalidCircuitError } from '../errors.js';
+import { InvalidCircuitError, UnsupportedTemperatureError } from '../errors.js';
 
 /**
  * MOSFET level 3 (semi-empirical short-channel model) and level 9 (ngspice
@@ -91,6 +91,8 @@ export interface MOS3ModelParams {
   THETA: number;
   KAPPA: number;
   TNOM: number;
+  /** First supplied field outside the ported DC/charge parameter surface. */
+  unsupportedTemperatureParameter?: string;
   /** mos3temp.c MOS3oxideCapFactor = EPS_OX / TOX (TOX defaults to 1e-7 m). */
   oxideCapFactor: number;
   /** mos3temp.c MOS3alpha = 2 EPSSIL / (q NSUB) (0 without NSUB). */
@@ -115,6 +117,9 @@ export interface MOS3InstanceParams {
   AS: number;
   PD: number;
   PS: number;
+  /** Instance TEMP/DTEMP overrides are not part of the validated circuit-temperature surface. */
+  TEMP?: number;
+  DTEMP?: number;
 }
 
 /** Temperature-dependent instance quantities (mos3temp.c), M included. */
@@ -214,6 +219,16 @@ export function resolveMOS3Model(
   }
 
   const delta = params.DELTA ?? 0;
+  // ngspice-47 mos3.c:114-157, mos3temp.c:41-114,214-339.
+  // No extra UTE/XTI/TCV/TRD laws are part of MOS3. Do not silently accept
+  // dialect extensions or unported fields when enabling circuit temperature.
+  const temperatureParameters = new Set([
+    'LEVEL', 'VTO', 'VT0', 'KP', 'GAMMA', 'PHI', 'RD', 'RS', 'CBD', 'CBS',
+    'IS', 'PB', 'CGSO', 'CGDO', 'CGBO', 'RSH', 'CJ', 'MJ', 'CJSW', 'MJSW',
+    'JS', 'TOX', 'LD', 'XL', 'WD', 'XW', 'DELVTO', 'DELVT0', 'U0', 'UO',
+    'FC', 'NSUB', 'TPG', 'NSS', 'VMAX', 'XJ', 'NFS', 'ETA', 'DELTA',
+    'THETA', 'KAPPA', 'TNOM',
+  ]);
   return {
     level,
     polarity,
@@ -247,6 +262,8 @@ export function resolveMOS3Model(
     THETA: params.THETA ?? 0,
     KAPPA: params.KAPPA ?? 0.2,
     TNOM: tnom,
+    unsupportedTemperatureParameter: Object.keys(params).find(key => params[key] !== undefined
+      && !temperatureParameters.has(key)),
     oxideCapFactor,
     alpha,
     coeffDepLayWidth,
@@ -378,6 +395,13 @@ export class MOS3 implements DeviceModel {
     instance: Partial<MOS3InstanceParams>,
   ) {
     this.model = model;
+    // Do not silently replace ngspice's mos3temp.c:131-137 instance overrides
+    // with CKTtemp. Fail closed until these inputs have an identical-byte oracle.
+    for (const parameter of ['TEMP', 'DTEMP'] as const) {
+      if (instance[parameter] !== undefined) {
+        throw new UnsupportedTemperatureError(name, instance.TEMP ?? 27 + (instance.DTEMP ?? 0), parameter);
+      }
+    }
     this.instance = {
       W: instance.W ?? DEFAULT_MOS_WIDTH,
       L: instance.L ?? DEFAULT_MOS_LENGTH,
@@ -413,6 +437,12 @@ export class MOS3 implements DeviceModel {
   }
 
   setTemperature(value: number): void {
+    // LEVEL=9 remains outside this validation slice, including direct hooks
+    // used by .dc/.step TEMP (not just the circuit compilation guard).
+    if (this.model.level !== 3 && value !== 27) throw new UnsupportedTemperatureError(this.name, value);
+    if (value !== this.model.TNOM - CONSTCTOK && this.model.unsupportedTemperatureParameter !== undefined) {
+      throw new UnsupportedTemperatureError(this.name, value, this.model.unsupportedTemperatureParameter);
+    }
     this.temperature = value;
     this.applyTemperature();
   }
@@ -421,7 +451,13 @@ export class MOS3 implements DeviceModel {
     return this.temperature;
   }
 
-  /** mos3temp.c instance loop. */
+  /**
+   * ngspice-47 mos3temp.c:44-50 (nominal factors),131-145 (instance factors),
+   * 214-251 (KP/U0, PHI/VTO, IS/JS and junction capacitance laws),253-339
+   * (Vcrit and depletion coefficients). These equations were already ported;
+   * #1057 validates and enables their use beyond the circuit's 27 C default.
+   * Source: https://github.com/imr/ngspice/blob/ngspice-47/src/spicelib/devices/mos3/mos3temp.c
+   */
   private applyTemperature(): void {
     const model = this.model;
     const { M, AD, AS, PD, PS } = this.instance;
@@ -523,6 +559,8 @@ export class MOS3 implements DeviceModel {
    */
   evaluateChannel(vgs: number, vds: number, vbs: number): MOS3Channel {
     const model = this.model;
+    // mos3load.c:111,152-154,567-575,615,626-638,657,1081-1087 consume
+    // instance vt, tKP, tPhi, tVbi, tSurfMob, never the nominal model values.
     const { tPhi, tVbi, tSurfMob, vt } = this.temp;
     const leff = this.effectiveLength;
     const weff = this.effectiveWidth;

@@ -74,4 +74,18 @@ describe('MOS3 non-nominal temperature ngspice-47 parity (#1057)', () => {
       code: 'UNSUPPORTED_TEMPERATURE', deviceName: 'M1', temperature: 100,
     });
   });
+  it.each(['TEMP=27', 'DTEMP=10'])('rejects unvalidated instance %s instead of ignoring it', async override => {
+    await expect(simulate(references[0].deck.replace('W=10u', `${override} W=10u`))).rejects.toMatchObject({
+      code: 'UNSUPPORTED_TEMPERATURE', deviceName: 'M1', parameter: override.split('=')[0],
+    });
+  });
+  it('guards unported fields in direct .step/.dc temperature hooks and preserves the last valid state', () => {
+    const circuit = parse(references[0].deck.replace('TNOM=50', 'TNOM=27 TCV=0.1')
+      .replace('TEMP=100', 'TEMP=27')).compile();
+    const device = circuit.devices.find(device => device instanceof MOS3) as MOS3;
+    expect(() => device.setTemperature(-40)).toThrowError(expect.objectContaining({
+      code: 'UNSUPPORTED_TEMPERATURE', parameter: 'TCV', temperature: -40,
+    }));
+    expect(device.getTemperature()).toBe(27);
+  });
 });
