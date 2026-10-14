@@ -74,5 +74,9 @@ X1 c b 0 stage`);
     expect(charged.transient!.time[0]).toBe(zeroIC.transient!.time[0]);
     expect(Math.abs(charged.transient!.voltage('b')[0] - zeroIC.transient!.voltage('b')[0]))
       .toBeGreaterThan(0.01);
+    // ngspice-47 on the identical NPN deck (.print tran v(b)) gives
+    // t=2e-12, v(b)=2.000018e-1; the PNP deck is its sign mirror.
+    expect(charged.transient!.time[0]).toBeCloseTo(2e-12, 20);
+    expect(charged.transient!.voltage('b')[0]).toBeCloseTo(sign * 0.2000018, 6);
   });
 });
