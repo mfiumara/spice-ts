@@ -2,7 +2,7 @@ import { expect, it } from 'vitest';
 import { probe, REST } from './transient-centered-1037.fixtures.js';
 
 // Known loss. This candidate is evidence only, NOT a simulator correction.
-it.fails('preserves DC equilibrium with post-assembly centered Newton (#1037)', async () => {
+it('preserves DC equilibrium with post-assembly centered Newton (#1037)', async () => {
   const result = await probe(REST, true);
   expect(result.error).toBeNull();
   expect(result.time).toBeCloseTo(1e-11, 20);
