@@ -104,6 +104,9 @@ original header and numeric payload; payloads deduplicate by SHA256 per matrix.
 `native-raw-sha256.json` retains original full-raw hashes, including changing dates.
 Partial CMOS50k raw bytes are preserved but NOT labelled complete numeric results.
 `SHA256SUMS` pins all committed evidence bytes except itself and the PR description.
+The original `controller-smoke.log` receipt is unpublished and unavailable in
+this checkout. Its stale manifest entry was removed; no smoke-test receipt is
+claimed by this bundle. Measurements, statistics and the rejection are unchanged.
 
 ## Reproduce
 
