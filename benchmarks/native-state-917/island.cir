@@ -1,0 +1,9 @@
+Floating series diode state and reorder reduction, self-written MIT
+V1 supply 0 1
+R1 supply 0 1k
+C1 a 0 1n
+C2 k 0 1n
+D1 a k dm
+.model dm D(IS=4e-7 RS=0.002)
+.op
+.end
