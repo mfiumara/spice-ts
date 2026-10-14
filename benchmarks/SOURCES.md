@@ -1024,6 +1024,18 @@ of nonconvergence. Runs require `spice-heavy`; no model-equivalence claim is mad
 
 ## Known ngspice bugs corpus (issue #803)
 
+Solver-selection follow-up (#812): `benchmarks/solver-selection/` reuses the
+existing manifest hashes and licence restrictions for tickets 645, 690, 691,
+718, 720, 725 and 852. `prepare.py` retrieves 718 from
+https://sourceforge.net/rest/p/ngspice/bugs/718 and 720 from
+https://raw.githubusercontent.com/ngspice/ngspice/master/examples/tclspice/tcl/diffpair.cir,
+reconstructs only the previously documented solver variants, and requires the
+existing SHA-256 pins before writing ignored fetched inputs. No complete third-party
+deck/model library is redistributed here; native diagnostics retain small error excerpts. The RC regression in
+`packages/core/src/parser/solver-selection.test.ts` is self-written under the
+repository MIT licence. The report retains singular-network, sensitivity,
+missing-plot and native-reference failures, not just completed comparisons.
+
 - Source: the open ngspice bug tickets (status `open` or `open-accepted`, 134 tickets on 2026-10-12) at https://sourceforge.net/p/ngspice/bugs/, harvested read-only through the SourceForge REST API (`https://sourceforge.net/rest/p/ngspice/bugs/search?q=status:open+OR+status:open-accepted`). Every deck records its ticket URL, attachment URL and SHA-256 in `benchmarks/corpus/ngspice-bugs/manifest.json`.
 - Licence: decks were posted publicly on the tracker by their authors without an explicit licence. Redistribution decision: only small (at most 3 KB) user-authored decks are committed, quoted to reproduce the bug reports, plus dot-card variants derived from them; #877/#878 decks were written by the spice-ts owner. Vendor model libraries, PDK files, archives and large attachments are not committed; `benchmarks/corpus/ngspice-bugs/fetch.ts` downloads them from the tracker into the git-ignored `fetched/` directory and verifies their hashes.
 - Adaptation: dot-card variants of `.control`-only decks and rewritten absolute Windows include paths, each recorded per ticket in the manifest. Method, engines and outcomes: [`benchmarks/corpus/ngspice-bugs/README.md`](corpus/ngspice-bugs/README.md) and [`benchmarks/NGSPICE_BUGS.md`](NGSPICE_BUGS.md).

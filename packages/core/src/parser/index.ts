@@ -994,6 +994,14 @@ function parseSimulationOptions(
     const separator = token.indexOf('=');
     const name = token.slice(0, separator < 0 ? token.length : separator).toLowerCase();
     if (OUTPUT_ONLY_OPTION_FLAGS.has(name) && separator < 0) continue;
+    if (name === 'klu' || name === 'sparse') {
+      if (separator >= 0) {
+        throw new ParseError(`Unsupported .options field: '${token}'`, lineNumber, context);
+      }
+      // Compatibility hint only. Every native analysis retains its sparse LU path.
+      options.solverSelection = name;
+      continue;
+    }
     if (isOutputOnlyGnucapOption(name, separator < 0 ? undefined : token.slice(separator + 1))) {
       continue;
     }
