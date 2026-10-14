@@ -3771,7 +3771,7 @@
           "sha256": "bebda546a64ba84973694f8cfaf7aa8086bfaf657f741323aead5f68254b273b"
         }
       ],
-      "expected": "undetermined: a KiCad op-amp test bench built from vendor PSpice macromodels; no independent waveform. The developers state PSpice models require compatibility mode LTPS.",
+      "expected": "undetermined: a KiCad op-amp test bench built from vendor PSpice macromodels; no independent waveform. The developers state PSpice models require compatibility mode LTPS. NEW OP diagnostic: large OP difference attributed to native rshunt narrowing; loss retained. See [ROOTCAUSE.md](https://github.com/mfiumara/spice-ts/blob/main/benchmarks/results/issue-1049/ROOTCAUSE.md).",
       "expectedBasis": "undetermined",
       "ngspice47": {
         "verdict": "error",
