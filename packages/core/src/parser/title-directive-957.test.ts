@@ -37,7 +37,7 @@ X1 in load
 .title
 .end`;
       const circuit = await parser(titled ? `Original title\n${body}` : body);
-      expect(circuit.compile().devices.map(device => device.name)).toEqual(['V1', 'X1:R1']);
+      expect(circuit.compile().devices.map(device => device.name)).toEqual(['V1', 'X1.R1']);
       expect(circuit.analyses).toEqual([{ type: 'op' }]);
       expect(circuit.parseWarnings).toEqual([]);
     });
