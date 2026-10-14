@@ -1,5 +1,15 @@
 # Benchmark sources
 
+## MOS2 temperature admission (#995)
+
+The 18 synthetic NMOS/PMOS temperature probes in [reference.ts](results/issue-995/reference.ts)
+are original spice-ts project work, MIT-licensed, not copied vendor decks. Recorded OP and
+short-transient references use ngspice-47 on identical decks at TEMP=27/50/125 C with model
+TNOM=50 C, no/direct/sheet series resistance and junction capacitances.
+The unchanged gm6 input uses the corpus-k k-8 source and GPL-3.0-or-later licence below.
+Its scoped before/after results and raw temperature probe are in [issue-995](results/issue-995/README.md).
+No fixture, comparison tolerance, corpus outcome or aggregate was changed.
+
 ## corpus-k CMOS/textbook/oscillator batch (#980)
 
 20 novel original Xyce_Regression decks at `7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2`, SPDX `GPL-3.0-or-later`. Redistribution basis is the repository README GPLv3-or-later grant. Notice and full GPL text are retained in corpus-k/licenses/xyce. All selected files have no separate copyright/licence notice and no external dependencies. Per-file bytes/hashes/include closures are in [manifest.json](corpus/corpus-k/manifest.json), selection and exclusions in [SOURCES.md](corpus/corpus-k/SOURCES.md). No fixture adaptation or engine-success filter. 19 ngspice-47 successes; 5 matches, 14 spice-ts losses, 1 both-engine failure. All results are in [README.md](corpus/corpus-k/README.md) and outcomes.json; gaps #982 and #983. No aggregate refresh.
@@ -45,6 +55,14 @@ in a bundler-preserved legal comment. Package licence metadata and npm publicati
 remain owner-gated and unchanged. Targeted oracle tests are not corpus-wide
 parity or speed evidence. This extends the existing single provenance row;
 it does not relabel these files BSD-3-Clause or add a duplicate source entry.
+
+## Title-continuation regression probes (#957 / PR #976)
+
+- Source: original project-authored minimal netlists in `benchmarks/title-directive/continuations.ts`, MIT (repository `LICENSE`), reproducing https://github.com/mfiumara/spice-ts/pull/976#pullrequestreview-5511583515. No third-party fixture or source code is redistributed.
+- Both engines receive identical bytes. `continuations-before.json` and `continuations-after.json` retain input SHA-256, native ngspice-47 output/exit codes and spice-ts results, including the previous input loss and hidden parameter error. These are semantic regression probes, not novel public-corpus fixtures or speed evidence.
+- Reference semantics: https://github.com/imr/ngspice/blob/ngspice-47/src/frontend/inpcom.c lines 1442-1456 turn `.title` into a comment before continuation stitching at 1958; lines 694-702 preserve the preceding card across comments.
+- `benchmarks/title-directive/x-continuations.ts` adds original MIT numeric/bare/braced/quoted X RHS probes at top-level and nested scope. `x-continuations-{before,after}.json` retain same-byte hashes and raw ngspice-47 output (R=2000 ohms, i(v1)=-5e-4 A). Before is the uncommitted PR955/main merge; after includes the metadata-skip scanner fix. No corpus or speed claim.
+
 
 ## Controlled E/G TABLE fail-closed probes (#917)
 

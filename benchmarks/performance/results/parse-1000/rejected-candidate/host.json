@@ -1,0 +1,23 @@
+{
+  "baseSha": "8f36aef3b819d3f09e1ef1ee2f126d1d81265c3c",
+  "node": "v22.23.1",
+  "ngspice": "******\n** ngspice-47 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2026, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n******\n",
+  "uname": [
+    "Darwin",
+    "mac.home",
+    "27.0.0",
+    "Darwin Kernel Version 27.0.0: Tue Aug 11 21:06:40 PDT 2026; root:xnu-13432.1.9~1/RELEASE_ARM64_T6050",
+    "arm64"
+  ],
+  "clock": "mach_continuous_time",
+  "childSeconds": 30.0,
+  "runSeconds": 300.0,
+  "planned": 60,
+  "nativePlanned": 20,
+  "order": "rotating control/instrumented/ngspice, serial cold children",
+  "start": {
+    "continuous": 122104.62455554165,
+    "monotonic": 63409.124252125,
+    "realtime": 1791946389.787453
+  }
+}

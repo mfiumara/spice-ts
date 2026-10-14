@@ -1,0 +1,9 @@
+diff --git a/packages/core/src/parser/numparam.ts b/packages/core/src/parser/numparam.ts
+--- a/packages/core/src/parser/numparam.ts
++++ b/packages/core/src/parser/numparam.ts
+@@ -191,3 +191,5 @@
+   const output = lines.map(line => line.text);
++  // With no parameter names in any scope, no token can need auto braces.
++  if (frames.every(frame => frame.names.size === 0)) return output;
+   let active = false;
+   let skip = 0;

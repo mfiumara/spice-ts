@@ -1,0 +1,30 @@
+{
+  "id": "k-8",
+  "sourcePath": "xyce/Netlists/CircuitSim90/MOS2/gm6.cir",
+  "sha256": "e0a5f86b6d1daebb364f3a156d2d2f411c9383bd61dbaca33bc2fae2692b3e70",
+  "analyses": [
+    "op",
+    "tran"
+  ],
+  "unmappedAnalyses": [],
+  "sameNameAs": [],
+  "ngspice": {
+    "status": "success",
+    "analyses": [
+      "op:1",
+      "tran:223"
+    ]
+  },
+  "spiceTs": {
+    "status": "failed",
+    "analyses": [],
+    "firstErrorLine": "Device 'mp2' has no ngspice temperature model in spice-ts and cannot be simulated at TEMP=125 C"
+  },
+  "comparedAnalyses": 0,
+  "comparedSignals": 0,
+  "worstNormalizedError": null,
+  "worstSignal": null,
+  "outcome": "spice-ts-loss",
+  "gapBucket": "execution: other failure",
+  "comparisons": []
+}
