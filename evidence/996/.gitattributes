@@ -1,0 +1,2 @@
+# Preserve original/public deck whitespace in extracted reproducer artifacts.
+repro/*.cir -whitespace
