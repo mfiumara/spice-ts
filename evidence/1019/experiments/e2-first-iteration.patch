@@ -1,0 +1,12 @@
+--- a/src/analysis/transient-step.ts
++++ b/src/analysis/transient-step.ts
+@@ -185,7 +185,8 @@
+     const limited = damped
+       || selfLimiting.some(device => device.limitedLastStamp?.() === true);
+     if (
+-      !limited
++      iter !== 0
++      && !limited
+       && isConvergedTransient(x, prev, nodeCount, options)
+       && convergenceTestedDevices(compiled).every(device => device.convergenceTest!(x, options))
+     ) {
