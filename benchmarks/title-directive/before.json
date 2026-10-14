@@ -1,0 +1,56 @@
+{
+  "phase": "before",
+  "coreTree": "fef372ca6640c2a8179d3ae784b4128253641463",
+  "tools": {
+    "node": "v22.23.1",
+    "ngspice": "ngspice-47"
+  },
+  "environment": {
+    "platform": "darwin",
+    "release": "27.0.0",
+    "arch": "arm64",
+    "cpu": "Apple M5 Pro"
+  },
+  "command": "spice-heavy pnpm exec tsx benchmarks/title-directive/compare.ts before",
+  "policy": {
+    "input": "unchanged corpus-j j-16 bytes",
+    "fixtureAdaptation": "none",
+    "perCircuitToleranceTuning": false,
+    "matchThreshold": 0.01,
+    "adapters": "unchanged corpus-j part2.ts --engine",
+    "runtimeBoundary": "cold child wall including pnpm/tsx, adapter, parse/solve and export; no speed claim"
+  },
+  "sha256": "5a124dc0286910a59a8782d0094a9bf8a57507a9c864090b6745ef4230b88f7f",
+  "wallMs": {
+    "ngspice": 720.316834,
+    "spiceTs": 1243.48575
+  },
+  "row": {
+    "id": "j-16",
+    "sourcePath": "spicelib/examples/testfiles/test_kicad_nets.cir",
+    "sha256": "5a124dc0286910a59a8782d0094a9bf8a57507a9c864090b6745ef4230b88f7f",
+    "analyses": [
+      "op"
+    ],
+    "unmappedAnalyses": [],
+    "sameNameAs": [],
+    "ngspice": {
+      "status": "success",
+      "analyses": [
+        "op:1"
+      ]
+    },
+    "spiceTs": {
+      "status": "unsupported",
+      "analyses": [],
+      "firstErrorLine": "Parse error at line 2: Unsupported dot command: '.title' .title KiCad schematic"
+    },
+    "comparedAnalyses": 0,
+    "comparedSignals": 0,
+    "worstNormalizedError": null,
+    "worstSignal": null,
+    "outcome": "spice-ts-loss",
+    "gapBucket": "directive: .title",
+    "comparisons": []
+  }
+}
