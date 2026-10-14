@@ -12,11 +12,14 @@ GitHub issues, open PRs and milestones were captured from **2026-10-13T12:35:49Z
 number,title,labels,milestone,url,body`, `gh pr list --state open --limit 100 --json
 number,title,headRefOid,url` and `gh api repos/mfiumara/spice-ts/milestones`, all for
 `mfiumara/spice-ts`. This is an immutable reconciliation, not a live dashboard. Later merges and new
-issues do not retroactively change this snapshot. Batch the next update rather than opening another
+issues do not retroactively change this snapshot, except for the explicitly dated M4 reconciliation below.
+Batch the next update rather than opening another
 standalone roadmap PR within six hours.
 
-The capture contains **33 open issues**, four canonical trackers and **29 non-tracker issues**.
-The issue tables below are the single active inventory: **19 M1, 1 M2, 0 M3, 9 M4**, each mapped once.
+The original capture contains **33 open issues**, four canonical trackers and **29 non-tracker issues**.
+The issue tables below are the single active inventory: **19 M1, 1 M2, 0 M3** from that capture and
+**11 M4** from the 2026-10-14 readback below, each mapped once. This mixed-date inventory is not a
+fresh repository-wide issue count; other milestones remain frozen.
 References elsewhere explain priorities or evidence, not additional inventory entries. Tracker
 checkboxes can lag GitHub issue state; the captured issue inventory takes precedence over their
 older checklist counts. The [spice-ts roadmap Project](https://github.com/users/mfiumara/projects/2)
@@ -241,15 +244,28 @@ of open issues does not make every SPICE device or analysis available through WA
 
 | Issue | Scope and next verifiable delivery |
 |---|---|
+| [#948](https://github.com/mfiumara/spice-ts/issues/948) | Xyce second-reference simulator integration remains open despite the merged EKV static validation. |
+| [#962](https://github.com/mfiumara/spice-ts/issues/962) | EKV2.6 charge-conserving dynamics, AC/NQS, noise and temperature follow-up; not completed by #964. |
+| [#963](https://github.com/mfiumara/spice-ts/issues/963) | Retain and characterize EKV2.6 static-slice residual/reference loss buckets. |
+| [#994](https://github.com/mfiumara/spice-ts/issues/994) | Xyce adapter SINE/DC source-value translation losses from Jimi fuzz (#974). |
 | [#497](https://github.com/mfiumara/spice-ts/issues/497) | CIDER NUMD/NUMOS/NBJT. Largest explicit model bucket, 37 F rows in the committed receipt; original issue title's ten is not the current receipt count. |
 | [#553](https://github.com/mfiumara/spice-ts/issues/553) | Remaining XSPICE models, including I's four d_jkff/lcouple/zener losses. Earlier adc_bridge/digital counts predate merged slices; audit before choosing the next group. |
-| [#3](https://github.com/mfiumara/spice-ts/issues/3) | BSIM4 or documented subset, three F plus one G unsupported rows in receipts. |
 | [#692](https://github.com/mfiumara/spice-ts/issues/692) | BSIM3 NQSMOD/ACNQSMOD; two F decks, explicit rejection rather than silent quasi-static simulation. |
 | [#559](https://github.com/mfiumara/spice-ts/issues/559) | VDMOS thermal Tj/Tc and VP/TT soft recovery. Two original F examples, with control-language blockers distinguished. |
 | [#747](https://github.com/mfiumara/spice-ts/issues/747) | B3SOI/PSP/EKV compact-model umbrella; G receipt has one B3SOI unsupported row, not the issue's original four as a fresh count. |
-| [#4](https://github.com/mfiumara/spice-ts/issues/4) | EKV parent; inversion-region reference evidence and bounded supported parameters. |
 | [#5](https://github.com/mfiumara/spice-ts/issues/5) | Gummel-Poon parent. Many later BJT slices merged; preserve unsupported boundaries rather than reusing the archive's old forward-active-only claim. |
 | [#7](https://github.com/mfiumara/spice-ts/issues/7) | Lossless T-line parent, including NL/F form and pending #892 step-control evidence; no blanket transmission-line parity claim. |
+
+M4 issue state was reconciled at **2026-10-14T05:17:08Z** with
+`gh issue list --repo mfiumara/spice-ts --milestone "M4 Device models" --state open --limit 1000 --json number,title`:
+**12 open issues including tracker #637; 11 non-tracker issues**, listed above.
+[#4](https://github.com/mfiumara/spice-ts/issues/4) is **done / closed**: EKV2.6 static OP/DC,
+validated against **Xyce 7.10**, merged in [PR #964](https://github.com/mfiumara/spice-ts/pull/964)
+as [`c1594afc`](https://github.com/mfiumara/spice-ts/commit/c1594afc420f9d61116d60fa21d14ae893315527).
+This is not full dynamic, noise or temperature support; #962 and #963 retain the follow-up gaps.
+[#3](https://github.com/mfiumara/spice-ts/issues/3) also closed through the documented BSIM4 static
+OP/DC subset in [PR #999](https://github.com/mfiumara/spice-ts/pull/999), merge `3e493009`;
+neither closed parent belongs in this refreshed open inventory. #948 and #747 remain open.
 
 ### Pending heads and independent lanes at capture
 
@@ -281,7 +297,9 @@ read as current. Use the frozen snapshot above and the linked later receipts for
 <summary>Historical roadmap and benchmark receipts (not current state)</summary>
 
 Issue state below was verified against live GitHub state on 2026-10-10. The repository had 17 open issues: seven in
-M1, none in M2, four in M3, and six in M4. Every open issue is represented below exactly once. Closed duplicate
+M1, none in M2, four in M3, and six in M4 (historical count only; the 2026-10-14 M4 readback above
+has 11 open non-tracker issues, 12 including #637). Every open issue at that historical capture is
+represented below exactly once. Closed duplicate
 [#278](https://github.com/mfiumara/spice-ts/issues/278) is not part of the active inventory.
 
 GitHub had three open PRs at verification time: this reconciliation in [PR
@@ -778,6 +796,7 @@ not complete merely because a bounded child slice merges.
 
 | Work | Issue | Merged evidence |
 |------|-------|-----------------|
+| EKV compact MOSFET model | [#4](https://github.com/mfiumara/spice-ts/issues/4) | **Post-archive update, done / closed:** static OP/DC validated against Xyce 7.10, merged [PR #964](https://github.com/mfiumara/spice-ts/pull/964), squash `c1594afc420f9d61116d60fa21d14ae893315527`. Dynamics/noise/temperature and static residual work remain in #962/#963, while #948 and #747 stay open |
 | Bounded lossless T-line transient slice (partial #7) | [#174](https://github.com/mfiumara/spice-ts/issues/174) | [PR #177](https://github.com/mfiumara/spice-ts/pull/177), accepted remediation head `7ae757ba57edc5c860282f646c747a342daf9840`, squash merge `6191fabb2b06096c918a580774091fefa51ba479`, moved history mutation to accepted transient steps after independently reproducing the rejected-head pre-arrival leak. The configured 5 ns line retained a measured 5.0075 ns delay; matched max/RMS absolute error improved to `1.887379141862766e-15` / `9.284985247008207e-17 V`, while mismatched input and output retained `0.004550045527923263` and `0.003349544520010017 V` maximum absolute errors and near-zero relative-error losses |
 | Bounded Gummel-Poon forward-active slice (partial #5) | [#182](https://github.com/mfiumara/spice-ts/issues/182) | [PR #188](https://github.com/mfiumara/spice-ts/pull/188), accepted head `be9c75e749ab33610ac4f8dc261159bb19075c89`, squash merge `c03fac0fbd38a3a9b079ee269bc1960682fb7ba1`, merged VAF Early effect, IKF high-current roll-off, and ISE/NE base-emitter leakage over a 21-point identical-netlist grid; base/collector current maximum relative errors remained `1.5033458336233197%` / `1.324569419093589%`, while capacitance, transit time, resistance, temperature, reverse-effect, breakdown, substrate-current, and area behavior remain unsupported |
 | Unsupported device-card coverage audit | [#288](https://github.com/mfiumara/spice-ts/issues/288) | [PR #291](https://github.com/mfiumara/spice-ts/pull/291), accepted remediation head `8d295c492e5c48af385a3b24b327715a773db01c`, squash merge `325fba2cce3cf39ba494f52027ea1f3b6e293b74`, published all first-failure status/cause/card/model/parameter transitions after rejected head `1097d19ab0ad3ffdd6b775c6db16c4b993c84c90` omitted same-status causes and mislabeled execution failures. The unchanged audit records ngspice-47 at 52 success / 20 parser / 2 device-model / 26 execution and spice-ts at 28 success / 45 parser / 8 device-model / 11 analysis / 4 convergence / 4 execution, including 14 gains, the RCA3040 regression, and eight reached-execution failures. Runtime totals of 9,457.65 ms and 5,981.721 ms are descriptive only |
@@ -790,7 +809,6 @@ not complete merely because a bounded child slice merges.
 | Work | Issue | Current residual |
 |------|-------|------------------|
 | BSIM4 MOSFET model or documented subset | [#3](https://github.com/mfiumara/spice-ts/issues/3) | Reference operating points and a benchmark-driven supported parameter set remain open |
-| EKV compact MOSFET model | [#4](https://github.com/mfiumara/spice-ts/issues/4) | Reference-circuit operating points across inversion regions remain open |
 | Gummel-Poon BJT model | [#5](https://github.com/mfiumara/spice-ts/issues/5) | Parent model gap remains open; bounded forward-active child #182 does not imply full Gummel-Poon support, including capacitance, transit-time, resistance, temperature, reverse-effect, breakdown, substrate-current, and area behavior |
 | Lossless transmission line | [#7](https://github.com/mfiumara/spice-ts/issues/7) | The bounded positive-`Z0`/`TD` T-card slice merged through #174, but frequency-length, initial-condition, lossy, frequency-dependent, O-card/LTRA, and broader model coverage remain open under this parent |
 | Unsupported device-card coverage | [#76](https://github.com/mfiumara/spice-ts/issues/76) | The merged #288 audit publishes the current benchmark-driven parser/device matrix, but its recorded parser, device/model, analysis, convergence, and execution gaps remain open; the measurement does not complete model support |

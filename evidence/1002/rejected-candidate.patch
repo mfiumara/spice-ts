@@ -1,0 +1,208 @@
+diff --git a/packages/core/src/analysis/transient-mosrect-1002.test.ts b/packages/core/src/analysis/transient-mosrect-1002.test.ts
+new file mode 100644
+index 00000000..0cd7cfe7
+--- /dev/null
++++ b/packages/core/src/analysis/transient-mosrect-1002.test.ts
+@@ -0,0 +1,40 @@
++import { readFileSync } from 'node:fs';
++import { gunzipSync } from 'node:zlib';
++import { describe, expect, it } from 'vitest';
++import { simulate } from '../simulate.js';
++
++// Recorded ngspice-47, identical original corpus-k k-10 deck. Source/hash and
++// reference command are embedded in the #996 receipt; GPL provenance in SOURCES.md.
++const receipt = JSON.parse(gunzipSync(readFileSync(new URL(
++  '../../../../evidence/996/runs/k-10-original.json.gz', import.meta.url,
++))).toString());
++const reference = receipt.ngspice.execution.analyses.find((a: { type: string }) => a.type === 'tran').series as {
++  grid: number[]; signals: Record<string, { re: number }[]>;
++};
++
++describe('MOS2 bridge accepted transient history (#1002)', () => {
++  it('matches every common original-deck signal under the unchanged corpus 1% rule', async () => {
++    const result = (await simulate(receipt.deck)).transient!;
++    const errors: Record<string, number> = {};
++    for (const [name, samples] of Object.entries(reference.signals)) {
++      const expected = samples.map(s => s.re);
++      const actual = name.startsWith('v(')
++        ? result.voltage(name.slice(2, -1)) : result.current(name.slice(2, -1));
++      const peak = Math.max(...expected.map(Math.abs), name.startsWith('v(') ? 1e-4 : 1e-10);
++      let cursor = 1;
++      let error = 0;
++      for (let i = 0; i < result.time.length; i++) {
++        const t = result.time[i];
++        if (t < reference.grid[0] || t > reference.grid.at(-1)!) continue;
++        while (cursor < reference.grid.length - 1 && reference.grid[cursor] < t) cursor++;
++        const f = (t - reference.grid[cursor - 1]) / (reference.grid[cursor] - reference.grid[cursor - 1]);
++        const value = expected[cursor - 1] + f * (expected[cursor] - expected[cursor - 1]);
++        error = Math.max(error, Math.abs(actual[i] - value) / peak);
++      }
++      errors[name] = error;
++    }
++    expect(Object.keys(errors)).toHaveLength(10);
++    expect(Object.values(errors).every(Number.isFinite)).toBe(true);
++    expect(Math.max(...Object.values(errors)), JSON.stringify(errors)).toBeLessThanOrEqual(0.01);
++  });
++});
+diff --git a/packages/core/src/devices/mos2-charge-history-1002.test.ts b/packages/core/src/devices/mos2-charge-history-1002.test.ts
+new file mode 100644
+index 00000000..2ddde416
+--- /dev/null
++++ b/packages/core/src/devices/mos2-charge-history-1002.test.ts
+@@ -0,0 +1,88 @@
++import { describe, expect, it } from 'vitest';
++import { parse } from '../parser/index.js';
++import { MOS2 } from './mos2.js';
++import type { ChargeIntegration, StampContext } from './device.js';
++
++function fixture() {
++  const compiled = parse(`MOS2 last-load history
++VD d 0 2
++VG g 0 3
++VB b 0 -1
++M1 d g 0 b N W=10u L=2u
++.model N NMOS LEVEL=2 VTO=0.7 KP=50u TOX=25n CGSO=1n CGDO=1n CBD=1p CBS=1p
++.end`).compile();
++  const device = compiled.devices.find((d): d is MOS2 => d instanceof MOS2)!;
++  const solution = new Float64Array(compiled.nodeCount);
++  const rhs = new Float64Array(compiled.nodeCount);
++  const conductance = new Float64Array(compiled.nodeCount ** 2);
++  const ctx: StampContext = {
++    stampG: (r, c, value) => { conductance[r * compiled.nodeCount + c] += value; },
++    stampB: (r, value) => { rhs[r] += value; }, stampC: () => {},
++    getVoltage: node => node < 0 ? 0 : solution[node], getCurrent: () => 0,
++    time: 0, dt: 0, numNodes: compiled.nodeCount, sourceScale: 1, useDcSourceValue: false,
++  };
++  const bias = (gate: number) => {
++    solution[device.nodes[0]] = 2;
++    solution[device.nodes[1]] = gate;
++    solution[device.nodes[3]] = -1;
++  };
++  const clear = () => { rhs.fill(0); conductance.fill(0); };
++  bias(1);
++  device.acceptTransientStep(ctx);
++  // Seed two integrated history points so Gear-2 and order-2 truncation are
++  // exercised, not their backward-Euler / insufficient-history fallbacks.
++  for (let i = 0; i < 2; i++) {
++    device.stampTransientCharge(ctx, { method: 'euler', dt: 1e-9 });
++    device.acceptTransientStep(ctx);
++  }
++  clear();
++  return { device, ctx, bias, rhs, conductance, clear };
++}
++
++describe('MOS2 last-load charge history (#1002)', () => {
++  it.each(['euler', 'trapezoidal', 'gear2'] as const)('commits the loaded state, not a post-solve reload, for %s', method => {
++    const a = fixture(), b = fixture();
++    const rule: ChargeIntegration = { method, dt: 1e-9, prevDt: 1e-9 };
++    for (const f of [a, b]) {
++      f.bias(2);
++      f.device.stampTransientCharge(f.ctx, rule);
++    }
++    // A converged linear solve can differ from the last Newton load. No load
++    // follows this change, just as ngspice NIiter returns without reloading.
++    b.bias(2.01);
++    for (const f of [a, b]) f.device.acceptTransientStep(f.ctx);
++    for (const f of [a, b]) { f.clear(); f.device.stampAcceptedChargeCurrent(f.ctx); }
++    expect(b.rhs).toEqual(a.rhs);
++    for (const f of [a, b]) {
++      f.clear(); f.bias(3);
++      f.device.stampTransientCharge(f.ctx, rule);
++    }
++    expect(b.rhs).toEqual(a.rhs);
++    expect(b.conductance).toEqual(a.conductance);
++  });
++
++  it('a rejected trial and truncation check do not commit history; a retry replaces the trial', () => {
++    const a = fixture(), b = fixture();
++    const rule: ChargeIntegration = { method: 'trapezoidal', dt: 1e-9 };
++    b.bias(4);
++    b.device.stampTransientCharge(b.ctx, rule);
++    b.device.truncateTransientStep(b.ctx, { deltas: [1e-9, 1e-9, 1e-9], reltol: 1e-3, abstol: 1e-12, chgtol: 1e-14, trtol: 7 });
++    for (const f of [a, b]) {
++      f.bias(2); f.device.stampTransientCharge(f.ctx, rule); f.device.acceptTransientStep(f.ctx);
++      f.clear(); f.device.stampAcceptedChargeCurrent(f.ctx);
++    }
++    expect(b.rhs).toEqual(a.rhs);
++  });
++
++  it('reset discards the last load before initializing a new run', () => {
++    const a = fixture(), b = fixture();
++    b.bias(4);
++    b.device.stampTransientCharge(b.ctx, { method: 'euler', dt: 1e-9 });
++    for (const f of [a, b]) {
++      f.device.resetTransient(); f.bias(1); f.device.acceptTransientStep(f.ctx);
++      f.clear(); f.bias(2); f.device.stampTransientCharge(f.ctx, { method: 'euler', dt: 1e-9 });
++    }
++    expect(b.rhs).toEqual(a.rhs);
++    expect(b.conductance).toEqual(a.conductance);
++  });
++});
+diff --git a/packages/core/src/devices/mos2.ts b/packages/core/src/devices/mos2.ts
+index ef76dff9..da89f964 100644
+--- a/packages/core/src/devices/mos2.ts
++++ b/packages/core/src/devices/mos2.ts
+@@ -342,6 +342,11 @@ export class MOS2 implements DeviceModel {
+   private readonly charges = new TransientChargeState(CHARGE_BRANCHES.length);
+   private readonly chargeScratch = new Float64Array(CHARGE_BRANCHES.length);
+   private readonly capacitanceScratch = new Float64Array(CHARGE_BRANCHES.length);
++  /** Last Newton load's CKTstate0. NIiter returns without reloading at the solved voltages. */
++  private readonly loadedCharge = new Float64Array(CHARGE_BRANCHES.length);
++  private readonly loadedVoltage = new Float64Array(CHARGE_BRANCHES.length);
++  private readonly loadedCapacitance = new Float64Array(CHARGE_BRANCHES.length);
++  private hasLoadedCharge = false;
+ 
+   constructor(
+     readonly name: string,
+@@ -1104,16 +1109,22 @@ export class MOS2 implements DeviceModel {
+     const capacitances = this.capacitanceScratch;
+     const junctionCharges = this.chargeScratch;
+     this.evaluateCharges(ctx, capacitances, junctionCharges);
++    this.loadedCapacitance.set(capacitances);
++    this.hasLoadedCharge = true;
+     charges.begin(integration);
+     for (let index = 0; index < CHARGE_BRANCHES.length; index++) {
+       const [p, n] = CHARGE_BRANCHES[index];
+       const positive = this.nodes[p];
+       const negative = this.nodes[n];
+-      if (positive === negative) continue;
+       const voltage = branchVoltage(ctx, positive, negative);
+       const capacitance = capacitances[index];
++      this.loadedVoltage[index] = voltage;
++      const charge = index < GATE_CHARGES
++        ? charges.incrementalCharge(index, voltage, capacitance, true)
++        : junctionCharges[index];
++      this.loadedCharge[index] = charge;
++      if (positive === negative) continue;
+       if (index < GATE_CHARGES) {
+-        const charge = charges.incrementalCharge(index, voltage, capacitance, true);
+         const effective = charges.factor * charges.incrementalCapacitance(index, capacitance, true);
+         stampChargeBranch(ctx, positive, negative, charges.current(index, charge), effective, voltage);
+       } else {
+@@ -1152,6 +1163,18 @@ export class MOS2 implements DeviceModel {
+   }
+ 
+   acceptTransientStep(ctx: StampContext): void {
++    if (this.hasLoadedCharge) {
++      // ngspice rotates the converged load's state into CKTstate1. Recomputing
++      // q/C at the final linear solve changes cq and the next trapezoidal RHS,
++      // even when that solve passed the unchanged Newton convergence tests.
++      // The same cached trial is used by MOS2trunc; retries replace it, never
++      // commit it. The initial DC/UIC point still initializes from ctx below.
++      for (let index = 0; index < CHARGE_BRANCHES.length; index++) {
++        this.charges.accept(index, this.loadedCharge[index], this.loadedVoltage[index], this.loadedCapacitance[index]);
++      }
++      this.charges.commit();
++      return;
++    }
+     const charges = this.charges;
+     const capacitances = this.capacitanceScratch;
+     const junctionCharges = this.chargeScratch;
+@@ -1174,6 +1197,7 @@ export class MOS2 implements DeviceModel {
+   }
+ 
+   resetTransient(): void {
++    this.hasLoadedCharge = false;
+     this.charges.reset();
+   }
+ 
