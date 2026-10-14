@@ -1,0 +1,24 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: na2
+
+
+
+Total elapsed time (seconds) = 0.005 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 14358.297 MB.
+Maximum ngspice program size =    9.859 MB.
+Current ngspice program size =    9.859 MB.
+
+
+Error on line 32 or its substitute:
+  .tran 0.1n 10n trace all
+ Error: unknown parameter on .tran - ignored
+    Simulation interrupted due to error!
+
+Error: circuit not parsed.
+Note: no resource usage information for 'time',
+	or no active circuit available

@@ -1,0 +1,35 @@
+
+*****
+***** Welcome to the Xyce(TM) Parallel Electronic Simulator
+*****
+***** This is version XyceNF Release 7.10.0
+***** Date: Wed Oct 14 02:03:24 CEST 2026
+
+
+***** Executing netlist input.cir
+
+***** Reading and parsing netlist...
+Netlist error in file input.cir at or near line 21
+ Unknown mode in .MEASURE line.  Should be TRAN/TR, DC, AC, FFT, NOISE,
+ TRAN_CONT, DC_CONT, AC_CONT or NOISE_CONT
+Netlist warning in file input.cir at or near line 21
+ Unrecognized dot line will be ignored
+Netlist error in file input.cir at or near line 22
+ Unknown mode in .MEASURE line.  Should be TRAN/TR, DC, AC, FFT, NOISE,
+ TRAN_CONT, DC_CONT, AC_CONT or NOISE_CONT
+Netlist warning in file input.cir at or near line 22
+ Unrecognized dot line will be ignored
+Netlist error in file input.cir at or near line 23
+ Unknown mode in .MEASURE line.  Should be TRAN/TR, DC, AC, FFT, NOISE,
+ TRAN_CONT, DC_CONT, AC_CONT or NOISE_CONT
+Netlist warning in file input.cir at or near line 23
+ Unrecognized dot line will be ignored
+Simulation aborted due to error.  There are 0 MSG_FATAL errors and 3 MSG_ERROR
+ errors
+*** Xyce Abort ***
+
+Simulation aborted due to error.  There are 0 MSG_FATAL errors and 3 MSG_ERROR
+ errors
+
+
+*** Xyce Abort ***

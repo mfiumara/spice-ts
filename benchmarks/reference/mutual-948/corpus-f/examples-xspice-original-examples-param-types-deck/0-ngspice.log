@@ -1,0 +1,15 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: parameter types
+
+
+Error in netlist line no. 14, new internal line no. 13:
+
+Undefined parameter [six]
+Error in netlist line no. 14, new internal line no. 13:
+
+Cannot compute substitute
+
+ERROR: fatal error in ngspice, exit(1)

@@ -1,0 +1,26 @@
+Mutual inductance test circuit
+v1 1 0  pulse(0 1 .002 .002 .002 .002 .01) ac 1
+r1a 1 2 22
+k1 l1a l1b .75
+l1a 2 0 .56
+l1b 3 0 .79
+r1b 3 0 75
+
+v2 4 0  pulse(0 1 .002 .002 .002 .002 .01) ac 1
+r2a 4 5 22
+l2a 5 6 .061151326
+l2b 6 0 .498848674
+l2c 6 7 .291151326
+r2b 7 0 75
+
+v3 8 0  pulse(0 1 .002 .002 .002 .002 .01) ac 1
+r3a 8 9 22
+l3a 10 0 .56
+l3b 11 0 .79
+e3a 9 10 11 0 .631454018
+e3b 12 11 10 0 .890801204
+r3b 12 0 75
+
+.tran .001 .01 0 .0001
+.print TRAN format=csv file=output.csv precision=17 I(e3a) I(e3b) I(l1a) I(l1b) I(l2a) I(l2b) I(l2c) I(l3a) I(l3b) I(v1) I(v2) I(v3) V(1) V(10) V(11) V(12) V(2) V(3) V(4) V(5) V(6) V(7) V(8) V(9)
+.end

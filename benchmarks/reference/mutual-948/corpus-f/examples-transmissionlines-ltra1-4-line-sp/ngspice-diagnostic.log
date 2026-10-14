@@ -1,0 +1,39 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: mosdriver -- 6.3inch 4 lossy line ltra model -- c load 
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1098
+
+Total analysis time (seconds) = 0.074409
+
+Total elapsed time (seconds) = 0.079 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13573.094 MB.
+Maximum ngspice program size =   13.750 MB.
+Current ngspice program size =   13.750 MB.
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Total analysis time (seconds) = 0.074461
+
+Total elapsed time (seconds) = 0.079 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13573.094 MB.
+Maximum ngspice program size =   13.828 MB.
+Current ngspice program size =   13.828 MB.
+
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+

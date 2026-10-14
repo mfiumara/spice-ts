@@ -1,0 +1,9 @@
+* Half-wave rectifier - SPICE E2E test
+* Vin -> D1 (diode) -> R1 (load) -> GND
+* Node 2 is the rectified output
+Vin 1 0 SIN(0 2 1k)
+D1 1 2 dmod
+R1 2 0 1k
+.model dmod d is=1e-14 n=1.5
+.tran 10u 10m
+.end

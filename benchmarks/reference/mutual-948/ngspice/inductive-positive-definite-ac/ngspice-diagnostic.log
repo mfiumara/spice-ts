@@ -1,0 +1,124 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: * indentify non-viable inductive systems ("altering" case)
+
+	* indentify non-viable inductive systems ("altering" case)
+
+     6 : v1 x 0 dc=0 ac=1
+     7 : rx x 1 1
+     8 : r1 2 0 1k
+     9 : r2 3 0 1k
+    10 : l1 1 0 10u
+    11 : l2 2 0 11u
+    12 : l3 3 0 10u
+    13 : k12 l1 l2 0
+    14 : k23 l2 l3 0
+    15 : k13 l1 l3 0
+    16 : r101 101 0 1k
+    17 : l101 101 0 1u
+    18 : l102 102 0 2u
+    19 : l103 103 0 3u
+    20 : k1012 l101 l102 0.1
+    21 : k1013 l101 l103 0.2
+    22 : .ac lin 5k 1k 10meg
+    24 : .end
+coupling factors 0 0 0 -- ok
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+coupling factors 0.96 0.98 0.98 -- ok
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+coupling factors 0.96 0.98 0.9898988607 -- ok
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+coupling factors 0.96 0.98 0.9898988608 -- not ok
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+coupling factors 1 1 1 -- not ok
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+coupling factors 1.01 1 1 -- not ok
+op with indverbosity=2
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+op with indverbosity=1
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+op with indverbosity=0
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+ngspice-47 done
+
+The Inductive System consisting of
+ l102 l101 l103
+ k1012 k1013
+has an incomplete set of K couplings, (missing ones are implicitly 0)
+
+The Inductive System consisting of
+ l102 l101 l103
+ k1012 k1013
+has an incomplete set of K couplings, (missing ones are implicitly 0)
+
+The Inductive System consisting of
+ l102 l101 l103
+ k1012 k1013
+has an incomplete set of K couplings, (missing ones are implicitly 0)
+
+The Inductive System consisting of
+ l2 l1 l3
+ k12 k23 k13
+is not positive definite
+
+The Inductive System consisting of
+ l102 l101 l103
+ k1012 k1013
+has an incomplete set of K couplings, (missing ones are implicitly 0)
+
+The Inductive System consisting of
+ l102 l101 l103
+ k1012 k1013
+has an incomplete set of K couplings, (missing ones are implicitly 0)
+
+The Inductive System consisting of
+ l2 l1 l3
+ k12 k23 k13
+is not positive definite
+ |k12| > 1
+
+The Inductive System consisting of
+ l102 l101 l103
+ k1012 k1013
+has an incomplete set of K couplings, (missing ones are implicitly 0)
+
+The Inductive System consisting of
+ l2 l1 l3
+ k12 k23 k13
+is not positive definite
+ |k12| > 1
+

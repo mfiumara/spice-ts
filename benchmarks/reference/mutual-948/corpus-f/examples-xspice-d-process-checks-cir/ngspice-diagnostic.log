@@ -1,0 +1,33 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: checks.cir test error handling.
+
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Instance: ap0   Message: ERROR: d_process returned invalid version: 10
+
+Instance: ap1   Message: ERROR: d_process returned invalid version: 10
+
+Instance: ap2   Message: ERROR: d_process failed to open in fifo badprog4in1out_in
+
+
+Instance: ap2   Message: ERROR: d_process failed to open out fifo badprog4in1out_out
+
+
+Instance: ap3   Message: ERROR: d_process returned invalid version: 10
+
+Instance: ap4   Message: ERROR: d_process process_file argument is not given
+
+
+ERROR: d_process failed to fork or start process graycode
+
+ERROR: d_process failed to fork or start process prog1in4out
+
+ERROR: d_process failed to fork or start process prog4in1outxxx
+
+ERROR: fatal error in ngspice, exit(1)

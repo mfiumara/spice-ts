@@ -1,0 +1,80 @@
+6-line coupled multiconductor with ECL drivers
+vemm mm 0 DC -0.4
+vepp pp 0 DC 0.4
+vein_left  lin  0 PULSE (-0.4 0.4 0N 1N 1N 7N 200N)
+vein_right rin  0 PULSE (-0.4 0.4 2N 1N 1N 7N 200N)
+
+* upper 2 lines
+x1 lin 0 1 1outn  ECL
+x2 mm 0 2 2outn   ECL
+x7 7 0 7r 7routn  ECL
+x8 8 0 8r 8routn  ECL
+
+c7r 7r 0 0.1P
+c8r 8r 0 0.1P
+
+* lower 2 lines
+x11 pp 0 11 11outn  ECL
+x12 rin 0 12 12outn  ECL
+x5  5 0 5l 5loutn  ECL
+x6  6 0 6l 6loutn ECL
+
+c5l 5l 0 0.1P
+c6l 6l 0 0.1P
+
+p1 1 2 3 4 5 6  0  7 8 9 10 11 12  0  pline
+
+.model pline cpl
++C = 0.900000P  -0.657947P -0.0767356P -0.0536544P -0.0386514P -0.0523990P
++                1.388730P -0.607034P  -0.0597635P -0.0258851P -0.0273442P
++                             1.39328P  -0.625675P -0.0425551P -0.0319791P
++                                         1.07821P  -0.255048P -0.0715824P
++                                                     1.06882P  -0.692091P
++                                                                0.900000P
++L = 0.868493E-7 0.781712E-7 0.748428E-7 0.728358E-7 0.700915E-7 0.692178E-7
++                0.866074E-7 0.780613E-7 0.748122E-7 0.711591E-7 0.701023E-7
++                            0.865789E-7 0.781095E-7 0.725431E-7 0.711986E-7
++                                        0.867480E-7 0.744242E-7 0.725826E-7
++                                                    0.868022E-7 0.782377E-7
++                                                                0.868437E-7
++R = 0.2  0    0    0    0    0
++         0.2  0    0    0    0
++              0.2  0    0    0
++                   0.2  0    0
++                        0.2  0
++                             0.2
++G = 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
++
++length = 2
+
+*XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+.SUBCKT ECL EIN GND 9 8
+*    Input-GND-OUTP-OUTN
+RIN  1 2   0.077K
+REF  5 6   0.077K
+R1   7 N   1.0K
+R2   P 3   0.4555K
+R3   P 4   0.4555K
+R4   8 N   0.615K
+R5   9 N   0.615K
+RL1  8 GND 0.093K
+RL2  9 GND 0.093K
+LIN  EIN 1 0.01U
+LREF 5 GND 0.01U
+CIN  1 GND 0.68P
+CL1  8 GND 1P
+CL2  9 GND 1P
+Q1 3 2 7 JCTRAN
+Q2 4 6 7 JCTRAN
+Q3 P 3 8 JCTRAN
+Q4 P 4 9 JCTRAN
+VEP  P GND DC 1.25
+VEN  N GND DC -3
+.ENDS ECL
+
+.TRAN 0.1N 20N
+.MODEL JCTRAN NPN BF=150 VAF=20 IS=4E-17 RB=300 RC=100 CJE=30F CJC=30F
++               CJS=40F VJE=0.6 VJC=0.6 VJS=0.6 MJE=0.5 MJC=0.5
++               MJS=0.5 TF=16P TR=1N
+.print TRAN format=csv file=output.csv precision=17 I(l.x1.lin) I(l.x1.lref) I(l.x11.lin) I(l.x11.lref) I(l.x12.lin) I(l.x12.lref) I(l.x2.lin) I(l.x2.lref) I(l.x5.lin) I(l.x5.lref) I(l.x6.lin) I(l.x6.lref) I(l.x7.lin) I(l.x7.lref) I(l.x8.lin) I(l.x8.lref) I(p1) I(v.x1.ven) I(v.x1.vep) I(v.x11.ven) I(v.x11.vep) I(v.x12.ven) I(v.x12.vep) I(v.x2.ven) I(v.x2.vep) I(v.x5.ven) I(v.x5.vep) I(v.x6.ven) I(v.x6.vep) I(v.x7.ven) I(v.x7.vep) I(v.x8.ven) I(v.x8.vep) I(vein_left) I(vein_right) I(vemm) I(vepp) V(1) V(10) V(11) V(11outn) V(12) V(12outn) V(1outn) V(2) V(2outn) V(3) V(4) V(5) V(5l) V(5loutn) V(6) V(6l) V(6loutn) V(7) V(7r) V(7routn) V(8) V(8r) V(8routn) V(9) V(lin) V(mm) V(pp) V(rin) V(x1.1) V(x1.2) V(x1.3) V(x1.4) V(x1.5) V(x1.6) V(x1.7) V(x1.n) V(x1.p) V(x11.1) V(x11.2) V(x11.3) V(x11.4) V(x11.5) V(x11.6) V(x11.7) V(x11.n) V(x11.p) V(x12.1) V(x12.2) V(x12.3) V(x12.4) V(x12.5) V(x12.6) V(x12.7) V(x12.n) V(x12.p) V(x2.1) V(x2.2) V(x2.3) V(x2.4) V(x2.5) V(x2.6) V(x2.7) V(x2.n) V(x2.p) V(x5.1) V(x5.2) V(x5.3) V(x5.4) V(x5.5) V(x5.6) V(x5.7) V(x5.n) V(x5.p) V(x6.1) V(x6.2) V(x6.3) V(x6.4) V(x6.5) V(x6.6) V(x6.7) V(x6.n) V(x6.p) V(x7.1) V(x7.2) V(x7.3) V(x7.4) V(x7.5) V(x7.6) V(x7.7) V(x7.n) V(x7.p) V(x8.1) V(x8.2) V(x8.3) V(x8.4) V(x8.5) V(x8.6) V(x8.7) V(x8.n) V(x8.p)
+.END

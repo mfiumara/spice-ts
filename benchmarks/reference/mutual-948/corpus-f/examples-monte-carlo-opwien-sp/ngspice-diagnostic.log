@@ -1,0 +1,52 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: opwien.cir - opamp wien-bridge oscillator
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+ Reference value :  1.69316e+00 Reference value :  3.59526e+00 Reference value :  5.36482e+00 Reference value :  7.14562e+00 Reference value :  8.88294e+00 Reference value :  1.06631e+01
+No. of Data Rows : 244205
+FFT: Time span: 12 s, input length: 240001
+FFT: Frequency resolution: 0.083333 Hz, output length: 120001
+
+Total analysis time (seconds) = 1.67998
+
+Total elapsed time (seconds) = 1.697 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13612.359 MB.
+Maximum ngspice program size =   82.453 MB.
+Current ngspice program size =   82.453 MB.
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 25  
+ Reference value :  8.93878e-01 Reference value :  1.80469e+00 Reference value :  2.70908e+00 Reference value :  3.61636e+00 Reference value :  4.55348e+00 Reference value :  5.51436e+00 Reference value :  6.42281e+00 Reference value :  7.38138e+00 Reference value :  8.30327e+00 Reference value :  9.24382e+00 Reference value :  1.01742e+01 Reference value :  1.11025e+01
+No. of Data Rows : 243741
+
+Total analysis time (seconds) = 4.9332
+
+Total elapsed time (seconds) = 4.950 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13325.594 MB.
+Maximum ngspice program size =   82.453 MB.
+Current ngspice program size =   82.453 MB.
+
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+

@@ -1,0 +1,21 @@
+power test for level 1 diode 
+*
+VIN  1 0 PULSE(0 1 10U 1U 1U 100m)
+R    2 1 1K
+D1   3 2 DFOR  
+rload 3 0 1K
+
+R2   4 1 1K
+D2   4 5 DFOR  
+rload2 5 0 1K
+
+.MODEL DFOR D   ( level=200 )
+
+.TRAN 0.5U 400ms
+.options timeint method=gear
+.options nonlin-tran rhstol=1.0e-7
+
+.PRINT TRAN v(3) v(2) i(d1) {i(d1)*(v(3)-v(2))} p(d1) w(d1) 
++ v(4) v(5) i(d2) {i(d2)*(v(4)-v(5))} p(d2) w(d2) 
+
+.END

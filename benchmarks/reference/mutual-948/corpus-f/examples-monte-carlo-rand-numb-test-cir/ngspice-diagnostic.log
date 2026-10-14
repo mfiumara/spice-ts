@@ -1,0 +1,34 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: *** random number test for scope-inpcom-8
+
+
+Seed value for random number generator is set to 12
+
+Seed value for random number generator is set to 55
+
+Circuit: *** random number test for scope-inpcom-8
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+v(1) = 1.124431e+00
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+OP information in rawfile.
+
+Total analysis time (seconds) = 0.000692
+
+Total elapsed time (seconds) = 0.007 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13271.688 MB.
+Maximum ngspice program size =   10.094 MB.
+Current ngspice program size =   10.094 MB.
+

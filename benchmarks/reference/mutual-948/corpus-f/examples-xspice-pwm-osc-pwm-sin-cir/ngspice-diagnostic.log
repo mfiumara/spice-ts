@@ -1,0 +1,51 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: *** xspice_pwm for audio demo *****************************
+
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+Operating point simulation skipped by 'uic',
+  now using transient initial conditions.
+ Reference value :  5.86720e-03 Reference value :  1.18890e-02 Reference value :  1.86147e-02
+No. of Data Rows : 270503
+
+Total analysis time (seconds) = 0.791772
+
+Total elapsed time (seconds) = 0.796 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 12400.406 MB.
+Maximum ngspice program size =   49.656 MB.
+Current ngspice program size =   49.656 MB.
+ASCII raw file "output.raw"
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Total analysis time (seconds) = 0.791794
+
+Total elapsed time (seconds) = 0.796 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 12405.984 MB.
+Maximum ngspice program size =   49.672 MB.
+Current ngspice program size =   49.672 MB.
+
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+

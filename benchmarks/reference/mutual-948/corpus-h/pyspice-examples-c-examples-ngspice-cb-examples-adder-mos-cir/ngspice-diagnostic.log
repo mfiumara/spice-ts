@@ -1,0 +1,55 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit:   adder - 4 bit all-nand-gate binary adder
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 9  
+ Reference value :  5.07766e-07 Reference value :  1.03055e-06 Reference value :  1.55425e-06 Reference value :  2.07446e-06 Reference value :  2.60000e-06 Reference value :  3.13314e-06 Reference value :  3.64109e-06 Reference value :  4.15561e-06 Reference value :  4.70500e-06 Reference value :  5.25584e-06 Reference value :  5.81055e-06 Reference value :  6.35375e-06
+No. of Data Rows : 18073
+Total elapsed time (seconds) = 3.042 
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13683.078 MB.
+Maximum ngspice program size =   10.797 MB.
+Current ngspice program size =   10.797 MB.
+27 page faults, 1 vol + 416 invol = 417 context switches.
+
+Number of lines in the deck = 301
+Netlist loading time = 0.000251
+Subckt and Param expansion time = 0.001816
+Netlist parsing time = 0.001569
+
+Nominal temperature = 27
+Operating temperature = 27
+Total iterations = 67753
+Transient iterations = 67718
+Circuit Equations = 91
+Circuit original non-zeroes = 539
+Circuit fill-in non-zeroes = 52
+Circuit total non-zeroes = 0
+Transient timepoints = 20502
+Accepted timepoints = 18073
+Rejected timepoints = 2429
+Total analysis time (seconds) = 3.03655
+Matrix load time = 2.63668
+Matrix synchronize time = 0
+Matrix reorder time = 7.2E-05
+Matrix factor time = 0.102263
+Matrix solve time = 0.053897
+Transient analysis time = 3.03499
+Transient load time = 2.63586
+Transient sync time = 0
+Transient factor time = 0.102214
+Transient solve time = 0.053873
+Transient trunc time = 0.113318
+Transient iterations for the last time point = 0
+AC analysis time = 0
+AC load time = 0
+AC sync time = 0
+AC factor time = 0
+AC solve time = 0
+

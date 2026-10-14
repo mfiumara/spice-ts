@@ -1,0 +1,6 @@
+﻿Test
+I1 1 0 AC 1
+R1 1 0 10
+.AC LIN 1000 1 1000
+.print AC format=csv file=output.csv precision=17 VR(1) VI(1)
+.END

@@ -1,0 +1,43 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: bicmos inverter pullup circuit
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 13  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+1                                            5
+2                                            0
+3                                         0.75
+11                                           5
+5                                  6.39318e-25
+15                                 6.39318e-25
+4                                         0.75
+vb#branch                         -6.39318e-15
+vc#branch                          6.49577e-15
+vin#branch                         1.46413e-27
+vss#branch                                   0
+vdd#branch                        -0.000974247
+
+ Reference value :  0.00000e+00 Reference value :  1.20000e-12 Reference value :  8.07306e-12 Reference value :  1.80769e-11 Reference value :  3.19099e-11 Reference value :  5.08446e-11 Reference value :  5.19399e-11 Reference value :  5.64314e-11 Reference value :  6.37563e-11 Reference value :  7.26397e-11 Reference value :  8.25609e-11 Reference value :  1.12357e-10 Reference value :  1.51726e-10 Reference value :  2.05367e-10 Reference value :  2.94570e-10 Reference value :  4.47399e-10 Reference value :  6.27399e-10 Reference value :  8.07399e-10 Reference value :  9.87399e-10 Reference value :  1.16740e-09 Reference value :  1.34740e-09 Reference value :  1.52740e-09 Reference value :  1.70740e-09 Reference value :  1.88740e-09 Reference value :  2.06740e-09 Reference value :  2.24740e-09 Reference value :  2.34254e-09 Reference value :  2.37270e-09 Reference value :  2.39357e-09 Reference value :  2.40660e-09 Reference value :  2.41768e-09 Reference value :  2.42905e-09 Reference value :  2.43730e-09 Reference value :  2.45468e-09 Reference value :  2.47166e-09 Reference value :  2.47322e-09 Reference value :  2.49513e-09 Reference value :  2.51283e-09 Reference value :  2.54269e-09 Reference value :  2.54612e-09 Reference value :  2.59407e-09 Reference value :  2.59894e-09 Reference value :  2.66712e-09 Reference value :  2.67366e-09 Reference value :  2.71943e-09 Reference value :  2.87099e-09
+No. of Data Rows : 120
+
+Total analysis time (seconds) = 45.2627
+
+Total elapsed time (seconds) = 45.267 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13501.250 MB.
+Maximum ngspice program size =   25.797 MB.
+Current ngspice program size =   25.797 MB.
+
+ngspice-47 done

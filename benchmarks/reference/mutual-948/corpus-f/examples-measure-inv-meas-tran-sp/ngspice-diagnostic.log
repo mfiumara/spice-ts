@@ -1,0 +1,108 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: inverter example circuit
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+vdd                                          1
+in                                           1
+out                                 4.1884e-07
+v1#branch                                    0
+v0#branch                         -1.92849e-08
+
+
+No. of Data Rows : 4104
+Total elapsed time (seconds) = 0.015 
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 14101.578 MB.
+Maximum ngspice program size =   10.828 MB.
+Current ngspice program size =   10.828 MB.
+24 page faults, 0 vol + 9 invol = 9 context switches.
+
+Number of lines in the deck = 79
+Netlist loading time = 0.000276
+Subckt and Param expansion time = 0.000314
+Netlist parsing time = 0.000212
+
+Nominal temperature = 27
+Operating temperature = 27
+Total iterations = 8230
+Transient iterations = 8222
+Circuit Equations = 6
+Circuit original non-zeroes = 13
+Circuit fill-in non-zeroes = 0
+Circuit total non-zeroes = 0
+Transient timepoints = 4104
+Accepted timepoints = 4104
+Rejected timepoints = 0
+Total analysis time (seconds) = 0.011419
+Matrix load time = 0.006114
+Matrix synchronize time = 0
+Matrix reorder time = 2E-06
+Matrix factor time = 0.000209
+Matrix solve time = 0.000212
+Transient analysis time = 0.010951
+Transient load time = 0.006102
+Transient sync time = 0
+Transient factor time = 0.000209
+Transient solve time = 0.00021
+Transient trunc time = 0.000632
+Transient iterations for the last time point = 0
+AC analysis time = 0
+AC load time = 0
+AC sync time = 0
+AC factor time = 0
+AC solve time = 0
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 6  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+vdd                                          1
+in                                           1
+out                                 4.1884e-07
+v1#branch                                    0
+v0#branch                         -1.92849e-08
+
+
+No. of Data Rows : 4104
+
+Total analysis time (seconds) = 0.029716
+
+Total elapsed time (seconds) = 0.034 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 14101.578 MB.
+Maximum ngspice program size =   10.828 MB.
+Current ngspice program size =   10.828 MB.
+
+
+
+No .measure possible in batch mode (-b) with -r rawfile set!
+Remove rawfile and use .print or .plot or
+select interactive mode (optionally with .control section) instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+No .measure possible in batch mode (-b) with -r rawfile set!
+Remove rawfile and use .print or .plot or
+select interactive mode (optionally with .control section) instead.
+

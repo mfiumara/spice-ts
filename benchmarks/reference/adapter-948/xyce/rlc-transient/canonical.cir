@@ -1,0 +1,38 @@
+Netlist to Test Xyce with RLC
+*********************************************************************
+* Tier No.:	1                                               
+* Description: Solution verfication circuit containing the linear 
+*              resistor, capacitor, and inductor models implemented 
+*              in Xyce. 
+* Creator:  Ben Long
+*
+* Input: VIN=10V DC 
+* Output: Current through V1
+* Circuit Elements: R1, L1, C1
+* Analysis:     
+*	The solution is the zero state response of the circuit below:
+*	A DC voltage source in series with a 3 Ohm resistor,
+*	a 1H inductor, and a .5F capacitor.  The measured output
+*	is the current through the loop.  
+*
+*	 1___/\/\/\___2___ccccc__3
+*	 |	 R1	        L1   |
+*	 |	--> I		  	---
+*	(V1)		     	   C1 ---
+*	 |			   	 |   
+*	 |			   	 | 
+*	 |_______________________|
+*	 		0
+*
+*********************************************************************** 
+r1 1 2 3
+l1 2 3 1
+c1 3 0 .5
+v1 1 0 10 pulse(0 10 0 0 0 10 10)
+
+.tran  0.01 10 0
+* Note: the current has 1 subtracted from it to help with xyce_verify.
+.print tran v(1) {i(v1)-1.0}
+.options timeint reltol=1.0e-3
+.end
+

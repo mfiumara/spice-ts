@@ -1,0 +1,124 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: cmos inverter
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 24  
+ Reference value :  6.50000e-01 Reference value :  1.55000e+00 Reference value :  2.50000e+00 Reference value :  3.20000e+00 Reference value :  4.20000e+00
+No. of Data Rows : 101
+.print line ignored since rawfile was produced.
+.plot line ignored since rawfile was produced.
+Total elapsed time (seconds) = 1.476 
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13997.234 MB.
+Maximum ngspice program size =   16.219 MB.
+Current ngspice program size =   16.219 MB.
+24 page faults, 0 vol + 154 invol = 154 context switches.
+
+Number of lines in the deck = 25
+Netlist loading time = 0.000276
+Subckt and Param expansion time = 0.000295
+Netlist parsing time = 0.000253
+
+Nominal temperature = 27
+Operating temperature = 27
+Total iterations = 305
+Transient iterations = 0
+Circuit Equations = 24
+Circuit original non-zeroes = 70
+Circuit fill-in non-zeroes = 3
+Circuit total non-zeroes = 0
+Transient timepoints = 0
+Accepted timepoints = 0
+Rejected timepoints = 0
+Total analysis time (seconds) = 1.47225
+Matrix load time = 1.46769
+Matrix synchronize time = 0
+Matrix reorder time = 1E-05
+Matrix factor time = 0.000129
+Matrix solve time = 6.9E-05
+Transient analysis time = 0
+Transient load time = 0
+Transient sync time = 0
+Transient factor time = 0
+Transient solve time = 0
+Transient trunc time = 0
+Transient iterations for the last time point = 305
+AC analysis time = 0
+AC load time = 0
+AC sync time = 0
+AC factor time = 0
+AC solve time = 0
+----------------------------------------
+Device m.x1.m2 Memory Usage:
+Item                     Count     Bytes
+----------------------------------------
+Device                       1       240
+Elements                   508    207264
+Nodes                      557    637208
+Edges                     1064    212800
+Misc Mesh                  n/a     10960
+Equil Orig NZ             2379     95160
+Equil Fill NZ             6438    257520
+Equil Tot  NZ             8817    352680
+Equil Vectors              496     15872
+Bias Orig NZ              6885    275400
+Bias Fill NZ             23606    944240
+Bias Tot  NZ             30491   1219640
+Bias Vectors               922     36880
+State Vector              4913     39304
+----------------------------------------------------------------------
+Device m.x1.m2 Time Usage:
+Item                     SETUP        DC      TRAN        AC     TOTAL
+----------------------------------------------------------------------
+Setup Time             6.5e-05  0.000171         0         0  0.000236
+Load Time             0.000251  0.091612         0         0  0.091863
+Order Time            0.002064    0.0126         0         0  0.014664
+Factor Time           0.000813  0.493863         0         0  0.494676
+Solve Time             0.00011  0.050726         0         0  0.050836
+Update Time              2e-06  0.002311         0         0  0.002313
+Check Time             4.6e-05  0.010346         0         0  0.010392
+Misc Time                8e-06    0.0067         0         0  0.000236
+LTE Time                                         0                   0
+Total Time            0.003565  0.737883         0         0  0.741448
+Iterations                   7       582         0         0       589
+----------------------------------------
+Device m.x1.m1 Memory Usage:
+Item                     Count     Bytes
+----------------------------------------
+Device                       1       240
+Elements                   508    207264
+Nodes                      557    637208
+Edges                     1064    212800
+Misc Mesh                  n/a     10960
+Equil Orig NZ             2379     95160
+Equil Fill NZ             6438    257520
+Equil Tot  NZ             8817    352680
+Equil Vectors              496     15872
+Bias Orig NZ              6885    275400
+Bias Fill NZ             23606    944240
+Bias Tot  NZ             30491   1219640
+Bias Vectors               922     36880
+State Vector              4913     39304
+----------------------------------------------------------------------
+Device m.x1.m1 Time Usage:
+Item                     SETUP        DC      TRAN        AC     TOTAL
+----------------------------------------------------------------------
+Setup Time             8.8e-05  0.000161         0         0  0.000249
+Load Time             0.000265  0.091869         0         0  0.092134
+Order Time            0.002072  0.012623         0         0  0.014695
+Factor Time           0.000822  0.481593         0         0  0.482415
+Solve Time            0.000106  0.049796         0         0  0.049902
+Update Time              2e-06  0.001812         0         0  0.001814
+Check Time             4.8e-05  0.010069         0         0  0.010117
+Misc Time                8e-06  0.006757         0         0  0.000249
+LTE Time                                         0                   0
+Total Time            0.003619  0.722616         0         0  0.726235
+Iterations                   7       563         0         0       570
+
+ngspice-47 done

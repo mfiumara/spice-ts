@@ -1,0 +1,25 @@
+
+*****
+***** Welcome to the Xyce(TM) Parallel Electronic Simulator
+*****
+***** This is version XyceNF Release 7.10.0
+***** Date: Wed Oct 14 01:40:35 CEST 2026
+
+
+***** Executing netlist input.cir
+
+***** Reading and parsing netlist...
+Netlist error in file input.cir at or near line 8
+ .TRAN line has an unexpected number of fields
+Netlist warning in file input.cir at or near line 8
+ Unrecognized dot line will be ignored
+Netlist error: No analysis specified.
+Simulation aborted due to error.  There are 0 MSG_FATAL errors and 2 MSG_ERROR
+ errors
+*** Xyce Abort ***
+
+Simulation aborted due to error.  There are 0 MSG_FATAL errors and 2 MSG_ERROR
+ errors
+
+
+*** Xyce Abort ***

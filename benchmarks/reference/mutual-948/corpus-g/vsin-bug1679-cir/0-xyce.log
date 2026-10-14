@@ -1,0 +1,461 @@
+
+*****
+***** Welcome to the Xyce(TM) Parallel Electronic Simulator
+*****
+***** This is version XyceNF Release 7.10.0
+***** Date: Wed Oct 14 02:03:16 CEST 2026
+
+
+***** Executing netlist input.cir
+
+***** Reading and parsing netlist...
+***** Setting up topology...
+
+***** Device Count Summary ...
+       R level 1 (Resistor)                   1
+       V level 1 (Independent Voltage Source) 1
+       ----------------------------------------
+       Total Devices                          2
+***** Setting up matrix structure...
+***** Number of Unknowns = 2
+***** Initializing...
+
+***** Beginning DC Operating Point Calculation...
+
+***** Beginning Transient Calculation...
+
+***** Percent complete: 1.0207 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 2.1215 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 3.21887 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 4.23372 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 5.24857 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 6.26343 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 7.27828 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 8.45686 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 9.48327 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 10.4887 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 11.5099 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 12.8893 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 13.993 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 15.0967 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 16.2004 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 17.4268 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 18.4687 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 19.4876 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 20.4898 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 21.5135 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 22.9159 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 24.0031 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 25.0903 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 26.1775 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 27.3855 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 28.4001 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 29.4298 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 30.4348 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 31.4566 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 32.4652 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 33.5028 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 34.6062 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 35.7096 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 36.813 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 37.9164 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 38.9283 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 39.9295 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 40.9535 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 42.0204 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 43.0395 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 44.1251 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 45.2107 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 46.2964 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 47.382 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 48.3981 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 49.4321 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 50.4396 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 51.4657 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 52.4784 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 53.5133 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 54.6085 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 55.7038 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 56.799 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 57.8942 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 58.9204 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 59.9218 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 60.9326 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 62.0245 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 63.1275 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 64.268 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 65.4553 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 66.6426 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 67.8299 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 68.8683 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 69.8693 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 70.878 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 71.9152 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 72.9524 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 74.0588 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 75.2205 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 76.3406 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 77.4608 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 78.4613 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 79.4943 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 80.5011 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 81.506 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 82.8047 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 83.8725 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 85.06 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 86.2475 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 87.435 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 88.4594 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 89.4948 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 90.5021 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 91.5094 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 92.8078 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 93.8718 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 95.0588 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 96.2457 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 97.4327 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 98.4589 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Percent complete: 99.493 %
+***** Current system time: Wed Oct 14 02:03:16 2026
+***** Estimated time to completion:  0 sec.
+
+***** Problem read in and set up time: 0.00105023 seconds
+ ***** DCOP time: 0.000346899 seconds.  Breakdown follows:
+	Number Successful Steps Taken:		1
+	Number Failed Steps Attempted:		0
+	Number Jacobians Evaluated:		1
+	Number Linear Solves:			1
+	Number Failed Linear Solves:		0
+	Number Residual Evaluations:		3
+	Number Nonlinear Convergence Failures:	0
+	Total Residual Load Time:		5.00679e-06 seconds
+	Total Jacobian Load Time:		3.09944e-06 seconds
+	Total Linear Solution Time:		2.28882e-05 seconds
+
+ ***** Transient Stepping time: 0.0315061 seconds.  Breakdown follows:
+	Number Successful Steps Taken:		2217
+	Number Failed Steps Attempted:		33
+	Number Jacobians Evaluated:		2250
+	Number Linear Solves:			2250
+	Number Failed Linear Solves:		0
+	Number Residual Evaluations:		4500
+	Number Nonlinear Convergence Failures:	0
+	Total Residual Load Time:		0.00206971 seconds
+	Total Jacobian Load Time:		0.000308752 seconds
+	Total Linear Solution Time:		0.00229549 seconds
+
+
+***** Solution Summary *****
+	Number Successful Steps Taken:		2218
+	Number Failed Steps Attempted:		33
+	Number Jacobians Evaluated:		2251
+	Number Linear Solves:			2251
+	Number Failed Linear Solves:		0
+	Number Residual Evaluations:		4503
+	Number Nonlinear Convergence Failures:	0
+	Total Residual Load Time:		0.00207472 seconds
+	Total Jacobian Load Time:		0.000311852 seconds
+	Total Linear Solution Time:		0.00231838 seconds
+
+
+***** Total Simulation Solvers Run Time: 0.031987 seconds
+***** Total Elapsed Run Time:            0.0330362 seconds
+*****
+***** End of Xyce(TM) Simulation
+*****
+
+Timing summary of 1 processor
+                 Stats                   Count       CPU Time              Wall Time
+---------------------------------------- ----- --------------------- ---------------------
+Xyce                                         1        0.019 (100.0%)        0.034 (100.0%)
+  Analysis                                   1        0.019 (95.87%)        0.032 (95.04%)
+    Transient                                1        0.019 (95.86%)        0.032 (95.03%)
+      Nonlinear Solve                     2251        0.010 (52.85%)        0.017 (49.19%)
+        Residual                          4503        0.003 (14.03%)        0.004 (12.12%)
+        Jacobian                          2251        0.001 ( 3.21%)        0.001 ( 4.02%)
+        Linear Solve                      2251        0.003 (13.58%)        0.003 ( 9.89%)
+      Successful DCOP Steps                  1        0.000 ( 0.19%)        0.000 ( 0.51%)
+      Successful Step                     2217        0.005 (28.48%)        0.011 (32.00%)
+      Failed Steps                          33        0.000 ( 0.02%)        0.000 ( 0.05%)
+  Netlist Import                             1        0.000 ( 1.30%)        0.000 ( 1.26%)
+    Parse Context                            1        0.000 ( 0.20%)        0.000 ( 0.23%)
+    Distribute Devices                       1        0.000 ( 0.31%)        0.000 ( 0.23%)
+    Verify Devices                           1        0.000 ( 0.01%)        0.000 ( 0.01%)
+    Instantiate                              1        0.000 ( 0.11%)        0.000 ( 0.07%)
+  Late Initialization                        1        0.000 ( 0.82%)        0.000 ( 0.75%)
+    Global Indices                           1        0.000 ( 0.05%)        0.000 ( 0.03%)
+  Setup Matrix Structure                     1        0.000 ( 0.17%)        0.000 ( 0.23%)
+

@@ -1,0 +1,64 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: window detector circuit
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 34  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+7                                      5.09458
+3                                           10
+34                                     0.10221
+5                                      4.78298
+6                                      0.10221
+10                                          10
+2                                            2
+1                                      2.00066
+4                                      5.09458
+x4.9                                 0.0179282
+x4.7                                   3.11151
+x4.21                                  5.54458
+x4.22                                  2.45066
+x4.8                                  0.650329
+x4.10                                0.0179282
+x4.11                                0.0179282
+x5.9                                  0.763048
+x5.7                                   3.11151
+x5.21                                  2.45066
+x5.22                                  5.23298
+x5.8                                  0.225344
+x5.10                                 0.763048
+x5.11                                 0.763048
+v.x5.v1#branch                     9.98502e-05
+v.x4.v1#branch                    -6.71229e-14
+e.x5.e1#branch                    -9.98502e-05
+e.x4.e1#branch                     6.71229e-14
+v_in#branch                        2.99529e-07
+v1#branch                           -0.0521542
+v.x5.vi2#branch                   -1.23629e-11
+v.x5.vi1#branch                    1.49764e-07
+v.x4.vi2#branch                    1.49764e-07
+v.x4.vi1#branch                   -1.35051e-11
+
+
+No. of Data Rows : 10151
+.print line ignored since rawfile was produced.
+
+Total analysis time (seconds) = 0.205524
+
+Total elapsed time (seconds) = 0.210 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 12884.016 MB.
+Maximum ngspice program size =   10.297 MB.
+Current ngspice program size =   10.297 MB.
+

@@ -1,0 +1,40 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: # cccs test, with element probes (forces full eval)
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 11  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+1                                         -110
+2                                         -880
+3                                         -110
+4                                         -110
+5                                          880
+6                                           11
+7                                           88
+v7#branch                                 -1.1
+v2#branch                                  -11
+e1#branch                                   88
+
+
+No. of Data Rows : 59
+
+Total analysis time (seconds) = 0.000717
+
+Total elapsed time (seconds) = 0.006 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 14635.969 MB.
+Maximum ngspice program size =   10.156 MB.
+Current ngspice program size =   10.156 MB.
+

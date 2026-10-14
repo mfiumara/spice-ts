@@ -1,0 +1,106 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: examples of xspice analog delay
+
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+in1                                          0
+out1                                         0
+cntrl1                                       0
+in2                                          0
+out2                                         0
+cntrl2                                       0
+in3                                          0
+out3                                         0
+cntrl3                                       0
+in4                                          0
+out4                                         0
+cntrl4                                    0.01
+in5                                          0
+out5                                         0
+cntrl5                                       0
+vc5#branch                                   0
+v5#branch                                    0
+vc4#branch                                   0
+v4#branch                                    0
+vc3#branch                                   0
+v3#branch                                    0
+vc2#branch                                   0
+v2#branch                                    0
+vc1#branch                                   0
+v1#branch                                    0
+a5#branch_1_0                                0
+a4#branch_1_0                                0
+a3#branch_1_0                                0
+a2#branch_1_0                                0
+a1#branch_1_0                                0
+
+
+No. of Data Rows : 10224
+
+Total analysis time (seconds) = 0.033377
+
+Total elapsed time (seconds) = 0.037 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 12235.750 MB.
+Maximum ngspice program size =   13.078 MB.
+Current ngspice program size =   13.078 MB.
+ASCII raw file "output.raw"
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Total analysis time (seconds) = 0.033423
+
+Total elapsed time (seconds) = 0.037 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 12235.750 MB.
+Maximum ngspice program size =   13.109 MB.
+Current ngspice program size =   13.109 MB.
+
+
+Note: v4: dc value used for op instead of transient time=0 value.
+Note: vc3: dc value used for op instead of transient time=0 value.
+Note: v3: dc value used for op instead of transient time=0 value.
+Note: vc2: dc value used for op instead of transient time=0 value.
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+Note: v4: dc value used for op instead of transient time=0 value.
+Note: vc3: dc value used for op instead of transient time=0 value.
+Note: v3: dc value used for op instead of transient time=0 value.
+Note: vc2: dc value used for op instead of transient time=0 value.

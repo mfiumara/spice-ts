@@ -1,0 +1,21 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: rc time delay circuit
+
+
+Error in netlist line no. 3, new internal line no. 2:
+
+Undefined parameter [vdc]
+Error in netlist line no. 3, new internal line no. 2:
+
+Cannot compute substitute
+Error in netlist line no. 8, new internal line no. 7:
+
+Undefined parameter [gear3]
+Error in netlist line no. 8, new internal line no. 7:
+
+Cannot compute substitute
+
+ERROR: fatal error in ngspice, exit(1)

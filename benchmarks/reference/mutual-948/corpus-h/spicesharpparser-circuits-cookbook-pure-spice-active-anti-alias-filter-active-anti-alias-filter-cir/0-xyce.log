@@ -1,0 +1,33 @@
+
+*****
+***** Welcome to the Xyce(TM) Parallel Electronic Simulator
+*****
+***** This is version XyceNF Release 7.10.0
+***** Date: Wed Oct 14 02:03:23 CEST 2026
+
+
+***** Executing netlist input.cir
+
+***** Reading and parsing netlist...
+***** Setting up topology...
+
+***** Device Count Summary ...
+       C level 1 (Capacitor)                                 3
+       E level 1 (Linear Voltage Controlled Voltage Source)  2
+       R level 1 (Resistor)                                  5
+       V level 1 (Independent Voltage Source)                1
+       -------------------------------------------------------
+       Total Devices                                        11
+***** Setting up matrix structure...
+***** Number of Unknowns = 10
+***** Initializing...
+
+Netlist error: Netlist analysis statement and measure mode (TRAN) for measure
+ OUTPUT_FINAL do not agree
+Netlist error: Netlist analysis statement and measure mode (TRAN) for measure
+ OUTPUT_PEAK do not agree
+Netlist error: Netlist analysis statement and measure mode (TRAN) for measure
+ SETTLING_DELAY do not agree
+
+***** Total Elapsed Run Time: 0.00144386 seconds
+Xyce Initialization Phase failed

@@ -1,0 +1,58 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: rc band pass example circuit
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 41
+vout_at             =  7.75498e-02
+vout_atr            =  7.75498e-02
+vout_ati            =  -1.15644e-01
+vout_atm            =  1.39239e-01
+vout_atp            =  -9.80081e-01
+vout_atd            =  -1.71248e+01
+vout_max            =  2.48497e-01 at=  2.51189e+05
+freq_at             =  6.03514e+04
+vout_diff           =  7.87535e+05 targ=  8.47887e+05 trig=  6.03514e+04
+fixed_diff          =  5.03514e+04 targ=  6.03514e+04 trig=  1.00000e+04
+vout_avg            =  1.76626e-01 from=  1.00000e+04 to=  1.00000e+06
+vout_integ          =  9.68316e+04 from=  2.00000e+04 to=  5.00000e+05
+freq_at2            =  8.47887e+05
+bw_chk = 0
+bw_chk2 = 1
+vout_rms            =  5.61483e-02 from=  1.00000e+03 to=  1.00000e+07
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Total analysis time (seconds) = 0.000531
+
+Total elapsed time (seconds) = 0.004 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 12655.438 MB.
+Maximum ngspice program size =   10.203 MB.
+Current ngspice program size =   10.203 MB.
+
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+

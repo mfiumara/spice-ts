@@ -1,0 +1,9 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_84a6a757/benchmarks/reference
+
+
+ Test Files  1 passed (1)
+      Tests  9 passed (9)
+   Start at  01:31:47
+   Duration  200ms (transform 81ms, setup 0ms, import 99ms, tests 7ms, environment 0ms)
+

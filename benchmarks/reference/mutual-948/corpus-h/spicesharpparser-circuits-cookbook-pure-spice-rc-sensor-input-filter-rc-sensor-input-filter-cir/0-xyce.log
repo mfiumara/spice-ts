@@ -1,0 +1,39 @@
+
+*****
+***** Welcome to the Xyce(TM) Parallel Electronic Simulator
+*****
+***** This is version XyceNF Release 7.10.0
+***** Date: Wed Oct 14 02:03:25 CEST 2026
+
+
+***** Executing netlist input.cir
+
+***** Reading and parsing netlist...
+***** Setting up topology...
+
+***** Device Count Summary ...
+       C level 1 (Capacitor)                  1
+       D level 1,2 (Diode)                    2
+       R level 1 (Resistor)                   2
+       V level 1 (Independent Voltage Source) 2
+       ----------------------------------------
+       Total Devices                          7
+***** Setting up matrix structure...
+***** Number of Unknowns = 7
+***** Initializing...
+
+Netlist error: Function or variable I(DHI) is not defined
+Netlist error: Function or variable I(DLO) is not defined
+Netlist error: Netlist analysis statement and measure mode (TRAN) for measure
+ HIGH_CLAMP_VOLTAGE do not agree
+Netlist error: Netlist analysis statement and measure mode (TRAN) for measure
+ UPPER_CLAMP_CURRENT do not agree
+Netlist error: Netlist analysis statement and measure mode (TRAN) for measure
+ LOW_CLAMP_VOLTAGE do not agree
+Netlist error: Netlist analysis statement and measure mode (TRAN) for measure
+ LOWER_CLAMP_CURRENT do not agree
+Netlist error: Netlist analysis statement and measure mode (TRAN) for measure
+ HIGH_SETTLING_TIME do not agree
+
+***** Total Elapsed Run Time: 0.00142789 seconds
+Xyce Initialization Phase failed

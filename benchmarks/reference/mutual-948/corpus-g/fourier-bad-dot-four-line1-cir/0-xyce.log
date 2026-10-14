@@ -1,0 +1,50 @@
+
+*****
+***** Welcome to the Xyce(TM) Parallel Electronic Simulator
+*****
+***** This is version XyceNF Release 7.10.0
+***** Date: Wed Oct 14 02:01:59 CEST 2026
+
+
+***** Executing netlist input.cir
+
+***** Reading and parsing netlist...
+Netlist error in file input.cir at or near line 21
+ Error: .FOUR line needs at least 3 arguments '.FOUR freq ov1 <ov2 ...>'
+Netlist warning in file input.cir at or near line 21
+ Unrecognized dot line will be ignored
+Netlist error in file input.cir at or near line 22
+ Error: .FOUR line needs at least 3 arguments '.FOUR freq ov1 <ov2 ...>'
+Netlist warning in file input.cir at or near line 22
+ Unrecognized dot line will be ignored
+Netlist error in file input.cir at or near line 23
+ Could not parse .FOUR variable (
+Netlist error in file input.cir at or near line 23
+ Could not parse .FOUR variable )
+Netlist error in file input.cir at or near line 24
+ Error: .FOUR line needs at least 3 arguments '.FOUR freq ov1 <ov2 ...>'
+Netlist warning in file input.cir at or near line 24
+ Unrecognized dot line will be ignored
+Netlist error in file input.cir at or near line 25
+ Error: .FOUR line needs at least 3 arguments '.FOUR freq ov1 <ov2 ...>'
+Netlist warning in file input.cir at or near line 25
+ Unrecognized dot line will be ignored
+Netlist error in file input.cir at or near line 26
+ Could not parse .FOUR variable {
+Netlist error in file input.cir at or near line 27
+ Could not parse .FOUR variable }
+Netlist error in file input.cir at or near line 28
+ Could not parse .FOUR variable {V(2)
+Netlist error in file input.cir at or near line 29
+ Could not parse .FOUR variable
+Netlist error in file input.cir at or near line 30
+ Could not parse .FOUR variable 2
+Simulation aborted due to error.  There are 0 MSG_FATAL errors and 11
+ MSG_ERROR errors
+*** Xyce Abort ***
+
+Simulation aborted due to error.  There are 0 MSG_FATAL errors and 11
+ MSG_ERROR errors
+
+
+*** Xyce Abort ***

@@ -1,0 +1,26 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: code model test - swept dc: gain, summer, mult, divide, pwl
+
+ASCII raw file "output.raw"
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 16  
+
+No. of Data Rows : 100
+
+Total analysis time (seconds) = 0.000905
+
+Total elapsed time (seconds) = 0.004 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 12358.188 MB.
+Maximum ngspice program size =   10.250 MB.
+Current ngspice program size =   10.250 MB.
+
+
+Value 1e-10 below limit 1e-10 for parameter 'den_lower_limit' of model 'divide1'.

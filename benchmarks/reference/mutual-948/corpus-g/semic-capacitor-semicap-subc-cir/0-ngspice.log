@@ -1,0 +1,35 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: semiconductor capacitor circuit netlist
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 6  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+1                                            0
+2                                            0
+3                                            0
+vmon#branch                                  0
+vin#branch                                   0
+
+
+No. of Data Rows : 20018
+
+Total analysis time (seconds) = 0.0651
+
+Total elapsed time (seconds) = 0.072 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 12884.016 MB.
+Maximum ngspice program size =   10.172 MB.
+Current ngspice program size =   10.172 MB.
+

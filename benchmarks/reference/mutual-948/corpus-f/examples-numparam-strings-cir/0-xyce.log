@@ -1,0 +1,35 @@
+
+*****
+***** Welcome to the Xyce(TM) Parallel Electronic Simulator
+*****
+***** This is version XyceNF Release 7.10.0
+***** Date: Wed Oct 14 01:50:08 CEST 2026
+
+
+***** Executing netlist input.cir
+
+***** Reading and parsing netlist...
+Netlist error: Unrecognized character: " in expression {"0001"}
+Netlist error: Unrecognized character: " in expression {"0001"}
+Netlist error: Unrecognized character: " in expression {"0111"}
+Netlist error: Unrecognized character: " in expression {"0111"}
+Netlist error: syntax error in expression {or{and}}
+ 
+Netlist error: Unrecognized character: " in expression {"0001"}
+Netlist error: Unrecognized character: " in expression {"0001"}
+Netlist error: Unrecognized character: " in expression {"0111"}
+Netlist error: Unrecognized character: " in expression {"0111"}
+Netlist error: syntax error in expression {or{and}}
+ 
+Netlist error: syntax error in expression {or{and}}
+ 
+Netlist error: Unable to resolve parameter BOTH found in .PARAM statement 
+Simulation aborted due to error.  There are 0 MSG_FATAL errors and 12
+ MSG_ERROR errors
+*** Xyce Abort ***
+
+Simulation aborted due to error.  There are 0 MSG_FATAL errors and 12
+ MSG_ERROR errors
+
+
+*** Xyce Abort ***

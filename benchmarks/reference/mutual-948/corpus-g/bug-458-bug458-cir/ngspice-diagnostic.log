@@ -1,0 +1,34 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: netlist to test the klu solver
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 4  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+1                                            0
+2                                            0
+l1#branch                                    0
+
+
+No. of Data Rows : 62
+.print line ignored since rawfile was produced.
+
+Total analysis time (seconds) = 0.00078
+
+Total elapsed time (seconds) = 0.004 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13178.625 MB.
+Maximum ngspice program size =   10.062 MB.
+Current ngspice program size =   10.062 MB.
+

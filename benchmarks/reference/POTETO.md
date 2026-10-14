@@ -31,3 +31,18 @@ Deliver a verified upstream macOS serial installation, DC/TRAN/AC adapter, EKV
 OP/control/options translation, 100 mutually accepted fixtures, verified source
 build/Linux execution, and true spice-ts EKV parity remain follow-up work.
 This is not completion of all #948 acceptance criteria and must not close #948.
+
+## Canonical adapter expansion (t_8223ca21)
+
+The domain shape is `CanonicalCircuit` with logical records, ordered analyses,
+explicit changes and limitations. The seam is a shared ordinal analysis projection
+fed to both native references, with only output directives differing. Live Xyce
+cannot export mixed DC/AC/TRAN in one process, so projections replace that invalid
+assumption without changing circuit or model statements.
+
+Atomic lowering prevents unsupported control programs from being partially executed.
+Only proven shared DEVICE TEMP/TNOM/GMIN options map; other solver semantics fail
+closed. Export/parse failures and ignored-statement losses remain separate from
+convergence claims. The reproducible 100-row receipt and hash verifier live in
+`adapter-948/` and the existing offline CI reference gate. No parallel worker edits,
+SOURCES.md hotspot edits, core changes, or aggregate regeneration in this slice.

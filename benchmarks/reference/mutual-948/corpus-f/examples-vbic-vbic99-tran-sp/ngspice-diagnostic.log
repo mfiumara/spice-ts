@@ -1,0 +1,57 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: ***** vbic99 level 9 transient test *****
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+c                                            5
+b                                   1.0033e-09
+t                                  2.62403e-11
+vp                                           5
+in                                           0
+vin#branch                          1.0033e-11
+vcc#branch                        -1.50101e-11
+
+
+No. of Data Rows : 2065
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+OP information in rawfile.
+
+Total analysis time (seconds) = 0.010396
+
+Total elapsed time (seconds) = 0.014 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13641.609 MB.
+Maximum ngspice program size =   10.484 MB.
+Current ngspice program size =   10.484 MB.
+
+
+Note: vin: dc value used for op instead of transient time=0 value.
+Note: vin: dc value used for op instead of transient time=0 value.
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+Note: vin: dc value used for op instead of transient time=0 value.

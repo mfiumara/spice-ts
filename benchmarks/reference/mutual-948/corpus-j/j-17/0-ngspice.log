@@ -1,0 +1,24 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: * c:\sandbox\spicelib\examples\testfiles\ac_rawtest.asc
+
+
+
+Total elapsed time (seconds) = 0.003 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 12655.438 MB.
+Maximum ngspice program size =    9.797 MB.
+Current ngspice program size =    9.797 MB.
+
+
+Error on line 6 or its substitute:
+  .backanno
+ unimplemented dot command '.backanno'
+    Simulation interrupted due to error!
+
+Error: circuit not parsed.
+Note: no resource usage information for 'time',
+	or no active circuit available

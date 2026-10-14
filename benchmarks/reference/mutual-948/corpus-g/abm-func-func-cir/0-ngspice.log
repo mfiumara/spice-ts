@@ -1,0 +1,38 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: test of function handling in expression lib
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 9  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+x                                            1
+y                                            2
+z                                            3
+f                                           -4
+bf#branch                                 4000
+vz#branch                                -3000
+vy#branch                                -2000
+vx#branch                                -1000
+
+
+No. of Data Rows : 111
+
+Total analysis time (seconds) = 0.001069
+
+Total elapsed time (seconds) = 0.005 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 15002.047 MB.
+Maximum ngspice program size =   10.125 MB.
+Current ngspice program size =   10.125 MB.
+

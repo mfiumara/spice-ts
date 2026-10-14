@@ -1,0 +1,10 @@
+test for ddt capability.
+V1 1 0 SIN(0 1 0.5 0.0)
+Bsrc 1 0 I={-ddt(V(1))}
+
+.tran 10us 0.25
+*.options timeint method=8 newlte=0
+*reltol=1e-4
+
+.print TRAN format=csv file=output.csv precision=17 I(v1) V(1)
+.end

@@ -1,0 +1,32 @@
+rca3040 ckt - rca 3040 wideband amplifier
+.ac dec 10 1 10ghz
+vin 1 0 sin(0 0.1 50meg 0.5ns) ac 1
+vcc     2       0       15.0
+vee     3       0       -15.0
+rs1     30      1       1k
+rs2     31      0       1k
+r1      5       3       4.8k
+r2      6       3       4.8k
+r3      9       3       811
+r4      8       3       2.17k
+r5      8       0       820
+r6      2       14      1.32k
+r7      2       12      4.5k
+r8      2       15      1.32k
+r9      16      0       5.25k
+r10     17      0       5.25k
+q1      2       30      5       qnl
+q2      2       31      6       qnl
+q3      10      5       7       qnl
+q4      11      6       7       qnl
+q5      14      12      10      qnl
+q6      15      12      11      qnl
+q7      12      12      13      qnl
+q8      13      13      0       qnl
+q9      7       8       9       qnl
+q10     2       15      16      qnl
+q11     2       14      17      qnl
+.model qnl npn bf=80 rb=100 ccs=2pf tf=0.3ns tr=6ns cje=3pf
++ cjc=2pf va 50
+.print AC format=csv file=output.csv precision=17 IR(vcc) II(vcc) IR(vee) II(vee) IR(vin) II(vin) VR(1) VI(1) VR(10) VI(10) VR(11) VI(11) VR(12) VI(12) VR(13) VI(13) VR(14) VI(14) VR(15) VI(15) VR(16) VI(16) VR(17) VI(17) VR(2) VI(2) VR(3) VI(3) VR(30) VI(30) VR(31) VI(31) VR(5) VI(5) VR(6) VI(6) VR(7) VI(7) VR(8) VI(8) VR(9) VI(9)
+.end

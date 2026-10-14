@@ -1,0 +1,91 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: example circuit to read a touchstone-format parameter file.
+
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Instance: a.x1.a0202   Message: Can not open file 137mhz_bpf.s2p: No such file or directory
+
+Instance: a.x1.a0201   Message: Can not open file 137mhz_bpf.s2p: No such file or directory
+
+Instance: a.x1.a0102   Message: Can not open file 137mhz_bpf.s2p: No such file or directory
+
+Instance: a.x1.a0101   Message: Can not open file 137mhz_bpf.s2p: No such file or directory
+
+No. of Data Rows : 71
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Instance: a.x1.a0202   Message: Can not open file 137mhz_bpf.s2p: No such file or directory
+
+Instance: a.x1.a0201   Message: Can not open file 137mhz_bpf.s2p: No such file or directory
+
+Instance: a.x1.a0102   Message: Can not open file 137mhz_bpf.s2p: No such file or directory
+
+Instance: a.x1.a0101   Message: Can not open file 137mhz_bpf.s2p: No such file or directory
+
+No. of Data Rows : 71
+Here are the vectors currently active:
+
+Title: example circuit to read a touchstone-format parameter file.
+Name: ac1 (AC Analysis)
+Date: Wed Oct 14 01:50:14  2026
+
+    _net1               : voltage, complex, 71 long
+    _net2               : voltage, complex, 71 long
+    _net3               : voltage, complex, 71 long
+    a.x1.a0101#branch_1_0: current, complex, 71 long
+    a.x1.a0102#branch_1_0: current, complex, 71 long
+    a.x1.a0201#branch_1_0: current, complex, 71 long
+    a.x1.a0202#branch_1_0: current, complex, 71 long
+    filter_out          : voltage, complex, 71 long
+    frequency           : frequency, complex, 71 long [default scale]
+    l1#branch           : current, complex, 71 long
+    l2#branch           : current, complex, 71 long
+    net1                : voltage, complex, 71 long
+    sin                 : voltage, complex, 71 long
+    sp_model_out        : voltage, complex, 71 long
+    vp1#branch          : current, complex, 71 long
+    vp1#res             : voltage, complex, 71 long
+    vp2#branch          : current, complex, 71 long
+    vp2#res             : voltage, complex, 71 long
+    vp3#branch          : current, complex, 71 long
+    x1.100              : voltage, complex, 71 long
+    x1.101              : voltage, complex, 71 long
+    x1.102              : voltage, complex, 71 long
+    x1.200              : voltage, complex, 71 long
+    x1.201              : voltage, complex, 71 long
+    x1.202              : voltage, complex, 71 long
+ASCII raw file "output.raw"
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Total analysis time (seconds) = 0.001123
+
+Total elapsed time (seconds) = 0.005 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 14065.375 MB.
+Maximum ngspice program size =   11.359 MB.
+Current ngspice program size =   11.359 MB.
+
+
+snp: no such command available in ngspice
+Note: only 2 ports 1 and 2 are supported by wrs2p
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
