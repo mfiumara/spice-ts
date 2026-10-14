@@ -3,6 +3,7 @@ import { parse } from './index.js';
 import { preprocess } from './preprocessor.js';
 import { simulate } from '../simulate.js';
 import { ParseError } from '../errors.js';
+import { lowerBehavioralCapacitors } from './behavioral-capacitor.js';
 
 const deck = (card: string) => `behavioral capacitor
 .param base=1u
@@ -14,6 +15,65 @@ ${card}
 .end`;
 
 describe('ngspice-47 behavioral C= (#1098)', () => {
+  const continuedCards = [
+    'Ctest p n C={1u*\n+ (1+v(ctrl))}',
+    'Ctest p n\n+ C={1u*(1+v(ctrl))}',
+  ];
+
+  it.each(continuedCards)('parses the complete logical card: %s', card => {
+    expect(() => parse(deck(card)).compile()).not.toThrow();
+  });
+
+  it.each(continuedCards)('simulates the native ramp for logical card: %s', async card => {
+    const tran = (await simulate(deck(card))).transient!;
+    const current = tran.current('Vdrive');
+    let checked = 0;
+    for (let i = 0; i < tran.time.length; i++) {
+      const t = tran.time[i];
+      if (t < 0.0002 || t > 0.0009) continue;
+      expect(current[i]).toBeCloseTo(-0.001 * (1 + 1000 * t), 6);
+      checked++;
+    }
+    expect(checked).toBeGreaterThan(10);
+  });
+
+  it('folds across comments, strips physical-line comments and retains source metadata', () => {
+    const statements = [
+      { text: 'Ctest p n ; value follows', line: 6 },
+      { text: '* between', line: 7 },
+      { text: '+ C={1u* $ expression follows', line: 8 },
+      { text: '', line: 9 },
+      { text: '+ (1+v(ctrl))}', line: 10 },
+      { text: 'Rnext p n 1k', line: 11 },
+    ];
+    const lowered = lowerBehavioralCapacitors(statements);
+    expect(lowered[5]).toMatchObject({ line: 6 });
+    expect(lowered[5].text).toContain('(1u* (1+v(ctrl)))');
+    expect(lowered.slice(6)).toEqual([
+      statements[1], { ...statements[2], text: '' }, statements[3],
+      { ...statements[4], text: '' }, statements[5],
+    ]);
+    expect(statements[0].text).toBe('Ctest p n ; value follows');
+  });
+
+  it.each(continuedCards)('reports structured errors at the logical card origin: %s', async card => {
+    await expect(preprocess(deck(`${card}\n+ ic=1`))).rejects.toMatchObject({
+      name: 'ParseError', line: 6,
+      context: 'Ctest p n' + (card.includes('C={1u*\n') ? ' C={1u* (1+v(ctrl))} ic=1' : ' C={1u*(1+v(ctrl))} ic=1'),
+    });
+  });
+
+  it('preserves ordinary physical cards and their source positions', () => {
+    const statements = [
+      { text: 'Cplain p n', line: 6 },
+      { text: '* between', line: 7 },
+      { text: '+ C={1u*', line: 8 },
+      { text: '+ 2} ic=0', line: 9 },
+      { text: 'Rnext p n 1k', line: 10 },
+    ];
+    expect(lowerBehavioralCapacitors(statements)).toEqual(statements);
+  });
+
   it.each(["Ctest p n C = 'base*(1+V(ctrl))'", 'Ctest p n {base*(1+V(ctrl))}'])('parses %s', card => {
     expect(() => parse(deck(card)).compile()).not.toThrow();
   });

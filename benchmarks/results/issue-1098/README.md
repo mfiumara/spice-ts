@@ -52,6 +52,36 @@ Full snapshot: 24 ngspice successes; TS 17 successes, 4 failures, 3 unsupported.
 
 Input bytes, uniform 1% metric and 119 s engine-group bounds are unchanged. Environment: Apple M5 Pro, darwin 27.0.0 arm64, Node v22.23.1, ngspice-47, spice-ts 0.3.0. Outcome digest: 2faa2e4e51340744ed177cbc6208fd5ce0b60efedb08faa868a8a4234daaa105.
 
-## Publication
+## PR #1123 logical-card review remediation
+
+The rejected head `4ea59790d3cbf6ca6b471758662b907ef7e2dced` classified the
+first physical line before folding continuations. Both valid layouts failed:
+`Ctest p n C={1u*` followed by `+ (1+v(ctrl))}`, and `Ctest p n` followed by
+`+ C={1u*(1+v(ctrl))}`. Classification now uses the complete logical card,
+with comments removed per physical line. Folding is speculative: only
+behavioral cards replace their original text, so ordinary capacitors and
+their continuation/source metadata remain unchanged. Structured rejection
+retains the originating card's line and complete logical context.
+
+RED on that old implementation: 7 failed / 15 passed, including both parser
+and both transient regressions (`continuations-red.txt`). GREEN: 186/186
+across the same 8 focused files, 22 capacitor tests (`continuations-green.txt`).
+Additional regressions cover comment/blank interleaving, ordinary physical
+cards and structured source locations. No fixture or tolerance changes.
+
+Run `node benchmarks/results/issue-1098/native-continuations.mjs` to regenerate
+`native-continuations.json`. Both authored MIT diagnostics use the identical
+ramp input as the TS regressions (only native `.control` output commands are
+added). ngspice-47 succeeds for both: each has 108 points, 70 checked points,
+max absolute analytical current error 2.168404344971009e-19 A. The TS regressions
+now pass the existing analytical tolerance. This is scoped correctness
+evidence, not a new full-corpus parity or performance claim; the historical
+corpus snapshot above is unchanged and was not rerun for this remediation.
+
+Frozen install, `pnpm build`, `pnpm lint`, and `spice-heavy pnpm test` pass.
+Core: 4362 passed, 4 expected failures, 8 skipped; all other package suites
+pass. Root benchmark tests: 198 passed, 4 skipped, zero failures.
+
+## Original publication receipt
 
 PR https://github.com/mfiumara/spice-ts/pull/1123. Required test (20), test (22), build and accuracy passed on code head 4dde8cd9fdf15eec865a0350da209a5ef03e7516 in https://github.com/mfiumara/spice-ts/actions/runs/38625201857. The documentation/snapshot commit gets a separate exact-head CI check before handoff. Vercel is externally rate-limited, non-required and untouched. Independent review is required; this worker does not merge.

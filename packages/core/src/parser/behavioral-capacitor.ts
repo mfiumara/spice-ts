@@ -9,21 +9,35 @@ import { endOfLineCommentStart } from './end-of-line-comment.js';
  * existing transient history, AC linearisation and subcircuit binding apply.
  */
 export function lowerBehavioralCapacitors<T extends { text: string; line: number; control?: boolean }>(statements: readonly T[]): T[] {
-  const logical: T[] = [];
-  let previous: T | undefined;
-  for (const statement of statements) {
-    const previousBody = previous && /^\s*c\S*\s+\S+\s+\S+\s+(.+)$/i.exec(previous.text)?.[1];
-    const behavioral = previousBody !== undefined && (NODE_DEPENDENT_EXPRESSION.test(previousBody)
-      || /\b(?:time|temper|hertz)\b|\bq\s*=/i.test(previousBody));
-    if (previous && behavioral && !statement.control && /^\s*\+/.test(statement.text)) {
-      previous.text = previous.text.slice(0, endOfLineCommentStart(previous.text)) + ` ${statement.text.replace(/^\s*\+\s*/, '')}`;
-      logical.push({ ...statement, text: '' });
-    } else {
-      const copy = { ...statement };
-      logical.push(copy);
-      if (copy.text.trim() !== '' && !/^\s*\*/.test(copy.text)) previous = copy;
+  const logical = statements.map(statement => ({ ...statement }));
+  let origin: number | undefined;
+  let text = '';
+  let continuations: number[] = [];
+  const flush = () => {
+    if (origin === undefined) return;
+    const body = /^\s*c\S*\s+\S+\s+\S+\s+(.+)$/i.exec(text)?.[1];
+    if (body !== undefined && (NODE_DEPENDENT_EXPRESSION.test(body)
+      || /\b(?:time|temper|hertz)\b|\bq\s*=/i.test(body))) {
+      logical[origin].text = text;
+      continuations.forEach(index => { logical[index].text = ''; });
     }
-  }
+  };
+  // Classify only complete logical cards. Speculative folding leaves ordinary
+  // capacitor text and every physical statement's source metadata untouched.
+  logical.forEach((statement, index) => {
+    const code = statement.text.slice(0, endOfLineCommentStart(statement.text)).trimEnd();
+    if (!statement.control && (code.trim() === '' || /^\s*\*/.test(code))) return;
+    if (origin !== undefined && !statement.control && /^\s*\+/.test(code)) {
+      text += ` ${code.replace(/^\s*\+\s*/, '')}`;
+      continuations.push(index);
+      return;
+    }
+    flush();
+    origin = !statement.control && /^\s*c\S*(?:\s|$)/i.test(code) ? index : undefined;
+    text = code;
+    continuations = [];
+  });
+  flush();
   const occupied = new Set(logical.flatMap(statement => statement.text.toLowerCase().split(/[\s(),={}\[\]]+/)));
   let serial = 0;
   return logical.flatMap(statement => {
