@@ -1,0 +1,1131 @@
+{
+  "schemaVersion": "spice-ts-xyce-sine/v1",
+  "environment": {
+    "node": "v22.23.1",
+    "platform": "darwin",
+    "release": "27.0.0",
+    "arch": "arm64",
+    "cpu": "Apple M5 Pro",
+    "ngspiceVersion": "******\n** ngspice-47 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2026, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n******",
+    "xyceVersion": "XyceNF Release 7.10.0"
+  },
+  "sourceHead": "c74ca905a6a7f467173b99cb1d718779b9e057bf",
+  "adapterSha256": "d6ffddd5cba3596336bd491709ab2857894fda8da7b7c78a9430d7c33d8fada3",
+  "sharedInputPath": "benchmarks/reference/mutual-948/ngspice/jimi-fuzz/0-tran.cir",
+  "sharedInputSha256": "fc23c8e82e791dd0268d8e28086b60f9e470a20b3d774eb4b608a68b4e9d0f99",
+  "beforeInputPath": "benchmarks/reference/mutual-948/ngspice/jimi-fuzz/0-tran-xyce.cir",
+  "beforeInputSha256": "3184f4acfcd175b90b46e6b929f97d67c27e9009322b55855b1f5ff022d03372",
+  "afterInputPath": "benchmarks/reference/investigations/974/jimi-fuzz-sine-994-xyce.cir",
+  "afterInputSha256": "f8c1ba374d0529ec7c7dfe0ae0dcd44b15daa2b8509b411a04f6e567584032ed",
+  "signals": [
+    "i(v_v1)",
+    "i(v_v2)",
+    "v(1)",
+    "v(10)",
+    "v(11)",
+    "v(2)",
+    "v(3)",
+    "v(4)",
+    "v(5)",
+    "v(6)",
+    "v(7)",
+    "v(8)",
+    "v(9)"
+  ],
+  "changes": [
+    "Normalised source V_V2 SINE to SIN (values preserved)",
+    "Added .print TRAN format=csv file=output.csv precision=17 I(v_v1) I(v_v2) V(1) V(10) V(11) V(2) V(3) V(4) V(5) V(6) V(7) V(8) V(9)"
+  ],
+  "ngspice": {
+    "status": "success",
+    "convergence": "converged",
+    "command": [
+      "ngspice",
+      "-b",
+      "-r",
+      "output.raw",
+      "input.cir"
+    ],
+    "runtimeMs": 3355.3424999999997,
+    "output": "\nNote: No compatibility mode selected!\n\n\nCircuit: * jimi hendrix fuzz face - by j. dunlop\n\nASCII raw file \"output.raw\"\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 14  \n\nInitial Transient Solution\n--------------------------\n\nNode                                   Voltage\n----                                   -------\n10                                           0\n9                                            0\n3                                            0\n6                                     0.816708\n5                                    0.0408354\n1                                            9\n8                                       1.5863\n4                                      8.74144\n11                                    0.906263\n7                                     0.722975\n2                                     0.722975\nv_v1#branch                       -0.000955929\nv_v2#branch                                  0\n\n Reference value :  8.54019e-01\r Reference value :  1.70648e+00\r Reference value :  2.55112e+00\r Reference value :  3.41524e+00\r Reference value :  4.30421e+00\r\nNo. of Data Rows : 243504\n\nTotal analysis time (seconds) = 1.44799\n\nTotal elapsed time (seconds) = 1.451 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 14172.547 MB.\nMaximum ngspice program size =   10.188 MB.\nCurrent ngspice program size =   10.188 MB.\n\n",
+    "points": 243504,
+    "firstTime": 0,
+    "lastTime": 5,
+    "signals": {
+      "i(v_v1)": {
+        "first": {
+          "re": -0.0009559291238940445,
+          "im": 0
+        },
+        "last": {
+          "re": -0.0009447422826387676,
+          "im": 0
+        },
+        "min": -0.0009599301594295647,
+        "max": -0.0001956335250757306
+      },
+      "i(v_v2)": {
+        "first": {
+          "re": 0,
+          "im": 0
+        },
+        "last": {
+          "re": 0.000006017677648386737,
+          "im": 0
+        },
+        "min": -0.000932430536924923,
+        "max": 0.00001453057517029314
+      },
+      "v(1)": {
+        "first": {
+          "re": 9,
+          "im": 0
+        },
+        "last": {
+          "re": 9,
+          "im": 0
+        },
+        "min": 9,
+        "max": 9
+      },
+      "v(10)": {
+        "first": {
+          "re": 0,
+          "im": 0
+        },
+        "last": {
+          "re": -4.22821978797538e-14,
+          "im": 0
+        },
+        "min": -0.2999999999955677,
+        "max": 0.2999999999177452
+      },
+      "v(11)": {
+        "first": {
+          "re": 0.9062634676847597,
+          "im": 0
+        },
+        "last": {
+          "re": 0.9899660085749887,
+          "im": 0
+        },
+        "min": 0.8764049030334992,
+        "max": 9.000298604819953
+      },
+      "v(2)": {
+        "first": {
+          "re": 0.7229752054496634,
+          "im": 0
+        },
+        "last": {
+          "re": 0.4569276141234677,
+          "im": 0
+        },
+        "min": 0.1545023614125637,
+        "max": 0.8853789538903086
+      },
+      "v(3)": {
+        "first": {
+          "re": 0,
+          "im": 0
+        },
+        "last": {
+          "re": -0.02845401227690726,
+          "im": 0
+        },
+        "min": -0.05326853526522906,
+        "max": 0.2581927678614382
+      },
+      "v(4)": {
+        "first": {
+          "re": 8.741439200806967,
+          "im": 0
+        },
+        "last": {
+          "re": 8.74413132423144,
+          "im": 0
+        },
+        "min": 8.740519379509564,
+        "max": 8.99986327983299
+      },
+      "v(5)": {
+        "first": {
+          "re": 0.04083540680234245,
+          "im": 0
+        },
+        "last": {
+          "re": 0.0468742246945852,
+          "im": 0
+        },
+        "min": 0.0005419115167593514,
+        "max": 0.04694671674603789
+      },
+      "v(6)": {
+        "first": {
+          "re": 0.816708136046849,
+          "im": 0
+        },
+        "last": {
+          "re": 0.9400312964786209,
+          "im": 0
+        },
+        "min": 0.004808941527683292,
+        "max": 0.9448586428119208
+      },
+      "v(7)": {
+        "first": {
+          "re": 0.7229752054496634,
+          "im": 0
+        },
+        "last": {
+          "re": 0.4575293818883077,
+          "im": 0
+        },
+        "min": 0.1555691020936979,
+        "max": 0.7922796800908266
+      },
+      "v(8)": {
+        "first": {
+          "re": 1.586303324981416,
+          "im": 0
+        },
+        "last": {
+          "re": 1.716545658799842,
+          "im": 0
+        },
+        "min": 0.02076624478179632,
+        "max": 1.721342221671483
+      },
+      "v(9)": {
+        "first": {
+          "re": 0,
+          "im": 0
+        },
+        "last": {
+          "re": -0.02276320982152581,
+          "im": 0
+        },
+        "min": -0.04261482821218325,
+        "max": 0.2065542142891506
+      }
+    }
+  },
+  "before": {
+    "command": [
+      "/Users/mattiafiumara/.hermes/cache/scratch/xyce-948/install/bin/Xyce",
+      "input.cir"
+    ],
+    "output": "\n*****\n***** Welcome to the Xyce(TM) Parallel Electronic Simulator\n*****\n***** This is version XyceNF Release 7.10.0\n***** Date: Wed Oct 14 08:32:30 CEST 2026\n\n\n***** Executing netlist input.cir\n\n***** Reading and parsing netlist...\n***** Setting up topology...\n\n***** Device Count Summary ...\n       C level 1 (Capacitor)                    5\n       Q level 1 (Bipolar Junction Transistor)  2\n       R level 1 (Resistor)                    10\n       V level 1 (Independent Voltage Source)   2\n       ------------------------------------------\n       Total Devices                           19\n***** Setting up matrix structure...\n***** Number of Unknowns = 16\n***** Initializing...\n\n***** Beginning DC Operating Point Calculation...\n\n***** Beginning Transient Calculation...\n\n***** Percent complete: 1.00003 %\n***** Current system time: Wed Oct 14 08:32:30 2026\n***** Estimated time to completion:  4 sec.\n\n***** Percent complete: 2.00044 %\n***** Current system time: Wed Oct 14 08:32:31 2026\n***** Estimated time to completion:  4 sec.\n\n***** Percent complete: 3.00086 %\n***** Current system time: Wed Oct 14 08:32:31 2026\n***** Estimated time to completion:  4 sec.\n\n***** Percent complete: 4.00128 %\n***** Current system time: Wed Oct 14 08:32:31 2026\n***** Estimated time to completion:  4 sec.\n\n***** Percent complete: 5.00169 %\n***** Current system time: Wed Oct 14 08:32:31 2026\n***** Estimated time to completion:  4 sec.\n\n***** Percent complete: 6.00169 %\n***** Current system time: Wed Oct 14 08:32:31 2026\n***** Estimated time to completion:  4 sec.\n\n***** Percent complete: 7.00169 %\n***** Current system time: Wed Oct 14 08:32:31 2026\n***** Estimated time to completion:  4 sec.\n\n***** Percent complete: 8.00169 %\n***** Current system time: Wed Oct 14 08:32:31 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 9.00169 %\n***** Current system time: Wed Oct 14 08:32:31 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 10.0017 %\n***** Current system time: Wed Oct 14 08:32:31 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 11.0017 %\n***** Current system time: Wed Oct 14 08:32:31 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 12.0017 %\n***** Current system time: Wed Oct 14 08:32:31 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 13.0017 %\n***** Current system time: Wed Oct 14 08:32:31 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 14.0017 %\n***** Current system time: Wed Oct 14 08:32:31 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 15.0017 %\n***** Current system time: Wed Oct 14 08:32:31 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 16.0017 %\n***** Current system time: Wed Oct 14 08:32:31 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 17.0017 %\n***** Current system time: Wed Oct 14 08:32:31 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 18.0017 %\n***** Current system time: Wed Oct 14 08:32:31 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 19.0017 %\n***** Current system time: Wed Oct 14 08:32:31 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 20.0017 %\n***** Current system time: Wed Oct 14 08:32:31 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 21.0017 %\n***** Current system time: Wed Oct 14 08:32:31 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 22.0017 %\n***** Current system time: Wed Oct 14 08:32:31 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 23.0017 %\n***** Current system time: Wed Oct 14 08:32:31 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 24.0017 %\n***** Current system time: Wed Oct 14 08:32:31 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 25.0017 %\n***** Current system time: Wed Oct 14 08:32:32 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 26.0017 %\n***** Current system time: Wed Oct 14 08:32:32 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 27.0017 %\n***** Current system time: Wed Oct 14 08:32:32 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 28.0017 %\n***** Current system time: Wed Oct 14 08:32:32 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 29.0017 %\n***** Current system time: Wed Oct 14 08:32:32 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 30.0017 %\n***** Current system time: Wed Oct 14 08:32:32 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 31.0017 %\n***** Current system time: Wed Oct 14 08:32:32 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 32.0017 %\n***** Current system time: Wed Oct 14 08:32:32 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 33.0017 %\n***** Current system time: Wed Oct 14 08:32:32 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 34.0017 %\n***** Current system time: Wed Oct 14 08:32:32 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 35.0017 %\n***** Current system time: Wed Oct 14 08:32:32 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 36.0017 %\n***** Current system time: Wed Oct 14 08:32:32 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 37.0017 %\n***** Current system time: Wed Oct 14 08:32:32 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 38.0017 %\n***** Current system time: Wed Oct 14 08:32:32 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 39.0017 %\n***** Current system time: Wed Oct 14 08:32:32 2026\n***** Estimated time to completion:  2 sec.\n\n***** Percent complete: 40.0017 %\n***** Current system time: Wed Oct 14 08:32:32 2026\n***** Estimated time to completion:  2 sec.\n\n***** Percent complete: 41.0021 %\n***** Current system time: Wed Oct 14 08:32:32 2026\n***** Estimated time to completion:  2 sec.\n\n***** Percent complete: 42.0025 %\n***** Current system time: Wed Oct 14 08:32:33 2026\n***** Estimated time to completion:  2 sec.\n\n***** Percent complete: 43.0029 %\n***** Current system time: Wed Oct 14 08:32:33 2026\n***** Estimated time to completion:  2 sec.\n\n***** Percent complete: 44.0034 %\n***** Current system time: Wed Oct 14 08:32:33 2026\n***** Estimated time to completion:  2 sec.\n\n***** Percent complete: 45.0038 %\n***** Current system time: Wed Oct 14 08:32:33 2026\n***** Estimated time to completion:  2 sec.\n\n***** Percent complete: 46.0042 %\n***** Current system time: Wed Oct 14 08:32:33 2026\n***** Estimated time to completion:  2 sec.\n\n***** Percent complete: 47.0046 %\n***** Current system time: Wed Oct 14 08:32:33 2026\n***** Estimated time to completion:  2 sec.\n\n***** Percent complete: 48.005 %\n***** Current system time: Wed Oct 14 08:32:33 2026\n***** Estimated time to completion:  2 sec.\n\n***** Percent complete: 49.0054 %\n***** Current system time: Wed Oct 14 08:32:33 2026\n***** Estimated time to completion:  2 sec.\n\n***** Percent complete: 50.0059 %\n***** Current system time: Wed Oct 14 08:32:33 2026\n***** Estimated time to completion:  2 sec.\n\n***** Percent complete: 51.0063 %\n***** Current system time: Wed Oct 14 08:32:33 2026\n***** Estimated time to completion:  2 sec.\n\n***** Percent complete: 52.0067 %\n***** Current system time: Wed Oct 14 08:32:33 2026\n***** Estimated time to completion:  2 sec.\n\n***** Percent complete: 53.0071 %\n***** Current system time: Wed Oct 14 08:32:33 2026\n***** Estimated time to completion:  2 sec.\n\n***** Percent complete: 54.0075 %\n***** Current system time: Wed Oct 14 08:32:33 2026\n***** Estimated time to completion:  2 sec.\n\n***** Percent complete: 55.0079 %\n***** Current system time: Wed Oct 14 08:32:33 2026\n***** Estimated time to completion:  2 sec.\n\n***** Percent complete: 56.0084 %\n***** Current system time: Wed Oct 14 08:32:33 2026\n***** Estimated time to completion:  2 sec.\n\n***** Percent complete: 57.0088 %\n***** Current system time: Wed Oct 14 08:32:33 2026\n***** Estimated time to completion:  2 sec.\n\n***** Percent complete: 58.0092 %\n***** Current system time: Wed Oct 14 08:32:33 2026\n***** Estimated time to completion:  2 sec.\n\n***** Percent complete: 59.0096 %\n***** Current system time: Wed Oct 14 08:32:33 2026\n***** Estimated time to completion:  2 sec.\n\n***** Percent complete: 60.01 %\n***** Current system time: Wed Oct 14 08:32:33 2026\n***** Estimated time to completion:  1 sec.\n\n***** Percent complete: 61.0104 %\n***** Current system time: Wed Oct 14 08:32:33 2026\n***** Estimated time to completion:  1 sec.\n\n***** Percent complete: 62.0109 %\n***** Current system time: Wed Oct 14 08:32:34 2026\n***** Estimated time to completion:  1 sec.\n\n***** Percent complete: 63.0113 %\n***** Current system time: Wed Oct 14 08:32:34 2026\n***** Estimated time to completion:  1 sec.\n\n***** Percent complete: 64.0117 %\n***** Current system time: Wed Oct 14 08:32:34 2026\n***** Estimated time to completion:  1 sec.\n\n***** Percent complete: 65.0121 %\n***** Current system time: Wed Oct 14 08:32:34 2026\n***** Estimated time to completion:  1 sec.\n\n***** Percent complete: 66.0125 %\n***** Current system time: Wed Oct 14 08:32:34 2026\n***** Estimated time to completion:  1 sec.\n\n***** Percent complete: 67.0129 %\n***** Current system time: Wed Oct 14 08:32:34 2026\n***** Estimated time to completion:  1 sec.\n\n***** Percent complete: 68.0134 %\n***** Current system time: Wed Oct 14 08:32:34 2026\n***** Estimated time to completion:  1 sec.\n\n***** Percent complete: 69.0138 %\n***** Current system time: Wed Oct 14 08:32:34 2026\n***** Estimated time to completion:  1 sec.\n\n***** Percent complete: 70.0142 %\n***** Current system time: Wed Oct 14 08:32:34 2026\n***** Estimated time to completion:  1 sec.\n\n***** Percent complete: 71.0146 %\n***** Current system time: Wed Oct 14 08:32:34 2026\n***** Estimated time to completion:  1 sec.\n\n***** Percent complete: 72.015 %\n***** Current system time: Wed Oct 14 08:32:34 2026\n***** Estimated time to completion:  1 sec.\n\n***** Percent complete: 73.0154 %\n***** Current system time: Wed Oct 14 08:32:34 2026\n***** Estimated time to completion:  1 sec.\n\n***** Percent complete: 74.0159 %\n***** Current system time: Wed Oct 14 08:32:34 2026\n***** Estimated time to completion:  1 sec.\n\n***** Percent complete: 75.0163 %\n***** Current system time: Wed Oct 14 08:32:34 2026\n***** Estimated time to completion:  1 sec.\n\n***** Percent complete: 76.0167 %\n***** Current system time: Wed Oct 14 08:32:34 2026\n***** Estimated time to completion:  1 sec.\n\n***** Percent complete: 77.0171 %\n***** Current system time: Wed Oct 14 08:32:34 2026\n***** Estimated time to completion:  1 sec.\n\n***** Percent complete: 78.0175 %\n***** Current system time: Wed Oct 14 08:32:34 2026\n***** Estimated time to completion:  1 sec.\n\n***** Percent complete: 79.0179 %\n***** Current system time: Wed Oct 14 08:32:34 2026\n***** Estimated time to completion:  1 sec.\n\n***** Percent complete: 80.0184 %\n***** Current system time: Wed Oct 14 08:32:34 2026\n***** Estimated time to completion:  0 sec.\n\n***** Percent complete: 81.0188 %\n***** Current system time: Wed Oct 14 08:32:34 2026\n***** Estimated time to completion:  0 sec.\n\n***** Percent complete: 82.0192 %\n***** Current system time: Wed Oct 14 08:32:34 2026\n***** Estimated time to completion:  0 sec.\n\n***** Percent complete: 83.0196 %\n***** Current system time: Wed Oct 14 08:32:34 2026\n***** Estimated time to completion:  0 sec.\n\n***** Percent complete: 84.02 %\n***** Current system time: Wed Oct 14 08:32:35 2026\n***** Estimated time to completion:  0 sec.\n\n***** Percent complete: 85.0204 %\n***** Current system time: Wed Oct 14 08:32:35 2026\n***** Estimated time to completion:  0 sec.\n\n***** Percent complete: 86.0209 %\n***** Current system time: Wed Oct 14 08:32:35 2026\n***** Estimated time to completion:  0 sec.\n\n***** Percent complete: 87.0213 %\n***** Current system time: Wed Oct 14 08:32:35 2026\n***** Estimated time to completion:  0 sec.\n\n***** Percent complete: 88.0217 %\n***** Current system time: Wed Oct 14 08:32:35 2026\n***** Estimated time to completion:  0 sec.\n\n***** Percent complete: 89.0221 %\n***** Current system time: Wed Oct 14 08:32:35 2026\n***** Estimated time to completion:  0 sec.\n\n***** Percent complete: 90.0225 %\n***** Current system time: Wed Oct 14 08:32:35 2026\n***** Estimated time to completion:  0 sec.\n\n***** Percent complete: 91.0229 %\n***** Current system time: Wed Oct 14 08:32:35 2026\n***** Estimated time to completion:  0 sec.\n\n***** Percent complete: 92.0234 %\n***** Current system time: Wed Oct 14 08:32:35 2026\n***** Estimated time to completion:  0 sec.\n\n***** Percent complete: 93.0238 %\n***** Current system time: Wed Oct 14 08:32:35 2026\n***** Estimated time to completion:  0 sec.\n\n***** Percent complete: 94.0242 %\n***** Current system time: Wed Oct 14 08:32:35 2026\n***** Estimated time to completion:  0 sec.\n\n***** Percent complete: 95.0246 %\n***** Current system time: Wed Oct 14 08:32:35 2026\n***** Estimated time to completion:  0 sec.\n\n***** Percent complete: 96.025 %\n***** Current system time: Wed Oct 14 08:32:35 2026\n***** Estimated time to completion:  0 sec.\n\n***** Percent complete: 97.0254 %\n***** Current system time: Wed Oct 14 08:32:35 2026\n***** Estimated time to completion:  0 sec.\n\n***** Percent complete: 98.0259 %\n***** Current system time: Wed Oct 14 08:32:35 2026\n***** Estimated time to completion:  0 sec.\n\n***** Percent complete: 99.0263 %\n***** Current system time: Wed Oct 14 08:32:35 2026\n***** Estimated time to completion:  0 sec.\n\n***** Problem read in and set up time: 0.00129414 seconds\n ***** DCOP time: 0.000482082 seconds.  Breakdown follows:\n\tNumber Successful Steps Taken:\t\t1\n\tNumber Failed Steps Attempted:\t\t0\n\tNumber Jacobians Evaluated:\t\t16\n\tNumber Linear Solves:\t\t\t16\n\tNumber Failed Linear Solves:\t\t0\n\tNumber Residual Evaluations:\t\t17\n\tNumber Nonlinear Convergence Failures:\t0\n\tTotal Residual Load Time:\t\t1.3113e-05 seconds\n\tTotal Jacobian Load Time:\t\t7.86781e-06 seconds\n\tTotal Linear Solution Time:\t\t8.08239e-05 seconds\n\n ***** Transient Stepping time: 4.74779 seconds.  Breakdown follows:\n\tNumber Successful Steps Taken:\t\t240005\n\tNumber Failed Steps Attempted:\t\t2\n\tNumber Jacobians Evaluated:\t\t240047\n\tNumber Linear Solves:\t\t\t240047\n\tNumber Failed Linear Solves:\t\t0\n\tNumber Residual Evaluations:\t\t480054\n\tNumber Nonlinear Convergence Failures:\t0\n\tTotal Residual Load Time:\t\t0.356359 seconds\n\tTotal Jacobian Load Time:\t\t0.154593 seconds\n\tTotal Linear Solution Time:\t\t0.406942 seconds\n\n\n***** Solution Summary *****\n\tNumber Successful Steps Taken:\t\t240006\n\tNumber Failed Steps Attempted:\t\t2\n\tNumber Jacobians Evaluated:\t\t240063\n\tNumber Linear Solves:\t\t\t240063\n\tNumber Failed Linear Solves:\t\t0\n\tNumber Residual Evaluations:\t\t480071\n\tNumber Nonlinear Convergence Failures:\t0\n\tTotal Residual Load Time:\t\t0.356372 seconds\n\tTotal Jacobian Load Time:\t\t0.154601 seconds\n\tTotal Linear Solution Time:\t\t0.407023 seconds\n\n\n***** Total Simulation Solvers Run Time: 4.74866 seconds\n***** Total Elapsed Run Time:            4.74995 seconds\n*****\n***** End of Xyce(TM) Simulation\n*****\n\nTiming summary of 1 processor\n                 Stats                   Count        CPU Time              Wall Time\n---------------------------------------- ------ --------------------- ---------------------\nXyce                                          1        3.091 (100.0%)        4.750 (100.0%)\n  Analysis                                    1        3.090 (99.97%)        4.749 (99.96%)\n    Transient                                 1        3.090 (99.97%)        4.749 (99.96%)\n      Nonlinear Solve                    240008        1.437 (46.49%)        2.265 (47.68%)\n        Residual                         480071        0.421 (13.61%)        0.602 (12.67%)\n        Jacobian                         240063        0.187 ( 6.04%)        0.279 ( 5.87%)\n        Linear Solve                     240063        0.438 (14.17%)        0.531 (11.18%)\n      Successful DCOP Steps                   1        0.000 (<0.01%)        0.000 (<0.01%)\n      Successful Step                    240005        1.393 (45.07%)        2.046 (43.06%)\n      Failed Steps                            2        0.000 (<0.01%)        0.000 (<0.01%)\n  Netlist Import                              1        0.000 ( 0.01%)        0.001 ( 0.01%)\n    Parse Context                             1        0.000 (<0.01%)        0.000 (<0.01%)\n    Distribute Devices                        1        0.000 (<0.01%)        0.000 (<0.01%)\n    Verify Devices                            1        0.000 (<0.01%)        0.000 (<0.01%)\n    Instantiate                               1        0.000 (<0.01%)        0.000 (<0.01%)\n  Late Initialization                         1        0.000 (<0.01%)        0.000 (<0.01%)\n    Global Indices                            1        0.000 (<0.01%)        0.000 (<0.01%)\n  Setup Matrix Structure                      1        0.000 (<0.01%)        0.000 (<0.01%)\n\n",
+    "points": 240006,
+    "firstTime": 0,
+    "lastTime": 5,
+    "signals": {
+      "i(v_v1)": {
+        "first": {
+          "re": -0.0010744715504558398,
+          "im": 0
+        },
+        "last": {
+          "re": -0.0009559302052711882,
+          "im": 0
+        },
+        "min": -0.0010744715504558398,
+        "max": -0.000944905308282883
+      },
+      "i(v_v2)": {
+        "first": {
+          "re": 0,
+          "im": 0
+        },
+        "last": {
+          "re": 2.8732477560973274e-14,
+          "im": 0
+        },
+        "min": -2.8721008171813474e-14,
+        "max": 0.000015170580976022245
+      },
+      "v(1)": {
+        "first": {
+          "re": 9,
+          "im": 0
+        },
+        "last": {
+          "re": 9,
+          "im": 0
+        },
+        "min": 9,
+        "max": 9
+      },
+      "v(10)": {
+        "first": {
+          "re": 0,
+          "im": 0
+        },
+        "last": {
+          "re": 0,
+          "im": 0
+        },
+        "min": 0,
+        "max": 0
+      },
+      "v(11)": {
+        "first": {
+          "re": 0.04972745850449863,
+          "im": 0
+        },
+        "last": {
+          "re": 0.9062601998153561,
+          "im": 0
+        },
+        "min": 0.04972745850449863,
+        "max": 0.9890833321677647
+      },
+      "v(2)": {
+        "first": {
+          "re": 0,
+          "im": 0
+        },
+        "last": {
+          "re": 0.7229569369445753,
+          "im": 0
+        },
+        "min": 0,
+        "max": 0.7229569369445753
+      },
+      "v(3)": {
+        "first": {
+          "re": 8.708512476182351,
+          "im": 0
+        },
+        "last": {
+          "re": 1.5809190730347036e-12,
+          "im": 0
+        },
+        "min": -0.00024148664751957023,
+        "max": 8.708512476182351
+      },
+      "v(4)": {
+        "first": {
+          "re": 8.708512476182351,
+          "im": 0
+        },
+        "last": {
+          "re": 8.74143909641237,
+          "im": 0
+        },
+        "min": 8.708512476182351,
+        "max": 8.744084945612808
+      },
+      "v(5)": {
+        "first": {
+          "re": 0,
+          "im": 0
+        },
+        "last": {
+          "re": 0.04083488124052659,
+          "im": 0
+        },
+        "min": 0,
+        "max": 0.04695525984615743
+      },
+      "v(6)": {
+        "first": {
+          "re": 0,
+          "im": 0
+        },
+        "last": {
+          "re": 0.8166976248105263,
+          "im": 0
+        },
+        "min": 0,
+        "max": 0.9391052004043529
+      },
+      "v(7)": {
+        "first": {
+          "re": 0,
+          "im": 0
+        },
+        "last": {
+          "re": 0.7229569369445759,
+          "im": 0
+        },
+        "min": 0,
+        "max": 0.722956936944576
+      },
+      "v(8)": {
+        "first": {
+          "re": 0.7794309793653337,
+          "im": 0
+        },
+        "last": {
+          "re": 1.5862704341376133,
+          "im": 0
+        },
+        "min": 0.7794309793653337,
+        "max": 1.7155837775472316
+      },
+      "v(9)": {
+        "first": {
+          "re": 6.9668099809458806,
+          "im": 0
+        },
+        "last": {
+          "re": 1.2608765123853165e-12,
+          "im": 0
+        },
+        "min": -0.0001931893180195147,
+        "max": 6.9668099809458806
+      }
+    }
+  },
+  "after": {
+    "status": "success",
+    "convergence": "converged",
+    "runtimeMs": 9978.940125,
+    "command": [
+      "/Users/mattiafiumara/.hermes/cache/scratch/xyce-948/install/bin/Xyce",
+      "input.cir"
+    ],
+    "output": "\n*****\n***** Welcome to the Xyce(TM) Parallel Electronic Simulator\n*****\n***** This is version XyceNF Release 7.10.0\n***** Date: Wed Oct 14 08:32:39 CEST 2026\n\n\n***** Executing netlist input.cir\n\n***** Reading and parsing netlist...\n***** Setting up topology...\n\n***** Device Count Summary ...\n       C level 1 (Capacitor)                    5\n       Q level 1 (Bipolar Junction Transistor)  2\n       R level 1 (Resistor)                    10\n       V level 1 (Independent Voltage Source)   2\n       ------------------------------------------\n       Total Devices                           19\n***** Setting up matrix structure...\n***** Number of Unknowns = 16\n***** Initializing...\n\n***** Beginning DC Operating Point Calculation...\n\n***** Beginning Transient Calculation...\n\n***** Percent complete: 1.00003 %\n***** Current system time: Wed Oct 14 08:32:39 2026\n***** Estimated time to completion:  4 sec.\n\n***** Percent complete: 2.00031 %\n***** Current system time: Wed Oct 14 08:32:39 2026\n***** Estimated time to completion:  4 sec.\n\n***** Percent complete: 3.00037 %\n***** Current system time: Wed Oct 14 08:32:40 2026\n***** Estimated time to completion:  5 sec.\n\n***** Percent complete: 4.00071 %\n***** Current system time: Wed Oct 14 08:32:40 2026\n***** Estimated time to completion:  6 sec.\n\n***** Percent complete: 5.00071 %\n***** Current system time: Wed Oct 14 08:32:40 2026\n***** Estimated time to completion:  6 sec.\n\n***** Percent complete: 6.00101 %\n***** Current system time: Wed Oct 14 08:32:40 2026\n***** Estimated time to completion:  6 sec.\n\n***** Percent complete: 7.00125 %\n***** Current system time: Wed Oct 14 08:32:40 2026\n***** Estimated time to completion:  6 sec.\n\n***** Percent complete: 8.00165 %\n***** Current system time: Wed Oct 14 08:32:40 2026\n***** Estimated time to completion:  6 sec.\n\n***** Percent complete: 9.00169 %\n***** Current system time: Wed Oct 14 08:32:40 2026\n***** Estimated time to completion:  7 sec.\n\n***** Percent complete: 10.0019 %\n***** Current system time: Wed Oct 14 08:32:40 2026\n***** Estimated time to completion:  7 sec.\n\n***** Percent complete: 11.0019 %\n***** Current system time: Wed Oct 14 08:32:40 2026\n***** Estimated time to completion:  7 sec.\n\n***** Percent complete: 12.0021 %\n***** Current system time: Wed Oct 14 08:32:40 2026\n***** Estimated time to completion:  7 sec.\n\n***** Percent complete: 13.0022 %\n***** Current system time: Wed Oct 14 08:32:40 2026\n***** Estimated time to completion:  6 sec.\n\n***** Percent complete: 14.0023 %\n***** Current system time: Wed Oct 14 08:32:40 2026\n***** Estimated time to completion:  6 sec.\n\n***** Percent complete: 15.0026 %\n***** Current system time: Wed Oct 14 08:32:41 2026\n***** Estimated time to completion:  6 sec.\n\n***** Percent complete: 16.0029 %\n***** Current system time: Wed Oct 14 08:32:41 2026\n***** Estimated time to completion:  6 sec.\n\n***** Percent complete: 17.003 %\n***** Current system time: Wed Oct 14 08:32:41 2026\n***** Estimated time to completion:  6 sec.\n\n***** Percent complete: 18.0032 %\n***** Current system time: Wed Oct 14 08:32:41 2026\n***** Estimated time to completion:  6 sec.\n\n***** Percent complete: 19.0036 %\n***** Current system time: Wed Oct 14 08:32:41 2026\n***** Estimated time to completion:  6 sec.\n\n***** Percent complete: 20.0039 %\n***** Current system time: Wed Oct 14 08:32:41 2026\n***** Estimated time to completion:  6 sec.\n\n***** Percent complete: 21.0041 %\n***** Current system time: Wed Oct 14 08:32:41 2026\n***** Estimated time to completion:  6 sec.\n\n***** Percent complete: 22.0042 %\n***** Current system time: Wed Oct 14 08:32:41 2026\n***** Estimated time to completion:  6 sec.\n\n***** Percent complete: 23.0044 %\n***** Current system time: Wed Oct 14 08:32:41 2026\n***** Estimated time to completion:  6 sec.\n\n***** Percent complete: 24.0044 %\n***** Current system time: Wed Oct 14 08:32:41 2026\n***** Estimated time to completion:  6 sec.\n\n***** Percent complete: 25.0048 %\n***** Current system time: Wed Oct 14 08:32:41 2026\n***** Estimated time to completion:  6 sec.\n\n***** Percent complete: 26.0052 %\n***** Current system time: Wed Oct 14 08:32:42 2026\n***** Estimated time to completion:  6 sec.\n\n***** Percent complete: 27.0054 %\n***** Current system time: Wed Oct 14 08:32:42 2026\n***** Estimated time to completion:  6 sec.\n\n***** Percent complete: 28.0055 %\n***** Current system time: Wed Oct 14 08:32:42 2026\n***** Estimated time to completion:  5 sec.\n\n***** Percent complete: 29.0058 %\n***** Current system time: Wed Oct 14 08:32:42 2026\n***** Estimated time to completion:  5 sec.\n\n***** Percent complete: 30.0059 %\n***** Current system time: Wed Oct 14 08:32:42 2026\n***** Estimated time to completion:  5 sec.\n\n***** Percent complete: 31.0061 %\n***** Current system time: Wed Oct 14 08:32:42 2026\n***** Estimated time to completion:  5 sec.\n\n***** Percent complete: 32.0064 %\n***** Current system time: Wed Oct 14 08:32:42 2026\n***** Estimated time to completion:  5 sec.\n\n***** Percent complete: 33.0065 %\n***** Current system time: Wed Oct 14 08:32:42 2026\n***** Estimated time to completion:  5 sec.\n\n***** Percent complete: 34.0068 %\n***** Current system time: Wed Oct 14 08:32:42 2026\n***** Estimated time to completion:  5 sec.\n\n***** Percent complete: 35.0068 %\n***** Current system time: Wed Oct 14 08:32:42 2026\n***** Estimated time to completion:  5 sec.\n\n***** Percent complete: 36.0069 %\n***** Current system time: Wed Oct 14 08:32:42 2026\n***** Estimated time to completion:  5 sec.\n\n***** Percent complete: 37.0072 %\n***** Current system time: Wed Oct 14 08:32:42 2026\n***** Estimated time to completion:  5 sec.\n\n***** Percent complete: 38.0072 %\n***** Current system time: Wed Oct 14 08:32:43 2026\n***** Estimated time to completion:  5 sec.\n\n***** Percent complete: 39.0073 %\n***** Current system time: Wed Oct 14 08:32:43 2026\n***** Estimated time to completion:  5 sec.\n\n***** Percent complete: 40.0073 %\n***** Current system time: Wed Oct 14 08:32:43 2026\n***** Estimated time to completion:  4 sec.\n\n***** Percent complete: 41.0076 %\n***** Current system time: Wed Oct 14 08:32:43 2026\n***** Estimated time to completion:  4 sec.\n\n***** Percent complete: 42.0077 %\n***** Current system time: Wed Oct 14 08:32:43 2026\n***** Estimated time to completion:  4 sec.\n\n***** Percent complete: 43.0079 %\n***** Current system time: Wed Oct 14 08:32:43 2026\n***** Estimated time to completion:  4 sec.\n\n***** Percent complete: 44.008 %\n***** Current system time: Wed Oct 14 08:32:43 2026\n***** Estimated time to completion:  4 sec.\n\n***** Percent complete: 45.0081 %\n***** Current system time: Wed Oct 14 08:32:43 2026\n***** Estimated time to completion:  4 sec.\n\n***** Percent complete: 46.0081 %\n***** Current system time: Wed Oct 14 08:32:43 2026\n***** Estimated time to completion:  4 sec.\n\n***** Percent complete: 47.0081 %\n***** Current system time: Wed Oct 14 08:32:43 2026\n***** Estimated time to completion:  4 sec.\n\n***** Percent complete: 48.0081 %\n***** Current system time: Wed Oct 14 08:32:43 2026\n***** Estimated time to completion:  4 sec.\n\n***** Percent complete: 49.0081 %\n***** Current system time: Wed Oct 14 08:32:43 2026\n***** Estimated time to completion:  4 sec.\n\n***** Percent complete: 50.0081 %\n***** Current system time: Wed Oct 14 08:32:44 2026\n***** Estimated time to completion:  4 sec.\n\n***** Percent complete: 51.0081 %\n***** Current system time: Wed Oct 14 08:32:44 2026\n***** Estimated time to completion:  4 sec.\n\n***** Percent complete: 52.0081 %\n***** Current system time: Wed Oct 14 08:32:44 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 53.0081 %\n***** Current system time: Wed Oct 14 08:32:44 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 54.0081 %\n***** Current system time: Wed Oct 14 08:32:44 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 55.0081 %\n***** Current system time: Wed Oct 14 08:32:44 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 56.0082 %\n***** Current system time: Wed Oct 14 08:32:44 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 57.0082 %\n***** Current system time: Wed Oct 14 08:32:44 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 58.0082 %\n***** Current system time: Wed Oct 14 08:32:44 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 59.0082 %\n***** Current system time: Wed Oct 14 08:32:44 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 60.0082 %\n***** Current system time: Wed Oct 14 08:32:44 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 61.0082 %\n***** Current system time: Wed Oct 14 08:32:44 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 62.0082 %\n***** Current system time: Wed Oct 14 08:32:45 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 63.0083 %\n***** Current system time: Wed Oct 14 08:32:45 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 64.0083 %\n***** Current system time: Wed Oct 14 08:32:45 2026\n***** Estimated time to completion:  3 sec.\n\n***** Percent complete: 65.0084 %\n***** Current system time: Wed Oct 14 08:32:45 2026\n***** Estimated time to completion:  2 sec.\n\n***** Percent complete: 66.0084 %\n***** Current system time: Wed Oct 14 08:32:45 2026\n***** Estimated time to completion:  2 sec.\n\n***** Percent complete: 67.0084 %\n***** Current system time: Wed Oct 14 08:32:45 2026\n***** Estimated time to completion:  2 sec.\n\n***** Percent complete: 68.0084 %\n***** Current system time: Wed Oct 14 08:32:45 2026\n***** Estimated time to completion:  2 sec.\n\n***** Percent complete: 69.0084 %\n***** Current system time: Wed Oct 14 08:32:45 2026\n***** Estimated time to completion:  2 sec.\n\n***** Percent complete: 70.0084 %\n***** Current system time: Wed Oct 14 08:32:45 2026\n***** Estimated time to completion:  2 sec.\n\n***** Percent complete: 71.0084 %\n***** Current system time: Wed Oct 14 08:32:45 2026\n***** Estimated time to completion:  2 sec.\n\n***** Percent complete: 72.0084 %\n***** Current system time: Wed Oct 14 08:32:45 2026\n***** Estimated time to completion:  2 sec.\n\n***** Percent complete: 73.0084 %\n***** Current system time: Wed Oct 14 08:32:45 2026\n***** Estimated time to completion:  2 sec.\n\n***** Percent complete: 74.0084 %\n***** Current system time: Wed Oct 14 08:32:46 2026\n***** Estimated time to completion:  2 sec.\n\n***** Percent complete: 75.0084 %\n***** Current system time: Wed Oct 14 08:32:46 2026\n***** Estimated time to completion:  2 sec.\n\n***** Percent complete: 76.0084 %\n***** Current system time: Wed Oct 14 08:32:46 2026\n***** Estimated time to completion:  2 sec.\n\n***** Percent complete: 77.0085 %\n***** Current system time: Wed Oct 14 08:32:46 2026\n***** Estimated time to completion:  1 sec.\n\n***** Percent complete: 78.0085 %\n***** Current system time: Wed Oct 14 08:32:46 2026\n***** Estimated time to completion:  1 sec.\n\n***** Percent complete: 79.0085 %\n***** Current system time: Wed Oct 14 08:32:46 2026\n***** Estimated time to completion:  1 sec.\n\n***** Percent complete: 80.0085 %\n***** Current system time: Wed Oct 14 08:32:46 2026\n***** Estimated time to completion:  1 sec.\n\n***** Percent complete: 81.0085 %\n***** Current system time: Wed Oct 14 08:32:46 2026\n***** Estimated time to completion:  1 sec.\n\n***** Percent complete: 82.0085 %\n***** Current system time: Wed Oct 14 08:32:46 2026\n***** Estimated time to completion:  1 sec.\n\n***** Percent complete: 83.0085 %\n***** Current system time: Wed Oct 14 08:32:46 2026\n***** Estimated time to completion:  1 sec.\n\n***** Percent complete: 84.0085 %\n***** Current system time: Wed Oct 14 08:32:46 2026\n***** Estimated time to completion:  1 sec.\n\n***** Percent complete: 85.0086 %\n***** Current system time: Wed Oct 14 08:32:47 2026\n***** Estimated time to completion:  1 sec.\n\n***** Percent complete: 86.0086 %\n***** Current system time: Wed Oct 14 08:32:47 2026\n***** Estimated time to completion:  1 sec.\n\n***** Percent complete: 87.0086 %\n***** Current system time: Wed Oct 14 08:32:47 2026\n***** Estimated time to completion:  1 sec.\n\n***** Percent complete: 88.0086 %\n***** Current system time: Wed Oct 14 08:32:47 2026\n***** Estimated time to completion:  1 sec.\n\n***** Percent complete: 89.0087 %\n***** Current system time: Wed Oct 14 08:32:47 2026\n***** Estimated time to completion:  0 sec.\n\n***** Percent complete: 90.0089 %\n***** Current system time: Wed Oct 14 08:32:47 2026\n***** Estimated time to completion:  0 sec.\n\n***** Percent complete: 91.0089 %\n***** Current system time: Wed Oct 14 08:32:47 2026\n***** Estimated time to completion:  0 sec.\n\n***** Percent complete: 92.0089 %\n***** Current system time: Wed Oct 14 08:32:47 2026\n***** Estimated time to completion:  0 sec.\n\n***** Percent complete: 93.0091 %\n***** Current system time: Wed Oct 14 08:32:47 2026\n***** Estimated time to completion:  0 sec.\n\n***** Percent complete: 94.0095 %\n***** Current system time: Wed Oct 14 08:32:47 2026\n***** Estimated time to completion:  0 sec.\n\n***** Percent complete: 95.0098 %\n***** Current system time: Wed Oct 14 08:32:47 2026\n***** Estimated time to completion:  0 sec.\n\n***** Percent complete: 96.01 %\n***** Current system time: Wed Oct 14 08:32:47 2026\n***** Estimated time to completion:  0 sec.\n\n***** Percent complete: 97.01 %\n***** Current system time: Wed Oct 14 08:32:48 2026\n***** Estimated time to completion:  0 sec.\n\n***** Percent complete: 98.0104 %\n***** Current system time: Wed Oct 14 08:32:48 2026\n***** Estimated time to completion:  0 sec.\n\n***** Percent complete: 99.0104 %\n***** Current system time: Wed Oct 14 08:32:48 2026\n***** Estimated time to completion:  0 sec.\n\n***** Problem read in and set up time: 0.00113201 seconds\n ***** DCOP time: 0.000417948 seconds.  Breakdown follows:\n\tNumber Successful Steps Taken:\t\t1\n\tNumber Failed Steps Attempted:\t\t0\n\tNumber Jacobians Evaluated:\t\t16\n\tNumber Linear Solves:\t\t\t16\n\tNumber Failed Linear Solves:\t\t0\n\tNumber Residual Evaluations:\t\t17\n\tNumber Nonlinear Convergence Failures:\t0\n\tTotal Residual Load Time:\t\t1.19209e-05 seconds\n\tTotal Jacobian Load Time:\t\t1.09673e-05 seconds\n\tTotal Linear Solution Time:\t\t6.1512e-05 seconds\n\n ***** Transient Stepping time: 8.43154 seconds.  Breakdown follows:\n\tNumber Successful Steps Taken:\t\t346131\n\tNumber Failed Steps Attempted:\t\t33051\n\tNumber Jacobians Evaluated:\t\t771733\n\tNumber Linear Solves:\t\t\t771733\n\tNumber Failed Linear Solves:\t\t0\n\tNumber Residual Evaluations:\t\t1150915\n\tNumber Nonlinear Convergence Failures:\t0\n\tTotal Residual Load Time:\t\t0.695869 seconds\n\tTotal Jacobian Load Time:\t\t0.414064 seconds\n\tTotal Linear Solution Time:\t\t1.07631 seconds\n\n\n***** Solution Summary *****\n\tNumber Successful Steps Taken:\t\t346132\n\tNumber Failed Steps Attempted:\t\t33051\n\tNumber Jacobians Evaluated:\t\t771749\n\tNumber Linear Solves:\t\t\t771749\n\tNumber Failed Linear Solves:\t\t0\n\tNumber Residual Evaluations:\t\t1150932\n\tNumber Nonlinear Convergence Failures:\t0\n\tTotal Residual Load Time:\t\t0.695881 seconds\n\tTotal Jacobian Load Time:\t\t0.414075 seconds\n\tTotal Linear Solution Time:\t\t1.07637 seconds\n\n\n***** Total Simulation Solvers Run Time: 8.4327 seconds\n***** Total Elapsed Run Time:            8.43383 seconds\n*****\n***** End of Xyce(TM) Simulation\n*****\n\nTiming summary of 1 processor\n                 Stats                    Count        CPU Time              Wall Time\n---------------------------------------- ------- --------------------- ---------------------\nXyce                                           1        5.477 (100.0%)        8.434 (100.0%)\n  Analysis                                     1        5.476 (99.98%)        8.433 (99.98%)\n    Transient                                  1        5.476 (99.98%)        8.433 (99.98%)\n      Nonlinear Solve                     379183        3.329 (60.79%)        5.168 (61.27%)\n        Residual                         1150932        0.827 (15.11%)        1.192 (14.14%)\n        Jacobian                          771749        0.503 ( 9.18%)        0.748 ( 8.86%)\n        Linear Solve                      771749        1.160 (21.19%)        1.409 (16.70%)\n      Successful DCOP Steps                    1        0.000 (<0.01%)        0.000 (<0.01%)\n      Successful Step                     346131        1.787 (32.62%)        2.661 (31.55%)\n      Failed Steps                         33051        0.005 ( 0.10%)        0.016 ( 0.19%)\n  Netlist Import                               1        0.000 (<0.01%)        0.001 (<0.01%)\n    Parse Context                              1        0.000 (<0.01%)        0.000 (<0.01%)\n    Distribute Devices                         1        0.000 (<0.01%)        0.000 (<0.01%)\n    Verify Devices                             1        0.000 (<0.01%)        0.000 (<0.01%)\n    Instantiate                                1        0.000 (<0.01%)        0.000 (<0.01%)\n  Late Initialization                          1        0.000 (<0.01%)        0.000 (<0.01%)\n    Global Indices                             1        0.000 (<0.01%)        0.000 (<0.01%)\n  Setup Matrix Structure                       1        0.000 (<0.01%)        0.000 (<0.01%)\n\n",
+    "points": 346132,
+    "firstTime": 0,
+    "lastTime": 5,
+    "signals": {
+      "i(v_v1)": {
+        "first": {
+          "re": -0.0010744715504558398,
+          "im": 0
+        },
+        "last": {
+          "re": -0.0009449929476663253,
+          "im": 0
+        },
+        "min": -0.0010744715504558398,
+        "max": -0.00019572621738763024
+      },
+      "i(v_v2)": {
+        "first": {
+          "re": 0,
+          "im": 0
+        },
+        "last": {
+          "re": 0.000006188941859503975,
+          "im": 0
+        },
+        "min": -0.00008092308299531376,
+        "max": 0.00001961733131459574
+      },
+      "v(1)": {
+        "first": {
+          "re": 9,
+          "im": 0
+        },
+        "last": {
+          "re": 9,
+          "im": 0
+        },
+        "min": 9,
+        "max": 9
+      },
+      "v(10)": {
+        "first": {
+          "re": 0,
+          "im": 0
+        },
+        "last": {
+          "re": -4.2282197860820216e-14,
+          "im": 0
+        },
+        "min": -0.29999999983860437,
+        "max": 0.2999999999942702
+      },
+      "v(11)": {
+        "first": {
+          "re": 0.04972745850449863,
+          "im": 0
+        },
+        "last": {
+          "re": 0.9878704715374484,
+          "im": 0
+        },
+        "min": 0.04972745850449863,
+        "max": 9.000245340529665
+      },
+      "v(2)": {
+        "first": {
+          "re": 0,
+          "im": 0
+        },
+        "last": {
+          "re": 0.4569635081115068,
+          "im": 0
+        },
+        "min": -0.2899517257795527,
+        "max": 0.7541175512211367
+      },
+      "v(3)": {
+        "first": {
+          "re": 8.708512476182351,
+          "im": 0
+        },
+        "last": {
+          "re": -0.02861932107131769,
+          "im": 0
+        },
+        "min": -0.04254984267048792,
+        "max": 8.708512476182351
+      },
+      "v(4)": {
+        "first": {
+          "re": 8.708512476182351,
+          "im": 0
+        },
+        "last": {
+          "re": 8.744064486265865,
+          "im": 0
+        },
+        "min": 8.708512476182351,
+        "max": 8.999869098863803
+      },
+      "v(5)": {
+        "first": {
+          "re": 0,
+          "im": 0
+        },
+        "last": {
+          "re": 0.0468743654720614,
+          "im": 0
+        },
+        "min": 0,
+        "max": 0.04695470448848846
+      },
+      "v(6)": {
+        "first": {
+          "re": 0,
+          "im": 0
+        },
+        "last": {
+          "re": 0.9379769274316456,
+          "im": 0
+        },
+        "min": 0,
+        "max": 0.9392552992093316
+      },
+      "v(7)": {
+        "first": {
+          "re": 0,
+          "im": 0
+        },
+        "last": {
+          "re": 0.4575824022974573,
+          "im": 0
+        },
+        "min": -0.28816582508670396,
+        "max": 0.7461926593060558
+      },
+      "v(8)": {
+        "first": {
+          "re": 0.7794309793653337,
+          "im": 0
+        },
+        "last": {
+          "re": 1.7144762520674321,
+          "im": 0
+        },
+        "min": 0.042639886367806315,
+        "max": 1.7157317976597337
+      },
+      "v(9)": {
+        "first": {
+          "re": 6.9668099809458806,
+          "im": 0
+        },
+        "last": {
+          "re": -0.022895456857054144,
+          "im": 0
+        },
+        "min": -0.034039874136390334,
+        "max": 6.9668099809458806
+      }
+    }
+  },
+  "metrics": {
+    "before": {
+      "grid": {
+        "spiceTsPoints": 243504,
+        "ngspicePoints": 240006,
+        "alignedPoints": 243504,
+        "excludedOutOfRange": 0
+      },
+      "signals": {
+        "i(v_v1)": {
+          "status": "compared",
+          "sampleCount": 243504,
+          "absoluteError": {
+            "max": 0.0008056636036811793,
+            "rms": 0.0002681391590842699
+          },
+          "relativeError": {
+            "max": 0.8014756940233639,
+            "rms": 0.28062696392009967,
+            "sampleCount": 243504,
+            "excludedZeroReferences": 0
+          }
+        },
+        "i(v_v2)": {
+          "status": "compared",
+          "sampleCount": 243504,
+          "absoluteError": {
+            "max": 0.00094602663993337,
+            "rms": 0.00002377583008752657
+          },
+          "relativeError": {
+            "max": 79555432185.24193,
+            "rms": 6500717588.602296,
+            "sampleCount": 205021,
+            "excludedZeroReferences": 38483
+          }
+        },
+        "v(1)": {
+          "status": "compared",
+          "sampleCount": 243504,
+          "absoluteError": {
+            "max": 0,
+            "rms": 0
+          },
+          "relativeError": {
+            "max": 0,
+            "rms": 0,
+            "sampleCount": 243504,
+            "excludedZeroReferences": 0
+          }
+        },
+        "v(10)": {
+          "status": "compared",
+          "sampleCount": 243504,
+          "absoluteError": {
+            "max": 0.2999999999955677,
+            "rms": 0.2131508235452795
+          },
+          "relativeError": {
+            "max": null,
+            "rms": null,
+            "sampleCount": 0,
+            "excludedZeroReferences": 243504
+          }
+        },
+        "v(11)": {
+          "status": "compared",
+          "sampleCount": 243504,
+          "absoluteError": {
+            "max": 8.37304444535639,
+            "rms": 2.8994166132320807
+          },
+          "relativeError": {
+            "max": 17.224608595325133,
+            "rms": 3.1890822058825563,
+            "sampleCount": 243504,
+            "excludedZeroReferences": 0
+          }
+        },
+        "v(2)": {
+          "status": "compared",
+          "sampleCount": 243504,
+          "absoluteError": {
+            "max": 0.883037339907223,
+            "rms": 0.33801338877041637
+          },
+          "relativeError": {
+            "max": 503370.767263469,
+            "rms": 1178.81212703567,
+            "sampleCount": 243503,
+            "excludedZeroReferences": 1
+          }
+        },
+        "v(3)": {
+          "status": "compared",
+          "sampleCount": 243504,
+          "absoluteError": {
+            "max": 8.708512476182351,
+            "rms": 0.22061564255273652
+          },
+          "relativeError": {
+            "max": 208608240467200.12,
+            "rms": 1918603726313.597,
+            "sampleCount": 243410,
+            "excludedZeroReferences": 94
+          }
+        },
+        "v(4)": {
+          "status": "compared",
+          "sampleCount": 243504,
+          "absoluteError": {
+            "max": 0.27287949711883464,
+            "rms": 0.09257842886346453
+          },
+          "relativeError": {
+            "max": 0.03126859878111275,
+            "rms": 0.01059063579197043,
+            "sampleCount": 243504,
+            "excludedZeroReferences": 0
+          }
+        },
+        "v(5)": {
+          "status": "compared",
+          "sampleCount": 243504,
+          "absoluteError": {
+            "max": 0.04626698059039421,
+            "rms": 0.01422190064563796
+          },
+          "relativeError": {
+            "max": 296.39532176997096,
+            "rms": 0.774265084997063,
+            "sampleCount": 243503,
+            "excludedZeroReferences": 1
+          }
+        },
+        "v(6)": {
+          "status": "compared",
+          "sampleCount": 243504,
+          "absoluteError": {
+            "max": 0.9325282960422482,
+            "rms": 0.30639678780440227
+          },
+          "relativeError": {
+            "max": 89.62261446339464,
+            "rms": 0.42710859158336933,
+            "sampleCount": 243503,
+            "excludedZeroReferences": 1
+          }
+        },
+        "v(7)": {
+          "status": "compared",
+          "sampleCount": 243504,
+          "absoluteError": {
+            "max": 0.788591834774163,
+            "rms": 0.3371834767334615
+          },
+          "relativeError": {
+            "max": 43539.355671683305,
+            "rms": 102.01269545753254,
+            "sampleCount": 243503,
+            "excludedZeroReferences": 1
+          }
+        },
+        "v(8)": {
+          "status": "compared",
+          "sampleCount": 243504,
+          "absoluteError": {
+            "max": 1.6873940626278088,
+            "rms": 0.5502370671909684
+          },
+          "relativeError": {
+            "max": 1.0352069227131482,
+            "rms": 0.3456290149952909,
+            "sampleCount": 243504,
+            "excludedZeroReferences": 0
+          }
+        },
+        "v(9)": {
+          "status": "compared",
+          "sampleCount": 243504,
+          "absoluteError": {
+            "max": 6.9668099809458806,
+            "rms": 0.17649251404219035
+          },
+          "relativeError": {
+            "max": 168165635056189.66,
+            "rms": 1700046099804.9124,
+            "sampleCount": 243370,
+            "excludedZeroReferences": 134
+          }
+        }
+      }
+    },
+    "after": {
+      "grid": {
+        "spiceTsPoints": 243504,
+        "ngspicePoints": 346132,
+        "alignedPoints": 243504,
+        "excludedOutOfRange": 0
+      },
+      "signals": {
+        "i(v_v1)": {
+          "status": "compared",
+          "sampleCount": 243504,
+          "absoluteError": {
+            "max": 0.0008056445630949881,
+            "rms": 0.00003854640808528255
+          },
+          "relativeError": {
+            "max": 0.8014719335818452,
+            "rms": 0.041351899415233276,
+            "sampleCount": 243504,
+            "excludedZeroReferences": 0
+          }
+        },
+        "i(v_v2)": {
+          "status": "compared",
+          "sampleCount": 243504,
+          "absoluteError": {
+            "max": 0.0009404087048785941,
+            "rms": 0.000009160975897624346
+          },
+          "relativeError": {
+            "max": 25718.018405405932,
+            "rms": 66.13781122934472,
+            "sampleCount": 243503,
+            "excludedZeroReferences": 1
+          }
+        },
+        "v(1)": {
+          "status": "compared",
+          "sampleCount": 243504,
+          "absoluteError": {
+            "max": 0,
+            "rms": 0
+          },
+          "relativeError": {
+            "max": 0,
+            "rms": 0,
+            "sampleCount": 243504,
+            "excludedZeroReferences": 0
+          }
+        },
+        "v(10)": {
+          "status": "compared",
+          "sampleCount": 243504,
+          "absoluteError": {
+            "max": 0.00012438936791114852,
+            "rms": 0.000060727274066860084
+          },
+          "relativeError": {
+            "max": 0.21107460752104848,
+            "rms": 0.0009438992399201265,
+            "sampleCount": 243503,
+            "excludedZeroReferences": 1
+          }
+        },
+        "v(11)": {
+          "status": "compared",
+          "sampleCount": 243504,
+          "absoluteError": {
+            "max": 8.372885664628734,
+            "rms": 0.4174168797111802
+          },
+          "relativeError": {
+            "max": 17.224608595325133,
+            "rms": 0.43008705144037834,
+            "sampleCount": 243504,
+            "excludedZeroReferences": 0
+          }
+        },
+        "v(2)": {
+          "status": "compared",
+          "sampleCount": 243504,
+          "absoluteError": {
+            "max": 0.7229752054496634,
+            "rms": 0.03551036567717115
+          },
+          "relativeError": {
+            "max": 4154.458993220342,
+            "rms": 11.49312115840363,
+            "sampleCount": 243503,
+            "excludedZeroReferences": 1
+          }
+        },
+        "v(3)": {
+          "status": "compared",
+          "sampleCount": 243504,
+          "absoluteError": {
+            "max": 8.708512476182351,
+            "rms": 0.2037913679259536
+          },
+          "relativeError": {
+            "max": 191660.82608471045,
+            "rms": 802.1659591145946,
+            "sampleCount": 243504,
+            "excludedZeroReferences": 0
+          }
+        },
+        "v(4)": {
+          "status": "compared",
+          "sampleCount": 243504,
+          "absoluteError": {
+            "max": 0.27287442796853867,
+            "rms": 0.013360436894547757
+          },
+          "relativeError": {
+            "max": 0.031267999757111746,
+            "rms": 0.0015279100735855397,
+            "sampleCount": 243504,
+            "excludedZeroReferences": 0
+          }
+        },
+        "v(5)": {
+          "status": "compared",
+          "sampleCount": 243504,
+          "absoluteError": {
+            "max": 0.046256640494051565,
+            "rms": 0.002247871814042313
+          },
+          "relativeError": {
+            "max": 296.31351561197357,
+            "rms": 0.6979302401767581,
+            "sampleCount": 243503,
+            "excludedZeroReferences": 1
+          }
+        },
+        "v(6)": {
+          "status": "compared",
+          "sampleCount": 243504,
+          "absoluteError": {
+            "max": 0.9322554856035641,
+            "rms": 0.04767635276727449
+          },
+          "relativeError": {
+            "max": 89.5976864051024,
+            "rms": 0.22508805324000106,
+            "sampleCount": 243503,
+            "excludedZeroReferences": 1
+          }
+        },
+        "v(7)": {
+          "status": "compared",
+          "sampleCount": 243504,
+          "absoluteError": {
+            "max": 0.7229752054496634,
+            "rms": 0.035197513327777354
+          },
+          "relativeError": {
+            "max": 5859.244901756414,
+            "rms": 15.777543954681187,
+            "sampleCount": 243503,
+            "excludedZeroReferences": 1
+          }
+        },
+        "v(8)": {
+          "status": "compared",
+          "sampleCount": 243504,
+          "absoluteError": {
+            "max": 1.6909467622611905,
+            "rms": 0.08449019483362952
+          },
+          "relativeError": {
+            "max": 1.0352069227131482,
+            "rms": 0.05469500567929246,
+            "sampleCount": 243504,
+            "excludedZeroReferences": 0
+          }
+        },
+        "v(9)": {
+          "status": "compared",
+          "sampleCount": 243504,
+          "absoluteError": {
+            "max": 6.9668099809458806,
+            "rms": 0.16303309434076454
+          },
+          "relativeError": {
+            "max": 191660.82912917473,
+            "rms": 802.1659627737173,
+            "sampleCount": 243504,
+            "excludedZeroReferences": 0
+          }
+        }
+      }
+    },
+    "afterReverse": {
+      "grid": {
+        "spiceTsPoints": 346132,
+        "ngspicePoints": 243504,
+        "alignedPoints": 346132,
+        "excludedOutOfRange": 0
+      },
+      "signals": {
+        "i(v_v1)": {
+          "status": "compared",
+          "sampleCount": 346132,
+          "absoluteError": {
+            "max": 0.0007581754206694974,
+            "rms": 0.00008265222432987196
+          },
+          "relativeError": {
+            "max": 3.8352575894038057,
+            "rms": 0.22202556630243359,
+            "sampleCount": 346132,
+            "excludedZeroReferences": 0
+          }
+        },
+        "i(v_v2)": {
+          "status": "compared",
+          "sampleCount": 346132,
+          "absoluteError": {
+            "max": 0.0009403991020452229,
+            "rms": 0.00000776940772914659
+          },
+          "relativeError": {
+            "max": 5900.147223069313,
+            "rms": 17.356379461777735,
+            "sampleCount": 346131,
+            "excludedZeroReferences": 1
+          }
+        },
+        "v(1)": {
+          "status": "compared",
+          "sampleCount": 346132,
+          "absoluteError": {
+            "max": 0,
+            "rms": 0
+          },
+          "relativeError": {
+            "max": 0,
+            "rms": 0,
+            "sampleCount": 346132,
+            "excludedZeroReferences": 0
+          }
+        },
+        "v(10)": {
+          "status": "compared",
+          "sampleCount": 346132,
+          "absoluteError": {
+            "max": 0.00012438936194247852,
+            "rms": 0.00006768366894753857
+          },
+          "relativeError": {
+            "max": 0.08569287447480167,
+            "rms": 0.0003396346443500745,
+            "sampleCount": 346131,
+            "excludedZeroReferences": 1
+          }
+        },
+        "v(11)": {
+          "status": "compared",
+          "sampleCount": 346132,
+          "absoluteError": {
+            "max": 8.113704129155035,
+            "rms": 0.8704976103663318
+          },
+          "relativeError": {
+            "max": 0.94512913708026,
+            "rms": 0.20391275934188796,
+            "sampleCount": 346132,
+            "excludedZeroReferences": 0
+          }
+        },
+        "v(2)": {
+          "status": "compared",
+          "sampleCount": 346132,
+          "absoluteError": {
+            "max": 0.7229752054496634,
+            "rms": 0.029450340284076455
+          },
+          "relativeError": {
+            "max": 2.550936527742449,
+            "rms": 0.09369810159529403,
+            "sampleCount": 346132,
+            "excludedZeroReferences": 0
+          }
+        },
+        "v(3)": {
+          "status": "compared",
+          "sampleCount": 346132,
+          "absoluteError": {
+            "max": 8.708512476182351,
+            "rms": 0.16708303443610387
+          },
+          "relativeError": {
+            "max": 35038.29458679334,
+            "rms": 84.51455730054266,
+            "sampleCount": 346131,
+            "excludedZeroReferences": 1
+          }
+        },
+        "v(4)": {
+          "status": "compared",
+          "sampleCount": 346132,
+          "absoluteError": {
+            "max": 0.2625235919064881,
+            "rms": 0.027802298645024138
+          },
+          "relativeError": {
+            "max": 0.029169839488664136,
+            "rms": 0.003124726734688078,
+            "sampleCount": 346132,
+            "excludedZeroReferences": 0
+          }
+        },
+        "v(5)": {
+          "status": "compared",
+          "sampleCount": 346132,
+          "absoluteError": {
+            "max": 0.046237588102036965,
+            "rms": 0.0020246498304823677
+          },
+          "relativeError": {
+            "max": 85.25238825491272,
+            "rms": 1.5278901725703513,
+            "sampleCount": 346132,
+            "excludedZeroReferences": 0
+          }
+        },
+        "v(6)": {
+          "status": "compared",
+          "sampleCount": 346132,
+          "absoluteError": {
+            "max": 0.93170264867648,
+            "rms": 0.08242726967181466
+          },
+          "relativeError": {
+            "max": 134.06416007317705,
+            "rms": 2.898845941450572,
+            "sampleCount": 346132,
+            "excludedZeroReferences": 0
+          }
+        },
+        "v(7)": {
+          "status": "compared",
+          "sampleCount": 346132,
+          "absoluteError": {
+            "max": 0.7229752054496634,
+            "rms": 0.02918571266476757
+          },
+          "relativeError": {
+            "max": 2.530450444671076,
+            "rms": 0.09307506937955301,
+            "sampleCount": 346132,
+            "excludedZeroReferences": 0
+          }
+        },
+        "v(8)": {
+          "status": "compared",
+          "sampleCount": 346132,
+          "absoluteError": {
+            "max": 1.690947001398777,
+            "rms": 0.10882095445860573
+          },
+          "relativeError": {
+            "max": 81.41694282270366,
+            "rms": 1.6079881515267205,
+            "sampleCount": 346132,
+            "excludedZeroReferences": 0
+          }
+        },
+        "v(9)": {
+          "status": "compared",
+          "sampleCount": 346132,
+          "absoluteError": {
+            "max": 6.9668099809458806,
+            "rms": 0.13366642754888286
+          },
+          "relativeError": {
+            "max": 35038.294586793345,
+            "rms": 84.51455730060557,
+            "sampleCount": 346131,
+            "excludedZeroReferences": 1
+          }
+        }
+      }
+    }
+  },
+  "policy": "Fresh ngspice-47 reference on unchanged shared input; Xyce 7.10 historical export vs current adapter. Only SINE spelling changes. Device IC and solver settings remain unchanged. No parity or speed claim."
+}

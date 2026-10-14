@@ -41,6 +41,7 @@ import {
 } from './packed.js';
 import { runCorpusFSpiceTs } from './plot-adapter.js';
 import { readNgspiceRawFilePacked } from './raw-stream.js';
+import { declaredSecondaryGrid } from '../../sweep-coordinates.js';
 import {
   classifyNgspiceFailure,
   CONTROL_SECTION,
@@ -270,7 +271,8 @@ export async function runNgspicePacked(input: Buffer, circuit: CorpusFCircuit, s
     try { plots = await readNgspiceRawFilePacked(rawPath, keep); } catch { plots = []; }
     const analyses = plots.flatMap((plot): PackedAnalysis[] => {
       const type = analysisType(plot.plotName);
-      return type ? [{ type, plotName: plot.plotName, grid: Float64Array.from(plot.grid), signals: plot.signals }] : [];
+      const secondaryGrid = type === 'dc' ? declaredSecondaryGrid(input.toString('utf8'), plot.plotName, plot.grid) : undefined;
+      return type ? [{ type, plotName: plot.plotName, grid: Float64Array.from(plot.grid), signals: plot.signals, ...(secondaryGrid ? { secondaryGrid: Float64Array.from(secondaryGrid) } : {}) }] : [];
     });
     if (analyses.length === 0 && !errorLine && /^\s*\.control\b/im.test(input.toString('utf8'))) {
       return { execution: { status: 'success', convergence: 'converged', analyses: [] }, status: 'success', note: CONTROL_ONLY_NOTE };

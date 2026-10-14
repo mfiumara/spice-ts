@@ -5,6 +5,7 @@ import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { describe, it } from 'node:test';
+import { gunzipSync } from 'node:zlib';
 import {
   CATEGORIES,
   EXPECTED_BASES,
@@ -26,7 +27,7 @@ async function deck(path: string): Promise<string> {
   return readFile(resolve(HERE, path), 'utf8');
 }
 
-async function core(): Promise<{ simulate: (netlist: string) => Promise<any> }> {
+async function core(): Promise<{ simulate: (netlist: string) => Promise<any>; parse: (netlist: string) => any }> {
   return import(pathToFileURL(resolve(HERE, '../../../packages/core/dist/index.js')).href);
 }
 
@@ -85,6 +86,52 @@ describe('ngspice-bugs manifest', () => {
  * against the expected answers (not against ngspice). Requires `pnpm build` (imports packages/core/dist).
  */
 describe('ngspice-bugs spice-ts verdicts', () => {
+  it('#871: unchanged arg/temper cards match independent lexical-shadowing answers', async () => {
+    const manifest = await loadManifest();
+    assert.equal(outcome(entry(manifest, 871)), 'spice-ts-correct');
+    const { simulate, parse } = await core();
+    const arg = await simulate(await deck('tickets/871/arg_capture_cards.cir'));
+    assert.equal(arg.dc.current('V1'), -1);
+
+    const temperDeck = await deck('tickets/871/temper_capture_cards.cir');
+    const resistor = parse(temperDeck).compile().devices.find((device: { name: string }) => device.name === 'R1');
+    assert.ok(resistor, 'temper deck resolves R1');
+    const bits = (value: number): bigint => {
+      const view = new DataView(new ArrayBuffer(8));
+      view.setFloat64(0, value);
+      return view.getBigUint64(0);
+    };
+    // ngspice-47 binary rawfile probe: {twice(3)} -> 0x4018000000000001,
+    // unlike bare 6. #782/#1032 preserve this INPevaluate round-trip (see PR evidence).
+    assert.equal(bits(resistor.resistance), 0x4018000000000001n);
+    const temper = await simulate(temperDeck);
+    const current = temper.dc.current('V1');
+    assert.equal(current, -1 / resistor.resistance);
+    assert.equal(bits(current), 0xbfc5555555555554n);
+    // 1/6 lies in [2^-3, 2^-2): its binary64 ulp is 2^(-3 - 52).
+    assert.ok(Math.abs(current + 1 / 6) <= 4 * 2 ** -55, `I(V1) = ${current}`);
+    assert.ok(Math.abs(current - (-1 / 56)) > 0.1, 'distinct from ngspice lexical capture of temper + 1');
+  });
+
+  it('#812: receipts cover the original 25 tickets without substituting unpinned decks', async () => {
+    const lines = gunzipSync(await readFile(resolve(HERE, 'refresh-812.jsonl.gz'))).toString('utf8').trim().split('\n').map(line => JSON.parse(line));
+    const rows = lines.slice(1);
+    assert.equal(rows.length, 43);
+    assert.equal(new Set(rows.map(row => row.ticket)).size, 25);
+    const manifest = await loadManifest();
+    for (const row of rows) {
+      const ticket = entry(manifest, row.ticket);
+      assert.ok(ticket.spiceTs.evidence.startsWith('#812 refresh d8ab9d33'));
+      if (row.receipt.status === 'provenance-gap') {
+        assert.equal(row.receipt.actualSha256, null);
+        assert.ok(ticket.uncommittedDecks.some(file => file.sha256 === row.receipt.expectedSha256));
+        assert.equal(ticket.spiceTs.verdict, 'unsupported');
+      } else {
+        assert.ok([...ticket.committedDecks, ...ticket.uncommittedDecks].some(file => file.sha256 === row.receipt.netlistSha256));
+      }
+    }
+  });
+
   for (const [ticket, a, b] of [
     [877, 'tickets/877/repro_a_cards.cir', 'tickets/877/repro_b_cards.cir'],
     [878, 'tickets/878/repro_l2_a_cards.cir', 'tickets/878/repro_l2_b_cards.cir'],

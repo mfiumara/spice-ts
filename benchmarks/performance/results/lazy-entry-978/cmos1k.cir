@@ -1,0 +1,3003 @@
+* spice-ts generated CMOS inverter chain transient: 998 stages, 1000 nodes
+.options acct
+VDD vdd 0 DC 2.5
+VIN s0 0 PULSE(0 2.5 0.1n 0.1n 0.1n 5n 10n)
+.model nch nmos level=1 vto=0.5 kp=120u lambda=0.02
+.model pch pmos level=1 vto=-0.5 kp=60u lambda=0.02
+MP1 s1 s0 vdd vdd pch W=2u L=1u
+MN1 s1 s0 0 0 nch W=1u L=1u
+C1 s1 0 10f
+MP2 s2 s1 vdd vdd pch W=2u L=1u
+MN2 s2 s1 0 0 nch W=1u L=1u
+C2 s2 0 10f
+MP3 s3 s2 vdd vdd pch W=2u L=1u
+MN3 s3 s2 0 0 nch W=1u L=1u
+C3 s3 0 10f
+MP4 s4 s3 vdd vdd pch W=2u L=1u
+MN4 s4 s3 0 0 nch W=1u L=1u
+C4 s4 0 10f
+MP5 s5 s4 vdd vdd pch W=2u L=1u
+MN5 s5 s4 0 0 nch W=1u L=1u
+C5 s5 0 10f
+MP6 s6 s5 vdd vdd pch W=2u L=1u
+MN6 s6 s5 0 0 nch W=1u L=1u
+C6 s6 0 10f
+MP7 s7 s6 vdd vdd pch W=2u L=1u
+MN7 s7 s6 0 0 nch W=1u L=1u
+C7 s7 0 10f
+MP8 s8 s7 vdd vdd pch W=2u L=1u
+MN8 s8 s7 0 0 nch W=1u L=1u
+C8 s8 0 10f
+MP9 s9 s8 vdd vdd pch W=2u L=1u
+MN9 s9 s8 0 0 nch W=1u L=1u
+C9 s9 0 10f
+MP10 s10 s9 vdd vdd pch W=2u L=1u
+MN10 s10 s9 0 0 nch W=1u L=1u
+C10 s10 0 10f
+MP11 s11 s10 vdd vdd pch W=2u L=1u
+MN11 s11 s10 0 0 nch W=1u L=1u
+C11 s11 0 10f
+MP12 s12 s11 vdd vdd pch W=2u L=1u
+MN12 s12 s11 0 0 nch W=1u L=1u
+C12 s12 0 10f
+MP13 s13 s12 vdd vdd pch W=2u L=1u
+MN13 s13 s12 0 0 nch W=1u L=1u
+C13 s13 0 10f
+MP14 s14 s13 vdd vdd pch W=2u L=1u
+MN14 s14 s13 0 0 nch W=1u L=1u
+C14 s14 0 10f
+MP15 s15 s14 vdd vdd pch W=2u L=1u
+MN15 s15 s14 0 0 nch W=1u L=1u
+C15 s15 0 10f
+MP16 s16 s15 vdd vdd pch W=2u L=1u
+MN16 s16 s15 0 0 nch W=1u L=1u
+C16 s16 0 10f
+MP17 s17 s16 vdd vdd pch W=2u L=1u
+MN17 s17 s16 0 0 nch W=1u L=1u
+C17 s17 0 10f
+MP18 s18 s17 vdd vdd pch W=2u L=1u
+MN18 s18 s17 0 0 nch W=1u L=1u
+C18 s18 0 10f
+MP19 s19 s18 vdd vdd pch W=2u L=1u
+MN19 s19 s18 0 0 nch W=1u L=1u
+C19 s19 0 10f
+MP20 s20 s19 vdd vdd pch W=2u L=1u
+MN20 s20 s19 0 0 nch W=1u L=1u
+C20 s20 0 10f
+MP21 s21 s20 vdd vdd pch W=2u L=1u
+MN21 s21 s20 0 0 nch W=1u L=1u
+C21 s21 0 10f
+MP22 s22 s21 vdd vdd pch W=2u L=1u
+MN22 s22 s21 0 0 nch W=1u L=1u
+C22 s22 0 10f
+MP23 s23 s22 vdd vdd pch W=2u L=1u
+MN23 s23 s22 0 0 nch W=1u L=1u
+C23 s23 0 10f
+MP24 s24 s23 vdd vdd pch W=2u L=1u
+MN24 s24 s23 0 0 nch W=1u L=1u
+C24 s24 0 10f
+MP25 s25 s24 vdd vdd pch W=2u L=1u
+MN25 s25 s24 0 0 nch W=1u L=1u
+C25 s25 0 10f
+MP26 s26 s25 vdd vdd pch W=2u L=1u
+MN26 s26 s25 0 0 nch W=1u L=1u
+C26 s26 0 10f
+MP27 s27 s26 vdd vdd pch W=2u L=1u
+MN27 s27 s26 0 0 nch W=1u L=1u
+C27 s27 0 10f
+MP28 s28 s27 vdd vdd pch W=2u L=1u
+MN28 s28 s27 0 0 nch W=1u L=1u
+C28 s28 0 10f
+MP29 s29 s28 vdd vdd pch W=2u L=1u
+MN29 s29 s28 0 0 nch W=1u L=1u
+C29 s29 0 10f
+MP30 s30 s29 vdd vdd pch W=2u L=1u
+MN30 s30 s29 0 0 nch W=1u L=1u
+C30 s30 0 10f
+MP31 s31 s30 vdd vdd pch W=2u L=1u
+MN31 s31 s30 0 0 nch W=1u L=1u
+C31 s31 0 10f
+MP32 s32 s31 vdd vdd pch W=2u L=1u
+MN32 s32 s31 0 0 nch W=1u L=1u
+C32 s32 0 10f
+MP33 s33 s32 vdd vdd pch W=2u L=1u
+MN33 s33 s32 0 0 nch W=1u L=1u
+C33 s33 0 10f
+MP34 s34 s33 vdd vdd pch W=2u L=1u
+MN34 s34 s33 0 0 nch W=1u L=1u
+C34 s34 0 10f
+MP35 s35 s34 vdd vdd pch W=2u L=1u
+MN35 s35 s34 0 0 nch W=1u L=1u
+C35 s35 0 10f
+MP36 s36 s35 vdd vdd pch W=2u L=1u
+MN36 s36 s35 0 0 nch W=1u L=1u
+C36 s36 0 10f
+MP37 s37 s36 vdd vdd pch W=2u L=1u
+MN37 s37 s36 0 0 nch W=1u L=1u
+C37 s37 0 10f
+MP38 s38 s37 vdd vdd pch W=2u L=1u
+MN38 s38 s37 0 0 nch W=1u L=1u
+C38 s38 0 10f
+MP39 s39 s38 vdd vdd pch W=2u L=1u
+MN39 s39 s38 0 0 nch W=1u L=1u
+C39 s39 0 10f
+MP40 s40 s39 vdd vdd pch W=2u L=1u
+MN40 s40 s39 0 0 nch W=1u L=1u
+C40 s40 0 10f
+MP41 s41 s40 vdd vdd pch W=2u L=1u
+MN41 s41 s40 0 0 nch W=1u L=1u
+C41 s41 0 10f
+MP42 s42 s41 vdd vdd pch W=2u L=1u
+MN42 s42 s41 0 0 nch W=1u L=1u
+C42 s42 0 10f
+MP43 s43 s42 vdd vdd pch W=2u L=1u
+MN43 s43 s42 0 0 nch W=1u L=1u
+C43 s43 0 10f
+MP44 s44 s43 vdd vdd pch W=2u L=1u
+MN44 s44 s43 0 0 nch W=1u L=1u
+C44 s44 0 10f
+MP45 s45 s44 vdd vdd pch W=2u L=1u
+MN45 s45 s44 0 0 nch W=1u L=1u
+C45 s45 0 10f
+MP46 s46 s45 vdd vdd pch W=2u L=1u
+MN46 s46 s45 0 0 nch W=1u L=1u
+C46 s46 0 10f
+MP47 s47 s46 vdd vdd pch W=2u L=1u
+MN47 s47 s46 0 0 nch W=1u L=1u
+C47 s47 0 10f
+MP48 s48 s47 vdd vdd pch W=2u L=1u
+MN48 s48 s47 0 0 nch W=1u L=1u
+C48 s48 0 10f
+MP49 s49 s48 vdd vdd pch W=2u L=1u
+MN49 s49 s48 0 0 nch W=1u L=1u
+C49 s49 0 10f
+MP50 s50 s49 vdd vdd pch W=2u L=1u
+MN50 s50 s49 0 0 nch W=1u L=1u
+C50 s50 0 10f
+MP51 s51 s50 vdd vdd pch W=2u L=1u
+MN51 s51 s50 0 0 nch W=1u L=1u
+C51 s51 0 10f
+MP52 s52 s51 vdd vdd pch W=2u L=1u
+MN52 s52 s51 0 0 nch W=1u L=1u
+C52 s52 0 10f
+MP53 s53 s52 vdd vdd pch W=2u L=1u
+MN53 s53 s52 0 0 nch W=1u L=1u
+C53 s53 0 10f
+MP54 s54 s53 vdd vdd pch W=2u L=1u
+MN54 s54 s53 0 0 nch W=1u L=1u
+C54 s54 0 10f
+MP55 s55 s54 vdd vdd pch W=2u L=1u
+MN55 s55 s54 0 0 nch W=1u L=1u
+C55 s55 0 10f
+MP56 s56 s55 vdd vdd pch W=2u L=1u
+MN56 s56 s55 0 0 nch W=1u L=1u
+C56 s56 0 10f
+MP57 s57 s56 vdd vdd pch W=2u L=1u
+MN57 s57 s56 0 0 nch W=1u L=1u
+C57 s57 0 10f
+MP58 s58 s57 vdd vdd pch W=2u L=1u
+MN58 s58 s57 0 0 nch W=1u L=1u
+C58 s58 0 10f
+MP59 s59 s58 vdd vdd pch W=2u L=1u
+MN59 s59 s58 0 0 nch W=1u L=1u
+C59 s59 0 10f
+MP60 s60 s59 vdd vdd pch W=2u L=1u
+MN60 s60 s59 0 0 nch W=1u L=1u
+C60 s60 0 10f
+MP61 s61 s60 vdd vdd pch W=2u L=1u
+MN61 s61 s60 0 0 nch W=1u L=1u
+C61 s61 0 10f
+MP62 s62 s61 vdd vdd pch W=2u L=1u
+MN62 s62 s61 0 0 nch W=1u L=1u
+C62 s62 0 10f
+MP63 s63 s62 vdd vdd pch W=2u L=1u
+MN63 s63 s62 0 0 nch W=1u L=1u
+C63 s63 0 10f
+MP64 s64 s63 vdd vdd pch W=2u L=1u
+MN64 s64 s63 0 0 nch W=1u L=1u
+C64 s64 0 10f
+MP65 s65 s64 vdd vdd pch W=2u L=1u
+MN65 s65 s64 0 0 nch W=1u L=1u
+C65 s65 0 10f
+MP66 s66 s65 vdd vdd pch W=2u L=1u
+MN66 s66 s65 0 0 nch W=1u L=1u
+C66 s66 0 10f
+MP67 s67 s66 vdd vdd pch W=2u L=1u
+MN67 s67 s66 0 0 nch W=1u L=1u
+C67 s67 0 10f
+MP68 s68 s67 vdd vdd pch W=2u L=1u
+MN68 s68 s67 0 0 nch W=1u L=1u
+C68 s68 0 10f
+MP69 s69 s68 vdd vdd pch W=2u L=1u
+MN69 s69 s68 0 0 nch W=1u L=1u
+C69 s69 0 10f
+MP70 s70 s69 vdd vdd pch W=2u L=1u
+MN70 s70 s69 0 0 nch W=1u L=1u
+C70 s70 0 10f
+MP71 s71 s70 vdd vdd pch W=2u L=1u
+MN71 s71 s70 0 0 nch W=1u L=1u
+C71 s71 0 10f
+MP72 s72 s71 vdd vdd pch W=2u L=1u
+MN72 s72 s71 0 0 nch W=1u L=1u
+C72 s72 0 10f
+MP73 s73 s72 vdd vdd pch W=2u L=1u
+MN73 s73 s72 0 0 nch W=1u L=1u
+C73 s73 0 10f
+MP74 s74 s73 vdd vdd pch W=2u L=1u
+MN74 s74 s73 0 0 nch W=1u L=1u
+C74 s74 0 10f
+MP75 s75 s74 vdd vdd pch W=2u L=1u
+MN75 s75 s74 0 0 nch W=1u L=1u
+C75 s75 0 10f
+MP76 s76 s75 vdd vdd pch W=2u L=1u
+MN76 s76 s75 0 0 nch W=1u L=1u
+C76 s76 0 10f
+MP77 s77 s76 vdd vdd pch W=2u L=1u
+MN77 s77 s76 0 0 nch W=1u L=1u
+C77 s77 0 10f
+MP78 s78 s77 vdd vdd pch W=2u L=1u
+MN78 s78 s77 0 0 nch W=1u L=1u
+C78 s78 0 10f
+MP79 s79 s78 vdd vdd pch W=2u L=1u
+MN79 s79 s78 0 0 nch W=1u L=1u
+C79 s79 0 10f
+MP80 s80 s79 vdd vdd pch W=2u L=1u
+MN80 s80 s79 0 0 nch W=1u L=1u
+C80 s80 0 10f
+MP81 s81 s80 vdd vdd pch W=2u L=1u
+MN81 s81 s80 0 0 nch W=1u L=1u
+C81 s81 0 10f
+MP82 s82 s81 vdd vdd pch W=2u L=1u
+MN82 s82 s81 0 0 nch W=1u L=1u
+C82 s82 0 10f
+MP83 s83 s82 vdd vdd pch W=2u L=1u
+MN83 s83 s82 0 0 nch W=1u L=1u
+C83 s83 0 10f
+MP84 s84 s83 vdd vdd pch W=2u L=1u
+MN84 s84 s83 0 0 nch W=1u L=1u
+C84 s84 0 10f
+MP85 s85 s84 vdd vdd pch W=2u L=1u
+MN85 s85 s84 0 0 nch W=1u L=1u
+C85 s85 0 10f
+MP86 s86 s85 vdd vdd pch W=2u L=1u
+MN86 s86 s85 0 0 nch W=1u L=1u
+C86 s86 0 10f
+MP87 s87 s86 vdd vdd pch W=2u L=1u
+MN87 s87 s86 0 0 nch W=1u L=1u
+C87 s87 0 10f
+MP88 s88 s87 vdd vdd pch W=2u L=1u
+MN88 s88 s87 0 0 nch W=1u L=1u
+C88 s88 0 10f
+MP89 s89 s88 vdd vdd pch W=2u L=1u
+MN89 s89 s88 0 0 nch W=1u L=1u
+C89 s89 0 10f
+MP90 s90 s89 vdd vdd pch W=2u L=1u
+MN90 s90 s89 0 0 nch W=1u L=1u
+C90 s90 0 10f
+MP91 s91 s90 vdd vdd pch W=2u L=1u
+MN91 s91 s90 0 0 nch W=1u L=1u
+C91 s91 0 10f
+MP92 s92 s91 vdd vdd pch W=2u L=1u
+MN92 s92 s91 0 0 nch W=1u L=1u
+C92 s92 0 10f
+MP93 s93 s92 vdd vdd pch W=2u L=1u
+MN93 s93 s92 0 0 nch W=1u L=1u
+C93 s93 0 10f
+MP94 s94 s93 vdd vdd pch W=2u L=1u
+MN94 s94 s93 0 0 nch W=1u L=1u
+C94 s94 0 10f
+MP95 s95 s94 vdd vdd pch W=2u L=1u
+MN95 s95 s94 0 0 nch W=1u L=1u
+C95 s95 0 10f
+MP96 s96 s95 vdd vdd pch W=2u L=1u
+MN96 s96 s95 0 0 nch W=1u L=1u
+C96 s96 0 10f
+MP97 s97 s96 vdd vdd pch W=2u L=1u
+MN97 s97 s96 0 0 nch W=1u L=1u
+C97 s97 0 10f
+MP98 s98 s97 vdd vdd pch W=2u L=1u
+MN98 s98 s97 0 0 nch W=1u L=1u
+C98 s98 0 10f
+MP99 s99 s98 vdd vdd pch W=2u L=1u
+MN99 s99 s98 0 0 nch W=1u L=1u
+C99 s99 0 10f
+MP100 s100 s99 vdd vdd pch W=2u L=1u
+MN100 s100 s99 0 0 nch W=1u L=1u
+C100 s100 0 10f
+MP101 s101 s100 vdd vdd pch W=2u L=1u
+MN101 s101 s100 0 0 nch W=1u L=1u
+C101 s101 0 10f
+MP102 s102 s101 vdd vdd pch W=2u L=1u
+MN102 s102 s101 0 0 nch W=1u L=1u
+C102 s102 0 10f
+MP103 s103 s102 vdd vdd pch W=2u L=1u
+MN103 s103 s102 0 0 nch W=1u L=1u
+C103 s103 0 10f
+MP104 s104 s103 vdd vdd pch W=2u L=1u
+MN104 s104 s103 0 0 nch W=1u L=1u
+C104 s104 0 10f
+MP105 s105 s104 vdd vdd pch W=2u L=1u
+MN105 s105 s104 0 0 nch W=1u L=1u
+C105 s105 0 10f
+MP106 s106 s105 vdd vdd pch W=2u L=1u
+MN106 s106 s105 0 0 nch W=1u L=1u
+C106 s106 0 10f
+MP107 s107 s106 vdd vdd pch W=2u L=1u
+MN107 s107 s106 0 0 nch W=1u L=1u
+C107 s107 0 10f
+MP108 s108 s107 vdd vdd pch W=2u L=1u
+MN108 s108 s107 0 0 nch W=1u L=1u
+C108 s108 0 10f
+MP109 s109 s108 vdd vdd pch W=2u L=1u
+MN109 s109 s108 0 0 nch W=1u L=1u
+C109 s109 0 10f
+MP110 s110 s109 vdd vdd pch W=2u L=1u
+MN110 s110 s109 0 0 nch W=1u L=1u
+C110 s110 0 10f
+MP111 s111 s110 vdd vdd pch W=2u L=1u
+MN111 s111 s110 0 0 nch W=1u L=1u
+C111 s111 0 10f
+MP112 s112 s111 vdd vdd pch W=2u L=1u
+MN112 s112 s111 0 0 nch W=1u L=1u
+C112 s112 0 10f
+MP113 s113 s112 vdd vdd pch W=2u L=1u
+MN113 s113 s112 0 0 nch W=1u L=1u
+C113 s113 0 10f
+MP114 s114 s113 vdd vdd pch W=2u L=1u
+MN114 s114 s113 0 0 nch W=1u L=1u
+C114 s114 0 10f
+MP115 s115 s114 vdd vdd pch W=2u L=1u
+MN115 s115 s114 0 0 nch W=1u L=1u
+C115 s115 0 10f
+MP116 s116 s115 vdd vdd pch W=2u L=1u
+MN116 s116 s115 0 0 nch W=1u L=1u
+C116 s116 0 10f
+MP117 s117 s116 vdd vdd pch W=2u L=1u
+MN117 s117 s116 0 0 nch W=1u L=1u
+C117 s117 0 10f
+MP118 s118 s117 vdd vdd pch W=2u L=1u
+MN118 s118 s117 0 0 nch W=1u L=1u
+C118 s118 0 10f
+MP119 s119 s118 vdd vdd pch W=2u L=1u
+MN119 s119 s118 0 0 nch W=1u L=1u
+C119 s119 0 10f
+MP120 s120 s119 vdd vdd pch W=2u L=1u
+MN120 s120 s119 0 0 nch W=1u L=1u
+C120 s120 0 10f
+MP121 s121 s120 vdd vdd pch W=2u L=1u
+MN121 s121 s120 0 0 nch W=1u L=1u
+C121 s121 0 10f
+MP122 s122 s121 vdd vdd pch W=2u L=1u
+MN122 s122 s121 0 0 nch W=1u L=1u
+C122 s122 0 10f
+MP123 s123 s122 vdd vdd pch W=2u L=1u
+MN123 s123 s122 0 0 nch W=1u L=1u
+C123 s123 0 10f
+MP124 s124 s123 vdd vdd pch W=2u L=1u
+MN124 s124 s123 0 0 nch W=1u L=1u
+C124 s124 0 10f
+MP125 s125 s124 vdd vdd pch W=2u L=1u
+MN125 s125 s124 0 0 nch W=1u L=1u
+C125 s125 0 10f
+MP126 s126 s125 vdd vdd pch W=2u L=1u
+MN126 s126 s125 0 0 nch W=1u L=1u
+C126 s126 0 10f
+MP127 s127 s126 vdd vdd pch W=2u L=1u
+MN127 s127 s126 0 0 nch W=1u L=1u
+C127 s127 0 10f
+MP128 s128 s127 vdd vdd pch W=2u L=1u
+MN128 s128 s127 0 0 nch W=1u L=1u
+C128 s128 0 10f
+MP129 s129 s128 vdd vdd pch W=2u L=1u
+MN129 s129 s128 0 0 nch W=1u L=1u
+C129 s129 0 10f
+MP130 s130 s129 vdd vdd pch W=2u L=1u
+MN130 s130 s129 0 0 nch W=1u L=1u
+C130 s130 0 10f
+MP131 s131 s130 vdd vdd pch W=2u L=1u
+MN131 s131 s130 0 0 nch W=1u L=1u
+C131 s131 0 10f
+MP132 s132 s131 vdd vdd pch W=2u L=1u
+MN132 s132 s131 0 0 nch W=1u L=1u
+C132 s132 0 10f
+MP133 s133 s132 vdd vdd pch W=2u L=1u
+MN133 s133 s132 0 0 nch W=1u L=1u
+C133 s133 0 10f
+MP134 s134 s133 vdd vdd pch W=2u L=1u
+MN134 s134 s133 0 0 nch W=1u L=1u
+C134 s134 0 10f
+MP135 s135 s134 vdd vdd pch W=2u L=1u
+MN135 s135 s134 0 0 nch W=1u L=1u
+C135 s135 0 10f
+MP136 s136 s135 vdd vdd pch W=2u L=1u
+MN136 s136 s135 0 0 nch W=1u L=1u
+C136 s136 0 10f
+MP137 s137 s136 vdd vdd pch W=2u L=1u
+MN137 s137 s136 0 0 nch W=1u L=1u
+C137 s137 0 10f
+MP138 s138 s137 vdd vdd pch W=2u L=1u
+MN138 s138 s137 0 0 nch W=1u L=1u
+C138 s138 0 10f
+MP139 s139 s138 vdd vdd pch W=2u L=1u
+MN139 s139 s138 0 0 nch W=1u L=1u
+C139 s139 0 10f
+MP140 s140 s139 vdd vdd pch W=2u L=1u
+MN140 s140 s139 0 0 nch W=1u L=1u
+C140 s140 0 10f
+MP141 s141 s140 vdd vdd pch W=2u L=1u
+MN141 s141 s140 0 0 nch W=1u L=1u
+C141 s141 0 10f
+MP142 s142 s141 vdd vdd pch W=2u L=1u
+MN142 s142 s141 0 0 nch W=1u L=1u
+C142 s142 0 10f
+MP143 s143 s142 vdd vdd pch W=2u L=1u
+MN143 s143 s142 0 0 nch W=1u L=1u
+C143 s143 0 10f
+MP144 s144 s143 vdd vdd pch W=2u L=1u
+MN144 s144 s143 0 0 nch W=1u L=1u
+C144 s144 0 10f
+MP145 s145 s144 vdd vdd pch W=2u L=1u
+MN145 s145 s144 0 0 nch W=1u L=1u
+C145 s145 0 10f
+MP146 s146 s145 vdd vdd pch W=2u L=1u
+MN146 s146 s145 0 0 nch W=1u L=1u
+C146 s146 0 10f
+MP147 s147 s146 vdd vdd pch W=2u L=1u
+MN147 s147 s146 0 0 nch W=1u L=1u
+C147 s147 0 10f
+MP148 s148 s147 vdd vdd pch W=2u L=1u
+MN148 s148 s147 0 0 nch W=1u L=1u
+C148 s148 0 10f
+MP149 s149 s148 vdd vdd pch W=2u L=1u
+MN149 s149 s148 0 0 nch W=1u L=1u
+C149 s149 0 10f
+MP150 s150 s149 vdd vdd pch W=2u L=1u
+MN150 s150 s149 0 0 nch W=1u L=1u
+C150 s150 0 10f
+MP151 s151 s150 vdd vdd pch W=2u L=1u
+MN151 s151 s150 0 0 nch W=1u L=1u
+C151 s151 0 10f
+MP152 s152 s151 vdd vdd pch W=2u L=1u
+MN152 s152 s151 0 0 nch W=1u L=1u
+C152 s152 0 10f
+MP153 s153 s152 vdd vdd pch W=2u L=1u
+MN153 s153 s152 0 0 nch W=1u L=1u
+C153 s153 0 10f
+MP154 s154 s153 vdd vdd pch W=2u L=1u
+MN154 s154 s153 0 0 nch W=1u L=1u
+C154 s154 0 10f
+MP155 s155 s154 vdd vdd pch W=2u L=1u
+MN155 s155 s154 0 0 nch W=1u L=1u
+C155 s155 0 10f
+MP156 s156 s155 vdd vdd pch W=2u L=1u
+MN156 s156 s155 0 0 nch W=1u L=1u
+C156 s156 0 10f
+MP157 s157 s156 vdd vdd pch W=2u L=1u
+MN157 s157 s156 0 0 nch W=1u L=1u
+C157 s157 0 10f
+MP158 s158 s157 vdd vdd pch W=2u L=1u
+MN158 s158 s157 0 0 nch W=1u L=1u
+C158 s158 0 10f
+MP159 s159 s158 vdd vdd pch W=2u L=1u
+MN159 s159 s158 0 0 nch W=1u L=1u
+C159 s159 0 10f
+MP160 s160 s159 vdd vdd pch W=2u L=1u
+MN160 s160 s159 0 0 nch W=1u L=1u
+C160 s160 0 10f
+MP161 s161 s160 vdd vdd pch W=2u L=1u
+MN161 s161 s160 0 0 nch W=1u L=1u
+C161 s161 0 10f
+MP162 s162 s161 vdd vdd pch W=2u L=1u
+MN162 s162 s161 0 0 nch W=1u L=1u
+C162 s162 0 10f
+MP163 s163 s162 vdd vdd pch W=2u L=1u
+MN163 s163 s162 0 0 nch W=1u L=1u
+C163 s163 0 10f
+MP164 s164 s163 vdd vdd pch W=2u L=1u
+MN164 s164 s163 0 0 nch W=1u L=1u
+C164 s164 0 10f
+MP165 s165 s164 vdd vdd pch W=2u L=1u
+MN165 s165 s164 0 0 nch W=1u L=1u
+C165 s165 0 10f
+MP166 s166 s165 vdd vdd pch W=2u L=1u
+MN166 s166 s165 0 0 nch W=1u L=1u
+C166 s166 0 10f
+MP167 s167 s166 vdd vdd pch W=2u L=1u
+MN167 s167 s166 0 0 nch W=1u L=1u
+C167 s167 0 10f
+MP168 s168 s167 vdd vdd pch W=2u L=1u
+MN168 s168 s167 0 0 nch W=1u L=1u
+C168 s168 0 10f
+MP169 s169 s168 vdd vdd pch W=2u L=1u
+MN169 s169 s168 0 0 nch W=1u L=1u
+C169 s169 0 10f
+MP170 s170 s169 vdd vdd pch W=2u L=1u
+MN170 s170 s169 0 0 nch W=1u L=1u
+C170 s170 0 10f
+MP171 s171 s170 vdd vdd pch W=2u L=1u
+MN171 s171 s170 0 0 nch W=1u L=1u
+C171 s171 0 10f
+MP172 s172 s171 vdd vdd pch W=2u L=1u
+MN172 s172 s171 0 0 nch W=1u L=1u
+C172 s172 0 10f
+MP173 s173 s172 vdd vdd pch W=2u L=1u
+MN173 s173 s172 0 0 nch W=1u L=1u
+C173 s173 0 10f
+MP174 s174 s173 vdd vdd pch W=2u L=1u
+MN174 s174 s173 0 0 nch W=1u L=1u
+C174 s174 0 10f
+MP175 s175 s174 vdd vdd pch W=2u L=1u
+MN175 s175 s174 0 0 nch W=1u L=1u
+C175 s175 0 10f
+MP176 s176 s175 vdd vdd pch W=2u L=1u
+MN176 s176 s175 0 0 nch W=1u L=1u
+C176 s176 0 10f
+MP177 s177 s176 vdd vdd pch W=2u L=1u
+MN177 s177 s176 0 0 nch W=1u L=1u
+C177 s177 0 10f
+MP178 s178 s177 vdd vdd pch W=2u L=1u
+MN178 s178 s177 0 0 nch W=1u L=1u
+C178 s178 0 10f
+MP179 s179 s178 vdd vdd pch W=2u L=1u
+MN179 s179 s178 0 0 nch W=1u L=1u
+C179 s179 0 10f
+MP180 s180 s179 vdd vdd pch W=2u L=1u
+MN180 s180 s179 0 0 nch W=1u L=1u
+C180 s180 0 10f
+MP181 s181 s180 vdd vdd pch W=2u L=1u
+MN181 s181 s180 0 0 nch W=1u L=1u
+C181 s181 0 10f
+MP182 s182 s181 vdd vdd pch W=2u L=1u
+MN182 s182 s181 0 0 nch W=1u L=1u
+C182 s182 0 10f
+MP183 s183 s182 vdd vdd pch W=2u L=1u
+MN183 s183 s182 0 0 nch W=1u L=1u
+C183 s183 0 10f
+MP184 s184 s183 vdd vdd pch W=2u L=1u
+MN184 s184 s183 0 0 nch W=1u L=1u
+C184 s184 0 10f
+MP185 s185 s184 vdd vdd pch W=2u L=1u
+MN185 s185 s184 0 0 nch W=1u L=1u
+C185 s185 0 10f
+MP186 s186 s185 vdd vdd pch W=2u L=1u
+MN186 s186 s185 0 0 nch W=1u L=1u
+C186 s186 0 10f
+MP187 s187 s186 vdd vdd pch W=2u L=1u
+MN187 s187 s186 0 0 nch W=1u L=1u
+C187 s187 0 10f
+MP188 s188 s187 vdd vdd pch W=2u L=1u
+MN188 s188 s187 0 0 nch W=1u L=1u
+C188 s188 0 10f
+MP189 s189 s188 vdd vdd pch W=2u L=1u
+MN189 s189 s188 0 0 nch W=1u L=1u
+C189 s189 0 10f
+MP190 s190 s189 vdd vdd pch W=2u L=1u
+MN190 s190 s189 0 0 nch W=1u L=1u
+C190 s190 0 10f
+MP191 s191 s190 vdd vdd pch W=2u L=1u
+MN191 s191 s190 0 0 nch W=1u L=1u
+C191 s191 0 10f
+MP192 s192 s191 vdd vdd pch W=2u L=1u
+MN192 s192 s191 0 0 nch W=1u L=1u
+C192 s192 0 10f
+MP193 s193 s192 vdd vdd pch W=2u L=1u
+MN193 s193 s192 0 0 nch W=1u L=1u
+C193 s193 0 10f
+MP194 s194 s193 vdd vdd pch W=2u L=1u
+MN194 s194 s193 0 0 nch W=1u L=1u
+C194 s194 0 10f
+MP195 s195 s194 vdd vdd pch W=2u L=1u
+MN195 s195 s194 0 0 nch W=1u L=1u
+C195 s195 0 10f
+MP196 s196 s195 vdd vdd pch W=2u L=1u
+MN196 s196 s195 0 0 nch W=1u L=1u
+C196 s196 0 10f
+MP197 s197 s196 vdd vdd pch W=2u L=1u
+MN197 s197 s196 0 0 nch W=1u L=1u
+C197 s197 0 10f
+MP198 s198 s197 vdd vdd pch W=2u L=1u
+MN198 s198 s197 0 0 nch W=1u L=1u
+C198 s198 0 10f
+MP199 s199 s198 vdd vdd pch W=2u L=1u
+MN199 s199 s198 0 0 nch W=1u L=1u
+C199 s199 0 10f
+MP200 s200 s199 vdd vdd pch W=2u L=1u
+MN200 s200 s199 0 0 nch W=1u L=1u
+C200 s200 0 10f
+MP201 s201 s200 vdd vdd pch W=2u L=1u
+MN201 s201 s200 0 0 nch W=1u L=1u
+C201 s201 0 10f
+MP202 s202 s201 vdd vdd pch W=2u L=1u
+MN202 s202 s201 0 0 nch W=1u L=1u
+C202 s202 0 10f
+MP203 s203 s202 vdd vdd pch W=2u L=1u
+MN203 s203 s202 0 0 nch W=1u L=1u
+C203 s203 0 10f
+MP204 s204 s203 vdd vdd pch W=2u L=1u
+MN204 s204 s203 0 0 nch W=1u L=1u
+C204 s204 0 10f
+MP205 s205 s204 vdd vdd pch W=2u L=1u
+MN205 s205 s204 0 0 nch W=1u L=1u
+C205 s205 0 10f
+MP206 s206 s205 vdd vdd pch W=2u L=1u
+MN206 s206 s205 0 0 nch W=1u L=1u
+C206 s206 0 10f
+MP207 s207 s206 vdd vdd pch W=2u L=1u
+MN207 s207 s206 0 0 nch W=1u L=1u
+C207 s207 0 10f
+MP208 s208 s207 vdd vdd pch W=2u L=1u
+MN208 s208 s207 0 0 nch W=1u L=1u
+C208 s208 0 10f
+MP209 s209 s208 vdd vdd pch W=2u L=1u
+MN209 s209 s208 0 0 nch W=1u L=1u
+C209 s209 0 10f
+MP210 s210 s209 vdd vdd pch W=2u L=1u
+MN210 s210 s209 0 0 nch W=1u L=1u
+C210 s210 0 10f
+MP211 s211 s210 vdd vdd pch W=2u L=1u
+MN211 s211 s210 0 0 nch W=1u L=1u
+C211 s211 0 10f
+MP212 s212 s211 vdd vdd pch W=2u L=1u
+MN212 s212 s211 0 0 nch W=1u L=1u
+C212 s212 0 10f
+MP213 s213 s212 vdd vdd pch W=2u L=1u
+MN213 s213 s212 0 0 nch W=1u L=1u
+C213 s213 0 10f
+MP214 s214 s213 vdd vdd pch W=2u L=1u
+MN214 s214 s213 0 0 nch W=1u L=1u
+C214 s214 0 10f
+MP215 s215 s214 vdd vdd pch W=2u L=1u
+MN215 s215 s214 0 0 nch W=1u L=1u
+C215 s215 0 10f
+MP216 s216 s215 vdd vdd pch W=2u L=1u
+MN216 s216 s215 0 0 nch W=1u L=1u
+C216 s216 0 10f
+MP217 s217 s216 vdd vdd pch W=2u L=1u
+MN217 s217 s216 0 0 nch W=1u L=1u
+C217 s217 0 10f
+MP218 s218 s217 vdd vdd pch W=2u L=1u
+MN218 s218 s217 0 0 nch W=1u L=1u
+C218 s218 0 10f
+MP219 s219 s218 vdd vdd pch W=2u L=1u
+MN219 s219 s218 0 0 nch W=1u L=1u
+C219 s219 0 10f
+MP220 s220 s219 vdd vdd pch W=2u L=1u
+MN220 s220 s219 0 0 nch W=1u L=1u
+C220 s220 0 10f
+MP221 s221 s220 vdd vdd pch W=2u L=1u
+MN221 s221 s220 0 0 nch W=1u L=1u
+C221 s221 0 10f
+MP222 s222 s221 vdd vdd pch W=2u L=1u
+MN222 s222 s221 0 0 nch W=1u L=1u
+C222 s222 0 10f
+MP223 s223 s222 vdd vdd pch W=2u L=1u
+MN223 s223 s222 0 0 nch W=1u L=1u
+C223 s223 0 10f
+MP224 s224 s223 vdd vdd pch W=2u L=1u
+MN224 s224 s223 0 0 nch W=1u L=1u
+C224 s224 0 10f
+MP225 s225 s224 vdd vdd pch W=2u L=1u
+MN225 s225 s224 0 0 nch W=1u L=1u
+C225 s225 0 10f
+MP226 s226 s225 vdd vdd pch W=2u L=1u
+MN226 s226 s225 0 0 nch W=1u L=1u
+C226 s226 0 10f
+MP227 s227 s226 vdd vdd pch W=2u L=1u
+MN227 s227 s226 0 0 nch W=1u L=1u
+C227 s227 0 10f
+MP228 s228 s227 vdd vdd pch W=2u L=1u
+MN228 s228 s227 0 0 nch W=1u L=1u
+C228 s228 0 10f
+MP229 s229 s228 vdd vdd pch W=2u L=1u
+MN229 s229 s228 0 0 nch W=1u L=1u
+C229 s229 0 10f
+MP230 s230 s229 vdd vdd pch W=2u L=1u
+MN230 s230 s229 0 0 nch W=1u L=1u
+C230 s230 0 10f
+MP231 s231 s230 vdd vdd pch W=2u L=1u
+MN231 s231 s230 0 0 nch W=1u L=1u
+C231 s231 0 10f
+MP232 s232 s231 vdd vdd pch W=2u L=1u
+MN232 s232 s231 0 0 nch W=1u L=1u
+C232 s232 0 10f
+MP233 s233 s232 vdd vdd pch W=2u L=1u
+MN233 s233 s232 0 0 nch W=1u L=1u
+C233 s233 0 10f
+MP234 s234 s233 vdd vdd pch W=2u L=1u
+MN234 s234 s233 0 0 nch W=1u L=1u
+C234 s234 0 10f
+MP235 s235 s234 vdd vdd pch W=2u L=1u
+MN235 s235 s234 0 0 nch W=1u L=1u
+C235 s235 0 10f
+MP236 s236 s235 vdd vdd pch W=2u L=1u
+MN236 s236 s235 0 0 nch W=1u L=1u
+C236 s236 0 10f
+MP237 s237 s236 vdd vdd pch W=2u L=1u
+MN237 s237 s236 0 0 nch W=1u L=1u
+C237 s237 0 10f
+MP238 s238 s237 vdd vdd pch W=2u L=1u
+MN238 s238 s237 0 0 nch W=1u L=1u
+C238 s238 0 10f
+MP239 s239 s238 vdd vdd pch W=2u L=1u
+MN239 s239 s238 0 0 nch W=1u L=1u
+C239 s239 0 10f
+MP240 s240 s239 vdd vdd pch W=2u L=1u
+MN240 s240 s239 0 0 nch W=1u L=1u
+C240 s240 0 10f
+MP241 s241 s240 vdd vdd pch W=2u L=1u
+MN241 s241 s240 0 0 nch W=1u L=1u
+C241 s241 0 10f
+MP242 s242 s241 vdd vdd pch W=2u L=1u
+MN242 s242 s241 0 0 nch W=1u L=1u
+C242 s242 0 10f
+MP243 s243 s242 vdd vdd pch W=2u L=1u
+MN243 s243 s242 0 0 nch W=1u L=1u
+C243 s243 0 10f
+MP244 s244 s243 vdd vdd pch W=2u L=1u
+MN244 s244 s243 0 0 nch W=1u L=1u
+C244 s244 0 10f
+MP245 s245 s244 vdd vdd pch W=2u L=1u
+MN245 s245 s244 0 0 nch W=1u L=1u
+C245 s245 0 10f
+MP246 s246 s245 vdd vdd pch W=2u L=1u
+MN246 s246 s245 0 0 nch W=1u L=1u
+C246 s246 0 10f
+MP247 s247 s246 vdd vdd pch W=2u L=1u
+MN247 s247 s246 0 0 nch W=1u L=1u
+C247 s247 0 10f
+MP248 s248 s247 vdd vdd pch W=2u L=1u
+MN248 s248 s247 0 0 nch W=1u L=1u
+C248 s248 0 10f
+MP249 s249 s248 vdd vdd pch W=2u L=1u
+MN249 s249 s248 0 0 nch W=1u L=1u
+C249 s249 0 10f
+MP250 s250 s249 vdd vdd pch W=2u L=1u
+MN250 s250 s249 0 0 nch W=1u L=1u
+C250 s250 0 10f
+MP251 s251 s250 vdd vdd pch W=2u L=1u
+MN251 s251 s250 0 0 nch W=1u L=1u
+C251 s251 0 10f
+MP252 s252 s251 vdd vdd pch W=2u L=1u
+MN252 s252 s251 0 0 nch W=1u L=1u
+C252 s252 0 10f
+MP253 s253 s252 vdd vdd pch W=2u L=1u
+MN253 s253 s252 0 0 nch W=1u L=1u
+C253 s253 0 10f
+MP254 s254 s253 vdd vdd pch W=2u L=1u
+MN254 s254 s253 0 0 nch W=1u L=1u
+C254 s254 0 10f
+MP255 s255 s254 vdd vdd pch W=2u L=1u
+MN255 s255 s254 0 0 nch W=1u L=1u
+C255 s255 0 10f
+MP256 s256 s255 vdd vdd pch W=2u L=1u
+MN256 s256 s255 0 0 nch W=1u L=1u
+C256 s256 0 10f
+MP257 s257 s256 vdd vdd pch W=2u L=1u
+MN257 s257 s256 0 0 nch W=1u L=1u
+C257 s257 0 10f
+MP258 s258 s257 vdd vdd pch W=2u L=1u
+MN258 s258 s257 0 0 nch W=1u L=1u
+C258 s258 0 10f
+MP259 s259 s258 vdd vdd pch W=2u L=1u
+MN259 s259 s258 0 0 nch W=1u L=1u
+C259 s259 0 10f
+MP260 s260 s259 vdd vdd pch W=2u L=1u
+MN260 s260 s259 0 0 nch W=1u L=1u
+C260 s260 0 10f
+MP261 s261 s260 vdd vdd pch W=2u L=1u
+MN261 s261 s260 0 0 nch W=1u L=1u
+C261 s261 0 10f
+MP262 s262 s261 vdd vdd pch W=2u L=1u
+MN262 s262 s261 0 0 nch W=1u L=1u
+C262 s262 0 10f
+MP263 s263 s262 vdd vdd pch W=2u L=1u
+MN263 s263 s262 0 0 nch W=1u L=1u
+C263 s263 0 10f
+MP264 s264 s263 vdd vdd pch W=2u L=1u
+MN264 s264 s263 0 0 nch W=1u L=1u
+C264 s264 0 10f
+MP265 s265 s264 vdd vdd pch W=2u L=1u
+MN265 s265 s264 0 0 nch W=1u L=1u
+C265 s265 0 10f
+MP266 s266 s265 vdd vdd pch W=2u L=1u
+MN266 s266 s265 0 0 nch W=1u L=1u
+C266 s266 0 10f
+MP267 s267 s266 vdd vdd pch W=2u L=1u
+MN267 s267 s266 0 0 nch W=1u L=1u
+C267 s267 0 10f
+MP268 s268 s267 vdd vdd pch W=2u L=1u
+MN268 s268 s267 0 0 nch W=1u L=1u
+C268 s268 0 10f
+MP269 s269 s268 vdd vdd pch W=2u L=1u
+MN269 s269 s268 0 0 nch W=1u L=1u
+C269 s269 0 10f
+MP270 s270 s269 vdd vdd pch W=2u L=1u
+MN270 s270 s269 0 0 nch W=1u L=1u
+C270 s270 0 10f
+MP271 s271 s270 vdd vdd pch W=2u L=1u
+MN271 s271 s270 0 0 nch W=1u L=1u
+C271 s271 0 10f
+MP272 s272 s271 vdd vdd pch W=2u L=1u
+MN272 s272 s271 0 0 nch W=1u L=1u
+C272 s272 0 10f
+MP273 s273 s272 vdd vdd pch W=2u L=1u
+MN273 s273 s272 0 0 nch W=1u L=1u
+C273 s273 0 10f
+MP274 s274 s273 vdd vdd pch W=2u L=1u
+MN274 s274 s273 0 0 nch W=1u L=1u
+C274 s274 0 10f
+MP275 s275 s274 vdd vdd pch W=2u L=1u
+MN275 s275 s274 0 0 nch W=1u L=1u
+C275 s275 0 10f
+MP276 s276 s275 vdd vdd pch W=2u L=1u
+MN276 s276 s275 0 0 nch W=1u L=1u
+C276 s276 0 10f
+MP277 s277 s276 vdd vdd pch W=2u L=1u
+MN277 s277 s276 0 0 nch W=1u L=1u
+C277 s277 0 10f
+MP278 s278 s277 vdd vdd pch W=2u L=1u
+MN278 s278 s277 0 0 nch W=1u L=1u
+C278 s278 0 10f
+MP279 s279 s278 vdd vdd pch W=2u L=1u
+MN279 s279 s278 0 0 nch W=1u L=1u
+C279 s279 0 10f
+MP280 s280 s279 vdd vdd pch W=2u L=1u
+MN280 s280 s279 0 0 nch W=1u L=1u
+C280 s280 0 10f
+MP281 s281 s280 vdd vdd pch W=2u L=1u
+MN281 s281 s280 0 0 nch W=1u L=1u
+C281 s281 0 10f
+MP282 s282 s281 vdd vdd pch W=2u L=1u
+MN282 s282 s281 0 0 nch W=1u L=1u
+C282 s282 0 10f
+MP283 s283 s282 vdd vdd pch W=2u L=1u
+MN283 s283 s282 0 0 nch W=1u L=1u
+C283 s283 0 10f
+MP284 s284 s283 vdd vdd pch W=2u L=1u
+MN284 s284 s283 0 0 nch W=1u L=1u
+C284 s284 0 10f
+MP285 s285 s284 vdd vdd pch W=2u L=1u
+MN285 s285 s284 0 0 nch W=1u L=1u
+C285 s285 0 10f
+MP286 s286 s285 vdd vdd pch W=2u L=1u
+MN286 s286 s285 0 0 nch W=1u L=1u
+C286 s286 0 10f
+MP287 s287 s286 vdd vdd pch W=2u L=1u
+MN287 s287 s286 0 0 nch W=1u L=1u
+C287 s287 0 10f
+MP288 s288 s287 vdd vdd pch W=2u L=1u
+MN288 s288 s287 0 0 nch W=1u L=1u
+C288 s288 0 10f
+MP289 s289 s288 vdd vdd pch W=2u L=1u
+MN289 s289 s288 0 0 nch W=1u L=1u
+C289 s289 0 10f
+MP290 s290 s289 vdd vdd pch W=2u L=1u
+MN290 s290 s289 0 0 nch W=1u L=1u
+C290 s290 0 10f
+MP291 s291 s290 vdd vdd pch W=2u L=1u
+MN291 s291 s290 0 0 nch W=1u L=1u
+C291 s291 0 10f
+MP292 s292 s291 vdd vdd pch W=2u L=1u
+MN292 s292 s291 0 0 nch W=1u L=1u
+C292 s292 0 10f
+MP293 s293 s292 vdd vdd pch W=2u L=1u
+MN293 s293 s292 0 0 nch W=1u L=1u
+C293 s293 0 10f
+MP294 s294 s293 vdd vdd pch W=2u L=1u
+MN294 s294 s293 0 0 nch W=1u L=1u
+C294 s294 0 10f
+MP295 s295 s294 vdd vdd pch W=2u L=1u
+MN295 s295 s294 0 0 nch W=1u L=1u
+C295 s295 0 10f
+MP296 s296 s295 vdd vdd pch W=2u L=1u
+MN296 s296 s295 0 0 nch W=1u L=1u
+C296 s296 0 10f
+MP297 s297 s296 vdd vdd pch W=2u L=1u
+MN297 s297 s296 0 0 nch W=1u L=1u
+C297 s297 0 10f
+MP298 s298 s297 vdd vdd pch W=2u L=1u
+MN298 s298 s297 0 0 nch W=1u L=1u
+C298 s298 0 10f
+MP299 s299 s298 vdd vdd pch W=2u L=1u
+MN299 s299 s298 0 0 nch W=1u L=1u
+C299 s299 0 10f
+MP300 s300 s299 vdd vdd pch W=2u L=1u
+MN300 s300 s299 0 0 nch W=1u L=1u
+C300 s300 0 10f
+MP301 s301 s300 vdd vdd pch W=2u L=1u
+MN301 s301 s300 0 0 nch W=1u L=1u
+C301 s301 0 10f
+MP302 s302 s301 vdd vdd pch W=2u L=1u
+MN302 s302 s301 0 0 nch W=1u L=1u
+C302 s302 0 10f
+MP303 s303 s302 vdd vdd pch W=2u L=1u
+MN303 s303 s302 0 0 nch W=1u L=1u
+C303 s303 0 10f
+MP304 s304 s303 vdd vdd pch W=2u L=1u
+MN304 s304 s303 0 0 nch W=1u L=1u
+C304 s304 0 10f
+MP305 s305 s304 vdd vdd pch W=2u L=1u
+MN305 s305 s304 0 0 nch W=1u L=1u
+C305 s305 0 10f
+MP306 s306 s305 vdd vdd pch W=2u L=1u
+MN306 s306 s305 0 0 nch W=1u L=1u
+C306 s306 0 10f
+MP307 s307 s306 vdd vdd pch W=2u L=1u
+MN307 s307 s306 0 0 nch W=1u L=1u
+C307 s307 0 10f
+MP308 s308 s307 vdd vdd pch W=2u L=1u
+MN308 s308 s307 0 0 nch W=1u L=1u
+C308 s308 0 10f
+MP309 s309 s308 vdd vdd pch W=2u L=1u
+MN309 s309 s308 0 0 nch W=1u L=1u
+C309 s309 0 10f
+MP310 s310 s309 vdd vdd pch W=2u L=1u
+MN310 s310 s309 0 0 nch W=1u L=1u
+C310 s310 0 10f
+MP311 s311 s310 vdd vdd pch W=2u L=1u
+MN311 s311 s310 0 0 nch W=1u L=1u
+C311 s311 0 10f
+MP312 s312 s311 vdd vdd pch W=2u L=1u
+MN312 s312 s311 0 0 nch W=1u L=1u
+C312 s312 0 10f
+MP313 s313 s312 vdd vdd pch W=2u L=1u
+MN313 s313 s312 0 0 nch W=1u L=1u
+C313 s313 0 10f
+MP314 s314 s313 vdd vdd pch W=2u L=1u
+MN314 s314 s313 0 0 nch W=1u L=1u
+C314 s314 0 10f
+MP315 s315 s314 vdd vdd pch W=2u L=1u
+MN315 s315 s314 0 0 nch W=1u L=1u
+C315 s315 0 10f
+MP316 s316 s315 vdd vdd pch W=2u L=1u
+MN316 s316 s315 0 0 nch W=1u L=1u
+C316 s316 0 10f
+MP317 s317 s316 vdd vdd pch W=2u L=1u
+MN317 s317 s316 0 0 nch W=1u L=1u
+C317 s317 0 10f
+MP318 s318 s317 vdd vdd pch W=2u L=1u
+MN318 s318 s317 0 0 nch W=1u L=1u
+C318 s318 0 10f
+MP319 s319 s318 vdd vdd pch W=2u L=1u
+MN319 s319 s318 0 0 nch W=1u L=1u
+C319 s319 0 10f
+MP320 s320 s319 vdd vdd pch W=2u L=1u
+MN320 s320 s319 0 0 nch W=1u L=1u
+C320 s320 0 10f
+MP321 s321 s320 vdd vdd pch W=2u L=1u
+MN321 s321 s320 0 0 nch W=1u L=1u
+C321 s321 0 10f
+MP322 s322 s321 vdd vdd pch W=2u L=1u
+MN322 s322 s321 0 0 nch W=1u L=1u
+C322 s322 0 10f
+MP323 s323 s322 vdd vdd pch W=2u L=1u
+MN323 s323 s322 0 0 nch W=1u L=1u
+C323 s323 0 10f
+MP324 s324 s323 vdd vdd pch W=2u L=1u
+MN324 s324 s323 0 0 nch W=1u L=1u
+C324 s324 0 10f
+MP325 s325 s324 vdd vdd pch W=2u L=1u
+MN325 s325 s324 0 0 nch W=1u L=1u
+C325 s325 0 10f
+MP326 s326 s325 vdd vdd pch W=2u L=1u
+MN326 s326 s325 0 0 nch W=1u L=1u
+C326 s326 0 10f
+MP327 s327 s326 vdd vdd pch W=2u L=1u
+MN327 s327 s326 0 0 nch W=1u L=1u
+C327 s327 0 10f
+MP328 s328 s327 vdd vdd pch W=2u L=1u
+MN328 s328 s327 0 0 nch W=1u L=1u
+C328 s328 0 10f
+MP329 s329 s328 vdd vdd pch W=2u L=1u
+MN329 s329 s328 0 0 nch W=1u L=1u
+C329 s329 0 10f
+MP330 s330 s329 vdd vdd pch W=2u L=1u
+MN330 s330 s329 0 0 nch W=1u L=1u
+C330 s330 0 10f
+MP331 s331 s330 vdd vdd pch W=2u L=1u
+MN331 s331 s330 0 0 nch W=1u L=1u
+C331 s331 0 10f
+MP332 s332 s331 vdd vdd pch W=2u L=1u
+MN332 s332 s331 0 0 nch W=1u L=1u
+C332 s332 0 10f
+MP333 s333 s332 vdd vdd pch W=2u L=1u
+MN333 s333 s332 0 0 nch W=1u L=1u
+C333 s333 0 10f
+MP334 s334 s333 vdd vdd pch W=2u L=1u
+MN334 s334 s333 0 0 nch W=1u L=1u
+C334 s334 0 10f
+MP335 s335 s334 vdd vdd pch W=2u L=1u
+MN335 s335 s334 0 0 nch W=1u L=1u
+C335 s335 0 10f
+MP336 s336 s335 vdd vdd pch W=2u L=1u
+MN336 s336 s335 0 0 nch W=1u L=1u
+C336 s336 0 10f
+MP337 s337 s336 vdd vdd pch W=2u L=1u
+MN337 s337 s336 0 0 nch W=1u L=1u
+C337 s337 0 10f
+MP338 s338 s337 vdd vdd pch W=2u L=1u
+MN338 s338 s337 0 0 nch W=1u L=1u
+C338 s338 0 10f
+MP339 s339 s338 vdd vdd pch W=2u L=1u
+MN339 s339 s338 0 0 nch W=1u L=1u
+C339 s339 0 10f
+MP340 s340 s339 vdd vdd pch W=2u L=1u
+MN340 s340 s339 0 0 nch W=1u L=1u
+C340 s340 0 10f
+MP341 s341 s340 vdd vdd pch W=2u L=1u
+MN341 s341 s340 0 0 nch W=1u L=1u
+C341 s341 0 10f
+MP342 s342 s341 vdd vdd pch W=2u L=1u
+MN342 s342 s341 0 0 nch W=1u L=1u
+C342 s342 0 10f
+MP343 s343 s342 vdd vdd pch W=2u L=1u
+MN343 s343 s342 0 0 nch W=1u L=1u
+C343 s343 0 10f
+MP344 s344 s343 vdd vdd pch W=2u L=1u
+MN344 s344 s343 0 0 nch W=1u L=1u
+C344 s344 0 10f
+MP345 s345 s344 vdd vdd pch W=2u L=1u
+MN345 s345 s344 0 0 nch W=1u L=1u
+C345 s345 0 10f
+MP346 s346 s345 vdd vdd pch W=2u L=1u
+MN346 s346 s345 0 0 nch W=1u L=1u
+C346 s346 0 10f
+MP347 s347 s346 vdd vdd pch W=2u L=1u
+MN347 s347 s346 0 0 nch W=1u L=1u
+C347 s347 0 10f
+MP348 s348 s347 vdd vdd pch W=2u L=1u
+MN348 s348 s347 0 0 nch W=1u L=1u
+C348 s348 0 10f
+MP349 s349 s348 vdd vdd pch W=2u L=1u
+MN349 s349 s348 0 0 nch W=1u L=1u
+C349 s349 0 10f
+MP350 s350 s349 vdd vdd pch W=2u L=1u
+MN350 s350 s349 0 0 nch W=1u L=1u
+C350 s350 0 10f
+MP351 s351 s350 vdd vdd pch W=2u L=1u
+MN351 s351 s350 0 0 nch W=1u L=1u
+C351 s351 0 10f
+MP352 s352 s351 vdd vdd pch W=2u L=1u
+MN352 s352 s351 0 0 nch W=1u L=1u
+C352 s352 0 10f
+MP353 s353 s352 vdd vdd pch W=2u L=1u
+MN353 s353 s352 0 0 nch W=1u L=1u
+C353 s353 0 10f
+MP354 s354 s353 vdd vdd pch W=2u L=1u
+MN354 s354 s353 0 0 nch W=1u L=1u
+C354 s354 0 10f
+MP355 s355 s354 vdd vdd pch W=2u L=1u
+MN355 s355 s354 0 0 nch W=1u L=1u
+C355 s355 0 10f
+MP356 s356 s355 vdd vdd pch W=2u L=1u
+MN356 s356 s355 0 0 nch W=1u L=1u
+C356 s356 0 10f
+MP357 s357 s356 vdd vdd pch W=2u L=1u
+MN357 s357 s356 0 0 nch W=1u L=1u
+C357 s357 0 10f
+MP358 s358 s357 vdd vdd pch W=2u L=1u
+MN358 s358 s357 0 0 nch W=1u L=1u
+C358 s358 0 10f
+MP359 s359 s358 vdd vdd pch W=2u L=1u
+MN359 s359 s358 0 0 nch W=1u L=1u
+C359 s359 0 10f
+MP360 s360 s359 vdd vdd pch W=2u L=1u
+MN360 s360 s359 0 0 nch W=1u L=1u
+C360 s360 0 10f
+MP361 s361 s360 vdd vdd pch W=2u L=1u
+MN361 s361 s360 0 0 nch W=1u L=1u
+C361 s361 0 10f
+MP362 s362 s361 vdd vdd pch W=2u L=1u
+MN362 s362 s361 0 0 nch W=1u L=1u
+C362 s362 0 10f
+MP363 s363 s362 vdd vdd pch W=2u L=1u
+MN363 s363 s362 0 0 nch W=1u L=1u
+C363 s363 0 10f
+MP364 s364 s363 vdd vdd pch W=2u L=1u
+MN364 s364 s363 0 0 nch W=1u L=1u
+C364 s364 0 10f
+MP365 s365 s364 vdd vdd pch W=2u L=1u
+MN365 s365 s364 0 0 nch W=1u L=1u
+C365 s365 0 10f
+MP366 s366 s365 vdd vdd pch W=2u L=1u
+MN366 s366 s365 0 0 nch W=1u L=1u
+C366 s366 0 10f
+MP367 s367 s366 vdd vdd pch W=2u L=1u
+MN367 s367 s366 0 0 nch W=1u L=1u
+C367 s367 0 10f
+MP368 s368 s367 vdd vdd pch W=2u L=1u
+MN368 s368 s367 0 0 nch W=1u L=1u
+C368 s368 0 10f
+MP369 s369 s368 vdd vdd pch W=2u L=1u
+MN369 s369 s368 0 0 nch W=1u L=1u
+C369 s369 0 10f
+MP370 s370 s369 vdd vdd pch W=2u L=1u
+MN370 s370 s369 0 0 nch W=1u L=1u
+C370 s370 0 10f
+MP371 s371 s370 vdd vdd pch W=2u L=1u
+MN371 s371 s370 0 0 nch W=1u L=1u
+C371 s371 0 10f
+MP372 s372 s371 vdd vdd pch W=2u L=1u
+MN372 s372 s371 0 0 nch W=1u L=1u
+C372 s372 0 10f
+MP373 s373 s372 vdd vdd pch W=2u L=1u
+MN373 s373 s372 0 0 nch W=1u L=1u
+C373 s373 0 10f
+MP374 s374 s373 vdd vdd pch W=2u L=1u
+MN374 s374 s373 0 0 nch W=1u L=1u
+C374 s374 0 10f
+MP375 s375 s374 vdd vdd pch W=2u L=1u
+MN375 s375 s374 0 0 nch W=1u L=1u
+C375 s375 0 10f
+MP376 s376 s375 vdd vdd pch W=2u L=1u
+MN376 s376 s375 0 0 nch W=1u L=1u
+C376 s376 0 10f
+MP377 s377 s376 vdd vdd pch W=2u L=1u
+MN377 s377 s376 0 0 nch W=1u L=1u
+C377 s377 0 10f
+MP378 s378 s377 vdd vdd pch W=2u L=1u
+MN378 s378 s377 0 0 nch W=1u L=1u
+C378 s378 0 10f
+MP379 s379 s378 vdd vdd pch W=2u L=1u
+MN379 s379 s378 0 0 nch W=1u L=1u
+C379 s379 0 10f
+MP380 s380 s379 vdd vdd pch W=2u L=1u
+MN380 s380 s379 0 0 nch W=1u L=1u
+C380 s380 0 10f
+MP381 s381 s380 vdd vdd pch W=2u L=1u
+MN381 s381 s380 0 0 nch W=1u L=1u
+C381 s381 0 10f
+MP382 s382 s381 vdd vdd pch W=2u L=1u
+MN382 s382 s381 0 0 nch W=1u L=1u
+C382 s382 0 10f
+MP383 s383 s382 vdd vdd pch W=2u L=1u
+MN383 s383 s382 0 0 nch W=1u L=1u
+C383 s383 0 10f
+MP384 s384 s383 vdd vdd pch W=2u L=1u
+MN384 s384 s383 0 0 nch W=1u L=1u
+C384 s384 0 10f
+MP385 s385 s384 vdd vdd pch W=2u L=1u
+MN385 s385 s384 0 0 nch W=1u L=1u
+C385 s385 0 10f
+MP386 s386 s385 vdd vdd pch W=2u L=1u
+MN386 s386 s385 0 0 nch W=1u L=1u
+C386 s386 0 10f
+MP387 s387 s386 vdd vdd pch W=2u L=1u
+MN387 s387 s386 0 0 nch W=1u L=1u
+C387 s387 0 10f
+MP388 s388 s387 vdd vdd pch W=2u L=1u
+MN388 s388 s387 0 0 nch W=1u L=1u
+C388 s388 0 10f
+MP389 s389 s388 vdd vdd pch W=2u L=1u
+MN389 s389 s388 0 0 nch W=1u L=1u
+C389 s389 0 10f
+MP390 s390 s389 vdd vdd pch W=2u L=1u
+MN390 s390 s389 0 0 nch W=1u L=1u
+C390 s390 0 10f
+MP391 s391 s390 vdd vdd pch W=2u L=1u
+MN391 s391 s390 0 0 nch W=1u L=1u
+C391 s391 0 10f
+MP392 s392 s391 vdd vdd pch W=2u L=1u
+MN392 s392 s391 0 0 nch W=1u L=1u
+C392 s392 0 10f
+MP393 s393 s392 vdd vdd pch W=2u L=1u
+MN393 s393 s392 0 0 nch W=1u L=1u
+C393 s393 0 10f
+MP394 s394 s393 vdd vdd pch W=2u L=1u
+MN394 s394 s393 0 0 nch W=1u L=1u
+C394 s394 0 10f
+MP395 s395 s394 vdd vdd pch W=2u L=1u
+MN395 s395 s394 0 0 nch W=1u L=1u
+C395 s395 0 10f
+MP396 s396 s395 vdd vdd pch W=2u L=1u
+MN396 s396 s395 0 0 nch W=1u L=1u
+C396 s396 0 10f
+MP397 s397 s396 vdd vdd pch W=2u L=1u
+MN397 s397 s396 0 0 nch W=1u L=1u
+C397 s397 0 10f
+MP398 s398 s397 vdd vdd pch W=2u L=1u
+MN398 s398 s397 0 0 nch W=1u L=1u
+C398 s398 0 10f
+MP399 s399 s398 vdd vdd pch W=2u L=1u
+MN399 s399 s398 0 0 nch W=1u L=1u
+C399 s399 0 10f
+MP400 s400 s399 vdd vdd pch W=2u L=1u
+MN400 s400 s399 0 0 nch W=1u L=1u
+C400 s400 0 10f
+MP401 s401 s400 vdd vdd pch W=2u L=1u
+MN401 s401 s400 0 0 nch W=1u L=1u
+C401 s401 0 10f
+MP402 s402 s401 vdd vdd pch W=2u L=1u
+MN402 s402 s401 0 0 nch W=1u L=1u
+C402 s402 0 10f
+MP403 s403 s402 vdd vdd pch W=2u L=1u
+MN403 s403 s402 0 0 nch W=1u L=1u
+C403 s403 0 10f
+MP404 s404 s403 vdd vdd pch W=2u L=1u
+MN404 s404 s403 0 0 nch W=1u L=1u
+C404 s404 0 10f
+MP405 s405 s404 vdd vdd pch W=2u L=1u
+MN405 s405 s404 0 0 nch W=1u L=1u
+C405 s405 0 10f
+MP406 s406 s405 vdd vdd pch W=2u L=1u
+MN406 s406 s405 0 0 nch W=1u L=1u
+C406 s406 0 10f
+MP407 s407 s406 vdd vdd pch W=2u L=1u
+MN407 s407 s406 0 0 nch W=1u L=1u
+C407 s407 0 10f
+MP408 s408 s407 vdd vdd pch W=2u L=1u
+MN408 s408 s407 0 0 nch W=1u L=1u
+C408 s408 0 10f
+MP409 s409 s408 vdd vdd pch W=2u L=1u
+MN409 s409 s408 0 0 nch W=1u L=1u
+C409 s409 0 10f
+MP410 s410 s409 vdd vdd pch W=2u L=1u
+MN410 s410 s409 0 0 nch W=1u L=1u
+C410 s410 0 10f
+MP411 s411 s410 vdd vdd pch W=2u L=1u
+MN411 s411 s410 0 0 nch W=1u L=1u
+C411 s411 0 10f
+MP412 s412 s411 vdd vdd pch W=2u L=1u
+MN412 s412 s411 0 0 nch W=1u L=1u
+C412 s412 0 10f
+MP413 s413 s412 vdd vdd pch W=2u L=1u
+MN413 s413 s412 0 0 nch W=1u L=1u
+C413 s413 0 10f
+MP414 s414 s413 vdd vdd pch W=2u L=1u
+MN414 s414 s413 0 0 nch W=1u L=1u
+C414 s414 0 10f
+MP415 s415 s414 vdd vdd pch W=2u L=1u
+MN415 s415 s414 0 0 nch W=1u L=1u
+C415 s415 0 10f
+MP416 s416 s415 vdd vdd pch W=2u L=1u
+MN416 s416 s415 0 0 nch W=1u L=1u
+C416 s416 0 10f
+MP417 s417 s416 vdd vdd pch W=2u L=1u
+MN417 s417 s416 0 0 nch W=1u L=1u
+C417 s417 0 10f
+MP418 s418 s417 vdd vdd pch W=2u L=1u
+MN418 s418 s417 0 0 nch W=1u L=1u
+C418 s418 0 10f
+MP419 s419 s418 vdd vdd pch W=2u L=1u
+MN419 s419 s418 0 0 nch W=1u L=1u
+C419 s419 0 10f
+MP420 s420 s419 vdd vdd pch W=2u L=1u
+MN420 s420 s419 0 0 nch W=1u L=1u
+C420 s420 0 10f
+MP421 s421 s420 vdd vdd pch W=2u L=1u
+MN421 s421 s420 0 0 nch W=1u L=1u
+C421 s421 0 10f
+MP422 s422 s421 vdd vdd pch W=2u L=1u
+MN422 s422 s421 0 0 nch W=1u L=1u
+C422 s422 0 10f
+MP423 s423 s422 vdd vdd pch W=2u L=1u
+MN423 s423 s422 0 0 nch W=1u L=1u
+C423 s423 0 10f
+MP424 s424 s423 vdd vdd pch W=2u L=1u
+MN424 s424 s423 0 0 nch W=1u L=1u
+C424 s424 0 10f
+MP425 s425 s424 vdd vdd pch W=2u L=1u
+MN425 s425 s424 0 0 nch W=1u L=1u
+C425 s425 0 10f
+MP426 s426 s425 vdd vdd pch W=2u L=1u
+MN426 s426 s425 0 0 nch W=1u L=1u
+C426 s426 0 10f
+MP427 s427 s426 vdd vdd pch W=2u L=1u
+MN427 s427 s426 0 0 nch W=1u L=1u
+C427 s427 0 10f
+MP428 s428 s427 vdd vdd pch W=2u L=1u
+MN428 s428 s427 0 0 nch W=1u L=1u
+C428 s428 0 10f
+MP429 s429 s428 vdd vdd pch W=2u L=1u
+MN429 s429 s428 0 0 nch W=1u L=1u
+C429 s429 0 10f
+MP430 s430 s429 vdd vdd pch W=2u L=1u
+MN430 s430 s429 0 0 nch W=1u L=1u
+C430 s430 0 10f
+MP431 s431 s430 vdd vdd pch W=2u L=1u
+MN431 s431 s430 0 0 nch W=1u L=1u
+C431 s431 0 10f
+MP432 s432 s431 vdd vdd pch W=2u L=1u
+MN432 s432 s431 0 0 nch W=1u L=1u
+C432 s432 0 10f
+MP433 s433 s432 vdd vdd pch W=2u L=1u
+MN433 s433 s432 0 0 nch W=1u L=1u
+C433 s433 0 10f
+MP434 s434 s433 vdd vdd pch W=2u L=1u
+MN434 s434 s433 0 0 nch W=1u L=1u
+C434 s434 0 10f
+MP435 s435 s434 vdd vdd pch W=2u L=1u
+MN435 s435 s434 0 0 nch W=1u L=1u
+C435 s435 0 10f
+MP436 s436 s435 vdd vdd pch W=2u L=1u
+MN436 s436 s435 0 0 nch W=1u L=1u
+C436 s436 0 10f
+MP437 s437 s436 vdd vdd pch W=2u L=1u
+MN437 s437 s436 0 0 nch W=1u L=1u
+C437 s437 0 10f
+MP438 s438 s437 vdd vdd pch W=2u L=1u
+MN438 s438 s437 0 0 nch W=1u L=1u
+C438 s438 0 10f
+MP439 s439 s438 vdd vdd pch W=2u L=1u
+MN439 s439 s438 0 0 nch W=1u L=1u
+C439 s439 0 10f
+MP440 s440 s439 vdd vdd pch W=2u L=1u
+MN440 s440 s439 0 0 nch W=1u L=1u
+C440 s440 0 10f
+MP441 s441 s440 vdd vdd pch W=2u L=1u
+MN441 s441 s440 0 0 nch W=1u L=1u
+C441 s441 0 10f
+MP442 s442 s441 vdd vdd pch W=2u L=1u
+MN442 s442 s441 0 0 nch W=1u L=1u
+C442 s442 0 10f
+MP443 s443 s442 vdd vdd pch W=2u L=1u
+MN443 s443 s442 0 0 nch W=1u L=1u
+C443 s443 0 10f
+MP444 s444 s443 vdd vdd pch W=2u L=1u
+MN444 s444 s443 0 0 nch W=1u L=1u
+C444 s444 0 10f
+MP445 s445 s444 vdd vdd pch W=2u L=1u
+MN445 s445 s444 0 0 nch W=1u L=1u
+C445 s445 0 10f
+MP446 s446 s445 vdd vdd pch W=2u L=1u
+MN446 s446 s445 0 0 nch W=1u L=1u
+C446 s446 0 10f
+MP447 s447 s446 vdd vdd pch W=2u L=1u
+MN447 s447 s446 0 0 nch W=1u L=1u
+C447 s447 0 10f
+MP448 s448 s447 vdd vdd pch W=2u L=1u
+MN448 s448 s447 0 0 nch W=1u L=1u
+C448 s448 0 10f
+MP449 s449 s448 vdd vdd pch W=2u L=1u
+MN449 s449 s448 0 0 nch W=1u L=1u
+C449 s449 0 10f
+MP450 s450 s449 vdd vdd pch W=2u L=1u
+MN450 s450 s449 0 0 nch W=1u L=1u
+C450 s450 0 10f
+MP451 s451 s450 vdd vdd pch W=2u L=1u
+MN451 s451 s450 0 0 nch W=1u L=1u
+C451 s451 0 10f
+MP452 s452 s451 vdd vdd pch W=2u L=1u
+MN452 s452 s451 0 0 nch W=1u L=1u
+C452 s452 0 10f
+MP453 s453 s452 vdd vdd pch W=2u L=1u
+MN453 s453 s452 0 0 nch W=1u L=1u
+C453 s453 0 10f
+MP454 s454 s453 vdd vdd pch W=2u L=1u
+MN454 s454 s453 0 0 nch W=1u L=1u
+C454 s454 0 10f
+MP455 s455 s454 vdd vdd pch W=2u L=1u
+MN455 s455 s454 0 0 nch W=1u L=1u
+C455 s455 0 10f
+MP456 s456 s455 vdd vdd pch W=2u L=1u
+MN456 s456 s455 0 0 nch W=1u L=1u
+C456 s456 0 10f
+MP457 s457 s456 vdd vdd pch W=2u L=1u
+MN457 s457 s456 0 0 nch W=1u L=1u
+C457 s457 0 10f
+MP458 s458 s457 vdd vdd pch W=2u L=1u
+MN458 s458 s457 0 0 nch W=1u L=1u
+C458 s458 0 10f
+MP459 s459 s458 vdd vdd pch W=2u L=1u
+MN459 s459 s458 0 0 nch W=1u L=1u
+C459 s459 0 10f
+MP460 s460 s459 vdd vdd pch W=2u L=1u
+MN460 s460 s459 0 0 nch W=1u L=1u
+C460 s460 0 10f
+MP461 s461 s460 vdd vdd pch W=2u L=1u
+MN461 s461 s460 0 0 nch W=1u L=1u
+C461 s461 0 10f
+MP462 s462 s461 vdd vdd pch W=2u L=1u
+MN462 s462 s461 0 0 nch W=1u L=1u
+C462 s462 0 10f
+MP463 s463 s462 vdd vdd pch W=2u L=1u
+MN463 s463 s462 0 0 nch W=1u L=1u
+C463 s463 0 10f
+MP464 s464 s463 vdd vdd pch W=2u L=1u
+MN464 s464 s463 0 0 nch W=1u L=1u
+C464 s464 0 10f
+MP465 s465 s464 vdd vdd pch W=2u L=1u
+MN465 s465 s464 0 0 nch W=1u L=1u
+C465 s465 0 10f
+MP466 s466 s465 vdd vdd pch W=2u L=1u
+MN466 s466 s465 0 0 nch W=1u L=1u
+C466 s466 0 10f
+MP467 s467 s466 vdd vdd pch W=2u L=1u
+MN467 s467 s466 0 0 nch W=1u L=1u
+C467 s467 0 10f
+MP468 s468 s467 vdd vdd pch W=2u L=1u
+MN468 s468 s467 0 0 nch W=1u L=1u
+C468 s468 0 10f
+MP469 s469 s468 vdd vdd pch W=2u L=1u
+MN469 s469 s468 0 0 nch W=1u L=1u
+C469 s469 0 10f
+MP470 s470 s469 vdd vdd pch W=2u L=1u
+MN470 s470 s469 0 0 nch W=1u L=1u
+C470 s470 0 10f
+MP471 s471 s470 vdd vdd pch W=2u L=1u
+MN471 s471 s470 0 0 nch W=1u L=1u
+C471 s471 0 10f
+MP472 s472 s471 vdd vdd pch W=2u L=1u
+MN472 s472 s471 0 0 nch W=1u L=1u
+C472 s472 0 10f
+MP473 s473 s472 vdd vdd pch W=2u L=1u
+MN473 s473 s472 0 0 nch W=1u L=1u
+C473 s473 0 10f
+MP474 s474 s473 vdd vdd pch W=2u L=1u
+MN474 s474 s473 0 0 nch W=1u L=1u
+C474 s474 0 10f
+MP475 s475 s474 vdd vdd pch W=2u L=1u
+MN475 s475 s474 0 0 nch W=1u L=1u
+C475 s475 0 10f
+MP476 s476 s475 vdd vdd pch W=2u L=1u
+MN476 s476 s475 0 0 nch W=1u L=1u
+C476 s476 0 10f
+MP477 s477 s476 vdd vdd pch W=2u L=1u
+MN477 s477 s476 0 0 nch W=1u L=1u
+C477 s477 0 10f
+MP478 s478 s477 vdd vdd pch W=2u L=1u
+MN478 s478 s477 0 0 nch W=1u L=1u
+C478 s478 0 10f
+MP479 s479 s478 vdd vdd pch W=2u L=1u
+MN479 s479 s478 0 0 nch W=1u L=1u
+C479 s479 0 10f
+MP480 s480 s479 vdd vdd pch W=2u L=1u
+MN480 s480 s479 0 0 nch W=1u L=1u
+C480 s480 0 10f
+MP481 s481 s480 vdd vdd pch W=2u L=1u
+MN481 s481 s480 0 0 nch W=1u L=1u
+C481 s481 0 10f
+MP482 s482 s481 vdd vdd pch W=2u L=1u
+MN482 s482 s481 0 0 nch W=1u L=1u
+C482 s482 0 10f
+MP483 s483 s482 vdd vdd pch W=2u L=1u
+MN483 s483 s482 0 0 nch W=1u L=1u
+C483 s483 0 10f
+MP484 s484 s483 vdd vdd pch W=2u L=1u
+MN484 s484 s483 0 0 nch W=1u L=1u
+C484 s484 0 10f
+MP485 s485 s484 vdd vdd pch W=2u L=1u
+MN485 s485 s484 0 0 nch W=1u L=1u
+C485 s485 0 10f
+MP486 s486 s485 vdd vdd pch W=2u L=1u
+MN486 s486 s485 0 0 nch W=1u L=1u
+C486 s486 0 10f
+MP487 s487 s486 vdd vdd pch W=2u L=1u
+MN487 s487 s486 0 0 nch W=1u L=1u
+C487 s487 0 10f
+MP488 s488 s487 vdd vdd pch W=2u L=1u
+MN488 s488 s487 0 0 nch W=1u L=1u
+C488 s488 0 10f
+MP489 s489 s488 vdd vdd pch W=2u L=1u
+MN489 s489 s488 0 0 nch W=1u L=1u
+C489 s489 0 10f
+MP490 s490 s489 vdd vdd pch W=2u L=1u
+MN490 s490 s489 0 0 nch W=1u L=1u
+C490 s490 0 10f
+MP491 s491 s490 vdd vdd pch W=2u L=1u
+MN491 s491 s490 0 0 nch W=1u L=1u
+C491 s491 0 10f
+MP492 s492 s491 vdd vdd pch W=2u L=1u
+MN492 s492 s491 0 0 nch W=1u L=1u
+C492 s492 0 10f
+MP493 s493 s492 vdd vdd pch W=2u L=1u
+MN493 s493 s492 0 0 nch W=1u L=1u
+C493 s493 0 10f
+MP494 s494 s493 vdd vdd pch W=2u L=1u
+MN494 s494 s493 0 0 nch W=1u L=1u
+C494 s494 0 10f
+MP495 s495 s494 vdd vdd pch W=2u L=1u
+MN495 s495 s494 0 0 nch W=1u L=1u
+C495 s495 0 10f
+MP496 s496 s495 vdd vdd pch W=2u L=1u
+MN496 s496 s495 0 0 nch W=1u L=1u
+C496 s496 0 10f
+MP497 s497 s496 vdd vdd pch W=2u L=1u
+MN497 s497 s496 0 0 nch W=1u L=1u
+C497 s497 0 10f
+MP498 s498 s497 vdd vdd pch W=2u L=1u
+MN498 s498 s497 0 0 nch W=1u L=1u
+C498 s498 0 10f
+MP499 s499 s498 vdd vdd pch W=2u L=1u
+MN499 s499 s498 0 0 nch W=1u L=1u
+C499 s499 0 10f
+MP500 s500 s499 vdd vdd pch W=2u L=1u
+MN500 s500 s499 0 0 nch W=1u L=1u
+C500 s500 0 10f
+MP501 s501 s500 vdd vdd pch W=2u L=1u
+MN501 s501 s500 0 0 nch W=1u L=1u
+C501 s501 0 10f
+MP502 s502 s501 vdd vdd pch W=2u L=1u
+MN502 s502 s501 0 0 nch W=1u L=1u
+C502 s502 0 10f
+MP503 s503 s502 vdd vdd pch W=2u L=1u
+MN503 s503 s502 0 0 nch W=1u L=1u
+C503 s503 0 10f
+MP504 s504 s503 vdd vdd pch W=2u L=1u
+MN504 s504 s503 0 0 nch W=1u L=1u
+C504 s504 0 10f
+MP505 s505 s504 vdd vdd pch W=2u L=1u
+MN505 s505 s504 0 0 nch W=1u L=1u
+C505 s505 0 10f
+MP506 s506 s505 vdd vdd pch W=2u L=1u
+MN506 s506 s505 0 0 nch W=1u L=1u
+C506 s506 0 10f
+MP507 s507 s506 vdd vdd pch W=2u L=1u
+MN507 s507 s506 0 0 nch W=1u L=1u
+C507 s507 0 10f
+MP508 s508 s507 vdd vdd pch W=2u L=1u
+MN508 s508 s507 0 0 nch W=1u L=1u
+C508 s508 0 10f
+MP509 s509 s508 vdd vdd pch W=2u L=1u
+MN509 s509 s508 0 0 nch W=1u L=1u
+C509 s509 0 10f
+MP510 s510 s509 vdd vdd pch W=2u L=1u
+MN510 s510 s509 0 0 nch W=1u L=1u
+C510 s510 0 10f
+MP511 s511 s510 vdd vdd pch W=2u L=1u
+MN511 s511 s510 0 0 nch W=1u L=1u
+C511 s511 0 10f
+MP512 s512 s511 vdd vdd pch W=2u L=1u
+MN512 s512 s511 0 0 nch W=1u L=1u
+C512 s512 0 10f
+MP513 s513 s512 vdd vdd pch W=2u L=1u
+MN513 s513 s512 0 0 nch W=1u L=1u
+C513 s513 0 10f
+MP514 s514 s513 vdd vdd pch W=2u L=1u
+MN514 s514 s513 0 0 nch W=1u L=1u
+C514 s514 0 10f
+MP515 s515 s514 vdd vdd pch W=2u L=1u
+MN515 s515 s514 0 0 nch W=1u L=1u
+C515 s515 0 10f
+MP516 s516 s515 vdd vdd pch W=2u L=1u
+MN516 s516 s515 0 0 nch W=1u L=1u
+C516 s516 0 10f
+MP517 s517 s516 vdd vdd pch W=2u L=1u
+MN517 s517 s516 0 0 nch W=1u L=1u
+C517 s517 0 10f
+MP518 s518 s517 vdd vdd pch W=2u L=1u
+MN518 s518 s517 0 0 nch W=1u L=1u
+C518 s518 0 10f
+MP519 s519 s518 vdd vdd pch W=2u L=1u
+MN519 s519 s518 0 0 nch W=1u L=1u
+C519 s519 0 10f
+MP520 s520 s519 vdd vdd pch W=2u L=1u
+MN520 s520 s519 0 0 nch W=1u L=1u
+C520 s520 0 10f
+MP521 s521 s520 vdd vdd pch W=2u L=1u
+MN521 s521 s520 0 0 nch W=1u L=1u
+C521 s521 0 10f
+MP522 s522 s521 vdd vdd pch W=2u L=1u
+MN522 s522 s521 0 0 nch W=1u L=1u
+C522 s522 0 10f
+MP523 s523 s522 vdd vdd pch W=2u L=1u
+MN523 s523 s522 0 0 nch W=1u L=1u
+C523 s523 0 10f
+MP524 s524 s523 vdd vdd pch W=2u L=1u
+MN524 s524 s523 0 0 nch W=1u L=1u
+C524 s524 0 10f
+MP525 s525 s524 vdd vdd pch W=2u L=1u
+MN525 s525 s524 0 0 nch W=1u L=1u
+C525 s525 0 10f
+MP526 s526 s525 vdd vdd pch W=2u L=1u
+MN526 s526 s525 0 0 nch W=1u L=1u
+C526 s526 0 10f
+MP527 s527 s526 vdd vdd pch W=2u L=1u
+MN527 s527 s526 0 0 nch W=1u L=1u
+C527 s527 0 10f
+MP528 s528 s527 vdd vdd pch W=2u L=1u
+MN528 s528 s527 0 0 nch W=1u L=1u
+C528 s528 0 10f
+MP529 s529 s528 vdd vdd pch W=2u L=1u
+MN529 s529 s528 0 0 nch W=1u L=1u
+C529 s529 0 10f
+MP530 s530 s529 vdd vdd pch W=2u L=1u
+MN530 s530 s529 0 0 nch W=1u L=1u
+C530 s530 0 10f
+MP531 s531 s530 vdd vdd pch W=2u L=1u
+MN531 s531 s530 0 0 nch W=1u L=1u
+C531 s531 0 10f
+MP532 s532 s531 vdd vdd pch W=2u L=1u
+MN532 s532 s531 0 0 nch W=1u L=1u
+C532 s532 0 10f
+MP533 s533 s532 vdd vdd pch W=2u L=1u
+MN533 s533 s532 0 0 nch W=1u L=1u
+C533 s533 0 10f
+MP534 s534 s533 vdd vdd pch W=2u L=1u
+MN534 s534 s533 0 0 nch W=1u L=1u
+C534 s534 0 10f
+MP535 s535 s534 vdd vdd pch W=2u L=1u
+MN535 s535 s534 0 0 nch W=1u L=1u
+C535 s535 0 10f
+MP536 s536 s535 vdd vdd pch W=2u L=1u
+MN536 s536 s535 0 0 nch W=1u L=1u
+C536 s536 0 10f
+MP537 s537 s536 vdd vdd pch W=2u L=1u
+MN537 s537 s536 0 0 nch W=1u L=1u
+C537 s537 0 10f
+MP538 s538 s537 vdd vdd pch W=2u L=1u
+MN538 s538 s537 0 0 nch W=1u L=1u
+C538 s538 0 10f
+MP539 s539 s538 vdd vdd pch W=2u L=1u
+MN539 s539 s538 0 0 nch W=1u L=1u
+C539 s539 0 10f
+MP540 s540 s539 vdd vdd pch W=2u L=1u
+MN540 s540 s539 0 0 nch W=1u L=1u
+C540 s540 0 10f
+MP541 s541 s540 vdd vdd pch W=2u L=1u
+MN541 s541 s540 0 0 nch W=1u L=1u
+C541 s541 0 10f
+MP542 s542 s541 vdd vdd pch W=2u L=1u
+MN542 s542 s541 0 0 nch W=1u L=1u
+C542 s542 0 10f
+MP543 s543 s542 vdd vdd pch W=2u L=1u
+MN543 s543 s542 0 0 nch W=1u L=1u
+C543 s543 0 10f
+MP544 s544 s543 vdd vdd pch W=2u L=1u
+MN544 s544 s543 0 0 nch W=1u L=1u
+C544 s544 0 10f
+MP545 s545 s544 vdd vdd pch W=2u L=1u
+MN545 s545 s544 0 0 nch W=1u L=1u
+C545 s545 0 10f
+MP546 s546 s545 vdd vdd pch W=2u L=1u
+MN546 s546 s545 0 0 nch W=1u L=1u
+C546 s546 0 10f
+MP547 s547 s546 vdd vdd pch W=2u L=1u
+MN547 s547 s546 0 0 nch W=1u L=1u
+C547 s547 0 10f
+MP548 s548 s547 vdd vdd pch W=2u L=1u
+MN548 s548 s547 0 0 nch W=1u L=1u
+C548 s548 0 10f
+MP549 s549 s548 vdd vdd pch W=2u L=1u
+MN549 s549 s548 0 0 nch W=1u L=1u
+C549 s549 0 10f
+MP550 s550 s549 vdd vdd pch W=2u L=1u
+MN550 s550 s549 0 0 nch W=1u L=1u
+C550 s550 0 10f
+MP551 s551 s550 vdd vdd pch W=2u L=1u
+MN551 s551 s550 0 0 nch W=1u L=1u
+C551 s551 0 10f
+MP552 s552 s551 vdd vdd pch W=2u L=1u
+MN552 s552 s551 0 0 nch W=1u L=1u
+C552 s552 0 10f
+MP553 s553 s552 vdd vdd pch W=2u L=1u
+MN553 s553 s552 0 0 nch W=1u L=1u
+C553 s553 0 10f
+MP554 s554 s553 vdd vdd pch W=2u L=1u
+MN554 s554 s553 0 0 nch W=1u L=1u
+C554 s554 0 10f
+MP555 s555 s554 vdd vdd pch W=2u L=1u
+MN555 s555 s554 0 0 nch W=1u L=1u
+C555 s555 0 10f
+MP556 s556 s555 vdd vdd pch W=2u L=1u
+MN556 s556 s555 0 0 nch W=1u L=1u
+C556 s556 0 10f
+MP557 s557 s556 vdd vdd pch W=2u L=1u
+MN557 s557 s556 0 0 nch W=1u L=1u
+C557 s557 0 10f
+MP558 s558 s557 vdd vdd pch W=2u L=1u
+MN558 s558 s557 0 0 nch W=1u L=1u
+C558 s558 0 10f
+MP559 s559 s558 vdd vdd pch W=2u L=1u
+MN559 s559 s558 0 0 nch W=1u L=1u
+C559 s559 0 10f
+MP560 s560 s559 vdd vdd pch W=2u L=1u
+MN560 s560 s559 0 0 nch W=1u L=1u
+C560 s560 0 10f
+MP561 s561 s560 vdd vdd pch W=2u L=1u
+MN561 s561 s560 0 0 nch W=1u L=1u
+C561 s561 0 10f
+MP562 s562 s561 vdd vdd pch W=2u L=1u
+MN562 s562 s561 0 0 nch W=1u L=1u
+C562 s562 0 10f
+MP563 s563 s562 vdd vdd pch W=2u L=1u
+MN563 s563 s562 0 0 nch W=1u L=1u
+C563 s563 0 10f
+MP564 s564 s563 vdd vdd pch W=2u L=1u
+MN564 s564 s563 0 0 nch W=1u L=1u
+C564 s564 0 10f
+MP565 s565 s564 vdd vdd pch W=2u L=1u
+MN565 s565 s564 0 0 nch W=1u L=1u
+C565 s565 0 10f
+MP566 s566 s565 vdd vdd pch W=2u L=1u
+MN566 s566 s565 0 0 nch W=1u L=1u
+C566 s566 0 10f
+MP567 s567 s566 vdd vdd pch W=2u L=1u
+MN567 s567 s566 0 0 nch W=1u L=1u
+C567 s567 0 10f
+MP568 s568 s567 vdd vdd pch W=2u L=1u
+MN568 s568 s567 0 0 nch W=1u L=1u
+C568 s568 0 10f
+MP569 s569 s568 vdd vdd pch W=2u L=1u
+MN569 s569 s568 0 0 nch W=1u L=1u
+C569 s569 0 10f
+MP570 s570 s569 vdd vdd pch W=2u L=1u
+MN570 s570 s569 0 0 nch W=1u L=1u
+C570 s570 0 10f
+MP571 s571 s570 vdd vdd pch W=2u L=1u
+MN571 s571 s570 0 0 nch W=1u L=1u
+C571 s571 0 10f
+MP572 s572 s571 vdd vdd pch W=2u L=1u
+MN572 s572 s571 0 0 nch W=1u L=1u
+C572 s572 0 10f
+MP573 s573 s572 vdd vdd pch W=2u L=1u
+MN573 s573 s572 0 0 nch W=1u L=1u
+C573 s573 0 10f
+MP574 s574 s573 vdd vdd pch W=2u L=1u
+MN574 s574 s573 0 0 nch W=1u L=1u
+C574 s574 0 10f
+MP575 s575 s574 vdd vdd pch W=2u L=1u
+MN575 s575 s574 0 0 nch W=1u L=1u
+C575 s575 0 10f
+MP576 s576 s575 vdd vdd pch W=2u L=1u
+MN576 s576 s575 0 0 nch W=1u L=1u
+C576 s576 0 10f
+MP577 s577 s576 vdd vdd pch W=2u L=1u
+MN577 s577 s576 0 0 nch W=1u L=1u
+C577 s577 0 10f
+MP578 s578 s577 vdd vdd pch W=2u L=1u
+MN578 s578 s577 0 0 nch W=1u L=1u
+C578 s578 0 10f
+MP579 s579 s578 vdd vdd pch W=2u L=1u
+MN579 s579 s578 0 0 nch W=1u L=1u
+C579 s579 0 10f
+MP580 s580 s579 vdd vdd pch W=2u L=1u
+MN580 s580 s579 0 0 nch W=1u L=1u
+C580 s580 0 10f
+MP581 s581 s580 vdd vdd pch W=2u L=1u
+MN581 s581 s580 0 0 nch W=1u L=1u
+C581 s581 0 10f
+MP582 s582 s581 vdd vdd pch W=2u L=1u
+MN582 s582 s581 0 0 nch W=1u L=1u
+C582 s582 0 10f
+MP583 s583 s582 vdd vdd pch W=2u L=1u
+MN583 s583 s582 0 0 nch W=1u L=1u
+C583 s583 0 10f
+MP584 s584 s583 vdd vdd pch W=2u L=1u
+MN584 s584 s583 0 0 nch W=1u L=1u
+C584 s584 0 10f
+MP585 s585 s584 vdd vdd pch W=2u L=1u
+MN585 s585 s584 0 0 nch W=1u L=1u
+C585 s585 0 10f
+MP586 s586 s585 vdd vdd pch W=2u L=1u
+MN586 s586 s585 0 0 nch W=1u L=1u
+C586 s586 0 10f
+MP587 s587 s586 vdd vdd pch W=2u L=1u
+MN587 s587 s586 0 0 nch W=1u L=1u
+C587 s587 0 10f
+MP588 s588 s587 vdd vdd pch W=2u L=1u
+MN588 s588 s587 0 0 nch W=1u L=1u
+C588 s588 0 10f
+MP589 s589 s588 vdd vdd pch W=2u L=1u
+MN589 s589 s588 0 0 nch W=1u L=1u
+C589 s589 0 10f
+MP590 s590 s589 vdd vdd pch W=2u L=1u
+MN590 s590 s589 0 0 nch W=1u L=1u
+C590 s590 0 10f
+MP591 s591 s590 vdd vdd pch W=2u L=1u
+MN591 s591 s590 0 0 nch W=1u L=1u
+C591 s591 0 10f
+MP592 s592 s591 vdd vdd pch W=2u L=1u
+MN592 s592 s591 0 0 nch W=1u L=1u
+C592 s592 0 10f
+MP593 s593 s592 vdd vdd pch W=2u L=1u
+MN593 s593 s592 0 0 nch W=1u L=1u
+C593 s593 0 10f
+MP594 s594 s593 vdd vdd pch W=2u L=1u
+MN594 s594 s593 0 0 nch W=1u L=1u
+C594 s594 0 10f
+MP595 s595 s594 vdd vdd pch W=2u L=1u
+MN595 s595 s594 0 0 nch W=1u L=1u
+C595 s595 0 10f
+MP596 s596 s595 vdd vdd pch W=2u L=1u
+MN596 s596 s595 0 0 nch W=1u L=1u
+C596 s596 0 10f
+MP597 s597 s596 vdd vdd pch W=2u L=1u
+MN597 s597 s596 0 0 nch W=1u L=1u
+C597 s597 0 10f
+MP598 s598 s597 vdd vdd pch W=2u L=1u
+MN598 s598 s597 0 0 nch W=1u L=1u
+C598 s598 0 10f
+MP599 s599 s598 vdd vdd pch W=2u L=1u
+MN599 s599 s598 0 0 nch W=1u L=1u
+C599 s599 0 10f
+MP600 s600 s599 vdd vdd pch W=2u L=1u
+MN600 s600 s599 0 0 nch W=1u L=1u
+C600 s600 0 10f
+MP601 s601 s600 vdd vdd pch W=2u L=1u
+MN601 s601 s600 0 0 nch W=1u L=1u
+C601 s601 0 10f
+MP602 s602 s601 vdd vdd pch W=2u L=1u
+MN602 s602 s601 0 0 nch W=1u L=1u
+C602 s602 0 10f
+MP603 s603 s602 vdd vdd pch W=2u L=1u
+MN603 s603 s602 0 0 nch W=1u L=1u
+C603 s603 0 10f
+MP604 s604 s603 vdd vdd pch W=2u L=1u
+MN604 s604 s603 0 0 nch W=1u L=1u
+C604 s604 0 10f
+MP605 s605 s604 vdd vdd pch W=2u L=1u
+MN605 s605 s604 0 0 nch W=1u L=1u
+C605 s605 0 10f
+MP606 s606 s605 vdd vdd pch W=2u L=1u
+MN606 s606 s605 0 0 nch W=1u L=1u
+C606 s606 0 10f
+MP607 s607 s606 vdd vdd pch W=2u L=1u
+MN607 s607 s606 0 0 nch W=1u L=1u
+C607 s607 0 10f
+MP608 s608 s607 vdd vdd pch W=2u L=1u
+MN608 s608 s607 0 0 nch W=1u L=1u
+C608 s608 0 10f
+MP609 s609 s608 vdd vdd pch W=2u L=1u
+MN609 s609 s608 0 0 nch W=1u L=1u
+C609 s609 0 10f
+MP610 s610 s609 vdd vdd pch W=2u L=1u
+MN610 s610 s609 0 0 nch W=1u L=1u
+C610 s610 0 10f
+MP611 s611 s610 vdd vdd pch W=2u L=1u
+MN611 s611 s610 0 0 nch W=1u L=1u
+C611 s611 0 10f
+MP612 s612 s611 vdd vdd pch W=2u L=1u
+MN612 s612 s611 0 0 nch W=1u L=1u
+C612 s612 0 10f
+MP613 s613 s612 vdd vdd pch W=2u L=1u
+MN613 s613 s612 0 0 nch W=1u L=1u
+C613 s613 0 10f
+MP614 s614 s613 vdd vdd pch W=2u L=1u
+MN614 s614 s613 0 0 nch W=1u L=1u
+C614 s614 0 10f
+MP615 s615 s614 vdd vdd pch W=2u L=1u
+MN615 s615 s614 0 0 nch W=1u L=1u
+C615 s615 0 10f
+MP616 s616 s615 vdd vdd pch W=2u L=1u
+MN616 s616 s615 0 0 nch W=1u L=1u
+C616 s616 0 10f
+MP617 s617 s616 vdd vdd pch W=2u L=1u
+MN617 s617 s616 0 0 nch W=1u L=1u
+C617 s617 0 10f
+MP618 s618 s617 vdd vdd pch W=2u L=1u
+MN618 s618 s617 0 0 nch W=1u L=1u
+C618 s618 0 10f
+MP619 s619 s618 vdd vdd pch W=2u L=1u
+MN619 s619 s618 0 0 nch W=1u L=1u
+C619 s619 0 10f
+MP620 s620 s619 vdd vdd pch W=2u L=1u
+MN620 s620 s619 0 0 nch W=1u L=1u
+C620 s620 0 10f
+MP621 s621 s620 vdd vdd pch W=2u L=1u
+MN621 s621 s620 0 0 nch W=1u L=1u
+C621 s621 0 10f
+MP622 s622 s621 vdd vdd pch W=2u L=1u
+MN622 s622 s621 0 0 nch W=1u L=1u
+C622 s622 0 10f
+MP623 s623 s622 vdd vdd pch W=2u L=1u
+MN623 s623 s622 0 0 nch W=1u L=1u
+C623 s623 0 10f
+MP624 s624 s623 vdd vdd pch W=2u L=1u
+MN624 s624 s623 0 0 nch W=1u L=1u
+C624 s624 0 10f
+MP625 s625 s624 vdd vdd pch W=2u L=1u
+MN625 s625 s624 0 0 nch W=1u L=1u
+C625 s625 0 10f
+MP626 s626 s625 vdd vdd pch W=2u L=1u
+MN626 s626 s625 0 0 nch W=1u L=1u
+C626 s626 0 10f
+MP627 s627 s626 vdd vdd pch W=2u L=1u
+MN627 s627 s626 0 0 nch W=1u L=1u
+C627 s627 0 10f
+MP628 s628 s627 vdd vdd pch W=2u L=1u
+MN628 s628 s627 0 0 nch W=1u L=1u
+C628 s628 0 10f
+MP629 s629 s628 vdd vdd pch W=2u L=1u
+MN629 s629 s628 0 0 nch W=1u L=1u
+C629 s629 0 10f
+MP630 s630 s629 vdd vdd pch W=2u L=1u
+MN630 s630 s629 0 0 nch W=1u L=1u
+C630 s630 0 10f
+MP631 s631 s630 vdd vdd pch W=2u L=1u
+MN631 s631 s630 0 0 nch W=1u L=1u
+C631 s631 0 10f
+MP632 s632 s631 vdd vdd pch W=2u L=1u
+MN632 s632 s631 0 0 nch W=1u L=1u
+C632 s632 0 10f
+MP633 s633 s632 vdd vdd pch W=2u L=1u
+MN633 s633 s632 0 0 nch W=1u L=1u
+C633 s633 0 10f
+MP634 s634 s633 vdd vdd pch W=2u L=1u
+MN634 s634 s633 0 0 nch W=1u L=1u
+C634 s634 0 10f
+MP635 s635 s634 vdd vdd pch W=2u L=1u
+MN635 s635 s634 0 0 nch W=1u L=1u
+C635 s635 0 10f
+MP636 s636 s635 vdd vdd pch W=2u L=1u
+MN636 s636 s635 0 0 nch W=1u L=1u
+C636 s636 0 10f
+MP637 s637 s636 vdd vdd pch W=2u L=1u
+MN637 s637 s636 0 0 nch W=1u L=1u
+C637 s637 0 10f
+MP638 s638 s637 vdd vdd pch W=2u L=1u
+MN638 s638 s637 0 0 nch W=1u L=1u
+C638 s638 0 10f
+MP639 s639 s638 vdd vdd pch W=2u L=1u
+MN639 s639 s638 0 0 nch W=1u L=1u
+C639 s639 0 10f
+MP640 s640 s639 vdd vdd pch W=2u L=1u
+MN640 s640 s639 0 0 nch W=1u L=1u
+C640 s640 0 10f
+MP641 s641 s640 vdd vdd pch W=2u L=1u
+MN641 s641 s640 0 0 nch W=1u L=1u
+C641 s641 0 10f
+MP642 s642 s641 vdd vdd pch W=2u L=1u
+MN642 s642 s641 0 0 nch W=1u L=1u
+C642 s642 0 10f
+MP643 s643 s642 vdd vdd pch W=2u L=1u
+MN643 s643 s642 0 0 nch W=1u L=1u
+C643 s643 0 10f
+MP644 s644 s643 vdd vdd pch W=2u L=1u
+MN644 s644 s643 0 0 nch W=1u L=1u
+C644 s644 0 10f
+MP645 s645 s644 vdd vdd pch W=2u L=1u
+MN645 s645 s644 0 0 nch W=1u L=1u
+C645 s645 0 10f
+MP646 s646 s645 vdd vdd pch W=2u L=1u
+MN646 s646 s645 0 0 nch W=1u L=1u
+C646 s646 0 10f
+MP647 s647 s646 vdd vdd pch W=2u L=1u
+MN647 s647 s646 0 0 nch W=1u L=1u
+C647 s647 0 10f
+MP648 s648 s647 vdd vdd pch W=2u L=1u
+MN648 s648 s647 0 0 nch W=1u L=1u
+C648 s648 0 10f
+MP649 s649 s648 vdd vdd pch W=2u L=1u
+MN649 s649 s648 0 0 nch W=1u L=1u
+C649 s649 0 10f
+MP650 s650 s649 vdd vdd pch W=2u L=1u
+MN650 s650 s649 0 0 nch W=1u L=1u
+C650 s650 0 10f
+MP651 s651 s650 vdd vdd pch W=2u L=1u
+MN651 s651 s650 0 0 nch W=1u L=1u
+C651 s651 0 10f
+MP652 s652 s651 vdd vdd pch W=2u L=1u
+MN652 s652 s651 0 0 nch W=1u L=1u
+C652 s652 0 10f
+MP653 s653 s652 vdd vdd pch W=2u L=1u
+MN653 s653 s652 0 0 nch W=1u L=1u
+C653 s653 0 10f
+MP654 s654 s653 vdd vdd pch W=2u L=1u
+MN654 s654 s653 0 0 nch W=1u L=1u
+C654 s654 0 10f
+MP655 s655 s654 vdd vdd pch W=2u L=1u
+MN655 s655 s654 0 0 nch W=1u L=1u
+C655 s655 0 10f
+MP656 s656 s655 vdd vdd pch W=2u L=1u
+MN656 s656 s655 0 0 nch W=1u L=1u
+C656 s656 0 10f
+MP657 s657 s656 vdd vdd pch W=2u L=1u
+MN657 s657 s656 0 0 nch W=1u L=1u
+C657 s657 0 10f
+MP658 s658 s657 vdd vdd pch W=2u L=1u
+MN658 s658 s657 0 0 nch W=1u L=1u
+C658 s658 0 10f
+MP659 s659 s658 vdd vdd pch W=2u L=1u
+MN659 s659 s658 0 0 nch W=1u L=1u
+C659 s659 0 10f
+MP660 s660 s659 vdd vdd pch W=2u L=1u
+MN660 s660 s659 0 0 nch W=1u L=1u
+C660 s660 0 10f
+MP661 s661 s660 vdd vdd pch W=2u L=1u
+MN661 s661 s660 0 0 nch W=1u L=1u
+C661 s661 0 10f
+MP662 s662 s661 vdd vdd pch W=2u L=1u
+MN662 s662 s661 0 0 nch W=1u L=1u
+C662 s662 0 10f
+MP663 s663 s662 vdd vdd pch W=2u L=1u
+MN663 s663 s662 0 0 nch W=1u L=1u
+C663 s663 0 10f
+MP664 s664 s663 vdd vdd pch W=2u L=1u
+MN664 s664 s663 0 0 nch W=1u L=1u
+C664 s664 0 10f
+MP665 s665 s664 vdd vdd pch W=2u L=1u
+MN665 s665 s664 0 0 nch W=1u L=1u
+C665 s665 0 10f
+MP666 s666 s665 vdd vdd pch W=2u L=1u
+MN666 s666 s665 0 0 nch W=1u L=1u
+C666 s666 0 10f
+MP667 s667 s666 vdd vdd pch W=2u L=1u
+MN667 s667 s666 0 0 nch W=1u L=1u
+C667 s667 0 10f
+MP668 s668 s667 vdd vdd pch W=2u L=1u
+MN668 s668 s667 0 0 nch W=1u L=1u
+C668 s668 0 10f
+MP669 s669 s668 vdd vdd pch W=2u L=1u
+MN669 s669 s668 0 0 nch W=1u L=1u
+C669 s669 0 10f
+MP670 s670 s669 vdd vdd pch W=2u L=1u
+MN670 s670 s669 0 0 nch W=1u L=1u
+C670 s670 0 10f
+MP671 s671 s670 vdd vdd pch W=2u L=1u
+MN671 s671 s670 0 0 nch W=1u L=1u
+C671 s671 0 10f
+MP672 s672 s671 vdd vdd pch W=2u L=1u
+MN672 s672 s671 0 0 nch W=1u L=1u
+C672 s672 0 10f
+MP673 s673 s672 vdd vdd pch W=2u L=1u
+MN673 s673 s672 0 0 nch W=1u L=1u
+C673 s673 0 10f
+MP674 s674 s673 vdd vdd pch W=2u L=1u
+MN674 s674 s673 0 0 nch W=1u L=1u
+C674 s674 0 10f
+MP675 s675 s674 vdd vdd pch W=2u L=1u
+MN675 s675 s674 0 0 nch W=1u L=1u
+C675 s675 0 10f
+MP676 s676 s675 vdd vdd pch W=2u L=1u
+MN676 s676 s675 0 0 nch W=1u L=1u
+C676 s676 0 10f
+MP677 s677 s676 vdd vdd pch W=2u L=1u
+MN677 s677 s676 0 0 nch W=1u L=1u
+C677 s677 0 10f
+MP678 s678 s677 vdd vdd pch W=2u L=1u
+MN678 s678 s677 0 0 nch W=1u L=1u
+C678 s678 0 10f
+MP679 s679 s678 vdd vdd pch W=2u L=1u
+MN679 s679 s678 0 0 nch W=1u L=1u
+C679 s679 0 10f
+MP680 s680 s679 vdd vdd pch W=2u L=1u
+MN680 s680 s679 0 0 nch W=1u L=1u
+C680 s680 0 10f
+MP681 s681 s680 vdd vdd pch W=2u L=1u
+MN681 s681 s680 0 0 nch W=1u L=1u
+C681 s681 0 10f
+MP682 s682 s681 vdd vdd pch W=2u L=1u
+MN682 s682 s681 0 0 nch W=1u L=1u
+C682 s682 0 10f
+MP683 s683 s682 vdd vdd pch W=2u L=1u
+MN683 s683 s682 0 0 nch W=1u L=1u
+C683 s683 0 10f
+MP684 s684 s683 vdd vdd pch W=2u L=1u
+MN684 s684 s683 0 0 nch W=1u L=1u
+C684 s684 0 10f
+MP685 s685 s684 vdd vdd pch W=2u L=1u
+MN685 s685 s684 0 0 nch W=1u L=1u
+C685 s685 0 10f
+MP686 s686 s685 vdd vdd pch W=2u L=1u
+MN686 s686 s685 0 0 nch W=1u L=1u
+C686 s686 0 10f
+MP687 s687 s686 vdd vdd pch W=2u L=1u
+MN687 s687 s686 0 0 nch W=1u L=1u
+C687 s687 0 10f
+MP688 s688 s687 vdd vdd pch W=2u L=1u
+MN688 s688 s687 0 0 nch W=1u L=1u
+C688 s688 0 10f
+MP689 s689 s688 vdd vdd pch W=2u L=1u
+MN689 s689 s688 0 0 nch W=1u L=1u
+C689 s689 0 10f
+MP690 s690 s689 vdd vdd pch W=2u L=1u
+MN690 s690 s689 0 0 nch W=1u L=1u
+C690 s690 0 10f
+MP691 s691 s690 vdd vdd pch W=2u L=1u
+MN691 s691 s690 0 0 nch W=1u L=1u
+C691 s691 0 10f
+MP692 s692 s691 vdd vdd pch W=2u L=1u
+MN692 s692 s691 0 0 nch W=1u L=1u
+C692 s692 0 10f
+MP693 s693 s692 vdd vdd pch W=2u L=1u
+MN693 s693 s692 0 0 nch W=1u L=1u
+C693 s693 0 10f
+MP694 s694 s693 vdd vdd pch W=2u L=1u
+MN694 s694 s693 0 0 nch W=1u L=1u
+C694 s694 0 10f
+MP695 s695 s694 vdd vdd pch W=2u L=1u
+MN695 s695 s694 0 0 nch W=1u L=1u
+C695 s695 0 10f
+MP696 s696 s695 vdd vdd pch W=2u L=1u
+MN696 s696 s695 0 0 nch W=1u L=1u
+C696 s696 0 10f
+MP697 s697 s696 vdd vdd pch W=2u L=1u
+MN697 s697 s696 0 0 nch W=1u L=1u
+C697 s697 0 10f
+MP698 s698 s697 vdd vdd pch W=2u L=1u
+MN698 s698 s697 0 0 nch W=1u L=1u
+C698 s698 0 10f
+MP699 s699 s698 vdd vdd pch W=2u L=1u
+MN699 s699 s698 0 0 nch W=1u L=1u
+C699 s699 0 10f
+MP700 s700 s699 vdd vdd pch W=2u L=1u
+MN700 s700 s699 0 0 nch W=1u L=1u
+C700 s700 0 10f
+MP701 s701 s700 vdd vdd pch W=2u L=1u
+MN701 s701 s700 0 0 nch W=1u L=1u
+C701 s701 0 10f
+MP702 s702 s701 vdd vdd pch W=2u L=1u
+MN702 s702 s701 0 0 nch W=1u L=1u
+C702 s702 0 10f
+MP703 s703 s702 vdd vdd pch W=2u L=1u
+MN703 s703 s702 0 0 nch W=1u L=1u
+C703 s703 0 10f
+MP704 s704 s703 vdd vdd pch W=2u L=1u
+MN704 s704 s703 0 0 nch W=1u L=1u
+C704 s704 0 10f
+MP705 s705 s704 vdd vdd pch W=2u L=1u
+MN705 s705 s704 0 0 nch W=1u L=1u
+C705 s705 0 10f
+MP706 s706 s705 vdd vdd pch W=2u L=1u
+MN706 s706 s705 0 0 nch W=1u L=1u
+C706 s706 0 10f
+MP707 s707 s706 vdd vdd pch W=2u L=1u
+MN707 s707 s706 0 0 nch W=1u L=1u
+C707 s707 0 10f
+MP708 s708 s707 vdd vdd pch W=2u L=1u
+MN708 s708 s707 0 0 nch W=1u L=1u
+C708 s708 0 10f
+MP709 s709 s708 vdd vdd pch W=2u L=1u
+MN709 s709 s708 0 0 nch W=1u L=1u
+C709 s709 0 10f
+MP710 s710 s709 vdd vdd pch W=2u L=1u
+MN710 s710 s709 0 0 nch W=1u L=1u
+C710 s710 0 10f
+MP711 s711 s710 vdd vdd pch W=2u L=1u
+MN711 s711 s710 0 0 nch W=1u L=1u
+C711 s711 0 10f
+MP712 s712 s711 vdd vdd pch W=2u L=1u
+MN712 s712 s711 0 0 nch W=1u L=1u
+C712 s712 0 10f
+MP713 s713 s712 vdd vdd pch W=2u L=1u
+MN713 s713 s712 0 0 nch W=1u L=1u
+C713 s713 0 10f
+MP714 s714 s713 vdd vdd pch W=2u L=1u
+MN714 s714 s713 0 0 nch W=1u L=1u
+C714 s714 0 10f
+MP715 s715 s714 vdd vdd pch W=2u L=1u
+MN715 s715 s714 0 0 nch W=1u L=1u
+C715 s715 0 10f
+MP716 s716 s715 vdd vdd pch W=2u L=1u
+MN716 s716 s715 0 0 nch W=1u L=1u
+C716 s716 0 10f
+MP717 s717 s716 vdd vdd pch W=2u L=1u
+MN717 s717 s716 0 0 nch W=1u L=1u
+C717 s717 0 10f
+MP718 s718 s717 vdd vdd pch W=2u L=1u
+MN718 s718 s717 0 0 nch W=1u L=1u
+C718 s718 0 10f
+MP719 s719 s718 vdd vdd pch W=2u L=1u
+MN719 s719 s718 0 0 nch W=1u L=1u
+C719 s719 0 10f
+MP720 s720 s719 vdd vdd pch W=2u L=1u
+MN720 s720 s719 0 0 nch W=1u L=1u
+C720 s720 0 10f
+MP721 s721 s720 vdd vdd pch W=2u L=1u
+MN721 s721 s720 0 0 nch W=1u L=1u
+C721 s721 0 10f
+MP722 s722 s721 vdd vdd pch W=2u L=1u
+MN722 s722 s721 0 0 nch W=1u L=1u
+C722 s722 0 10f
+MP723 s723 s722 vdd vdd pch W=2u L=1u
+MN723 s723 s722 0 0 nch W=1u L=1u
+C723 s723 0 10f
+MP724 s724 s723 vdd vdd pch W=2u L=1u
+MN724 s724 s723 0 0 nch W=1u L=1u
+C724 s724 0 10f
+MP725 s725 s724 vdd vdd pch W=2u L=1u
+MN725 s725 s724 0 0 nch W=1u L=1u
+C725 s725 0 10f
+MP726 s726 s725 vdd vdd pch W=2u L=1u
+MN726 s726 s725 0 0 nch W=1u L=1u
+C726 s726 0 10f
+MP727 s727 s726 vdd vdd pch W=2u L=1u
+MN727 s727 s726 0 0 nch W=1u L=1u
+C727 s727 0 10f
+MP728 s728 s727 vdd vdd pch W=2u L=1u
+MN728 s728 s727 0 0 nch W=1u L=1u
+C728 s728 0 10f
+MP729 s729 s728 vdd vdd pch W=2u L=1u
+MN729 s729 s728 0 0 nch W=1u L=1u
+C729 s729 0 10f
+MP730 s730 s729 vdd vdd pch W=2u L=1u
+MN730 s730 s729 0 0 nch W=1u L=1u
+C730 s730 0 10f
+MP731 s731 s730 vdd vdd pch W=2u L=1u
+MN731 s731 s730 0 0 nch W=1u L=1u
+C731 s731 0 10f
+MP732 s732 s731 vdd vdd pch W=2u L=1u
+MN732 s732 s731 0 0 nch W=1u L=1u
+C732 s732 0 10f
+MP733 s733 s732 vdd vdd pch W=2u L=1u
+MN733 s733 s732 0 0 nch W=1u L=1u
+C733 s733 0 10f
+MP734 s734 s733 vdd vdd pch W=2u L=1u
+MN734 s734 s733 0 0 nch W=1u L=1u
+C734 s734 0 10f
+MP735 s735 s734 vdd vdd pch W=2u L=1u
+MN735 s735 s734 0 0 nch W=1u L=1u
+C735 s735 0 10f
+MP736 s736 s735 vdd vdd pch W=2u L=1u
+MN736 s736 s735 0 0 nch W=1u L=1u
+C736 s736 0 10f
+MP737 s737 s736 vdd vdd pch W=2u L=1u
+MN737 s737 s736 0 0 nch W=1u L=1u
+C737 s737 0 10f
+MP738 s738 s737 vdd vdd pch W=2u L=1u
+MN738 s738 s737 0 0 nch W=1u L=1u
+C738 s738 0 10f
+MP739 s739 s738 vdd vdd pch W=2u L=1u
+MN739 s739 s738 0 0 nch W=1u L=1u
+C739 s739 0 10f
+MP740 s740 s739 vdd vdd pch W=2u L=1u
+MN740 s740 s739 0 0 nch W=1u L=1u
+C740 s740 0 10f
+MP741 s741 s740 vdd vdd pch W=2u L=1u
+MN741 s741 s740 0 0 nch W=1u L=1u
+C741 s741 0 10f
+MP742 s742 s741 vdd vdd pch W=2u L=1u
+MN742 s742 s741 0 0 nch W=1u L=1u
+C742 s742 0 10f
+MP743 s743 s742 vdd vdd pch W=2u L=1u
+MN743 s743 s742 0 0 nch W=1u L=1u
+C743 s743 0 10f
+MP744 s744 s743 vdd vdd pch W=2u L=1u
+MN744 s744 s743 0 0 nch W=1u L=1u
+C744 s744 0 10f
+MP745 s745 s744 vdd vdd pch W=2u L=1u
+MN745 s745 s744 0 0 nch W=1u L=1u
+C745 s745 0 10f
+MP746 s746 s745 vdd vdd pch W=2u L=1u
+MN746 s746 s745 0 0 nch W=1u L=1u
+C746 s746 0 10f
+MP747 s747 s746 vdd vdd pch W=2u L=1u
+MN747 s747 s746 0 0 nch W=1u L=1u
+C747 s747 0 10f
+MP748 s748 s747 vdd vdd pch W=2u L=1u
+MN748 s748 s747 0 0 nch W=1u L=1u
+C748 s748 0 10f
+MP749 s749 s748 vdd vdd pch W=2u L=1u
+MN749 s749 s748 0 0 nch W=1u L=1u
+C749 s749 0 10f
+MP750 s750 s749 vdd vdd pch W=2u L=1u
+MN750 s750 s749 0 0 nch W=1u L=1u
+C750 s750 0 10f
+MP751 s751 s750 vdd vdd pch W=2u L=1u
+MN751 s751 s750 0 0 nch W=1u L=1u
+C751 s751 0 10f
+MP752 s752 s751 vdd vdd pch W=2u L=1u
+MN752 s752 s751 0 0 nch W=1u L=1u
+C752 s752 0 10f
+MP753 s753 s752 vdd vdd pch W=2u L=1u
+MN753 s753 s752 0 0 nch W=1u L=1u
+C753 s753 0 10f
+MP754 s754 s753 vdd vdd pch W=2u L=1u
+MN754 s754 s753 0 0 nch W=1u L=1u
+C754 s754 0 10f
+MP755 s755 s754 vdd vdd pch W=2u L=1u
+MN755 s755 s754 0 0 nch W=1u L=1u
+C755 s755 0 10f
+MP756 s756 s755 vdd vdd pch W=2u L=1u
+MN756 s756 s755 0 0 nch W=1u L=1u
+C756 s756 0 10f
+MP757 s757 s756 vdd vdd pch W=2u L=1u
+MN757 s757 s756 0 0 nch W=1u L=1u
+C757 s757 0 10f
+MP758 s758 s757 vdd vdd pch W=2u L=1u
+MN758 s758 s757 0 0 nch W=1u L=1u
+C758 s758 0 10f
+MP759 s759 s758 vdd vdd pch W=2u L=1u
+MN759 s759 s758 0 0 nch W=1u L=1u
+C759 s759 0 10f
+MP760 s760 s759 vdd vdd pch W=2u L=1u
+MN760 s760 s759 0 0 nch W=1u L=1u
+C760 s760 0 10f
+MP761 s761 s760 vdd vdd pch W=2u L=1u
+MN761 s761 s760 0 0 nch W=1u L=1u
+C761 s761 0 10f
+MP762 s762 s761 vdd vdd pch W=2u L=1u
+MN762 s762 s761 0 0 nch W=1u L=1u
+C762 s762 0 10f
+MP763 s763 s762 vdd vdd pch W=2u L=1u
+MN763 s763 s762 0 0 nch W=1u L=1u
+C763 s763 0 10f
+MP764 s764 s763 vdd vdd pch W=2u L=1u
+MN764 s764 s763 0 0 nch W=1u L=1u
+C764 s764 0 10f
+MP765 s765 s764 vdd vdd pch W=2u L=1u
+MN765 s765 s764 0 0 nch W=1u L=1u
+C765 s765 0 10f
+MP766 s766 s765 vdd vdd pch W=2u L=1u
+MN766 s766 s765 0 0 nch W=1u L=1u
+C766 s766 0 10f
+MP767 s767 s766 vdd vdd pch W=2u L=1u
+MN767 s767 s766 0 0 nch W=1u L=1u
+C767 s767 0 10f
+MP768 s768 s767 vdd vdd pch W=2u L=1u
+MN768 s768 s767 0 0 nch W=1u L=1u
+C768 s768 0 10f
+MP769 s769 s768 vdd vdd pch W=2u L=1u
+MN769 s769 s768 0 0 nch W=1u L=1u
+C769 s769 0 10f
+MP770 s770 s769 vdd vdd pch W=2u L=1u
+MN770 s770 s769 0 0 nch W=1u L=1u
+C770 s770 0 10f
+MP771 s771 s770 vdd vdd pch W=2u L=1u
+MN771 s771 s770 0 0 nch W=1u L=1u
+C771 s771 0 10f
+MP772 s772 s771 vdd vdd pch W=2u L=1u
+MN772 s772 s771 0 0 nch W=1u L=1u
+C772 s772 0 10f
+MP773 s773 s772 vdd vdd pch W=2u L=1u
+MN773 s773 s772 0 0 nch W=1u L=1u
+C773 s773 0 10f
+MP774 s774 s773 vdd vdd pch W=2u L=1u
+MN774 s774 s773 0 0 nch W=1u L=1u
+C774 s774 0 10f
+MP775 s775 s774 vdd vdd pch W=2u L=1u
+MN775 s775 s774 0 0 nch W=1u L=1u
+C775 s775 0 10f
+MP776 s776 s775 vdd vdd pch W=2u L=1u
+MN776 s776 s775 0 0 nch W=1u L=1u
+C776 s776 0 10f
+MP777 s777 s776 vdd vdd pch W=2u L=1u
+MN777 s777 s776 0 0 nch W=1u L=1u
+C777 s777 0 10f
+MP778 s778 s777 vdd vdd pch W=2u L=1u
+MN778 s778 s777 0 0 nch W=1u L=1u
+C778 s778 0 10f
+MP779 s779 s778 vdd vdd pch W=2u L=1u
+MN779 s779 s778 0 0 nch W=1u L=1u
+C779 s779 0 10f
+MP780 s780 s779 vdd vdd pch W=2u L=1u
+MN780 s780 s779 0 0 nch W=1u L=1u
+C780 s780 0 10f
+MP781 s781 s780 vdd vdd pch W=2u L=1u
+MN781 s781 s780 0 0 nch W=1u L=1u
+C781 s781 0 10f
+MP782 s782 s781 vdd vdd pch W=2u L=1u
+MN782 s782 s781 0 0 nch W=1u L=1u
+C782 s782 0 10f
+MP783 s783 s782 vdd vdd pch W=2u L=1u
+MN783 s783 s782 0 0 nch W=1u L=1u
+C783 s783 0 10f
+MP784 s784 s783 vdd vdd pch W=2u L=1u
+MN784 s784 s783 0 0 nch W=1u L=1u
+C784 s784 0 10f
+MP785 s785 s784 vdd vdd pch W=2u L=1u
+MN785 s785 s784 0 0 nch W=1u L=1u
+C785 s785 0 10f
+MP786 s786 s785 vdd vdd pch W=2u L=1u
+MN786 s786 s785 0 0 nch W=1u L=1u
+C786 s786 0 10f
+MP787 s787 s786 vdd vdd pch W=2u L=1u
+MN787 s787 s786 0 0 nch W=1u L=1u
+C787 s787 0 10f
+MP788 s788 s787 vdd vdd pch W=2u L=1u
+MN788 s788 s787 0 0 nch W=1u L=1u
+C788 s788 0 10f
+MP789 s789 s788 vdd vdd pch W=2u L=1u
+MN789 s789 s788 0 0 nch W=1u L=1u
+C789 s789 0 10f
+MP790 s790 s789 vdd vdd pch W=2u L=1u
+MN790 s790 s789 0 0 nch W=1u L=1u
+C790 s790 0 10f
+MP791 s791 s790 vdd vdd pch W=2u L=1u
+MN791 s791 s790 0 0 nch W=1u L=1u
+C791 s791 0 10f
+MP792 s792 s791 vdd vdd pch W=2u L=1u
+MN792 s792 s791 0 0 nch W=1u L=1u
+C792 s792 0 10f
+MP793 s793 s792 vdd vdd pch W=2u L=1u
+MN793 s793 s792 0 0 nch W=1u L=1u
+C793 s793 0 10f
+MP794 s794 s793 vdd vdd pch W=2u L=1u
+MN794 s794 s793 0 0 nch W=1u L=1u
+C794 s794 0 10f
+MP795 s795 s794 vdd vdd pch W=2u L=1u
+MN795 s795 s794 0 0 nch W=1u L=1u
+C795 s795 0 10f
+MP796 s796 s795 vdd vdd pch W=2u L=1u
+MN796 s796 s795 0 0 nch W=1u L=1u
+C796 s796 0 10f
+MP797 s797 s796 vdd vdd pch W=2u L=1u
+MN797 s797 s796 0 0 nch W=1u L=1u
+C797 s797 0 10f
+MP798 s798 s797 vdd vdd pch W=2u L=1u
+MN798 s798 s797 0 0 nch W=1u L=1u
+C798 s798 0 10f
+MP799 s799 s798 vdd vdd pch W=2u L=1u
+MN799 s799 s798 0 0 nch W=1u L=1u
+C799 s799 0 10f
+MP800 s800 s799 vdd vdd pch W=2u L=1u
+MN800 s800 s799 0 0 nch W=1u L=1u
+C800 s800 0 10f
+MP801 s801 s800 vdd vdd pch W=2u L=1u
+MN801 s801 s800 0 0 nch W=1u L=1u
+C801 s801 0 10f
+MP802 s802 s801 vdd vdd pch W=2u L=1u
+MN802 s802 s801 0 0 nch W=1u L=1u
+C802 s802 0 10f
+MP803 s803 s802 vdd vdd pch W=2u L=1u
+MN803 s803 s802 0 0 nch W=1u L=1u
+C803 s803 0 10f
+MP804 s804 s803 vdd vdd pch W=2u L=1u
+MN804 s804 s803 0 0 nch W=1u L=1u
+C804 s804 0 10f
+MP805 s805 s804 vdd vdd pch W=2u L=1u
+MN805 s805 s804 0 0 nch W=1u L=1u
+C805 s805 0 10f
+MP806 s806 s805 vdd vdd pch W=2u L=1u
+MN806 s806 s805 0 0 nch W=1u L=1u
+C806 s806 0 10f
+MP807 s807 s806 vdd vdd pch W=2u L=1u
+MN807 s807 s806 0 0 nch W=1u L=1u
+C807 s807 0 10f
+MP808 s808 s807 vdd vdd pch W=2u L=1u
+MN808 s808 s807 0 0 nch W=1u L=1u
+C808 s808 0 10f
+MP809 s809 s808 vdd vdd pch W=2u L=1u
+MN809 s809 s808 0 0 nch W=1u L=1u
+C809 s809 0 10f
+MP810 s810 s809 vdd vdd pch W=2u L=1u
+MN810 s810 s809 0 0 nch W=1u L=1u
+C810 s810 0 10f
+MP811 s811 s810 vdd vdd pch W=2u L=1u
+MN811 s811 s810 0 0 nch W=1u L=1u
+C811 s811 0 10f
+MP812 s812 s811 vdd vdd pch W=2u L=1u
+MN812 s812 s811 0 0 nch W=1u L=1u
+C812 s812 0 10f
+MP813 s813 s812 vdd vdd pch W=2u L=1u
+MN813 s813 s812 0 0 nch W=1u L=1u
+C813 s813 0 10f
+MP814 s814 s813 vdd vdd pch W=2u L=1u
+MN814 s814 s813 0 0 nch W=1u L=1u
+C814 s814 0 10f
+MP815 s815 s814 vdd vdd pch W=2u L=1u
+MN815 s815 s814 0 0 nch W=1u L=1u
+C815 s815 0 10f
+MP816 s816 s815 vdd vdd pch W=2u L=1u
+MN816 s816 s815 0 0 nch W=1u L=1u
+C816 s816 0 10f
+MP817 s817 s816 vdd vdd pch W=2u L=1u
+MN817 s817 s816 0 0 nch W=1u L=1u
+C817 s817 0 10f
+MP818 s818 s817 vdd vdd pch W=2u L=1u
+MN818 s818 s817 0 0 nch W=1u L=1u
+C818 s818 0 10f
+MP819 s819 s818 vdd vdd pch W=2u L=1u
+MN819 s819 s818 0 0 nch W=1u L=1u
+C819 s819 0 10f
+MP820 s820 s819 vdd vdd pch W=2u L=1u
+MN820 s820 s819 0 0 nch W=1u L=1u
+C820 s820 0 10f
+MP821 s821 s820 vdd vdd pch W=2u L=1u
+MN821 s821 s820 0 0 nch W=1u L=1u
+C821 s821 0 10f
+MP822 s822 s821 vdd vdd pch W=2u L=1u
+MN822 s822 s821 0 0 nch W=1u L=1u
+C822 s822 0 10f
+MP823 s823 s822 vdd vdd pch W=2u L=1u
+MN823 s823 s822 0 0 nch W=1u L=1u
+C823 s823 0 10f
+MP824 s824 s823 vdd vdd pch W=2u L=1u
+MN824 s824 s823 0 0 nch W=1u L=1u
+C824 s824 0 10f
+MP825 s825 s824 vdd vdd pch W=2u L=1u
+MN825 s825 s824 0 0 nch W=1u L=1u
+C825 s825 0 10f
+MP826 s826 s825 vdd vdd pch W=2u L=1u
+MN826 s826 s825 0 0 nch W=1u L=1u
+C826 s826 0 10f
+MP827 s827 s826 vdd vdd pch W=2u L=1u
+MN827 s827 s826 0 0 nch W=1u L=1u
+C827 s827 0 10f
+MP828 s828 s827 vdd vdd pch W=2u L=1u
+MN828 s828 s827 0 0 nch W=1u L=1u
+C828 s828 0 10f
+MP829 s829 s828 vdd vdd pch W=2u L=1u
+MN829 s829 s828 0 0 nch W=1u L=1u
+C829 s829 0 10f
+MP830 s830 s829 vdd vdd pch W=2u L=1u
+MN830 s830 s829 0 0 nch W=1u L=1u
+C830 s830 0 10f
+MP831 s831 s830 vdd vdd pch W=2u L=1u
+MN831 s831 s830 0 0 nch W=1u L=1u
+C831 s831 0 10f
+MP832 s832 s831 vdd vdd pch W=2u L=1u
+MN832 s832 s831 0 0 nch W=1u L=1u
+C832 s832 0 10f
+MP833 s833 s832 vdd vdd pch W=2u L=1u
+MN833 s833 s832 0 0 nch W=1u L=1u
+C833 s833 0 10f
+MP834 s834 s833 vdd vdd pch W=2u L=1u
+MN834 s834 s833 0 0 nch W=1u L=1u
+C834 s834 0 10f
+MP835 s835 s834 vdd vdd pch W=2u L=1u
+MN835 s835 s834 0 0 nch W=1u L=1u
+C835 s835 0 10f
+MP836 s836 s835 vdd vdd pch W=2u L=1u
+MN836 s836 s835 0 0 nch W=1u L=1u
+C836 s836 0 10f
+MP837 s837 s836 vdd vdd pch W=2u L=1u
+MN837 s837 s836 0 0 nch W=1u L=1u
+C837 s837 0 10f
+MP838 s838 s837 vdd vdd pch W=2u L=1u
+MN838 s838 s837 0 0 nch W=1u L=1u
+C838 s838 0 10f
+MP839 s839 s838 vdd vdd pch W=2u L=1u
+MN839 s839 s838 0 0 nch W=1u L=1u
+C839 s839 0 10f
+MP840 s840 s839 vdd vdd pch W=2u L=1u
+MN840 s840 s839 0 0 nch W=1u L=1u
+C840 s840 0 10f
+MP841 s841 s840 vdd vdd pch W=2u L=1u
+MN841 s841 s840 0 0 nch W=1u L=1u
+C841 s841 0 10f
+MP842 s842 s841 vdd vdd pch W=2u L=1u
+MN842 s842 s841 0 0 nch W=1u L=1u
+C842 s842 0 10f
+MP843 s843 s842 vdd vdd pch W=2u L=1u
+MN843 s843 s842 0 0 nch W=1u L=1u
+C843 s843 0 10f
+MP844 s844 s843 vdd vdd pch W=2u L=1u
+MN844 s844 s843 0 0 nch W=1u L=1u
+C844 s844 0 10f
+MP845 s845 s844 vdd vdd pch W=2u L=1u
+MN845 s845 s844 0 0 nch W=1u L=1u
+C845 s845 0 10f
+MP846 s846 s845 vdd vdd pch W=2u L=1u
+MN846 s846 s845 0 0 nch W=1u L=1u
+C846 s846 0 10f
+MP847 s847 s846 vdd vdd pch W=2u L=1u
+MN847 s847 s846 0 0 nch W=1u L=1u
+C847 s847 0 10f
+MP848 s848 s847 vdd vdd pch W=2u L=1u
+MN848 s848 s847 0 0 nch W=1u L=1u
+C848 s848 0 10f
+MP849 s849 s848 vdd vdd pch W=2u L=1u
+MN849 s849 s848 0 0 nch W=1u L=1u
+C849 s849 0 10f
+MP850 s850 s849 vdd vdd pch W=2u L=1u
+MN850 s850 s849 0 0 nch W=1u L=1u
+C850 s850 0 10f
+MP851 s851 s850 vdd vdd pch W=2u L=1u
+MN851 s851 s850 0 0 nch W=1u L=1u
+C851 s851 0 10f
+MP852 s852 s851 vdd vdd pch W=2u L=1u
+MN852 s852 s851 0 0 nch W=1u L=1u
+C852 s852 0 10f
+MP853 s853 s852 vdd vdd pch W=2u L=1u
+MN853 s853 s852 0 0 nch W=1u L=1u
+C853 s853 0 10f
+MP854 s854 s853 vdd vdd pch W=2u L=1u
+MN854 s854 s853 0 0 nch W=1u L=1u
+C854 s854 0 10f
+MP855 s855 s854 vdd vdd pch W=2u L=1u
+MN855 s855 s854 0 0 nch W=1u L=1u
+C855 s855 0 10f
+MP856 s856 s855 vdd vdd pch W=2u L=1u
+MN856 s856 s855 0 0 nch W=1u L=1u
+C856 s856 0 10f
+MP857 s857 s856 vdd vdd pch W=2u L=1u
+MN857 s857 s856 0 0 nch W=1u L=1u
+C857 s857 0 10f
+MP858 s858 s857 vdd vdd pch W=2u L=1u
+MN858 s858 s857 0 0 nch W=1u L=1u
+C858 s858 0 10f
+MP859 s859 s858 vdd vdd pch W=2u L=1u
+MN859 s859 s858 0 0 nch W=1u L=1u
+C859 s859 0 10f
+MP860 s860 s859 vdd vdd pch W=2u L=1u
+MN860 s860 s859 0 0 nch W=1u L=1u
+C860 s860 0 10f
+MP861 s861 s860 vdd vdd pch W=2u L=1u
+MN861 s861 s860 0 0 nch W=1u L=1u
+C861 s861 0 10f
+MP862 s862 s861 vdd vdd pch W=2u L=1u
+MN862 s862 s861 0 0 nch W=1u L=1u
+C862 s862 0 10f
+MP863 s863 s862 vdd vdd pch W=2u L=1u
+MN863 s863 s862 0 0 nch W=1u L=1u
+C863 s863 0 10f
+MP864 s864 s863 vdd vdd pch W=2u L=1u
+MN864 s864 s863 0 0 nch W=1u L=1u
+C864 s864 0 10f
+MP865 s865 s864 vdd vdd pch W=2u L=1u
+MN865 s865 s864 0 0 nch W=1u L=1u
+C865 s865 0 10f
+MP866 s866 s865 vdd vdd pch W=2u L=1u
+MN866 s866 s865 0 0 nch W=1u L=1u
+C866 s866 0 10f
+MP867 s867 s866 vdd vdd pch W=2u L=1u
+MN867 s867 s866 0 0 nch W=1u L=1u
+C867 s867 0 10f
+MP868 s868 s867 vdd vdd pch W=2u L=1u
+MN868 s868 s867 0 0 nch W=1u L=1u
+C868 s868 0 10f
+MP869 s869 s868 vdd vdd pch W=2u L=1u
+MN869 s869 s868 0 0 nch W=1u L=1u
+C869 s869 0 10f
+MP870 s870 s869 vdd vdd pch W=2u L=1u
+MN870 s870 s869 0 0 nch W=1u L=1u
+C870 s870 0 10f
+MP871 s871 s870 vdd vdd pch W=2u L=1u
+MN871 s871 s870 0 0 nch W=1u L=1u
+C871 s871 0 10f
+MP872 s872 s871 vdd vdd pch W=2u L=1u
+MN872 s872 s871 0 0 nch W=1u L=1u
+C872 s872 0 10f
+MP873 s873 s872 vdd vdd pch W=2u L=1u
+MN873 s873 s872 0 0 nch W=1u L=1u
+C873 s873 0 10f
+MP874 s874 s873 vdd vdd pch W=2u L=1u
+MN874 s874 s873 0 0 nch W=1u L=1u
+C874 s874 0 10f
+MP875 s875 s874 vdd vdd pch W=2u L=1u
+MN875 s875 s874 0 0 nch W=1u L=1u
+C875 s875 0 10f
+MP876 s876 s875 vdd vdd pch W=2u L=1u
+MN876 s876 s875 0 0 nch W=1u L=1u
+C876 s876 0 10f
+MP877 s877 s876 vdd vdd pch W=2u L=1u
+MN877 s877 s876 0 0 nch W=1u L=1u
+C877 s877 0 10f
+MP878 s878 s877 vdd vdd pch W=2u L=1u
+MN878 s878 s877 0 0 nch W=1u L=1u
+C878 s878 0 10f
+MP879 s879 s878 vdd vdd pch W=2u L=1u
+MN879 s879 s878 0 0 nch W=1u L=1u
+C879 s879 0 10f
+MP880 s880 s879 vdd vdd pch W=2u L=1u
+MN880 s880 s879 0 0 nch W=1u L=1u
+C880 s880 0 10f
+MP881 s881 s880 vdd vdd pch W=2u L=1u
+MN881 s881 s880 0 0 nch W=1u L=1u
+C881 s881 0 10f
+MP882 s882 s881 vdd vdd pch W=2u L=1u
+MN882 s882 s881 0 0 nch W=1u L=1u
+C882 s882 0 10f
+MP883 s883 s882 vdd vdd pch W=2u L=1u
+MN883 s883 s882 0 0 nch W=1u L=1u
+C883 s883 0 10f
+MP884 s884 s883 vdd vdd pch W=2u L=1u
+MN884 s884 s883 0 0 nch W=1u L=1u
+C884 s884 0 10f
+MP885 s885 s884 vdd vdd pch W=2u L=1u
+MN885 s885 s884 0 0 nch W=1u L=1u
+C885 s885 0 10f
+MP886 s886 s885 vdd vdd pch W=2u L=1u
+MN886 s886 s885 0 0 nch W=1u L=1u
+C886 s886 0 10f
+MP887 s887 s886 vdd vdd pch W=2u L=1u
+MN887 s887 s886 0 0 nch W=1u L=1u
+C887 s887 0 10f
+MP888 s888 s887 vdd vdd pch W=2u L=1u
+MN888 s888 s887 0 0 nch W=1u L=1u
+C888 s888 0 10f
+MP889 s889 s888 vdd vdd pch W=2u L=1u
+MN889 s889 s888 0 0 nch W=1u L=1u
+C889 s889 0 10f
+MP890 s890 s889 vdd vdd pch W=2u L=1u
+MN890 s890 s889 0 0 nch W=1u L=1u
+C890 s890 0 10f
+MP891 s891 s890 vdd vdd pch W=2u L=1u
+MN891 s891 s890 0 0 nch W=1u L=1u
+C891 s891 0 10f
+MP892 s892 s891 vdd vdd pch W=2u L=1u
+MN892 s892 s891 0 0 nch W=1u L=1u
+C892 s892 0 10f
+MP893 s893 s892 vdd vdd pch W=2u L=1u
+MN893 s893 s892 0 0 nch W=1u L=1u
+C893 s893 0 10f
+MP894 s894 s893 vdd vdd pch W=2u L=1u
+MN894 s894 s893 0 0 nch W=1u L=1u
+C894 s894 0 10f
+MP895 s895 s894 vdd vdd pch W=2u L=1u
+MN895 s895 s894 0 0 nch W=1u L=1u
+C895 s895 0 10f
+MP896 s896 s895 vdd vdd pch W=2u L=1u
+MN896 s896 s895 0 0 nch W=1u L=1u
+C896 s896 0 10f
+MP897 s897 s896 vdd vdd pch W=2u L=1u
+MN897 s897 s896 0 0 nch W=1u L=1u
+C897 s897 0 10f
+MP898 s898 s897 vdd vdd pch W=2u L=1u
+MN898 s898 s897 0 0 nch W=1u L=1u
+C898 s898 0 10f
+MP899 s899 s898 vdd vdd pch W=2u L=1u
+MN899 s899 s898 0 0 nch W=1u L=1u
+C899 s899 0 10f
+MP900 s900 s899 vdd vdd pch W=2u L=1u
+MN900 s900 s899 0 0 nch W=1u L=1u
+C900 s900 0 10f
+MP901 s901 s900 vdd vdd pch W=2u L=1u
+MN901 s901 s900 0 0 nch W=1u L=1u
+C901 s901 0 10f
+MP902 s902 s901 vdd vdd pch W=2u L=1u
+MN902 s902 s901 0 0 nch W=1u L=1u
+C902 s902 0 10f
+MP903 s903 s902 vdd vdd pch W=2u L=1u
+MN903 s903 s902 0 0 nch W=1u L=1u
+C903 s903 0 10f
+MP904 s904 s903 vdd vdd pch W=2u L=1u
+MN904 s904 s903 0 0 nch W=1u L=1u
+C904 s904 0 10f
+MP905 s905 s904 vdd vdd pch W=2u L=1u
+MN905 s905 s904 0 0 nch W=1u L=1u
+C905 s905 0 10f
+MP906 s906 s905 vdd vdd pch W=2u L=1u
+MN906 s906 s905 0 0 nch W=1u L=1u
+C906 s906 0 10f
+MP907 s907 s906 vdd vdd pch W=2u L=1u
+MN907 s907 s906 0 0 nch W=1u L=1u
+C907 s907 0 10f
+MP908 s908 s907 vdd vdd pch W=2u L=1u
+MN908 s908 s907 0 0 nch W=1u L=1u
+C908 s908 0 10f
+MP909 s909 s908 vdd vdd pch W=2u L=1u
+MN909 s909 s908 0 0 nch W=1u L=1u
+C909 s909 0 10f
+MP910 s910 s909 vdd vdd pch W=2u L=1u
+MN910 s910 s909 0 0 nch W=1u L=1u
+C910 s910 0 10f
+MP911 s911 s910 vdd vdd pch W=2u L=1u
+MN911 s911 s910 0 0 nch W=1u L=1u
+C911 s911 0 10f
+MP912 s912 s911 vdd vdd pch W=2u L=1u
+MN912 s912 s911 0 0 nch W=1u L=1u
+C912 s912 0 10f
+MP913 s913 s912 vdd vdd pch W=2u L=1u
+MN913 s913 s912 0 0 nch W=1u L=1u
+C913 s913 0 10f
+MP914 s914 s913 vdd vdd pch W=2u L=1u
+MN914 s914 s913 0 0 nch W=1u L=1u
+C914 s914 0 10f
+MP915 s915 s914 vdd vdd pch W=2u L=1u
+MN915 s915 s914 0 0 nch W=1u L=1u
+C915 s915 0 10f
+MP916 s916 s915 vdd vdd pch W=2u L=1u
+MN916 s916 s915 0 0 nch W=1u L=1u
+C916 s916 0 10f
+MP917 s917 s916 vdd vdd pch W=2u L=1u
+MN917 s917 s916 0 0 nch W=1u L=1u
+C917 s917 0 10f
+MP918 s918 s917 vdd vdd pch W=2u L=1u
+MN918 s918 s917 0 0 nch W=1u L=1u
+C918 s918 0 10f
+MP919 s919 s918 vdd vdd pch W=2u L=1u
+MN919 s919 s918 0 0 nch W=1u L=1u
+C919 s919 0 10f
+MP920 s920 s919 vdd vdd pch W=2u L=1u
+MN920 s920 s919 0 0 nch W=1u L=1u
+C920 s920 0 10f
+MP921 s921 s920 vdd vdd pch W=2u L=1u
+MN921 s921 s920 0 0 nch W=1u L=1u
+C921 s921 0 10f
+MP922 s922 s921 vdd vdd pch W=2u L=1u
+MN922 s922 s921 0 0 nch W=1u L=1u
+C922 s922 0 10f
+MP923 s923 s922 vdd vdd pch W=2u L=1u
+MN923 s923 s922 0 0 nch W=1u L=1u
+C923 s923 0 10f
+MP924 s924 s923 vdd vdd pch W=2u L=1u
+MN924 s924 s923 0 0 nch W=1u L=1u
+C924 s924 0 10f
+MP925 s925 s924 vdd vdd pch W=2u L=1u
+MN925 s925 s924 0 0 nch W=1u L=1u
+C925 s925 0 10f
+MP926 s926 s925 vdd vdd pch W=2u L=1u
+MN926 s926 s925 0 0 nch W=1u L=1u
+C926 s926 0 10f
+MP927 s927 s926 vdd vdd pch W=2u L=1u
+MN927 s927 s926 0 0 nch W=1u L=1u
+C927 s927 0 10f
+MP928 s928 s927 vdd vdd pch W=2u L=1u
+MN928 s928 s927 0 0 nch W=1u L=1u
+C928 s928 0 10f
+MP929 s929 s928 vdd vdd pch W=2u L=1u
+MN929 s929 s928 0 0 nch W=1u L=1u
+C929 s929 0 10f
+MP930 s930 s929 vdd vdd pch W=2u L=1u
+MN930 s930 s929 0 0 nch W=1u L=1u
+C930 s930 0 10f
+MP931 s931 s930 vdd vdd pch W=2u L=1u
+MN931 s931 s930 0 0 nch W=1u L=1u
+C931 s931 0 10f
+MP932 s932 s931 vdd vdd pch W=2u L=1u
+MN932 s932 s931 0 0 nch W=1u L=1u
+C932 s932 0 10f
+MP933 s933 s932 vdd vdd pch W=2u L=1u
+MN933 s933 s932 0 0 nch W=1u L=1u
+C933 s933 0 10f
+MP934 s934 s933 vdd vdd pch W=2u L=1u
+MN934 s934 s933 0 0 nch W=1u L=1u
+C934 s934 0 10f
+MP935 s935 s934 vdd vdd pch W=2u L=1u
+MN935 s935 s934 0 0 nch W=1u L=1u
+C935 s935 0 10f
+MP936 s936 s935 vdd vdd pch W=2u L=1u
+MN936 s936 s935 0 0 nch W=1u L=1u
+C936 s936 0 10f
+MP937 s937 s936 vdd vdd pch W=2u L=1u
+MN937 s937 s936 0 0 nch W=1u L=1u
+C937 s937 0 10f
+MP938 s938 s937 vdd vdd pch W=2u L=1u
+MN938 s938 s937 0 0 nch W=1u L=1u
+C938 s938 0 10f
+MP939 s939 s938 vdd vdd pch W=2u L=1u
+MN939 s939 s938 0 0 nch W=1u L=1u
+C939 s939 0 10f
+MP940 s940 s939 vdd vdd pch W=2u L=1u
+MN940 s940 s939 0 0 nch W=1u L=1u
+C940 s940 0 10f
+MP941 s941 s940 vdd vdd pch W=2u L=1u
+MN941 s941 s940 0 0 nch W=1u L=1u
+C941 s941 0 10f
+MP942 s942 s941 vdd vdd pch W=2u L=1u
+MN942 s942 s941 0 0 nch W=1u L=1u
+C942 s942 0 10f
+MP943 s943 s942 vdd vdd pch W=2u L=1u
+MN943 s943 s942 0 0 nch W=1u L=1u
+C943 s943 0 10f
+MP944 s944 s943 vdd vdd pch W=2u L=1u
+MN944 s944 s943 0 0 nch W=1u L=1u
+C944 s944 0 10f
+MP945 s945 s944 vdd vdd pch W=2u L=1u
+MN945 s945 s944 0 0 nch W=1u L=1u
+C945 s945 0 10f
+MP946 s946 s945 vdd vdd pch W=2u L=1u
+MN946 s946 s945 0 0 nch W=1u L=1u
+C946 s946 0 10f
+MP947 s947 s946 vdd vdd pch W=2u L=1u
+MN947 s947 s946 0 0 nch W=1u L=1u
+C947 s947 0 10f
+MP948 s948 s947 vdd vdd pch W=2u L=1u
+MN948 s948 s947 0 0 nch W=1u L=1u
+C948 s948 0 10f
+MP949 s949 s948 vdd vdd pch W=2u L=1u
+MN949 s949 s948 0 0 nch W=1u L=1u
+C949 s949 0 10f
+MP950 s950 s949 vdd vdd pch W=2u L=1u
+MN950 s950 s949 0 0 nch W=1u L=1u
+C950 s950 0 10f
+MP951 s951 s950 vdd vdd pch W=2u L=1u
+MN951 s951 s950 0 0 nch W=1u L=1u
+C951 s951 0 10f
+MP952 s952 s951 vdd vdd pch W=2u L=1u
+MN952 s952 s951 0 0 nch W=1u L=1u
+C952 s952 0 10f
+MP953 s953 s952 vdd vdd pch W=2u L=1u
+MN953 s953 s952 0 0 nch W=1u L=1u
+C953 s953 0 10f
+MP954 s954 s953 vdd vdd pch W=2u L=1u
+MN954 s954 s953 0 0 nch W=1u L=1u
+C954 s954 0 10f
+MP955 s955 s954 vdd vdd pch W=2u L=1u
+MN955 s955 s954 0 0 nch W=1u L=1u
+C955 s955 0 10f
+MP956 s956 s955 vdd vdd pch W=2u L=1u
+MN956 s956 s955 0 0 nch W=1u L=1u
+C956 s956 0 10f
+MP957 s957 s956 vdd vdd pch W=2u L=1u
+MN957 s957 s956 0 0 nch W=1u L=1u
+C957 s957 0 10f
+MP958 s958 s957 vdd vdd pch W=2u L=1u
+MN958 s958 s957 0 0 nch W=1u L=1u
+C958 s958 0 10f
+MP959 s959 s958 vdd vdd pch W=2u L=1u
+MN959 s959 s958 0 0 nch W=1u L=1u
+C959 s959 0 10f
+MP960 s960 s959 vdd vdd pch W=2u L=1u
+MN960 s960 s959 0 0 nch W=1u L=1u
+C960 s960 0 10f
+MP961 s961 s960 vdd vdd pch W=2u L=1u
+MN961 s961 s960 0 0 nch W=1u L=1u
+C961 s961 0 10f
+MP962 s962 s961 vdd vdd pch W=2u L=1u
+MN962 s962 s961 0 0 nch W=1u L=1u
+C962 s962 0 10f
+MP963 s963 s962 vdd vdd pch W=2u L=1u
+MN963 s963 s962 0 0 nch W=1u L=1u
+C963 s963 0 10f
+MP964 s964 s963 vdd vdd pch W=2u L=1u
+MN964 s964 s963 0 0 nch W=1u L=1u
+C964 s964 0 10f
+MP965 s965 s964 vdd vdd pch W=2u L=1u
+MN965 s965 s964 0 0 nch W=1u L=1u
+C965 s965 0 10f
+MP966 s966 s965 vdd vdd pch W=2u L=1u
+MN966 s966 s965 0 0 nch W=1u L=1u
+C966 s966 0 10f
+MP967 s967 s966 vdd vdd pch W=2u L=1u
+MN967 s967 s966 0 0 nch W=1u L=1u
+C967 s967 0 10f
+MP968 s968 s967 vdd vdd pch W=2u L=1u
+MN968 s968 s967 0 0 nch W=1u L=1u
+C968 s968 0 10f
+MP969 s969 s968 vdd vdd pch W=2u L=1u
+MN969 s969 s968 0 0 nch W=1u L=1u
+C969 s969 0 10f
+MP970 s970 s969 vdd vdd pch W=2u L=1u
+MN970 s970 s969 0 0 nch W=1u L=1u
+C970 s970 0 10f
+MP971 s971 s970 vdd vdd pch W=2u L=1u
+MN971 s971 s970 0 0 nch W=1u L=1u
+C971 s971 0 10f
+MP972 s972 s971 vdd vdd pch W=2u L=1u
+MN972 s972 s971 0 0 nch W=1u L=1u
+C972 s972 0 10f
+MP973 s973 s972 vdd vdd pch W=2u L=1u
+MN973 s973 s972 0 0 nch W=1u L=1u
+C973 s973 0 10f
+MP974 s974 s973 vdd vdd pch W=2u L=1u
+MN974 s974 s973 0 0 nch W=1u L=1u
+C974 s974 0 10f
+MP975 s975 s974 vdd vdd pch W=2u L=1u
+MN975 s975 s974 0 0 nch W=1u L=1u
+C975 s975 0 10f
+MP976 s976 s975 vdd vdd pch W=2u L=1u
+MN976 s976 s975 0 0 nch W=1u L=1u
+C976 s976 0 10f
+MP977 s977 s976 vdd vdd pch W=2u L=1u
+MN977 s977 s976 0 0 nch W=1u L=1u
+C977 s977 0 10f
+MP978 s978 s977 vdd vdd pch W=2u L=1u
+MN978 s978 s977 0 0 nch W=1u L=1u
+C978 s978 0 10f
+MP979 s979 s978 vdd vdd pch W=2u L=1u
+MN979 s979 s978 0 0 nch W=1u L=1u
+C979 s979 0 10f
+MP980 s980 s979 vdd vdd pch W=2u L=1u
+MN980 s980 s979 0 0 nch W=1u L=1u
+C980 s980 0 10f
+MP981 s981 s980 vdd vdd pch W=2u L=1u
+MN981 s981 s980 0 0 nch W=1u L=1u
+C981 s981 0 10f
+MP982 s982 s981 vdd vdd pch W=2u L=1u
+MN982 s982 s981 0 0 nch W=1u L=1u
+C982 s982 0 10f
+MP983 s983 s982 vdd vdd pch W=2u L=1u
+MN983 s983 s982 0 0 nch W=1u L=1u
+C983 s983 0 10f
+MP984 s984 s983 vdd vdd pch W=2u L=1u
+MN984 s984 s983 0 0 nch W=1u L=1u
+C984 s984 0 10f
+MP985 s985 s984 vdd vdd pch W=2u L=1u
+MN985 s985 s984 0 0 nch W=1u L=1u
+C985 s985 0 10f
+MP986 s986 s985 vdd vdd pch W=2u L=1u
+MN986 s986 s985 0 0 nch W=1u L=1u
+C986 s986 0 10f
+MP987 s987 s986 vdd vdd pch W=2u L=1u
+MN987 s987 s986 0 0 nch W=1u L=1u
+C987 s987 0 10f
+MP988 s988 s987 vdd vdd pch W=2u L=1u
+MN988 s988 s987 0 0 nch W=1u L=1u
+C988 s988 0 10f
+MP989 s989 s988 vdd vdd pch W=2u L=1u
+MN989 s989 s988 0 0 nch W=1u L=1u
+C989 s989 0 10f
+MP990 s990 s989 vdd vdd pch W=2u L=1u
+MN990 s990 s989 0 0 nch W=1u L=1u
+C990 s990 0 10f
+MP991 s991 s990 vdd vdd pch W=2u L=1u
+MN991 s991 s990 0 0 nch W=1u L=1u
+C991 s991 0 10f
+MP992 s992 s991 vdd vdd pch W=2u L=1u
+MN992 s992 s991 0 0 nch W=1u L=1u
+C992 s992 0 10f
+MP993 s993 s992 vdd vdd pch W=2u L=1u
+MN993 s993 s992 0 0 nch W=1u L=1u
+C993 s993 0 10f
+MP994 s994 s993 vdd vdd pch W=2u L=1u
+MN994 s994 s993 0 0 nch W=1u L=1u
+C994 s994 0 10f
+MP995 s995 s994 vdd vdd pch W=2u L=1u
+MN995 s995 s994 0 0 nch W=1u L=1u
+C995 s995 0 10f
+MP996 s996 s995 vdd vdd pch W=2u L=1u
+MN996 s996 s995 0 0 nch W=1u L=1u
+C996 s996 0 10f
+MP997 s997 s996 vdd vdd pch W=2u L=1u
+MN997 s997 s996 0 0 nch W=1u L=1u
+C997 s997 0 10f
+MP998 s998 s997 vdd vdd pch W=2u L=1u
+MN998 s998 s997 0 0 nch W=1u L=1u
+C998 s998 0 10f
+.tran 10p 2n
+.print tran v(s20)
+.end

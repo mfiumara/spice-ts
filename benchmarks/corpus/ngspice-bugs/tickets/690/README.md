@@ -33,7 +33,7 @@ KCL gives H(s)=1/[1+s(R1+R2)C1]=1/(1+1.5e-8 s); one pole at -6.6666666667e7 rad/
 |---|---|---|
 | ngspice-47 | error | KLU explicitly rejects PZ: Pole/zero analysis is not (yet) supported; Sparse returns pole -6.66667e+07 + j0, no zeros (correct). |
 | ngspice master | wrong | KLU .pz now runs on master but aborts with "The input signal is shorted on the way to the output" for a plain RC low-pass (Sparse gives the single pole). 47 refused KLU pole-zero outright. [ngspice pre-master-48 HEAD 3ef069fb (2026-10-09), built in scratch] |
-| spice-ts | unsupported | ParseError Unsupported .options field: 'klu'; sparse likewise unsupported. |
+| spice-ts | unsupported | #812 refresh d8ab9d33: pinned klu.cir/sparse.cir still first fail at ParseError line 2, Unsupported .options field klu/sparse. Native ngspice-47 KLU aborts; Sparse emits no operating-point raw plot for this .tf deck. No spice-ts metrics. Existing #812 solver-selection bucket. |
 
 Reproduces on ngspice-47: partially. Check: Check KLU PZ support/rejection; if supported, expect sole pole -6.6666667e7 and no zeros.
 
