@@ -1,0 +1,315 @@
+{
+  "verifiedRows": 18,
+  "uniqueDecks": 18,
+  "duplicateDecks": [],
+  "previousWaveformsExact": {
+    "spiceTs": true,
+    "ngspice": true
+  },
+  "unchangedPaths": [
+    "packages/core/src/devices/mos2.ts",
+    "packages/core/src/devices/charge-state.ts",
+    "packages/core/src/analysis/transient-step.ts"
+  ],
+  "firstIndexedGridSplitOverOneAttosecond": {
+    "index": 37,
+    "ts": 5.027387875826269e-9,
+    "ng": 5.027387877402101e-9
+  },
+  "pump": {
+    "linear": {
+      "signal": "i(vnin)",
+      "peak": 0.0003101259607419718,
+      "maxAbs": 0.00006914257947383886,
+      "normalized": 0.22294998879944222,
+      "rmsNormalized": 0.014316863542482317,
+      "initialAbs": 0,
+      "worstTime": 6.020095960439223e-8,
+      "first": 1.5208922042773343e-8
+    },
+    "shared": {
+      "status": "compared",
+      "sampleCount": 867,
+      "absoluteError": {
+        "max": 0.000019539446179088065,
+        "rms": 0.0000017369361337686317
+      },
+      "relativeError": {
+        "max": 4.599885920491787,
+        "rms": 1.578795711984099,
+        "sampleCount": 611,
+        "excludedZeroReferences": 256
+      }
+    }
+  },
+  "reduced": {
+    "signal": "i(vnin)",
+    "peak": 0.0003101257783177369,
+    "maxAbs": 0.000019539446179088065,
+    "normalized": 0.0630049081539719,
+    "rmsNormalized": 0.005901182723931107,
+    "initialAbs": 0,
+    "worstTime": 4.502373230181537e-8,
+    "first": 1.5208922042773343e-8
+  },
+  "cross": [
+    {
+      "name": "k-13-original",
+      "defaultTsVsFineNative": [
+        {
+          "signal": "i(vnin)",
+          "peak": 0.0003101257403383451,
+          "maxAbs": 0.00001220681779035954,
+          "normalized": 0.039360866263606444,
+          "rmsNormalized": 0.006383548665548032,
+          "initialAbs": 0,
+          "worstTime": 6.020095960439223e-8,
+          "first": 5.0237739315258896e-9
+        },
+        {
+          "signal": "v(6)",
+          "peak": 0.4813381890415371,
+          "maxAbs": 0.007440735599743812,
+          "normalized": 0.01545843602096096,
+          "rmsNormalized": 0.008421346525117447,
+          "initialAbs": 7.510466008028569e-16,
+          "worstTime": 9.502133783436179e-8,
+          "first": 7.017300576883081e-8
+        },
+        {
+          "signal": "v(5)",
+          "peak": 0.4813381890415211,
+          "maxAbs": 0.007440735598204963,
+          "normalized": 0.01545843601776445,
+          "rmsNormalized": 0.00842134652376602,
+          "initialAbs": 7.518037659318017e-16,
+          "worstTime": 9.502133783436179e-8,
+          "first": 7.017300576883081e-8
+        },
+        {
+          "signal": "v(2)",
+          "peak": 5,
+          "maxAbs": 1.6608936448392342e-13,
+          "normalized": 3.321787289678468e-14,
+          "rmsNormalized": 5.168595699392478e-15,
+          "initialAbs": 0,
+          "worstTime": 3.01874708790709e-8,
+          "first": null
+        }
+      ],
+      "defaultNativeVsFineNative": [
+        {
+          "signal": "i(vnin)",
+          "peak": 0.0003101257403383451,
+          "maxAbs": 0.000010826369018403177,
+          "normalized": 0.034909611200256,
+          "rmsNormalized": 0.006204181106797149,
+          "initialAbs": 0,
+          "worstTime": 6.502335449428168e-8,
+          "first": 5.02377393152589e-9
+        },
+        {
+          "signal": "v(6)",
+          "peak": 0.4813381890415371,
+          "maxAbs": 0.007861357712771118,
+          "normalized": 0.016332295861304955,
+          "rmsNormalized": 0.009255621657703928,
+          "initialAbs": 0,
+          "worstTime": 9.502174499852107e-8,
+          "first": 6.017404574138736e-8
+        },
+        {
+          "signal": "v(5)",
+          "peak": 0.4813381890415211,
+          "maxAbs": 0.007861357712693327,
+          "normalized": 0.016332295861143886,
+          "rmsNormalized": 0.009255621657595485,
+          "initialAbs": 0,
+          "worstTime": 9.502174499852107e-8,
+          "first": 6.017404574138736e-8
+        },
+        {
+          "signal": "v(2)",
+          "peak": 5,
+          "maxAbs": 3.2152058793144533e-13,
+          "normalized": 6.430411758628907e-14,
+          "rmsNormalized": 8.50473089837411e-15,
+          "initialAbs": 0,
+          "worstTime": 3.508308231086309e-8,
+          "first": null
+        }
+      ],
+      "fineTsVsFineNative": [
+        {
+          "signal": "i(vnin)",
+          "peak": 0.0003101257403383451,
+          "maxAbs": 9.856328770624476e-8,
+          "normalized": 0.00031781717827972895,
+          "rmsNormalized": 0.000011498305666074362,
+          "initialAbs": 0,
+          "worstTime": 1.0176331256496458e-8,
+          "first": null
+        },
+        {
+          "signal": "v(5)",
+          "peak": 0.4813381890415211,
+          "maxAbs": 0.0000648647687300774,
+          "normalized": 0.00013475924039860893,
+          "rmsNormalized": 0.00007874623623061854,
+          "initialAbs": 7.518037659318017e-16,
+          "worstTime": 9.501879434733299e-8,
+          "first": null
+        },
+        {
+          "signal": "v(6)",
+          "peak": 0.4813381890415371,
+          "maxAbs": 0.000064864768353547,
+          "normalized": 0.00013475923961634695,
+          "rmsNormalized": 0.00007874623572608293,
+          "initialAbs": 7.510466008028569e-16,
+          "worstTime": 9.501879434733299e-8,
+          "first": null
+        },
+        {
+          "signal": "v(2)",
+          "peak": 5,
+          "maxAbs": 1.6608936448392342e-13,
+          "normalized": 3.321787289678468e-14,
+          "rmsNormalized": 2.8479818311555864e-15,
+          "initialAbs": 0,
+          "worstTime": 3.0074999999999996e-8,
+          "first": null
+        }
+      ]
+    },
+    {
+      "name": "pump-reduced",
+      "defaultTsVsFineNative": [
+        {
+          "signal": "i(vnin)",
+          "peak": 0.0003101257403383451,
+          "maxAbs": 0.000010211716010659442,
+          "normalized": 0.03292766346810983,
+          "rmsNormalized": 0.006177661602396837,
+          "initialAbs": 0,
+          "worstTime": 1.0181922451638212e-8,
+          "first": 5.0237739315258896e-9
+        },
+        {
+          "signal": "v(6)",
+          "peak": 0.4801948731026414,
+          "maxAbs": 0.003199477961358662,
+          "normalized": 0.006662874055039682,
+          "rmsNormalized": 0.004071317897029959,
+          "initialAbs": 7.510466008028569e-16,
+          "worstTime": 4.017391153529658e-8,
+          "first": null
+        },
+        {
+          "signal": "v(5)",
+          "peak": 0.4801948731026271,
+          "maxAbs": 0.003199477961063086,
+          "normalized": 0.006662874054424347,
+          "rmsNormalized": 0.0040713178967121825,
+          "initialAbs": 7.518037659318017e-16,
+          "worstTime": 4.017391153529658e-8,
+          "first": null
+        },
+        {
+          "signal": "v(2)",
+          "peak": 5,
+          "maxAbs": 1.6608936448392342e-13,
+          "normalized": 3.321787289678468e-14,
+          "rmsNormalized": 6.780693027553162e-15,
+          "initialAbs": 0,
+          "worstTime": 3.01874708790709e-8,
+          "first": null
+        }
+      ],
+      "defaultNativeVsFineNative": [
+        {
+          "signal": "i(vnin)",
+          "peak": 0.0003101257403383451,
+          "maxAbs": 0.000010157854192674009,
+          "normalized": 0.032753986114122155,
+          "rmsNormalized": 0.006092871719513648,
+          "initialAbs": 0,
+          "worstTime": 1.01819131420454e-8,
+          "first": 5.02377393152589e-9
+        },
+        {
+          "signal": "v(6)",
+          "peak": 0.4801948731026414,
+          "maxAbs": 0.003439319359589233,
+          "normalized": 0.007162340858341652,
+          "rmsNormalized": 0.004418014819638618,
+          "initialAbs": 0,
+          "worstTime": 4.017434885539701e-8,
+          "first": null
+        },
+        {
+          "signal": "v(5)",
+          "peak": 0.4801948731026271,
+          "maxAbs": 0.003439319359530093,
+          "normalized": 0.007162340858218706,
+          "rmsNormalized": 0.004418014819534086,
+          "initialAbs": 0,
+          "worstTime": 4.017434885539701e-8,
+          "first": null
+        },
+        {
+          "signal": "v(2)",
+          "peak": 5,
+          "maxAbs": 3.2152058793144533e-13,
+          "normalized": 6.430411758628907e-14,
+          "rmsNormalized": 1.0441916615019228e-14,
+          "initialAbs": 0,
+          "worstTime": 3.508308231086309e-8,
+          "first": null
+        }
+      ],
+      "fineTsVsFineNative": [
+        {
+          "signal": "i(vnin)",
+          "peak": 0.0003101257403383451,
+          "maxAbs": 9.856328770624476e-8,
+          "normalized": 0.00031781717827972895,
+          "rmsNormalized": 0.000009889558887011162,
+          "initialAbs": 0,
+          "worstTime": 1.0176331256496458e-8,
+          "first": null
+        },
+        {
+          "signal": "v(5)",
+          "peak": 0.4801948731026271,
+          "maxAbs": 0.00003006144173144272,
+          "normalized": 0.00006260258785607234,
+          "rmsNormalized": 0.000038364217957393996,
+          "initialAbs": 7.518037659318017e-16,
+          "worstTime": 4.501875786346363e-8,
+          "first": null
+        },
+        {
+          "signal": "v(6)",
+          "peak": 0.4801948731026414,
+          "maxAbs": 0.00003006144142201142,
+          "normalized": 0.00006260258721168354,
+          "rmsNormalized": 0.000038364217643660974,
+          "initialAbs": 7.510466008028569e-16,
+          "worstTime": 4.501875786346363e-8,
+          "first": null
+        },
+        {
+          "signal": "v(2)",
+          "peak": 5,
+          "maxAbs": 1.6608936448392342e-13,
+          "normalized": 3.321787289678468e-14,
+          "rmsNormalized": 3.54510728728438e-15,
+          "initialAbs": 0,
+          "worstTime": 3.0074999999999996e-8,
+          "first": null
+        }
+      ]
+    }
+  ]
+}

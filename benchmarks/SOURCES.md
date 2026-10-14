@@ -1112,3 +1112,25 @@ Every row uses the pinned revision above and GPL-3.0-or-later under the retained
 | l-18 | [Netlists/CircuitSim90/MOS3/mike2.cir](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS3/mike2.cir) | 99cf3671f37b401548a991f679ceaeb6ab502c97ac7c98de81b5adbddb4df013 | GPL-3.0-or-later |
 | l-19 | [Netlists/CircuitSim90/MOS3/rich3.cir](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS3/rich3.cir) | 5cf5ebcafb990907419d4844249ed6c8a53e47be8faf06f8e16fd08a5ef353ae | GPL-3.0-or-later |
 | l-20 | [Netlists/CircuitSim90/MOS3/todd3.cir](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS3/todd3.cir) | adecd1aec7ea465065ee828bea3db6a4f675a9e8abf0e8931137593bb338b57f | GPL-3.0-or-later |
+
+### MOS2 residual remeasurement and pump reduction (#1001 / #1019)
+
+`benchmarks/results/issue-1001/` replays existing corpus-k / #996 inputs; it is
+not a new corpus or aggregate refresh. `pump-reduced.cir` derives from
+[Xyce_Regression pump.cir](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS2/pump.cir),
+revision `7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2`, GPL-3.0-or-later under
+the existing corpus-k README grant and retained full licence. It removes the
+unused PMOS model, comments/output requests and the final five cycles; active
+NMOS model, geometry, source edge times, capacitors, MAXORD and tolerances are
+unchanged. Original SHA-256:
+`142a0df7fc79780e9eb85491b0307224a5e0fa745e15dffb3c27bb6f38bb668f`;
+reduction SHA-256:
+`41da2258c5e4b729aa0ad6032bedd1f43ef362cab393d5adff697ed39fc838df`.
+Every OP/fine diagnostic's complete bytes/hash are in the generated captures.
+The checker deduplicates hashes; duplicate mosrect controls are not new coverage.
+ngspice-47 source citations use pinned object
+`a80f6e3e95d51534905b1f23410a951802666656` with fetched URLs/hashes in
+`source-receipt.json`; its mixed BSD-style licences remain recorded in corpus-k.
+No upstream native source or binary is redistributed. Scripts/tests are
+project-authored MIT; captures are generated simulation evidence containing
+the licensed input text. Losses and passing controls are both retained.
