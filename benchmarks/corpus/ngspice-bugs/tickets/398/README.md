@@ -29,7 +29,7 @@ A backslash inside an end-of-line comment is comment text, not continuation synt
 |---|---|---|
 | ngspice-47 | wrong | MIF-ERROR - unable to find definition of model *****; output shows comment line merged into a_pd card. |
 | ngspice master | wrong | Identical to 47: "MIF-ERROR - unable to find definition of model *****". [ngspice pre-master-48 HEAD 3ef069fb (2026-10-09), built in scratch] |
-| spice-ts | unsupported | UnsupportedCodeModelError: XSPICE code model 'd_pulldown' is not supported. |
+| spice-ts | unsupported | #812 refresh d8ab9d33, pinned original_cards.cir: UnsupportedCodeModelError line 6: XSPICE code model d_pulldown (.model PD) is not supported. Native ngspice-47 completes this dot-card variant; original comment-continuation defect is historical. No spice-ts waveform/metrics. Existing feature bucket #812. |
 
 Reproduces on ngspice-47: yes. Check: Look for a_pd zero pd .model ... ***** and MIF-ERROR unable to find definition of model *****.
 

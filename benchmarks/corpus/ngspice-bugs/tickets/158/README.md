@@ -32,7 +32,7 @@ undetermined: the correct poles are finite roots of the independently evaluated 
 |---|---|---|
 | ngspice-47 | error | PZ reports iteration limit reached after501 and253 trials; emits22 real poles including RHP1.547593e11/1.668718e12 and4 real zeros, no complex pair. TF prints1.000117. |
 | ngspice master | error | Output identical to 47 (same warnings and results). [ngspice pre-master-48 HEAD 3ef069fb (2026-10-09), built in scratch] |
-| spice-ts | unsupported | Unsupported .options field: 'PROBE' in .OPTION POST PROBE UNWRAP nomod. |
+| spice-ts | unsupported | #812 refresh d8ab9d33: provenance gap, not a current parser verdict. Fetched amp3.tar.gz matches its attachment hash; documented reconstruction produces 2592 bytes but SHA256 e1ce54429baf985034972f1424548d05f8bada6b9947371228f6c85134acfcfb != pinned 7e943e7c63cfbb2a5724ab5d01f2d91591d9f78a60e2966ecd91d62f92cd9b35. Neither engine received the substitute. Historical first error: Unsupported .options field PROBE. See REFRESH_812.md; unscored, not a win. |
 
 Reproduces on ngspice-47: partially. Check: Check explicit PZ iteration-limit warnings and absent complex pair; roots require an independent G+sC oracle before labeling individual values wrong.
 

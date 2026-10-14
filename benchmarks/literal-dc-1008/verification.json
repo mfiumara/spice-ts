@@ -1,0 +1,18 @@
+{
+  "node": "v22.23.1",
+  "commands": [
+    { "command": "pnpm install --frozen-lockfile", "exitCode": 0 },
+    { "command": "pnpm exec tsx --test benchmarks/plot-alignment.test.ts (RED)", "exitCode": 1, "passed": 31, "failed": 1, "reason": "nested dot-card returns undefined" },
+    { "command": "pnpm exec tsx --test benchmarks/plot-alignment.test.ts benchmarks/comparison-harness.test.ts (initial GREEN attempt)", "exitCode": 1, "reason": "test expected decimal literal instead of existing suffix-parser multiplication result; expectation corrected without numeric production changes" },
+    { "command": "pnpm build", "exitCode": 0 },
+    { "command": "pnpm lint", "exitCode": 0 },
+    { "command": "pnpm exec tsx --test benchmarks/plot-alignment.test.ts benchmarks/comparison-harness.test.ts benchmarks/literal-dc-1008/adapters.test.ts", "exitCode": 0, "passed": 100, "failed": 0 },
+    { "command": "spice-heavy pnpm test", "exitCode": 0, "corePassed": 4049, "coreSkipped": 2, "finalBenchmarkTapPassed": 180, "finalBenchmarkTapSkipped": 4 },
+    { "command": "spice-heavy pnpm exec tsx benchmarks/literal-dc-1008/replay.ts (first foreground attempt)", "exitCode": 124, "reason": "180s timeout while waiting for heavy slots; no simulations run" },
+    { "command": "spice-heavy pnpm exec tsx benchmarks/literal-dc-1008/replay.ts (first background attempt)", "exitCode": 1, "reason": "top-level await unsupported by root CommonJS package; wrapped main" },
+    { "command": "spice-heavy pnpm exec tsx benchmarks/literal-dc-1008/replay.ts (second attempt)", "exitCode": 1, "reason": "single unnamed comparison omits plot tags; provenance diagnostics now select/assert the unique DC analysis" },
+    { "command": "spice-heavy pnpm exec tsx benchmarks/literal-dc-1008/replay.ts", "exitCode": 0, "fixtures": 8 },
+    { "command": "spice-heavy pnpm exec tsx benchmarks/literal-dc-1008/replay.ts --check", "exitCode": 0, "fixtures": 8 }
+  ],
+  "policy": "No tolerance or identity changes. Four recovered fixtures, four remaining losses. No new simulator runs for the replay. Native adapter smoke tests use a project-authored tiny resistor/source deck."
+}

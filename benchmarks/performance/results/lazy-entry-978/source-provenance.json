@@ -1,0 +1,7 @@
+{
+  "packages/core/tsup.config.ts": "5b6de18bc55b8cbb3c68178a39eac0768ab18515429cb82cc98a35daa7a69e78",
+  "benchmarks/performance/rc1k-attribution-worker.mjs": "bccf7e835266ab4e1761cf90f2713c155948fc34c38c74fbc2834115762c3573",
+  "benchmarks/performance/rc1k-attribution-data.mjs": "83f912d281175f717f7170db16da759a3340047357c940ca77b1e13ca9cf7c22",
+  "benchmarks/performance/scaling-m2-fixture.mjs": "376c0c34b65c0000d8cf484cb1df19e2f14f696e50878797808ff9985b903869",
+  "benchmarks/performance/results/elapsed-controls-951/controls.py": "ac88efe4b72f8fc33f4cf18073d310153671620ee6178c01d9bfd35a65a8d6d4"
+}

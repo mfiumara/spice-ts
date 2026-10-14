@@ -5,6 +5,7 @@ import {
 } from './numparam.js';
 import { NODE_DEPENDENT_EXPRESSION, substituteBehavioralParameters } from './behavioral-expression.js';
 import { parseNumber } from './tokenizer.js';
+import { formatNumber as formatLiteralNumber } from '../netlist-number.js';
 import { tempDirective } from './temp-directive.js';
 import { translateMicroSign } from './micro-sign.js';
 import { bracedSubcircuitCallValues } from './subcircuit-syntax.js';
@@ -565,7 +566,10 @@ function substituteStatement(statement: PendingStatement, scopes: ParamScopes, m
       const substituted = substituteExpressions(text, scopes.params, true);
       return substituteBehavioralParameters(substituted, scopes.params);
     }
-    return substituteExpressions(quotedExpressionsAsBraces(text), scopes.numparam);
+    // X actuals are numparam bindings, not device values: preserve their
+    // double until the subcircuit body substitutes it into a device card.
+    return substituteExpressions(quotedExpressionsAsBraces(text), scopes.numparam, false,
+      /^\s*x/i.test(text) ? formatLiteralNumber : formatNumber);
   } catch (error) {
     if (error instanceof ParseError) throw error;
     throw toParseError(error, statement.line, statement.text.trim());
@@ -1055,20 +1059,49 @@ export function substituteExpressions(
   line: string,
   params: Record<string, number>,
   keepNodeDependent = false,
+  formatter: (value: number) => string = formatNumber,
 ): string {
   return line.replace(/\{([^}]+)\}/g, (match, expr: string) => {
     if (keepNodeDependent && NODE_DEPENDENT_EXPRESSION.test(expr)) return match;
     const value = evaluateExpression(expr, params);
-    return formatNumber(value);
+    return formatter(value);
   });
 }
 
-function formatNumber(value: number): string {
-  // JavaScript's Number.toString() already produces exponential notation for very
-  // small (< 5e-7) and very large (>= 1e21) values, and decimal strings otherwise.
-  // This naturally satisfies all test expectations (e.g. 1e-7 → "1e-7",
-  // 2e-6 → "0.000002", 1.8 → "1.8", 5 → "5").
-  return value.toString();
+export function formatNumber(value: number): string {
+  // ngspice-47 numparam double_to_string uses "% 23.15e". Padding and
+  // exponent zero-padding do not affect INPevaluate, but all 16 mantissa
+  // digits must survive until the downstream card reader parses the text.
+  // JS toExponential rounds exact halfway cases away from zero, whereas
+  // printf rounds to even. Expand the binary double exactly before rounding.
+  if (!Number.isFinite(value)) return value.toExponential(15);
+  if (value === 0) return `${Object.is(value, -0) ? '-' : ''}0.000000000000000e+0`;
+  const view = new DataView(new ArrayBuffer(8));
+  view.setFloat64(0, Math.abs(value));
+  const bits = view.getBigUint64(0);
+  const biasedExponent = Number((bits >> 52n) & 0x7ffn);
+  const significand = (bits & ((1n << 52n) - 1n))
+    | (biasedExponent === 0 ? 0n : 1n << 52n);
+  const binaryExponent = (biasedExponent === 0 ? 1 : biasedExponent) - 1023 - 52;
+  // For negative exponents, m / 2^k = (m * 5^k) / 10^k.
+  const scale = Math.max(0, -binaryExponent);
+  const exact = binaryExponent < 0
+    ? significand * 5n ** BigInt(scale)
+    : significand << BigInt(binaryExponent);
+  const digits = exact.toString();
+  let exponent = digits.length - scale - 1;
+  let rounded = BigInt(digits.slice(0, 16).padEnd(16, '0'));
+  if (digits.length > 16) {
+    const remainder = BigInt(digits.slice(16));
+    const halfway = 5n * 10n ** BigInt(digits.length - 17);
+    if (remainder > halfway || (remainder === halfway && rounded % 2n !== 0n)) rounded++;
+  }
+  if (rounded === 10n ** 16n) {
+    rounded /= 10n;
+    exponent++;
+  }
+  const mantissa = rounded.toString();
+  return `${value < 0 ? '-' : ''}${mantissa[0]}.${mantissa.slice(1)}e${exponent < 0 ? '' : '+'}${exponent}`;
 }
 
 function extractLibSection(content: string, section: string): string {
