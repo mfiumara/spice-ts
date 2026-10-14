@@ -1,5 +1,11 @@
 # #1049: #737 NEW-op localization
 
+**Superseded interpretation:** [slice 2 root-cause evidence](ROOTCAUSE.md) shows
+that this ngspice-47 binary interprets integral `.options rshunt=1T` as
+2147483647 ohms. The native disable KCL residual below disappears when computed
+with that measured resistance. The numerical-acceptance explanation below is
+historical, not the current conclusion. Original receipts and losses are retained.
+
 Evidence only. Refs #1049. No simulator fix, tolerance change, corpus reclassification or pin replacement. The full OP root cause is **not localized to a general spice-ts device/parser bug**. The first independently reproducible divergent subnet is XU68's disable clamp, D_D1/D_D2 using model DX, R_R1 and the weakly grounded DisA pin. A separate weakly grounded XQ37 source discrepancy persists without the op-amp. These observations do not establish two valid operating points.
 
 ## Inputs and scope
