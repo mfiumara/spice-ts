@@ -61,7 +61,7 @@ import {
   prepareXspiceInstance,
   type PreparedXspiceInstance,
 } from './devices/xspice/compile.js';
-import type { XspiceInstanceCard, XspiceModelCard } from './parser/xspice-parser.js';
+import { parseXspiceInstance, parseXspiceModelCard, xspiceModelType, type XspiceInstanceCard, type XspiceModelCard } from './parser/xspice-parser.js';
 import { assertControlledSourceCard, withoutNodePairParentheses } from './parser/controlled-source.js';
 import type { ControlScript } from './parser/control/script.js';
 import { DEFAULT_OPTIONS, GROUND_NODE } from './types.js';
@@ -3334,6 +3334,14 @@ export class Circuit {
         throw new ParseError((error as Error).message, lineNumber, raw);
       }
       let modelTokens = tokenizeLine(evaluated);
+      if (xspiceModelType(modelTokens) !== undefined) {
+        const card = parseXspiceModelCard(evaluated, lineNumber);
+        const scoped = `${instanceName}:${card.name}`;
+        this._xspiceModels.set(scoped.toUpperCase(), { ...card, name: scoped });
+        this._subcircuitModelNames.add(scoped.toUpperCase());
+        local.set(card.name.toUpperCase(), scoped);
+        continue;
+      }
       if (isPspiceSwitchModel(modelTokens)) {
         const translated = translatePspiceSwitchModel(evaluated, lineNumber);
         if (translated.kind === 'xspice') {
@@ -3722,6 +3730,21 @@ export class Circuit {
             nodes: [mapNode(fields[1]), mapNode(fields[2]), mapNode(fields[3]), mapNode(fields[4])],
             value: parseNumber(valStr),
           });
+          break;
+        }
+        case 'A': {
+          const card = parseXspiceInstance(raw, lineNumber);
+          const modelName = scopeModel(card.modelName);
+          // This seam admits scoped PWL transfers only. Other A-card families
+          // retain the explicit unsupported boundary until their ports are scoped.
+          if (this._xspiceModels.get(modelName.toUpperCase())?.codeModel !== 'pwl') {
+            throw new ParseError("Unsupported device card: 'A'", lineNumber, raw);
+          }
+          const connectionTokens = card.connectionTokens.map((token, index) => token.kind === 'string'
+            && card.connectionTokens[index - 1]?.kind !== 'percent'
+            ? { ...token, text: mapNode(token.text) } : token);
+          result.push({ type: 'A', name: devName, nodes: [], modelName,
+            xspice: { ...card, name: devName, modelName, connectionTokens } });
           break;
         }
         case 'B': {

@@ -1,0 +1,24 @@
+{
+  "sha256": "96fa01edbdc7a6e5b5c1634f0384e159afe28ff01c94c5ec5718a1a2b569bbc3",
+  "identicalBytes": true,
+  "ngspiceVersion": "******\n** ngspice-47 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2026, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n******",
+  "frequencies": [
+    1
+  ],
+  "ngspice": {
+    "exit": 0,
+    "voltage": {
+      "magnitude": 2.5,
+      "phase": 0
+    }
+  },
+  "spiceTs": {
+    "rows": 1,
+    "voltage": {
+      "magnitude": 2.5,
+      "phase": 0
+    }
+  },
+  "maxError": 0,
+  "errorUnits": "max of magnitude error in V/V and phase error in degrees"
+}
