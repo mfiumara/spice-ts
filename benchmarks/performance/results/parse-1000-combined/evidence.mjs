@@ -10,9 +10,9 @@ export const rows = name => readFileSync(base + name, 'utf8').trim().split('\n')
 export function matrix(name) {
   return verify(rows(name + '/receipts.jsonl'), load(name + '/prepared.json'), load(name + '/budget.json'));
 }
-export function corpus() {
-  const control = rows('corpus-control.jsonl').map(JSON.stringify).sort();
-  const candidate = rows('corpus-candidate.jsonl').map(JSON.stringify).sort();
+export function corpus(suffix = '') {
+  const control = rows('corpus-control' + suffix + '.jsonl').map(JSON.stringify).sort();
+  const candidate = rows('corpus-candidate' + suffix + '.jsonl').map(JSON.stringify).sort();
   if (JSON.stringify(control) !== JSON.stringify(candidate)) throw new Error('parser corpus state drift');
   return {
     successfulParses: control.length,

@@ -43,13 +43,13 @@ describe('parser preparation equivalence', () => {
 
   it.each([
     ['R1 a b 1k\nC1 b 0 1n\n+ ic=0', 'R1 a b 1k\nC1 b 0 1n\n+ ic=0'],
-    ['.param r=2\nR1 a b r\nC1 b 0 {r*1n}', '\nR1 a b 2\nC1 b 0 2e-9'],
-    ["R1 a b '2+3'", 'R1 a b 5'],
+    ['.param r=2\nR1 a b r\nC1 b 0 {r*1n}', '\nR1 a b 2.000000000000000e+0\nC1 b 0 2.000000000000000e-9'],
+    ["R1 a b '2+3'", 'R1 a b 5.000000000000000e+0'],
     ['R1 a b {v(a)}', 'bR1 a b i = v(a, b)/(v(a)) reciproctc=1'],
     ['E1 a b value=2', 'bE1 a b v = 2'],
     ['G1 a b cur=2', 'bG1 a b i = 2'],
     ['.param x=2\nB1 a b v=x', '\nB1 a b v=2'],
-    ['.param x=2\n.meas op result param=x', '\n.meas op result param=(2)'],
+    ['.param x=2\n.meas op result param=x', '\n.meas op result param=(2.000000000000000e+0)'],
     ['R1 a b 1k ; numeric comment', 'R1 a b 1k ; numeric comment'],
   ])('retains preprocessing for %s', async (input, expected) => {
     expect(await preprocess(input)).toBe(expected);

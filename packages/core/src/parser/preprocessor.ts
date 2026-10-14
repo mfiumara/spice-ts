@@ -552,10 +552,6 @@ function evaluateParamExpression(
 }
 
 function substituteStatement(statement: PendingStatement, scopes: ParamScopes, measureNames: ReadonlySet<string>): string {
-  // Ordinary cards without expression delimiters need neither translation
-  // nor substitution. E/G and B cards can carry bare expressions; dot cards
-  // include measurements with bare parameter operands, so retain their path.
-  if (!/[{']/.test(statement.text) && !/^\s*[beg.]/i.test(statement.text)) return statement.text;
   try {
     if (MEASURE_CARD.test(statement.text)) return substituteMeasureCard(statement.text, scopes, measureNames);
     const behavioralCard = behavioralCardAsBSource(statement.text);

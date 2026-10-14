@@ -1,6 +1,55 @@
-# Combined parser preparation receipt
+# Combined parser preparation rejection receipt
 
-Refs #1000. Refs #991. The combined candidate meets the issue's local fixed-matrix gate. Independent review and exact-head CI are separate gates; no merge is authorized by these measurements.
+Refs #1000. Refs #991. Candidate REJECTED and reverted. Neither issue is resolved by this PR. There is no shipped production optimization.
+
+## Authoritative refreshed-main result
+
+Initial worktree control `a521e9e221f4445639d899265589e5893a07e165` turned out to predate 19 commits already merged to main. The first PR CI exposed new characterization expectations incompatible with main's #782 formatter. Refreshed main to `f31762cd0c7620f93cf024bebd9061cd062cf9ab`, merged without changing the general candidate, corrected those three expected strings, then reran the entire baseline, decisive matrix and corpus comparison. The measured checkout HEAD was merge `a28f245712fe9a69d034245b3d58c18901833d0f`. Control source has the candidate patch reversed; candidate has it applied. Both exact executable bundles are archived.
+
+The refreshed fixed matrix supersedes the favorable initial result. It fails the required disjoint-IQR gate on Mesh10k despite reductions above 25% in both medians. No retry to rescue the result. Reverted both production guards; only characterization tests and evidence remain in the PR diff against refreshed main. `numparam.ts`, `preprocessor.ts` and `parser/index.ts` have no production changes.
+
+| Deck | Before parse median / IQR ms | Rejected candidate | Reduction |
+|---|---:|---:|---:|
+| RC1k | 23.136 / 5.463 | 17.476 / 4.269 | 24.464% |
+| Mesh1k | 23.891 / 3.486 | 15.950 / 5.009 | 33.240% |
+| RC10k | 121.122 / 61.101 | 84.605 / 12.713 | 30.149% |
+| Mesh10k | 116.793 / 23.390 | 83.396 / 34.762 | 28.594% |
+| RC50k | 366.576 / 34.940 | 257.111 / 25.431 | 29.861% |
+| Mesh50k | 450.571 / 155.158 | 259.323 / 68.074 | 42.446% |
+
+Mesh10k control Q1/Q3 109.185 / 132.575 ms overlaps candidate 76.259 / 111.022 ms. Therefore `comparison-refreshed/verification.json` has `thresholdMet: false`. 1k/50k parse results do not regress beyond IQR. Mesh1k cold wall DOES regress 202.961 -> 211.704 ms, 4.308% worse. RC10k worst cold wall increases 118.831 ms; Mesh10k worst increases 4.896 ms. Full medians, deltas, IQRs, native ratios, individual losses and current subphase attribution are in `table-refreshed.md`. All TS cold-wall medians remain slower than direct ngspice.
+
+Baseline-refreshed 60/60 certified cells, 25.866903 s actual elapsed. Comparison-refreshed 180/180, 156.117869 s. Combined with the initial matrices, 480/480 retained cells, no clock/deadline/budget failures, no trimmed samples. Deck, complete output and enumerable parse-state hashes match within each refreshed comparison at every size. The two baselines need not have equal states because main changed semantics legitimately.
+
+Refreshed corpus 64 files / 1,460 passes in both source variants, 968 successful captures, 770 unique input/state pairs, unchanged sorted-multiset SHA256 `4dfeeee6b31e9d292d0c08b1cecaa755c2c43b7387b622877c809be1c5610984`. Per-call receipts are `corpus-*-refreshed.jsonl`. Expected-error tests pass too. Serialization limits remain as documented in the historical section below.
+
+### Refreshed reproduction
+
+From this evidence-only PR checkout, production source starts with NO candidate applied. Use fresh output paths and restore the candidate patch even if a command fails.
+
+```
+E=benchmarks/performance/results/parse-1000-combined
+pnpm -C packages/core build
+spice-heavy python3 benchmarks/performance/linear-10k.py "$TMPDIR/parse-combined-new-baseline" --parse
+node benchmarks/performance/linear-10k-verify.mjs "$TMPDIR/parse-combined-new-baseline"
+git apply "$E/candidate.patch"
+pnpm -C packages/core build
+spice-heavy python3 benchmarks/performance/linear-10k.py "$TMPDIR/parse-combined-new-comparison" --parse --before "$TMPDIR/parse-combined-new-baseline"
+node benchmarks/performance/linear-10k-verify.mjs "$TMPDIR/parse-combined-new-comparison"
+git apply -R "$E/candidate.patch"
+```
+
+Offline receipt validation runs `node --test "$E/evidence.test.mjs"` (seven passes), the unchanged verifier on all four directories, and `node "$E/report.mjs" --refreshed`. The report without the flag regenerates only historical initial statistics. Corpus capture follows the historical hook/setup recipe below, but start by applying the candidate patch, use new receipt paths, then reverse it for control and leave it reversed at the end.
+
+### CI and scope boundary
+
+Initial PR CI run `38544730367` failed the three new format-specific expectations, now corrected, and accuracy's unrelated #871 exact-float assertion. Main CI run `38540814748` on `f31762cd0c7620f93cf024bebd9061cd062cf9ab` independently fails the SAME #871 assertion: actual `-0.16666666666666663`, expected `-0.16666666666666666`. This card prohibits ngspice-bugs/corpus edits, so this failure is reported to the supervisor rather than patched or waived. No all-four-green claim is made unless a later exact-head run proves it. Publication of the rejection receipt does not waive CI or independent review.
+
+Final reverted-source local build and lint pass. `spice-heavy pnpm test` fails solely on that same root #871 assertion; all workspace suites pass, including core 4,182 passes / one expected failure / two skips. No final full-suite pass is claimed. The earlier full-suite pass below applies only to the historical initial checkout.
+
+## Historical initial attempt (superseded, retained without selection)
+
+The remainder describes the initial run on a521e9e2. Its favorable gate result is not the current conclusion, and its source-reproduction commands assume the candidate is initially applied. Use the authoritative recipe above for the final rejection checkout.
 
 ## Change and measured hypothesis
 

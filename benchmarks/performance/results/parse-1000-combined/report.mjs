@@ -2,9 +2,10 @@
 import { writeFileSync } from 'node:fs';
 import { matrix, corpus, rows } from './evidence.mjs';
 
-const baseline = matrix('baseline');
-const comparison = matrix('comparison');
-const cells = rows('comparison/receipts.jsonl');
+const suffix = process.argv.includes('--refreshed') ? '-refreshed' : '';
+const baseline = matrix('baseline' + suffix);
+const comparison = matrix('comparison' + suffix);
+const cells = rows('comparison' + suffix + '/receipts.jsonl');
 const f = value => value.toFixed(3);
 const stat = value => `${f(value.median)} / ${f(value.iqr)}`;
 const lines = [
@@ -19,7 +20,7 @@ for (const [key, modes] of Object.entries(comparison.summary)) {
 }
 lines.push('', `Gate met: ${comparison.thresholdMet}. Native ratios are cold TS wall including equality/output hashing divided by direct ngspice wall including raw emission, not native superiority claims.`, '',
   '## Shared-host losses and spread', '',
-  'All six median cold-wall changes improve, but individual rotating-round cells lose. Paired counts below are descriptive, not a paired causal estimate.', '',
+  'Median cold-wall losses, when present, are negative reductions in the table above. Individual rotating-round cells also lose. Paired counts below are descriptive, not a paired causal estimate.', '',
   '| Deck | Rounds with candidate cold wall slower | Before worst wall | Candidate worst wall | Worst-wall change |',
   '|---|---:|---:|---:|---:|');
 for (const [key, modes] of Object.entries(comparison.summary)) {
@@ -34,6 +35,6 @@ lines.push('', '## Current baseline exclusive attribution', '',
 for (const phase of ['parse', 'preprocess', 'numparam.braceBareParameters', 'numparam.substituteStatement', 'tokenize', 'cardParse', 'assembly', 'parseResidual']) {
   lines.push(`| ${phase} | ${stat(baseline.summary['rc-ladder-tran'].instrumented[phase])} | ${stat(baseline.summary['resistor-mesh-op'].instrumented[phase])} |`);
 }
-lines.push('', 'Corpus equality: ' + JSON.stringify(corpus()), '');
-writeFileSync(new URL('./table.md', import.meta.url), lines.join('\n'));
+lines.push('', 'Corpus equality: ' + JSON.stringify(corpus(suffix)), '');
+writeFileSync(new URL('./table' + suffix + '.md', import.meta.url), lines.join('\n'));
 console.log(lines.join('\n'));

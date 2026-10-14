@@ -23,6 +23,15 @@ test('all successful parser corpus calls preserve their input/state multiset', (
   });
 });
 
+test('refreshed main comparison is certified but fails the disjoint-IQR gate', () => {
+  assert.equal(matrix('baseline-refreshed').samples, 60);
+  const refreshed = matrix('comparison-refreshed');
+  assert.equal(refreshed.samples, 180);
+  assert.equal(refreshed.thresholdMet, false);
+  assert.equal(refreshed.comparison['resistor-mesh-op-10000'].nonOverlappingIQR, false);
+  assert.ok(corpus('-refreshed').successfulParses > 951);
+});
+
 for (const [name, corrupt] of [
   ['parse-state corruption', rows => { rows.find(row => row.mode === 'candidate').worker.evidence.parseSha256 = '0'.repeat(64); }],
   ['output corruption', rows => { rows.find(row => row.mode === 'candidate').worker.evidence.output.outputSha256 = '0'.repeat(64); }],
