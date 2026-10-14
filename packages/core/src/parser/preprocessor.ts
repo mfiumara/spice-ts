@@ -226,14 +226,11 @@ const UNUSUAL_LEADING_WARNING = (character: string) =>
   + "in netlist or included files, will be replaced with '*'";
 
 /**
- * The card after ngspice's leading space/tab skip when it is metadata or
- * ngspice-47 comments it out: `.title`, `#`, or an unusual leading character.
+ * The card after ngspice's leading space/tab skip when ngspice-47 comments
+ * it out: `#` or an unusual leading character.
  */
 function commentedOutCard(line: string): { card: string; warn: boolean } | undefined {
   const card = line.replace(/^[ \t]+/, '');
-  // .title replaces deck metadata in ngspice-47, never circuit/numparam input.
-  // Circuit does not expose titles; consume the card and its continuations.
-  if (/^\.title(?:\s|$)/i.test(card)) return { card, warn: false };
   if (card.startsWith('#')) return { card, warn: false };
   return UNUSUAL_LEADING_CHARACTERS.has(card[0]) ? { card, warn: true } : undefined;
 }
@@ -813,6 +810,12 @@ function* collectStatements(
     // Comments are metadata, not expression-bearing netlist statements.
     if (trimmed.startsWith('*')) {
       passThrough();
+      continue;
+    }
+    // inpcom.c:1442-1456 comments .title before continuation stitching (1958).
+    // Like an ordinary comment, it must leave the preceding card's state intact.
+    if (!inControl && /^\.title(?:\s|$)/i.test(trimmed)) {
+      blank();
       continue;
     }
     const commentedOut = inControl ? undefined : commentedOutCard(line);
