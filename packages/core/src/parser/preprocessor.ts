@@ -226,8 +226,8 @@ const UNUSUAL_LEADING_WARNING = (character: string) =>
   + "in netlist or included files, will be replaced with '*'";
 
 /**
- * The card after ngspice's leading space/tab skip when ngspice-47 comments it
- * out: an unusual leading character (warned) or `#` (silent); else undefined.
+ * The card after ngspice's leading space/tab skip when ngspice-47 comments
+ * it out: `#` or an unusual leading character.
  */
 function commentedOutCard(line: string): { card: string; warn: boolean } | undefined {
   const card = line.replace(/^[ \t]+/, '');
@@ -817,6 +817,12 @@ function* collectStatements(
       passThrough();
       continue;
     }
+    // inpcom.c:1442-1456 comments .title before continuation stitching (1958).
+    // Like an ordinary comment, it must leave the preceding card's state intact.
+    if (!inControl && /^\.title(?:\s|$)/i.test(trimmed)) {
+      blank();
+      continue;
+    }
     const commentedOut = inControl ? undefined : commentedOutCard(line);
     if (commentedOut) {
       if (commentedOut.warn && !state.warnedUnusualLeadingCharacter) {
@@ -851,7 +857,8 @@ function* collectStatements(
       card = line.slice(0, commentStart(line));
       for (let next = index + 1; next < lines.length; next++) {
         const continuation = lines[next].slice(0, commentStart(lines[next])).trim();
-        if (continuation === '' || continuation.startsWith('*')) continue;
+        // .title is commented before stitching in ngspice, including inside X RHS values.
+        if (continuation === '' || continuation.startsWith('*') || /^\.title(?:\s|$)/i.test(continuation)) continue;
         if (!continuation.startsWith('+')) break;
         card += ' ' + continuation.slice(1);
         foldedCallContinuations.add(next);
