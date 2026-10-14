@@ -30,7 +30,17 @@ export function pairPlots<T extends PlotIdentity>(left: readonly T[], right: rea
       : candidates.find(candidate => candidate.plotName.toLowerCase() === own.plotName.toLowerCase());
     // A legacy raw header has a descriptive title, not a control ID. Fall back to occurrence
     // only when neither side has IDs. Never pair dc6 with dc1 by analysis type alone.
-    const paired = reference ?? (id === undefined && candidates.every(candidate => identity(candidate) === undefined) ? candidates[0] : undefined);
+    // A single batch raw header omits the ID of the first retained control plot.
+    // Do not infer control order from multiple descriptive batch plots (dot-card
+    // raw order is reversed), or pair later control plots with that first result.
+    const controlOccurrence = id?.match(new RegExp(`^${own.type}([1-9]\\d*)$`, 'i'));
+    const sameType = right.filter(candidate => candidate.type === own.type);
+    const controlTarget = controlOccurrence?.[1] === '1' && sameType.length === 1
+      ? sameType[0]
+      : undefined;
+    const paired = reference
+      ?? (controlTarget && remaining.has(controlTarget) && identity(controlTarget) === undefined ? controlTarget : undefined)
+      ?? (id === undefined && candidates.every(candidate => identity(candidate) === undefined) ? candidates[0] : undefined);
     if (paired) remaining.delete(paired);
     pairs.push({ left: own, right: paired });
   }

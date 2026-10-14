@@ -23,6 +23,19 @@ See [VENDOR_PUBLISHED.md](VENDOR_PUBLISHED.md) for all points, uncertainty polic
 losses and the coverage boundary. Source attribution is retained; newly authored
 runner/tests are MIT project work, not re-licensed source chapters.
 
+## VDMOS comparison/export boundary (#1106)
+
+`benchmarks/vdmos-1106/` captures derived engine exports from the eight unchanged
+corpus-n ngspice VDMOS examples (n-6 through n-13). Source revision
+`a80f6e3e95d51534905b1f23410a951802666656`, BSD-3-Clause, upstream directory
+https://github.com/imr/ngspice/tree/a80f6e3e95d51534905b1f23410a951802666656/paranoia_parallel/examples/vdmos.
+The original decks, individual URLs, licenses and input hashes remain in
+`benchmarks/corpus/corpus-n/manifest.json`; no deck is edited or copied here.
+Captured waveforms and full plot/vector inventories are reproducible with the
+guarded runner. Runner, regression tests and report checker are original MIT
+project work. Common-vector metrics, missing-vector inventories and the n-12
+unmatched-plot loss are all published; no aggregate refresh or tolerance change.
+
 ## MOS1 per-iteration history trace (#1080)
 
 [mos1-invert1-1080/HISTORY.md](mos1-invert1-1080/HISTORY.md) traces the

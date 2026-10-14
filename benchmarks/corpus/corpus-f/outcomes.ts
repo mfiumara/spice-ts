@@ -271,7 +271,7 @@ export async function runNgspicePacked(input: Buffer, circuit: CorpusFCircuit, s
     try { plots = await readNgspiceRawFilePacked(rawPath, keep); } catch { plots = []; }
     const analyses = plots.flatMap((plot): PackedAnalysis[] => {
       const type = analysisType(plot.plotName);
-      const secondaryGrid = type === 'dc' ? declaredSecondaryGrid(input.toString('utf8'), plot.plotName, plot.grid) : undefined;
+      const secondaryGrid = type === 'dc' ? declaredSecondaryGrid(input.toString('utf8'), plot.plotName, plot.grid, 'batch-dot') : undefined;
       return type ? [{ type, plotName: plot.plotName, grid: Float64Array.from(plot.grid), signals: plot.signals, ...(secondaryGrid ? { secondaryGrid: Float64Array.from(secondaryGrid) } : {}) }] : [];
     });
     if (analyses.length === 0 && !errorLine && /^\s*\.control\b/im.test(input.toString('utf8'))) {

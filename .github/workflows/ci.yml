@@ -43,6 +43,9 @@ jobs:
 
       - run: pnpm -C packages/protocol build && pnpm -C packages/core build
 
+      - name: Offline VDMOS comparison/export regression
+        run: pnpm exec tsx --test benchmarks/vdmos-1106/comparison.test.ts
+
       - run: pnpm lint
 
       # Keep all 1M deterministic #749/#806 patterns in each required test job.
