@@ -3,7 +3,7 @@
   "rawBinarySha256": "723429a1ba2738f046747257af3ae9cbf4d2dd4dc607bc40b1292a4bc6f1c027",
   "sourceArchiveSha256": "815b3dc041418fafab096295a9d12b4f4cca03538082600eb8eef2c594b1328a",
   "nativeVersion": "ngspice-47",
-  "baseCommit": "5ece9928",
+  "baseCommit": "5ece99288a411acb92c17c047e2deb326ba63f37",
   "fixtureSha256": "a25f498f542c6b3e62d5ca10ee4f6aadc6ad05e05ac5b49123c41e54f928abd2",
   "machine": "macOS-27.0.1-arm64-arm-64bit-Mach-O"
 }

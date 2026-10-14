@@ -45,8 +45,8 @@ run a fixed-history/fixed-schedule causal replay or a generic production fix.
 
 ## 19.505 us comparison
 
-`history-summary.json` publishes both full iteration streams over
-19.49-19.51 us, the corner, the first current discrepancy, and the first grid
+`history-window.json.gz` publishes both full iteration streams over
+19.49-19.51 us. `history-summary.json` contains the corner, the first current discrepancy, and the first grid
 separation. Do not equate iteration numbers between different adaptive grids.
 
 - Native first attempts dt=0.8034407528926917 ns, order 2, seven Newton

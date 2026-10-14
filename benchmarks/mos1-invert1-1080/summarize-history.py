@@ -55,5 +55,6 @@ summary = dict(schema='spice-ts-mos1-history/v1', boundary='original identical d
     firstPredictorCurrentDivergence=first_predictor,
     corner=dict(nativeAccepted=corner(accepted), tsAccepted=corner(ts['accepted']), native=corner(native), ts=corner(ts['records'])),
     window=dict(native=window(native), ts=window(ts['records'])))
+root.joinpath('history-window.json.gz').write_bytes(gzip.compress(json.dumps(summary.pop('window')).encode(), mtime=0))
 root.joinpath('history-summary.json').write_text(json.dumps(summary, indent=2) + '\n')
 print(json.dumps(dict(counts=summary['counts'], firstGridDivergence=first_grid, nativeCorner=corner(accepted), tsCorner=corner(ts['accepted'])), indent=2))
