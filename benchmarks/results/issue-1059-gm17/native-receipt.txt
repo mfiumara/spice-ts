@@ -1,0 +1,76 @@
+{
+  "kcl": [
+    {
+      "time": 1.6e-12,
+      "gate9ChargeCurrent": 7.36793719885915e-12,
+      "gate3ChargeCurrent": 5.597809932012765e-12
+    },
+    {
+      "time": 3.2e-12,
+      "gate9ChargeCurrent": 5.695948197155146e-12,
+      "gate3ChargeCurrent": 3.505329140269164e-12
+    }
+  ],
+  "controls": [
+    {
+      "name": "gm17",
+      "worst": [
+        {
+          "signal": "i(vdi)",
+          "normalized": 0.07367900254433166,
+          "absoluteMax": 7.367900254433165e-12
+        },
+        {
+          "signal": "i(vwr)",
+          "normalized": 0.055980963167251284,
+          "absoluteMax": 5.598096316725128e-12
+        },
+        {
+          "signal": "i(vad)",
+          "normalized": 0.0001054211671383927,
+          "absoluteMax": 8.742579257249323e-8
+        }
+      ]
+    },
+    {
+      "name": "gm17-no-leak",
+      "worst": [
+        {
+          "signal": "i(vad)",
+          "normalized": 0.00010542711043345743,
+          "absoluteMax": 8.743072129615507e-8
+        },
+        {
+          "signal": "i(vwr)",
+          "normalized": 0.00006760057426588722,
+          "absoluteMax": 6.760057426588722e-15
+        },
+        {
+          "signal": "i(vdi)",
+          "normalized": 0.00006347951583464397,
+          "absoluteMax": 6.347951583464397e-15
+        }
+      ]
+    },
+    {
+      "name": "storage-no-leak",
+      "worst": [
+        {
+          "signal": "i(vdd)",
+          "normalized": 0.000680621245338882,
+          "absoluteMax": 6.80621245338882e-14
+        },
+        {
+          "signal": "i(vdi)",
+          "normalized": 0.0000571930179167184,
+          "absoluteMax": 5.71930179167184e-15
+        },
+        {
+          "signal": "i(vwr)",
+          "normalized": 0.000057020582033589706,
+          "absoluteMax": 5.702058203358971e-15
+        }
+      ]
+    }
+  ]
+}

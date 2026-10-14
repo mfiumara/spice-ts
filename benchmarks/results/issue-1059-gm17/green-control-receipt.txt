@@ -1,0 +1,12 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e457fe0a/packages/core
+
+ ✓ src/devices/mos3-gm17-startup-1059.test.ts (2 tests) 246ms
+ ✓ src/devices/mos3.test.ts (15 tests) 418ms
+
+ Test Files  2 passed (2)
+      Tests  16 passed | 1 expected fail (17)
+   Start at  17:49:31
+   Duration  2.70s (transform 3.53s, setup 0ms, import 4.23s, tests 663ms, environment 0ms)
+
+JUNIT report written to /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_e457fe0a/packages/core/test-results.xml

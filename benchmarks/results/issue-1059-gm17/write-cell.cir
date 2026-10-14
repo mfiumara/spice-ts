@@ -1,0 +1,40 @@
+gm17 write cell startup reduction
+vdd 10 0 5
+vdi 9 0 0
+vwr 3 0 0
+x11 11 9 10 inv
+x12 14 13 10 inv
+x13 15 12 10 inv
+x14 12 9 3 10 nand
+x15 13 3 11 10 nand
+.subckt inv 2 1 10
+mp1 2 1 10 10 pn4a w=50u l=3u ad=400p as=400p
+mn1 2 1 0 0 nn4a w=20u l=3u ad=160p as=160p
+.ends inv
+*
+.subckt nand 3 2 1 10
+mp1 3 1 10 10 pn4a w=50u l=3u ad=400p as=400p
+mp2 3 2 10 10 pn4a w=50u l=3u ad=400p as=400p
+mn1 3 1 4 0 nn4a w=20u l=3u ad=160p as=160p
+mn2 4 2 0 0 nn4a w=20u l=3u ad=160p as=160p
+.ends nand
+*
+.model nn4a nmos(
++     vto=   1.004e+00     uo=     6.668e+02     kappa= 2.000e-01
++     eta=   1.645e+00     theta=  3.811e-02     vmax=  1.818e+05
++     delta= 8.729e+00     nsub=   3.545e+16     tox=   4.200e-08
++     tpg=   1             xj=     6.000e-09
++     js=    1.000e-07     cj=     4.000e-04     pb=    0.920e-00
++     rs=    2.600e+00     rd=     2.600e+00     level= 3)
+*seq.#: 22 proc: b3918ap 3153 wafer:  1 loc:  5;  9 date: 18oct82
+.model pn4a pmos(
++     vto=  -1.281e+00     uo=     1.817e+02     kappa= 2.000e-01
++     eta=   3.778e+00     theta=  6.226e-02     vmax=  2.000e+05
++     delta= 7.698e-01     nsub=   1.843e+15     tox=   4.270e-08
++     tpg=  -1             xj=     6.000e-09
++     js=    1.000e-07     cj=     1.300e-04     pb=    0.900e-00
++     rs=    5.900e+00     rd=     5.900e+00     level= 3)
+
+.ic v(10)=5
+.tran .25n 16n
+.end

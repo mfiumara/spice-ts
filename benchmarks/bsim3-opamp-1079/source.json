@@ -1,0 +1,10 @@
+{
+  "tag": "ngspice-47",
+  "commit": "a80f6e3e95d51534905b1f23410a951802666656",
+  "files": {
+    "src/spicelib/parser/inpdomod.c": "f4e89a26273234803c5fc96321eb55b68d997ccf5c17a19036f8b0b7da748963",
+    "src/spicelib/devices/mos9/mos9load.c": "71140f712dd98c1f61a17dd14295ceb0ac6810a7197c41e940f4b4c1e28ccb80",
+    "src/spicelib/devices/bsim3v32/b3v32set.c": "59495397698c7cf21d2a4e839b4173f3ae34d8764d2c68b4161cce0877f74921",
+    "src/spicelib/devices/bsim3v32/b3v32ld.c": "78b8f76f9d2427610ef7f6c2abd1ba56d6f91eb2f709568dc0864edaeb9f25f5"
+  }
+}

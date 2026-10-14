@@ -1,0 +1,215 @@
+{
+  "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+  "ngspice": "ngspice-47",
+  "command": "spice-heavy pnpm exec tsx benchmarks/corpus/corpus-n/probe-xyce.ts",
+  "selection": "First 11 successes in survey order; unprobed remainder deferred.",
+  "probes": [
+    {
+      "sourcePath": "Netlists/4049OSC/4049osc.cir",
+      "sha256": "17213048661e53c9922a071ebb1aa9f55f672e77ed91cf696cbc4588be973923",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error on line 16 or its substitute:"
+    },
+    {
+      "sourcePath": "Netlists/ACSENS/bsim3/op-amp_expr_fd.cir",
+      "sha256": "1667c34c9cd58942432fb21c93943b6f12b0138a1460f576acaaaaad82d61519",
+      "status": "success",
+      "plots": [
+        "ac"
+      ]
+    },
+    {
+      "sourcePath": "Netlists/ACSENS/bsim3/op-amp_expr.cir",
+      "sha256": "b1f55c69430b7a1a53b25faf5910a912346d5fc9c6faba4e7fc053a7312a41f5",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error in netlist line no. 25, new internal line no. 33:"
+    },
+    {
+      "sourcePath": "Netlists/ACSENS/bsim3/op-amp_param.cir",
+      "sha256": "d61a1cb5299911836c73fb089ff14fa048305a5ca49a2ef9570d5605b6b34ba4",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error in netlist line no. 25, new internal line no. 33:"
+    },
+    {
+      "sourcePath": "Netlists/ACSENS/bsim3/op-amp_unique_fd.cir",
+      "sha256": "31770a8ccf83d8d1e4d84d32a80c5cb035d53c72b887cccf0a92409a598523ef",
+      "status": "success",
+      "plots": [
+        "ac"
+      ]
+    },
+    {
+      "sourcePath": "Netlists/ACSENS/bsim3/op-amp_unique.cir",
+      "sha256": "571c39b291128b59aad132c75f654f71f0d7e95d68d4e7cd9f5a0a811663ea41",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error in netlist line no. 28, new internal line no. 36:"
+    },
+    {
+      "sourcePath": "Netlists/ACSENS/bsim3/op-amp.cir",
+      "sha256": "4cdaf22713a6494601bfa53d921d0947fc4631efa263c7fbe7273f89f54b3f42",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error in netlist line no. 25, new internal line no. 33:"
+    },
+    {
+      "sourcePath": "Netlists/ACtests/bsim3/step-op-amp.cir",
+      "sha256": "705443e029bde0e72d440db118991e38e9af319353cf916089e193ab36c4018f",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error on line 32 or its substitute:"
+    },
+    {
+      "sourcePath": "Netlists/ERROPTION/rc_osc.cir",
+      "sha256": "1695d9b4aa273cf554d73d808c0e4cb9e10cc1c9644123b4155973b5a6e46941",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error on line 13 or its substitute:"
+    },
+    {
+      "sourcePath": "Netlists/MPDE/FORCED_OSCILLATOR/forced_oscillator.cir",
+      "sha256": "9d6cd8afe274e3a3723c74cb8566774fcb3c936ff4d79fa18ed0a31ee36c5356",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error: unknown option mpde - ignored"
+    },
+    {
+      "sourcePath": "Netlists/MPDE/OPAMP/ccmop.cir",
+      "sha256": "4ef3de1a543d2f7616be3dfa14fc4d6557835a9652d0b0bbcf0cc8311491f0d3",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error in netlist line no. 70, new internal line no. 78:"
+    },
+    {
+      "sourcePath": "Netlists/Output/TRAN/tran-prn-filter.cir",
+      "sha256": "e2c25889d90fd5aa9f86793c969bd36a448e516637af2f1b741822170bdf369e",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "Netlists/TIA/TRAP/4049OSC/4049osc.cir",
+      "sha256": "a33bcf373d11de3bbca864ea0f8c0474936cb753d6e501f3964f3d292857c767",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error on line 16 or its substitute:"
+    },
+    {
+      "sourcePath": "Netlists/XDM/HSPICE/SPARAMS/p_element_bandpass_filter.cir",
+      "sha256": "8150d10ed63b13ad9ce824655b4850353a14537535aa2b23f95c49d130b4a0d5",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error on line 15 or its substitute:"
+    },
+    {
+      "sourcePath": "Netlists/ACtests/test1.cir",
+      "sha256": "22d734223b90d7e9c3147680b5a92418c7e39cef36c7abf2acdeda256a9681c1",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error: no such function 'if' at line 7"
+    },
+    {
+      "sourcePath": "Netlists/BJT_IC/bjt_ic.cir",
+      "sha256": "b2f414dea73a0fb66b61335fe83320fecac2b7bbf1f12e0438b6893c363c5534",
+      "status": "success",
+      "plots": [
+        "dc"
+      ]
+    },
+    {
+      "sourcePath": "Netlists/CircuitSim90/MOS2_LARGE/add20.cir",
+      "sha256": "197b34fcac1376f5351f3c3c8508b30cec83f0ba45540c233aac8b9856340bc1",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "Netlists/CircuitSim90/MOS2_LARGE/add32.cir",
+      "sha256": "120cbd0023c06993224b862be199f095226ce4a0efa587dc8c46cebd21181138",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "Netlists/CircuitSim90/MOS2_LARGE/chip2.cir",
+      "sha256": "565e93a8c658a9b46e33bacf1a01794b79285bfe295998db8260fa5494c150fd",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "ngspice exceeded the 60000 ms probe bound"
+    },
+    {
+      "sourcePath": "Netlists/CircuitSim90/MOS2_LARGE/dac.cir",
+      "sha256": "daff3bedde91fafd24d5a4123738d7845cd2f067d1c918f73dc07f8d9c3ab637",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "Netlists/CircuitSim90/MOS2_LARGE/fadd32.cir",
+      "sha256": "e0056c1c0e9f7c9c1fd917affec058d32001c6172251359068506b165dc5a12d",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "Netlists/CircuitSim90/MOS2_LARGE/mem_plus.cir",
+      "sha256": "8018590341994b176a192a86b448166bd33d1d3b1d7d733af8ffffe355d2dbed",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "ngspice exceeded the 60000 ms probe bound"
+    },
+    {
+      "sourcePath": "Netlists/CircuitSim90/MOS2_LARGE/pc_frame.cir",
+      "sha256": "0a17bad85607d9dadd55057c004fc2cb4508d4402b524fd553dfa946dc29c250",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error on line 34 or its substitute:"
+    },
+    {
+      "sourcePath": "Netlists/CircuitSim90/MOS2_LARGE/pchip.cir",
+      "sha256": "6abe8ffc3bb0e664b465bbb0ebc9d202265df9eb39608140bc976f28202bcb21",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "Netlists/CircuitSim90/MOS2_LARGE/ram2k.cir",
+      "sha256": "67ccac70d1c253d20bdeea6f15877d4222de43cc102a377c9990cd1e94a23818",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "ngspice exceeded the 60000 ms probe bound"
+    },
+    {
+      "sourcePath": "Netlists/CircuitSim90/MOS2_LARGE/smult20.cir",
+      "sha256": "318f1cf6c7a49b76e7f72f626fb2b0bfc802fdc693ac7704e4fee36f4984f199",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "ngspice exceeded the 60000 ms probe bound"
+    },
+    {
+      "sourcePath": "Netlists/CircuitSim90/MOS2_LARGE/sqrt.cir",
+      "sha256": "efec05bb614eedd46c39b85f3e8430e3c0955230909ab2adb2542667306ee791",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "Netlists/CircuitSim90/MOS2_LARGE/sram.cir",
+      "sha256": "f7199d0ba58e8b3563f9910511b7a1954f86ea647e276bb517eb49acdcf1fdd4",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    }
+  ]
+}

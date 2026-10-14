@@ -1,0 +1,33 @@
+--- a/src/spicelib/analysis/cktop.c
++++ b/src/spicelib/analysis/cktop.c
+@@ -641,6 +641,7 @@
+         } while ((raise >= 1e-7) && (ConvFact < 1));
+ 
+         ckt->CKTdiagGmin = ckt->CKTgmin = gminstart;
++        if (getenv("GM17_NO_LEAK")) ckt->CKTdiagGmin = ckt->CKTgshunt;
+         FREE (OldRhsOld);
+         FREE (OldCKTstate0);
+     }
+--- a/src/spicelib/devices/mos3/mos3load.c
++++ b/src/spicelib/devices/mos3/mos3load.c
+@@ -1195,6 +1195,20 @@
+ 		/*
+ 		 *     store charge storage info for meyer's cap in lx table
+ 		 */
++
++        if (getenv("GM17_TRACE") && ckt->CKTtime <= 3.3e-12) {
++            if (!strcmp(here->MOS3name, "m.x11.mp1"))
++                fprintf(stderr, "GM17_DIAG {\"time\":%.17g,\"mode\":%ld,\"diagGmin\":%.17g,\"deviceGmin\":%.17g,\"srcFact\":%.17g}\n", ckt->CKTtime, (long)ckt->CKTmode, ckt->CKTdiagGmin, ckt->CKTgmin, ckt->CKTsrcFact);
++            fprintf(stderr, "GM17 {\"name\":\"%s\",\"time\":%.17g,\"mode\":%ld,\"order\":%d,\"ag\":[%.17g,%.17g,%.17g],\"prime\":[%.17g,%.17g,%.17g,%.17g],\"v\":[%.17g,%.17g,%.17g],\"half\":[%.17g,%.17g,%.17g],\"q0\":[%.17g,%.17g,%.17g],\"q1\":[%.17g,%.17g,%.17g],\"cq\":[%.17g,%.17g,%.17g]}\n",
++                here->MOS3name, (double)ckt->CKTtime, (long)ckt->CKTmode, ckt->CKTorder,
++                ckt->CKTag[0], ckt->CKTag[1], ckt->CKTag[2],
++                ckt->CKTrhsOld[here->MOS3dNodePrime], ckt->CKTrhsOld[here->MOS3gNode], ckt->CKTrhsOld[here->MOS3sNodePrime], ckt->CKTrhsOld[here->MOS3bNode],
++                vgs, vds, vbs,
++                ckt->CKTstate0[here->MOS3capgs], ckt->CKTstate0[here->MOS3capgd], ckt->CKTstate0[here->MOS3capgb],
++                ckt->CKTstate0[here->MOS3qgs], ckt->CKTstate0[here->MOS3qgd], ckt->CKTstate0[here->MOS3qgb],
++                ckt->CKTstate1[here->MOS3qgs], ckt->CKTstate1[here->MOS3qgd], ckt->CKTstate1[here->MOS3qgb],
++                ckt->CKTstate0[here->MOS3cqgs], ckt->CKTstate0[here->MOS3cqgd], ckt->CKTstate0[here->MOS3cqgb]);
++        }
+ 		    
+ 		/*
+ 		 *  load current vector

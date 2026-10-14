@@ -1,0 +1,362 @@
+{
+  "before": {
+    "totals": {
+      "fixtures": 24,
+      "ngspice": {
+        "success": 24,
+        "failed": 0,
+        "unsupported": 0
+      },
+      "spiceTs": {
+        "success": 21,
+        "failed": 2,
+        "unsupported": 1
+      },
+      "outcomes": {
+        "matched": 15,
+        "mismatch": 6,
+        "not-compared": 0,
+        "spice-ts-loss": 3,
+        "ngspice-failed": 0,
+        "both-failed": 0
+      },
+      "bySource": {
+        "xyce": {
+          "matched": 15,
+          "mismatch": 6,
+          "not-compared": 0,
+          "spice-ts-loss": 3,
+          "ngspice-failed": 0,
+          "both-failed": 0
+        }
+      }
+    },
+    "coreTree": "926efe53f0ee2f2813987a1a66d9fc19bf4a20df",
+    "rows": [
+      {
+        "id": "m-1",
+        "outcome": "matched",
+        "worstSignal": "ac v(1)",
+        "worstNormalizedError": 3.7e-16
+      },
+      {
+        "id": "m-2",
+        "outcome": "matched",
+        "worstSignal": "ac v(1)",
+        "worstNormalizedError": 6.64e-16
+      },
+      {
+        "id": "m-3",
+        "outcome": "mismatch",
+        "worstSignal": "ac v(out)",
+        "worstNormalizedError": 0.637
+      },
+      {
+        "id": "m-4",
+        "outcome": "spice-ts-loss",
+        "worstSignal": null,
+        "worstNormalizedError": null
+      },
+      {
+        "id": "m-5",
+        "outcome": "matched",
+        "worstSignal": "ac i(vdd1)",
+        "worstNormalizedError": 7.13e-16
+      },
+      {
+        "id": "m-6",
+        "outcome": "matched",
+        "worstSignal": "ac v(6)",
+        "worstNormalizedError": 8.91e-05
+      },
+      {
+        "id": "m-7",
+        "outcome": "matched",
+        "worstSignal": "ac v(7)",
+        "worstNormalizedError": 1.31e-09
+      },
+      {
+        "id": "m-8",
+        "outcome": "matched",
+        "worstSignal": "ac v(7)",
+        "worstNormalizedError": 1.31e-09
+      },
+      {
+        "id": "m-9",
+        "outcome": "matched",
+        "worstSignal": "ac i(v1)",
+        "worstNormalizedError": 5.76e-16
+      },
+      {
+        "id": "m-10",
+        "outcome": "matched",
+        "worstSignal": "ac v(13)",
+        "worstNormalizedError": 1.31e-10
+      },
+      {
+        "id": "m-11",
+        "outcome": "matched",
+        "worstSignal": "ac v(12)",
+        "worstNormalizedError": 3.78e-11
+      },
+      {
+        "id": "m-12",
+        "outcome": "matched",
+        "worstSignal": "dc i(vin)",
+        "worstNormalizedError": 0.000631
+      },
+      {
+        "id": "m-13",
+        "outcome": "matched",
+        "worstSignal": "dc i(vin)",
+        "worstNormalizedError": 0.00204
+      },
+      {
+        "id": "m-14",
+        "outcome": "matched",
+        "worstSignal": "dc i(vin)",
+        "worstNormalizedError": 0.00015
+      },
+      {
+        "id": "m-15",
+        "outcome": "matched",
+        "worstSignal": "dc i(vin)",
+        "worstNormalizedError": 0.000631
+      },
+      {
+        "id": "m-16",
+        "outcome": "matched",
+        "worstSignal": "dc i(vds)",
+        "worstNormalizedError": 1.34e-11
+      },
+      {
+        "id": "m-17",
+        "outcome": "matched",
+        "worstSignal": "dc i(vmon)",
+        "worstNormalizedError": 1.22e-06
+      },
+      {
+        "id": "m-18",
+        "outcome": "mismatch",
+        "worstSignal": "tran i(vdddev)",
+        "worstNormalizedError": 0.249
+      },
+      {
+        "id": "m-19",
+        "outcome": "mismatch",
+        "worstSignal": "tran v(vout)",
+        "worstNormalizedError": 0.38
+      },
+      {
+        "id": "m-20",
+        "outcome": "mismatch",
+        "worstSignal": "tran v(vout)",
+        "worstNormalizedError": 0.38
+      },
+      {
+        "id": "m-21",
+        "outcome": "mismatch",
+        "worstSignal": "tran i(vdddev)",
+        "worstNormalizedError": 0.229
+      },
+      {
+        "id": "m-22",
+        "outcome": "mismatch",
+        "worstSignal": "tran i(vdddev)",
+        "worstNormalizedError": 0.229
+      },
+      {
+        "id": "m-23",
+        "outcome": "spice-ts-loss",
+        "worstSignal": null,
+        "worstNormalizedError": null
+      },
+      {
+        "id": "m-24",
+        "outcome": "spice-ts-loss",
+        "worstSignal": null,
+        "worstNormalizedError": null
+      }
+    ]
+  },
+  "after": {
+    "totals": {
+      "fixtures": 24,
+      "ngspice": {
+        "success": 24,
+        "failed": 0,
+        "unsupported": 0
+      },
+      "spiceTs": {
+        "success": 21,
+        "failed": 2,
+        "unsupported": 1
+      },
+      "outcomes": {
+        "matched": 15,
+        "mismatch": 6,
+        "not-compared": 0,
+        "spice-ts-loss": 3,
+        "ngspice-failed": 0,
+        "both-failed": 0
+      },
+      "bySource": {
+        "xyce": {
+          "matched": 15,
+          "mismatch": 6,
+          "not-compared": 0,
+          "spice-ts-loss": 3,
+          "ngspice-failed": 0,
+          "both-failed": 0
+        }
+      }
+    },
+    "coreTree": "926efe53f0ee2f2813987a1a66d9fc19bf4a20df",
+    "rows": [
+      {
+        "id": "m-1",
+        "outcome": "matched",
+        "worstSignal": "ac v(1)",
+        "worstNormalizedError": 3.7e-16
+      },
+      {
+        "id": "m-2",
+        "outcome": "matched",
+        "worstSignal": "ac v(1)",
+        "worstNormalizedError": 6.64e-16
+      },
+      {
+        "id": "m-3",
+        "outcome": "mismatch",
+        "worstSignal": "ac v(out)",
+        "worstNormalizedError": 0.637
+      },
+      {
+        "id": "m-4",
+        "outcome": "spice-ts-loss",
+        "worstSignal": null,
+        "worstNormalizedError": null
+      },
+      {
+        "id": "m-5",
+        "outcome": "matched",
+        "worstSignal": "ac i(vdd1)",
+        "worstNormalizedError": 7.13e-16
+      },
+      {
+        "id": "m-6",
+        "outcome": "matched",
+        "worstSignal": "ac v(6)",
+        "worstNormalizedError": 8.91e-05
+      },
+      {
+        "id": "m-7",
+        "outcome": "matched",
+        "worstSignal": "ac v(7)",
+        "worstNormalizedError": 1.31e-09
+      },
+      {
+        "id": "m-8",
+        "outcome": "matched",
+        "worstSignal": "ac v(7)",
+        "worstNormalizedError": 1.31e-09
+      },
+      {
+        "id": "m-9",
+        "outcome": "matched",
+        "worstSignal": "ac i(v1)",
+        "worstNormalizedError": 5.76e-16
+      },
+      {
+        "id": "m-10",
+        "outcome": "matched",
+        "worstSignal": "ac v(13)",
+        "worstNormalizedError": 1.31e-10
+      },
+      {
+        "id": "m-11",
+        "outcome": "matched",
+        "worstSignal": "ac v(12)",
+        "worstNormalizedError": 3.78e-11
+      },
+      {
+        "id": "m-12",
+        "outcome": "matched",
+        "worstSignal": "dc i(vin)",
+        "worstNormalizedError": 0.000631
+      },
+      {
+        "id": "m-13",
+        "outcome": "matched",
+        "worstSignal": "dc i(vin)",
+        "worstNormalizedError": 0.00204
+      },
+      {
+        "id": "m-14",
+        "outcome": "matched",
+        "worstSignal": "dc i(vin)",
+        "worstNormalizedError": 0.00015
+      },
+      {
+        "id": "m-15",
+        "outcome": "matched",
+        "worstSignal": "dc i(vin)",
+        "worstNormalizedError": 0.000631
+      },
+      {
+        "id": "m-16",
+        "outcome": "matched",
+        "worstSignal": "dc i(vds)",
+        "worstNormalizedError": 1.34e-11
+      },
+      {
+        "id": "m-17",
+        "outcome": "matched",
+        "worstSignal": "dc i(vmon)",
+        "worstNormalizedError": 1.22e-06
+      },
+      {
+        "id": "m-18",
+        "outcome": "mismatch",
+        "worstSignal": "tran i(vdddev)",
+        "worstNormalizedError": 0.249
+      },
+      {
+        "id": "m-19",
+        "outcome": "mismatch",
+        "worstSignal": "tran v(vout)",
+        "worstNormalizedError": 0.38
+      },
+      {
+        "id": "m-20",
+        "outcome": "mismatch",
+        "worstSignal": "tran v(vout)",
+        "worstNormalizedError": 0.38
+      },
+      {
+        "id": "m-21",
+        "outcome": "mismatch",
+        "worstSignal": "tran i(vdddev)",
+        "worstNormalizedError": 0.229
+      },
+      {
+        "id": "m-22",
+        "outcome": "mismatch",
+        "worstSignal": "tran i(vdddev)",
+        "worstNormalizedError": 0.229
+      },
+      {
+        "id": "m-23",
+        "outcome": "spice-ts-loss",
+        "worstSignal": null,
+        "worstNormalizedError": null
+      },
+      {
+        "id": "m-24",
+        "outcome": "spice-ts-loss",
+        "worstSignal": null,
+        "worstNormalizedError": null
+      }
+    ]
+  }
+}

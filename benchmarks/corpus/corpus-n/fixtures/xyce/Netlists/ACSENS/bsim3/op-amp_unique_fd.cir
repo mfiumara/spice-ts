@@ -1,0 +1,98 @@
+* Operational Amplifier.  AC Analysis.
+* BSIM3 testing, 3/16/96. 
+
+.param m6w=2u
+.param dm6w={m6w*1.0e-6}
+.param m6l=1u
+.param dm6l={m6l*1.0e-6}
+
+*Operational Amplifier
+M1 bias1 1 cm cm nmos w=10u l=1u
+M2 bias2 in2 cm cm  nmos w=10u l=1u
+M3 vdd bias1 bias1 vdd pmos w=2u l=1u
+M4 bias2 bias1 vdd vdd pmos w=2u l=1u
+
+m5 cm bias vss vss nmos w=2u l=1u
+mbias bias bias vss vss nmos w=2u l=1u
+rbias 0 bias 195k
+
+m6 8 bias vss vss  nmos w={m6w} l={m6l}
+m7 8 bias2 vdd out nmos w=2u l=1u
+
+Cfb bias2 8 2p
+
+Vid 1 c 0 ac 0.1
+eid in2 c 1 c -1
+vic c 0 dc 0
+vss1 vss 0 -5
+Vdd1 vdd 0 5 
+
+* perturbed circuit for m6:w
+M1_w bias1_w 1_w     cm_w    cm_w  nmos w=10u l=1u
+M2_w bias2_w in2_w   cm_w    cm_w  nmos w=10u l=1u
+M3_w vdd_w   bias1_w bias1_w vdd_w pmos w=2u l=1u
+M4_w bias2_w bias1_w vdd_w   vdd_w pmos w=2u l=1u
+
+m5_w    cm_w   bias_w vss_w vss_w nmos w=2u l=1u
+mbias_w bias_w bias_w vss_w vss_w nmos w=2u l=1u
+rbias_w 0      bias_w 195k
+
+m6_w 8_w bias_w  vss_w vss_w nmos w={m6w+dm6w} l={m6l}
+m7_w 8_w bias2_w vdd_w out_w nmos w=2u l=1u
+
+Cfb_w bias2_w 8_w 2p
+
+Vid_w  1_w   c_w 0 ac 0.1
+eid_w  in2_w c_w 1_w c_w -1
+
+vic_w  c_w   0   dc 0
+vss1_w vss_w 0   -5
+Vdd1_w vdd_w 0   5 
+
+* perturbed circuit for m6:l
+M1_l bias1_l 1_l     cm_l    cm_l  nmos w=10u l=1u
+M2_l bias2_l in2_l   cm_l    cm_l  nmos w=10u l=1u
+M3_l vdd_l   bias1_l bias1_l vdd_l pmos w=2u l=1u
+M4_l bias2_l bias1_l vdd_l   vdd_l pmos w=2u l=1u
+
+m5_l    cm_l   bias_l vss_l vss_l nmos w=2u l=1u
+mbias_l bias_l bias_l vss_l vss_l nmos w=2u l=1u
+rbias_l 0      bias_l 195k
+
+m6_l 8_l bias_l  vss_l vss_l nmos w={m6w} l={m6l+dm6l}
+m7_l 8_l bias2_l vdd_l out_l nmos w=2u l=1u
+
+Cfb_l bias2_l 8_l 2p
+
+Vid_l  1_l   c_l 0 ac 0.1
+eid_l  in2_l c_l 1_l c_l -1
+
+vic_l  c_l   0   dc 0
+vss1_l vss_l 0   -5
+Vdd1_l vdd_l 0   5 
+
+*AC analysis
+.ac dec 10 1e2 100Meg 
+.print ac  
+*+ format=tecplot
++ vr(8) vi(8) vm(8) vp(8)
+*
++ { (vr(8_w)-vr(8))/dm6w }
++ { (vi(8_w)-vi(8))/dm6w }
++ { (vm(8_w)-vm(8))/dm6w }
++ { (vp(8_w)-vp(8))/dm6w }
+*
++ { (vr(8_l)-vr(8))/dm6l }
++ { (vi(8_l)-vi(8))/dm6l }
++ { (vm(8_l)-vm(8))/dm6l }
++ { (vp(8_l)-vp(8))/dm6l }
+**
+
+.model nmos nmos level=9 version=3.2.2
+.model pmos pmos level=9 version=3.2.2
+
+.end
+
+
+
+
