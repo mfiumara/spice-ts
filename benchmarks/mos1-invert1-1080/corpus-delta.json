@@ -1,0 +1,174 @@
+{
+  "base": "1556ca0e",
+  "rows": [
+    {
+      "id": "m-1",
+      "beforeOutcome": "matched",
+      "afterOutcome": "matched",
+      "beforeWorst": 3.7e-16,
+      "afterWorst": 3.7e-16
+    },
+    {
+      "id": "m-2",
+      "beforeOutcome": "matched",
+      "afterOutcome": "matched",
+      "beforeWorst": 6.64e-16,
+      "afterWorst": 6.64e-16
+    },
+    {
+      "id": "m-3",
+      "beforeOutcome": "mismatch",
+      "afterOutcome": "mismatch",
+      "beforeWorst": 0.637,
+      "afterWorst": 0.637
+    },
+    {
+      "id": "m-4",
+      "beforeOutcome": "spice-ts-loss",
+      "afterOutcome": "spice-ts-loss",
+      "beforeWorst": null,
+      "afterWorst": null
+    },
+    {
+      "id": "m-5",
+      "beforeOutcome": "matched",
+      "afterOutcome": "matched",
+      "beforeWorst": 7.13e-16,
+      "afterWorst": 7.13e-16
+    },
+    {
+      "id": "m-6",
+      "beforeOutcome": "matched",
+      "afterOutcome": "matched",
+      "beforeWorst": 8.91e-05,
+      "afterWorst": 8.91e-05
+    },
+    {
+      "id": "m-7",
+      "beforeOutcome": "matched",
+      "afterOutcome": "matched",
+      "beforeWorst": 1.31e-09,
+      "afterWorst": 1.31e-09
+    },
+    {
+      "id": "m-8",
+      "beforeOutcome": "matched",
+      "afterOutcome": "matched",
+      "beforeWorst": 1.31e-09,
+      "afterWorst": 1.31e-09
+    },
+    {
+      "id": "m-9",
+      "beforeOutcome": "matched",
+      "afterOutcome": "matched",
+      "beforeWorst": 5.76e-16,
+      "afterWorst": 5.76e-16
+    },
+    {
+      "id": "m-10",
+      "beforeOutcome": "matched",
+      "afterOutcome": "matched",
+      "beforeWorst": 1.31e-10,
+      "afterWorst": 1.31e-10
+    },
+    {
+      "id": "m-11",
+      "beforeOutcome": "matched",
+      "afterOutcome": "matched",
+      "beforeWorst": 3.78e-11,
+      "afterWorst": 3.78e-11
+    },
+    {
+      "id": "m-12",
+      "beforeOutcome": "matched",
+      "afterOutcome": "matched",
+      "beforeWorst": 0.000631,
+      "afterWorst": 0.000631
+    },
+    {
+      "id": "m-13",
+      "beforeOutcome": "matched",
+      "afterOutcome": "matched",
+      "beforeWorst": 0.00204,
+      "afterWorst": 0.00204
+    },
+    {
+      "id": "m-14",
+      "beforeOutcome": "matched",
+      "afterOutcome": "matched",
+      "beforeWorst": 0.00015,
+      "afterWorst": 0.00015
+    },
+    {
+      "id": "m-15",
+      "beforeOutcome": "matched",
+      "afterOutcome": "matched",
+      "beforeWorst": 0.000631,
+      "afterWorst": 0.000631
+    },
+    {
+      "id": "m-16",
+      "beforeOutcome": "matched",
+      "afterOutcome": "matched",
+      "beforeWorst": 1.34e-11,
+      "afterWorst": 1.34e-11
+    },
+    {
+      "id": "m-17",
+      "beforeOutcome": "matched",
+      "afterOutcome": "matched",
+      "beforeWorst": 1.22e-06,
+      "afterWorst": 1.22e-06
+    },
+    {
+      "id": "m-18",
+      "beforeOutcome": "mismatch",
+      "afterOutcome": "mismatch",
+      "beforeWorst": 0.249,
+      "afterWorst": 0.249
+    },
+    {
+      "id": "m-19",
+      "beforeOutcome": "mismatch",
+      "afterOutcome": "mismatch",
+      "beforeWorst": 0.38,
+      "afterWorst": 0.38
+    },
+    {
+      "id": "m-20",
+      "beforeOutcome": "mismatch",
+      "afterOutcome": "mismatch",
+      "beforeWorst": 0.38,
+      "afterWorst": 0.38
+    },
+    {
+      "id": "m-21",
+      "beforeOutcome": "mismatch",
+      "afterOutcome": "mismatch",
+      "beforeWorst": 0.229,
+      "afterWorst": 0.229
+    },
+    {
+      "id": "m-22",
+      "beforeOutcome": "mismatch",
+      "afterOutcome": "mismatch",
+      "beforeWorst": 0.229,
+      "afterWorst": 0.229
+    },
+    {
+      "id": "m-23",
+      "beforeOutcome": "spice-ts-loss",
+      "afterOutcome": "spice-ts-loss",
+      "beforeWorst": null,
+      "afterWorst": null
+    },
+    {
+      "id": "m-24",
+      "beforeOutcome": "spice-ts-loss",
+      "afterOutcome": "spice-ts-loss",
+      "beforeWorst": null,
+      "afterWorst": null
+    }
+  ],
+  "changedScores": 0
+}

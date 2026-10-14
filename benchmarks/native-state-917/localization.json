@@ -1,0 +1,1015 @@
+{
+  "base": {
+    "firstZeroSource": {
+      "native": {
+        "attempt": 0,
+        "stage": "loaded",
+        "iteration": 1,
+        "error": 0,
+        "mode": 528,
+        "ni": 784,
+        "time": 0,
+        "dt": 0,
+        "scale": 0,
+        "diag": 0,
+        "gmin": 1e-12,
+        "noncon": 131,
+        "ids": [
+          290,
+          200,
+          203
+        ],
+        "old": [
+          0,
+          0,
+          0
+        ],
+        "rhs": [
+          0.3656970964156338,
+          -0.3656970964156338,
+          0
+        ],
+        "state0": [
+          0.570454328909948,
+          0.03767502791438239,
+          0.7071067811875481,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "state1": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "matrix": [
+          486.14399998507105,
+          -0.7071067811875481,
+          -485.43689320388347,
+          -0.7071067811875481,
+          0.7071067811875481,
+          0,
+          -485.43689320388347,
+          0,
+          485.43689320388347
+        ]
+      },
+      "spiceTs": {
+        "scale": 0,
+        "time": 0,
+        "dt": 0,
+        "old": [
+          0,
+          0,
+          0
+        ],
+        "stateBefore": {
+          "previousJunctionVoltage": 0,
+          "stampedJunctionVoltage": 0,
+          "acceptedJunctionVoltage": null,
+          "acceptedCharge": null,
+          "acceptedChargeCurrent": 0,
+          "newtonJunctionVoltage": null
+        },
+        "stateAfter": {
+          "previousJunctionVoltage": 0,
+          "stampedJunctionVoltage": 0,
+          "acceptedJunctionVoltage": null,
+          "acceptedCharge": null,
+          "acceptedChargeCurrent": 0,
+          "newtonJunctionVoltage": null
+        },
+        "ids": [
+          "D183.rs",
+          "Net-_D183-A_",
+          "Net-_D183-K_"
+        ],
+        "matrix": [
+          485.4369090442113,
+          -1.584032779287937e-05,
+          -485.43689320388347,
+          -1.584032779287937e-05,
+          1.584032779287937e-05,
+          0,
+          -485.43689320388347,
+          0,
+          485.43689320388347
+        ],
+        "rhs": [
+          0,
+          0,
+          0
+        ],
+        "error": "SingularMatrixError: Singular matrix: zero pivot at matrix column 10 (nodes: Net-_D183-K_)"
+      }
+    },
+    "firstUnshuntedSource": {
+      "native": {
+        "attempt": 0,
+        "stage": "loaded",
+        "iteration": 1,
+        "error": 0,
+        "mode": 272,
+        "ni": 784,
+        "time": 0,
+        "dt": 0,
+        "scale": 0.001,
+        "diag": 0,
+        "gmin": 1e-12,
+        "noncon": 0,
+        "ids": [
+          290,
+          200,
+          203
+        ],
+        "old": [
+          -1.1799629427909544e-25,
+          2.084699921126692e-19,
+          -1.1799629427909544e-25
+        ],
+        "rhs": [
+          -3.302234670673527e-24,
+          3.302234670673527e-24,
+          0
+        ],
+        "state0": [
+          -2.084701101089635e-19,
+          -2.084701101089635e-31,
+          1.584032779287937e-05,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "state1": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "matrix": [
+          485.4369090442113,
+          -1.584032779287937e-05,
+          -485.43689320388347,
+          -1.584032779287937e-05,
+          1.584032779287937e-05,
+          0,
+          -485.43689320388347,
+          0,
+          485.43689320388347
+        ]
+      },
+      "spiceTs": {
+        "scale": 0.001,
+        "time": 0,
+        "dt": 0,
+        "old": [
+          0,
+          0,
+          0
+        ],
+        "stateBefore": {
+          "previousJunctionVoltage": 0,
+          "stampedJunctionVoltage": 0,
+          "acceptedJunctionVoltage": null,
+          "acceptedCharge": null,
+          "acceptedChargeCurrent": 0,
+          "newtonJunctionVoltage": null
+        },
+        "stateAfter": {
+          "previousJunctionVoltage": 0,
+          "stampedJunctionVoltage": 0,
+          "acceptedJunctionVoltage": null,
+          "acceptedCharge": null,
+          "acceptedChargeCurrent": 0,
+          "newtonJunctionVoltage": null
+        },
+        "ids": [
+          "D183.rs",
+          "Net-_D183-A_",
+          "Net-_D183-K_"
+        ],
+        "matrix": [
+          485.4369090442113,
+          -1.584032779287937e-05,
+          -485.43689320388347,
+          -1.584032779287937e-05,
+          1.584032779287937e-05,
+          0,
+          -485.43689320388347,
+          0,
+          485.43689320388347
+        ],
+        "rhs": [
+          0,
+          0,
+          0
+        ],
+        "error": "SingularMatrixError: Singular matrix: zero pivot at matrix column 10 (nodes: Net-_D183-K_)"
+      },
+      "factor": {
+        "attempt": 0,
+        "stage": "factor",
+        "iteration": 1,
+        "error": 0,
+        "mode": 272,
+        "ni": 784,
+        "time": 0,
+        "dt": 0,
+        "scale": 0.001,
+        "diag": 0,
+        "gmin": 1e-12,
+        "noncon": 0,
+        "ids": [
+          290,
+          200,
+          203
+        ],
+        "old": [
+          -1.1799629427909544e-25,
+          2.084699921126692e-19,
+          -1.1799629427909544e-25
+        ],
+        "rhs": [
+          -3.302234670673527e-24,
+          3.302234670673527e-24,
+          0
+        ],
+        "state0": [
+          -2.084701101089635e-19,
+          -2.084701101089635e-31,
+          1.584032779287937e-05,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "state1": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "matrix": [
+          0.0020599999327799872,
+          -3.263107418854447e-08,
+          -0.9999999673689258,
+          -1.584032779287937e-05,
+          63130.00877927543,
+          -1,
+          -485.43689320388347,
+          -1.584032727599246e-05,
+          -164996696229703.88
+        ]
+      },
+      "identicalBlock": true,
+      "nativeIslandPivot": -6.060727413643649e-15
+    }
+  },
+  "variant": {
+    "firstZeroSource": {
+      "native": {
+        "attempt": 0,
+        "stage": "loaded",
+        "iteration": 1,
+        "error": 0,
+        "mode": 528,
+        "ni": 784,
+        "time": 0,
+        "dt": 0,
+        "scale": 0,
+        "diag": 0,
+        "gmin": 1e-12,
+        "noncon": 131,
+        "ids": [
+          296,
+          13,
+          6
+        ],
+        "old": [
+          0,
+          0,
+          0
+        ],
+        "rhs": [
+          0.3656970964156338,
+          -0.3656970964156338,
+          0
+        ],
+        "state0": [
+          0.570454328909948,
+          0.03767502791438239,
+          0.7071067811875481,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "state1": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "matrix": [
+          486.14399998507105,
+          -0.7071067811875481,
+          -485.43689320388347,
+          -0.7071067811875481,
+          0.7071067811875481,
+          0,
+          -485.43689320388347,
+          0,
+          485.43689320388347
+        ]
+      },
+      "spiceTs": {
+        "scale": 0,
+        "time": 0,
+        "dt": 0,
+        "old": [
+          0,
+          0,
+          0
+        ],
+        "stateBefore": {
+          "previousJunctionVoltage": 0,
+          "stampedJunctionVoltage": 0,
+          "acceptedJunctionVoltage": null,
+          "acceptedCharge": null,
+          "acceptedChargeCurrent": 0,
+          "newtonJunctionVoltage": null
+        },
+        "stateAfter": {
+          "previousJunctionVoltage": 0,
+          "stampedJunctionVoltage": 0,
+          "acceptedJunctionVoltage": null,
+          "acceptedCharge": null,
+          "acceptedChargeCurrent": 0,
+          "newtonJunctionVoltage": null
+        },
+        "ids": [
+          "D183.rs",
+          "Net-_D183-A_",
+          "Net-_D183-K_"
+        ],
+        "matrix": [
+          485.4369090442113,
+          -1.584032779287937e-05,
+          -485.43689320388347,
+          -1.584032779287937e-05,
+          1.584032779287937e-05,
+          0,
+          -485.43689320388347,
+          0,
+          485.43689320388347
+        ],
+        "rhs": [
+          0,
+          0,
+          0
+        ],
+        "error": "SingularMatrixError: Singular matrix: zero pivot at matrix column 10 (nodes: Net-_D183-K_)"
+      }
+    },
+    "firstUnshuntedSource": {
+      "native": {
+        "attempt": 0,
+        "stage": "loaded",
+        "iteration": 1,
+        "error": 0,
+        "mode": 272,
+        "ni": 784,
+        "time": 0,
+        "dt": 0,
+        "scale": 0.001,
+        "diag": 0,
+        "gmin": 1e-12,
+        "noncon": 0,
+        "ids": [
+          296,
+          13,
+          6
+        ],
+        "old": [
+          -1.1799629427909544e-25,
+          2.084699921126692e-19,
+          -1.1799629427909544e-25
+        ],
+        "rhs": [
+          -3.302234670673527e-24,
+          3.302234670673527e-24,
+          0
+        ],
+        "state0": [
+          -2.084701101089635e-19,
+          -2.084701101089635e-31,
+          1.584032779287937e-05,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "state1": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "matrix": [
+          485.4369090442113,
+          -1.584032779287937e-05,
+          -485.43689320388347,
+          -1.584032779287937e-05,
+          1.584032779287937e-05,
+          0,
+          -485.43689320388347,
+          0,
+          485.43689320388347
+        ]
+      },
+      "spiceTs": {
+        "scale": 0.001,
+        "time": 0,
+        "dt": 0,
+        "old": [
+          0,
+          0,
+          0
+        ],
+        "stateBefore": {
+          "previousJunctionVoltage": 0,
+          "stampedJunctionVoltage": 0,
+          "acceptedJunctionVoltage": null,
+          "acceptedCharge": null,
+          "acceptedChargeCurrent": 0,
+          "newtonJunctionVoltage": null
+        },
+        "stateAfter": {
+          "previousJunctionVoltage": 0,
+          "stampedJunctionVoltage": 0,
+          "acceptedJunctionVoltage": null,
+          "acceptedCharge": null,
+          "acceptedChargeCurrent": 0,
+          "newtonJunctionVoltage": null
+        },
+        "ids": [
+          "D183.rs",
+          "Net-_D183-A_",
+          "Net-_D183-K_"
+        ],
+        "matrix": [
+          485.4369090442113,
+          -1.584032779287937e-05,
+          -485.43689320388347,
+          -1.584032779287937e-05,
+          1.584032779287937e-05,
+          0,
+          -485.43689320388347,
+          0,
+          485.43689320388347
+        ],
+        "rhs": [
+          0,
+          0,
+          0
+        ],
+        "error": "SingularMatrixError: Singular matrix: zero pivot at matrix column 10 (nodes: Net-_D183-K_)"
+      },
+      "factor": {
+        "attempt": 0,
+        "stage": "factor",
+        "iteration": 1,
+        "error": 0,
+        "mode": 272,
+        "ni": 784,
+        "time": 0,
+        "dt": 0,
+        "scale": 0.001,
+        "diag": 0,
+        "gmin": 1e-12,
+        "noncon": 0,
+        "ids": [
+          296,
+          13,
+          6
+        ],
+        "old": [
+          -1.1799629427909544e-25,
+          2.084699921126692e-19,
+          -1.1799629427909544e-25
+        ],
+        "rhs": [
+          -3.302234670673527e-24,
+          3.302234670673527e-24,
+          0
+        ],
+        "state0": [
+          -2.084701101089635e-19,
+          -2.084701101089635e-31,
+          1.584032779287937e-05,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "state1": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "matrix": [
+          0.0020599999327799872,
+          -3.263107418854447e-08,
+          -0.9999999673689258,
+          -1.584032779287937e-05,
+          63130.00877927543,
+          -1,
+          -485.43689320388347,
+          -1.584032727599246e-05,
+          -164996696229703.88
+        ]
+      },
+      "identicalBlock": true,
+      "nativeIslandPivot": -6.060727413643649e-15
+    },
+    "transientCheckpoints": {
+      "nativeStartupLoad": {
+        "attempt": 1,
+        "stage": "loaded",
+        "iteration": 1,
+        "error": 0,
+        "mode": 4097,
+        "ni": 784,
+        "time": 0,
+        "dt": 1e-09,
+        "scale": 1,
+        "diag": 1e-12,
+        "gmin": 1e-12,
+        "noncon": 96,
+        "ids": [
+          296,
+          13,
+          6
+        ],
+        "old": [
+          4.560649720893012e-26,
+          2.084482311091484e-19,
+          4.560649720893012e-26
+        ],
+        "rhs": [
+          -7.200760364396553e-20,
+          6.253446933994527e-10,
+          1.8242598883572046e-16
+        ],
+        "state0": [
+          -2.084481855026512e-19,
+          -2.084481855026852e-31,
+          0.3454460563930317,
+          0,
+          0,
+          0,
+          -9.004961613714533e-37,
+          -3.39950469785658e-44
+        ],
+        "state1": [
+          -2.084481855026512e-19,
+          -2.0844818550265122e-31,
+          1.584032779287937e-05,
+          0,
+          0,
+          0,
+          -9.004961613714533e-37,
+          -3.39950469785658e-44
+        ],
+        "matrix": [
+          485.7823392602765,
+          -0.3454460563930317,
+          -485.43689320388347,
+          -0.3454460563930317,
+          3000000000.3454456,
+          0,
+          -485.43689320388347,
+          0,
+          4000000485.4368925
+        ]
+      },
+      "spiceTsStartupLoad": {
+        "scale": 1,
+        "time": 1e-09,
+        "dt": 1e-09,
+        "old": [
+          0,
+          0,
+          0
+        ],
+        "stateBefore": {
+          "previousJunctionVoltage": 0,
+          "stampedJunctionVoltage": 0,
+          "acceptedJunctionVoltage": 0,
+          "acceptedCharge": 0,
+          "acceptedChargeCurrent": 0,
+          "newtonJunctionVoltage": null
+        },
+        "stateAfter": {
+          "previousJunctionVoltage": 0,
+          "stampedJunctionVoltage": 0,
+          "acceptedJunctionVoltage": 0,
+          "acceptedCharge": 0,
+          "acceptedChargeCurrent": 0,
+          "newtonJunctionVoltage": null
+        },
+        "ids": [
+          "D183.rs",
+          "Net-_D183-A_",
+          "Net-_D183-K_"
+        ],
+        "matrix": [
+          485.7823392602765,
+          -0.3454460563930318,
+          -485.43689320388347,
+          -0.3454460563930318,
+          3000000000.3454456,
+          0,
+          -485.43689320388347,
+          0,
+          4000000485.4368925
+        ],
+        "rhs": [
+          0,
+          0,
+          0
+        ],
+        "error": null
+      },
+      "nativeFirstFailedAttempt": {
+        "attempt": 3,
+        "stage": "after",
+        "optime": 1.0040052493342835e-09,
+        "dt": 4.0052493342833036e-12,
+        "error": 103
+      },
+      "nativeFailedStart": {
+        "attempt": 3,
+        "stage": "before",
+        "iteration": 1,
+        "error": 0,
+        "mode": 8193,
+        "ni": 784,
+        "time": 0,
+        "dt": 4.0052493342833036e-12,
+        "scale": 1,
+        "diag": 1e-12,
+        "gmin": 1e-12,
+        "noncon": 0,
+        "ids": [
+          296,
+          13,
+          6
+        ],
+        "old": [
+          -1.0254396851689904e-09,
+          -1.0274442987790052e-09,
+          -1.0254380302827912e-09
+        ],
+        "rhs": [
+          -1.025439699834693e-09,
+          -1.0274442275210887e-09,
+          -1.025438044945585e-09
+        ],
+        "state0": [
+          2.004613610014773e-12,
+          8.033739102721139e-13,
+          0.3454460563957917,
+          0,
+          0,
+          0,
+          6.924857893433339e-22,
+          8.033421564447624e-13
+        ],
+        "state1": [
+          -3.2094943344543634e-13,
+          -1.1086145104212847e-13,
+          0.3454460563925898,
+          0,
+          0,
+          0,
+          -1.1085636710142864e-22,
+          -1.1085636710142773e-13
+        ],
+        "matrix": [
+          0.0020585351075601862,
+          -0.0007111128348589532,
+          -0.9992888871651389,
+          -0.3454460563957917,
+          3.333333332949778e-10,
+          -1.150668017438718e-10,
+          -485.43689320388347,
+          -0.3452004052713365,
+          122.97642054679712
+        ]
+      },
+      "nativeFailedLoad": {
+        "attempt": 3,
+        "stage": "loaded",
+        "iteration": 1,
+        "error": 0,
+        "mode": 8193,
+        "ni": 784,
+        "time": 0,
+        "dt": 4.0052493342833036e-12,
+        "scale": 1,
+        "diag": 1e-12,
+        "gmin": 1e-12,
+        "noncon": 0,
+        "ids": [
+          296,
+          13,
+          6
+        ],
+        "old": [
+          -1.0254396851689904e-09,
+          -1.0274442987790052e-09,
+          -1.0254380302827912e-09
+        ],
+        "rhs": [
+          -2.7676924109667063e-11,
+          1.5613125989667286e-07,
+          2.7674232695912733e-11
+        ],
+        "state0": [
+          -3.222349151151953e-13,
+          -1.1402908845673982e-13,
+          86.24438847102851,
+          0,
+          0,
+          0,
+          -1.1131306158816803e-22,
+          -1.1402398418252514e-13
+        ],
+        "state1": [
+          -3.2094943344543634e-13,
+          -1.1086145104212847e-13,
+          0.3454460563925898,
+          0,
+          0,
+          0,
+          -1.1085636710142864e-22,
+          -1.1085636710142773e-13
+        ],
+        "matrix": [
+          571.681281674912,
+          -86.24438847102851,
+          -485.43689320388347,
+          -86.24438847102851,
+          749017039879.8026,
+          0,
+          -485.43689320388347,
+          0,
+          998689386876.8479
+        ]
+      },
+      "nativeFailure": {
+        "attempt": 3,
+        "stage": "iteration-limit",
+        "iteration": 101,
+        "error": 103,
+        "mode": 257,
+        "ni": 784,
+        "time": 0,
+        "dt": 4.0052493342833036e-12,
+        "scale": 1,
+        "diag": 1e-12,
+        "gmin": 1e-12,
+        "noncon": 0,
+        "ids": [
+          296,
+          13,
+          6
+        ],
+        "old": [
+          -5.028189551418308e-10,
+          -5.02497549710161e-10,
+          -5.028190648523317e-10
+        ],
+        "rhs": [
+          -5.028247183827102e-10,
+          -5.025030460792511e-10,
+          -5.02824829265389e-10
+        ],
+        "state0": [
+          -3.214054316697945e-13,
+          -3.081034831724285e-14,
+          86.24438847102881,
+          0,
+          0,
+          0,
+          -1.1097974983716687e-22,
+          -3.0805257161424265e-14
+        ],
+        "state1": [
+          -3.2094943344543634e-13,
+          -1.1086145104212847e-13,
+          0.3454460563925898,
+          0,
+          0,
+          0,
+          -1.1085636710142864e-22,
+          -1.1085636710142773e-13
+        ],
+        "matrix": [
+          0.0017492264169821992,
+          -0.15086096262999862,
+          -0.8491390373699995,
+          -86.24438847102881,
+          1.3350831112972331e-12,
+          -9.777277833075445e-11,
+          -485.43689320388347,
+          -73.2334770048537,
+          9.446449371786924
+        ]
+      },
+      "note": "Native startup Newton succeeds at 1ns; TS candidate rejects its first startup Newton. Native first failed Newton attempt is #3, after a successful #2 solve and LTE retry. Diode/three-row observation only, not a full vendor model-state bisect. Native optime is local; CKTtime remains zero."
+    }
+  },
+  "island": {
+    "firstJunctionLoad": {
+      "native": {
+        "attempt": 0,
+        "stage": "loaded",
+        "iteration": 1,
+        "error": 0,
+        "mode": 528,
+        "ni": 785,
+        "time": 0,
+        "dt": 0,
+        "scale": 0,
+        "diag": 0,
+        "gmin": 1e-12,
+        "noncon": 1,
+        "ids": [
+          4,
+          3,
+          2
+        ],
+        "old": [
+          0,
+          0,
+          0
+        ],
+        "rhs": [
+          0.17796146497349657,
+          -0.17796146497349657,
+          0
+        ],
+        "state0": [
+          0.27753986866703595,
+          0.018288858210865837,
+          0.7071067811875473,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "state1": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "matrix": [
+          500.7071067811875,
+          -0.7071067811875473,
+          -500,
+          -0.7071067811875473,
+          0.7071067811875473,
+          0,
+          -500,
+          0,
+          500
+        ]
+      },
+      "spiceTs": {
+        "scale": 1,
+        "time": 0,
+        "dt": 0,
+        "old": [
+          0,
+          0,
+          0
+        ],
+        "stateBefore": {
+          "previousJunctionVoltage": null,
+          "stampedJunctionVoltage": 0,
+          "acceptedJunctionVoltage": null,
+          "acceptedCharge": null,
+          "acceptedChargeCurrent": 0,
+          "newtonJunctionVoltage": null
+        },
+        "stateAfter": {
+          "previousJunctionVoltage": 0,
+          "stampedJunctionVoltage": 0,
+          "acceptedJunctionVoltage": null,
+          "acceptedCharge": null,
+          "acceptedChargeCurrent": 0,
+          "newtonJunctionVoltage": null
+        },
+        "ids": [
+          "D1.rs",
+          "k",
+          "a"
+        ],
+        "matrix": [
+          500.0000154649646,
+          -1.546496459873531e-05,
+          -500,
+          -1.546496459873531e-05,
+          1.546496459873531e-05,
+          0,
+          -500,
+          0,
+          500
+        ],
+        "rhs": [
+          0,
+          0,
+          0
+        ],
+        "error": null
+      }
+    },
+    "note": "MIT reduction is RED on INITJCT state, not final OP. Its rounded explicit-series block already factors under TS ordering."
+  },
+  "replay": {
+    "matrix": [
+      485.4369090442113,
+      -1.584032779287937e-05,
+      -485.43689320388347,
+      -1.584032779287937e-05,
+      1.584032779287937e-05,
+      0,
+      -485.43689320388347,
+      0,
+      485.43689320388347
+    ],
+    "rowSums": [
+      0,
+      0,
+      0
+    ],
+    "error": "SingularMatrixError: Singular matrix: zero pivot at matrix column 2 (nodes: )"
+  },
+  "parity": {
+    "before": {
+      "base": "singular pivot10",
+      "variant": "singular pivot10",
+      "maxError": null,
+      "rmsError": null
+    },
+    "after": {
+      "base": "singular pivot10",
+      "variant": "singular pivot10",
+      "maxError": null,
+      "rmsError": null
+    },
+    "reason": "Evidence only; production simulator unchanged. Shared variant failure is not parity."
+  }
+}

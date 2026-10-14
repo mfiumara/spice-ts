@@ -56,5 +56,13 @@ losses and engine-specific BJT losses remain published. Cold-process ngspice and
 warm in-process TS timings are receipts only, not comparable speed measurements.
 
 Shared-file hotspots: `package.json` (one appended test path),
-`benchmarks/SOURCES.md` (one source attribution section). No other corpus metrics,
+`benchmarks/SOURCES.md` (one source attribution section), and
+`.github/workflows/ci.yml` (one offline benchmark test allowlist entry). No other corpus metrics,
 roadmap rows, model parameters or production solver files are modified.
+
+The first PR head conflicted with a concurrent SOURCES.md prepend, so GitHub did
+not start Actions. Merged current main into this branch, retaining both source
+sections without changing the dataset/harness. The comparator is registered in
+the required `accuracy` job's fast offline allowlist; root tests alone are not
+the CI benchmark allowlist. Post-merge six-test run and exact native receipt
+replay pass. Final SHA/check results are in the Kanban review handoff.

@@ -1,0 +1,1097 @@
+[
+  {
+    "step": "original",
+    "row": {
+      "id": "m-18",
+      "sourcePath": "xyce/Netlists/MOSFET_ParamAliases/invert1.cir",
+      "sha256": "a25f498f542c6b3e62d5ca10ee4f6aadc6ad05e05ac5b49123c41e54f928abd2",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:1930"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:1932"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 6,
+      "worstNormalizedError": 0.249,
+      "worstSignal": "tran i(vdddev)",
+      "outcome": "mismatch",
+      "gapBucket": null,
+      "comparisons": [
+        {
+          "analysis": "tran",
+          "signals": [
+            "i(vdddev)",
+            "i(vin1)",
+            "v(1)",
+            "v(in)",
+            "v(vdd)",
+            "v(vout)"
+          ],
+          "metrics": {
+            "grid": {
+              "spiceTsPoints": 1932,
+              "ngspicePoints": 1930,
+              "alignedPoints": 1932,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "i(vdddev)": {
+                "status": "compared",
+                "sampleCount": 1932,
+                "absoluteError": {
+                  "max": 0.0004459265790256867,
+                  "rms": 0.00001929833451751002
+                },
+                "relativeError": {
+                  "max": 129.0650784639518,
+                  "rms": 3.2327236462193327,
+                  "sampleCount": 1932,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "i(vin1)": {
+                "status": "compared",
+                "sampleCount": 1932,
+                "absoluteError": {
+                  "max": 0.00010629267955107092,
+                  "rms": 0.00000873527793072965
+                },
+                "relativeError": {
+                  "max": 814.1268811678788,
+                  "rms": 19.701928753193133,
+                  "sampleCount": 1849,
+                  "excludedZeroReferences": 83
+                }
+              },
+              "v(1)": {
+                "status": "compared",
+                "sampleCount": 1932,
+                "absoluteError": {
+                  "max": 5.057287921772513e-12,
+                  "rms": 5.561737607601815e-13
+                },
+                "relativeError": {
+                  "max": 1,
+                  "rms": 0.06293534308424553,
+                  "sampleCount": 1073,
+                  "excludedZeroReferences": 859
+                }
+              },
+              "v(in)": {
+                "status": "compared",
+                "sampleCount": 1932,
+                "absoluteError": {
+                  "max": 0.10629267955445942,
+                  "rms": 0.008735277930871293
+                },
+                "relativeError": {
+                  "max": 814.1268811679372,
+                  "rms": 18.8477752939027,
+                  "sampleCount": 1932,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(vdd)": {
+                "status": "compared",
+                "sampleCount": 1932,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1932,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(vout)": {
+                "status": "compared",
+                "sampleCount": 1932,
+                "absoluteError": {
+                  "max": 1.0226005071764388,
+                  "rms": 0.04869662676755779
+                },
+                "relativeError": {
+                  "max": 30.179549494487077,
+                  "rms": 1.3465616101904778,
+                  "sampleCount": 1932,
+                  "excludedZeroReferences": 0
+                }
+              }
+            }
+          },
+          "linearMetrics": {
+            "grid": {
+              "spiceTsPoints": 1932,
+              "ngspicePoints": 1930,
+              "alignedPoints": 1932,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "i(vdddev)": {
+                "status": "compared",
+                "sampleCount": 1932,
+                "absoluteError": {
+                  "max": 0.0004459265790256867,
+                  "rms": 0.000019298345021203692
+                },
+                "relativeError": {
+                  "max": 129.0650784639518,
+                  "rms": 3.232723647229015,
+                  "sampleCount": 1932,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "i(vin1)": {
+                "status": "compared",
+                "sampleCount": 1932,
+                "absoluteError": {
+                  "max": 0.00010629267955107092,
+                  "rms": 0.000008741714032284422
+                },
+                "relativeError": {
+                  "max": 814.1268811678788,
+                  "rms": 19.70192875538468,
+                  "sampleCount": 1849,
+                  "excludedZeroReferences": 83
+                }
+              },
+              "v(1)": {
+                "status": "compared",
+                "sampleCount": 1932,
+                "absoluteError": {
+                  "max": 5.057287921772513e-12,
+                  "rms": 5.561737609437181e-13
+                },
+                "relativeError": {
+                  "max": 1,
+                  "rms": 0.06293534308424553,
+                  "sampleCount": 1073,
+                  "excludedZeroReferences": 859
+                }
+              },
+              "v(in)": {
+                "status": "compared",
+                "sampleCount": 1932,
+                "absoluteError": {
+                  "max": 0.10629267955445942,
+                  "rms": 0.00874171403242596
+                },
+                "relativeError": {
+                  "max": 814.1268811679372,
+                  "rms": 18.847775296093474,
+                  "sampleCount": 1932,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(vdd)": {
+                "status": "compared",
+                "sampleCount": 1932,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1932,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(vout)": {
+                "status": "compared",
+                "sampleCount": 1932,
+                "absoluteError": {
+                  "max": 1.0226005071764388,
+                  "rms": 0.0487106439905331
+                },
+                "relativeError": {
+                  "max": 30.179549494487077,
+                  "rms": 1.3465616401243703,
+                  "sampleCount": 1932,
+                  "excludedZeroReferences": 0
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "worst": [
+      {
+        "name": "i(vdddev)",
+        "points": [
+          {
+            "t": 0.000028504628069406413,
+            "actual": -0.0011730928718015044,
+            "reference": -0.001619019450827191,
+            "error": 0.0004459265790256867
+          },
+          {
+            "t": 0.00001950505246422299,
+            "actual": -0.0013118947160949122,
+            "reference": -0.001537182897380726,
+            "error": 0.00022528818128581376
+          },
+          {
+            "t": 0.000019505,
+            "actual": -0.0013664114551422994,
+            "reference": -0.001577267373957459,
+            "error": 0.00021085591881515962
+          },
+          {
+            "t": 0.000028504256138812827,
+            "actual": -0.0019679510529296055,
+            "reference": -0.001763735791019916,
+            "error": 0.00020421526190968946
+          },
+          {
+            "t": 0.000028505,
+            "actual": -0.0015919642807903465,
+            "reference": -0.001421409908342407,
+            "error": 0.00017055437244793952
+          },
+          {
+            "t": 0.00001950515739266897,
+            "actual": -0.001229669842258767,
+            "reference": -0.0013991618226620618,
+            "error": 0.00016949198040329492
+          },
+          {
+            "t": 0.000010504231244810843,
+            "actual": -0.0017749413257216653,
+            "reference": -0.001617541867220534,
+            "error": 0.00015739945850113128
+          },
+          {
+            "t": 0.000010503239937174693,
+            "actual": -0.0007692435566838543,
+            "reference": -0.0009075147376656138,
+            "error": 0.00013827118098175956
+          },
+          {
+            "t": 0.00002850513721138317,
+            "actual": -0.0011909857719131934,
+            "reference": -0.0013061696450787407,
+            "error": 0.00011518387316554728
+          },
+          {
+            "t": 0.000019504172391985403,
+            "actual": -0.0017228074506910492,
+            "reference": -0.0016108825696954877,
+            "error": 0.00011192488099556145
+          }
+        ]
+      },
+      {
+        "name": "v(vout)",
+        "points": [
+          {
+            "t": 0.00001950431632381403,
+            "actual": 3.3434472604241114,
+            "reference": 2.3208467532476726,
+            "error": 1.0226005071764388
+          },
+          {
+            "t": 0.00001950457864492898,
+            "actual": 3.9901152984299237,
+            "reference": 3.097340600580921,
+            "error": 0.8927746978490028
+          },
+          {
+            "t": 0.000019504172391985403,
+            "actual": 2.682100909023151,
+            "reference": 1.9122359811146858,
+            "error": 0.7698649279084653
+          },
+          {
+            "t": 0.00001050405383976719,
+            "actual": 1.557946697536387,
+            "reference": 2.149973519729333,
+            "error": 0.5920268221929461
+          },
+          {
+            "t": 0.000010504112974781741,
+            "actual": 1.8711531636505045,
+            "reference": 2.445749327043825,
+            "error": 0.5745961633933205
+          },
+          {
+            "t": 0.000028504256138812827,
+            "actual": 3.0032325637805184,
+            "reference": 2.4431503823959324,
+            "error": 0.560082181384586
+          },
+          {
+            "t": 0.00001950410042607109,
+            "actual": 2.2720924737806345,
+            "reference": 1.7511445120945348,
+            "error": 0.5209479616860997
+          },
+          {
+            "t": 0.000019504064443113933,
+            "actual": 2.074997878793362,
+            "reference": 1.670598777584459,
+            "error": 0.40439910120890277
+          },
+          {
+            "t": 0.000010504231244810843,
+            "actual": 2.547210180542484,
+            "reference": 2.9029069690634905,
+            "error": 0.3556967885210067
+          },
+          {
+            "t": 0.000028504628069406413,
+            "actual": 4.1247492647745085,
+            "reference": 3.779298666804337,
+            "error": 0.34545059797017164
+          }
+        ]
+      }
+    ],
+    "referencePeak": 0.001789292317396894
+  },
+  {
+    "step": " 1ns",
+    "row": {
+      "id": "m-18",
+      "sourcePath": "xyce/Netlists/MOSFET_ParamAliases/invert1.cir",
+      "sha256": "a25f498f542c6b3e62d5ca10ee4f6aadc6ad05e05ac5b49123c41e54f928abd2",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:30288"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:30263"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 6,
+      "worstNormalizedError": 0.189,
+      "worstSignal": "tran v(vout)",
+      "outcome": "mismatch",
+      "gapBucket": null,
+      "comparisons": [
+        {
+          "analysis": "tran",
+          "signals": [
+            "i(vdddev)",
+            "i(vin1)",
+            "v(1)",
+            "v(in)",
+            "v(vdd)",
+            "v(vout)"
+          ],
+          "metrics": {
+            "grid": {
+              "spiceTsPoints": 30263,
+              "ngspicePoints": 30288,
+              "alignedPoints": 30263,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "i(vdddev)": {
+                "status": "compared",
+                "sampleCount": 30263,
+                "absoluteError": {
+                  "max": 0.0003035252881899927,
+                  "rms": 0.000005959006610578309
+                },
+                "relativeError": {
+                  "max": 1772.6449109344599,
+                  "rms": 33.49224742416805,
+                  "sampleCount": 30263,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "i(vin1)": {
+                "status": "compared",
+                "sampleCount": 30263,
+                "absoluteError": {
+                  "max": 0.00009986008359763056,
+                  "rms": 0.0000028133369149652276
+                },
+                "relativeError": {
+                  "max": 49450.44694043381,
+                  "rms": 306.9403009086668,
+                  "sampleCount": 28756,
+                  "excludedZeroReferences": 1507
+                }
+              },
+              "v(1)": {
+                "status": "compared",
+                "sampleCount": 30263,
+                "absoluteError": {
+                  "max": 6.456390977405135e-12,
+                  "rms": 1.8066969180581958e-13
+                },
+                "relativeError": {
+                  "max": 1,
+                  "rms": 0.01461091091663959,
+                  "sampleCount": 15224,
+                  "excludedZeroReferences": 15039
+                }
+              },
+              "v(in)": {
+                "status": "compared",
+                "sampleCount": 30263,
+                "absoluteError": {
+                  "max": 0.09986008359511622,
+                  "rms": 0.002813336914979958
+                },
+                "relativeError": {
+                  "max": 383582.1248315819,
+                  "rms": 2224.6641026036323,
+                  "sampleCount": 30263,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(vdd)": {
+                "status": "compared",
+                "sampleCount": 30263,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 30263,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(vout)": {
+                "status": "compared",
+                "sampleCount": 30263,
+                "absoluteError": {
+                  "max": 0.9239540974272638,
+                  "rms": 0.014710291969418584
+                },
+                "relativeError": {
+                  "max": 287.5188526227889,
+                  "rms": 29.64760234609303,
+                  "sampleCount": 30263,
+                  "excludedZeroReferences": 0
+                }
+              }
+            }
+          },
+          "linearMetrics": {
+            "grid": {
+              "spiceTsPoints": 30263,
+              "ngspicePoints": 30288,
+              "alignedPoints": 30263,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "i(vdddev)": {
+                "status": "compared",
+                "sampleCount": 30263,
+                "absoluteError": {
+                  "max": 0.0003035252881899927,
+                  "rms": 0.000005963023088283038
+                },
+                "relativeError": {
+                  "max": 1772.6449109344599,
+                  "rms": 33.49224743218407,
+                  "sampleCount": 30263,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "i(vin1)": {
+                "status": "compared",
+                "sampleCount": 30263,
+                "absoluteError": {
+                  "max": 0.00009986008359763056,
+                  "rms": 0.0000028133730771355393
+                },
+                "relativeError": {
+                  "max": 49450.44694043381,
+                  "rms": 306.94030090879585,
+                  "sampleCount": 28756,
+                  "excludedZeroReferences": 1507
+                }
+              },
+              "v(1)": {
+                "status": "compared",
+                "sampleCount": 30263,
+                "absoluteError": {
+                  "max": 6.456390977405135e-12,
+                  "rms": 1.8066969180581958e-13
+                },
+                "relativeError": {
+                  "max": 1,
+                  "rms": 0.01461091091663959,
+                  "sampleCount": 15224,
+                  "excludedZeroReferences": 15039
+                }
+              },
+              "v(in)": {
+                "status": "compared",
+                "sampleCount": 30263,
+                "absoluteError": {
+                  "max": 0.09986008359511622,
+                  "rms": 0.002813373077150423
+                },
+                "relativeError": {
+                  "max": 383582.1248315819,
+                  "rms": 2224.664102603163,
+                  "sampleCount": 30263,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(vdd)": {
+                "status": "compared",
+                "sampleCount": 30263,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 30263,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(vout)": {
+                "status": "compared",
+                "sampleCount": 30263,
+                "absoluteError": {
+                  "max": 0.9239540974272638,
+                  "rms": 0.014710389335394295
+                },
+                "relativeError": {
+                  "max": 287.5188526227889,
+                  "rms": 29.647602390364707,
+                  "sampleCount": 30263,
+                  "excludedZeroReferences": 0
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "worst": [
+      {
+        "name": "i(vdddev)",
+        "points": [
+          {
+            "t": 0.00001950433227697813,
+            "actual": -0.001856874213031381,
+            "reference": -0.0015533489248413883,
+            "error": 0.0003035252881899927
+          },
+          {
+            "t": 0.000019505,
+            "actual": -0.001564849546705662,
+            "reference": -0.001268980185703093,
+            "error": 0.000295869361002569
+          },
+          {
+            "t": 0.000028505,
+            "actual": -0.0015846056596418555,
+            "reference": -0.001351428614758245,
+            "error": 0.0002331770448836105
+          },
+          {
+            "t": 0.000028505059785947964,
+            "actual": -0.0015330469635459105,
+            "reference": -0.0013181307836705291,
+            "error": 0.0002149161798753814
+          },
+          {
+            "t": 0.000028504812294723747,
+            "actual": -0.0016459256485571682,
+            "reference": -0.0014590671823653514,
+            "error": 0.00018685846619181674
+          },
+          {
+            "t": 0.00002250445889082425,
+            "actual": -0.0015978079040243677,
+            "reference": -0.0014127313949367417,
+            "error": 0.00018507650908762595
+          },
+          {
+            "t": 0.00001950505040671064,
+            "actual": -0.0014544999588013024,
+            "reference": -0.0012881161193596803,
+            "error": 0.0001663838394416221
+          },
+          {
+            "t": 0.00001501,
+            "actual": 0.0005662242774999507,
+            "reference": 0.0007290821624241382,
+            "error": 0.0001628578849241875
+          },
+          {
+            "t": 0.000024009933662238377,
+            "actual": 0.00042981685257668153,
+            "reference": 0.000578681978372297,
+            "error": 0.00014886512579561544
+          },
+          {
+            "t": 0.000013504479776318654,
+            "actual": -0.0015849852107478446,
+            "reference": -0.0014457618742289245,
+            "error": 0.0001392233365189201
+          }
+        ]
+      },
+      {
+        "name": "v(vout)",
+        "points": [
+          {
+            "t": 0.000028504241200116395,
+            "actual": 2.0096218250214526,
+            "reference": 2.9335759224487163,
+            "error": 0.9239540974272638
+          },
+          {
+            "t": 0.00001950433227697813,
+            "actual": 2.600314427749328,
+            "reference": 3.3593329355517745,
+            "error": 0.7590185078024465
+          },
+          {
+            "t": 0.000022504098151373744,
+            "actual": 1.8086156405642535,
+            "reference": 2.4646183354953197,
+            "error": 0.6560026949310662
+          },
+          {
+            "t": 0.000022504038028131994,
+            "actual": 1.4952386886306157,
+            "reference": 2.1498566013399074,
+            "error": 0.6546179127092917
+          },
+          {
+            "t": 0.00001350413296053109,
+            "actual": 1.9135708238696687,
+            "reference": 2.4980051211202396,
+            "error": 0.5844342972505709
+          },
+          {
+            "t": 0.00001650404863862598,
+            "actual": 1.5843404256863771,
+            "reference": 2.1683287792339594,
+            "error": 0.5839883535475823
+          },
+          {
+            "t": 0.000016504104041126632,
+            "actual": 1.86696493891649,
+            "reference": 2.4477146835002834,
+            "error": 0.5807497445837935
+          },
+          {
+            "t": 0.000016504020937375656,
+            "actual": 1.4490608802446339,
+            "reference": 2.02863582710934,
+            "error": 0.5795749468647062
+          },
+          {
+            "t": 0.00001350407515789983,
+            "actual": 1.6011743543802688,
+            "reference": 2.161411916080385,
+            "error": 0.5602375617001163
+          },
+          {
+            "t": 0.000022504218397857247,
+            "actual": 2.4876726407164487,
+            "reference": 3.006810956937615,
+            "error": 0.5191383162211665
+          }
+        ]
+      }
+    ],
+    "referencePeak": 0.001878681746677188
+  },
+  {
+    "step": " 0.2ns",
+    "row": {
+      "id": "m-18",
+      "sourcePath": "xyce/Netlists/MOSFET_ParamAliases/invert1.cir",
+      "sha256": "a25f498f542c6b3e62d5ca10ee4f6aadc6ad05e05ac5b49123c41e54f928abd2",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:150129"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:150129"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 6,
+      "worstNormalizedError": 0.000794,
+      "worstSignal": "tran i(vdddev)",
+      "outcome": "matched",
+      "gapBucket": null,
+      "comparisons": [
+        {
+          "analysis": "tran",
+          "signals": [
+            "i(vdddev)",
+            "i(vin1)",
+            "v(1)",
+            "v(in)",
+            "v(vdd)",
+            "v(vout)"
+          ],
+          "metrics": {
+            "grid": {
+              "spiceTsPoints": 150129,
+              "ngspicePoints": 150129,
+              "alignedPoints": 150129,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "i(vdddev)": {
+                "status": "compared",
+                "sampleCount": 150129,
+                "absoluteError": {
+                  "max": 0.0000015303635587519179,
+                  "rms": 8.56322542190412e-9
+                },
+                "relativeError": {
+                  "max": 0.7110146486847856,
+                  "rms": 0.0053202392717322956,
+                  "sampleCount": 150129,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "i(vin1)": {
+                "status": "compared",
+                "sampleCount": 150129,
+                "absoluteError": {
+                  "max": 2.524804198658463e-7,
+                  "rms": 2.957778802327046e-9
+                },
+                "relativeError": {
+                  "max": 1.7327640020859159,
+                  "rms": 0.015977246423247514,
+                  "sampleCount": 24896,
+                  "excludedZeroReferences": 125233
+                }
+              },
+              "v(1)": {
+                "status": "compared",
+                "sampleCount": 150129,
+                "absoluteError": {
+                  "max": 6.7761352084971804e-12,
+                  "rms": 1.3778820813033172e-13
+                },
+                "relativeError": {
+                  "max": 1,
+                  "rms": 0.005472812618662802,
+                  "sampleCount": 75121,
+                  "excludedZeroReferences": 75008
+                }
+              },
+              "v(in)": {
+                "status": "compared",
+                "sampleCount": 150129,
+                "absoluteError": {
+                  "max": 0.00025248041897074636,
+                  "rms": 0.0000029577788071273003
+                },
+                "relativeError": {
+                  "max": 11.137286983975189,
+                  "rms": 1.5298147368882746,
+                  "sampleCount": 135037,
+                  "excludedZeroReferences": 15092
+                }
+              },
+              "v(vdd)": {
+                "status": "compared",
+                "sampleCount": 150129,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 150129,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(vout)": {
+                "status": "compared",
+                "sampleCount": 150129,
+                "absoluteError": {
+                  "max": 0.000779070687347172,
+                  "rms": 0.000005414311717895506
+                },
+                "relativeError": {
+                  "max": 16.014539150000573,
+                  "rms": 0.05360363445144431,
+                  "sampleCount": 150129,
+                  "excludedZeroReferences": 0
+                }
+              }
+            }
+          },
+          "linearMetrics": {
+            "grid": {
+              "spiceTsPoints": 150129,
+              "ngspicePoints": 150129,
+              "alignedPoints": 150129,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "i(vdddev)": {
+                "status": "compared",
+                "sampleCount": 150129,
+                "absoluteError": {
+                  "max": 0.0000015303635587519179,
+                  "rms": 8.563748934372222e-9
+                },
+                "relativeError": {
+                  "max": 0.7110146486847856,
+                  "rms": 0.0053202392739926645,
+                  "sampleCount": 150129,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "i(vin1)": {
+                "status": "compared",
+                "sampleCount": 150129,
+                "absoluteError": {
+                  "max": 2.524804198658463e-7,
+                  "rms": 2.9577789613818586e-9
+                },
+                "relativeError": {
+                  "max": 1.7327640020859159,
+                  "rms": 0.01597724642324818,
+                  "sampleCount": 24896,
+                  "excludedZeroReferences": 125233
+                }
+              },
+              "v(1)": {
+                "status": "compared",
+                "sampleCount": 150129,
+                "absoluteError": {
+                  "max": 6.7761352084971804e-12,
+                  "rms": 1.3778820813033172e-13
+                },
+                "relativeError": {
+                  "max": 1,
+                  "rms": 0.005472812618662802,
+                  "sampleCount": 75121,
+                  "excludedZeroReferences": 75008
+                }
+              },
+              "v(in)": {
+                "status": "compared",
+                "sampleCount": 150129,
+                "absoluteError": {
+                  "max": 0.00025248041897074636,
+                  "rms": 0.000002957778966182107
+                },
+                "relativeError": {
+                  "max": 11.137286983975189,
+                  "rms": 1.5298147368882726,
+                  "sampleCount": 135037,
+                  "excludedZeroReferences": 15092
+                }
+              },
+              "v(vdd)": {
+                "status": "compared",
+                "sampleCount": 150129,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 150129,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(vout)": {
+                "status": "compared",
+                "sampleCount": 150129,
+                "absoluteError": {
+                  "max": 0.000779070687347172,
+                  "rms": 0.000005414355395552798
+                },
+                "relativeError": {
+                  "max": 16.014539150000573,
+                  "rms": 0.05360363445209858,
+                  "sampleCount": 150129,
+                  "excludedZeroReferences": 0
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "worst": [
+      {
+        "name": "i(vdddev)",
+        "points": [
+          {
+            "t": 0.000010504142728034403,
+            "actual": -0.001643380104736196,
+            "reference": -0.0016449104682949478,
+            "error": 0.0000015303635587519179
+          },
+          {
+            "t": 0.000010504413027477042,
+            "actual": -0.0014898903736668752,
+            "reference": -0.0014909221863610867,
+            "error": 0.0000010318126942114852
+          },
+          {
+            "t": 0.00002700986949792525,
+            "actual": 0.0006434397764049603,
+            "reference": 0.0006426747357263053,
+            "error": 7.650406786550079e-7
+          },
+          {
+            "t": 0.000021009868962773876,
+            "actual": 0.0006400031191914832,
+            "reference": 0.0006394002691305126,
+            "error": 6.028500609705535e-7
+          },
+          {
+            "t": 0.000006009868962773874,
+            "actual": 0.0006400031191797773,
+            "reference": 0.0006394002691191993,
+            "error": 6.028500605779639e-7
+          },
+          {
+            "t": 0.00000900986896277388,
+            "actual": 0.0006400031191902376,
+            "reference": 0.0006394002691303337,
+            "error": 6.028500599039154e-7
+          },
+          {
+            "t": 0.00001500986896277388,
+            "actual": 0.0006400031191895889,
+            "reference": 0.0006394002691340067,
+            "error": 6.028500555821771e-7
+          },
+          {
+            "t": 0.000018009868962773878,
+            "actual": 0.0006400031191924997,
+            "reference": 0.0006394002691377468,
+            "error": 6.028500547528709e-7
+          },
+          {
+            "t": 0.00002400986896277388,
+            "actual": 0.0006400031191934677,
+            "reference": 0.0006394002691391567,
+            "error": 6.028500543109501e-7
+          },
+          {
+            "t": 0.00001200986896277388,
+            "actual": 0.000640003119191275,
+            "reference": 0.000639400269137556,
+            "error": 6.028500537189757e-7
+          }
+        ]
+      },
+      {
+        "name": "v(vout)",
+        "points": [
+          {
+            "t": 0.0000270089908225127,
+            "actual": 3.195228131665366,
+            "reference": 3.1944490609780187,
+            "error": 0.000779070687347172
+          },
+          {
+            "t": 0.0000270087908225127,
+            "actual": 4.234173885735507,
+            "reference": 4.233534491189271,
+            "error": 0.0006393945462361827
+          },
+          {
+            "t": 0.000010504601178342616,
+            "actual": 3.9575624031780916,
+            "reference": 3.957916727142187,
+            "error": 0.0003543239640952933
+          },
+          {
+            "t": 0.0000270093908225127,
+            "actual": 0.7378689263979361,
+            "reference": 0.7382214271615537,
+            "error": 0.0003525007636175914
+          },
+          {
+            "t": 0.000010504801178342617,
+            "actual": 4.236650396280654,
+            "reference": 4.236948796232606,
+            "error": 0.000298399951952355
+          },
+          {
+            "t": 0.000013504444383129674,
+            "actual": 3.584820019531804,
+            "reference": 3.584522627617582,
+            "error": 0.00029739191422173405
+          },
+          {
+            "t": 0.0000030091773055231086,
+            "actual": 1.825057466580298,
+            "reference": 1.8253327912656596,
+            "error": 0.000275324685361511
+          },
+          {
+            "t": 0.000013504644383129675,
+            "actual": 4.0063701156463,
+            "reference": 4.006131856805685,
+            "error": 0.00023825884061512426
+          },
+          {
+            "t": 0.000015008985771457773,
+            "actual": 3.210584423483577,
+            "reference": 3.2107851645849994,
+            "error": 0.0002007411014224303
+          },
+          {
+            "t": 0.000021008985771457778,
+            "actual": 3.2105844234655367,
+            "reference": 3.2107851645546615,
+            "error": 0.0002007410891247119
+          }
+        ]
+      }
+    ],
+    "referencePeak": 0.001928098781839356
+  }
+]
