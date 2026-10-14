@@ -1,0 +1,4 @@
+*.json.gz binary
+*.log.gz binary
+# Preserve the inherited model-card whitespace in the source-derived deck.
+ring-15.cir whitespace=-blank-at-eol
