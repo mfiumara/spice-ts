@@ -1,0 +1,38 @@
+{
+  "phase": "after",
+  "head": "868d17faa65af755d962846472957ff3da1cf782",
+  "node": "v22.23.1",
+  "ngspice": "ngspice-47",
+  "command": "spice-heavy pnpm exec tsx benchmarks/title-directive/continuations.ts after",
+  "policy": "Identical input bytes for both engines; synthetic regression, not a speed claim",
+  "cases": [
+    {
+      "name": "resistor",
+      "input": "Original\nV1 in 0 1\nR1 in 0\n.title replacement {not_a_parameter}\n+ 1k\n.title another replacement\n+ m=2\n.op\n.control\nop\nprint v(in) i(v1)\nquit\n.endc\n.end",
+      "sha256": "2ff16d3100761e87d17cb4bfffb63fe0912a4ff257945ab234df3a98008634e7",
+      "ngspice": {
+        "exitCode": 0,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: another replacement\n\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\n\nNo. of Data Rows : 1\nv(in) = 1.000000e+00\ni(v1) = -2.00000e-03\nngspice-47 done\n",
+        "stderr": ""
+      },
+      "spiceTs": {
+        "status": "success",
+        "currentV1": -0.002
+      }
+    },
+    {
+      "name": "undefinedParameter",
+      "input": "Original\n.title replacement\n+ continued {missing}\nV1 in 0 1\nR1 in 0 1k\n.op\n.control\nop\nprint v(in) i(v1)\nquit\n.endc\n.end",
+      "sha256": "54dac630d82ebee1b66fee2bf428451863c130b83c0826f754c977de9d0ccdeb",
+      "ngspice": {
+        "exitCode": 1,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: replacement\n\n",
+        "stderr": "Error in netlist line no. 2, new internal line no. 0:\n\nUndefined parameter [missing]\nError in netlist line no. 2, new internal line no. 0:\n\nCannot compute substitute\n\nERROR: fatal error in ngspice, exit(1)\n"
+      },
+      "spiceTs": {
+        "status": "error",
+        "diagnostic": "ParseError: Parse error at line 3: Undefined parameter 'missing'\n  + continued {missing}"
+      }
+    }
+  ]
+}

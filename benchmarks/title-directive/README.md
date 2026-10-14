@@ -1,7 +1,8 @@
 # .title regression (#957), corpus-j j-16
 
-The parser consumes `.title` as metadata, including its continuations, before
-numparam substitution or subcircuit expansion. ngspice-47 replaces the physical
+The parser consumes only the `.title` card as metadata before numparam
+substitution or subcircuit expansion. Subsequent `+` lines continue the preceding
+circuit card, not the title. ngspice-47 replaces the physical
 deck title; spice-ts exposes neither physical titles nor `.title` text on Circuit,
 so this change adds no title API or circuit semantics. Other unsupported
 directives still fail explicitly.
@@ -49,8 +50,8 @@ At the fixed head, build and rerun only this original fixture:
     pnpm -C packages/core exec vitest run src/parser/title-directive-957.test.ts src/parser/parser.test.ts src/parser/preprocessor.test.ts src/parser/parse-preprocess-parity.test.ts
     spice-heavy pnpm exec tsx benchmarks/title-directive/compare.ts after
 
-GREEN: 116 tests across 4 files, including 7 new regression tests. RED at commit
-`6e51401a`: all 7 regressions fail, including the exact j-16 line-2 error.
+Initial GREEN: 116 tests across 4 files, including 7 new regression tests. RED at commit
+`6e51401a`: all 7 original regressions fail, including the exact j-16 line-2 error.
 The GREEN commit also corrects the synthetic test's hierarchical device name
 expectation (`X1.R1`). No production device naming changes were made.
 For the numerical baseline, build the RED commit and run `compare.ts before`
@@ -65,6 +66,36 @@ Cold child wall (pnpm/tsx startup, adapter, parse/solve, export included):
 | Phase | ngspice wall ms | spice-ts wall ms |
 |---|---:|---:|
 | Before | 720.316834 | 1243.48575 |
-| After | 838.1244159999999 | 1315.092833 |
+| After (continuation fix, refreshed) | 536.654125 | 945.315 |
 
 One measurement per phase under shared-host load. No statistical speed inference.
+
+## Continuation remediation
+
+PR #976's rejected head `04de921d` incorrectly swallowed title continuations.
+The prior synthetic metadata test asserted the wrong reference behavior and is
+corrected. RED commit `8d3387fe` adds two regressions, both fail (exit 1);
+GREEN `868d17fa` passes 118 tests across the same four files (exit 0).
+`pnpm build && pnpm lint` also exits 0. Existing #843 tests pass 20/20 and
+#837 tests pass 14/14 (each exit 0). Full tests remain the exact-head CI gate.
+
+Reference [ngspice-47 inpcom.c](https://github.com/imr/ngspice/blob/ngspice-47/src/frontend/inpcom.c)
+lines 1442-1456 comment `.title` before stitching at line 1958. Lines 694-702
+skip comments while preserving the preceding regular card. The fix mirrors that
+ordering, retaining source lines without swallowing `+` input or evaluating title text.
+
+Reproduce the differential probes with
+`spice-heavy pnpm exec tsx benchmarks/title-directive/continuations.ts after`.
+For `before`, use the RED commit's core sources with this script. Receipts retain
+identical deck bytes, hashes, raw ngspice output and exit codes in
+`continuations-{before,after}.json`. These original MIT project probes are
+registered in `benchmarks/SOURCES.md`; they do not replace j-16 or count as
+new public-corpus circuits.
+
+- Resistor across two titles and two continuations: ngspice exits 0, current
+  -0.002 A. Before spice-ts rejects R1 at line 3; after current is -0.002 A.
+- Undefined `{missing}` on a continuation: ngspice exits 1. Before spice-ts
+  wrongly succeeds with -0.001 A; after it rejects the undefined parameter.
+
+The original j-16 before-loss receipt is retained. `after.json` is refreshed on
+the corrected core. No benchmark input or tolerance changes, no speed claim.

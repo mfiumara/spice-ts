@@ -3,6 +3,12 @@
 This file records the provenance and redistribution decision for benchmark fixtures.
 The machine-readable catalogue is `benchmarks/corpus/ngspice/manifest.json`.
 
+## Title-continuation regression probes (#957 / PR #976)
+
+- Source: original project-authored minimal netlists in `benchmarks/title-directive/continuations.ts`, MIT (repository `LICENSE`), reproducing https://github.com/mfiumara/spice-ts/pull/976#pullrequestreview-5511583515. No third-party fixture or source code is redistributed.
+- Both engines receive identical bytes. `continuations-before.json` and `continuations-after.json` retain input SHA-256, native ngspice-47 output/exit codes and spice-ts results, including the previous input loss and hidden parameter error. These are semantic regression probes, not novel public-corpus fixtures or speed evidence.
+- Reference semantics: https://github.com/imr/ngspice/blob/ngspice-47/src/frontend/inpcom.c lines 1442-1456 turn `.title` into a comment before continuation stitching at 1958; lines 694-702 preserve the preceding card across comments.
+
 ## Xyce second-reference bootstrap (#948)
 
 - `benchmarks/reference/ekv/fixtures/*.cir` are byte-identical copies of the three
