@@ -1,0 +1,95 @@
+{
+  "baseSha": "08072804291785b2ca9213f3689551eb325fc5f6",
+  "hashes": {
+    "control/chunk-LFXDOPTR.js": "1ce28221f14e7b5070c1a8120210864fb7ec74216d88ee4f323bb577826f3abb",
+    "control/chunk-QSFWMZ2R.js": "daafddb5c48ba29a4eda49c9481a14634bb7120bedac365105e53b9df7083be6",
+    "control/index.js": "05ea25c54a9ac7e04deec41ae47037dacb4f065f65958e2d6d764ae3e4da523b",
+    "control/step-worker-browser.js": "42d33ce4d3085619c5824063afea88c08f3453007c5f572ca914298f89d5480d",
+    "control/step-worker.js": "8d65113b574f5a9074b6a36ba7a181b3efbb8ee28d5579bc4122fa02245459b7",
+    "instrumented/chunk-LFXDOPTR.js": "9540aa87ecc00c53472bbe9fcb7b85cc2d3a8f7a0f0ed29ca7b963c61a491d32",
+    "instrumented/chunk-QSFWMZ2R.js": "daafddb5c48ba29a4eda49c9481a14634bb7120bedac365105e53b9df7083be6",
+    "instrumented/index.js": "05ea25c54a9ac7e04deec41ae47037dacb4f065f65958e2d6d764ae3e4da523b",
+    "instrumented/step-worker-browser.js": "42d33ce4d3085619c5824063afea88c08f3453007c5f572ca914298f89d5480d",
+    "instrumented/step-worker.js": "8d65113b574f5a9074b6a36ba7a181b3efbb8ee28d5579bc4122fa02245459b7"
+  },
+  "counts": {
+    "_MOSFET.batchNewtonStepScale": 1,
+    "_MOSFET.stamp": 1,
+    "_MOSFET.convergenceTest": 1,
+    "_MOSFET.batchStamp": 1,
+    "Circuit.compile": 1,
+    "TransientResult.constructor": 1,
+    "GilbertPeierlsSolver.factorize": 1,
+    "GilbertPeierlsSolver.solve": 1,
+    "stampStaticDevices": 1,
+    "stampDynamicDevices": 1,
+    "buildCompanionSystem": 1,
+    "attemptStep": 1,
+    "solveLinearized": 1,
+    "isConvergedTransient": 1,
+    "TransientSimImpl.constructor": 1,
+    "TransientSimImpl.advanceSolution": 1,
+    "TransientSimImpl.selectStep": 1,
+    "TransientSimImpl.processEvents": 1,
+    "TransientSimImpl.stampPrevB": 1,
+    "TransientSimImpl.acceptTransientStep": 1,
+    "TransientSimImpl.checkLTE": 1,
+    "TransientSimImpl.orderAfterAcceptedStep": 1,
+    "TransientSimImpl.chargeTruncationTimestep": 1,
+    "ColumnRecorder.record": 1,
+    "ColumnRecorder.flush": 1
+  },
+  "targets": {
+    "Circuit.compile": "compile",
+    "GilbertPeierlsSolver.factorize": "factor",
+    "GilbertPeierlsSolver.solve": "solve",
+    "buildCompanionSystem": "loadStamp",
+    "stampStaticDevices": "loadStamp",
+    "stampDynamicDevices": "loadStamp",
+    "ColumnRecorder.record": "outputMaterialization",
+    "ColumnRecorder.flush": "outputMaterialization",
+    "TransientResult.constructor": "outputMaterialization",
+    "TransientSimImpl.constructor": "driverSetup",
+    "TransientSimImpl.advanceSolution": "driverAdvanceSelf",
+    "TransientSimImpl.selectStep": "timestepSelection",
+    "TransientSimImpl.processEvents": "eventControl",
+    "TransientSimImpl.checkLTE": "nodeLTE",
+    "TransientSimImpl.chargeTruncationTimestep": "chargeTruncation",
+    "TransientSimImpl.orderAfterAcceptedStep": "orderControl",
+    "TransientSimImpl.acceptTransientStep": "acceptHistory",
+    "TransientSimImpl.stampPrevB": "staticHistorySelf",
+    "attemptStep": "newtonAttemptSelf",
+    "solveLinearized": "linearSolveSelf",
+    "isConvergedTransient": "convergenceCheck",
+    "_MOSFET.batchStamp": "mosLoadStamp",
+    "_MOSFET.stamp": "mosLoadStamp",
+    "_MOSFET.batchNewtonStepScale": "mosLimit",
+    "_MOSFET.convergenceTest": "mosConvergence"
+  },
+  "decks": [
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 1000,
+      "file": "cmos-inverter-chain-tran-1000.cir",
+      "deckSha256": "1a9866593c778a9fa26e23c1916c7b00b1bdb1adc2e7a246d9e3f4aa4f1ca1e1"
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 10000,
+      "file": "cmos-inverter-chain-tran-10000.cir",
+      "deckSha256": "2ce663326238609299d8628016b1211632f1474e9d40b6c39747fff964999a18"
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 10000,
+      "file": "rc-ladder-tran-10000.cir",
+      "deckSha256": "eb21933fd99fcbc32276816a4f389ba216dcdddc29683551a67f606f352dfca7"
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "file": "resistor-mesh-op-10000.cir",
+      "deckSha256": "c88e6076daf2523437e3da014d7a3c329f679a7405f789530c5c805f447ed0dc"
+    }
+  ]
+}

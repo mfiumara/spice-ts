@@ -1,0 +1,894 @@
+{
+  "thresholdMet": false,
+  "profiles": {
+    "1000": {
+      "control": {
+        "parse": {
+          "n": 10,
+          "min": 19.355333,
+          "q1": 19.57986425,
+          "median": 19.725082999999998,
+          "q3": 23.075333,
+          "iqr": 3.4954687500000006,
+          "max": 83.114458
+        },
+        "totals": {}
+      },
+      "instrumented": {
+        "parse": {
+          "n": 10,
+          "min": 22.555292,
+          "q1": 23.007333000000003,
+          "median": 23.423354,
+          "q3": 26.48831225,
+          "iqr": 3.480979249999997,
+          "max": 40.67125
+        },
+        "totals": {
+          "numparam.expandFunctionCalls": {
+            "n": 10,
+            "min": 0.035167,
+            "q1": 0.038417,
+            "median": 0.0420835,
+            "q3": 0.0464895,
+            "iqr": 0.008072500000000003,
+            "max": 0.065958
+          },
+          "numparam.cardEnd": {
+            "n": 10,
+            "min": 0.8209790000000461,
+            "q1": 0.8427702500000429,
+            "median": 0.9591350000000431,
+            "q3": 1.1225975000000288,
+            "iqr": 0.27982724999998587,
+            "max": 1.7782179999999812
+          },
+          "numparam.collectParamFrames": {
+            "n": 10,
+            "min": 0.969306,
+            "q1": 1.0954247499999998,
+            "median": 1.1480755,
+            "q3": 1.21189275,
+            "iqr": 0.11646800000000024,
+            "max": 1.641485
+          },
+          "numparam.braceTokens": {
+            "n": 10,
+            "min": 1.1594409999999868,
+            "q1": 1.2913992499999911,
+            "median": 1.5722559999999999,
+            "q3": 1.7095900000000004,
+            "iqr": 0.41819075000000927,
+            "max": 3.042980999999993
+          },
+          "numparam.braceBareParameters": {
+            "n": 10,
+            "min": 1.004593,
+            "q1": 1.2184,
+            "median": 1.3504,
+            "q3": 1.401292,
+            "iqr": 0.18289200000000005,
+            "max": 1.807234
+          },
+          "numparam.circuitTemperature": {
+            "n": 10,
+            "min": 0.353,
+            "q1": 0.39392675,
+            "median": 0.3989165,
+            "q3": 0.414635,
+            "iqr": 0.020708249999999984,
+            "max": 0.606792
+          },
+          "numparam.createParamScopes": {
+            "n": 10,
+            "min": 0.006125,
+            "q1": 0.00667675,
+            "median": 0.0074795,
+            "q3": 0.00890575,
+            "iqr": 0.002229,
+            "max": 0.013959
+          },
+          "numparam.measureName": {
+            "n": 10,
+            "min": 0.19280699999999698,
+            "q1": 0.195677249999997,
+            "median": 0.2033489999999972,
+            "q3": 0.22253249999999636,
+            "iqr": 0.02685524999999936,
+            "max": 0.33706399999998204
+          },
+          "numparam.substituteStatement": {
+            "n": 10,
+            "min": 1.7954879999999545,
+            "q1": 1.8270094999999313,
+            "median": 1.8731339999999526,
+            "q3": 2.1713114999999696,
+            "iqr": 0.3443020000000383,
+            "max": 3.296268000000043
+          },
+          "preprocess": {
+            "n": 10,
+            "min": 4.336029,
+            "q1": 4.42423,
+            "median": 4.522496,
+            "q3": 4.9980530000000005,
+            "iqr": 0.5738230000000009,
+            "max": 7.752731
+          },
+          "tokenize.tokenizeLine": {
+            "n": 10,
+            "min": 1.2646159999999875,
+            "q1": 1.3379519999999863,
+            "median": 1.6037879999999811,
+            "q3": 1.6942487499999825,
+            "iqr": 0.3562967499999963,
+            "max": 2.8094159999999793
+          },
+          "tokenize": {
+            "n": 10,
+            "min": 1.257384,
+            "q1": 1.29374925,
+            "median": 1.325015,
+            "q3": 1.9440520000000001,
+            "iqr": 0.65030275,
+            "max": 2.233667
+          },
+          "assembly": {
+            "n": 10,
+            "min": 0.22753599999999577,
+            "q1": 0.2363474999999972,
+            "median": 0.23961849999999688,
+            "q3": 0.3759489999999904,
+            "iqr": 0.13960149999999316,
+            "max": 0.6040849999999968
+          },
+          "cardParse.parseNumber": {
+            "n": 10,
+            "min": 1.5451349999999904,
+            "q1": 1.6588990000000448,
+            "median": 1.9621735000000444,
+            "q3": 2.3402220000000242,
+            "iqr": 0.6813229999999795,
+            "max": 3.5051640000001063
+          },
+          "cardParse": {
+            "n": 10,
+            "min": 5.294972,
+            "q1": 5.81969225,
+            "median": 5.975485000000001,
+            "q3": 6.611911500000001,
+            "iqr": 0.7922192500000005,
+            "max": 11.289959
+          }
+        }
+      },
+      "candidate": {
+        "parse": {
+          "n": 10,
+          "min": 19.171708,
+          "q1": 19.3061355,
+          "median": 19.5139165,
+          "q3": 21.811874500000002,
+          "iqr": 2.505739000000002,
+          "max": 34.67475
+        },
+        "totals": {}
+      }
+    },
+    "10000": {
+      "control": {
+        "parse": {
+          "n": 10,
+          "min": 98.118208,
+          "q1": 100.54571875,
+          "median": 102.4634795,
+          "q3": 117.0307915,
+          "iqr": 16.48507275,
+          "max": 302.447958
+        },
+        "totals": {}
+      },
+      "instrumented": {
+        "parse": {
+          "n": 10,
+          "min": 117.780208,
+          "q1": 119.99276025,
+          "median": 120.157708,
+          "q3": 137.06608325000002,
+          "iqr": 17.073323000000016,
+          "max": 391.871084
+        },
+        "totals": {
+          "numparam.expandFunctionCalls": {
+            "n": 10,
+            "min": 0.042208,
+            "q1": 0.04462475,
+            "median": 0.0489375,
+            "q3": 0.0507505,
+            "iqr": 0.006125749999999999,
+            "max": 0.073291
+          },
+          "numparam.cardEnd": {
+            "n": 10,
+            "min": 2.8504580000015034,
+            "q1": 2.954450000001616,
+            "median": 3.472028000001477,
+            "q3": 3.8231290000017184,
+            "iqr": 0.8686790000001023,
+            "max": 6.907211000001618
+          },
+          "numparam.collectParamFrames": {
+            "n": 10,
+            "min": 4.96046,
+            "q1": 5.0259565,
+            "median": 5.4772075000000005,
+            "q3": 6.15549575,
+            "iqr": 1.1295392499999997,
+            "max": 8.085825
+          },
+          "numparam.braceTokens": {
+            "n": 10,
+            "min": 5.271808000000265,
+            "q1": 5.769036000000188,
+            "median": 6.086345499999988,
+            "q3": 7.226166499999993,
+            "iqr": 1.4571304999998045,
+            "max": 13.735273999999624
+          },
+          "numparam.braceBareParameters": {
+            "n": 10,
+            "min": 5.935553,
+            "q1": 6.23929575,
+            "median": 6.484781,
+            "q3": 6.813636499999999,
+            "iqr": 0.5743407499999993,
+            "max": 11.160253
+          },
+          "numparam.circuitTemperature": {
+            "n": 10,
+            "min": 2.443666,
+            "q1": 2.50363525,
+            "median": 2.5795624999999998,
+            "q3": 2.92896875,
+            "iqr": 0.42533350000000025,
+            "max": 4.417084
+          },
+          "numparam.createParamScopes": {
+            "n": 10,
+            "min": 0.008041,
+            "q1": 0.00982275,
+            "median": 0.010791499999999999,
+            "q3": 0.012927,
+            "iqr": 0.0031042499999999994,
+            "max": 0.016291
+          },
+          "numparam.measureName": {
+            "n": 10,
+            "min": 1.2337410000000886,
+            "q1": 1.313044000000195,
+            "median": 1.4418900000003858,
+            "q3": 1.7150612500007323,
+            "iqr": 0.40201725000053723,
+            "max": 2.823585000001143
+          },
+          "numparam.substituteStatement": {
+            "n": 10,
+            "min": 7.962161999997923,
+            "q1": 8.18246699999753,
+            "median": 8.34261349999774,
+            "q3": 9.5693482499995,
+            "iqr": 1.38688125000197,
+            "max": 16.045485999998053
+          },
+          "preprocess": {
+            "n": 10,
+            "min": 23.386973,
+            "q1": 24.8681065,
+            "median": 25.206404499999998,
+            "q3": 28.0669915,
+            "iqr": 3.1988850000000006,
+            "max": 85.546721
+          },
+          "tokenize.tokenizeLine": {
+            "n": 10,
+            "min": 12.455020000000587,
+            "q1": 13.978921250000182,
+            "median": 17.759623999999576,
+            "q3": 19.516180499998537,
+            "iqr": 5.537259249998355,
+            "max": 92.84815700000057
+          },
+          "tokenize": {
+            "n": 10,
+            "min": 7.532217,
+            "q1": 8.05859375,
+            "median": 11.63596,
+            "q3": 13.365601250000001,
+            "iqr": 5.307007500000001,
+            "max": 23.561135
+          },
+          "assembly": {
+            "n": 10,
+            "min": 1.1183970000000565,
+            "q1": 1.1607205000000775,
+            "median": 1.2643365000001467,
+            "q3": 1.6636275000000609,
+            "iqr": 0.5029069999999833,
+            "max": 1.9029829999998535
+          },
+          "cardParse.parseNumber": {
+            "n": 10,
+            "min": 6.761390000003451,
+            "q1": 7.618382500003253,
+            "median": 7.911252000003287,
+            "q3": 9.042936250001205,
+            "iqr": 1.4245537499979521,
+            "max": 18.299305000017643
+          },
+          "cardParse": {
+            "n": 10,
+            "min": 20.792605,
+            "q1": 21.75734425,
+            "median": 21.981762500000002,
+            "q3": 25.42425025,
+            "iqr": 3.666906000000001,
+            "max": 94.687837
+          }
+        }
+      },
+      "candidate": {
+        "parse": {
+          "n": 10,
+          "min": 98.724,
+          "q1": 99.64721925,
+          "median": 101.41202100000001,
+          "q3": 113.73255225,
+          "iqr": 14.085332999999991,
+          "max": 334.188541
+        },
+        "totals": {}
+      }
+    },
+    "50000": {
+      "control": {
+        "parse": {
+          "n": 10,
+          "min": 389.187333,
+          "q1": 393.14250025,
+          "median": 417.994667,
+          "q3": 430.6494685,
+          "iqr": 37.50696825,
+          "max": 1238.484166
+        },
+        "totals": {}
+      },
+      "instrumented": {
+        "parse": {
+          "n": 10,
+          "min": 457.271125,
+          "q1": 472.04645825,
+          "median": 483.882021,
+          "q3": 502.684854,
+          "iqr": 30.638395749999972,
+          "max": 1543.070291
+        },
+        "totals": {
+          "numparam.expandFunctionCalls": {
+            "n": 10,
+            "min": 0.046584,
+            "q1": 0.0488335,
+            "median": 0.0507915,
+            "q3": 0.05174975,
+            "iqr": 0.0029162499999999952,
+            "max": 0.084
+          },
+          "numparam.cardEnd": {
+            "n": 10,
+            "min": 9.309016000000831,
+            "q1": 9.780152250002578,
+            "median": 10.377717500002642,
+            "q3": 10.838381000004482,
+            "iqr": 1.0582287500019039,
+            "max": 26.015078000021063
+          },
+          "numparam.collectParamFrames": {
+            "n": 10,
+            "min": 13.435224,
+            "q1": 13.6490245,
+            "median": 14.130843500000001,
+            "q3": 14.993955,
+            "iqr": 1.3449305000000003,
+            "max": 72.461857
+          },
+          "numparam.braceTokens": {
+            "n": 10,
+            "min": 24.989485999990052,
+            "q1": 26.383482499988176,
+            "median": 27.138885499986785,
+            "q3": 29.226730499974906,
+            "iqr": 2.8432479999867297,
+            "max": 81.33909100002525
+          },
+          "numparam.braceBareParameters": {
+            "n": 10,
+            "min": 16.277472,
+            "q1": 16.666240000000002,
+            "median": 16.906792,
+            "q3": 17.55554175,
+            "iqr": 0.8893017499999978,
+            "max": 64.344932
+          },
+          "numparam.circuitTemperature": {
+            "n": 10,
+            "min": 6.810167,
+            "q1": 7.001166749999999,
+            "median": 7.100334,
+            "q3": 7.624208250000001,
+            "iqr": 0.6230415000000011,
+            "max": 17.140083
+          },
+          "numparam.createParamScopes": {
+            "n": 10,
+            "min": 0.010625,
+            "q1": 0.01221875,
+            "median": 0.0133335,
+            "q3": 0.01471875,
+            "iqr": 0.0024999999999999988,
+            "max": 51.555875
+          },
+          "numparam.measureName": {
+            "n": 10,
+            "min": 4.571299000002003,
+            "q1": 4.688407500001869,
+            "median": 4.879562000001393,
+            "q3": 6.121203499998662,
+            "iqr": 1.4327959999967934,
+            "max": 14.759110000013823
+          },
+          "numparam.substituteStatement": {
+            "n": 10,
+            "min": 29.698346000063456,
+            "q1": 30.17709700006849,
+            "median": 30.66831000007113,
+            "q3": 32.74613775007525,
+            "iqr": 2.56904075000676,
+            "max": 60.58939900003982
+          },
+          "preprocess": {
+            "n": 10,
+            "min": 85.963875,
+            "q1": 87.36322200000001,
+            "median": 88.90017599999999,
+            "q3": 93.29358625,
+            "iqr": 5.930364249999997,
+            "max": 263.776575
+          },
+          "tokenize.tokenizeLine": {
+            "n": 10,
+            "min": 57.52166099992906,
+            "q1": 58.006368749931575,
+            "median": 60.93432949996125,
+            "q3": 66.30958674998926,
+            "iqr": 8.30321800005769,
+            "max": 238.73829799985162
+          },
+          "tokenize": {
+            "n": 10,
+            "min": 29.516275,
+            "q1": 31.1241555,
+            "median": 32.238763,
+            "q3": 36.943698250000004,
+            "iqr": 5.819542750000004,
+            "max": 59.090244
+          },
+          "assembly": {
+            "n": 10,
+            "min": 4.616326000002155,
+            "q1": 4.70941000000226,
+            "median": 4.96912950000219,
+            "q3": 6.0256292500020034,
+            "iqr": 1.3162192499997438,
+            "max": 46.56853999995105
+          },
+          "cardParse.parseNumber": {
+            "n": 10,
+            "min": 25.196968000027056,
+            "q1": 26.55547225003335,
+            "median": 28.65526550004555,
+            "q3": 64.55901499991653,
+            "iqr": 38.00354274988318,
+            "max": 155.44578099985156
+          },
+          "cardParse": {
+            "n": 10,
+            "min": 95.05929,
+            "q1": 109.750087,
+            "median": 129.6597045,
+            "q3": 132.438564,
+            "iqr": 22.68847700000002,
+            "max": 350.778387
+          }
+        }
+      },
+      "candidate": {
+        "parse": {
+          "n": 10,
+          "min": 384.930583,
+          "q1": 388.81073975000004,
+          "median": 397.7341255,
+          "q3": 436.741573,
+          "iqr": 47.93083324999998,
+          "max": 1276.441416
+        },
+        "totals": {}
+      }
+    }
+  },
+  "walls": {
+    "1000": {
+      "control": {
+        "wall": 344.37237499999895,
+        "import": 23.420959,
+        "deckRead": 0.445416,
+        "parse": 19.4255,
+        "parseEqualityHash": 2.326542,
+        "simulate": 263.865583,
+        "outputHash": 5.323209,
+        "compile": null,
+        "matrixBuild": null,
+        "ordering": null,
+        "loadStamp": null,
+        "factor": null,
+        "solve": null,
+        "outputMaterialization": null,
+        "evidence": {
+          "deckSha256": "1a9866593c778a9fa26e23c1916c7b00b1bdb1adc2e7a246d9e3f4aa4f1ca1e1",
+          "parseSha256": "3102bb9a086e999b6452be0985973b83c7d87e9ad5378c02948d205a46363496",
+          "output": {
+            "outputSha256": "8301f2834fc8157f9c23bc1eb9044e09fdd90e180a32271104a1d1ad600d1f11",
+            "vectors": 1003,
+            "count": 214642
+          },
+          "convergence": {
+            "dc": {
+              "newtonIterations": 138,
+              "acceptedSolves": 18,
+              "rejectedSolves": 0,
+              "sourceStepAttempts": 0,
+              "sourceStepFailures": 0,
+              "gminStepAttempts": 20,
+              "gminStepFailures": 2,
+              "failure": null
+            },
+            "transient": {
+              "acceptedSteps": 213,
+              "rejectedSteps": 0,
+              "newtonIterations": 466,
+              "nrRetries": 0,
+              "lteRetries": 0,
+              "minimumAcceptedTimestep": 1e-13,
+              "failure": null
+            }
+          },
+          "calls": {}
+        }
+      },
+      "candidate": {
+        "wall": 355.05408299999885,
+        "import": 23.648042,
+        "deckRead": 0.520416,
+        "parse": 19.022708,
+        "parseEqualityHash": 2.24525,
+        "simulate": 273.67,
+        "outputHash": 5.336417,
+        "compile": null,
+        "matrixBuild": null,
+        "ordering": null,
+        "loadStamp": null,
+        "factor": null,
+        "solve": null,
+        "outputMaterialization": null,
+        "evidence": {
+          "deckSha256": "1a9866593c778a9fa26e23c1916c7b00b1bdb1adc2e7a246d9e3f4aa4f1ca1e1",
+          "parseSha256": "3102bb9a086e999b6452be0985973b83c7d87e9ad5378c02948d205a46363496",
+          "output": {
+            "outputSha256": "8301f2834fc8157f9c23bc1eb9044e09fdd90e180a32271104a1d1ad600d1f11",
+            "vectors": 1003,
+            "count": 214642
+          },
+          "convergence": {
+            "dc": {
+              "newtonIterations": 138,
+              "acceptedSolves": 18,
+              "rejectedSolves": 0,
+              "sourceStepAttempts": 0,
+              "sourceStepFailures": 0,
+              "gminStepAttempts": 20,
+              "gminStepFailures": 2,
+              "failure": null
+            },
+            "transient": {
+              "acceptedSteps": 213,
+              "rejectedSteps": 0,
+              "newtonIterations": 466,
+              "nrRetries": 0,
+              "lteRetries": 0,
+              "minimumAcceptedTimestep": 1e-13,
+              "failure": null
+            }
+          },
+          "calls": {}
+        }
+      },
+      "ngspice": {
+        "wall": 257.04012499999607,
+        "import": 4.075666,
+        "deckRead": 0.410042,
+        "nativeWall": 220.57475,
+        "parse": 6.261,
+        "loadStamp": 113.933,
+        "factor": 14.81,
+        "solve": 13.267,
+        "ordering": 0.23399999999999999,
+        "outputHash": 0.974,
+        "evidence": {
+          "deckSha256": "1a9866593c778a9fa26e23c1916c7b00b1bdb1adc2e7a246d9e3f4aa4f1ca1e1",
+          "native": {
+            "pid": 24270,
+            "code": 0
+          },
+          "output": {
+            "outputSha256": "460bf44710bc0e9bd3a8a75f57b180ba7ca65941b663ec694097b85954e6101a",
+            "bytes": 1717136
+          }
+        }
+      }
+    },
+    "10000": {
+      "control": {
+        "wall": 2684.164750000001,
+        "import": 25.322417,
+        "deckRead": 1.35075,
+        "parse": 109.2185,
+        "parseEqualityHash": 22.027416,
+        "simulate": 2452.564125,
+        "outputHash": 35.220792,
+        "compile": null,
+        "matrixBuild": null,
+        "ordering": null,
+        "loadStamp": null,
+        "factor": null,
+        "solve": null,
+        "outputMaterialization": null,
+        "evidence": {
+          "deckSha256": "2ce663326238609299d8628016b1211632f1474e9d40b6c39747fff964999a18",
+          "parseSha256": "6b67c8c23735bbc42d8e44f41e0ea9c6d37cc76309e694da8620748956550160",
+          "output": {
+            "outputSha256": "43bfa25cd2463b7b6ee4b14961087467de6fc8379be8a7ffaec45e83dcdd6915",
+            "vectors": 10003,
+            "count": 2140642
+          },
+          "convergence": {
+            "dc": {
+              "newtonIterations": 226,
+              "acceptedSolves": 25,
+              "rejectedSolves": 1,
+              "sourceStepAttempts": 0,
+              "sourceStepFailures": 0,
+              "gminStepAttempts": 29,
+              "gminStepFailures": 4,
+              "failure": null
+            },
+            "transient": {
+              "acceptedSteps": 213,
+              "rejectedSteps": 0,
+              "newtonIterations": 466,
+              "nrRetries": 0,
+              "lteRetries": 0,
+              "minimumAcceptedTimestep": 1e-13,
+              "failure": null
+            }
+          },
+          "calls": {}
+        }
+      },
+      "candidate": {
+        "wall": 3155.2882919999947,
+        "import": 23.597292,
+        "deckRead": 1.20775,
+        "parse": 100.624167,
+        "parseEqualityHash": 21.529292,
+        "simulate": 2934.968041,
+        "outputHash": 36.531084,
+        "compile": null,
+        "matrixBuild": null,
+        "ordering": null,
+        "loadStamp": null,
+        "factor": null,
+        "solve": null,
+        "outputMaterialization": null,
+        "evidence": {
+          "deckSha256": "2ce663326238609299d8628016b1211632f1474e9d40b6c39747fff964999a18",
+          "parseSha256": "6b67c8c23735bbc42d8e44f41e0ea9c6d37cc76309e694da8620748956550160",
+          "output": {
+            "outputSha256": "43bfa25cd2463b7b6ee4b14961087467de6fc8379be8a7ffaec45e83dcdd6915",
+            "vectors": 10003,
+            "count": 2140642
+          },
+          "convergence": {
+            "dc": {
+              "newtonIterations": 226,
+              "acceptedSolves": 25,
+              "rejectedSolves": 1,
+              "sourceStepAttempts": 0,
+              "sourceStepFailures": 0,
+              "gminStepAttempts": 29,
+              "gminStepFailures": 4,
+              "failure": null
+            },
+            "transient": {
+              "acceptedSteps": 213,
+              "rejectedSteps": 0,
+              "newtonIterations": 466,
+              "nrRetries": 0,
+              "lteRetries": 0,
+              "minimumAcceptedTimestep": 1e-13,
+              "failure": null
+            }
+          },
+          "calls": {}
+        }
+      },
+      "ngspice": {
+        "wall": 4671.920249999999,
+        "import": 4.073792,
+        "deckRead": 1.214458,
+        "nativeWall": 4627.973416,
+        "parse": 67.641,
+        "loadStamp": 2986.44,
+        "factor": 198.44400000000002,
+        "solve": 157.713,
+        "ordering": 1.869,
+        "outputHash": 7.937541,
+        "evidence": {
+          "deckSha256": "2ce663326238609299d8628016b1211632f1474e9d40b6c39747fff964999a18",
+          "native": {
+            "pid": 24468,
+            "code": 0
+          },
+          "output": {
+            "outputSha256": "d41e7b5e2e0b7ffab5d0c3319bf914b637736dff3c8d47a7e702a139695fdd85",
+            "bytes": 17125136
+          }
+        }
+      }
+    },
+    "50000": {
+      "control": {
+        "wall": 18957.585250000007,
+        "import": 21.994416,
+        "deckRead": 4.6835,
+        "parse": 394.971917,
+        "parseEqualityHash": 96.463125,
+        "simulate": 18216.079625,
+        "outputHash": 171.078208,
+        "compile": null,
+        "matrixBuild": null,
+        "ordering": null,
+        "loadStamp": null,
+        "factor": null,
+        "solve": null,
+        "outputMaterialization": null,
+        "evidence": {
+          "deckSha256": "d680f1054eb14002980a7a65eb68a5dddae8063a871050fde025e8f5080bc543",
+          "parseSha256": "74682f140aa4fda2ddc8024249596cd37b5154f514426235d6358850cc7f5d5e",
+          "output": {
+            "outputSha256": "9ba4e56b9fc26a1bbb12982a31f75c386b2c74827a171a11dd77b5039c4c7719",
+            "vectors": 50003,
+            "count": 10700642
+          },
+          "convergence": {
+            "dc": {
+              "newtonIterations": 1110,
+              "acceptedSolves": 39,
+              "rejectedSolves": 9,
+              "sourceStepAttempts": 0,
+              "sourceStepFailures": 0,
+              "gminStepAttempts": 58,
+              "gminStepFailures": 19,
+              "failure": null
+            },
+            "transient": {
+              "acceptedSteps": 213,
+              "rejectedSteps": 0,
+              "newtonIterations": 466,
+              "nrRetries": 0,
+              "lteRetries": 0,
+              "minimumAcceptedTimestep": 1e-13,
+              "failure": null
+            }
+          },
+          "calls": {}
+        }
+      },
+      "candidate": {
+        "wall": 18465.706166000004,
+        "import": 22.021834,
+        "deckRead": 4.689291,
+        "parse": 390.065875,
+        "parseEqualityHash": 110.438416,
+        "simulate": 17551.649667,
+        "outputHash": 310.261167,
+        "compile": null,
+        "matrixBuild": null,
+        "ordering": null,
+        "loadStamp": null,
+        "factor": null,
+        "solve": null,
+        "outputMaterialization": null,
+        "evidence": {
+          "deckSha256": "d680f1054eb14002980a7a65eb68a5dddae8063a871050fde025e8f5080bc543",
+          "parseSha256": "74682f140aa4fda2ddc8024249596cd37b5154f514426235d6358850cc7f5d5e",
+          "output": {
+            "outputSha256": "9ba4e56b9fc26a1bbb12982a31f75c386b2c74827a171a11dd77b5039c4c7719",
+            "vectors": 50003,
+            "count": 10700642
+          },
+          "convergence": {
+            "dc": {
+              "newtonIterations": 1110,
+              "acceptedSolves": 39,
+              "rejectedSolves": 9,
+              "sourceStepAttempts": 0,
+              "sourceStepFailures": 0,
+              "gminStepAttempts": 58,
+              "gminStepFailures": 19,
+              "failure": null
+            },
+            "transient": {
+              "acceptedSteps": 213,
+              "rejectedSteps": 0,
+              "newtonIterations": 466,
+              "nrRetries": 0,
+              "lteRetries": 0,
+              "minimumAcceptedTimestep": 1e-13,
+              "failure": null
+            }
+          },
+          "calls": {}
+        }
+      }
+    }
+  },
+  "load1min": {
+    "n": 458,
+    "min": 6.1357421875,
+    "q1": 7.2685546875,
+    "median": 8.634765625,
+    "q3": 9.54248046875,
+    "iqr": 2.27392578125,
+    "max": 10.56005859375
+  },
+  "completeLinearCells": 360,
+  "cmosParseOnlyCells": 90,
+  "cmosFullWallCells": 8,
+  "censoredNative50k": {
+    "status": "censored",
+    "deadlineSeconds": 30,
+    "nativeStarted": {
+      "pid": 25537,
+      "startNs": "132480768895458"
+    },
+    "controllerError": "owned process group survived immediately after SIGKILL; subsequent ps found PID absent",
+    "nativePidAbsentOnLaterCheck": true,
+    "psOutput": "  PID  PPID  PGID STAT COMM\n",
+    "sourceLog": "cmos-run.log",
+    "exactParentWallUnavailable": true,
+    "firstAttempt": {
+      "directory": "aborted-nine-deck",
+      "deadlineSeconds": 30,
+      "controllerError": "PermissionError probing killpg after deadline",
+      "noCompleteReceipt": true
+    }
+  }
+}

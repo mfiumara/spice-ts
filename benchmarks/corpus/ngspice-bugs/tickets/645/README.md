@@ -35,7 +35,7 @@ Independent noise-source PSDs propagate as sum |H_k|^2 S_k, with resistor S_I=4k
 |---|---|---|
 | ngspice-47 | error | KLU explicitly rejects noise simulation as not yet supported. Sparse outputs84 finite spectral rows: f=.5Hz onoise1.664290e-6, inoise3.526263e-8; f99.76312MHz onoise3.192241e-9. |
 | ngspice master | right | Fixed on master: KLU noise now runs and the 84 onoise/inoise rows equal the Sparse rows exactly (e.g. 0.5 Hz onoise 1.664290e-06); 47 refused noise with KLU. [ngspice pre-master-48 HEAD 3ef069fb (2026-10-09), built in scratch] |
-| spice-ts | unsupported | Unqualified dot deck: InvalidCircuitError .noise does not support BJT model parameter 'VAR' for q1; solver option variants also unsupported. |
+| spice-ts | unsupported | #812 refresh d8ab9d33: unqualified dot.cir succeeds since #736/#738 (84 noise points); valid native ngspice-47 reference matches at 84 points, onoise spectrum absolute max/RMS 2.9478846941461046e-14/2.0805582685808688e-14, relative max/RMS 1.2817787191677196e-7/1.0255969023370908e-7. Integrated output noise relative error 1.2410488076859786e-7. Required klu.cir/sparse.cir still first fail at Unsupported .options field klu/sparse (line 2). ngspice KLU rejects noise; Sparse succeeds. Partial unblock, not a KLU win; existing #812. |
 
 Reproduces on ngspice-47: partially. Check: Check whether KLU still rejects noise; if enabled, results must be nonnegative and solver-independent, requiring an independent BJT model oracle for exact coefficients.
 

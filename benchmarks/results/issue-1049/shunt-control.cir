@@ -1,0 +1,7 @@
+Linear shunt control
+* SPDX-License-Identifier: MIT
+* Original one-source option probe for #1049.
+Vbias high 0 5
+.options rshunt=1T
+.op
+.end

@@ -163,7 +163,7 @@ export async function simulate(
     return { steps: stepResults, warnings, convergence };
   }
 
-  const result = solveCompiledAnalyses(compiled, options, warnings, convergence, guard, measures, new Map());
+  const result = solveCompiledAnalyses(compiled, options, warnings, convergence, guard, measures, new Map(), true);
   warnUnmeasuredAnalyses(measures, compiled.analyses, warnings);
   return result;
 }
@@ -195,17 +195,23 @@ function solveCompiledAnalyses(
   guard: ProtocolExecutionGuard | undefined,
   measures: readonly MeasureCard[],
   measureValues: Map<string, number>,
+  retainRuns: boolean,
 ): SimulationResult {
   const result: SimulationResult = { warnings, convergence };
-  const measure = (analysis: AnalysisDirective): void => {
+  if (retainRuns && compiled.analyses.length + compiled.poleZeroAnalyses.length >= 2) result.analyses = [];
+  const measure = (analysis: AnalysisDirective, run: SimulationResult): void => {
     if (measures.length === 0) return;
     const plot = measurePlot(analysis, result);
     if (!plot) return;
     const measurements = evaluateMeasureCards(measures, analysis.type, plot, measureValues);
-    if (measurements.length > 0) result.measurements = [...(result.measurements ?? []), ...measurements];
+    if (measurements.length > 0) {
+      result.measurements = [...(result.measurements ?? []), ...measurements];
+      if (run !== result) run.measurements = measurements;
+    }
   };
 
   for (const analysis of compiled.analyses) {
+    const run: SimulationResult = result.analyses ? { warnings: [] } : result;
     switch (analysis.type) {
       case 'op': {
         const opts = resolveOptions(options);
@@ -213,22 +219,22 @@ function solveCompiledAnalyses(
           compiled, opts, undefined, convergence, 'operating-point', guard,
         );
         guard?.recordResultPoint();
-        result.dc = dcResult;
+        result.dc = run.dc = dcResult;
         break;
       }
       case 'dc': {
         const opts = resolveOptions(options);
-        result.dcSweep = solveDCSweep(compiled, analysis, opts, convergence, guard);
-        measure(analysis);
+        result.dcSweep = run.dcSweep = solveDCSweep(compiled, analysis, opts, convergence, guard);
+        measure(analysis, run);
         break;
       }
       case 'tran': {
         const opts = resolveOptions(options, analysis.stopTime);
         const seed = transientInitialSolution(compiled, analysis, opts, undefined, convergence, guard);
-        result.transient = solveTransient(
+        result.transient = run.transient = solveTransient(
           compiled, runnableTransient(analysis, options), opts, seed, convergence, guard,
         );
-        measure(analysis);
+        measure(analysis, run);
         break;
       }
       case 'ac': {
@@ -236,8 +242,8 @@ function solveCompiledAnalyses(
         const { assembler: dcAsm } = solveDCOperatingPoint(
           compiled, opts, undefined, convergence, 'operating-point', guard,
         );
-        result.ac = solveAC(compiled, analysis, opts, dcAsm.solution, guard);
-        measure(analysis);
+        result.ac = run.ac = solveAC(compiled, analysis, opts, dcAsm.solution, guard);
+        measure(analysis, run);
         break;
       }
       case 'noise': {
@@ -246,7 +252,7 @@ function solveCompiledAnalyses(
         const { assembler: dcAsm } = solveDCOperatingPoint(
           compiled, opts, undefined, convergence,
         );
-        result.noise = solveNoise(compiled, analysis, opts, dcAsm.solution);
+        result.noise = run.noise = solveNoise(compiled, analysis, opts, dcAsm.solution);
         break;
       }
       case 'sp': {
@@ -254,7 +260,7 @@ function solveCompiledAnalyses(
         const { assembler: dcAsm } = solveDCOperatingPoint(
           compiled, opts, undefined, convergence, 'operating-point', guard,
         );
-        result.sParameters = solveSParameters(compiled, analysis, opts, dcAsm.solution, guard);
+        result.sParameters = run.sParameters = solveSParameters(compiled, analysis, opts, dcAsm.solution, guard);
         break;
       }
       case 'disto': {
@@ -266,7 +272,7 @@ function solveCompiledAnalyses(
           const { assembler: dcAsm } = solveDCOperatingPoint(
             compiled, opts, undefined, convergence, 'operating-point', guard,
           );
-          result.distortion = solveDistortion(
+          result.distortion = run.distortion = solveDistortion(
             compiled, analysis, opts, dcAsm.solution, guard,
           );
         } finally {
@@ -276,24 +282,28 @@ function solveCompiledAnalyses(
       }
       case 'tf': {
         const opts = resolveOptions(options);
-        result.transferFunction = solveTransferFunction(
+        result.transferFunction = run.transferFunction = solveTransferFunction(
           compiled, analysis, opts, convergence,
         );
         break;
       }
       case 'sens': {
         const opts = resolveOptions(options);
-        result.sensitivity = solveSensitivity(
+        result.sensitivity = run.sensitivity = solveSensitivity(
           compiled, analysis, opts, convergence,
         );
         break;
       }
     }
+    result.analyses?.push({ index: result.analyses.length, analysis: analysis.type, result: run });
   }
 
   for (const analysis of compiled.poleZeroAnalyses) {
     const opts = resolveOptions(options);
     result.poleZero = solvePoleZero(compiled, analysis, opts, convergence);
+    result.analyses?.push({
+      index: result.analyses.length, analysis: 'pz', result: { poleZero: result.poleZero, warnings: [] },
+    });
   }
 
   return result;
@@ -345,7 +355,7 @@ function simulateControlScript(
     const resolved = withNetlistOptions(compiled.simulationOptions, options);
     // Cleared first: a failed analysis leaves no state to read out.
     operatingState = undefined;
-    const result = solveCompiledAnalyses(compiled, resolved, warnings, convergence, guard, measures, measureValues);
+    const result = solveCompiledAnalyses(compiled, resolved, warnings, convergence, guard, measures, measureValues, false);
     operatingState = analyses.length === 1 && poleZero.length === 0
       ? controlOperatingState(compiled, analyses[0], result)
       : undefined;

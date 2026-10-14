@@ -1,0 +1,119 @@
+*file: gm1.ckt
+.model pn4a pmos(
++ vto        = -1.26e+00
++ uo         =  1.68e+02
++ kappa      =  2.00e-02
++ eta        =  2.02e+00
++ theta      =  7.77e-02
++ vmax       =  7.95e+05
++ delta      =  7.03e-01
++ nsub       =  2.39e+15
++ tox        =  4.50e-08
++ tpg        = -1
++ xj         =  6.00e-07
++ js         =  1.000e-07     cj=     1.300e-04     pb=    0.900e-00
++ rs         =  6.920e+00     rd=     6.920e+00     level= 3)
+* seq. #:   50 process: b4506ap 3153 wafer: 18 loc: 18; 51 date: 10jan83
+.model nn4a nmos(
++ vto        =  9.25e-01
++ uo         =  6.34e+02
++ kappa      =  2.00e-02
++ eta        =  1.45e+00
++ theta      =  6.96e-02
++ vmax       =  3.66e+05
++ delta      =  7.23e+00
++ nsub       =  3.43e+16
++ tox        =  4.50e-08
++ tpg        =  1
++ xj         =  6.00e-07
++ js         =  1.000e-07     cj=     4.000e-04     pb=    0.920e-00
++ rs         =  4.750e+00     rd=     4.750e+00     level= 3)
+* seq. #:   25 process: b3908an 3123 wafer: 19 loc: 13; 87 date: 14may82
+vdd 10 0 pulse (0 5 0n 1n 1n 200n 205n)
+.tran 1n 120n
+*
+vclk 1 0 5v
+vwr 2 0 pulse (0 5 9n 2n 2n 18n 50n)
+vrd1 3 0 pulse (0 5 29n 2n 2n 18n 60n)
+vrd2 4 0 pulse (0 5 29n 2n 2n 18n 60n)
+vdi 18 0 pulse (0 5 49n 2n 2n 128n 200n)
+*
+* storage cell:
+x1 14 6 2 23 10 tg
+mp1 14 16 10 10 pn4a w=25u l=10u ad=200p as=200p
+mn1 14 16  0  0 nn4a w=7u  l=10u ad=56p  as=56p
+r1 13 16 25k
+mp2 13 15 10 10 pn4a w=25u l=3u ad=200p as=200p
+mn2 13 15  0  0 nn4a w=7u  l=3u ad=56p  as=56p
+r2 14 15 25k
+x2 17 14 10 inv2
+x3 7 17 3 24 10 tg
+x4 8 17 4 25 10 tg
+x5 23 2 10 inv
+x6 24 3 10 inv
+x7 25 4 10 inv
+*
+* read line latches:
+x8 19 10 llatch
+x9 20 10 llatch
+*
+* transparent output latches:
+x10 21 19 1 10 dlatch
+x11 22 20 1 10 dlatch
+*
+.subckt inv2 2 1 10
+* storage cell output buffer
+mp1 2 1 10 10 pn4a w=50u l=3u ad=400p as=400p
+mn1 2 1 0 0 nn4a   w=20u l=3u ad=120p as=160p
+.ends inv2
+*
+.subckt inv 2 1 10
+* normal inverter
+mp1 2 1 10 10 pn4a w=25u l=3u ad=200p as=200p
+mn1 2 1  0  0 nn4a w=7u  l=3u ad=56p  as=56p
+.ends inv
+*
+.subckt tg 31 32 33 34 10
+* nodes: out in ngate pgate vdd
+mp1 31 34 32 10 pn4a w=25u l=3u ad=200p as=200p
+mn1 31 33 32 0  nn4a w=7u  l=3u ad=56p  as=56p
+.ends tg
+*
+* bit lines:
+ro1 7 19 1k
+r02 8 20 1k
+rin 18 6 1k
+cdi 6 0 .5p
+cdo1 19 0 .5p
+cdo2 20 0 .5p
+*
+* write line:
+cwl 2 0 .3pf
+*
+* read lines:
+cr1 3 0 .3p
+cr2 4 0 .3p
+*
+.subckt dlatch 8 6 1 10
+* nodes: q, d, clk, vdd
+x31 73 6 1 74 10 tg
+x33 75 73 10 inv
+x34 8 75 10 inv
+rfb 77 8 20k
+x32 73 77 74 1 10 tg
+x35 74 1 10 inv
+cl 8 0 .5p
+.ends dlatch
+*
+* tail-chaser data out line latch:
+.subckt llatch 1 10
+* nodes: i/0 vdd
+mp1 1 2 10 10 pn4a w=25u l=10u ad=200p as=200p
+mn1 1 2  0  0 nn4a w=7u  l=10u ad=56p  as=56p
+mp2 2 1 10 10 pn4a w=25u l=3u  ad=200p as=200p
+mn2 2 1  0  0 nn4a w=7u  l=3u  ad=56p  as=56p
+.ends llatch
+*
+*.options acct
+.print tran {v(2)+2.0} {v(3)+2.0} {v(4)+2.0} {v(6)+2.0} {v(7)+2.0} {v(8)+2.0} {v(13)+2.0} {v(14)+2.0} {v(17)+2.0} {v(21)+2.0} {v(22)+2.0}
+.end

@@ -1,0 +1,409 @@
+{
+  "schemaVersion": 1,
+  "issue": "https://github.com/mfiumara/spice-ts/issues/1045",
+  "mechanicalAdaptation": "none",
+  "sources": [
+    {
+      "key": "xyce",
+      "repository": "https://github.com/Xyce/Xyce_Regression",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "license": "GPL-3.0-or-later",
+      "licensePath": "benchmarks/corpus/corpus-l/licenses/xyce/README.md",
+      "licenseSha256": "82ff6df7bddcdf639483d261949a02a5f43da85d579f1242b05c3aa0c430f7cb",
+      "licenseTextPath": "benchmarks/corpus/corpus-l/licenses/xyce/GPL-3.0.txt",
+      "licenseTextSha256": "12ac5047f2af0522f06798b1589ffc4599bc29c91f954d7874e0320634e777c0",
+      "basis": "Repository README Copyright and license grants GPL version 3 or later. Selected decks have no separate copyright/licence notice or external dependencies. README and full GPL text retained unchanged."
+    }
+  ],
+  "selection": "All 10 novel CircuitSim90/MOS3 decks, four ACtests/mos gain stages, four ACtests/SANDLER decks and first two ACtests/diffpair_spiceMan decks. Static/hash source-family selection before engine execution, no success filter. Every outcome retained.",
+  "circuits": [
+    {
+      "id": "l-1",
+      "source": "xyce",
+      "upstreamPath": "Netlists/ACtests/SANDLER16/sandler16.cir",
+      "sourcePath": "xyce/Netlists/ACtests/SANDLER16/sandler16.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/ACtests/SANDLER16/sandler16.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-l/fixtures/xyce/Netlists/ACtests/SANDLER16/sandler16.cir",
+      "sha256": "4559c5a5df102c1f471dab8b5b77d6d0856cc78c632586b1c4b46305f223344a",
+      "bytes": 2773,
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "l-2",
+      "source": "xyce",
+      "upstreamPath": "Netlists/ACtests/SANDLER7/sandler7.cir",
+      "sourcePath": "xyce/Netlists/ACtests/SANDLER7/sandler7.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/ACtests/SANDLER7/sandler7.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-l/fixtures/xyce/Netlists/ACtests/SANDLER7/sandler7.cir",
+      "sha256": "9ca67ca3b7eef3c1322936b9e4c6794f200237f781b714ec161dab1c35ab42f6",
+      "bytes": 2076,
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "l-3",
+      "source": "xyce",
+      "upstreamPath": "Netlists/ACtests/SANDLER8/sandler8.cir",
+      "sourcePath": "xyce/Netlists/ACtests/SANDLER8/sandler8.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/ACtests/SANDLER8/sandler8.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-l/fixtures/xyce/Netlists/ACtests/SANDLER8/sandler8.cir",
+      "sha256": "4bb0a1cea94ce0b097771edb78c5bd47234606ffad529b1aef2254cc0f864a7e",
+      "bytes": 1795,
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "l-4",
+      "source": "xyce",
+      "upstreamPath": "Netlists/ACtests/SANDLER9/sandler9.cir",
+      "sourcePath": "xyce/Netlists/ACtests/SANDLER9/sandler9.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/ACtests/SANDLER9/sandler9.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-l/fixtures/xyce/Netlists/ACtests/SANDLER9/sandler9.cir",
+      "sha256": "149ddd0a2d8b17106f791647236db84732d45bda01145284b8d0c85974171817",
+      "bytes": 1687,
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "l-5",
+      "source": "xyce",
+      "upstreamPath": "Netlists/ACtests/diffpair_spiceMan.cir",
+      "sourcePath": "xyce/Netlists/ACtests/diffpair_spiceMan.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/ACtests/diffpair_spiceMan.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-l/fixtures/xyce/Netlists/ACtests/diffpair_spiceMan.cir",
+      "sha256": "0780e3374389beeb6754c3423f43fa609c46f3d35537b7206e7e2014301038c1",
+      "bytes": 506,
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "l-6",
+      "source": "xyce",
+      "upstreamPath": "Netlists/ACtests/diffpair_spiceManLIN.cir",
+      "sourcePath": "xyce/Netlists/ACtests/diffpair_spiceManLIN.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/ACtests/diffpair_spiceManLIN.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-l/fixtures/xyce/Netlists/ACtests/diffpair_spiceManLIN.cir",
+      "sha256": "70af53508eda159fac01125533814f6dab74ceacb885be6a9d42ed0b776c045f",
+      "bytes": 526,
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "l-7",
+      "source": "xyce",
+      "upstreamPath": "Netlists/ACtests/mos/gain-stage1.cir",
+      "sourcePath": "xyce/Netlists/ACtests/mos/gain-stage1.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/ACtests/mos/gain-stage1.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-l/fixtures/xyce/Netlists/ACtests/mos/gain-stage1.cir",
+      "sha256": "e184d407df6a9fb6bb8992fb050aa7e7f28ce0d5717c4ee6cd36db59105a5203",
+      "bytes": 255,
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "l-8",
+      "source": "xyce",
+      "upstreamPath": "Netlists/ACtests/mos/gain-stage2.cir",
+      "sourcePath": "xyce/Netlists/ACtests/mos/gain-stage2.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/ACtests/mos/gain-stage2.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-l/fixtures/xyce/Netlists/ACtests/mos/gain-stage2.cir",
+      "sha256": "5a5f3da6d8f18bb865059acbc34b1fc464c52deda5f5e0d5eb039da8973b4deb",
+      "bytes": 246,
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "l-9",
+      "source": "xyce",
+      "upstreamPath": "Netlists/ACtests/mos/gain-stage3.cir",
+      "sourcePath": "xyce/Netlists/ACtests/mos/gain-stage3.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/ACtests/mos/gain-stage3.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-l/fixtures/xyce/Netlists/ACtests/mos/gain-stage3.cir",
+      "sha256": "9294b82b1e587d14937b75e89067454f57c056a1a54ebaed666117a884b7f0ae",
+      "bytes": 246,
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "l-10",
+      "source": "xyce",
+      "upstreamPath": "Netlists/ACtests/mos/gain-stage6.cir",
+      "sourcePath": "xyce/Netlists/ACtests/mos/gain-stage6.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/ACtests/mos/gain-stage6.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-l/fixtures/xyce/Netlists/ACtests/mos/gain-stage6.cir",
+      "sha256": "1a8f881f5687036ab790a47ea24e56a8a1afc6dd42c1966eab92a4a36d657b3d",
+      "bytes": 255,
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "l-11",
+      "source": "xyce",
+      "upstreamPath": "Netlists/CircuitSim90/MOS3/arom.cir",
+      "sourcePath": "xyce/Netlists/CircuitSim90/MOS3/arom.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS3/arom.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-l/fixtures/xyce/Netlists/CircuitSim90/MOS3/arom.cir",
+      "sha256": "4db593d3133a5929e7efdcb26921d3fce15e6c6c17e8bcef2fa2a08c4f7d062c",
+      "bytes": 8162,
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "l-12",
+      "source": "xyce",
+      "upstreamPath": "Netlists/CircuitSim90/MOS3/gm1.cir",
+      "sourcePath": "xyce/Netlists/CircuitSim90/MOS3/gm1.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS3/gm1.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-l/fixtures/xyce/Netlists/CircuitSim90/MOS3/gm1.cir",
+      "sha256": "417d4fe8629398295bb317ad236781f36b34eebb58e74c7b63757263f55c338c",
+      "bytes": 2933,
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "l-13",
+      "source": "xyce",
+      "upstreamPath": "Netlists/CircuitSim90/MOS3/gm17.cir",
+      "sourcePath": "xyce/Netlists/CircuitSim90/MOS3/gm17.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS3/gm17.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-l/fixtures/xyce/Netlists/CircuitSim90/MOS3/gm17.cir",
+      "sha256": "43fc842bd3c7bfbbe285a5d83b4eb08fa6acc1a3c8a5da9ae62c605bd32324a9",
+      "bytes": 3360,
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "l-14",
+      "source": "xyce",
+      "upstreamPath": "Netlists/CircuitSim90/MOS3/gm19.cir",
+      "sourcePath": "xyce/Netlists/CircuitSim90/MOS3/gm19.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS3/gm19.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-l/fixtures/xyce/Netlists/CircuitSim90/MOS3/gm19.cir",
+      "sha256": "0b94a01a96dd0ae19e93fe78b5fc7397411815d350ee13ee118c49548bb62c08",
+      "bytes": 7040,
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "l-15",
+      "source": "xyce",
+      "upstreamPath": "Netlists/CircuitSim90/MOS3/gm2.cir",
+      "sourcePath": "xyce/Netlists/CircuitSim90/MOS3/gm2.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS3/gm2.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-l/fixtures/xyce/Netlists/CircuitSim90/MOS3/gm2.cir",
+      "sha256": "ad4261e8c85a1f0376b24c0bad6f42fa4046a0fa669b84853236ef558fa417fc",
+      "bytes": 1561,
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "l-16",
+      "source": "xyce",
+      "upstreamPath": "Netlists/CircuitSim90/MOS3/gm3.cir",
+      "sourcePath": "xyce/Netlists/CircuitSim90/MOS3/gm3.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS3/gm3.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-l/fixtures/xyce/Netlists/CircuitSim90/MOS3/gm3.cir",
+      "sha256": "90ee65bd24818d09d008de93e92f5a398f3422ae2a4a663e5889834e2c1fe071",
+      "bytes": 2255,
+      "analyses": [
+        "op",
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "l-17",
+      "source": "xyce",
+      "upstreamPath": "Netlists/CircuitSim90/MOS3/jge.cir",
+      "sourcePath": "xyce/Netlists/CircuitSim90/MOS3/jge.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS3/jge.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-l/fixtures/xyce/Netlists/CircuitSim90/MOS3/jge.cir",
+      "sha256": "c0da4a46792a27496530ea1a57b1253dd980d17380db58ffd6e6434f0156babf",
+      "bytes": 91710,
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "l-18",
+      "source": "xyce",
+      "upstreamPath": "Netlists/CircuitSim90/MOS3/mike2.cir",
+      "sourcePath": "xyce/Netlists/CircuitSim90/MOS3/mike2.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS3/mike2.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-l/fixtures/xyce/Netlists/CircuitSim90/MOS3/mike2.cir",
+      "sha256": "99cf3671f37b401548a991f679ceaeb6ab502c97ac7c98de81b5adbddb4df013",
+      "bytes": 2361,
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "l-19",
+      "source": "xyce",
+      "upstreamPath": "Netlists/CircuitSim90/MOS3/rich3.cir",
+      "sourcePath": "xyce/Netlists/CircuitSim90/MOS3/rich3.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS3/rich3.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-l/fixtures/xyce/Netlists/CircuitSim90/MOS3/rich3.cir",
+      "sha256": "5cf5ebcafb990907419d4844249ed6c8a53e47be8faf06f8e16fd08a5ef353ae",
+      "bytes": 7286,
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "l-20",
+      "source": "xyce",
+      "upstreamPath": "Netlists/CircuitSim90/MOS3/todd3.cir",
+      "sourcePath": "xyce/Netlists/CircuitSim90/MOS3/todd3.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS3/todd3.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-l/fixtures/xyce/Netlists/CircuitSim90/MOS3/todd3.cir",
+      "sha256": "adecd1aec7ea465065ee828bea3db6a4f675a9e8abf0e8931137593bb338b57f",
+      "bytes": 2187,
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    }
+  ],
+  "exclusions": {
+    "receipt": "benchmarks/corpus/corpus-l/survey-xyce.json",
+    "receiptSha256": "ba391e9752daab4b01d06d15c1234cc9b7bdce2c45d457ecea1fcf6c75a687de",
+    "selectedPaths": [
+      "Netlists/ACtests/SANDLER16/sandler16.cir",
+      "Netlists/ACtests/SANDLER7/sandler7.cir",
+      "Netlists/ACtests/SANDLER8/sandler8.cir",
+      "Netlists/ACtests/SANDLER9/sandler9.cir",
+      "Netlists/ACtests/diffpair_spiceMan.cir",
+      "Netlists/ACtests/diffpair_spiceManLIN.cir",
+      "Netlists/ACtests/mos/gain-stage1.cir",
+      "Netlists/ACtests/mos/gain-stage2.cir",
+      "Netlists/ACtests/mos/gain-stage3.cir",
+      "Netlists/ACtests/mos/gain-stage6.cir",
+      "Netlists/CircuitSim90/MOS3/arom.cir",
+      "Netlists/CircuitSim90/MOS3/gm1.cir",
+      "Netlists/CircuitSim90/MOS3/gm17.cir",
+      "Netlists/CircuitSim90/MOS3/gm19.cir",
+      "Netlists/CircuitSim90/MOS3/gm2.cir",
+      "Netlists/CircuitSim90/MOS3/gm3.cir",
+      "Netlists/CircuitSim90/MOS3/jge.cir",
+      "Netlists/CircuitSim90/MOS3/mike2.cir",
+      "Netlists/CircuitSim90/MOS3/rich3.cir",
+      "Netlists/CircuitSim90/MOS3/todd3.cir"
+    ],
+    "rule": "Survey covers only the selected families. Other source families are batch-deferred, not engine failures or licence rejections."
+  }
+}

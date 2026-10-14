@@ -1,0 +1,12 @@
+diff --git a/packages/core/src/parser/index.ts b/packages/core/src/parser/index.ts
+index 2963b510..16288c20 100644
+--- a/packages/core/src/parser/index.ts
++++ b/packages/core/src/parser/index.ts
+@@ -274,6 +274,7 @@ function parseNetlist(
+   }
+   assertMaxOrderIsNoOp(circuit);
+ 
++  (globalThis as typeof globalThis & { __parseCorpus?: (text: string, state: unknown) => void }).__parseCorpus?.(netlist, circuit);
+   return circuit;
+ }
+ 

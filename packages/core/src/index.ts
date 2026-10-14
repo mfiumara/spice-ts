@@ -29,7 +29,7 @@ export {
   TransferFunctionResult, PoleZeroResult, SensitivityResult, SParameterResult,
 } from './results.js';
 export type {
-  SimulationResult, StepResult, PoleZeroValue, SensitivityEntry, ComplexSensitivityValue,
+  SimulationResult, DotAnalysisRun, StepResult, PoleZeroValue, SensitivityEntry, ComplexSensitivityValue,
   ComplexDistortionValue, ComplexValue, DistortionOrder, DistortionIntermodulationProduct, DistortionProduct,
   ControlScriptResult, ControlScriptRun, MeasurementResult,
 } from './results.js';

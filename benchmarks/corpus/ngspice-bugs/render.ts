@@ -133,6 +133,8 @@ export function renderSummary(manifest: Manifest): string {
   lines.push('');
   lines.push('## Totals');
   lines.push('');
+  lines.push('Current #812 refresh and #803 pin/oracle investigation: [refresh](corpus/ngspice-bugs/REFRESH_812.md), [bounded recovery](corpus/ngspice-bugs/PIN_RECOVERY_803.md). Five unreconstructed pins remain provenance gaps, not parser failures. Ticket 737 executes but has no full-waveform oracle; a NEW operating-point diagnostic disagrees with ngspice LTPS and is not a correctness win. Ticket 725 has disclosed log-attachment drift, not an executed-input re-pin. Historical engine verdicts and the original 25-ticket denominator are retained.');
+  lines.push('');
   const runnable = t.filter(hasReadme);
   lines.push(`- Tickets: ${t.length} (${count(e => e.status === 'open')} open, ${count(e => e.status === 'open-accepted')} open-accepted).`);
   lines.push(`- Simulator-relevant with a runnable deck: ${runnable.length}. Defect reproduced on ngspice-47: ${count(e => hasReadme(e) && ngspiceDefective(e))}; still present on master: ${count(e => hasReadme(e) && stillOnMaster(e))}; fixed on master: ${count(e => hasReadme(e) && fixedOnMaster(e))}.`);

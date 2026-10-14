@@ -1,0 +1,643 @@
+{
+  "base": "7a19e0537b5932f339eb3d19f36c0f6f849eddaa",
+  "environment": {
+    "node": "v22.23.1",
+    "arch": "arm64",
+    "platform": "darwin",
+    "cpu": "Apple M5 Pro",
+    "ngspice": "******\n** ngspice-47 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2026, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n******"
+  },
+  "candidate": "BJT-local DC/charge stamp aggregation; experimental only",
+  "attachments": [
+    {
+      "name": "DiodesInc_FET.lib",
+      "sha256": "956632bc5a1ed7ee02659e697171e34e8db51019468b28123788f7f5a8669cb0"
+    },
+    {
+      "name": "InductorSplit.cir",
+      "sha256": "c716605964d14590a9994b9c1883e2d5585c2d5fa1f14fd9dce5887bf9be5b83"
+    },
+    {
+      "name": "Originalnetlist.cir",
+      "sha256": "2ebe57b867f41fd71d84a0759ee29f1d378524532304984ce681139ba512511c"
+    },
+    {
+      "name": "PN2222.mod",
+      "sha256": "fade93cf84dcd8ef9e539bc6a5f9ffcf40e6e1cf3383a32811aa8080a711af05"
+    },
+    {
+      "name": "diode.lib",
+      "sha256": "4f07396942f9fa67d623899d6904636fa4a5be596d413ed863bc6e2b63a2e01d"
+    },
+    {
+      "name": "diode1.lib",
+      "sha256": "4f07396942f9fa67d623899d6904636fa4a5be596d413ed863bc6e2b63a2e01d"
+    }
+  ],
+  "rows": [
+    {
+      "id": "rest",
+      "path": "evidence/1037/local/rest.cir",
+      "sha256": "1760d513fa3d189905ccd8b170da8e879f7a1c7fd2305f1f5da509cdee12fad0",
+      "before": {
+        "status": "failed",
+        "errorCode": "TimestepTooSmallError",
+        "time": 9.999999999999999e-16,
+        "points": 1,
+        "convergence": {
+          "dc": {
+            "newtonIterations": 7,
+            "acceptedSolves": 1,
+            "rejectedSolves": 0,
+            "sourceStepAttempts": 0,
+            "sourceStepFailures": 0,
+            "gminStepAttempts": 0,
+            "gminStepFailures": 0,
+            "failure": null
+          },
+          "transient": {
+            "acceptedSteps": 1,
+            "rejectedSteps": 1,
+            "newtonIterations": 102,
+            "nrRetries": 1,
+            "lteRetries": 0,
+            "minimumAcceptedTimestep": 9.999999999999999e-16,
+            "failure": "dt-floor"
+          }
+        },
+        "runtimeMs": 24.106625000000008
+      },
+      "candidate": {
+        "status": "failed",
+        "errorCode": "TimestepTooSmallError",
+        "time": 9.999999999999999e-16,
+        "points": 1,
+        "convergence": {
+          "dc": {
+            "newtonIterations": 7,
+            "acceptedSolves": 1,
+            "rejectedSolves": 0,
+            "sourceStepAttempts": 0,
+            "sourceStepFailures": 0,
+            "gminStepAttempts": 0,
+            "gminStepFailures": 0,
+            "failure": null
+          },
+          "transient": {
+            "acceptedSteps": 1,
+            "rejectedSteps": 1,
+            "newtonIterations": 102,
+            "nrRetries": 1,
+            "lteRetries": 0,
+            "minimumAcceptedTimestep": 9.999999999999999e-16,
+            "failure": "dt-floor"
+          }
+        },
+        "runtimeMs": 6.2786669999999845
+      },
+      "ngspice": {
+        "status": "success",
+        "exitCode": 0,
+        "signal": null,
+        "runtimeMs": 19.651250000000005,
+        "points": 108,
+        "time": 1e-11,
+        "diagnosticSha256": "e6c6e56ec097aa02c94a96c5bf4b6dd0e3efa3904feb5b05c3bc540169220af0",
+        "command": [
+          "ngspice",
+          "-n",
+          "-b",
+          "-r",
+          "evidence/1037/local/rest.raw",
+          "evidence/1037/local/rest.cir"
+        ]
+      },
+      "beforeMetrics": null,
+      "candidateMetrics": null
+    },
+    {
+      "id": "schmitt",
+      "path": "benchmarks/corpus/ngspice/fixtures/tests/general/schmitt.cir",
+      "sha256": "c3e897ecd60c66cb5350c2a0fa7788f34af374803c10f4cf58d6f5ed01b00e55",
+      "before": {
+        "status": "success",
+        "errorCode": null,
+        "time": 0.0000010000000000000002,
+        "points": 135,
+        "convergence": {
+          "dc": {
+            "newtonIterations": 16,
+            "acceptedSolves": 1,
+            "rejectedSolves": 0,
+            "sourceStepAttempts": 0,
+            "sourceStepFailures": 0,
+            "gminStepAttempts": 0,
+            "gminStepFailures": 0,
+            "failure": null
+          },
+          "transient": {
+            "acceptedSteps": 135,
+            "rejectedSteps": 10,
+            "newtonIterations": 513,
+            "nrRetries": 0,
+            "lteRetries": 10,
+            "minimumAcceptedTimestep": 1e-10,
+            "failure": null
+          }
+        },
+        "runtimeMs": 52.883542000000034
+      },
+      "candidate": {
+        "status": "success",
+        "errorCode": null,
+        "time": 0.0000010000000000000002,
+        "points": 138,
+        "convergence": {
+          "dc": {
+            "newtonIterations": 16,
+            "acceptedSolves": 1,
+            "rejectedSolves": 0,
+            "sourceStepAttempts": 0,
+            "sourceStepFailures": 0,
+            "gminStepAttempts": 0,
+            "gminStepFailures": 0,
+            "failure": null
+          },
+          "transient": {
+            "acceptedSteps": 138,
+            "rejectedSteps": 12,
+            "newtonIterations": 508,
+            "nrRetries": 1,
+            "lteRetries": 11,
+            "minimumAcceptedTimestep": 1e-10,
+            "failure": null
+          }
+        },
+        "runtimeMs": 33.69820800000002
+      },
+      "ngspice": {
+        "status": "success",
+        "exitCode": 0,
+        "signal": null,
+        "runtimeMs": 18.62795799999992,
+        "points": 135,
+        "time": 0.000001,
+        "diagnosticSha256": "c085a0b5db9efaa8ec6b99fb63e558919eca898974da20c2f3af69902718ec49",
+        "command": [
+          "ngspice",
+          "-n",
+          "-b",
+          "-r",
+          "evidence/1037/local/schmitt.raw",
+          "benchmarks/corpus/ngspice/fixtures/tests/general/schmitt.cir"
+        ]
+      },
+      "beforeMetrics": {
+        "grid": {
+          "spiceTsPoints": 135,
+          "ngspicePoints": 135,
+          "alignedPoints": 134,
+          "excludedOutOfRange": 1
+        },
+        "signals": {
+          "v(1)": {
+            "status": "compared",
+            "sampleCount": 134,
+            "absoluteError": {
+              "max": 6.661338147750939e-16,
+              "rms": 2.0390461157198933e-16
+            },
+            "relativeError": {
+              "max": 4.432491353950869e-16,
+              "rms": 1.5402149273084618e-16,
+              "sampleCount": 134,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(3)": {
+            "status": "compared",
+            "sampleCount": 134,
+            "absoluteError": {
+              "max": 0.0035601853808444606,
+              "rms": 0.000483285989958665
+            },
+            "relativeError": {
+              "max": 0.004607331291813743,
+              "rms": 0.0006286338451559747,
+              "sampleCount": 134,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(5)": {
+            "status": "compared",
+            "sampleCount": 134,
+            "absoluteError": {
+              "max": 0.008137336293339459,
+              "rms": 0.0008632884147936568
+            },
+            "relativeError": {
+              "max": 0.005033616085795831,
+              "rms": 0.0005393298404345689,
+              "sampleCount": 134,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(6)": {
+            "status": "compared",
+            "sampleCount": 134,
+            "absoluteError": {
+              "max": 0.0052592994280805,
+              "rms": 0.0005181477740239204
+            },
+            "relativeError": {
+              "max": 0.2158326908504912,
+              "rms": 0.01900757771754511,
+              "sampleCount": 134,
+              "excludedZeroReferences": 0
+            }
+          }
+        }
+      },
+      "candidateMetrics": {
+        "grid": {
+          "spiceTsPoints": 138,
+          "ngspicePoints": 135,
+          "alignedPoints": 137,
+          "excludedOutOfRange": 1
+        },
+        "signals": {
+          "v(1)": {
+            "status": "compared",
+            "sampleCount": 137,
+            "absoluteError": {
+              "max": 6.661338147750939e-16,
+              "rms": 2.0694427795767963e-16
+            },
+            "relativeError": {
+              "max": 5.245041590925874e-16,
+              "rms": 1.564414545485467e-16,
+              "sampleCount": 137,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(3)": {
+            "status": "compared",
+            "sampleCount": 137,
+            "absoluteError": {
+              "max": 0.1187173039822727,
+              "rms": 0.014857429237461427
+            },
+            "relativeError": {
+              "max": 0.30766520219384036,
+              "rms": 0.03382898985752499,
+              "sampleCount": 137,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(5)": {
+            "status": "compared",
+            "sampleCount": 137,
+            "absoluteError": {
+              "max": 0.09093255339344375,
+              "rms": 0.012398933683131923
+            },
+            "relativeError": {
+              "max": 0.06741794187456236,
+              "rms": 0.009362467270057292,
+              "sampleCount": 137,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(6)": {
+            "status": "compared",
+            "sampleCount": 137,
+            "absoluteError": {
+              "max": 0.2790233824584455,
+              "rms": 0.03476778232491158
+            },
+            "relativeError": {
+              "max": 0.548613127253621,
+              "rms": 0.06741394423063217,
+              "sampleCount": 137,
+              "excludedZeroReferences": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "relay",
+      "path": "benchmarks/corpus/corpus-h/fixtures/spicesharpparser/circuits/cookbook/pure-spice/bjt-relay-driver/bjt-relay-driver.cir",
+      "sha256": "228c90873b8e558a10d4613ad39dd695d94b6f03852eb9480f95b6ddea32bdc4",
+      "before": {
+        "status": "success",
+        "errorCode": null,
+        "time": 0.011,
+        "points": 11364,
+        "convergence": {
+          "dc": {
+            "newtonIterations": 0,
+            "acceptedSolves": 0,
+            "rejectedSolves": 0,
+            "sourceStepAttempts": 0,
+            "sourceStepFailures": 0,
+            "gminStepAttempts": 0,
+            "gminStepFailures": 0,
+            "failure": null
+          },
+          "transient": {
+            "acceptedSteps": 11364,
+            "rejectedSteps": 524,
+            "newtonIterations": 19943,
+            "nrRetries": 0,
+            "lteRetries": 524,
+            "minimumAcceptedTimestep": 3.6568841142162006e-10,
+            "failure": null
+          }
+        },
+        "runtimeMs": 179.42783300000008
+      },
+      "candidate": {
+        "status": "success",
+        "errorCode": null,
+        "time": 0.011,
+        "points": 11365,
+        "convergence": {
+          "dc": {
+            "newtonIterations": 0,
+            "acceptedSolves": 0,
+            "rejectedSolves": 0,
+            "sourceStepAttempts": 0,
+            "sourceStepFailures": 0,
+            "gminStepAttempts": 0,
+            "gminStepFailures": 0,
+            "failure": null
+          },
+          "transient": {
+            "acceptedSteps": 11365,
+            "rejectedSteps": 526,
+            "newtonIterations": 19958,
+            "nrRetries": 0,
+            "lteRetries": 526,
+            "minimumAcceptedTimestep": 3.656884114215669e-10,
+            "failure": null
+          }
+        },
+        "runtimeMs": 183.58379200000002
+      },
+      "ngspice": {
+        "status": "success",
+        "exitCode": 0,
+        "signal": null,
+        "runtimeMs": 69.72366699999998,
+        "points": 11363,
+        "time": 0.011,
+        "diagnosticSha256": "6fc72dbc33a65a82e297e2704bd62ad0601ac3ce60f79c4fa1ca50fb6b844103",
+        "command": [
+          "ngspice",
+          "-n",
+          "-b",
+          "-r",
+          "evidence/1037/local/relay.raw",
+          "benchmarks/corpus/corpus-h/fixtures/spicesharpparser/circuits/cookbook/pure-spice/bjt-relay-driver/bjt-relay-driver.cir"
+        ]
+      },
+      "beforeMetrics": {
+        "grid": {
+          "spiceTsPoints": 11364,
+          "ngspicePoints": 11363,
+          "alignedPoints": 11364,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "v(base)": {
+            "status": "compared",
+            "sampleCount": 11364,
+            "absoluteError": {
+              "max": 0.009183807627477822,
+              "rms": 0.0001318889027623745
+            },
+            "relativeError": {
+              "max": 104.0062329057763,
+              "rms": 1.3294437714948764,
+              "sampleCount": 11364,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(collector)": {
+            "status": "compared",
+            "sampleCount": 11364,
+            "absoluteError": {
+              "max": 0.2741621267967229,
+              "rms": 0.002937501375943303
+            },
+            "relativeError": {
+              "max": 0.7393072743332362,
+              "rms": 0.008288611281975711,
+              "sampleCount": 11364,
+              "excludedZeroReferences": 0
+            }
+          }
+        }
+      },
+      "candidateMetrics": {
+        "grid": {
+          "spiceTsPoints": 11365,
+          "ngspicePoints": 11363,
+          "alignedPoints": 11365,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "v(base)": {
+            "status": "compared",
+            "sampleCount": 11365,
+            "absoluteError": {
+              "max": 0.00905040936801041,
+              "rms": 0.0001314305376476303
+            },
+            "relativeError": {
+              "max": 101.33172985827419,
+              "rms": 1.35510401449318,
+              "sampleCount": 11365,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(collector)": {
+            "status": "compared",
+            "sampleCount": 11365,
+            "absoluteError": {
+              "max": 0.12204998778976028,
+              "rms": 0.0020808053755046758
+            },
+            "relativeError": {
+              "max": 0.7856433742988128,
+              "rms": 0.008289084481488287,
+              "sampleCount": 11365,
+              "excludedZeroReferences": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "Originalnetlist",
+      "path": "benchmarks/corpus/ngspice-bugs/fetched/764/Originalnetlist.local.cir",
+      "sha256": "9ffac81021772f9049551269bae3f57fed3f594fed26569a77fbc7343f8275b8",
+      "before": {
+        "status": "failed",
+        "errorCode": "TimestepTooSmallError",
+        "time": 6.075652244586859e-11,
+        "points": 26,
+        "convergence": {
+          "dc": {
+            "newtonIterations": 12,
+            "acceptedSolves": 1,
+            "rejectedSolves": 0,
+            "sourceStepAttempts": 0,
+            "sourceStepFailures": 0,
+            "gminStepAttempts": 0,
+            "gminStepFailures": 0,
+            "failure": null
+          },
+          "transient": {
+            "acceptedSteps": 26,
+            "rejectedSteps": 21,
+            "newtonIterations": 1777,
+            "nrRetries": 17,
+            "lteRetries": 4,
+            "minimumAcceptedTimestep": 2.7477950129296678e-14,
+            "failure": "dt-floor"
+          }
+        },
+        "runtimeMs": 166.946958
+      },
+      "candidate": {
+        "status": "failed",
+        "errorCode": "TimestepTooSmallError",
+        "time": 1.1041506930422074e-10,
+        "points": 53,
+        "convergence": {
+          "dc": {
+            "newtonIterations": 12,
+            "acceptedSolves": 1,
+            "rejectedSolves": 0,
+            "sourceStepAttempts": 0,
+            "sourceStepFailures": 0,
+            "gminStepAttempts": 0,
+            "gminStepFailures": 0,
+            "failure": null
+          },
+          "transient": {
+            "acceptedSteps": 53,
+            "rejectedSteps": 46,
+            "newtonIterations": 3861,
+            "nrRetries": 37,
+            "lteRetries": 9,
+            "minimumAcceptedTimestep": 1.6627222706010443e-15,
+            "failure": "dt-floor"
+          }
+        },
+        "runtimeMs": 147.82449999999994
+      },
+      "ngspice": {
+        "status": "timeout",
+        "exitCode": null,
+        "signal": "SIGTERM",
+        "runtimeMs": 120003.01699999999,
+        "points": null,
+        "time": null,
+        "diagnosticSha256": "29717080af3ad912c1c3cef2df0a18d34fd848da3f460fb938a42bff047af26c",
+        "command": [
+          "ngspice",
+          "-n",
+          "-b",
+          "-r",
+          "evidence/1037/local/Originalnetlist.raw",
+          "benchmarks/corpus/ngspice-bugs/fetched/764/Originalnetlist.local.cir"
+        ]
+      },
+      "beforeMetrics": null,
+      "candidateMetrics": null
+    },
+    {
+      "id": "InductorSplit",
+      "path": "benchmarks/corpus/ngspice-bugs/fetched/764/InductorSplit.local.cir",
+      "sha256": "82dd70784683fcfeafe0ec661a85f6bc9b17658fe86d3d84a41069c8c1a4ee9e",
+      "before": {
+        "status": "failed",
+        "errorCode": "TimestepTooSmallError",
+        "time": 2.3555640717097648e-12,
+        "points": 9,
+        "convergence": {
+          "dc": {
+            "newtonIterations": 12,
+            "acceptedSolves": 1,
+            "rejectedSolves": 0,
+            "sourceStepAttempts": 0,
+            "sourceStepFailures": 0,
+            "gminStepAttempts": 0,
+            "gminStepFailures": 0,
+            "failure": null
+          },
+          "transient": {
+            "acceptedSteps": 9,
+            "rejectedSteps": 15,
+            "newtonIterations": 1133,
+            "nrRetries": 11,
+            "lteRetries": 4,
+            "minimumAcceptedTimestep": 2.281393977955368e-15,
+            "failure": "dt-floor"
+          }
+        },
+        "runtimeMs": 50.371291999996174
+      },
+      "candidate": {
+        "status": "failed",
+        "errorCode": "TimestepTooSmallError",
+        "time": 2.3555640717097627e-12,
+        "points": 9,
+        "convergence": {
+          "dc": {
+            "newtonIterations": 12,
+            "acceptedSolves": 1,
+            "rejectedSolves": 0,
+            "sourceStepAttempts": 0,
+            "sourceStepFailures": 0,
+            "gminStepAttempts": 0,
+            "gminStepFailures": 0,
+            "failure": null
+          },
+          "transient": {
+            "acceptedSteps": 9,
+            "rejectedSteps": 15,
+            "newtonIterations": 1135,
+            "nrRetries": 11,
+            "lteRetries": 4,
+            "minimumAcceptedTimestep": 2.281393977955368e-15,
+            "failure": "dt-floor"
+          }
+        },
+        "runtimeMs": 53.967167000009795
+      },
+      "ngspice": {
+        "status": "timeout",
+        "exitCode": null,
+        "signal": "SIGTERM",
+        "runtimeMs": 120003.74795799999,
+        "points": null,
+        "time": null,
+        "diagnosticSha256": "531b8cbee2a007e2f2b18f97d7e671beca7dc22165d8187122c8bd215f1e2d59",
+        "command": [
+          "ngspice",
+          "-n",
+          "-b",
+          "-r",
+          "evidence/1037/local/InductorSplit.raw",
+          "benchmarks/corpus/ngspice-bugs/fetched/764/InductorSplit.local.cir"
+        ]
+      },
+      "beforeMetrics": null,
+      "candidateMetrics": null
+    }
+  ]
+}

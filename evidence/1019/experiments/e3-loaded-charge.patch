@@ -1,0 +1,25 @@
+--- a/src/devices/mos2.ts
++++ b/src/devices/mos2.ts
+@@ -1184,5 +1184,22 @@
+   stampTransientCharge(ctx: StampContext, integration: ChargeIntegration): void {
+     ctx = this.transientLoadContext ?? ctx;
++    // Experimental only: read the static load's limited terminal voltages.
++    const original = ctx;
++    const [d, g, s, b] = this.nodes;
++    const type = this.model.polarity;
++    const load = this.lastLoad;
++    const source = s < 0 ? 0
++      : b < 0 ? -type * load.vbs
++        : d < 0 ? -type * load.vds
++          : g < 0 ? -type * load.vgs : ctx.getVoltage(s);
++    ctx = { ...ctx, getVoltage: node => {
++      if (node < 0) return 0;
++      if (node === g) return source + type * load.vgs;
++      if (node === d) return source + type * load.vds;
++      if (node === b) return source + type * load.vbs;
++      if (node === s) return source;
++      return original.getVoltage(node);
++    } };
+     const charges = this.charges;
+     const capacitances = this.capacitanceScratch;
+     const junctionCharges = this.chargeScratch;

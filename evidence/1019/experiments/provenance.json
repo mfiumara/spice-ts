@@ -1,0 +1,19 @@
+{
+  "baseSha": "8534aed9538d3b3578b2110038a8e6ebd62be958",
+  "coreTree": "e363cfd58b5fc6af7c505751d6c8913d9ed92506",
+  "nativeSourceObject": "a80f6e3e95d51534905b1f23410a951802666656",
+  "nativeSourceURL": "https://github.com/ngspice/ngspice",
+  "nativeLicense": "Existing ngspice mixed BSD-style sources; no source/binary redistributed",
+  "nativeBinarySha256": "053c1b9bca2d3ad796815aa3615d69c8945386fc8272e5a03a3049d94869d1f1",
+  "nativeVersion": "******\n** ngspice-47 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2026, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n******\n",
+  "node": "v22.23.1",
+  "machine": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+  "arch": "arm64",
+  "productionFilesChanged": [],
+  "policy": {
+    "perCircuitToleranceTuning": false,
+    "productionChanges": false,
+    "inputAdaptation": false,
+    "e4": "one retained diagnostic grid label only"
+  }
+}

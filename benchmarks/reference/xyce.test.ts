@@ -1,11 +1,13 @@
 import assert from 'node:assert/strict';
-import { readdirSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import test from 'node:test';
 import type { ComparisonFixture } from '../comparison-harness.js';
 import { parseXyceCsv, runXyce, translateForXyce } from './xyce.js';
 import { canonicalize, projectAnalysis } from './canonical.js';
 import { runNgspiceReference } from './expanded.js';
+import './investigations/990/receipt.test.js';
+import './investigations/974/sine-994.test.js';
 
 test('mixed-case requested names use canonical lower-case series keys like ngspice', () => {
   const result = parseXyceCsv('{V1},V(IN),I(V1)\n0,0,0', 'dc', ['V(IN)', 'I(V1)']);
@@ -47,6 +49,122 @@ function fixture(analysis: ComparisonFixture['analysis'] = 'dc'): ComparisonFixt
   return { name: 'adapter-small', analysis, signals: ['v(in)', 'i(V1)'],
     netlist: `adapter test\nV1 in 0 DC 1 AC 1\nR1 in 0 1k\n${directive}\n.end\n` };
 }
+
+test('SINE sources become native SIN without dropping DC, AC or waveform values', () => {
+  const sources = [
+    ['V1 in 0 dc 2.5 sine(1 .3 440 0 0)', 'V1 in 0 dc 2.5 SIN(1 .3 440 0 0)'],
+    ['I1 in 0 SiNe (1m 2m 1k 2u 3 45) DC 4m AC 5m 90', 'I1 in 0 SIN (1m 2m 1k 2u 3 45) DC 4m AC 5m 90'],
+    ['V1 in 0 2 AC 3 45\n+ sine(1 2 3)', 'V1 in 0 2 AC 3 45  SIN(1 2 3)'],
+  ];
+  for (const [source, expected] of sources) {
+    const f = { ...fixture('tran'), netlist: fixture('tran').netlist.replace('V1 in 0 DC 1 AC 1', source) };
+    const translated = translateForXyce(f);
+    assert.ok(translated.netlist.includes(expected), translated.netlist);
+    assert.ok(translated.changes.some(change => /SINE.*SIN/.test(change)));
+    assert.equal(translateForXyce({ ...f, netlist: translated.netlist }).netlist, translated.netlist);
+  }
+  const netlist = readFileSync('benchmarks/reference/investigations/974/jimi-fuzz-baseline-shared.cir', 'utf8');
+  const translated = translateForXyce({ name: 'jimi', analysis: 'tran', signals: ['v(10)', 'v(3)'], netlist });
+  assert.ok(translated.netlist.includes('V_V2 10 0 dc 0.0 SIN(0.0 0.3 440.0 0 0)'));
+  assert.ok(translated.netlist.includes('V_V1 1 0 dc 9.0'));
+});
+
+test('SINE after DC/AC expressions is normalized for V and I without rewriting values', () => {
+  for (const kind of ['V', 'I']) {
+    for (const prefix of ['DC {2.5}', 'AC {1 + 2} {45}', 'DC {2.5} AC {1} {0}', "DC '2.5' AC \"1\"", 'DC (2.5) AC (1 + (2))', 'DC {sine(2) + {3}}']) {
+      const source = `${kind}1 in 0 ${prefix} SiNe (1 .3 440 0 0)`;
+      const f = { ...fixture('tran'), netlist: fixture('tran').netlist.replace('V1 in 0 DC 1 AC 1', source) };
+      assert.ok(translateForXyce(f).netlist.includes(source.replace('SiNe', 'SIN')), source);
+    }
+  }
+});
+
+test('untranslatable top-level SINE fails closed before execution', async () => {
+  for (const body of ['unknown SINE(1 .3 440)', 'DC {2.5 SINE(1 .3 440)', 'DC 2.5 SINE 1 .3 440']) {
+    const result = await runXyce({ ...fixture('tran'), netlist: fixture('tran').netlist.replace('DC 1 AC 1', body) }, { executable: '/nonexistent/xyce-adapter' });
+    assert.equal(result.status, 'unsupported', JSON.stringify(result));
+    assert.equal(result.failureKind, 'translation');
+    assert.deepEqual(result.command, []);
+  }
+});
+
+test('live Xyce SINE after brace DC/AC agrees with ngspice extrema', { skip: !process.env.XYCE_BIN }, async () => {
+  for (const kind of ['V', 'I']) {
+    for (const prefix of ['DC {2.5}', 'AC {1} {45}', 'DC {2.5} AC {1} {45}']) {
+      const netlist = `expression source probe\n${kind}1 in 0 ${prefix} SINE(1 .3 440 0 0)\nR1 in 0 1\n.tran 10u 3m\n.end\n`;
+      const ng = runNgspiceReference(netlist, 'tran');
+      const xy = await runXyce({ name: 'expression-source', analysis: 'tran', netlist, signals: ['v(in)'] });
+      assert.equal(ng.status, 'success', JSON.stringify(ng));
+      assert.equal(xy.status, 'success', JSON.stringify(xy));
+      if (ng.status !== 'success' || xy.status !== 'success') continue;
+      const extrema = (run: typeof ng) => {
+        const values = run.series.signals['v(in)'].map(value => value.re);
+        return [Math.min(...values), Math.max(...values)];
+      };
+      const expected = extrema(ng), actual = extrema(xy);
+      console.log(JSON.stringify({ kind, prefix, ngspice: expected, xyce: actual }));
+      actual.forEach((value, i) => assert.ok(Math.abs(value - expected[i]) < .01));
+    }
+  }
+});
+
+test('SIN, DC-only sources, identifiers, expressions and comments remain untouched', () => {
+  const sources = ['V1 sine 0 DC 2', 'Isine in 0 SIN(1 2 3)', 'V1 in 0 DC 2 ; sine(9 9 9)', 'V1 in 0 DC {sine(2)}'];
+  for (const source of sources) {
+    const translated = translateForXyce({ ...fixture('tran'), netlist: fixture('tran').netlist.replace('V1 in 0 DC 1 AC 1', source) });
+    assert.ok(translated.netlist.includes(source));
+  }
+});
+
+test('live Xyce SINE translation retains explicit DC and nonzero transient excitation', { skip: !process.env.XYCE_BIN }, async () => {
+  for (const kind of ['V', 'I']) {
+    const netlist = `source probe\n${kind}1 in 0 DC 2.5 sine(1 .3 440 0 0)\nR1 in 0 1\n.tran 10u 3m\n.end\n`;
+    const f = { name: 'source', netlist, analysis: 'tran' as const, signals: ['v(in)'] };
+    const op = await runXyce({ ...f, analysis: 'op', netlist: netlist.replace('.tran 10u 3m', '.op') });
+    assert.equal(op.status, 'success', JSON.stringify(op));
+    if (op.status === 'success') assert.equal(op.series.signals['v(in)'][0].re, kind === 'V' ? 2.5 : -2.5);
+    const tran = await runXyce(f);
+    assert.equal(tran.status, 'success', JSON.stringify(tran));
+    if (tran.status !== 'success') continue;
+    const values = tran.series.signals['v(in)'].map(value => kind === 'V' ? value.re : -value.re);
+    assert.ok(Math.max(...values) > 1.29);
+    assert.ok(Math.min(...values) < .71);
+  }
+});
+
+test('Xyce adapter assigns bare BJT scalar parameters on model continuations (#990)', () => {
+  const netlist = readFileSync('benchmarks/reference/mutual-948/classic/rca3040-wideband-amplifier/0-ac.cir', 'utf8');
+  const f = { ...fixture('ac'), netlist };
+  const translated = translateForXyce(f);
+  assert.match(translated.netlist, /cjc=2pf VAF=50/i);
+  assert.doesNotMatch(translated.netlist, /\bva\s+50/i);
+  assert.ok(translated.changes.some(change => change.includes('va 50') && change.includes('VAF=50')));
+  assert.equal(f.netlist, netlist);
+});
+
+test('bare BJT syntax normalisation is general, preserves explicit assignments and other cards', () => {
+  const f = fixture();
+  const models = '.model p PNP (bf 80, va 50 vb 10 ik 2m)\n' +
+    '.model n NPN is 1e-16\n+ rb 100 tf 0.3ns ccs 2pf ; va 99\n' +
+    '.model explicit NPN (va=50 bf = 80)\n.model diode D (is 1e-14)\n* .model comment NPN va 100';
+  f.netlist = f.netlist.replace('.end', `${models}\n.end`);
+  const translated = translateForXyce(f);
+  assert.ok(translated.netlist.includes('.model p PNP (BF=80, VAF=50 VAR=10 IKF=2m)'));
+  assert.match(translated.netlist, /\.model n NPN IS=1e-16\s+RB=100 TF=0.3ns CJS=2pf/);
+  assert.ok(translated.netlist.includes('* ; va 99'));
+  for (const line of models.split('\n').slice(3)) assert.ok(translated.netlist.includes(line));
+  assert.equal(translateForXyce({ ...f, netlist: translated.netlist }).netlist, translated.netlist);
+});
+
+test('BJT model expressions are not partially rewritten, bare nonliteral values fail closed', () => {
+  const f = fixture();
+  for (const model of ['.model n NPN bf={80 + 2} va=50', ".model n NPN bf='80 + 2' va=50"]) {
+    assert.ok(translateForXyce({ ...f, netlist: f.netlist.replace('.end', `${model}\n.end`) }).netlist.includes(model));
+  }
+  for (const value of ['{early + 2}', "'early + 2'", 'early', '50+2']) {
+    assert.throws(() => translateForXyce({ ...f, netlist: f.netlist.replace('.end', `.model n NPN va ${value}\n.end`) }), /requires a scalar numeric literal/);
+  }
+});
 
 test('DC CSV uses explicit primary sweep and preserves flattened nested rows', () => {
   const series = parseXyceCsv('{V1},V(IN),I(V1)\n0,0,0\n.5,.5,-5e-4\n0,0,0\n.5,.5,-5e-4\n', 'dc', ['v(in)', 'i(V1)']);
