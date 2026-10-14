@@ -1,0 +1,291 @@
+[
+  {
+    "name": "inverter",
+    "base": {
+      "sha256": "20fc47a711fce962bb5e766140c9ef7aed0d36648d1f5881e1b702182be0864c",
+      "ngPoints": 280,
+      "tsPoints": 280,
+      "errors": [
+        {
+          "signal": "i(vp)",
+          "peak": 0.002599751062713873,
+          "worst": 0.004092953035492251,
+          "worstTime": 1.4202129806522637e-7,
+          "first": null
+        },
+        {
+          "signal": "i(vdd)",
+          "peak": 0.003832045486031362,
+          "worst": 0.0020774923898667533,
+          "worstTime": 1.4202129806522637e-7,
+          "first": null
+        },
+        {
+          "signal": "v(3)",
+          "peak": 10.28588006007774,
+          "worst": 0.0009931170872226377,
+          "worstTime": 1.4181535713293581e-7,
+          "first": null
+        },
+        {
+          "signal": "v(2)",
+          "peak": 10,
+          "worst": 5.2935433814127465e-14,
+          "worstTime": 1.410607312724134e-7,
+          "first": null
+        },
+        {
+          "signal": "v(1)",
+          "peak": 10,
+          "worst": 1.7763568394002506e-16,
+          "worstTime": 1.0382576102875827e-8,
+          "first": null
+        }
+      ]
+    },
+    "fine": {
+      "sha256": "6b0bf1f043243ad1f7227f1f55112bb19c9eec8fe76538b24376aea93f6f09b6",
+      "ngPoints": 4034,
+      "tsPoints": 4034,
+      "errors": [
+        {
+          "signal": "i(vp)",
+          "peak": 0.002370450285915016,
+          "worst": 0.0008225917758957457,
+          "worstTime": 1.42e-7,
+          "first": null
+        },
+        {
+          "signal": "v(3)",
+          "peak": 10.28499704579546,
+          "worst": 0.0000661271144746083,
+          "worstTime": 1.4173402434977159e-7,
+          "first": null
+        },
+        {
+          "signal": "i(vdd)",
+          "peak": 0.003983304027638717,
+          "worst": 0.00004546445207690946,
+          "worstTime": 4.170755281999208e-8,
+          "first": null
+        },
+        {
+          "signal": "v(2)",
+          "peak": 10,
+          "worst": 5.3113069498067486e-14,
+          "worstTime": 1.4109843293606547e-7,
+          "first": null
+        },
+        {
+          "signal": "v(1)",
+          "peak": 10,
+          "worst": 1.7763568394002506e-16,
+          "worstTime": 1.0129594862620271e-8,
+          "first": null
+        }
+      ]
+    },
+    "op": {
+      "sha256": "3d4d95e14099d5010e20f6b3183ad62e901b7be64a01edd7913e96d15dbcf39f",
+      "ngPoints": 1,
+      "tsPoints": 1,
+      "errors": [
+        {
+          "signal": "i(vdd)",
+          "peak": 1e-10,
+          "worst": 1.5679547104078573e-7,
+          "worstTime": 0,
+          "first": null
+        },
+        {
+          "signal": "v(3)",
+          "peak": 9.999999991900193,
+          "worst": 8.348877151943607e-15,
+          "worstTime": 0,
+          "first": null
+        },
+        {
+          "signal": "v(1)",
+          "peak": 10,
+          "worst": 0,
+          "worstTime": 0,
+          "first": null
+        },
+        {
+          "signal": "v(2)",
+          "peak": 0.0001,
+          "worst": 0,
+          "worstTime": 0,
+          "first": null
+        },
+        {
+          "signal": "i(vp)",
+          "peak": 1e-10,
+          "worst": 0,
+          "worstTime": 0,
+          "first": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "pair",
+    "base": {
+      "sha256": "2cf07960550f2227736d6f8d361a0207f5f3737fc85e1683dbaf4f07bdac82ba",
+      "ngPoints": 312,
+      "tsPoints": 312,
+      "errors": [
+        {
+          "signal": "i(vp)",
+          "peak": 0.002281858882292133,
+          "worst": 0.058076131190992926,
+          "worstTime": 1.1095391571190365e-7,
+          "first": {
+            "time": 4.2010800772761916e-8,
+            "actual": 0.0005330899254077301,
+            "reference": 0.0005627080129191444,
+            "normalized": 0.012979806832604312
+          }
+        },
+        {
+          "signal": "i(vdd)",
+          "peak": 0.004769040657204058,
+          "worst": 0.03603247201461949,
+          "worstTime": 1.1095391571190365e-7,
+          "first": {
+            "time": 1.1095391571190365e-7,
+            "actual": -0.002571285408694183,
+            "reference": -0.0023994450846768953,
+            "normalized": 0.03603247201461949
+          }
+        },
+        {
+          "signal": "v(4)",
+          "peak": 10.21171085564362,
+          "worst": 0.006996829528875296,
+          "worstTime": 4.2498898578268165e-8,
+          "first": null
+        },
+        {
+          "signal": "v(3)",
+          "peak": 10.20922806401285,
+          "worst": 0.0022216713668396283,
+          "worstTime": 1.1116394766511974e-7,
+          "first": null
+        },
+        {
+          "signal": "v(2)",
+          "peak": 10,
+          "worst": 5.2735593669694936e-14,
+          "worstTime": 1.1017126725311183e-7,
+          "first": null
+        },
+        {
+          "signal": "v(1)",
+          "peak": 10,
+          "worst": 1.7763568394002506e-16,
+          "worstTime": 1.063393177038251e-8,
+          "first": null
+        }
+      ]
+    },
+    "fine": {
+      "sha256": "2497669dd976c868ca607917efa267d68b7213cbdf916eb93c2a4bd4921d385b",
+      "ngPoints": 4035,
+      "tsPoints": 4035,
+      "errors": [
+        {
+          "signal": "i(vp)",
+          "peak": 0.002150640791951199,
+          "worst": 0.00021783848401732439,
+          "worstTime": 1.4222500000000002e-7,
+          "first": null
+        },
+        {
+          "signal": "i(vdd)",
+          "peak": 0.004670424716512946,
+          "worst": 0.00018355168694151618,
+          "worstTime": 1.42e-7,
+          "first": null
+        },
+        {
+          "signal": "v(4)",
+          "peak": 10.2444115290768,
+          "worst": 0.00008239497309929191,
+          "worstTime": 4.234687668726857e-8,
+          "first": null
+        },
+        {
+          "signal": "v(3)",
+          "peak": 10.21016048838975,
+          "worst": 0.000024420055110006595,
+          "worstTime": 1.4217500000000001e-7,
+          "first": null
+        },
+        {
+          "signal": "v(2)",
+          "peak": 10,
+          "worst": 5.302425165609748e-14,
+          "worstTime": 1.4147500000000004e-7,
+          "first": null
+        },
+        {
+          "signal": "v(1)",
+          "peak": 10,
+          "worst": 1.7763568394002506e-16,
+          "worstTime": 4.10464270877687e-8,
+          "first": null
+        }
+      ]
+    },
+    "op": {
+      "sha256": "2c69b5476b6c2d01f2ecce5a91b79aaa639888bbb73cf7d0014fd8b4fd23ef98",
+      "ngPoints": 1,
+      "tsPoints": 1,
+      "errors": [
+        {
+          "signal": "v(3)",
+          "peak": 9.999999991900097,
+          "worst": 3.7303493657620724e-15,
+          "worstTime": 0,
+          "first": null
+        },
+        {
+          "signal": "v(4)",
+          "peak": 0.0001,
+          "worst": 1.1001502146955268e-18,
+          "worstTime": 0,
+          "first": null
+        },
+        {
+          "signal": "v(1)",
+          "peak": 10,
+          "worst": 0,
+          "worstTime": 0,
+          "first": null
+        },
+        {
+          "signal": "v(2)",
+          "peak": 0.0001,
+          "worst": 0,
+          "worstTime": 0,
+          "first": null
+        },
+        {
+          "signal": "i(vdd)",
+          "peak": 1e-10,
+          "worst": 0,
+          "worstTime": 0,
+          "first": null
+        },
+        {
+          "signal": "i(vp)",
+          "peak": 1e-10,
+          "worst": 0,
+          "worstTime": 0,
+          "first": null
+        }
+      ]
+    }
+  }
+]
