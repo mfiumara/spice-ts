@@ -354,12 +354,17 @@ const DAC_BRIDGE: XspiceCodeModelSpec = {
   ],
 };
 
+/** digital/d_pulldown and d_pullup/ifspec.ifs: scalar digital output, no inputs. */
+function pull(name: string): XspiceCodeModelSpec {
+  return { name, connections: [digital('out', 'out')], params: [real('load', 1e-12)] };
+}
+
 /** Implemented code models keyed by lower-case ngspice Spice_Model_Name. */
 export const XSPICE_CODE_MODEL_SPECS: ReadonlyMap<string, XspiceCodeModelSpec> = new Map(
   [
     GAIN, SUMMER, MULT, DIVIDE, PWL, LIMIT, INT, D_DT, S_XFER,
     CLIMIT, HYST, ILIMIT, SLEW, SINE, CMETER, LMETER, PSWITCH, ASWITCH,
-    ADC_BRIDGE, DAC_BRIDGE,
+    ADC_BRIDGE, DAC_BRIDGE, pull('d_pulldown'), pull('d_pullup'),
     unaryGate('d_buffer'), unaryGate('d_inverter'),
     naryGate('d_and'), naryGate('d_nand'), naryGate('d_or'), naryGate('d_nor'), naryGate('d_xor'), naryGate('d_xnor'),
   ].map(spec => [spec.name, spec]),
