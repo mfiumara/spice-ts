@@ -1,0 +1,538 @@
+{
+  "metadata": {
+    "head": {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57",
+      "exit": 0,
+      "signal": null,
+      "timedOut": false,
+      "seconds": 0.016907333000000004,
+      "stdout": "4bea4d767702125b29e8cc610db811b507924178\n",
+      "stderr": ""
+    },
+    "workingDiff": {
+      "argv": [
+        "git",
+        "diff",
+        "--",
+        "packages/core/src/parser/preprocessor.ts"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57",
+      "exit": 0,
+      "signal": null,
+      "timedOut": false,
+      "seconds": 0.021685334,
+      "stdout": "diff --git a/packages/core/src/parser/preprocessor.ts b/packages/core/src/parser/preprocessor.ts\nindex 94c72c36..c14307c1 100644\n--- a/packages/core/src/parser/preprocessor.ts\n+++ b/packages/core/src/parser/preprocessor.ts\n@@ -793,7 +793,7 @@ function* collectStatements(\n   let inSubckt = 0;\n   let inControl = false;\n   let inOutputCard = false;\n-  const foldedCallContinuations = new Set<number>();\n+  let inSubcircuitCall = false;\n   // A card ngspice-47 comments out takes its `+` continuations with it (#843).\n   let inCommentedOutCard = false;\n \n@@ -807,11 +807,6 @@ function* collectStatements(\n     // Consumed numparam cards and unselected `.if` branches keep their line, blank.\n     const blank = () => statements.push({ text: '', substitute: false, line: lineNumber });\n \n-    if (foldedCallContinuations.has(index)) {\n-      blank();\n-      continue;\n-    }\n-\n     // Comments are metadata, not expression-bearing netlist statements.\n     if (trimmed.startsWith('*')) {\n       passThrough();\n@@ -842,22 +837,10 @@ function* collectStatements(\n     // A `+` continuation (blank and comment lines may sit in between) belongs to the preceding card.\n     if (trimmed !== '' && !trimmed.startsWith('+')) {\n       inOutputCard = OUTPUT_CARD.test(trimmed);\n+      inSubcircuitCall = /^x/i.test(trimmed);\n     }\n-    let card = line;\n-    if (!inControl && /^x/i.test(trimmed)) {\n-      // Scan the logical X card, not physical fragments. An RHS may start\n-      // after '=' on the next line, or a brace/quote may span continuations.\n-      // Leave consumed lines blank so subsequent source line numbers survive.\n-      card = line.slice(0, commentStart(line));\n-      for (let next = index + 1; next < lines.length; next++) {\n-        const continuation = lines[next].slice(0, commentStart(lines[next])).trim();\n-        if (continuation === '' || continuation.startsWith('*')) continue;\n-        if (!continuation.startsWith('+')) break;\n-        card += ' ' + continuation.slice(1);\n-        foldedCallContinuations.add(next);\n-      }\n-      card = bracedSubcircuitCallValues(card, card.length);\n-    }\n+    // An X card and its `+` continuations, with bare `name=value` values braced (#788).\n+    const card = inSubcircuitCall ? bracedSubcircuitCallValues(line, commentStart(line)) : line;\n \n     const conditional = inControl ? null : CONDITIONAL_CARD.exec(trimmed);\n     if (conditional) {\n",
+      "stderr": ""
+    },
+    "ngspiceVersion": {
+      "argv": [
+        "ngspice",
+        "--version"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57",
+      "exit": 0,
+      "signal": null,
+      "timedOut": false,
+      "seconds": 0.020870250000000007,
+      "stdout": "******\n** ngspice-47 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2026, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n******\n",
+      "stderr": ""
+    },
+    "nodeVersion": {
+      "argv": [
+        "node",
+        "--version"
+      ],
+      "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57",
+      "exit": 0,
+      "signal": null,
+      "timedOut": false,
+      "seconds": 0.013345542000000002,
+      "stdout": "v22.23.1\n",
+      "stderr": ""
+    },
+    "host": {
+      "system": "Darwin",
+      "release": "27.0.0",
+      "machine": "arm64"
+    },
+    "configuration": "ngspice -n; SPICE_ASCIIRAWFILE=1; no compatibility mode"
+  },
+  "phase": "before",
+  "source": {
+    "url": "https://github.com/mfiumara/spice-ts/issues/797",
+    "licence": "MIT",
+    "description": "Original project-authored continuation probes; legacy sources unchanged"
+  },
+  "limits": {
+    "directChildSeconds": 12,
+    "cumulativeChildSeconds": 300
+  },
+  "actualChildSeconds": 4.570986837000001,
+  "rows": [
+    {
+      "id": "top-numeric",
+      "path": "benchmarks/comma-numparam-fix-797/rhs-continuation/top-numeric.cir",
+      "deckHashBefore": "70e18b92d109b566403b104cda9b358a7dac48750fcc4443a0c9c9262150e05a",
+      "deckHashAfter": "70e18b92d109b566403b104cda9b358a7dac48750fcc4443a0c9c9262150e05a",
+      "reference": {
+        "argv": [
+          "ngspice",
+          "-n",
+          "-b",
+          "-r",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/.run/before/top-numeric.raw",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/top-numeric.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/.run/before",
+        "exit": 0,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.022008000000000014,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: x-call continuation\n\nASCII raw file \"/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/.run/before/top-numeric.raw\"\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 1  \n\nNo. of Data Rows : 1\n\nTotal analysis time (seconds) = 0.000804\n\nTotal elapsed time (seconds) = 0.012 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 15926.406 MB.\nMaximum ngspice program size =   10.125 MB.\nCurrent ngspice program size =   10.125 MB.\n\n",
+        "stderr": ""
+      },
+      "referenceRaw": "Title: x-call continuation\nDate: Wed Oct 14 00:14:54  2026\nCommand: ngspice-47, Build \nPlotname: Operating Point\nFlags: real\nNo. Variables: 1\nNo. Points: 1       \nVariables:\n\t0\tv(o)\tvoltage\nValues:\n0\t\t5.000000000000000e+00\n",
+      "referenceValues": {
+        "v(o)": 5.0
+      },
+      "native": {
+        "argv": [
+          "node",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-797/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/top-numeric.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57",
+        "exit": 1,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.6760332920000001,
+        "stdout": "{\"status\":\"failure\",\"error\":\"Parse error at line 7: Cannot parse number: '{}'\\n  Xchild o cell alpha={} 5\",\"values\":null}\n",
+        "stderr": ""
+      },
+      "nativeValues": null,
+      "nativeError": "Parse error at line 7: Cannot parse number: '{}'\n  Xchild o cell alpha={} 5",
+      "metrics": null
+    },
+    {
+      "id": "top-bare",
+      "path": "benchmarks/comma-numparam-fix-797/rhs-continuation/top-bare.cir",
+      "deckHashBefore": "a413b8d29c2bca492eb0fa84a2240bd44cfcfec0630ff21b93c6f5c24214dce7",
+      "deckHashAfter": "a413b8d29c2bca492eb0fa84a2240bd44cfcfec0630ff21b93c6f5c24214dce7",
+      "reference": {
+        "argv": [
+          "ngspice",
+          "-n",
+          "-b",
+          "-r",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/.run/before/top-bare.raw",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/top-bare.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/.run/before",
+        "exit": 0,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.022743332999999977,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: x-call continuation\n\nASCII raw file \"/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/.run/before/top-bare.raw\"\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 1  \n\nNo. of Data Rows : 1\n\nTotal analysis time (seconds) = 0.000758\n\nTotal elapsed time (seconds) = 0.007 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 15926.406 MB.\nMaximum ngspice program size =   10.078 MB.\nCurrent ngspice program size =   10.078 MB.\n\n",
+        "stderr": ""
+      },
+      "referenceRaw": "Title: x-call continuation\nDate: Wed Oct 14 00:14:55  2026\nCommand: ngspice-47, Build \nPlotname: Operating Point\nFlags: real\nNo. Variables: 1\nNo. Points: 1       \nVariables:\n\t0\tv(o)\tvoltage\nValues:\n0\t\t5.000000000000000e+00\n",
+      "referenceValues": {
+        "v(o)": 5.0
+      },
+      "native": {
+        "argv": [
+          "node",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-797/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/top-bare.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57",
+        "exit": 1,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.4004386670000001,
+        "stdout": "{\"status\":\"failure\",\"error\":\"Parse error at line 7: Cannot parse number: '{}'\\n  Xchild o cell alpha={} seed*2\",\"values\":null}\n",
+        "stderr": ""
+      },
+      "nativeValues": null,
+      "nativeError": "Parse error at line 7: Cannot parse number: '{}'\n  Xchild o cell alpha={} seed*2",
+      "metrics": null
+    },
+    {
+      "id": "top-braced",
+      "path": "benchmarks/comma-numparam-fix-797/rhs-continuation/top-braced.cir",
+      "deckHashBefore": "56e11a32abd0735a5f59802ede161e109ef05b76f78a962a1c49a59bf5808491",
+      "deckHashAfter": "56e11a32abd0735a5f59802ede161e109ef05b76f78a962a1c49a59bf5808491",
+      "reference": {
+        "argv": [
+          "ngspice",
+          "-n",
+          "-b",
+          "-r",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/.run/before/top-braced.raw",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/top-braced.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/.run/before",
+        "exit": 0,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.01396491600000016,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: x-call continuation\n\nASCII raw file \"/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/.run/before/top-braced.raw\"\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 1  \n\nNo. of Data Rows : 1\n\nTotal analysis time (seconds) = 0.000592\n\nTotal elapsed time (seconds) = 0.004 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 16059.453 MB.\nMaximum ngspice program size =   10.062 MB.\nCurrent ngspice program size =   10.062 MB.\n\n",
+        "stderr": ""
+      },
+      "referenceRaw": "Title: x-call continuation\nDate: Wed Oct 14 00:14:55  2026\nCommand: ngspice-47, Build \nPlotname: Operating Point\nFlags: real\nNo. Variables: 1\nNo. Points: 1       \nVariables:\n\t0\tv(o)\tvoltage\nValues:\n0\t\t5.000000000000000e+00\n",
+      "referenceValues": {
+        "v(o)": 5.0
+      },
+      "native": {
+        "argv": [
+          "node",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-797/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/top-braced.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57",
+        "exit": 1,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.40280879199999986,
+        "stdout": "{\"status\":\"failure\",\"error\":\"Missing } in subcircuit call\",\"values\":null}\n",
+        "stderr": ""
+      },
+      "nativeValues": null,
+      "nativeError": "Missing } in subcircuit call",
+      "metrics": null
+    },
+    {
+      "id": "top-quoted",
+      "path": "benchmarks/comma-numparam-fix-797/rhs-continuation/top-quoted.cir",
+      "deckHashBefore": "59ba7bfc3609e2eb54a8dc03c0bc245ef9a6749c5880414371eec7b597803bbd",
+      "deckHashAfter": "59ba7bfc3609e2eb54a8dc03c0bc245ef9a6749c5880414371eec7b597803bbd",
+      "reference": {
+        "argv": [
+          "ngspice",
+          "-n",
+          "-b",
+          "-r",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/.run/before/top-quoted.raw",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/top-quoted.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/.run/before",
+        "exit": 0,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.01840766699999996,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: x-call continuation\n\nASCII raw file \"/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/.run/before/top-quoted.raw\"\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 1  \n\nNo. of Data Rows : 1\n\nTotal analysis time (seconds) = 0.000622\n\nTotal elapsed time (seconds) = 0.004 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 16059.453 MB.\nMaximum ngspice program size =   10.078 MB.\nCurrent ngspice program size =   10.078 MB.\n\n",
+        "stderr": ""
+      },
+      "referenceRaw": "Title: x-call continuation\nDate: Wed Oct 14 00:14:55  2026\nCommand: ngspice-47, Build \nPlotname: Operating Point\nFlags: real\nNo. Variables: 1\nNo. Points: 1       \nVariables:\n\t0\tv(o)\tvoltage\nValues:\n0\t\t5.000000000000000e+00\n",
+      "referenceValues": {
+        "v(o)": 5.0
+      },
+      "native": {
+        "argv": [
+          "node",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-797/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/top-quoted.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57",
+        "exit": 1,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.3941247919999997,
+        "stdout": "{\"status\":\"failure\",\"error\":\"Missing quote in subcircuit call\",\"values\":null}\n",
+        "stderr": ""
+      },
+      "nativeValues": null,
+      "nativeError": "Missing quote in subcircuit call",
+      "metrics": null
+    },
+    {
+      "id": "top-comments",
+      "path": "benchmarks/comma-numparam-fix-797/rhs-continuation/top-comments.cir",
+      "deckHashBefore": "2b9a91a763cd6221903ecf903cfdfecbb6fff07048b3a97eaae2fd88d976ad87",
+      "deckHashAfter": "2b9a91a763cd6221903ecf903cfdfecbb6fff07048b3a97eaae2fd88d976ad87",
+      "reference": {
+        "argv": [
+          "ngspice",
+          "-n",
+          "-b",
+          "-r",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/.run/before/top-comments.raw",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/top-comments.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/.run/before",
+        "exit": 0,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.022700916999999876,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: x-call continuation\n\nASCII raw file \"/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/.run/before/top-comments.raw\"\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 1  \n\nNo. of Data Rows : 1\n\nTotal analysis time (seconds) = 0.000738\n\nTotal elapsed time (seconds) = 0.007 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 16059.453 MB.\nMaximum ngspice program size =   10.078 MB.\nCurrent ngspice program size =   10.078 MB.\n\n",
+        "stderr": ""
+      },
+      "referenceRaw": "Title: x-call continuation\nDate: Wed Oct 14 00:14:56  2026\nCommand: ngspice-47, Build \nPlotname: Operating Point\nFlags: real\nNo. Variables: 1\nNo. Points: 1       \nVariables:\n\t0\tv(o)\tvoltage\nValues:\n0\t\t5.000000000000000e+00\n",
+      "referenceValues": {
+        "v(o)": 5.0
+      },
+      "native": {
+        "argv": [
+          "node",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-797/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/top-comments.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57",
+        "exit": 1,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.37611433399999994,
+        "stdout": "{\"status\":\"failure\",\"error\":\"Parse error at line 7: Cannot parse number: '{}'\\n  Xchild o cell alpha={} {seed *2}\",\"values\":null}\n",
+        "stderr": ""
+      },
+      "nativeValues": null,
+      "nativeError": "Parse error at line 7: Cannot parse number: '{}'\n  Xchild o cell alpha={} {seed *2}",
+      "metrics": null
+    },
+    {
+      "id": "nested-numeric",
+      "path": "benchmarks/comma-numparam-fix-797/rhs-continuation/nested-numeric.cir",
+      "deckHashBefore": "460e75feb59f0ea446446690c079d5c99de10e208269fecb93ec6406ba6c287d",
+      "deckHashAfter": "460e75feb59f0ea446446690c079d5c99de10e208269fecb93ec6406ba6c287d",
+      "reference": {
+        "argv": [
+          "ngspice",
+          "-n",
+          "-b",
+          "-r",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/.run/before/nested-numeric.raw",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/nested-numeric.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/.run/before",
+        "exit": 0,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.019108374999999622,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: x-call continuation\n\nASCII raw file \"/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/.run/before/nested-numeric.raw\"\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 1  \n\nNo. of Data Rows : 1\n\nTotal analysis time (seconds) = 0.000603\n\nTotal elapsed time (seconds) = 0.004 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 15804.328 MB.\nMaximum ngspice program size =   10.094 MB.\nCurrent ngspice program size =   10.094 MB.\n\n",
+        "stderr": ""
+      },
+      "referenceRaw": "Title: x-call continuation\nDate: Wed Oct 14 00:14:56  2026\nCommand: ngspice-47, Build \nPlotname: Operating Point\nFlags: real\nNo. Variables: 1\nNo. Points: 1       \nVariables:\n\t0\tv(o)\tvoltage\nValues:\n0\t\t5.000000000000000e+00\n",
+      "referenceValues": {
+        "v(o)": 5.0
+      },
+      "native": {
+        "argv": [
+          "node",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-797/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/nested-numeric.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57",
+        "exit": 1,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.4146327919999999,
+        "stdout": "{\"status\":\"failure\",\"error\":\"Unexpected character 'EOF' at position 0\",\"values\":null}\n",
+        "stderr": ""
+      },
+      "nativeValues": null,
+      "nativeError": "Unexpected character 'EOF' at position 0",
+      "metrics": null
+    },
+    {
+      "id": "nested-bare",
+      "path": "benchmarks/comma-numparam-fix-797/rhs-continuation/nested-bare.cir",
+      "deckHashBefore": "4c2d2e4754f8b29d016d46aeb02f58803e1c8aafa6f2d5a8862566a8239b2ef6",
+      "deckHashAfter": "4c2d2e4754f8b29d016d46aeb02f58803e1c8aafa6f2d5a8862566a8239b2ef6",
+      "reference": {
+        "argv": [
+          "ngspice",
+          "-n",
+          "-b",
+          "-r",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/.run/before/nested-bare.raw",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/nested-bare.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/.run/before",
+        "exit": 0,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.019385499999999833,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: x-call continuation\n\nASCII raw file \"/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/.run/before/nested-bare.raw\"\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 1  \n\nNo. of Data Rows : 1\n\nTotal analysis time (seconds) = 0.000651\n\nTotal elapsed time (seconds) = 0.004 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 15804.328 MB.\nMaximum ngspice program size =   10.094 MB.\nCurrent ngspice program size =   10.094 MB.\n\n",
+        "stderr": ""
+      },
+      "referenceRaw": "Title: x-call continuation\nDate: Wed Oct 14 00:14:57  2026\nCommand: ngspice-47, Build \nPlotname: Operating Point\nFlags: real\nNo. Variables: 1\nNo. Points: 1       \nVariables:\n\t0\tv(o)\tvoltage\nValues:\n0\t\t5.000000000000000e+00\n",
+      "referenceValues": {
+        "v(o)": 5.0
+      },
+      "native": {
+        "argv": [
+          "node",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-797/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/nested-bare.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57",
+        "exit": 1,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.41359875000000024,
+        "stdout": "{\"status\":\"failure\",\"error\":\"Unexpected character 'EOF' at position 0\",\"values\":null}\n",
+        "stderr": ""
+      },
+      "nativeValues": null,
+      "nativeError": "Unexpected character 'EOF' at position 0",
+      "metrics": null
+    },
+    {
+      "id": "nested-braced",
+      "path": "benchmarks/comma-numparam-fix-797/rhs-continuation/nested-braced.cir",
+      "deckHashBefore": "cfb554cfcc275c383b820871378df80794239b5cb6993d137e3bbd1dce40e000",
+      "deckHashAfter": "cfb554cfcc275c383b820871378df80794239b5cb6993d137e3bbd1dce40e000",
+      "reference": {
+        "argv": [
+          "ngspice",
+          "-n",
+          "-b",
+          "-r",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/.run/before/nested-braced.raw",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/nested-braced.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/.run/before",
+        "exit": 0,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.015115250000000024,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: x-call continuation\n\nASCII raw file \"/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/.run/before/nested-braced.raw\"\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 1  \n\nNo. of Data Rows : 1\n\nTotal analysis time (seconds) = 0.000687\n\nTotal elapsed time (seconds) = 0.004 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 15804.328 MB.\nMaximum ngspice program size =   10.078 MB.\nCurrent ngspice program size =   10.078 MB.\n\n",
+        "stderr": ""
+      },
+      "referenceRaw": "Title: x-call continuation\nDate: Wed Oct 14 00:14:57  2026\nCommand: ngspice-47, Build \nPlotname: Operating Point\nFlags: real\nNo. Variables: 1\nNo. Points: 1       \nVariables:\n\t0\tv(o)\tvoltage\nValues:\n0\t\t5.000000000000000e+00\n",
+      "referenceValues": {
+        "v(o)": 5.0
+      },
+      "native": {
+        "argv": [
+          "node",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-797/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/nested-braced.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57",
+        "exit": 1,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.40608254200000005,
+        "stdout": "{\"status\":\"failure\",\"error\":\"Missing } in subcircuit call\",\"values\":null}\n",
+        "stderr": ""
+      },
+      "nativeValues": null,
+      "nativeError": "Missing } in subcircuit call",
+      "metrics": null
+    },
+    {
+      "id": "nested-quoted",
+      "path": "benchmarks/comma-numparam-fix-797/rhs-continuation/nested-quoted.cir",
+      "deckHashBefore": "e22d591e80e4ca55779d39fff2171204f218912d0c6c7d08bc4d84b7fdd17b28",
+      "deckHashAfter": "e22d591e80e4ca55779d39fff2171204f218912d0c6c7d08bc4d84b7fdd17b28",
+      "reference": {
+        "argv": [
+          "ngspice",
+          "-n",
+          "-b",
+          "-r",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/.run/before/nested-quoted.raw",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/nested-quoted.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/.run/before",
+        "exit": 0,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.023689667000000192,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: x-call continuation\n\nASCII raw file \"/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/.run/before/nested-quoted.raw\"\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 1  \n\nNo. of Data Rows : 1\n\nTotal analysis time (seconds) = 0.000783\n\nTotal elapsed time (seconds) = 0.007 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 15975.938 MB.\nMaximum ngspice program size =   10.078 MB.\nCurrent ngspice program size =   10.078 MB.\n\n",
+        "stderr": ""
+      },
+      "referenceRaw": "Title: x-call continuation\nDate: Wed Oct 14 00:14:58  2026\nCommand: ngspice-47, Build \nPlotname: Operating Point\nFlags: real\nNo. Variables: 1\nNo. Points: 1       \nVariables:\n\t0\tv(o)\tvoltage\nValues:\n0\t\t5.000000000000000e+00\n",
+      "referenceValues": {
+        "v(o)": 5.0
+      },
+      "native": {
+        "argv": [
+          "node",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-797/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/nested-quoted.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57",
+        "exit": 1,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.40272879200000045,
+        "stdout": "{\"status\":\"failure\",\"error\":\"Missing quote in subcircuit call\",\"values\":null}\n",
+        "stderr": ""
+      },
+      "nativeValues": null,
+      "nativeError": "Missing quote in subcircuit call",
+      "metrics": null
+    },
+    {
+      "id": "nested-comments",
+      "path": "benchmarks/comma-numparam-fix-797/rhs-continuation/nested-comments.cir",
+      "deckHashBefore": "f7b4599f7d094d82b15d4fe501fd7ad5b78a7a0ce5cb550550458a44c345c943",
+      "deckHashAfter": "f7b4599f7d094d82b15d4fe501fd7ad5b78a7a0ce5cb550550458a44c345c943",
+      "reference": {
+        "argv": [
+          "ngspice",
+          "-n",
+          "-b",
+          "-r",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/.run/before/nested-comments.raw",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/nested-comments.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/.run/before",
+        "exit": 0,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.023934208000000012,
+        "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: x-call continuation\n\nASCII raw file \"/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/.run/before/nested-comments.raw\"\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\nNo. of Data Columns : 1  \n\nNo. of Data Rows : 1\n\nTotal analysis time (seconds) = 0.000761\n\nTotal elapsed time (seconds) = 0.007 \n\nTotal DRAM available = 49152.000 MB.\nDRAM currently available = 15975.938 MB.\nMaximum ngspice program size =   10.094 MB.\nCurrent ngspice program size =   10.094 MB.\n\n",
+        "stderr": ""
+      },
+      "referenceRaw": "Title: x-call continuation\nDate: Wed Oct 14 00:14:58  2026\nCommand: ngspice-47, Build \nPlotname: Operating Point\nFlags: real\nNo. Variables: 1\nNo. Points: 1       \nVariables:\n\t0\tv(o)\tvoltage\nValues:\n0\t\t5.000000000000000e+00\n",
+      "referenceValues": {
+        "v(o)": 5.0
+      },
+      "native": {
+        "argv": [
+          "node",
+          "--import",
+          "tsx",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-797/native.mts",
+          "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57/benchmarks/comma-numparam-fix-797/rhs-continuation/nested-comments.cir"
+        ],
+        "cwd": "/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_f3d04f57",
+        "exit": 1,
+        "signal": null,
+        "timedOut": false,
+        "seconds": 0.41055779200000053,
+        "stdout": "{\"status\":\"failure\",\"error\":\"Unexpected character 'EOF' at position 0\",\"values\":null}\n",
+        "stderr": ""
+      },
+      "nativeValues": null,
+      "nativeError": "Unexpected character 'EOF' at position 0",
+      "metrics": null
+    }
+  ]
+}

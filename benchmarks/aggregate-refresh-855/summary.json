@@ -1,0 +1,1210 @@
+{
+  "base": "4632b7b7ec7840f3ecdb89b53b56e0b5d521d55e",
+  "head": "d3901ec1355519e582dc068b4dec5cc033e22de8",
+  "schedule": [
+    {
+      "commit": "4632b7b7ec7840f3ecdb89b53b56e0b5d521d55e",
+      "subject": "chore(benchmarks): refresh aggregate and provenance pins on main 3f26f10 (#598) (#613)"
+    },
+    {
+      "commit": "098da449c66d30c0053a800d744e209a5c10fc3e",
+      "subject": "fix(core): ngspice diagnostic, bypass and ramptime option compatibility (#494) (#600)"
+    },
+    {
+      "commit": "f5e9c5b048c2579e8445f0b4dfc7a92404153256",
+      "subject": "perf(core): record transient result columns through a chunked typed buffer (#609) (#617)"
+    },
+    {
+      "commit": "7c66aab9c99c78675ec5d4fad0ad645a13e81360",
+      "subject": "feat(core): .pz with sources, active elements and differential pairs (#504) (#614)"
+    },
+    {
+      "commit": "e58322eaa5a3e31cbf49b421211256a301f9193b",
+      "subject": "feat(parser): ngspice control-language interpreter for .control scripts (#488) (#584)"
+    },
+    {
+      "commit": "54dce0185b78f736a700fd9e8990fda81cfbacac",
+      "subject": "fix(core): port ngspice LTRAaccept breakpoints into the LTRA device (#595) (#623)"
+    },
+    {
+      "commit": "0f255516978fe874896cba7d087fc6e03c1cf0b5",
+      "subject": "feat(parser): numparam .func, .csparam and .if/.elseif/.else/.endif (#496) (#616)"
+    },
+    {
+      "commit": "3d07177f0492be70d1f7b0803f0e415c0587a038",
+      "subject": "feat(core): ngspice .global node semantics (#502) (#603)"
+    },
+    {
+      "commit": "b1a80b1913e759f12bf6ab95cb578b147db74b14",
+      "subject": "fix(core): control-language ln/log/log10 of 0 clamp and db(0) errors like ngspice-47 (#606) (#630)"
+    },
+    {
+      "commit": "325640124241fb30a3b9153f9e989731f0922ce0",
+      "subject": "fix(core): port ngspice-47 LTRAtrunc NOSTEPLIMIT/TRUNCDONTCUT step rules into the LTRA device (#595) (#628)"
+    },
+    {
+      "commit": "68b649095fa0b7e6bf14d92078fb3c7de176e3c6",
+      "subject": "fix(core): apply ngspice-47 temperature laws to diode, BJT and MOS1 for .step/.options TEMP (#374) (#639)"
+    },
+    {
+      "commit": "fbd43cb3fbba877df242ef248730f392bc6c8aef",
+      "subject": "fix(parser): numparam minus after an operator negates the next number literal (#578) (#631)"
+    },
+    {
+      "commit": "3d5ca2c3db5ddc973785be7af809a0ff7d36499c",
+      "subject": "perf(core): batch-stamp level-1 MOSFET runs in static stamp programs (#625) (#632)"
+    },
+    {
+      "commit": "c317324fde94608d0aea7b1662feac4243a94034",
+      "subject": "fix(core): port ngspice-47 BSIM3v3.3 b3ld.c DC core (#589) (#624)"
+    },
+    {
+      "commit": "5861ac794ca4bf4d444dd9e0c1ea99791703a0f9",
+      "subject": "fix(core): scale BJT B-C saturation current by AREAB/AREAC like ngspice-47 (#641) (#645)"
+    },
+    {
+      "commit": "e8916f922a87b8791e50f08ddfc641e1ff385237",
+      "subject": "perf(core): size BSIM3 nodes by charge truncation alone like ngspice-47 CKTtrunc (#638) (#648)"
+    },
+    {
+      "commit": "58641e68610c635ee7ad31fa8cfccec0cf37ba60",
+      "subject": "fix(core): model diode NS sidewall current separately like ngspice-47 (#642) (#644)"
+    },
+    {
+      "commit": "4bdbe0c2db7aacbdaf8862c2133c15ed8c3b7cfc",
+      "subject": "feat(core): TRNOISE/TRRANDOM transient noise sources from ngspice-47; typed EXTERNAL error (#501) (#640)"
+    },
+    {
+      "commit": "27644174af0ba81a13d4a4412946124190abf4a7",
+      "subject": "fix(core): port ngspice-47 VAR/IKR/ISC/NC/NKF/IRB/RBM and reject unported BJT params on every card (#633) (#652)"
+    },
+    {
+      "commit": "b3f045063a53a5c1183ed3890bc6f6c042c63ec7",
+      "subject": "fix(core): X-line params: keyword and .subckt PARAMS: expression defaults; keep v() B-source sub-expressions (#619, #615) (#651)"
+    },
+    {
+      "commit": "b79ee93cae4922b5de0646b0d438a415642e39ec",
+      "subject": "fix(parser): accept ngspice-47 .options NOMOD and XTRTOL; keep seed rejected (#612) (#668)"
+    },
+    {
+      "commit": "534e703cd3417250d5fda5faae98cc930d9713a3",
+      "subject": "fix(core): leave B-source nodes undamped in transient Newton so uic IC jumps converge (#649) (#656)"
+    },
+    {
+      "commit": "b65695aa87ec44ddeb40ac33349ece5d585a1ac4",
+      "subject": "fix(core): never accept a damped transient Newton iterate as converged (#650) (#674)"
+    },
+    {
+      "commit": "60d4d349728acead0c6c97e921320bc209695180",
+      "subject": "fix(core): build .dc/.ac sweep scales by ngspice-47 accumulation (#654) (#663)"
+    },
+    {
+      "commit": "e01476b89946e185bbbb8eefe946d02a215fc94e",
+      "subject": "fix(core): DC operating point in ngspice-47 CKTop order; MOS1 CKTnoncon and BJT bjtconv (#622) (#664)"
+    },
+    {
+      "commit": "b73c193a4fdd9aaf3c9439f449bd4dd1560d52ab",
+      "subject": "fix(core): split diode bottom/sidewall currents like ngspice-47 dioload.c (#643) (#659)"
+    },
+    {
+      "commit": "7963164e87b7c8a1bd98e45f9af43a7903d65f98",
+      "subject": "perf(core): memoise the diode breakdown knee, top frame on cpl4_txl_2_line (-30% CPU, bit-identical) (#549) (#665)"
+    },
+    {
+      "commit": "351c2e6620f03bf9ab57177145d5f423695bc6fc",
+      "subject": "perf(core): faster Gilbert-Peierls kernel and bit-identical pivot reuse for linear scaling decks (#669) (#671)"
+    },
+    {
+      "commit": "8dd2691ea114936bc6a8d2bcff922005e785eaab",
+      "subject": "fix(core): port ngspice-47 BSIM3v3.3 b3ld.c charge model (capMod 0-3) for transient and AC (#626) (#661)"
+    },
+    {
+      "commit": "80dfdc91f8c6718681097c355ccada6034444c2a",
+      "subject": "feat(core): port ngspice-47 MOS level 2 (Grove-Frohman) for LEVEL=2 MOSFET cards (#565) (#658)"
+    },
+    {
+      "commit": "3d38158110234f22e237ec7e2819481edfaba53c",
+      "subject": "feat(core): .meas/.measure and control meas ported from ngspice-47 (#505) (#647)"
+    },
+    {
+      "commit": "8f20b0478fdba7da99604c51ce037c08a2a70386",
+      "subject": "fix(core): parse() runs the same .param preprocessing as simulate() (#510) (#673)"
+    },
+    {
+      "commit": "b6f3bcb3fd9cfccf8037ec5227f5af53039c943f",
+      "subject": "feat(core): MES level 1, MESA level 3 and MESA/HFET1 Z-card parameters from ngspice-47 (#500) (#672)"
+    },
+    {
+      "commit": "03706cc7d6cf1949c92fc60fb2c8ca308b370f91",
+      "subject": "feat(core): ngspice-47 BSIM1/BSIM2 MOSFETs (LEVEL=4/5) (#657) (#667)"
+    },
+    {
+      "commit": "506577c982161454ad5f750eb0b62d55dc541bea",
+      "subject": "fix(core): read bare .model IF_FLAG params and `name value` pairs like ngspice-47 (#675) (#676)"
+    },
+    {
+      "commit": "d7fd03c360b1f1b454bd3329416dc8ddb6f8a97e",
+      "subject": "fix(core): size the step after a transient breakpoint from ngspice CKTsaveDelta and equalise the approach (#608) (#677)"
+    },
+    {
+      "commit": "bcac6a7bbd2ac0202d06ee32f5bddc36bed52d91",
+      "subject": "fix(core): scale diode breakdown current IBV with instance M like ngspice-47 diotemp.c (#662) (#682)"
+    },
+    {
+      "commit": "22c5976eff8d7b29b97647fd49ada0ea834cb264",
+      "subject": "fix(core): warn on a misplaced .endc and continue like ngspice-47 (#666) (#684)"
+    },
+    {
+      "commit": "1ef0780e77fb12edc9a2127b47abc009c386d947",
+      "subject": "feat(core): XSPICE climit, ilimit (%g ports), hyst, slew, sine, cmeter and lmeter code models (#553 slice 2) (#670)"
+    },
+    {
+      "commit": "5389edea8552e96d0a6b103f6b0141944153e7f4",
+      "subject": "fix(core): createTransientSim honours .tran TMAX like simulate() (#678) (#683)"
+    },
+    {
+      "commit": "2ae731503d1bb08cc7ed73abb7bcda6df03db635",
+      "subject": "fix(core): read the micro sign \u00b5 as the u scale suffix like ngspice-47 (#508) (#685)"
+    },
+    {
+      "commit": "b1a1ff58ccb83073d862f3a414ac1bc4fb8524dc",
+      "subject": "fix(core): hold transient-OP .ic rows with ngspice ZeroNoncurRow semantics (#588) (#687)"
+    },
+    {
+      "commit": "7b1f6cac2b84c43090ff6855fdb8f7256070e7f1",
+      "subject": "fix(control): accept set savecurrents and read @dev[i]/@dev[current] from the present state (#686) (#688)"
+    },
+    {
+      "commit": "be4c3c014e99f843ea9b927dc260c8be71c6a580",
+      "subject": "perf(core): batch-stamp level-1 MOSFETs from struct-of-arrays constants and state (#653) (#660)"
+    },
+    {
+      "commit": "e2c73b29e2d84de1270b908eccb0b7d88b5a5ab9",
+      "subject": "fix(core): ngspice-47 CKTtrunc step control instead of node-voltage LTE (#621, #646) (#689)"
+    },
+    {
+      "commit": "69e84be2b9ae9a8793731822e7b1bce518849024",
+      "subject": "fix(core): scale current sources by m like ngspice-47, reject m on V sources (#690) (#695)"
+    },
+    {
+      "commit": "dc7cc4a32d490ae1da49e05047abef18444cbc13",
+      "subject": "feat(core): BSIM3v32 (LEVEL=8/49 VERSION=3.2.x) revisions instead of typed unsupported (#594) (#696)"
+    },
+    {
+      "commit": "cbbafcdf6a92d57aa54855576e797fa64a3add97",
+      "subject": "perf(core): allocation-free AMD ordering and value-tested GP update loop for the mesh OP (#693) (#697)"
+    },
+    {
+      "commit": "1426fc1b08d0cddfb7b948e60f31afb0012f07e0",
+      "subject": "fix(core): model BSIM3 RSH*NRD/NRS series resistance with ngspice NRD=NRS=1 defaults (#691) (#701)"
+    },
+    {
+      "commit": "3b9c836f6d29d8d026117b688726695b2bbc5dfa",
+      "subject": "fix(core): MOS1/MOS6 device convergence test and MOS6trunc in transient Newton (#479) (#703)"
+    },
+    {
+      "commit": "34cac39e8d633365f99d95083805f0e42cfd9406",
+      "subject": "perf(core): batch CAPtrunc/INDtrunc charge truncation per timestep (#702) (#704)"
+    },
+    {
+      "commit": "dd4e58be39028ac1a80e2d088e66d15ed37f304b",
+      "subject": "fix(core): reproduce ngspice-47 BSIM3v32 3.2/3.2.2 pParam size-record reuse (#700) (#706)"
+    },
+    {
+      "commit": "37849eb90ba0b807188bc449dca178b6125cca06",
+      "subject": "perf(core): reuse the converged Newton iterate on iteration-invariant transients (#710) (#723)"
+    },
+    {
+      "commit": "c9877709959b2cce3004b54caf7eb208cab53b41",
+      "subject": "fix(core): read Xyce .options packages like ngspice-47 (#713) (#724)"
+    },
+    {
+      "commit": "9048f8cf30478cb2f331da2eefab6a5e79e7f840",
+      "subject": "feat(core): MOSFET LEVEL=3 (mos3) and LEVEL=9 (mos9) at ngspice-47 parity (#715) (#725)"
+    },
+    {
+      "commit": "d5ee77abd633761ca70ea965a3c000c434f72e4c",
+      "subject": "feat(core): read voltage-source branch currents i(vx) in B-source expressions (#718) (#726)"
+    },
+    {
+      "commit": "17783f96a0f710ee07911d65300f56cbd7ef22c2",
+      "subject": "fix(parser): leave .print/.plot brace expressions unsubstituted like ngspice-47 (#714) (#737)"
+    },
+    {
+      "commit": "544bfffcd048403334b0b6c3d5babb7b657da772",
+      "subject": "fix(noise): accept BJT capacitance, transit-time and VAR model parameters in .noise (#736) (#738)"
+    },
+    {
+      "commit": "60cfb1a7f2ffed8ae6df79a929691155ef7c2323",
+      "subject": "fix(core): ngspice threshold pivoting in the complex AC LU (#732) (#741)"
+    },
+    {
+      "commit": "524f3c1b8c91b20029b7cf8a181b69dfbb5aebc1",
+      "subject": "fix(core): JFET PJF polarity, instance TEMP= and J cards in .subckt bodies (#717) (#746)"
+    },
+    {
+      "commit": "219b04eed7dcaf0f00d5c213a774ec4f5f4462b3",
+      "subject": "feat(core): EXP, SFFM and AM source waveforms and PWL TD=/R= at ngspice-47 parity (#716) (#744)"
+    },
+    {
+      "commit": "68ab31eeeec9bb07d3a1d386e06344c4584e51db",
+      "subject": "fix(core): expand mutual inductance K cards inside .subckt like ngspice-47 (#739) (#745)"
+    },
+    {
+      "commit": "6dc6dfd69bd5e54ac70f6bc3dd0de7092f9a8521",
+      "subject": "perf(core): supernodal block updates in the sparse LU full factorization (#727) (#753)"
+    },
+    {
+      "commit": "fce4c99b8be5b0f65a3a65e740af212d97e4ebe7",
+      "subject": "fix(core): MOS1 RD/RS/RSH and C/L lead value; triage the 14 corpus-g mismatches (#719) (#735)"
+    },
+    {
+      "commit": "25bcf5b4ded91473d2280c1b21e6cc9874aee052",
+      "subject": "feat(control): linearize, fft and psd control commands (#752) (#756)"
+    },
+    {
+      "commit": "faa482471a59016fda30ad4fd9ceae72055bc60f",
+      "subject": "fix(core): MOS1 instance multiplier M and RD/RS=0-with-RSH open terminal (#731, #757) (#759)"
+    },
+    {
+      "commit": "3a5f9295711d64e7fac39faeb49863a526f43227",
+      "subject": "perf(core): AMD fill-reducing column ordering for the complex AC LU (#740) (#762)"
+    },
+    {
+      "commit": "9bb94573cf097821c88a5087001478ca3629f776",
+      "subject": "fix(core): ngspice-47 dctran first-step and order control (#742) (#758)"
+    },
+    {
+      "commit": "372174751ad80fe71ca6bc7edf1e3127a82483eb",
+      "subject": "fix(core): model LEVEL above 99 selects level 1 like ngspice-47 INPfindLev (#747 slice 1) (#765)"
+    },
+    {
+      "commit": "089ef16c50731212cce12fe36cce3821c2cdb9a7",
+      "subject": "fix(parser): drop value-less L/C cards with a warning like ngspice-47 inp2l/inp2c (#733) (#764)"
+    },
+    {
+      "commit": "a298c8fcf633d78185528f6a03ee3fd873bbb630",
+      "subject": "fix(core): fold node and element names case-insensitively like ngspice (#728, #754) (#763)"
+    },
+    {
+      "commit": "bc7585fdf229c20db718505fdaf6b97b81ce1b1f",
+      "subject": "fix(core): integrate the transient step with CKTdelta like ngspice-47 dctran (#708) (#776)"
+    },
+    {
+      "commit": "56dd2b7f591fde520ce7e913d15d91f798b62b8b",
+      "subject": "perf(core): reuse pivots across frequencies in the complex AC LU (#769) (#773)"
+    },
+    {
+      "commit": "e94a7debdfaf5814828795522f7457fa08d05f6c",
+      "subject": "feat(control): sp and sens commands in .control, s_i_j vectors in plot sp<n> (#750, #751) (#770)"
+    },
+    {
+      "commit": "01bce7fd55650a89bed907fdb6dc5188f889a6a8",
+      "subject": "test(core): pin ngspice-47 step grid after t=0 on corpus-f cpl1_4_line (#561) (#781)"
+    },
+    {
+      "commit": "51be0bfbea21e68de28fae3194ee58ecec583bc1",
+      "subject": "fix(core): ignore BJT model names ngspice-47 does not recognise (DTA), no gdsub in BJT AC, noise N_MINGAIN (#767) (#777)"
+    },
+    {
+      "commit": "42ab67bcfc3a1ce00f56643b6182efb653a192b2",
+      "subject": "feat(core): XSPICE event-driven digital gates and adc/dac bridges (#553 slice 3) (#778)"
+    },
+    {
+      "commit": "ebe8ca401a507c581913498d67c4f496978f4c94",
+      "subject": "perf(core): check-free supernodal row updates in the real LU (#779) (#784)"
+    },
+    {
+      "commit": "52c0b5a47cd8e8c9c0b968d7912356ede8a45034",
+      "subject": "feat(sens): multiplier (m) and scale sensitivities <dev>_m/<dev>_scale for R, C, L and I (#760) (#786)"
+    },
+    {
+      "commit": "d6c1197f205ce4f4b0ec90db8783e9c08eb8278c",
+      "subject": "fix(core): run E/G value= cards as ngspice ASRCs and reject malformed controlled sources with ParseError (#789) (#800)"
+    },
+    {
+      "commit": "3146c67bfa4770b34bedd0250b4d303f8c30f1ec",
+      "subject": "fix(core): MOS2 mos2conv.c convergence test and pnjlim Check in transient Newton (#799) (#805)"
+    },
+    {
+      "commit": "bb92d55c95bb00bbb03a794bc053adb8a12ac032",
+      "subject": "fix(control): accept # comment lines and batch-mode edit in .control like ngspice-47 (#787) (#801)"
+    },
+    {
+      "commit": "8be2a5a02b20d114adfa91e88a1f56515731f334",
+      "subject": "fix(parser): ngspice-47 INPevaluate literals and gnd as ground (#749, #772) (#783)"
+    },
+    {
+      "commit": "f7a24b45623dfa51c684c6004235789709b5706b",
+      "subject": "perf(core): fold each node spelling once in Circuit.compile (#796) (#808)"
+    },
+    {
+      "commit": "47b3d0cdabe9f59bca8af7f2813b0eead7e461d0",
+      "subject": "fix(core): accept rounding-floor Newton two-cycle under device convergence test (#817)"
+    },
+    {
+      "commit": "c6616b3c4ad481bd20fcb7750503ba3f5ca4c00f",
+      "subject": "fix(control): failed setplot/destroy warn and continue like ngspice-47 (#798) (#815)"
+    },
+    {
+      "commit": "1eaa58be31f2e63bbbc644f5ed51c740c5f0901d",
+      "subject": "fix(core): measure .meas WHEN crossings in the first plot interval (#811) (#820)"
+    },
+    {
+      "commit": "b5e475845ef1199a17d595d635cb254efa3054b1",
+      "subject": "fix(parser): accept bare .probe, unrecognised .options, .four, 27\u00b0C and (n+ n-) node pairs like ngspice-47 (#790) (#819)"
+    },
+    {
+      "commit": "037edcef25b137704e39e5382ad57745abbce79f",
+      "subject": "fix(core): ngspice-47 transient Newton failure handling: 100-iteration floor and order-1 retry (#804) (#821)"
+    },
+    {
+      "commit": "6fca021bf11ba9835247043ac65c4f9d5bb8ce02",
+      "subject": "fix(parser): evaluate bare parameter names as X-card values like ngspice-47 numparam (#788) (#827)"
+    },
+    {
+      "commit": "30145e8ccddb9666428c6a7c7af6765b2f885f52",
+      "subject": "feat(core): support .options rshunt node-to-ground shunts like ngspice-47 (#824) (#831)"
+    },
+    {
+      "commit": "03e4422febec8a29f40dcf5ec708e184fcf29f6c",
+      "subject": "feat(core): accept PSpice .model RES resistor model type like ngspice-47 (#823) (#828)"
+    },
+    {
+      "commit": "7b76bc6397c4ad8977855d2a808fee9826897c40",
+      "subject": "fix(core): scope nested .subckt definitions to the enclosing subcircuit like ngspice-47 (#826) (#832)"
+    },
+    {
+      "commit": "bbef0c1e281c59eeb8b698b8a31d51b1e397a769",
+      "subject": "perf(core): batch allocation-free MOS1 Newton step limiting on the CMOS chain OP (#830) (#835)"
+    },
+    {
+      "commit": "eb173b51f9a000634b1c958fccf7f7e96efca280",
+      "subject": "fix(core): ngspice-47 transient Newton rules for BJT regenerative edges (#818) (#836)"
+    },
+    {
+      "commit": "66aecad91b5e0ffce9f85685ec5c842d50aa998c",
+      "subject": "fix(core): diode RS temperature coefficients TRS1/TRS2 like ngspice-47 diotemp.c (#829) (#833)"
+    },
+    {
+      "commit": "7f075491cb526b2b92a593f993120e80a8c72cce",
+      "subject": "fix(core): BJT IKF/IKR/VAF/VAR = 0 means infinite like ngspice-47 bjttemp.c (#844) (#850)"
+    },
+    {
+      "commit": "c94944dba32a98d72839f9b2f1d5c49b75bcf79c",
+      "subject": "feat(core): PSpice VSWITCH switch models via ngspice-47 inpcompat pswitch translation (#825) (#849)"
+    },
+    {
+      "commit": "d7b34c2187c9d389f04106f805f4ba7587105a57",
+      "subject": "feat(core): SPICE2 POLY(n) E/F/G/H sources like ngspice-47 spice2poly (#845) (#863)"
+    },
+    {
+      "commit": "c14f5ad0bf75543b190ab1c74220afbbfcecd8b5",
+      "subject": "fix(parser): bare .param names as R/C/L values like ngspice-47 auto braces (#837) (#858)"
+    },
+    {
+      "commit": "77936e4016aa2c04116588d82a0e35b3d0275ae3",
+      "subject": "fix(core): scope subcircuit-local .model cards per instance like ngspice-47 (#854) (#866)"
+    },
+    {
+      "commit": "fe32a3a46bb47c1e98657838c4b22ef31ad9cdf5",
+      "subject": "feat(core): .ac with XSPICE event-driven digital instances like ngspice-47 acan.c (#838) (#865)"
+    },
+    {
+      "commit": "c9a412233c5bc11d7c4e03a760a61daa80a395cc",
+      "subject": "fix(parser): drop parentheses around .subckt and X port lists like ngspice-47 (#864) (#869)"
+    },
+    {
+      "commit": "08aaacf3e35251c2097106a41d75c4bcfd84a56e",
+      "subject": "feat(core): PSpice ISWITCH switch models via ngspice-47 inpcompat aswitch translation (#848) (#868)"
+    },
+    {
+      "commit": "a07f3199fafac7db38f8fb692d5da729887fff88",
+      "subject": "fix(parser): comment out cards with unusual leading characters like ngspice-47 (#843) (#873)"
+    },
+    {
+      "commit": "3a09e256d38b27a4c9f8bed18c8d755cc8f71fb6",
+      "subject": "fix(core): split BJT B-C capacitance by XCJC across RB like ngspice-47 bjtload.c (#861) (#874)"
+    },
+    {
+      "commit": "5572c5b0ce7e2f468acfdcc2b9ac43f7b40decc7",
+      "subject": "perf(core): reuse bit-identical MOS1 batched loads; M2 transient profile vs ngspice-47 (#842) (#859)"
+    },
+    {
+      "commit": "01512517df3b89da7634c0af47fb7092c69f0e9f",
+      "subject": "fix(core): bind F/H controlling sources declared later in the deck like ngspice-47 (#860) (#875)"
+    },
+    {
+      "commit": "b746a96c5af7f8904adec8be661a15d3157f98fd",
+      "subject": "fix(core): write no t=0 transient row under UIC like ngspice-47 (#856) (#876)"
+    },
+    {
+      "commit": "98b7ddcbf61e1c5e9644fceca6af3992e4a737bf",
+      "subject": "feat(parser): .param function definitions and 3-arg limit() clamp like ngspice-47 (#870) (#872)"
+    },
+    {
+      "commit": "8c304f428f58b97fcd29ddd26fd96ca0dd4cf3e4",
+      "subject": "fix(core): scale subcircuit instances by X-line multiplicity m= (#810) (#877)"
+    },
+    {
+      "commit": "f8c84c0da6900fc00d1f5a75d7e2acde2d53636b",
+      "subject": "fix(core): apply ngspice-47 XSPICE trtol rule to POLY(n) sources (#862) (#881)"
+    },
+    {
+      "commit": "a2001a93fa771745ae054febcbd84e70043c3046",
+      "subject": "feat(core): PSpice IF/LIMIT/PWRS/STP/INT in B-source expressions like ngspice-47 (#879) (#883)"
+    },
+    {
+      "commit": "9c51f1a8954981922c7fa5f0d50712989318e921",
+      "subject": "perf(core): MOS1 transient MODEINITPRED predictor closes the CMOS chain Newton-iteration gap vs ngspice-47 (#878) (#887)"
+    },
+    {
+      "commit": "0d75b203de5891f350371ac21e56620817f5ee56",
+      "subject": "fix(core): toNetlist literals round-trip every INPevaluate-reachable double (#806) (#885)"
+    },
+    {
+      "commit": "49a4fed46065cfb466abc776a9d8738af7077689",
+      "subject": "feat(core): PSpice T_ABS/T_REL_GLOBAL/T_MEASURED on .model cards like ngspice-47 inpcompat.c (#846) (#880)"
+    },
+    {
+      "commit": "a1987482a63bed23b0dfc72f6ab4c00f6ea1558c",
+      "subject": "fix(core): finite B-source pow()/^ slope at a zero base like ngspice-47 PTpwr (#886) (#889)"
+    },
+    {
+      "commit": "ac0d03dffe7a38927cbc43a7d42a4acd618e1c02",
+      "subject": "fix(core): evaluate subcircuit .param cards before body elements in dependency order (#857) (#884)"
+    },
+    {
+      "commit": "283e0c7ecfac8ce0f51b73b8f8f42d3aee9f1de5",
+      "subject": "fix(core): B-source ^ operator at initial iterate like ngspice-47 (#891) (#897)"
+    },
+    {
+      "commit": "604c523ecae247e97705da69c1ba883243188af8",
+      "subject": "perf(core): stamp resistor/capacitor runs from cached typed-array values (#890) (#898)"
+    },
+    {
+      "commit": "80a84bb5fa6d8974119576190ca677a0c4bd5f8b",
+      "subject": "fix(core): evaluate subcircuit model expressions in instance scope (#882) (#900)"
+    },
+    {
+      "commit": "97761a12648c972a7597bbc26ece0b7fd27c1399",
+      "subject": "fix(core): lossless T lines step like ngspice-47 TRA; triage corpus-h #791 decks (#892)"
+    },
+    {
+      "commit": "2fe281d2ed177e9230c04e72ef7bac847442f451",
+      "subject": "fix(core): certify B-source finite-Jacobian overflow like ngspice (#899) (#904)"
+    },
+    {
+      "commit": "4ce2ff1463e802bc269ddea11f91f0fa0ab5d38f",
+      "subject": "refactor(core): share the devsup.c Newton limiters across device models (#908)"
+    },
+    {
+      "commit": "a7f2ea52efee723d6fd74999ff38760f63c7143b",
+      "subject": "fix(parser): accept single-pipe behavioral boolean OR (#903) (#911)"
+    },
+    {
+      "commit": "a813f4a773cf62093ca321cab250dbd6ba42391f",
+      "subject": "refactor(core): delete seven unreferenced exports (#912)"
+    },
+    {
+      "commit": "6cfe27611ba980939c0ca4c6c55f49dbf5ced8dd",
+      "subject": "fix(core): recover bounded passive floating DC operating points (#927)"
+    },
+    {
+      "commit": "e1597e192c26a231dd576c668524d887b6e63844",
+      "subject": "feat(parser): bounded .temp circuit temperature semantics (#871) (#924)"
+    },
+    {
+      "commit": "ac898b613d9a61ff1532bb139d0e7747fdb16b27",
+      "subject": "feat(core): add bounded ngspice s_xfer analog transfer model (#931)"
+    },
+    {
+      "commit": "9d77448b6ff4c2e9b93535b927e1f856992070b7",
+      "subject": "fix(control): retain evaluated csparam constants across plots (#937)"
+    },
+    {
+      "commit": "8e32f51f555a2941a30ccfa9281a75f8ef2dbe30",
+      "subject": "fix(core): resolve subcircuit parameters through dynamic callers (#888) (#941)"
+    },
+    {
+      "commit": "3792ecc668f503f4fead57c37b1ed0b5b94e0900",
+      "subject": "fix(core): resolve altermod instance aliases to shared models (#945)"
+    },
+    {
+      "commit": "d3901ec1355519e582dc068b4dec5cc033e22de8",
+      "subject": "bench(perf): publish bounded current-main ngspice scaling matrix (#961)"
+    }
+  ],
+  "finalChanges": [
+    {
+      "fixture": "ngspice/vbic-fo",
+      "pullRequests": [
+        663,
+        783
+      ],
+      "beforeSha256": "0cdbd6972c74f9892ce692f70128410ab4119ea62757b9117d2f2929d0b0b7be",
+      "afterSha256": "dab0c7b3397ff6dbe2676920571627c0a941388bdd9b1210bc36b13fe51c0b30"
+    },
+    {
+      "fixture": "ngspice/vbic-temperature",
+      "pullRequests": [
+        663
+      ],
+      "beforeSha256": "b584c4fe9ba1e294abc8c4664137d999e301c4d17c9eb4c3f361c601e1e5153f",
+      "afterSha256": "1cef1033b9d845aa353dd82b7faa6bca3c2cfd71d68482eda2cb38996acf8166"
+    },
+    {
+      "fixture": "ngspice/mos6-inverter-transient",
+      "pullRequests": [
+        664,
+        677,
+        703,
+        758,
+        776,
+        783,
+        821,
+        836
+      ],
+      "beforeSha256": "25baf2187d34a79c6d9e4c9d8295ec2e63a11b300e3d5d0b121933067afaa621",
+      "afterSha256": "979df5e06767570b4df9eb79785348cb2f22d08270b8613e78a23d63a7ff35ec"
+    },
+    {
+      "fixture": "ngspice/jfet-vds-vgs",
+      "pullRequests": [
+        746,
+        783
+      ],
+      "beforeSha256": "99370f4b0016ace52a256bce9396176e6a8bcc7fd2ab3b0717457c754166f2ae",
+      "afterSha256": "3d3d9d172e18bacb4f02fc6d5716b7dd8f2a077f78018ddefa0bc56853a9e06f"
+    },
+    {
+      "fixture": "ngspice/rc-lowpass-ac",
+      "pullRequests": [
+        663,
+        741
+      ],
+      "beforeSha256": "7f1bbca979bc0ef73c579d921ef67b3df4c114d1018fcc8040d1265f6baf798a",
+      "afterSha256": "d2f22c4ffcdc24a0e3af061698eaf58c16060eba2f14a7b8566723fa2677854e"
+    },
+    {
+      "fixture": "ngspice/vbic-common-emitter-ac",
+      "pullRequests": [
+        663,
+        664,
+        741,
+        762
+      ],
+      "beforeSha256": "d174c94b55ebb7855d8e995f8f64d76bc47865e2375851293b527d7c8bbad201",
+      "afterSha256": "506f511768924da7e3d376291b4dd55ab1c1377a813be7296b1d2ff796366472"
+    },
+    {
+      "fixture": "ngspice/probe-ac",
+      "pullRequests": [
+        663,
+        741,
+        762
+      ],
+      "beforeSha256": "5f7216d5e049ec02bb50a9f62788ad6d5b54d3cec8ff3e32bbd9873a65e6dff0",
+      "afterSha256": "49cd1e316e094a2cf3621cbfa5858968f02da3deda2354a690ef5efc9a640167"
+    },
+    {
+      "fixture": "ngspice/rc-transient",
+      "pullRequests": [
+        677,
+        689,
+        758,
+        776
+      ],
+      "beforeSha256": "453d8cb41aa599cd6f998331e42970bd78fe84f7d18779390c9dea7603ecc944",
+      "afterSha256": "8330d0d018cd06d30f0f2bdfee213d64d3c13c4b899d5b1c7c3aca7d4f64d39d"
+    },
+    {
+      "fixture": "ngspice/mos-amplifier-transient",
+      "pullRequests": [
+        658,
+        677,
+        689,
+        758,
+        776,
+        805,
+        783,
+        821,
+        836
+      ],
+      "beforeSha256": "f605a7f8621f147cda68d56f9ffdd35bd199e4eb8d732f521526728d03be25dc",
+      "afterSha256": "63ef5cc6caf81d98129166a903edc2eaa694252bfcc9caf8541c9c40060a7bb6"
+    },
+    {
+      "fixture": "ngspice/mos6-simple-inverter-transient",
+      "pullRequests": [
+        664,
+        677,
+        703,
+        758,
+        776,
+        783,
+        836
+      ],
+      "beforeSha256": "704fff684fa7f0f272ebefeee81405f386c9a1739b695fb2a5c5b52a43131b82",
+      "afterSha256": "40404f0147805b808dbdf5542db54ea4d1748c72e29faa022d7792f957a5d031"
+    },
+    {
+      "fixture": "ngspice/ltra-line-transient",
+      "pullRequests": [
+        664,
+        677,
+        689,
+        703,
+        758,
+        776,
+        783,
+        836,
+        887
+      ],
+      "beforeSha256": "00201b1bb7fe3eece714302909228724dcb5f64857a1fa26d4ea1c34ea9607b1",
+      "afterSha256": "119a2fd22c8247dc7ac61e3952e412e76c2610b34c1beda208378cabd764f048"
+    },
+    {
+      "fixture": "ngspice/hfet-inverter",
+      "pullRequests": [
+        664,
+        677,
+        689,
+        758,
+        776,
+        783,
+        821,
+        836
+      ],
+      "beforeSha256": "79a0bc6c2641f473ea22186f7ddef78624b1755660ddadb6216d8f823fe1aa51",
+      "afterSha256": "f7c61d476774f5f8b8b0fe98b7a2312407f61abb5788bd8bc3d771970093f1cf"
+    },
+    {
+      "fixture": "ngspice/mesa-oscillator",
+      "pullRequests": [
+        664,
+        677,
+        689,
+        758,
+        776,
+        783,
+        836
+      ],
+      "beforeSha256": "af171a28dc5a2e7d0ed23da8d2f17524fcf88569c10f9d7ece98ed48669f8d42",
+      "afterSha256": "ea1e596fd6b843096b76a68348f656af07ad1a13958266b4868b8774ee7ab132"
+    },
+    {
+      "fixture": "ngspice/jimi-fuzz",
+      "pullRequests": [
+        664,
+        689,
+        758,
+        776,
+        783,
+        821,
+        836
+      ],
+      "beforeSha256": "cf99f911c360770c0cb9ed37be8146cdafc744296d3dae83b4d5b48611b2a6c3",
+      "afterSha256": "2881e58196d68e30e8e7b73d79d0b089c7f45f9763b35b879788be155bae448b"
+    },
+    {
+      "fixture": "ngspice/schmitt-trigger",
+      "pullRequests": [
+        652,
+        664,
+        677,
+        689,
+        758,
+        776,
+        783,
+        821,
+        836
+      ],
+      "beforeSha256": "7bb75b4eaa788651b29f78b50b50583275370194a94cabb8aab845a7c9a7fd48",
+      "afterSha256": "d7ca7352fc9675726571ef30d8d7d99bda2dc705505701ce9751d78a8fabbf47"
+    },
+    {
+      "fixture": "classic/bjt-noise",
+      "pullRequests": [
+        664,
+        741,
+        762,
+        777
+      ],
+      "beforeSha256": "b0ef5e868fadb8fe97ec72b3f5ffcef7400eef63716a8c3c5ec07689e25b4d02",
+      "afterSha256": "82dcf75029d0cae6b56f0805a79701b75fec5aec446c18660aab49285f0c43c1"
+    },
+    {
+      "fixture": "classic/bsim1-device-sweep",
+      "pullRequests": [
+        667,
+        783
+      ],
+      "beforeSha256": "1d0c0b8330761e6b75e893ea94cd73ff38f93494c94ebf1750085bd6388a6947",
+      "afterSha256": "59092e51a74bb8fba10b9a67b77b65c6fc9cd06044f92454b01f2380cb3b1f2b"
+    },
+    {
+      "fixture": "classic/bsim2-device-sweep",
+      "pullRequests": [
+        667,
+        783
+      ],
+      "beforeSha256": "a520d74997d586b0fbf667afc177286e1684afc52f5ef3e482a6a86b42b8a538",
+      "afterSha256": "370421bf9db8fe990f94f620ba9be44e32a55a9ae1d2c61d275c82d12d05cb74"
+    },
+    {
+      "fixture": "classic/bjt-differential-pair",
+      "pullRequests": [
+        652,
+        664,
+        677,
+        689,
+        758,
+        776,
+        783,
+        836
+      ],
+      "beforeSha256": "1326d87dc0248a7f380dae03513f29bc9193762daa8ab6e17aaef80d502eef05",
+      "afterSha256": "9aac60e6e3b3270b0933da7b8c2cd47c4661f577485c4137ef4a6700a1401de6"
+    },
+    {
+      "fixture": "classic/diode-distortion",
+      "pullRequests": [
+        664,
+        659,
+        741,
+        762,
+        783
+      ],
+      "beforeSha256": "762808ab5bfbe9730339db64faa9e0125d6259a8d4138ddbe8cf5ffb8213be0c",
+      "afterSha256": "ee197099464aedbe36ec05b25766c1150de1ceaef82f01eecc80f8b61e481646"
+    },
+    {
+      "fixture": "classic/lossy-line-24-inch",
+      "pullRequests": [
+        623,
+        664,
+        659,
+        677,
+        689,
+        758,
+        776,
+        783,
+        836
+      ],
+      "beforeSha256": "6a720accc86c4371d37e3c4cbd1341a9a08ad0f7e5448bb62b8225c4ecef3fb0",
+      "afterSha256": "e778203b41f330c8fd6c7ca216bfd0eca06b857052b8599493ce884b843b2b63"
+    },
+    {
+      "fixture": "classic/lossy-line-aluminium",
+      "pullRequests": [
+        659,
+        677,
+        689,
+        758,
+        776,
+        836
+      ],
+      "beforeSha256": "4e78ac7ec456022f34c2a9ee8b663a5c3155a969c2e5fcc1999b3c093eacd45d",
+      "afterSha256": "05612d8f978e4aff402e7226b248b5e0d5a1e5c3017bc44a4c49211446776334"
+    },
+    {
+      "fixture": "classic/coupled-lossy-lines",
+      "pullRequests": [
+        623,
+        664,
+        659,
+        677,
+        689,
+        758,
+        776,
+        783,
+        836
+      ],
+      "beforeSha256": "24fd87d9038ade8edbe2e0fbda5f083bcd9b9348bccaca202289ceda559b4f67",
+      "afterSha256": "aa039ebfbe95337f82bf974e989155c082fee65cca05ea49b56d45229a3fa266"
+    },
+    {
+      "fixture": "classic/mos6-inverter-chain",
+      "pullRequests": [
+        664,
+        677,
+        703,
+        758,
+        776,
+        783,
+        821,
+        836
+      ],
+      "beforeSha256": "55c36db49f43306d726ef7b5f30eaa187a7408fdd1d85646e877007c4c0e7459",
+      "afterSha256": "eeb0238535d3f42eff62626ae62c1bba50b3c7a9ee36b308ada27eb7cba9898b"
+    },
+    {
+      "fixture": "classic/mos-amplifier",
+      "pullRequests": [
+        658,
+        677,
+        689,
+        758,
+        776,
+        805,
+        783,
+        821,
+        836
+      ],
+      "beforeSha256": "a619ed47ab405738640c8f48514a8b4d895b3d9a724e349ad67fd25a5104f052",
+      "afterSha256": "f7c46899a94ff5e9d9be511ab721d7c6e0005ce5d8f384af3876ce32f2323550"
+    },
+    {
+      "fixture": "classic/mos-memory-cell",
+      "pullRequests": [
+        664,
+        677,
+        689,
+        703,
+        758,
+        776,
+        783,
+        836,
+        887
+      ],
+      "beforeSha256": "4f0b57d647691b0d57ed047ccc06fad63ddf60b56ee8e89e149aaffd124f4a6f",
+      "afterSha256": "7a74d29bb10dae94398edaf8c1b69549d6ca7685d7c3f7d5febe9af23f304e05"
+    },
+    {
+      "fixture": "classic/rc-transient",
+      "pullRequests": [
+        677,
+        689,
+        758,
+        776
+      ],
+      "beforeSha256": "bb04263957d149fb813939caedfbd06f535eac6a0db8a9532a32fdb8816ee709",
+      "afterSha256": "b79632fea89009e88a463f3bb2c3490b9ada57c1c0cccca3f4e16605e65c0379"
+    },
+    {
+      "fixture": "classic/rca3040-wideband-amplifier",
+      "pullRequests": [
+        663,
+        664,
+        676,
+        677,
+        689,
+        741,
+        762,
+        758,
+        776,
+        777,
+        783,
+        836
+      ],
+      "beforeSha256": "333ebe20235668047c9a12dcae2450fb3f7cb1ea55407c5e4d8c4136bf2548df",
+      "afterSha256": "7e0c92ed51454c92ee57b0cda82685e1fe7567cc92b231d708008a7d8f3373f3"
+    },
+    {
+      "fixture": "classic/rtl-inverter-chain",
+      "pullRequests": [
+        663,
+        664,
+        677,
+        689,
+        758,
+        776,
+        783,
+        836
+      ],
+      "beforeSha256": "75a91e2a648a2460dab288af4bc03f7b5a8b00faeb9eff6f2eab36a5e3cb8d5f",
+      "afterSha256": "1e3e35845b84824dcb2e0f4dd8e7edd0f6ec6ad2e577a36249aafb2384861ea6"
+    },
+    {
+      "fixture": "classic/ecl-schmitt-trigger",
+      "pullRequests": [
+        652,
+        664,
+        677,
+        689,
+        758,
+        776,
+        783,
+        821,
+        836
+      ],
+      "beforeSha256": "c74e17a186cdf39569634c574d0cd807d4a929ad35f895dbcda89583aefc9912",
+      "afterSha256": "47e4e5445b8b1cf21c61f79428f8137cf3f22916c95af7f6b1de031abe8977ba"
+    },
+    {
+      "fixture": "xyce/capacitor-rc-transient",
+      "pullRequests": [
+        758
+      ],
+      "beforeSha256": "f2ca7348851d20712b98fec315d27421e3e549ee02459f970aa641ce9d868ecb",
+      "afterSha256": "5b2baa74dd768da9fd4f2b909b9675041b4f684fbe054fe2dd1a984bbd456d8a"
+    },
+    {
+      "fixture": "xyce/capacitor-rc-transient-newlte",
+      "pullRequests": [
+        724,
+        758
+      ],
+      "beforeSha256": "38dab5348d0d18afae1af9e6e6ccfa1c3574ef6b4beafcb5875545f929445dcb",
+      "afterSha256": "e8ab945573b917aa40cddf92a67af8b77029f2c4f486d472668d79e1ac4b1b53"
+    },
+    {
+      "fixture": "xyce/capacitor-rc-oscillator",
+      "pullRequests": [
+        689,
+        758
+      ],
+      "beforeSha256": "cd7d8052caf65eb50e27387c83efed8f249dd4a95ccc0c79fc98dc45c2aaf2ab",
+      "afterSha256": "d5c231f4607ffa1d61b8b7474c88f5ce761591746109117f3490d8dca91df9a3"
+    },
+    {
+      "fixture": "xyce/diode-zener-5229",
+      "pullRequests": [
+        724
+      ],
+      "beforeSha256": "242200cff9b00872324794bd52fbef794e96c2f404001e07849d32dc8a4b075b",
+      "afterSha256": "3237575c2a4542b29a3d5437e0ddadbbbf28186d31dab84d62ae858a794e58bc"
+    },
+    {
+      "fixture": "xyce/diode-transient",
+      "pullRequests": [
+        677,
+        689,
+        758
+      ],
+      "beforeSha256": "530638710963bd8ccd7dd239b16732d8477fa75b7ff909820a7f73dc1fc2177f",
+      "afterSha256": "44a0a9a861256ade3c5444032dbe274bfc2c8cf8731f7fafd84b8aedc03d4757"
+    },
+    {
+      "fixture": "xyce/diode-sidewall-dc",
+      "pullRequests": [
+        663,
+        659
+      ],
+      "beforeSha256": "fe8cfc1b531ea9962d43b46df4297cc4f462fe719012ac7294fa7fc498b8ec60",
+      "afterSha256": "92665101ea51d50d8c7250a7654c4c7bfdca9504fe9f854dcb3acebdc59da2c7"
+    },
+    {
+      "fixture": "xyce/inductor-transient",
+      "pullRequests": [
+        677,
+        689,
+        758,
+        776
+      ],
+      "beforeSha256": "3c942ebc586d22be256012943575c2cd4adaf6038207c53dfaaf27b37ac57681",
+      "afterSha256": "b2bb5cf3299a92cddfe1b7971ea594c13544ceb24e213f60444a2a74f6db2eb9"
+    },
+    {
+      "fixture": "xyce/njfet-2109-dc",
+      "pullRequests": [
+        746,
+        783
+      ],
+      "beforeSha256": "58cf5203b5f20cb7a1a6b9be0054991679f48fce6021b75cc6192808d5428b60",
+      "afterSha256": "d2a6709d31eee9fb00bba843dd69e6dbe31e20518430f8492372249e3d599070"
+    },
+    {
+      "fixture": "xyce/npn-dc",
+      "pullRequests": [
+        664
+      ],
+      "beforeSha256": "ee223d496a97f63dbf81af0dbe14efc12c4daa2ae59c2c2e1cc710f228689146",
+      "afterSha256": "360b38c3ef222d9d3e1b0817b385035d67c0265d6919ab5e8de09203c3562fa1"
+    },
+    {
+      "fixture": "xyce/pmos-level1-dc",
+      "pullRequests": [
+        783
+      ],
+      "beforeSha256": "2d3de1dfc297fb3c3f2eeb06b8adc36a7d86166988b9354d6ab1a8afca6ad257",
+      "afterSha256": "b1062b17af8ebacbe296ccb7fbeddc840a2e17ebf5fb99f84d17cc17b43b5f8d"
+    },
+    {
+      "fixture": "xyce/pnp-dc",
+      "pullRequests": [
+        664
+      ],
+      "beforeSha256": "47db0644741135ddea68d73d076e35b12db95988a39904466bedf223c0149d64",
+      "afterSha256": "02f7dea10fcece92f428fe383211769447b41c38a2ab3250416fd98e5b532ba3"
+    },
+    {
+      "fixture": "xyce/rlc-transient",
+      "pullRequests": [
+        677,
+        689,
+        758,
+        776
+      ],
+      "beforeSha256": "d43c32c67a0c308623935b11bd67d95d6b4c19e60b8dbd6c41f5c5a09adee3a5",
+      "afterSha256": "64820b3f86732d794ae5e7c05214705e710f38a1a4b09a4859dc855ccc7804ef"
+    },
+    {
+      "fixture": "corpus-e/cccs-mixed-analysis",
+      "pullRequests": [
+        758
+      ],
+      "beforeSha256": "e5beb78898a723d1ec52ecb5fad1f0860825b2040d494d698bbac701a3f2cb96",
+      "afterSha256": "9a8207d6f9fd57da92c094f417b33f878473ace7e8624aef2329e44e5ed75b89"
+    },
+    {
+      "fixture": "corpus-e/diode-bias-sweep",
+      "pullRequests": [
+        664,
+        659,
+        783
+      ],
+      "beforeSha256": "778c368d34b1da6f6e8e18f793137a38153a946bec43367585de0cc11469c142",
+      "afterSha256": "39125f14ef4b613961bdb35e6fd0656a5dce07ec5029212b02578cf548f1e86e"
+    },
+    {
+      "fixture": "corpus-e/mos1-inverter-sweep",
+      "pullRequests": [
+        664,
+        677,
+        689,
+        703,
+        758,
+        776,
+        783,
+        887
+      ],
+      "beforeSha256": "8f3a40e7f7d2248e593c12ff7ddc88998f4410b877d8c0a1f263c27c048ae32f",
+      "afterSha256": "40be187574215eb74810b8a6ae1de4eff1eced939dc751e20bc56c39b260a924"
+    },
+    {
+      "fixture": "corpus-e/mutual-inductance-ac",
+      "pullRequests": [
+        745
+      ],
+      "beforeSha256": "75460d2ad746e64cd472e5493c43d00bbc433fd24cfb813566f787c70cea6c35",
+      "afterSha256": "c9f723bc72fb8b0c17d80e44af5b0e6468081864317f35426769ab900fb7e36f"
+    },
+    {
+      "fixture": "corpus-e/bjt-diffpair-ac",
+      "pullRequests": [
+        689,
+        758
+      ],
+      "beforeSha256": "06c66405416954bf6a823b826e7e49142c101014019ac5a30cfb8cc0980ba745",
+      "afterSha256": "2848bc436108ab87466810a96762edfa786d4f09d24e6242855143dc49a2d8e8"
+    },
+    {
+      "fixture": "corpus-e/capacitor-step-transient",
+      "pullRequests": [
+        677,
+        689,
+        758
+      ],
+      "beforeSha256": "45b8e4b4677a675efa458089e93d8b0c6cff0990c71c71d09e20ee16fd668f92",
+      "afterSha256": "f2855851a221050f4fad9ad30381c40ee34e0170ccc6aa5dec26e2e096c258ff"
+    },
+    {
+      "fixture": "corpus-e/capacitor-initial-condition",
+      "pullRequests": [
+        758
+      ],
+      "beforeSha256": "fc26b98b03c777a51988020e7c204993e4a24225d50aaaa161cbf2043f9abce6",
+      "afterSha256": "7a308e1c519ef162c61c07bbf4f4b59cc88e009977f068142ab06ce5fea19b28"
+    },
+    {
+      "fixture": "corpus-e/lc-oscillator-transient",
+      "pullRequests": [
+        677,
+        689,
+        758
+      ],
+      "beforeSha256": "c1a8786abffa6785e1e632eace5d8714fb1d83f5f0ad779f5d8ad01109d358d7",
+      "afterSha256": "a408eba0da7cd326ec03ead8958883fa01818f10032d0b681ad06cdae414a523"
+    },
+    {
+      "fixture": "corpus-e/bjt-diffpair-transient",
+      "pullRequests": [
+        664,
+        677,
+        689,
+        758,
+        776,
+        783,
+        836
+      ],
+      "beforeSha256": "1bdf468c35b7b81744afdc81f6b34a6101b6b728e83bfa442d45a29475bbc904",
+      "afterSha256": "515d5f125a11b80566442dc5511115f9b15ebc5cb4a79616b99c69e718dbb1b2"
+    },
+    {
+      "fixture": "corpus-e/bjt-schmitt-trigger",
+      "pullRequests": [
+        677,
+        689,
+        758,
+        776,
+        783,
+        821,
+        836
+      ],
+      "beforeSha256": "291e205b9e0ad3e2507bd92b0c6dec2fe0c74cc1a3d2efcfd5548cbe11d52ac3",
+      "afterSha256": "fc2e80e4b226b7defad49d7c48474c26397f8bd0698cbdca8642997a7a552422"
+    },
+    {
+      "fixture": "corpus-e/diode-temperature-sweep",
+      "pullRequests": [
+        663
+      ],
+      "beforeSha256": "b0df5383cf05bbf464a9ecf8e73a5a112bac33fd9700f5a165bbcb7484dceefc",
+      "afterSha256": "ba6d34da56c7acbd64b99759823ae8e2d24021c4296cca1858187f40c7250ff3"
+    },
+    {
+      "fixture": "corpus-e/mos1-nand-transient",
+      "pullRequests": [
+        677,
+        689,
+        758
+      ],
+      "beforeSha256": "49f5eed860a44acaa32ed1228ea9ab7625cdd2433f3170ac83bc800f98359ce6",
+      "afterSha256": "95a4f640de134ef6b4fa6d2cd81ae5a381eb5fa22fc5cc1626a3799b6ef0972e"
+    },
+    {
+      "fixture": "corpus-e/bjt-rtl-inverter-chain",
+      "pullRequests": [
+        663,
+        664,
+        677,
+        689,
+        758,
+        776,
+        783,
+        836
+      ],
+      "beforeSha256": "e1ba69b8dadeb26e76d9be0af7d30e2e4bfec67670c3340291d54877b009ab5a",
+      "afterSha256": "f33c7fac30cccb29a104c0516a3dcf58c42f571948979ef7db8fd8eb93a3e6e8"
+    },
+    {
+      "fixture": "corpus-e/dual-lc-uic-rejection",
+      "pullRequests": [
+        689,
+        758,
+        876
+      ],
+      "beforeSha256": "876f4e497bcaa04526a017993b6ac61df1a2438018565c39bfa849ed49d43732",
+      "afterSha256": "5fafcbe836faf03e741322709f62e46eda832f90169f843ae1b41a16c26cace9"
+    },
+    {
+      "fixture": "corpus-e/bjt-diffpair-current-source",
+      "pullRequests": [
+        663,
+        664,
+        677,
+        689,
+        741,
+        762,
+        758,
+        776,
+        777,
+        836
+      ],
+      "beforeSha256": "44ddca7018dbd90906848705176dcacf36c064691ab07fefd920e5f91a8d1e3e",
+      "afterSha256": "d81f45559b94343e146380dfd9eef2bfa1131a1602d1750ddff79c2d5609b421"
+    }
+  ]
+}

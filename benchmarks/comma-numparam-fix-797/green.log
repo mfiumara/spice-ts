@@ -1,0 +1,57 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_832f6221/packages/core
+
+ ✓ src/subcircuit-port-parens-864.test.ts (4 tests) 16ms
+ ✓ src/parser/xcard-bare-params-788.test.ts (4 tests) 16ms
+ ✓ src/parser/subckt-param-order-857.test.ts (12 tests) 23ms
+ ✓ src/subcircuit-dynamic-params-888.test.ts (16 tests) 30ms
+ ✓ src/altermod-alias.test.ts (16 tests) 30ms
+ ❯ src/parser/comma-numparam-797.test.ts (21 tests | 1 failed) 37ms
+     ✓ issue-1 2ms
+     ✓ issue-2 8ms
+     ✓ issue-3 0ms
+     ✓ issue-4 2ms
+     ✓ issue-5 0ms
+     ✓ issue-6 2ms
+     ✓ issue-7 2ms
+     ✓ defaults 1ms
+     ✓ plain-whitespace 1ms
+     ✓ braced-whitespace 0ms
+     ✓ braced-comma-space 0ms
+     ✓ braced-comma-tab 2ms
+     ✓ explicit-first 1ms
+     ✓ reordered-glued 0ms
+     ✓ function-comma 0ms
+     ✓ unbraced-trailing 0ms
+     × example01 7ms
+     ✓ example01_stringwriter 5ms
+     ✓ example01_without_params 2ms
+     ✓ uses arbitrary names and caller expressions in a nested call 0ms
+     ✓ does not evaluate comma-prefixed ignored expressions 0ms
+ ✓ src/subcircuit-params.test.ts (10 tests) 34ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/parser/comma-numparam-797.test.ts > #797 source-derived X-card assignment boundaries > example01
+Error: Subcircuit 'entry' (instance 'X_entry1') parameter 'RIN=1,': Unexpected character ',' at position 1 in expression: 1,
+ ❯ Circuit.expandSubcircuit src/circuit.ts:3367:17
+    3365|           localParams[name] = evaluateExpression(value, localParams);
+    3366|         } catch (error) {
+    3367|           throw new Error(
+       |                 ^
+    3368|             `Subcircuit '${subcktName}' (instance '${instanceName}') p…
+    3369|           );
+ ❯ Circuit.expandAllSubcircuits src/circuit.ts:2711:31
+ ❯ Circuit.compile src/circuit.ts:2016:34
+ ❯ simulate src/simulate.ts:132:28
+ ❯ src/parser/comma-numparam-797.test.ts:20:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 6 passed (7)
+      Tests  1 failed | 82 passed (83)
+   Start at  23:16:57
+   Duration  748ms (transform 3.44s, setup 0ms, import 4.33s, tests 185ms, environment 0ms)
+
+JUNIT report written to /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_832f6221/packages/core/test-results.xml

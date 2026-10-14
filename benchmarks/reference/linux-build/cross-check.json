@@ -1,0 +1,2252 @@
+{
+  "schemaVersion": "xyce-linux-mac/v1",
+  "target": "Linux source build",
+  "reference": "Mac upstream XyceNF 7.10.0",
+  "policy": "Identical translated input bytes; linear interpolation on Linux grid, monotonic sweep segments by ordinal; no tuning; units separated per signal. Runtime not a speed benchmark.",
+  "fixtures": [
+    {
+      "key": "test_ekv26_nmos",
+      "inputSha256": "44bc9988f72a4c6a03915a579a6297962314bd3a2f9aeb159d03b69bf6888d91",
+      "translatedSha256": "0aebd3b08d4fa93d038a3be9ee6878d7e72e156a957b0fbcc371e7208943537a",
+      "macSeriesSha256": "2e62e0bf7d7d4f59d859cc1359dc158811c7d34e66cb0201d56b1cd142bbea65",
+      "linuxSeriesSha256": "c7aefd369eba8fc58bb27434a40f4af8e1c04e1d5961e74822c5f87fcc986588",
+      "linuxCsvSha256": "634dd20c594113ebfad62a20a360f28f1bfd954c7089c325d2e05aaa8c60d17e",
+      "metrics": {
+        "grid": {
+          "spiceTsPoints": 1806,
+          "ngspicePoints": 1806,
+          "alignedPoints": 1806,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "v(d1)": {
+            "status": "compared",
+            "sampleCount": 1806,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 1800,
+              "excludedZeroReferences": 6
+            }
+          },
+          "v(g)": {
+            "status": "compared",
+            "sampleCount": 1806,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 1806,
+              "excludedZeroReferences": 0
+            }
+          },
+          "i(vdmon)": {
+            "status": "compared",
+            "sampleCount": 1806,
+            "absoluteError": {
+              "max": 1.6263032587282567e-19,
+              "rms": 2.4387931026916632e-20
+            },
+            "relativeError": {
+              "max": 5.525581262712274e-16,
+              "rms": 1.0332697268378929e-16,
+              "sampleCount": 1805,
+              "excludedZeroReferences": 1
+            }
+          }
+        }
+      }
+    },
+    {
+      "key": "test_ekv26_pmos",
+      "inputSha256": "adccf589ad58ed8f8bd8b683b1ab783b5bef03ac78627935f4483f5e22a5182b",
+      "translatedSha256": "ea3e4bc6c90979051728cef7c344557a20b2094ac912f016a08f4517a561226d",
+      "macSeriesSha256": "764e60d587f462f28704e2a6dc8b11adf0219974df1db1d2cf84f58c9d2f6af8",
+      "linuxSeriesSha256": "5d1efb60527ccff15d1ee61665aaba13cd8d37e6982e618e1f99839e8264cf4a",
+      "linuxCsvSha256": "9fb644fe64cb3a6ef0d8889fd75fb72a35aa94f2583615f701ab8ca61d5e7a27",
+      "metrics": {
+        "grid": {
+          "spiceTsPoints": 1806,
+          "ngspicePoints": 1806,
+          "alignedPoints": 1806,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "v(d1)": {
+            "status": "compared",
+            "sampleCount": 1806,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 1800,
+              "excludedZeroReferences": 6
+            }
+          },
+          "v(g)": {
+            "status": "compared",
+            "sampleCount": 1806,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 1806,
+              "excludedZeroReferences": 0
+            }
+          },
+          "i(vdmon)": {
+            "status": "compared",
+            "sampleCount": 1806,
+            "absoluteError": {
+              "max": 8.131516293641283e-20,
+              "rms": 9.091887565429369e-21
+            },
+            "relativeError": {
+              "max": 5.878785952464663e-16,
+              "rms": 1.0856390507717874e-16,
+              "sampleCount": 1800,
+              "excludedZeroReferences": 6
+            }
+          }
+        }
+      }
+    },
+    {
+      "key": "inverter_transient_ekv26",
+      "inputSha256": "c23703254e36b5454a2f02463e84cf16e6bb64a6b2a557b3a901486cdbe2dd98",
+      "translatedSha256": "297e87fbe9835c717a956e0760feee9fa64608c4b0af1b2142a643a03ec44193",
+      "macSeriesSha256": "94662c1db3ad22a79d9623671ded7951fa8e1647a2d4ed54ec39a9bdcf4ebee9",
+      "linuxSeriesSha256": "33f7141207424ea3ca1486f74f2475eba0215df75be52dcf0779a7dfab57ef17",
+      "linuxCsvSha256": "3fcbca1052491d162313dbdf4f2b28f7fff1748c4d344d52616aa5ec9957cd2b",
+      "metrics": {
+        "grid": {
+          "spiceTsPoints": 552,
+          "ngspicePoints": 552,
+          "alignedPoints": 552,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "v(vi)": {
+            "status": "compared",
+            "sampleCount": 552,
+            "absoluteError": {
+              "max": 6.7114043211802255e-9,
+              "rms": 7.241909237608918e-10
+            },
+            "relativeError": {
+              "max": 4.581556263223048e-9,
+              "rms": 3.962549135685942e-10,
+              "sampleCount": 551,
+              "excludedZeroReferences": 1
+            }
+          },
+          "v(1)": {
+            "status": "compared",
+            "sampleCount": 552,
+            "absoluteError": {
+              "max": 1.6428033322579694e-8,
+              "rms": 1.6653289856574822e-9
+            },
+            "relativeError": {
+              "max": 4.585160406166895e-8,
+              "rms": 3.4975790045582217e-9,
+              "sampleCount": 552,
+              "excludedZeroReferences": 0
+            }
+          },
+          "i(vdd)": {
+            "status": "compared",
+            "sampleCount": 552,
+            "absoluteError": {
+              "max": 5.010003574653331e-13,
+              "rms": 4.573178563151242e-14
+            },
+            "relativeError": {
+              "max": 2.410354870936337e-8,
+              "rms": 2.1719052583212475e-9,
+              "sampleCount": 552,
+              "excludedZeroReferences": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "key": "ngspice/schmitt-trigger",
+      "inputSha256": "c3e897ecd60c66cb5350c2a0fa7788f34af374803c10f4cf58d6f5ed01b00e55",
+      "translatedSha256": "8657b817d8ae843eb0fdb6db57e89c914dfe13bed9081ae82c21cc7578dba489",
+      "macSeriesSha256": "03de7cce91e51c7a0df30067cf1e3f4b2d29a2492c63048f97f60cf519c9c82a",
+      "linuxSeriesSha256": "119203f603d0b864f122f40ac76326ecc93085276fb946aa9f4deaea4914898b",
+      "linuxCsvSha256": "ca2b802df63b2933405615cf3649c5a1065594dbcef35f1c788330867ee8480c",
+      "metrics": {
+        "grid": {
+          "spiceTsPoints": 109,
+          "ngspicePoints": 109,
+          "alignedPoints": 109,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "i(vee)": {
+            "status": "compared",
+            "sampleCount": 109,
+            "absoluteError": {
+              "max": 4.496403249731884e-15,
+              "rms": 9.941033535465746e-16
+            },
+            "relativeError": {
+              "max": 1.0418919241528372e-13,
+              "rms": 2.2890955180229397e-14,
+              "sampleCount": 109,
+              "excludedZeroReferences": 0
+            }
+          },
+          "i(vin)": {
+            "status": "compared",
+            "sampleCount": 109,
+            "absoluteError": {
+              "max": 1.3804875211714807e-15,
+              "rms": 2.288208759734842e-16
+            },
+            "relativeError": {
+              "max": 3.683690629966955e-10,
+              "rms": 4.282597622217914e-11,
+              "sampleCount": 109,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(1)": {
+            "status": "compared",
+            "sampleCount": 109,
+            "absoluteError": {
+              "max": 2.220446049250313e-16,
+              "rms": 9.023254962928947e-17
+            },
+            "relativeError": {
+              "max": 1.7446810626368715e-16,
+              "rms": 6.548456896019451e-17,
+              "sampleCount": 109,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(2)": {
+            "status": "compared",
+            "sampleCount": 109,
+            "absoluteError": {
+              "max": 6.927791673660977e-14,
+              "rms": 1.1439504092422482e-14
+            },
+            "relativeError": {
+              "max": 4.72067290000317e-14,
+              "rms": 7.83106288957283e-15,
+              "sampleCount": 109,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(3)": {
+            "status": "compared",
+            "sampleCount": 109,
+            "absoluteError": {
+              "max": 3.5044189772293066e-13,
+              "rms": 7.435337600398173e-14
+            },
+            "relativeError": {
+              "max": 9.543257586680666e-13,
+              "rms": 1.952476817371132e-13,
+              "sampleCount": 109,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(4)": {
+            "status": "compared",
+            "sampleCount": 109,
+            "absoluteError": {
+              "max": 4.489741911584133e-13,
+              "rms": 7.869414200821601e-14
+            },
+            "relativeError": {
+              "max": 2.0743968514164604e-13,
+              "rms": 3.637560658831989e-14,
+              "sampleCount": 109,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(5)": {
+            "status": "compared",
+            "sampleCount": 109,
+            "absoluteError": {
+              "max": 3.863576125695545e-13,
+              "rms": 7.459994192895751e-14
+            },
+            "relativeError": {
+              "max": 2.9742413311730507e-13,
+              "rms": 5.646818128250325e-14,
+              "sampleCount": 109,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(6)": {
+            "status": "compared",
+            "sampleCount": 109,
+            "absoluteError": {
+              "max": 7.326361739501408e-13,
+              "rms": 1.7698790250878335e-13
+            },
+            "relativeError": {
+              "max": 1.1431052597549654e-12,
+              "rms": 3.298769854813024e-13,
+              "sampleCount": 109,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(7)": {
+            "status": "compared",
+            "sampleCount": 109,
+            "absoluteError": {
+              "max": 6.719069745031447e-13,
+              "rms": 1.6614356466383016e-13
+            },
+            "relativeError": {
+              "max": 4.38095295682812e-13,
+              "rms": 1.1081978346823138e-13,
+              "sampleCount": 109,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(8)": {
+            "status": "compared",
+            "sampleCount": 109,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 109,
+              "excludedZeroReferences": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "key": "classic/bjt-differential-pair",
+      "inputSha256": "d67594a868128d758cfa593047884990abff05d7ee4cc050afca8a152ace3add",
+      "translatedSha256": "50e2f3fc6ebb906f34f1e78247839162c14794c32a4b1d44b9c3dc05a7ac4418",
+      "macSeriesSha256": "0c5060e659835a802569a87eb1c2705d431680a007d377232b31e5dce849e908",
+      "linuxSeriesSha256": "5160de5afe41bbfc79ab4270f31383120a09badfbe7100c4918ad7cbd79d857a",
+      "linuxCsvSha256": "4113767f0a825bb5d5f670669a0140553da6bf8fb331fac250a800abf06bd917",
+      "metrics": {
+        "grid": {
+          "spiceTsPoints": 42,
+          "ngspicePoints": 42,
+          "alignedPoints": 42,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "i(vcc)": {
+            "status": "compared",
+            "sampleCount": 42,
+            "absoluteError": {
+              "max": 4.7704895589362195e-18,
+              "rms": 2.3006701488888747e-18
+            },
+            "relativeError": {
+              "max": 1.8976948152016713e-15,
+              "rms": 9.143878989295966e-16,
+              "sampleCount": 42,
+              "excludedZeroReferences": 0
+            }
+          },
+          "i(vee)": {
+            "status": "compared",
+            "sampleCount": 42,
+            "absoluteError": {
+              "max": 7.37257477290143e-18,
+              "rms": 3.1896995918070774e-18
+            },
+            "relativeError": {
+              "max": 2.921142332741293e-15,
+              "rms": 1.2617973134136546e-15,
+              "sampleCount": 42,
+              "excludedZeroReferences": 0
+            }
+          },
+          "i(vin)": {
+            "status": "compared",
+            "sampleCount": 42,
+            "absoluteError": {
+              "max": 8.639736061993863e-19,
+              "rms": 3.929333631134579e-19
+            },
+            "relativeError": {
+              "max": 5.652281762156838e-13,
+              "rms": 9.39098841112385e-14,
+              "sampleCount": 42,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(1)": {
+            "status": "compared",
+            "sampleCount": 42,
+            "absoluteError": {
+              "max": 4.163336342344337e-16,
+              "rms": 1.0940781585246846e-16
+            },
+            "relativeError": {
+              "max": 4.5089103372174646e-14,
+              "rms": 7.357667037690064e-15,
+              "sampleCount": 40,
+              "excludedZeroReferences": 2
+            }
+          },
+          "v(2)": {
+            "status": "compared",
+            "sampleCount": 42,
+            "absoluteError": {
+              "max": 8.617238866914789e-16,
+              "rms": 3.889854537333937e-16
+            },
+            "relativeError": {
+              "max": 2.8932260063452494e-13,
+              "rms": 6.239104624161719e-14,
+              "sampleCount": 42,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(3)": {
+            "status": "compared",
+            "sampleCount": 42,
+            "absoluteError": {
+              "max": 8.12501108060637e-16,
+              "rms": 3.813588486018278e-16
+            },
+            "relativeError": {
+              "max": 1.8288065353241553e-12,
+              "rms": 2.8346981434452007e-13,
+              "sampleCount": 42,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(4)": {
+            "status": "compared",
+            "sampleCount": 42,
+            "absoluteError": {
+              "max": 1.4210854715202004e-14,
+              "rms": 4.468298766095851e-15
+            },
+            "relativeError": {
+              "max": 2.8516450317696755e-15,
+              "rms": 8.988934332251784e-16,
+              "sampleCount": 42,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(5)": {
+            "status": "compared",
+            "sampleCount": 42,
+            "absoluteError": {
+              "max": 1.0658141036401503e-14,
+              "rms": 4.920418359172618e-15
+            },
+            "relativeError": {
+              "max": 2.433704061636335e-15,
+              "rms": 9.851536670923683e-16,
+              "sampleCount": 42,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(6)": {
+            "status": "compared",
+            "sampleCount": 42,
+            "absoluteError": {
+              "max": 9.992007221626409e-16,
+              "rms": 4.772175922745346e-16
+            },
+            "relativeError": {
+              "max": 1.3126988206970034e-15,
+              "rms": 6.293319403094818e-16,
+              "sampleCount": 42,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(7)": {
+            "status": "compared",
+            "sampleCount": 42,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 42,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(8)": {
+            "status": "compared",
+            "sampleCount": 42,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 42,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(9)": {
+            "status": "compared",
+            "sampleCount": 42,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 42,
+              "excludedZeroReferences": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "key": "classic/mos-memory-cell",
+      "inputSha256": "f63d832e7e63dd866e528d6e41eb653859243fdbfed48a83e55d9274e111859d",
+      "translatedSha256": "3899049df6ec5aba474f7971f9c02c9d728130081ae174010ef355f50b5273fb",
+      "macSeriesSha256": "d63b0a58d78a7d675da8427c806641f09a3f080abb39d577f6ecaf7ee999d1cf",
+      "linuxSeriesSha256": "d63b0a58d78a7d675da8427c806641f09a3f080abb39d577f6ecaf7ee999d1cf",
+      "linuxCsvSha256": "39638db459f80be3ac1b60f548c6818c361ccedf8ef0feadaed6aa20c2a75046",
+      "metrics": {
+        "grid": {
+          "spiceTsPoints": 102,
+          "ngspicePoints": 102,
+          "alignedPoints": 102,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "i(vdd)": {
+            "status": "compared",
+            "sampleCount": 102,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 102,
+              "excludedZeroReferences": 0
+            }
+          },
+          "i(vs)": {
+            "status": "compared",
+            "sampleCount": 102,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 101,
+              "excludedZeroReferences": 1
+            }
+          },
+          "i(vw)": {
+            "status": "compared",
+            "sampleCount": 102,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 101,
+              "excludedZeroReferences": 1
+            }
+          },
+          "i(vwb)": {
+            "status": "compared",
+            "sampleCount": 102,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 101,
+              "excludedZeroReferences": 1
+            }
+          },
+          "v(1)": {
+            "status": "compared",
+            "sampleCount": 102,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 57,
+              "excludedZeroReferences": 45
+            }
+          },
+          "v(2)": {
+            "status": "compared",
+            "sampleCount": 102,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 27,
+              "excludedZeroReferences": 75
+            }
+          },
+          "v(3)": {
+            "status": "compared",
+            "sampleCount": 102,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 102,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(4)": {
+            "status": "compared",
+            "sampleCount": 102,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 102,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(5)": {
+            "status": "compared",
+            "sampleCount": 102,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 102,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(6)": {
+            "status": "compared",
+            "sampleCount": 102,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 102,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(7)": {
+            "status": "compared",
+            "sampleCount": 102,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 85,
+              "excludedZeroReferences": 17
+            }
+          },
+          "v(8)": {
+            "status": "compared",
+            "sampleCount": 102,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 102,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(9)": {
+            "status": "compared",
+            "sampleCount": 102,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 102,
+              "excludedZeroReferences": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "key": "classic/rc-transient",
+      "inputSha256": "0abbffc7b66510fc170e9e57a9d2b94b13213e888be9060022bc00e06a30f1be",
+      "translatedSha256": "27923e05ca4043dcd5c6bdde4779873d5507b8693ba33e35e911214de378c854",
+      "macSeriesSha256": "24188e9ed1eb89f030e29b8a1ccda249d4adc9da09aac4d04e15202dd3d65d4f",
+      "linuxSeriesSha256": "24188e9ed1eb89f030e29b8a1ccda249d4adc9da09aac4d04e15202dd3d65d4f",
+      "linuxCsvSha256": "06b86b539ae7644addb032e926b1ad2b139ed54d5ed22b384bbb91db35ceb63f",
+      "metrics": {
+        "grid": {
+          "spiceTsPoints": 72,
+          "ngspicePoints": 72,
+          "alignedPoints": 72,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "i(vin)": {
+            "status": "compared",
+            "sampleCount": 72,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 71,
+              "excludedZeroReferences": 1
+            }
+          },
+          "v(1)": {
+            "status": "compared",
+            "sampleCount": 72,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 71,
+              "excludedZeroReferences": 1
+            }
+          },
+          "v(2)": {
+            "status": "compared",
+            "sampleCount": 72,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 71,
+              "excludedZeroReferences": 1
+            }
+          }
+        }
+      }
+    },
+    {
+      "key": "classic/ecl-schmitt-trigger",
+      "inputSha256": "ad673d52014030a49980fcbafeda898d547ab701fb5cf8eeaf374c9338324a31",
+      "translatedSha256": "fdefbf35a4cf403e22fc345e3f07f110778c08a931d995e92d878a3f066f1eba",
+      "macSeriesSha256": "03de7cce91e51c7a0df30067cf1e3f4b2d29a2492c63048f97f60cf519c9c82a",
+      "linuxSeriesSha256": "119203f603d0b864f122f40ac76326ecc93085276fb946aa9f4deaea4914898b",
+      "linuxCsvSha256": "ca2b802df63b2933405615cf3649c5a1065594dbcef35f1c788330867ee8480c",
+      "metrics": {
+        "grid": {
+          "spiceTsPoints": 109,
+          "ngspicePoints": 109,
+          "alignedPoints": 109,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "i(vee)": {
+            "status": "compared",
+            "sampleCount": 109,
+            "absoluteError": {
+              "max": 4.496403249731884e-15,
+              "rms": 9.941033535465746e-16
+            },
+            "relativeError": {
+              "max": 1.0418919241528372e-13,
+              "rms": 2.2890955180229397e-14,
+              "sampleCount": 109,
+              "excludedZeroReferences": 0
+            }
+          },
+          "i(vin)": {
+            "status": "compared",
+            "sampleCount": 109,
+            "absoluteError": {
+              "max": 1.3804875211714807e-15,
+              "rms": 2.288208759734842e-16
+            },
+            "relativeError": {
+              "max": 3.683690629966955e-10,
+              "rms": 4.282597622217914e-11,
+              "sampleCount": 109,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(1)": {
+            "status": "compared",
+            "sampleCount": 109,
+            "absoluteError": {
+              "max": 2.220446049250313e-16,
+              "rms": 9.023254962928947e-17
+            },
+            "relativeError": {
+              "max": 1.7446810626368715e-16,
+              "rms": 6.548456896019451e-17,
+              "sampleCount": 109,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(2)": {
+            "status": "compared",
+            "sampleCount": 109,
+            "absoluteError": {
+              "max": 6.927791673660977e-14,
+              "rms": 1.1439504092422482e-14
+            },
+            "relativeError": {
+              "max": 4.72067290000317e-14,
+              "rms": 7.83106288957283e-15,
+              "sampleCount": 109,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(3)": {
+            "status": "compared",
+            "sampleCount": 109,
+            "absoluteError": {
+              "max": 3.5044189772293066e-13,
+              "rms": 7.435337600398173e-14
+            },
+            "relativeError": {
+              "max": 9.543257586680666e-13,
+              "rms": 1.952476817371132e-13,
+              "sampleCount": 109,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(4)": {
+            "status": "compared",
+            "sampleCount": 109,
+            "absoluteError": {
+              "max": 4.489741911584133e-13,
+              "rms": 7.869414200821601e-14
+            },
+            "relativeError": {
+              "max": 2.0743968514164604e-13,
+              "rms": 3.637560658831989e-14,
+              "sampleCount": 109,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(5)": {
+            "status": "compared",
+            "sampleCount": 109,
+            "absoluteError": {
+              "max": 3.863576125695545e-13,
+              "rms": 7.459994192895751e-14
+            },
+            "relativeError": {
+              "max": 2.9742413311730507e-13,
+              "rms": 5.646818128250325e-14,
+              "sampleCount": 109,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(6)": {
+            "status": "compared",
+            "sampleCount": 109,
+            "absoluteError": {
+              "max": 7.326361739501408e-13,
+              "rms": 1.7698790250878335e-13
+            },
+            "relativeError": {
+              "max": 1.1431052597549654e-12,
+              "rms": 3.298769854813024e-13,
+              "sampleCount": 109,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(7)": {
+            "status": "compared",
+            "sampleCount": 109,
+            "absoluteError": {
+              "max": 6.719069745031447e-13,
+              "rms": 1.6614356466383016e-13
+            },
+            "relativeError": {
+              "max": 4.38095295682812e-13,
+              "rms": 1.1081978346823138e-13,
+              "sampleCount": 109,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(8)": {
+            "status": "compared",
+            "sampleCount": 109,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 109,
+              "excludedZeroReferences": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "key": "xyce/diode-sidewall-dc",
+      "inputSha256": "fb7d40fe14305d830afa0c4477e68b2da541f428883cec677f4c8cb13906d658",
+      "translatedSha256": "557b6f937bea7cae074f2d257afdb1313e0d487ec47d7d9deb5a75a0354a0fdd",
+      "macSeriesSha256": "7769193448f755377102754099a8ea58b3ea83e6de6922b2b17a68a37d5d35bd",
+      "linuxSeriesSha256": "29f249d6afd4d303a5464b8742f4bd3ffa91434c19d6206667097c2826519670",
+      "linuxCsvSha256": "fbe6dedcae7fc6fde7bed15889f8df3ee36331fed495aa0b1d0e7c7a3a43f63a",
+      "metrics": {
+        "grid": {
+          "spiceTsPoints": 61,
+          "ngspicePoints": 61,
+          "alignedPoints": 61,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "i(vin)": {
+            "status": "compared",
+            "sampleCount": 61,
+            "absoluteError": {
+              "max": 2.5849394142282115e-26,
+              "rms": 3.30967577413348e-27
+            },
+            "relativeError": {
+              "max": 1.5782047532477416e-16,
+              "rms": 2.0374535754112965e-17,
+              "sampleCount": 60,
+              "excludedZeroReferences": 1
+            }
+          },
+          "i(vmon)": {
+            "status": "compared",
+            "sampleCount": 61,
+            "absoluteError": {
+              "max": 2.5849394142282115e-26,
+              "rms": 3.30967577413348e-27
+            },
+            "relativeError": {
+              "max": 1.5782047532477416e-16,
+              "rms": 2.0374535754112965e-17,
+              "sampleCount": 60,
+              "excludedZeroReferences": 1
+            }
+          },
+          "v(1)": {
+            "status": "compared",
+            "sampleCount": 61,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 60,
+              "excludedZeroReferences": 1
+            }
+          },
+          "v(2)": {
+            "status": "compared",
+            "sampleCount": 61,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 60,
+              "excludedZeroReferences": 1
+            }
+          }
+        }
+      }
+    },
+    {
+      "key": "xyce/inductor-transient",
+      "inputSha256": "a0a869d9fe3b04d3bbdc8abf9e8a89a9302a54ac5be9c97f446f06834a248b35",
+      "translatedSha256": "9c9a3a536371e3308007828702ed01ea2132447ec0a0900fbbb528f7af389164",
+      "macSeriesSha256": "1294070c259812b8def3dc28b2a2c04d5fd75c6d46181c8ca9091bd352736af1",
+      "linuxSeriesSha256": "1294070c259812b8def3dc28b2a2c04d5fd75c6d46181c8ca9091bd352736af1",
+      "linuxCsvSha256": "4b986de931d1fcde499fa87d9cafca72250a54be5927c5df0984b9b17e3e26a6",
+      "metrics": {
+        "grid": {
+          "spiceTsPoints": 76,
+          "ngspicePoints": 76,
+          "alignedPoints": 76,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "i(l1)": {
+            "status": "compared",
+            "sampleCount": 76,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 52,
+              "excludedZeroReferences": 24
+            }
+          },
+          "v(1)": {
+            "status": "compared",
+            "sampleCount": 76,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 75,
+              "excludedZeroReferences": 1
+            }
+          },
+          "v(2)": {
+            "status": "compared",
+            "sampleCount": 76,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 55,
+              "excludedZeroReferences": 21
+            }
+          }
+        }
+      }
+    },
+    {
+      "key": "xyce/njfet-2109-dc",
+      "inputSha256": "d25578ed59ddc0f94e3a2f9281f1200982f82c682ec63d5256bf0399f34ecd46",
+      "translatedSha256": "97edc1f1a7014591e200a40c35e6b7a2ec6f95ce07b2b9d658708b94957111e7",
+      "macSeriesSha256": "2489956eab5244ed88741912763bd1736ac8653acb0035514df1582d5d92f50a",
+      "linuxSeriesSha256": "d5047ed92a91f472647647e941bd300836ad107d45ea041b14a5612be14c6f94",
+      "linuxCsvSha256": "0150971bf724060d36362403f7d72b085c3eb05005cc3479d8fc0ff27778cf5b",
+      "metrics": {
+        "grid": {
+          "spiceTsPoints": 64,
+          "ngspicePoints": 64,
+          "alignedPoints": 64,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "i(vds)": {
+            "status": "compared",
+            "sampleCount": 64,
+            "absoluteError": {
+              "max": 1.6263032587282567e-19,
+              "rms": 4.95263214583793e-20
+            },
+            "relativeError": {
+              "max": 9.686835232677279e-11,
+              "rms": 1.4430137418459483e-11,
+              "sampleCount": 63,
+              "excludedZeroReferences": 1
+            }
+          },
+          "i(vgs)": {
+            "status": "compared",
+            "sampleCount": 64,
+            "absoluteError": {
+              "max": 5.169878828456423e-26,
+              "rms": 1.292472777445089e-26
+            },
+            "relativeError": {
+              "max": 2.2026676219080843e-16,
+              "rms": 5.165668234138275e-17,
+              "sampleCount": 63,
+              "excludedZeroReferences": 1
+            }
+          },
+          "i(vidmon)": {
+            "status": "compared",
+            "sampleCount": 64,
+            "absoluteError": {
+              "max": 1.6263032587282567e-19,
+              "rms": 4.95263214583793e-20
+            },
+            "relativeError": {
+              "max": 9.686835232677279e-11,
+              "rms": 1.4430137418459483e-11,
+              "sampleCount": 63,
+              "excludedZeroReferences": 1
+            }
+          },
+          "i(vigmon)": {
+            "status": "compared",
+            "sampleCount": 64,
+            "absoluteError": {
+              "max": 5.169878828456423e-26,
+              "rms": 1.292472777445089e-26
+            },
+            "relativeError": {
+              "max": 2.2026676219080843e-16,
+              "rms": 5.165668234138275e-17,
+              "sampleCount": 63,
+              "excludedZeroReferences": 1
+            }
+          },
+          "i(vismon)": {
+            "status": "compared",
+            "sampleCount": 64,
+            "absoluteError": {
+              "max": 1.6263032587282567e-19,
+              "rms": 4.951907766085883e-20
+            },
+            "relativeError": {
+              "max": 9.839676024094845e-11,
+              "rms": 1.4719836435002126e-11,
+              "sampleCount": 63,
+              "excludedZeroReferences": 1
+            }
+          },
+          "v(1)": {
+            "status": "compared",
+            "sampleCount": 64,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 60,
+              "excludedZeroReferences": 4
+            }
+          },
+          "v(1a)": {
+            "status": "compared",
+            "sampleCount": 64,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 60,
+              "excludedZeroReferences": 4
+            }
+          },
+          "v(2)": {
+            "status": "compared",
+            "sampleCount": 64,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 48,
+              "excludedZeroReferences": 16
+            }
+          },
+          "v(2a)": {
+            "status": "compared",
+            "sampleCount": 64,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 48,
+              "excludedZeroReferences": 16
+            }
+          },
+          "v(3)": {
+            "status": "compared",
+            "sampleCount": 64,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": null,
+              "rms": null,
+              "sampleCount": 0,
+              "excludedZeroReferences": 64
+            }
+          }
+        }
+      }
+    },
+    {
+      "key": "xyce/nmos-level1-dc",
+      "inputSha256": "3ab24382b4fb966d2111ba8b2aa0590b989fc09b367c09eb41cc7ac475e0e255",
+      "translatedSha256": "0c0bd6a37fa24cf7926035863e3c262e44ad9803a053f7216bcb1eb08c4336a9",
+      "macSeriesSha256": "93b3a7e274e743ef1da1ccec301bde72443eaa4b7024f258350d0e3d3b2aedf8",
+      "linuxSeriesSha256": "93b3a7e274e743ef1da1ccec301bde72443eaa4b7024f258350d0e3d3b2aedf8",
+      "linuxCsvSha256": "3b13bbc192ef821d24b680bf6610b488a17eee1a0220a8e4f0c9938606edff67",
+      "metrics": {
+        "grid": {
+          "spiceTsPoints": 361,
+          "ngspicePoints": 361,
+          "alignedPoints": 361,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "i(vdd)": {
+            "status": "compared",
+            "sampleCount": 361,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 342,
+              "excludedZeroReferences": 19
+            }
+          },
+          "i(vgg)": {
+            "status": "compared",
+            "sampleCount": 361,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 342,
+              "excludedZeroReferences": 19
+            }
+          },
+          "v(1)": {
+            "status": "compared",
+            "sampleCount": 361,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 342,
+              "excludedZeroReferences": 19
+            }
+          },
+          "v(2)": {
+            "status": "compared",
+            "sampleCount": 361,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 342,
+              "excludedZeroReferences": 19
+            }
+          },
+          "v(3)": {
+            "status": "compared",
+            "sampleCount": 361,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 342,
+              "excludedZeroReferences": 19
+            }
+          },
+          "v(4)": {
+            "status": "compared",
+            "sampleCount": 361,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 342,
+              "excludedZeroReferences": 19
+            }
+          },
+          "v(5)": {
+            "status": "compared",
+            "sampleCount": 361,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 342,
+              "excludedZeroReferences": 19
+            }
+          }
+        }
+      }
+    },
+    {
+      "key": "xyce/npn-dc",
+      "inputSha256": "8775a88a3f9c032ee047d770781a5a0cbcf21a2e28b7b6352e63636a7c9f1ce0",
+      "translatedSha256": "30ba83ff5c9a20e144fcafb954be7197b2f45f6994dd77155f3294b4901b2eca",
+      "macSeriesSha256": "cf7c4fcbb39cb8908db5c2483f703f8fb53819828a47202915a6c9a3a3c4defd",
+      "linuxSeriesSha256": "cf7c4fcbb39cb8908db5c2483f703f8fb53819828a47202915a6c9a3a3c4defd",
+      "linuxCsvSha256": "387ded96ccc0fdd0bd59aec02ec838c7c4f0fa3cfa0f9ca12274f55e2b831315",
+      "metrics": {
+        "grid": {
+          "spiceTsPoints": 13,
+          "ngspicePoints": 13,
+          "alignedPoints": 13,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "i(vcc)": {
+            "status": "compared",
+            "sampleCount": 13,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 12,
+              "excludedZeroReferences": 1
+            }
+          },
+          "i(vmon1)": {
+            "status": "compared",
+            "sampleCount": 13,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 12,
+              "excludedZeroReferences": 1
+            }
+          },
+          "i(vmon2)": {
+            "status": "compared",
+            "sampleCount": 13,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 12,
+              "excludedZeroReferences": 1
+            }
+          },
+          "v(1)": {
+            "status": "compared",
+            "sampleCount": 13,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 12,
+              "excludedZeroReferences": 1
+            }
+          },
+          "v(2)": {
+            "status": "compared",
+            "sampleCount": 13,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 12,
+              "excludedZeroReferences": 1
+            }
+          },
+          "v(3)": {
+            "status": "compared",
+            "sampleCount": 13,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 12,
+              "excludedZeroReferences": 1
+            }
+          },
+          "v(4)": {
+            "status": "compared",
+            "sampleCount": 13,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 12,
+              "excludedZeroReferences": 1
+            }
+          },
+          "v(5)": {
+            "status": "compared",
+            "sampleCount": 13,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 12,
+              "excludedZeroReferences": 1
+            }
+          }
+        }
+      }
+    },
+    {
+      "key": "xyce/pmos-level1-dc",
+      "inputSha256": "767c989ba6c4ad761d2211ae39c9c82536895e76f6288e77276ad9468b2b2093",
+      "translatedSha256": "5e210aebd63a9b6b25fdccc35fc7a1af2a662fde62e5ce45f20d4d07de270378",
+      "macSeriesSha256": "286d3bd88e68c6983075f260e5bc0641f5a5a13499a237ef8cec80bda69959b5",
+      "linuxSeriesSha256": "286d3bd88e68c6983075f260e5bc0641f5a5a13499a237ef8cec80bda69959b5",
+      "linuxCsvSha256": "d40c8c2c611ea4f0e3bf4084796752313ef5fda13919f3fe50f009030757a7cb",
+      "metrics": {
+        "grid": {
+          "spiceTsPoints": 6,
+          "ngspicePoints": 6,
+          "alignedPoints": 6,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "i(vdd)": {
+            "status": "compared",
+            "sampleCount": 6,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 5,
+              "excludedZeroReferences": 1
+            }
+          },
+          "i(vmon)": {
+            "status": "compared",
+            "sampleCount": 6,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 5,
+              "excludedZeroReferences": 1
+            }
+          },
+          "v(1)": {
+            "status": "compared",
+            "sampleCount": 6,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 5,
+              "excludedZeroReferences": 1
+            }
+          },
+          "v(2)": {
+            "status": "compared",
+            "sampleCount": 6,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 5,
+              "excludedZeroReferences": 1
+            }
+          },
+          "v(3)": {
+            "status": "compared",
+            "sampleCount": 6,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 5,
+              "excludedZeroReferences": 1
+            }
+          },
+          "v(4)": {
+            "status": "compared",
+            "sampleCount": 6,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 5,
+              "excludedZeroReferences": 1
+            }
+          }
+        }
+      }
+    },
+    {
+      "key": "xyce/pnp-dc",
+      "inputSha256": "95796ac998eb051a535fcb498c259e715c1e8edd237e1e07add401fc6a1601df",
+      "translatedSha256": "8208fc0d7c72046437e10c2393344cdf7cc27ceb1ce2cebaa5ed6515aae042c4",
+      "macSeriesSha256": "03cb998c1668a486c955e54d7620da4cf5b22979dad7a765b702368d29a13b2a",
+      "linuxSeriesSha256": "e2578e9954b53ee5eb91d8bd25e3e25c331c0d9c80bad2f026e32ebc4dbef150",
+      "linuxCsvSha256": "6f1096fb75d5596e9cd34a6bbd29b31f1b9122eba4479f969341e1de9e1797a0",
+      "metrics": {
+        "grid": {
+          "spiceTsPoints": 30,
+          "ngspicePoints": 30,
+          "alignedPoints": 30,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "i(vbb)": {
+            "status": "compared",
+            "sampleCount": 30,
+            "absoluteError": {
+              "max": 1.6940658945086007e-21,
+              "rms": 3.0929270144084255e-22
+            },
+            "relativeError": {
+              "max": 1.547578061380256e-16,
+              "rms": 2.87378031463393e-17,
+              "sampleCount": 29,
+              "excludedZeroReferences": 1
+            }
+          },
+          "i(vmon1)": {
+            "status": "compared",
+            "sampleCount": 30,
+            "absoluteError": {
+              "max": 1.6940658945086007e-21,
+              "rms": 3.0929270144084255e-22
+            },
+            "relativeError": {
+              "max": 1.547578061380256e-16,
+              "rms": 2.87378031463393e-17,
+              "sampleCount": 29,
+              "excludedZeroReferences": 1
+            }
+          },
+          "i(vmon2)": {
+            "status": "compared",
+            "sampleCount": 30,
+            "absoluteError": {
+              "max": 1.0842021724855044e-19,
+              "rms": 2.2131184171720676e-20
+            },
+            "relativeError": {
+              "max": 1.6507499048249366e-16,
+              "rms": 3.9017333381923877e-17,
+              "sampleCount": 29,
+              "excludedZeroReferences": 1
+            }
+          },
+          "i(vmon3)": {
+            "status": "compared",
+            "sampleCount": 30,
+            "absoluteError": {
+              "max": 1.0842021724855044e-19,
+              "rms": 2.0403943636371544e-20
+            },
+            "relativeError": {
+              "max": 1.4616887011599046e-16,
+              "rms": 3.58092756538784e-17,
+              "sampleCount": 29,
+              "excludedZeroReferences": 1
+            }
+          },
+          "i(vpos)": {
+            "status": "compared",
+            "sampleCount": 30,
+            "absoluteError": {
+              "max": 1.0842021724855044e-19,
+              "rms": 2.0403943636371544e-20
+            },
+            "relativeError": {
+              "max": 1.4616887011599046e-16,
+              "rms": 3.58092756538784e-17,
+              "sampleCount": 29,
+              "excludedZeroReferences": 1
+            }
+          },
+          "v(1)": {
+            "status": "compared",
+            "sampleCount": 30,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 25,
+              "excludedZeroReferences": 5
+            }
+          },
+          "v(2)": {
+            "status": "compared",
+            "sampleCount": 30,
+            "absoluteError": {
+              "max": 1.1102230246251565e-16,
+              "rms": 2.0269806481627057e-17
+            },
+            "relativeError": {
+              "max": 1.6707156591436824e-16,
+              "rms": 3.102441093223822e-17,
+              "sampleCount": 29,
+              "excludedZeroReferences": 1
+            }
+          },
+          "v(3)": {
+            "status": "compared",
+            "sampleCount": 30,
+            "absoluteError": {
+              "max": 5.551115123125783e-17,
+              "rms": 1.4332917616497526e-17
+            },
+            "relativeError": {
+              "max": 6.952211833907893e-16,
+              "rms": 1.3137156278675828e-16,
+              "sampleCount": 29,
+              "excludedZeroReferences": 1
+            }
+          },
+          "v(4)": {
+            "status": "compared",
+            "sampleCount": 30,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 24,
+              "excludedZeroReferences": 6
+            }
+          },
+          "v(5)": {
+            "status": "compared",
+            "sampleCount": 30,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": null,
+              "rms": null,
+              "sampleCount": 0,
+              "excludedZeroReferences": 30
+            }
+          },
+          "v(6)": {
+            "status": "compared",
+            "sampleCount": 30,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 24,
+              "excludedZeroReferences": 6
+            }
+          },
+          "v(7)": {
+            "status": "compared",
+            "sampleCount": 30,
+            "absoluteError": {
+              "max": 1.1102230246251565e-16,
+              "rms": 2.0269806481627057e-17
+            },
+            "relativeError": {
+              "max": 1.6707156591436824e-16,
+              "rms": 3.102441093223822e-17,
+              "sampleCount": 29,
+              "excludedZeroReferences": 1
+            }
+          }
+        }
+      }
+    },
+    {
+      "key": "xyce/resistor-dc",
+      "inputSha256": "c0def3533cd6c07bf3cc6ee06f806c50d0b491d4d70d8296cc286ad8fc6066ba",
+      "translatedSha256": "5e6d0b9c23c1868936fe8748d373454abaf96b44a9da8bfe06c86395dac5f147",
+      "macSeriesSha256": "e180455c01dc0e5247fa565311021db0e51791080856088eb5b982bb69187641",
+      "linuxSeriesSha256": "e180455c01dc0e5247fa565311021db0e51791080856088eb5b982bb69187641",
+      "linuxCsvSha256": "3013f07782dc56e03d9644cf63381fabb02053a64a38d640aff2ca9d0ca0e247",
+      "metrics": {
+        "grid": {
+          "spiceTsPoints": 6,
+          "ngspicePoints": 6,
+          "alignedPoints": 6,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "i(v1)": {
+            "status": "compared",
+            "sampleCount": 6,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 5,
+              "excludedZeroReferences": 1
+            }
+          },
+          "v(1)": {
+            "status": "compared",
+            "sampleCount": 6,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 5,
+              "excludedZeroReferences": 1
+            }
+          }
+        }
+      }
+    },
+    {
+      "key": "xyce/resistor-level3-zero",
+      "inputSha256": "ab40c80d1175ad3079155b07bfed914b7085a6d9396f16a577446deb7693eb81",
+      "translatedSha256": "08ed81bd3379cd6d647b5dc7f4e348d78f8fd07cb8f84a1d8997648e976beefc",
+      "macSeriesSha256": "d8a5d449debd46964aaf814e3716f246304709f3b098d19cd3f18322964337a1",
+      "linuxSeriesSha256": "d8a5d449debd46964aaf814e3716f246304709f3b098d19cd3f18322964337a1",
+      "linuxCsvSha256": "81a33ae645423252aa23ef459f5ec934fa7298ef0b923a7fb04e5c5ade726d6d",
+      "metrics": {
+        "grid": {
+          "spiceTsPoints": 6,
+          "ngspicePoints": 6,
+          "alignedPoints": 6,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "i(v1)": {
+            "status": "compared",
+            "sampleCount": 6,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 5,
+              "excludedZeroReferences": 1
+            }
+          },
+          "v(a)": {
+            "status": "compared",
+            "sampleCount": 6,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 5,
+              "excludedZeroReferences": 1
+            }
+          },
+          "v(b)": {
+            "status": "compared",
+            "sampleCount": 6,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 5,
+              "excludedZeroReferences": 1
+            }
+          }
+        }
+      }
+    },
+    {
+      "key": "xyce/resistor-negative",
+      "inputSha256": "7576379306251dd8c2baf89b4dbbe25527c399edb1fd701e7e5d38e83851614b",
+      "translatedSha256": "cfa7136b140bd3682208dda47f81890974362f3f51385d65197a6c4e9f30249b",
+      "macSeriesSha256": "8d5531ad30bb6a139487655106609ea7142e6b2bd2cf3e9018daefb964b628de",
+      "linuxSeriesSha256": "8d5531ad30bb6a139487655106609ea7142e6b2bd2cf3e9018daefb964b628de",
+      "linuxCsvSha256": "7a8825c4f23f1d4df06d9085c72c99dac1d7f5fef21a5e6f32906e59e74214ba",
+      "metrics": {
+        "grid": {
+          "spiceTsPoints": 6,
+          "ngspicePoints": 6,
+          "alignedPoints": 6,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "i(v1)": {
+            "status": "compared",
+            "sampleCount": 6,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 5,
+              "excludedZeroReferences": 1
+            }
+          },
+          "v(a)": {
+            "status": "compared",
+            "sampleCount": 6,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 5,
+              "excludedZeroReferences": 1
+            }
+          }
+        }
+      }
+    },
+    {
+      "key": "xyce/rlc-transient",
+      "inputSha256": "4d52f9df5eb4fe814fdd137e3f66cd4b4ec6c988174e0fe1c7a19e6eddf21763",
+      "translatedSha256": "69e6453f83b0ad50f82f3bd08cf02ba149151b45c27ad71ed141ab85d76d8a02",
+      "macSeriesSha256": "10c6ae8416806922cce8a1487d9c47f254f9fdde2db196fa2228cef4be0e2eb3",
+      "linuxSeriesSha256": "10c6ae8416806922cce8a1487d9c47f254f9fdde2db196fa2228cef4be0e2eb3",
+      "linuxCsvSha256": "08ad5cb588ee2783711de08f7cf95f3cf63ac3525022a63f2be2e159dbdc8418",
+      "metrics": {
+        "grid": {
+          "spiceTsPoints": 72,
+          "ngspicePoints": 72,
+          "alignedPoints": 72,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "i(l1)": {
+            "status": "compared",
+            "sampleCount": 72,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 71,
+              "excludedZeroReferences": 1
+            }
+          },
+          "i(v1)": {
+            "status": "compared",
+            "sampleCount": 72,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 71,
+              "excludedZeroReferences": 1
+            }
+          },
+          "v(1)": {
+            "status": "compared",
+            "sampleCount": 72,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 71,
+              "excludedZeroReferences": 1
+            }
+          },
+          "v(2)": {
+            "status": "compared",
+            "sampleCount": 72,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 71,
+              "excludedZeroReferences": 1
+            }
+          },
+          "v(3)": {
+            "status": "compared",
+            "sampleCount": 72,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 71,
+              "excludedZeroReferences": 1
+            }
+          }
+        }
+      }
+    },
+    {
+      "key": "xyce/vccs-dc",
+      "inputSha256": "963d8d506600a2ac7f43812156739c8f49d332c50701f64268041ecd51b0306d",
+      "translatedSha256": "083f9010fcc7f2bdfd8700e23028bbaaaade982121c3ff0059af7b8aadec514a",
+      "macSeriesSha256": "6e60b3a26dc6e4210cb8ac62599acfe54ae29d00d33bde19585ade1880fde3bf",
+      "linuxSeriesSha256": "6e60b3a26dc6e4210cb8ac62599acfe54ae29d00d33bde19585ade1880fde3bf",
+      "linuxCsvSha256": "e7a8d683078b09e0b0629b9630ee53ea0b21df47db98938c5a5f20c1e90066ec",
+      "metrics": {
+        "grid": {
+          "spiceTsPoints": 12,
+          "ngspicePoints": 12,
+          "alignedPoints": 12,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "i(vin)": {
+            "status": "compared",
+            "sampleCount": 12,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 12,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(1)": {
+            "status": "compared",
+            "sampleCount": 12,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 12,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(2)": {
+            "status": "compared",
+            "sampleCount": 12,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 12,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(3)": {
+            "status": "compared",
+            "sampleCount": 12,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 12,
+              "excludedZeroReferences": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "key": "xyce/vcvs-dc",
+      "inputSha256": "62541466b4010245a24d2c37b35c3debfc675b86f1bd3b2523fb91a01b4bbd5c",
+      "translatedSha256": "c56ba1b7ed6996d2d04d880f981e1febb56e1bb9b8f3c8b897f6f7334e83a2ef",
+      "macSeriesSha256": "e19c0472eeab8fbe0f1d6d24bd072ab809012e51bfe4ffcf5ea58e19feefbaa3",
+      "linuxSeriesSha256": "e19c0472eeab8fbe0f1d6d24bd072ab809012e51bfe4ffcf5ea58e19feefbaa3",
+      "linuxCsvSha256": "cd82c26b402bfba291d46e5e01239950985f4ebbc472c009963caf1fa7c4bb63",
+      "metrics": {
+        "grid": {
+          "spiceTsPoints": 10,
+          "ngspicePoints": 10,
+          "alignedPoints": 10,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "i(e)": {
+            "status": "compared",
+            "sampleCount": 10,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 10,
+              "excludedZeroReferences": 0
+            }
+          },
+          "i(vin)": {
+            "status": "compared",
+            "sampleCount": 10,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 10,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(1)": {
+            "status": "compared",
+            "sampleCount": 10,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 10,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(2)": {
+            "status": "compared",
+            "sampleCount": 10,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 10,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(3)": {
+            "status": "compared",
+            "sampleCount": 10,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 10,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(4)": {
+            "status": "compared",
+            "sampleCount": 10,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 10,
+              "excludedZeroReferences": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "key": "corpus-e/diode-bias-sweep",
+      "inputSha256": "f84c531a2e0b4ef201f1cef5d85279b360d5fd20d17d3deb91563581a9371055",
+      "translatedSha256": "62d66662013b4290bcd8736ce51eeab1956fb56304932bec4d8b8b4beb020de0",
+      "macSeriesSha256": "500294dc295d83a31002ee09b63d3ce69cfb91bdd61ccd393d889a0e883407f6",
+      "linuxSeriesSha256": "500294dc295d83a31002ee09b63d3ce69cfb91bdd61ccd393d889a0e883407f6",
+      "linuxCsvSha256": "c471c31fe47273badfc3034c1410ec688b323b38c758fb1303c2cf991459d275",
+      "metrics": {
+        "grid": {
+          "spiceTsPoints": 11,
+          "ngspicePoints": 11,
+          "alignedPoints": 11,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "i(v1)": {
+            "status": "compared",
+            "sampleCount": 11,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 10,
+              "excludedZeroReferences": 1
+            }
+          },
+          "v(1)": {
+            "status": "compared",
+            "sampleCount": 11,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 10,
+              "excludedZeroReferences": 1
+            }
+          },
+          "v(2)": {
+            "status": "compared",
+            "sampleCount": 11,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 10,
+              "excludedZeroReferences": 1
+            }
+          }
+        }
+      }
+    }
+  ]
+}

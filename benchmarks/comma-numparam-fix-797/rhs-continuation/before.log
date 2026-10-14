@@ -1,0 +1,15 @@
+spice-heavy: all 2 heavy slots busy, waiting...
+spice-heavy: got slot 1
+top-numeric reference {'v(o)': 5.0} native Parse error at line 7: Cannot parse number: '{}'
+  Xchild o cell alpha={} 5
+top-bare reference {'v(o)': 5.0} native Parse error at line 7: Cannot parse number: '{}'
+  Xchild o cell alpha={} seed*2
+top-braced reference {'v(o)': 5.0} native Missing } in subcircuit call
+top-quoted reference {'v(o)': 5.0} native Missing quote in subcircuit call
+top-comments reference {'v(o)': 5.0} native Parse error at line 7: Cannot parse number: '{}'
+  Xchild o cell alpha={} {seed *2}
+nested-numeric reference {'v(o)': 5.0} native Unexpected character 'EOF' at position 0
+nested-bare reference {'v(o)': 5.0} native Unexpected character 'EOF' at position 0
+nested-braced reference {'v(o)': 5.0} native Missing } in subcircuit call
+nested-quoted reference {'v(o)': 5.0} native Missing quote in subcircuit call
+nested-comments reference {'v(o)': 5.0} native Unexpected character 'EOF' at position 0
