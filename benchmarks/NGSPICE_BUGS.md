@@ -13,6 +13,8 @@ Engines:
 
 ## Totals
 
+Current #812 refresh and #803 pin/oracle investigation: [refresh](corpus/ngspice-bugs/REFRESH_812.md), [bounded recovery](corpus/ngspice-bugs/PIN_RECOVERY_803.md). Five unreconstructed pins remain provenance gaps, not parser failures. Ticket 737 executes but has no full-waveform oracle; a NEW operating-point diagnostic disagrees with ngspice LTPS and is not a correctness win. Ticket 725 has disclosed log-attachment drift, not an executed-input re-pin. Historical engine verdicts and the original 25-ticket denominator are retained.
+
 - Tickets: 134 (121 open, 13 open-accepted).
 - Simulator-relevant with a runnable deck: 57. Defect reproduced on ngspice-47: 31; still present on master: 27; fixed on master: 3.
 - ngspice defective, spice-ts correct: 12.

@@ -37,4 +37,6 @@ undetermined: vendor macromodels; reported to work in KiCad (embedded ngspice wi
 
 Reproduces on ngspice-47: yes. Check: AC operating point aborts with Timestep too small.
 
+Notes: #803 recovery: 64512 unique deterministic candidate hashes per pinned variant, zero matches. Both archive decks are byte-identical (1433 bytes), but the recorded derived pins differ; their recipes cannot be inferred from KiCad export conventions. See PIN_RECOVERY_803.md and reconstruction-803.json; no substitute executed and no pins changed.
+
 Engines: ngspice-47 = ngspice-47 (Homebrew build, KLU), `ngspice -b [-r out.raw] <deck>`; master = ngspice pre-master-48 HEAD 3ef069fb1f04177a153f342a32d941fc20ff047e (2026-10-09, "Fixes bug 876"), configure --with-x=no --disable-debug --enable-xspice --enable-osdi --with-readline=no --disable-openmp; spice-ts = @spice-ts/core 0.3.0 at main 45d6ea73, simulate(<deck>) with a filesystem include resolver.

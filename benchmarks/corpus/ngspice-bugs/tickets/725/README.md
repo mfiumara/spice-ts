@@ -45,6 +45,6 @@ Reproduces on ngspice-47: partially. Check: The dot-card klu.cir reports interna
 
 Candidate upstream fix: Safely handle absent/floating switch-control matrix entries in KLU setup/loading; do not dereference missing bindings.
 
-Notes: Primary supplied netlist has malformed/missing models and floating internal subcircuits; developer provided this valid minimal crash-focused case. No physical output exists for floating control potentials.
+Notes: #803 recovery: fetched discussion 20241114182415.log is 2314 bytes, SHA256 bfc5ea49f206bda2371c50aa21cdc7af986dcce6f02f20d7dbddd8d958d4b7e4, versus authoritative recorded 2205 bytes / 04222eadf797543fe313672e070e214c4f690463eedfe20e621c6e85836a84a2. Not an executed input; no re-pin. The primary same-named attachment and -klu.log still match; fetch exits 1. Primary supplied netlist has malformed/missing models and floating internal subcircuits; developer provided this valid minimal crash-focused case. No physical output exists for floating control potentials.
 
 Engines: ngspice-47 = ngspice-47 (Homebrew build, KLU), `ngspice -b [-r out.raw] <deck>`; master = ngspice pre-master-48 HEAD 3ef069fb1f04177a153f342a32d941fc20ff047e (2026-10-09, "Fixes bug 876"), configure --with-x=no --disable-debug --enable-xspice --enable-osdi --with-readline=no --disable-openmp; spice-ts = @spice-ts/core 0.3.0 at main 45d6ea73, simulate(<deck>) with a filesystem include resolver.

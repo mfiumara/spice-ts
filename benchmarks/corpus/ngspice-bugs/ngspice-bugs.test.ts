@@ -1,11 +1,14 @@
 import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { existsSync } from 'node:fs';
-import { readFile } from 'node:fs/promises';
+import { readFile, mkdtemp, mkdir, writeFile, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { describe, it } from 'node:test';
 import { gunzipSync } from 'node:zlib';
+import { oracleDiagnostic } from './oracle-diagnostics.js';
 import {
   CATEGORIES,
   EXPECTED_BASES,
@@ -38,6 +41,121 @@ function entry(manifest: Manifest, ticket: number): TicketEntry {
 }
 
 describe('ngspice-bugs manifest', () => {
+  it('#737: source-bearing engine errors are reduced to fixed codes and hashes', () => {
+    const text = 'Error on line 9: .subckt VENDOR 1 2\n.model SECRET D(IS=1e-12)\nb.xvendor 1 0 v={vendor_expression}';
+    assert.deepEqual(oracleDiagnostic(text), { code: 'parse-error', sha256: createHash('sha256').update(text).digest('hex') });
+    assert.equal(oracleDiagnostic('Timestep too small: ' + text).code, 'timestep-too-small');
+    assert.equal(oracleDiagnostic(text, true).code, 'completed');
+    assert.equal(oracleDiagnostic('Unknown error: ' + text.replace('Error on line', 'line')).code, 'failed');
+  });
+
+  it('#737: committed oracle diagnostics contain only allowlisted metadata, never source text', async () => {
+    for (const path of ['oracle-737.json', 'reconstruction-803.json', 'clean-cache-1046.json']) {
+      const text = await readFile(resolve(HERE, path), 'utf8');
+      assert.equal(/\.(?:subckt|model|include)\b|b\.x\w*\.[^ ]*\s+[^ ]+\s+[^ ]+\s+v=/i.test(text), false, `${path} contains source fragments`);
+    }
+    const text = await readFile(resolve(HERE, 'oracle-737.json'), 'utf8');
+    const receipt = JSON.parse(text);
+    for (const row of receipt.rows) {
+      if (row.spiceTs.status === 'failed') {
+        assert.equal(typeof row.spiceTs.error, 'object');
+        assert.deepEqual(Object.keys(row.spiceTs.error).sort(), ['code', 'sha256']);
+      }
+      for (const run of row.ngspice) {
+        assert.equal(typeof run.diagnostics, 'object');
+        assert.deepEqual(Object.keys(run.diagnostics).sort(), ['code', 'sha256']);
+        assert.match(run.diagnostics.sha256, /^[a-f0-9]{64}$/);
+        assert.ok(['completed', 'parse-error', 'timestep-too-small', 'failed'].includes(run.diagnostics.code));
+        assert.ok(!('error' in run), 'no free-form spawn error');
+      }
+    }
+  });
+
+  it('#737: clean-cache receipt retains five gaps and exactly one pinned execution', async () => {
+    const receipt = JSON.parse(await readFile(resolve(HERE, 'clean-cache-1046.json'), 'utf8'));
+    const manifest = await loadManifest();
+    const gaps = receipt.rows.filter((row: any) => row.status === 'provenance-gap');
+    const runs = receipt.rows.filter((row: any) => row.status !== 'provenance-gap');
+    assert.equal(receipt.cleanCache, true);
+    assert.equal(gaps.length, 5);
+    assert.equal(runs.length, 1);
+    for (const row of gaps) {
+      assert.equal(row.actualSha256, null);
+      assert.equal(entry(manifest, row.ticket).uncommittedDecks.find(deck => deck.name === row.deck)?.sha256, row.expectedSha256);
+    }
+    assert.equal(runs[0].ticket, 737);
+    assert.equal(runs[0].netlistSha256, entry(manifest, 737).uncommittedDecks[0].sha256);
+    assert.equal(runs[0].spiceTsStatus, 'success');
+    assert.equal(runs[0].ngspiceStatus, 'failed');
+    assert.equal(runs[0].spiceTsPoints, 30771);
+  });
+
+  it('#737: fresh archive preparation materializes only the exact derived pin', async () => {
+    const { prepare737 } = await import('./prepare-737.js');
+    const directory = await mkdtemp(resolve(tmpdir(), 'prepare-737-test-'));
+    try {
+      const source = resolve(directory, 'source');
+      const fetched = resolve(directory, 'fetched');
+      await mkdir(source);
+      await mkdir(fetched);
+      // Synthetic source, not redistributed vendor material.
+      const original = 'Synthetic preparation fixture\r\n.include "D:/spice_lib/test.lib"\r\n.op\r\n.end\r\n';
+      const expected = 'Synthetic preparation fixture\n.include spice_lib/test.lib\n.op\n.end\n';
+      const hash = (text: string | Buffer) => createHash('sha256').update(text).digest('hex');
+      await writeFile(resolve(source, 'OPA890Test.cir'), original);
+      execFileSync('tar', ['-cf', resolve(fetched, 'Test.zip'), '-C', source, 'OPA890Test.cir']);
+      const pins = { archiveSha256: hash(await readFile(resolve(fetched, 'Test.zip'))), deckSha256: hash(expected), deckName: 'OPA890Test.local.cir' };
+      assert.equal(existsSync(resolve(fetched, pins.deckName)), false);
+      await prepare737(fetched, pins);
+      assert.equal(await readFile(resolve(fetched, pins.deckName), 'utf8'), expected);
+      await rm(resolve(fetched, pins.deckName));
+      await assert.rejects(prepare737(fetched, { ...pins, deckSha256: '0'.repeat(64) }), /deck pin mismatch/);
+      assert.equal(existsSync(resolve(fetched, pins.deckName)), false);
+      await assert.rejects(prepare737(fetched, { ...pins, archiveSha256: '0'.repeat(64) }), /archive pin mismatch/);
+    } finally { await rm(directory, { recursive: true, force: true }); }
+  });
+
+  it('#803: bounded recovery preserves the five original pins and never scores gaps', async () => {
+    const recovery = JSON.parse(await readFile(resolve(HERE, 'reconstruction-803.json'), 'utf8'));
+    const manifest = await loadManifest();
+    assert.equal(recovery.rows.length, 5);
+    assert.equal(new Set(recovery.rows.map((row: any) => `${row.ticket}/${row.deck}`)).size, 5);
+    for (const row of recovery.rows) {
+      const ticket = entry(manifest, row.ticket);
+      assert.equal(ticket.uncommittedDecks.find(deck => deck.name === row.deck)?.sha256, row.expectedSha256);
+      assert.equal(row.status, 'provenance-gap');
+      assert.deepEqual(row.matches, []);
+      assert.ok(row.attemptCount > 1000);
+      assert.match(row.attemptedHashSetSha256, /^[a-f0-9]{64}$/);
+      assert.ok(row.examples.length > 1);
+      for (const attempt of row.examples) {
+        assert.match(attempt.sha256, /^[a-f0-9]{64}$/);
+        assert.notEqual(attempt.sha256, row.expectedSha256);
+      }
+      assert.notEqual(ticket.spiceTs.verdict, 'right');
+    }
+  });
+
+  it('#737: partial OP oracle is not a complete transient correctness win', async () => {
+    const receipt = JSON.parse(await readFile(resolve(HERE, 'oracle-737.json'), 'utf8'));
+    assert.equal(receipt.rows.length, 5);
+    const ticket = entry(await loadManifest(), 737);
+    assert.notEqual(ticket.spiceTs.verdict, 'right');
+    assert.equal(receipt.rows[0].sha256, ticket.uncommittedDecks[0].sha256);
+    assert.equal(receipt.rows[0].spiceTs.finalTime, 0.01);
+    for (const row of receipt.rows.slice(0, 4)) {
+      assert.ok(row.ngspice.every((run: any) => run.exitCode !== 0));
+    }
+    const op = receipt.rows.at(-1);
+    assert.equal(op.name, 'NEW-op');
+    const native = op.ngspice.find((run: any) => run.mode === 'ltps');
+    assert.equal(native.exitCode, 0);
+    assert.equal(native.plots[0].points, 1);
+    // Publish disagreement, not a tolerance-tuned pass on a different analysis.
+    const reference = native.plots[0].signals['i(v159)'][0].re;
+    assert.ok(Math.abs(op.spiceTs.currents.V159 - reference) > 1e-4);
+  });
+
   it('lists every harvested ticket once, sorted, with valid enums', async () => {
     const manifest = await loadManifest();
     assert.equal(manifest.tickets.length, manifest.harvest.count);
