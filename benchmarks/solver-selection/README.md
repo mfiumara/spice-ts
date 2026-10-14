@@ -12,7 +12,11 @@ No stderr diagnostic is added and ngspice's KLU noise/PZ refusals are not emulat
 Baseline core `e89ed6a9f0836dea7d613ac303ad1f3a1b065cf4` includes only the RED
 regression commit on top of `a521e9e2`. After core
 `7442372721074e0e3e0237862768e7fc5963eb76` includes the parser/type fix.
-Subsequent changes add only evidence and control-parser assertions.
+Subsequent lane changes add only evidence and control-parser assertions.
+An origin/main merge at `822bdec67610a59766eb9c2b7b90b28e65c76cda` brings
+upstream changes, including #1009's repeated-dot-analysis retention. The separate
+`postMain` receipt reruns every variant on that merged source, with identical
+pins; the earlier before/after evidence is retained rather than overwritten.
 Node v22.23.1, darwin arm64, Apple M5 Pro, Homebrew ngspice-47 with KLU.
 
 Every one of the 14 variants was verified against its existing manifest SHA-256
@@ -52,6 +56,15 @@ this baseline. These gaps and 720's sibling-owned sensitivity work are reported,
 not fixed here.
 
 ## Comparison metrics, including residual losses
+
+Final post-main results keep the same 8 complete / 4 singular / 2 unsupported
+denominator. #1009 now exports both 13-row AC sweeps plus the 59-row transient
+on 852. Both sparse AC sweeps match with the same errors in the table below;
+the historical missing second plot is resolved upstream, not by the option fix.
+Native KLU completes this final trial, but one of its AC plots contains
+non-finite values: the harness serializes its max/RMS as null. That plot is
+unscorable, not a zero-error win. The other KLU AC plot has the exploratory
+metrics below; all final samples and null metrics are retained in `postMain`.
 
 Existing aggregate harness matches grids with linear alignment; no endpoints
 are excluded in the comparisons below. Full grids, signals, all root errors,
@@ -115,7 +128,7 @@ Changed non-input log on 725: actual
 It is not supplied to either simulator and its pin was not changed.
 
 `receipts.json.gz` is losslessly compressed JSON containing baseline, committed
-post-fix, exploratory post-fix and explicit native diagnostic executions.
+post-fix, exploratory post-fix, post-main-merge and explicit native diagnostic executions.
 Absolute workspace/scratch prefixes are sanitized; numerical samples are not
 truncated. No complete third-party netlist or model library is included;
 native error diagnostics retain the small excerpts printed by ngspice.

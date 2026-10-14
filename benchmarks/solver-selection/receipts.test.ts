@@ -8,7 +8,7 @@ const manifest = JSON.parse(readFileSync(new URL('../corpus/ngspice-bugs/manifes
 const ids = [645, 690, 691, 718, 720, 725, 852];
 
 test('all 14 before/after executions use matching existing pins', () => {
-  for (const phase of ['before', 'after', 'exploratoryAfter']) {
+  for (const phase of ['before', 'after', 'exploratoryAfter', 'postMain']) {
     const rows = receipts[phase].slice(1);
     assert.equal(rows.length, 14);
     assert.equal(new Set(rows.map((row: { ticket: number; solver: string }) => `${row.ticket}/${row.solver}`)).size, 14);
@@ -39,4 +39,14 @@ test('solver variants have exactly equal native execution results; downstream ga
   const signals = sparse690.receipt.spiceTs.analyses[0].series.signals;
   assert.deepEqual(Object.keys(signals), ['v(pole(1))']);
   assert.ok(Math.abs(signals['v(pole(1))'][0].re / (-1 / 1.5e-8) - 1) < 1e-12);
+});
+
+test('merged #1009 retains both dot-AC plots without hiding the older missing-plot loss', () => {
+  for (const ticket of ids) {
+    const pair = receipts.postMain.slice(1).filter((row: { ticket: number }) => row.ticket === ticket);
+    assert.deepEqual(pair[0].receipt.spiceTs, pair[1].receipt.spiceTs);
+  }
+  const sparse = receipts.postMain.slice(1).find((row: { ticket: number; solver: string }) => row.ticket === 852 && row.solver === 'sparse');
+  assert.equal(sparse.receipt.spiceTs.analyses.filter((item: { type: string }) => item.type === 'ac').length, 2);
+  assert.ok(sparse.receipt.comparisons.every((item: { unmatched?: string }) => item.unmatched === undefined));
 });
