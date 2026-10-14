@@ -173,6 +173,10 @@ export class EKV26 implements DeviceModel {
     if (temperature !== this.params.TNOM) throw new UnsupportedTemperatureError(this.name, temperature, 'EKV26 beyond TNOM');
   }
 
+  getTemperature(): number {
+    return this.params.TNOM;
+  }
+
   evaluate(voltages: readonly [number, number, number, number]): EKVEvaluation {
     const p = this.params;
     const [d, g, s, b] = voltages;

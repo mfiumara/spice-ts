@@ -97,6 +97,18 @@ describe('EKV 2.6 static device', () => {
     expect(degraded.evaluate([1, 1, 0, 0]).current).toBeLessThan(unbiased);
   });
 
+  it.each(['27 40 13', '40 27 -13'])('rejects off-nominal DC TEMP sweeps (%s) instead of silently skipping EKV', async grid => {
+    await expect(simulate(deck().replace('.op', `.dc TEMP ${grid}`))).rejects.toMatchObject({
+      code: 'UNSUPPORTED_TEMPERATURE',
+    });
+  });
+
+  it('allows a nominal DC TEMP point with unchanged current', async () => {
+    const nominal = await simulate(deck());
+    const swept = await simulate(deck().replace('.op', '.dc TEMP 27 27 1'));
+    expect(swept.dcSweep!.current('VD')[0]).toBeCloseTo(nominal.dc!.current('VD'), 14);
+  });
+
   it('reports named deferred parameters and rejects nonnominal temperature', async () => {
     const result = await simulate(deck('TCV=0.001 KF=1e-20'));
     for (const parameter of ['TCV', 'KF']) {
