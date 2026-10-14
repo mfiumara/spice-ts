@@ -13,6 +13,17 @@ guarded runner. Runner, regression tests and report checker are original MIT
 project work. Common-vector metrics, missing-vector inventories and the n-12
 unmatched-plot loss are all published; no aggregate refresh or tolerance change.
 
+## MOS1 per-iteration history trace (#1080)
+
+[mos1-invert1-1080/HISTORY.md](mos1-invert1-1080/HISTORY.md) traces the
+unchanged, already-pinned GPL-3.0-or-later Xyce `invert1.cir` fixture on
+both engines. Original MIT observation/parser scripts and generated numeric
+receipts are provided. `native-history.patch` adds observation statements
+to ngspice-47 (https://github.com/imr/ngspice/tree/ngspice-47); its small
+upstream context remains subject to ngspice's modified BSD/Berkeley notices
+and COPYING. No complete native source or adapted fixture is redistributed.
+The original 0.249 mismatch and all other corpus-m losses remain published.
+
 ## Diode hidden state and source-step factorization (#917)
 
 [native-state-917](native-state-917/README.md) contains an original MIT

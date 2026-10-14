@@ -1,0 +1,137 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_56290cad/packages/core
+
+ ❯ src/devices/mos6-series-resistance-1083.test.ts (15 tests | 13 failed) 59ms
+     × 'direct takes precedence and scales wi…' matches explicit external resistors in OP and AC 24ms
+     × 'sheet and squares scale with M' matches explicit external resistors in OP and AC 9ms
+     × 'sheet defaults to one square' matches explicit external resistors in OP and AC 2ms
+     ✓ 'explicit zero without sheet is a short' matches explicit external resistors in OP and AC 13ms
+     × 'zero squares suppress prime nodes' matches explicit external resistors in OP and AC 1ms
+     × 'explicit zero drain with sheet is open' matches explicit external resistors in OP and AC 1ms
+     × 'explicit zero source with sheet is op…' matches explicit external resistors in OP and AC 1ms
+     × 'direct takes precedence and scales wi…' creates only finite resistors and preserves prime/bulk nodes 1ms
+     × 'sheet and squares scale with M' creates only finite resistors and preserves prime/bulk nodes 1ms
+     × 'sheet defaults to one square' creates only finite resistors and preserves prime/bulk nodes 1ms
+     ✓ 'explicit zero without sheet is a short' creates only finite resistors and preserves prime/bulk nodes 1ms
+     × 'zero squares suppress prime nodes' creates only finite resistors and preserves prime/bulk nodes 1ms
+     × 'explicit zero drain with sheet is open' creates only finite resistors and preserves prime/bulk nodes 1ms
+     × 'explicit zero source with sheet is op…' creates only finite resistors and preserves prime/bulk nodes 1ms
+     × stamps transient charges behind the prime nodes like external resistors 1ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 13 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/devices/mos6-series-resistance-1083.test.ts > MOS6 series prime terminals (#1083) > 'direct takes precedence and scales wi…' matches explicit external resistors in OP and AC
+ FAIL  src/devices/mos6-series-resistance-1083.test.ts > MOS6 series prime terminals (#1083) > 'explicit zero source with sheet is op…' matches explicit external resistors in OP and AC
+InvalidCircuitError: MOSFET level 6 model 'N': series resistance parameter RD is not supported
+ ❯ resolveMOS6Model src/devices/mos6.ts:132:13
+    130|     const value = params[parameter];
+    131|     if (value !== undefined && value !== 0) {
+    132|       throw new InvalidCircuitError(
+       |             ^
+    133|         `MOSFET level 6 model '${name}': series resistance parameter $…
+    134|       );
+ ❯ Circuit.compile src/circuit.ts:2466:15
+ ❯ simulate src/simulate.ts:132:28
+ ❯ src/devices/mos6-series-resistance-1083.test.ts:46:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/13]⎯
+
+ FAIL  src/devices/mos6-series-resistance-1083.test.ts > MOS6 series prime terminals (#1083) > 'sheet and squares scale with M' matches explicit external resistors in OP and AC
+ FAIL  src/devices/mos6-series-resistance-1083.test.ts > MOS6 series prime terminals (#1083) > 'sheet defaults to one square' matches explicit external resistors in OP and AC
+ FAIL  src/devices/mos6-series-resistance-1083.test.ts > MOS6 series prime terminals (#1083) > 'zero squares suppress prime nodes' matches explicit external resistors in OP and AC
+InvalidCircuitError: MOSFET level 6 model 'N': series resistance parameter RSH is not supported
+ ❯ resolveMOS6Model src/devices/mos6.ts:132:13
+    130|     const value = params[parameter];
+    131|     if (value !== undefined && value !== 0) {
+    132|       throw new InvalidCircuitError(
+       |             ^
+    133|         `MOSFET level 6 model '${name}': series resistance parameter $…
+    134|       );
+ ❯ Circuit.compile src/circuit.ts:2466:15
+ ❯ simulate src/simulate.ts:132:28
+ ❯ src/devices/mos6-series-resistance-1083.test.ts:46:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/13]⎯
+
+ FAIL  src/devices/mos6-series-resistance-1083.test.ts > MOS6 series prime terminals (#1083) > 'explicit zero drain with sheet is open' matches explicit external resistors in OP and AC
+InvalidCircuitError: MOSFET level 6 model 'N': series resistance parameter RS is not supported
+ ❯ resolveMOS6Model src/devices/mos6.ts:132:13
+    130|     const value = params[parameter];
+    131|     if (value !== undefined && value !== 0) {
+    132|       throw new InvalidCircuitError(
+       |             ^
+    133|         `MOSFET level 6 model '${name}': series resistance parameter $…
+    134|       );
+ ❯ Circuit.compile src/circuit.ts:2466:15
+ ❯ simulate src/simulate.ts:132:28
+ ❯ src/devices/mos6-series-resistance-1083.test.ts:46:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/13]⎯
+
+ FAIL  src/devices/mos6-series-resistance-1083.test.ts > MOS6 series prime terminals (#1083) > 'direct takes precedence and scales wi…' creates only finite resistors and preserves prime/bulk nodes
+ FAIL  src/devices/mos6-series-resistance-1083.test.ts > MOS6 series prime terminals (#1083) > 'explicit zero source with sheet is op…' creates only finite resistors and preserves prime/bulk nodes
+InvalidCircuitError: MOSFET level 6 model 'N': series resistance parameter RD is not supported
+ ❯ resolveMOS6Model src/devices/mos6.ts:132:13
+    130|     const value = params[parameter];
+    131|     if (value !== undefined && value !== 0) {
+    132|       throw new InvalidCircuitError(
+       |             ^
+    133|         `MOSFET level 6 model '${name}': series resistance parameter $…
+    134|       );
+ ❯ Circuit.compile src/circuit.ts:2466:15
+ ❯ src/devices/mos6-series-resistance-1083.test.ts:58:55
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/13]⎯
+
+ FAIL  src/devices/mos6-series-resistance-1083.test.ts > MOS6 series prime terminals (#1083) > 'sheet and squares scale with M' creates only finite resistors and preserves prime/bulk nodes
+ FAIL  src/devices/mos6-series-resistance-1083.test.ts > MOS6 series prime terminals (#1083) > 'sheet defaults to one square' creates only finite resistors and preserves prime/bulk nodes
+ FAIL  src/devices/mos6-series-resistance-1083.test.ts > MOS6 series prime terminals (#1083) > 'zero squares suppress prime nodes' creates only finite resistors and preserves prime/bulk nodes
+InvalidCircuitError: MOSFET level 6 model 'N': series resistance parameter RSH is not supported
+ ❯ resolveMOS6Model src/devices/mos6.ts:132:13
+    130|     const value = params[parameter];
+    131|     if (value !== undefined && value !== 0) {
+    132|       throw new InvalidCircuitError(
+       |             ^
+    133|         `MOSFET level 6 model '${name}': series resistance parameter $…
+    134|       );
+ ❯ Circuit.compile src/circuit.ts:2466:15
+ ❯ src/devices/mos6-series-resistance-1083.test.ts:58:55
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/13]⎯
+
+ FAIL  src/devices/mos6-series-resistance-1083.test.ts > MOS6 series prime terminals (#1083) > 'explicit zero drain with sheet is open' creates only finite resistors and preserves prime/bulk nodes
+InvalidCircuitError: MOSFET level 6 model 'N': series resistance parameter RS is not supported
+ ❯ resolveMOS6Model src/devices/mos6.ts:132:13
+    130|     const value = params[parameter];
+    131|     if (value !== undefined && value !== 0) {
+    132|       throw new InvalidCircuitError(
+       |             ^
+    133|         `MOSFET level 6 model '${name}': series resistance parameter $…
+    134|       );
+ ❯ Circuit.compile src/circuit.ts:2466:15
+ ❯ src/devices/mos6-series-resistance-1083.test.ts:58:55
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/13]⎯
+
+ FAIL  src/devices/mos6-series-resistance-1083.test.ts > MOS6 series prime terminals (#1083) > stamps transient charges behind the prime nodes like external resistors
+InvalidCircuitError: MOSFET level 6 model 'N': series resistance parameter RD is not supported
+ ❯ resolveMOS6Model src/devices/mos6.ts:132:13
+    130|     const value = params[parameter];
+    131|     if (value !== undefined && value !== 0) {
+    132|       throw new InvalidCircuitError(
+       |             ^
+    133|         `MOSFET level 6 model '${name}': series resistance parameter $…
+    134|       );
+ ❯ Circuit.compile src/circuit.ts:2466:15
+ ❯ simulate src/simulate.ts:132:28
+ ❯ src/devices/mos6-series-resistance-1083.test.ts:71:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/13]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  13 failed | 2 passed (15)
+   Start at  19:09:47
+   Duration  1.97s (transform 1.48s, setup 0ms, import 1.75s, tests 59ms, environment 0ms)
+
+JUNIT report written to /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_56290cad/packages/core/test-results.xml
