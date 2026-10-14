@@ -1,5 +1,18 @@
 # Benchmark sources
 
+## corpus-m AC, diode and MOS device batch (#1045)
+
+24 unchanged decks from Xyce_Regression at
+`7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2`, GPL-3.0-or-later under the
+retained repository README grant. Per-deck pinned upstream URLs, SHA-256,
+licences, rejected candidates and selection policy are in
+[corpus-m/SOURCES.md](corpus/corpus-m/SOURCES.md); licence texts are retained
+under `corpus/corpus-m/licenses/xyce/`. All other corpus directories were
+hash-deduplicated, including terminal-newline variants. Selection uses only
+source families, static checks and unchanged ngspice-47 probe success, never
+spice-ts outcomes. All results and losses are in corpus-m/outcomes.json and
+README.md. No fixture adaptations, threshold tuning, core edits or aggregate refresh.
+
 ## MOS3 transient diagnosis (#1059)
 
 [issue-1059](results/issue-1059/report.md) reruns unchanged corpus-l MOS3

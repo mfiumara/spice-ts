@@ -1,0 +1,262 @@
+{
+  "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+  "ngspice": "ngspice-47",
+  "command": "spice-heavy pnpm exec tsx benchmarks/corpus/corpus-m/probe.ts",
+  "probes": [
+    {
+      "sourcePath": "Netlists/4049OSC/4049osc.cir",
+      "sha256": "17213048661e53c9922a071ebb1aa9f55f672e77ed91cf696cbc4588be973923",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error on line 16 or its substitute:"
+    },
+    {
+      "sourcePath": "Netlists/ACtests/RC_simple.cir",
+      "sha256": "e992eced2155febdb8b79922f0579a4798838385b7aa573dff5440719d9d7df9",
+      "status": "success",
+      "plots": [
+        "ac"
+      ]
+    },
+    {
+      "sourcePath": "Netlists/ACtests/bsim3/gain-stage1.cir",
+      "sha256": "7e5543b02926b53ca4d7346f5f90934d6cf90dac99f9861e7b9b72868f5f3dea",
+      "status": "success",
+      "plots": [
+        "ac"
+      ]
+    },
+    {
+      "sourcePath": "Netlists/ACtests/bsim3/op-amp.cir",
+      "sha256": "003a743c4b7e1194f03a7f182ad3708f59e83b6138d0dee76b3d07c94d7c1bb2",
+      "status": "success",
+      "plots": [
+        "ac"
+      ]
+    },
+    {
+      "sourcePath": "Netlists/ACtests/bsim3/step-op-amp.cir",
+      "sha256": "705443e029bde0e72d440db118991e38e9af319353cf916089e193ab36c4018f",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error on line 32 or its substitute:"
+    },
+    {
+      "sourcePath": "Netlists/ACtests/bsim3soi/gain-stagesoi_default.cir",
+      "sha256": "5b077be2cd8700ea04a265730b0d65b04aae5ce370b9e9c285f0bbb972a6b2bf",
+      "status": "success",
+      "plots": [
+        "ac"
+      ]
+    },
+    {
+      "sourcePath": "Netlists/ACtests/bsim3soi/gain-stagesoi_default_spice.cir",
+      "sha256": "428d1d5136e9918fd03eb6de06e2dd544d20bf24454b77236ded5db8400494e7",
+      "status": "success",
+      "plots": [
+        "ac"
+      ]
+    },
+    {
+      "sourcePath": "Netlists/ACtests/diffpair_spiceManOld.cir",
+      "sha256": "f7d00398679f273143abbffd547981003a3b7f488fce523a82062952d0c79c99",
+      "status": "success",
+      "plots": [
+        "ac"
+      ]
+    },
+    {
+      "sourcePath": "Netlists/ACtests/gminstepping/opamp-vf-gstepping.cir",
+      "sha256": "028226bbf4b112415a3a0a619cdfe936510db3ede71c186185625424236cfce6",
+      "status": "success",
+      "plots": [
+        "ac"
+      ]
+    },
+    {
+      "sourcePath": "Netlists/ACtests/gminstepping/opamp-vf.cir",
+      "sha256": "957bd3affee194c864ec63b8a8c4d6c3cc8af5bdd490495c0af803f915a87856",
+      "status": "success",
+      "plots": [
+        "ac"
+      ]
+    },
+    {
+      "sourcePath": "Netlists/ACtests/lowpass_old.cir",
+      "sha256": "64e70fd6d088b03105a1bcb80b2286d7f7f2a521ab3d3ba8ca6a724fd7bb4269",
+      "status": "success",
+      "plots": [
+        "ac"
+      ]
+    },
+    {
+      "sourcePath": "Netlists/ACtests/rca3040.cir",
+      "sha256": "bc9e9f061c34a0493f81e766541ac1ab2f46ba6e5ab4819908be532387ad9347",
+      "status": "success",
+      "plots": [
+        "ac"
+      ]
+    },
+    {
+      "sourcePath": "Netlists/ACtests/reg0.cir",
+      "sha256": "778becd53220f9f8a265d39f5a592afcd6b86ec413e32c3592a79b08aef83eb4",
+      "status": "success",
+      "plots": [
+        "ac"
+      ]
+    },
+    {
+      "sourcePath": "Netlists/ACtests/test1.cir",
+      "sha256": "22d734223b90d7e9c3147680b5a92418c7e39cef36c7abf2acdeda256a9681c1",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error: no such function 'if' at line 7"
+    },
+    {
+      "sourcePath": "Netlists/CAPACITOR/ErrorMessageTest.cir",
+      "sha256": "3772204d686833b8d88b99416e84aefeea0b8de849db5164e902be3c317e34c4",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error on line 24 or its substitute:"
+    },
+    {
+      "sourcePath": "Netlists/DIODE/diode_with_sidewall_mjsw.cir",
+      "sha256": "412a65ec4ff6660107a4c1e8e1bc49bff56bb6357f4c56cf40db4aae90112b59",
+      "status": "success",
+      "plots": [
+        "dc"
+      ]
+    },
+    {
+      "sourcePath": "Netlists/DIODE/diode_with_sidewall_nbv.cir",
+      "sha256": "835b5917349283838014b07082eac9075fbeba36d492b11776af3b2ecddd15b1",
+      "status": "success",
+      "plots": [
+        "dc"
+      ]
+    },
+    {
+      "sourcePath": "Netlists/DIODE/diode_with_sidewall_ns.cir",
+      "sha256": "52e718dc28c5fd15441c84091d2c1ddb8a3bb22172c75852a69e8f788ec15fc9",
+      "status": "success",
+      "plots": [
+        "dc"
+      ]
+    },
+    {
+      "sourcePath": "Netlists/DIODE/diode_with_sidewall_php.cir",
+      "sha256": "3c06bbd3bde127cbe659f376720587feb270b56811306eb709e527d2f6ef0f7e",
+      "status": "success",
+      "plots": [
+        "dc"
+      ]
+    },
+    {
+      "sourcePath": "Netlists/DIODE/diode_with_sidewall_temp.cir",
+      "sha256": "fc7398f74d7726637ec379138a8893d8ca05b764c7fdac947934a81db414f907",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error on line 7 or its substitute:"
+    },
+    {
+      "sourcePath": "Netlists/MOS6/nmos6_dc.cir",
+      "sha256": "bbca6b19fae1ffd8cebe1e5103d73546ca7e33b886353c64f927ddab96163d47",
+      "status": "success",
+      "plots": [
+        "dc"
+      ]
+    },
+    {
+      "sourcePath": "Netlists/MOS6/pmos6_dc.cir",
+      "sha256": "47622e3837585a8b4585917134b9c0bacb4cc98a8fddbbc59976296e47c85185",
+      "status": "success",
+      "plots": [
+        "dc"
+      ]
+    },
+    {
+      "sourcePath": "Netlists/MOSFET_ParamAliases/invert1.cir",
+      "sha256": "a25f498f542c6b3e62d5ca10ee4f6aadc6ad05e05ac5b49123c41e54f928abd2",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "Netlists/MOSFET_ParamAliases/invert2.cir",
+      "sha256": "55def2f3c379d38a88a52c542d396f23750bf0c5acc0873f67a6c093b3f8d081",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "Netlists/MOSFET_ParamAliases/invert2_alt.cir",
+      "sha256": "a21e82a9a4af97cca4862c84b3fd5eeb9a22a594bc4af871c981eced55f52fac",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "Netlists/MOSFET_ParamAliases/invert3.cir",
+      "sha256": "ec9a86626e18cf53dab5cb25f003715d4e74b37a0307347cbf290865b14f5dbc",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "Netlists/MOSFET_ParamAliases/invert3_alt.cir",
+      "sha256": "937b489015b214372885d42158765a70c5b7da65850224d644e67fbed136f591",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "Netlists/MOSFET_ParamAliases/invert6.cir",
+      "sha256": "bacd253a3cb268ff0191a07a0647ec160f396fe4ab8b187cfc1b9ab1d3829d35",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "Netlists/MOSFET_ParamAliases/invert6_alt.cir",
+      "sha256": "8edd8d8c6450e7cff7385d126c38b3f23809f47f186e8d3873a44d4b7c753008",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "Netlists/PJFET_DC/pjfet.cir",
+      "sha256": "7040ed1a4013f4bc884458bfa6dc9a79065ee504e0600f48f6cbea17ae35f129",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error on line 8 or its substitute:"
+    },
+    {
+      "sourcePath": "Netlists/PJFET_DC/pjfet_temp.cir",
+      "sha256": "513dcec62ab5b692af2f909a37457b5e65da43f7d823bee6f0d678f17728ca98",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error in netlist line no. 18, new internal line no. 17:"
+    },
+    {
+      "sourcePath": "Netlists/SANDLER24/sandler24.cir",
+      "sha256": "0ca28700edb921db7ce3a211a0e338dcb690d471f09e0ef5e8de33cf82c6820f",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error: no such function 'poly' at line 67"
+    },
+    {
+      "sourcePath": "Netlists/SANDLER28/sandler28.cir",
+      "sha256": "c93ff25b878786efbd8df3ab5f740147158be1262fecf7bb85aaf26e7c600acd",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error: no such function 'poly' at line 55"
+    }
+  ]
+}

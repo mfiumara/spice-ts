@@ -1,0 +1,17 @@
+N-Channel Mosfet (Level 6) Circuit 
+**************************************************************
+VDS 4 0  0V
+VGS  1   0  0V
+VMON 4 3 0V
+M1 3 1 0 0 NFET L=2.0U W=2.0U  
+.MODEL NFET NMOS 
++  LEVEL=6  UO=966.5  L=2.0U  W=2.0U  VTO=1.043
++  TOX=1E-07  NSUB=1.379E+16  
++  RSH=0  RS=0 	RD=0  IS =1E-14
++  LD=0  NSS=1E10
++  CGDO=1PF  	CGSO=1PF  CGBO=1PF  CBD=1PF CBS=1PF 
+
+.DC VDS 0 6 0.01  VGS 1 4 1 
+.PRINT DC V(4) V(1) I(VMON)
+
+.END
