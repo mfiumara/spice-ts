@@ -94,6 +94,7 @@ if (mode === 'ngspice') {
   boundaries.outputHash = ms(process.hrtime.bigint(), simulated);
   evidence.convergence = result.convergence;
   for (const key of ['compile', 'loadStamp', 'factor', 'solve', 'outputMaterialization']) boundaries[key] = mode === 'instrumented' ? totals[key] ?? 0 : null;
+  if (mode === 'instrumented') Object.assign(boundaries, totals);
   if (mode === 'instrumented') boundaries.simulateResidual = boundaries.simulate - Object.values(totals).reduce((a, b) => a + b, 0);
   evidence.calls = calls;
 }

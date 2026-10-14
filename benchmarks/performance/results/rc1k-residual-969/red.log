@@ -1,0 +1,8 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_d2157b6a/packages/core
+
+No test files found, exiting with code 1
+
+include: benchmarks/performance/rc1k-attribution.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
