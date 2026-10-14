@@ -1,11 +1,12 @@
 import assert from 'node:assert/strict';
-import { readdirSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import test from 'node:test';
 import type { ComparisonFixture } from '../comparison-harness.js';
 import { parseXyceCsv, runXyce, translateForXyce } from './xyce.js';
 import { canonicalize, projectAnalysis } from './canonical.js';
 import { runNgspiceReference } from './expanded.js';
+import './investigations/990/receipt.test.js';
 
 test('mixed-case requested names use canonical lower-case series keys like ngspice', () => {
   const result = parseXyceCsv('{V1},V(IN),I(V1)\n0,0,0', 'dc', ['V(IN)', 'I(V1)']);
@@ -47,6 +48,40 @@ function fixture(analysis: ComparisonFixture['analysis'] = 'dc'): ComparisonFixt
   return { name: 'adapter-small', analysis, signals: ['v(in)', 'i(V1)'],
     netlist: `adapter test\nV1 in 0 DC 1 AC 1\nR1 in 0 1k\n${directive}\n.end\n` };
 }
+
+test('Xyce adapter assigns bare BJT scalar parameters on model continuations (#990)', () => {
+  const netlist = readFileSync('benchmarks/reference/mutual-948/classic/rca3040-wideband-amplifier/0-ac.cir', 'utf8');
+  const f = { ...fixture('ac'), netlist };
+  const translated = translateForXyce(f);
+  assert.match(translated.netlist, /cjc=2pf VAF=50/i);
+  assert.doesNotMatch(translated.netlist, /\bva\s+50/i);
+  assert.ok(translated.changes.some(change => change.includes('va 50') && change.includes('VAF=50')));
+  assert.equal(f.netlist, netlist);
+});
+
+test('bare BJT syntax normalisation is general, preserves explicit assignments and other cards', () => {
+  const f = fixture();
+  const models = '.model p PNP (bf 80, va 50 vb 10 ik 2m)\n' +
+    '.model n NPN is 1e-16\n+ rb 100 tf 0.3ns ccs 2pf ; va 99\n' +
+    '.model explicit NPN (va=50 bf = 80)\n.model diode D (is 1e-14)\n* .model comment NPN va 100';
+  f.netlist = f.netlist.replace('.end', `${models}\n.end`);
+  const translated = translateForXyce(f);
+  assert.ok(translated.netlist.includes('.model p PNP (BF=80, VAF=50 VAR=10 IKF=2m)'));
+  assert.match(translated.netlist, /\.model n NPN IS=1e-16\s+RB=100 TF=0.3ns CJS=2pf/);
+  assert.ok(translated.netlist.includes('* ; va 99'));
+  for (const line of models.split('\n').slice(3)) assert.ok(translated.netlist.includes(line));
+  assert.equal(translateForXyce({ ...f, netlist: translated.netlist }).netlist, translated.netlist);
+});
+
+test('BJT model expressions are not partially rewritten, bare nonliteral values fail closed', () => {
+  const f = fixture();
+  for (const model of ['.model n NPN bf={80 + 2} va=50', ".model n NPN bf='80 + 2' va=50"]) {
+    assert.ok(translateForXyce({ ...f, netlist: f.netlist.replace('.end', `${model}\n.end`) }).netlist.includes(model));
+  }
+  for (const value of ['{early + 2}', "'early + 2'", 'early', '50+2']) {
+    assert.throws(() => translateForXyce({ ...f, netlist: f.netlist.replace('.end', `.model n NPN va ${value}\n.end`) }), /requires a scalar numeric literal/);
+  }
+});
 
 test('DC CSV uses explicit primary sweep and preserves flattened nested rows', () => {
   const series = parseXyceCsv('{V1},V(IN),I(V1)\n0,0,0\n.5,.5,-5e-4\n0,0,0\n.5,.5,-5e-4\n', 'dc', ['v(in)', 'i(V1)']);

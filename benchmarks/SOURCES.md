@@ -1,5 +1,15 @@
 # Benchmark sources
 
+## MAXORD order-cap regression (#983)
+
+[maxord-983](reference/maxord-983/README.md) reruns unchanged corpus-k k-13
+`Netlists/CircuitSim90/MOS2/pump.cir` at Xyce_Regression revision
+`7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2` (GPL-3.0-or-later, existing
+corpus-k licence/provenance below). The four RC method/order probes in
+`reference/maxord-983/run.ts` are original MIT-licensed spice-ts project work.
+Both engines receive identical bytes per case. This scoped receipt publishes
+the residual pump mismatch; no fixture, corpus outcome or tolerance is changed.
+
 ## Repeated dot-card semantics (#1009)
 
 [repeated-dot-1009](repeated-dot-1009/README.md) reruns five unchanged corpus-e /
@@ -109,10 +119,9 @@ the same pinned ECL-2.0 `b4check.c:797-806` source recorded above.
 - Reference semantics: https://github.com/imr/ngspice/blob/ngspice-47/src/frontend/inpcom.c lines 1442-1456 turn `.title` into a comment before continuation stitching at 1958; lines 694-702 preserve the preceding card across comments.
 - `benchmarks/title-directive/x-continuations.ts` adds original MIT numeric/bare/braced/quoted X RHS probes at top-level and nested scope. `x-continuations-{before,after}.json` retain same-byte hashes and raw ngspice-47 output (R=2000 ohms, i(v1)=-5e-4 A). Before is the uncommitted PR955/main merge; after includes the metadata-skip scanner fix. No corpus or speed claim.
 
+## Controlled E/G TABLE probes (#917)
 
-## Controlled E/G TABLE fail-closed probes (#917)
-
-- `benchmarks/controlled-table-917/{e,g-subckt}.cir` are original project-authored MIT netlists (repository `LICENSE`), not vendor extracts. Issue https://github.com/mfiumara/spice-ts/issues/917. Both engines receive identical bytes, with ngspice-47 `ngbehavior=ltps`; all 81 DC rows retain endpoint clamping and smoothed corners. Native unsupported results and null comparison metrics are published, not counted as parity wins.
+- `benchmarks/controlled-table-917/{e,g-subckt,ac}.cir` are original project-authored MIT netlists (repository `LICENSE`), not vendor extracts. Issue https://github.com/mfiumara/spice-ts/issues/917. Both engines receive identical bytes, with ngspice-47 `ngbehavior=ltps`; all 81 DC rows retain endpoint clamping and smoothed corners, and the one-row AC probe verifies the smoothed derivative. Receipts publish native values and max/RMS errors where available, and unsupported/failed outcomes with null metrics otherwise.
 - `vendor.py` reuses the fetch-only pinned attachment/hash/path-relocation policy of `benchmarks/vendor-expanded-node-917/run.py` for https://sourceforge.net/p/ngspice/bugs/784/. No vendor deck, model, expanded expression or raw log is redistributed. New before/after scalar receipts preserve identical relocated bytes and include hashes; both native runs remain non-completing while ngspice completes 141 AC rows per original. Existing #939 receipts are unchanged.
 
 
@@ -140,6 +149,28 @@ the same pinned ECL-2.0 `b4check.c:797-806` source recorded above.
   unchanged, retains every failure and does not refresh the aggregate ledger.
 - LEVEL=260 is EKV 2.6 in this upstream suite. spice-ts/ngspice MOS1 fallback
   results are losses against EKV, not EKV parity. No simulator superiority claim.
+
+## Xyce bare BJT assignment syntax (#990)
+
+The Xyce-only reference adapter now rewrites bare numeric `name value` pairs
+on NPN/PNP `.model` cards to explicit assignments, with ngspice BJT aliases
+canonicalised (for example `va 50` becomes `VAF=50`). Values and numeric suffixes
+are retained, not evaluated or tuned. Explicit assignments, non-BJT models,
+and ngspice-47 headline inputs remain unchanged. Bare expression/symbol values
+are reported as unsupported rather than guessed. Every rewrite is recorded in
+the adapter's changes list. This supersedes the output-only rule above for new
+Xyce BJT runs, not for the preserved historical #948 receipts.
+
+`benchmarks/reference/investigations/990/` contains a separate RCA3040 AC
+before/after reference receipt and runner. The source is the existing licensed
+classic RCA3040 fixture (same source/licence as the classic corpus entry below).
+No new upstream deck or model is imported. Project-authored runner/test/report
+code is MIT; the generated Xyce deck retains the original fixture's licence.
+The historical #948 decks, outputs, losses and source hashes remain unchanged;
+their tests pin the historical adapter hash instead of asserting it is today's
+adapter. See the [reference report](reference/investigations/990/README.md) for
+commands, original input hashes and the remaining ngspice/Xyce model residual.
+No aggregate refresh, solver tolerance change, perfect-parity or speed claim.
 
 ## corpus-j partial novel source survey (#940)
 
