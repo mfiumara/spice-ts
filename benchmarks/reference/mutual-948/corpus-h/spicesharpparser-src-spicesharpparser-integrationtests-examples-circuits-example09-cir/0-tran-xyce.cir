@@ -1,0 +1,6 @@
+﻿Test
+I1 1 0 AC 1
+R1 1 0 10
+.TRAN 0.1 1.5
+.print TRAN format=csv file=output.csv precision=17 V(1)
+.END

@@ -1,0 +1,24 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: ltspice a-device sampled sensor example
+
+
+
+Total elapsed time (seconds) = 0.004 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 12655.438 MB.
+Maximum ngspice program size =    9.797 MB.
+Current ngspice program size =    9.797 MB.
+
+
+Error on line 7 or its substitute:
+  ash sensor 0 sample 0 0 0 held 0 samplehold rout=10
+MIF-ERROR - unable to find definition of model 10
+    Simulation interrupted due to error!
+
+Error: circuit not parsed.
+Note: no resource usage information for 'time',
+	or no active circuit available

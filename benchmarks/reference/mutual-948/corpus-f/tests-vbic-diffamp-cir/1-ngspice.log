@@ -1,0 +1,67 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: vbic diffamp test
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 69  
+
+Last Node Voltages
+------------------
+
+Node                                   Last Voltage        Previous Iter
+----                                   ------------        -------------
+vcc                                             3.3                  3.3
+v2_p                                        2.00751              1.99357 *
+r3_n                                        2.00751              1.99357 *
+q3_c                                        4.20506              4.41477 *
+q4_c                                         4.0315              4.20121 *
+q1_e                                        1.11839              1.10197 *
+i1_n                                       0.895695             0.897896 *
+q9_b                                        3.97571              4.05527 *
+q5_b                                        5.00086              4.98059 *
+q5_c                                        4.85065              4.79715 *
+q6_c                                        3.92037              3.87863 *
+e1_p                                       0.173561             0.213556 *
+q8_b                                        3.22449               3.2598 *
+e1#branch                              -1.73561e-10         -2.13556e-10 *
+v2#branch                               0.000640627          0.000572651 *
+v1#branch                                 -0.184053            -0.185357 *
+
+
+No. of Data Rows : 0
+
+Total analysis time (seconds) = 0.111382
+
+Total elapsed time (seconds) = 0.115 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 14166.672 MB.
+Maximum ngspice program size =   10.359 MB.
+Current ngspice program size =   10.359 MB.
+
+
+Note: Starting dynamic gmin stepping
+Warning: Dynamic gmin stepping failed
+Note: Starting true gmin stepping
+Warning: True gmin stepping failed
+Note: Starting source stepping
+Warning: source stepping failed
+Note: Transient op started
+Error: Transient op failed, timestep too small
+
+
+Error: The operating point could not be simulated successfully.
+    Any of the following steps may fail.!
+
+
+Error: Finding the operating point for transient simulation failed 
+
+doAnalyses: TRAN:  Timestep too small; initial timepoint: trouble with p1-instance q3
+
+
+run simulation(s) aborted

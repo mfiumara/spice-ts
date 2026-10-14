@@ -1,0 +1,49 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: operational amplifier adder
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 20  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+1                                  9.98741e-07
+4                                  0.000102007
+6                                            0
+5                                 -2.50802e-10
+7                                            0
+2                                           15
+3                                          -15
+x1.10                             -1.25903e-09
+x1.11                             -1.00822e-09
+x1.12                             -1.00822e-09
+x1.13                             -1.00822e-09
+x1.14                              0.000102007
+l.x1.l#branch                      1.01008e-09
+e.x1.ea#branch                     1.00004e-25
+v.x1.vofst#branch                 -5.04112e-15
+v4#branch                         -2.50802e-15
+v3#branch                         -2.50802e-15
+vee#branch                           0.0030015
+vcc#branch                              -0.003
+
+
+No. of Data Rows : 3058
+
+Total analysis time (seconds) = 0.031839
+
+Total elapsed time (seconds) = 0.036 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 12884.016 MB.
+Maximum ngspice program size =   10.172 MB.
+Current ngspice program size =   10.172 MB.
+

@@ -1,0 +1,23 @@
+
+*****
+***** Welcome to the Xyce(TM) Parallel Electronic Simulator
+*****
+***** This is version XyceNF Release 7.10.0
+***** Date: Wed Oct 14 02:03:22 CEST 2026
+
+
+***** Executing netlist input.cir
+
+***** Reading and parsing netlist...
+Netlist error: There were 7 undefined symbols in .PRINT command: device
+ E.XOP.EBUFFER{I}, device E.XOP.EBUFFER{R}, device E.XOP.EGAIN{I}, device
+ E.XOP.EGAIN{R}, node XOP.3, node XOP.4, node XOP.5
+Simulation aborted due to error.  There are 0 MSG_FATAL errors and 1 MSG_ERROR
+ errors
+*** Xyce Abort ***
+
+Simulation aborted due to error.  There are 0 MSG_FATAL errors and 1 MSG_ERROR
+ errors
+
+
+*** Xyce Abort ***

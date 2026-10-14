@@ -1,0 +1,128 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: .probe test with simple cmos inverter, many buggy .probe commands
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+dd                                           5
+in                                           0
+ss                                           0
+out                                          5
+probe_int_ss_mn1_3                           0
+vd_mn1:d:s                                   5
+vd_mn1:d:0                                   5
+probe_int_dd_mp1_3                           5
+vd_mp1:d_mn1:d                               0
+ediff2_mp1_mn1#branch                        0
+ediff1_mn1#branch                            0
+ediff3_mn1#branch                            0
+mp1:s#branch                          5.01e-12
+mn1:s#branch                                 0
+vs#branch                             5.01e-12
+vin#branch                                   0
+vd#branch                            -5.01e-12
+
+
+No. of Data Rows : 135
+Here are the vectors currently active:
+
+Title: .probe test with simple cmos inverter, many buggy .probe commands
+Name: tran1 (Transient Analysis)
+Date: Wed Oct 14 01:50:09  2026
+
+    @mn1[id]            : current, real, 135 long
+    in                  : voltage, real, 135 long
+    mn1:s#branch        : current, real, 135 long
+    mp1:s#branch        : current, real, 135 long
+    out                 : voltage, real, 135 long
+    time                : time, real, 135 long [default scale]
+    vd_mn1:d:0          : voltage, real, 135 long
+    vd_mn1:d:s          : voltage, real, 135 long
+    vd_mp1:d_mn1:d      : voltage, real, 135 long
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 9  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+dd                                           5
+in                                           0
+ss                                           0
+out                                          5
+probe_int_ss_mn1_3                           0
+vd_mn1:d:s                                   5
+vd_mn1:d:0                                   5
+probe_int_dd_mp1_3                           5
+vd_mp1:d_mn1:d                               0
+ediff2_mp1_mn1#branch                        0
+ediff1_mn1#branch                            0
+ediff3_mn1#branch                            0
+mp1:s#branch                          5.01e-12
+mn1:s#branch                                 0
+vs#branch                             5.01e-12
+vin#branch                                   0
+vd#branch                            -5.01e-12
+
+
+No. of Data Rows : 135
+
+Total analysis time (seconds) = 0.001756
+
+Total elapsed time (seconds) = 0.006 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13949.000 MB.
+Maximum ngspice program size =   10.219 MB.
+Current ngspice program size =   10.219 MB.
+
+
+Warning: Could not find the instance line for ,
+   .probe i(,z) will be ignored
+Warning: Could not find the instance line for ,
+   .probe vd(:0:0) will be ignored
+Warning: unknown .probe parameter ),
+   .probe ) will be ignored!
+Warning: Could not find the instance line for ,
+   .probe i(() will be ignored
+Warning: Could not find the instance line for z,
+   .probe vd(z) will be ignored
+Warning: Could not find the instance line for ,
+   .probe i(,u) will be ignored
+Warning: unknown .probe parameter hhhh),
+   .probe hhhh) will be ignored!
+Warning: Duplicate node numbers,
+   .probe vd(mp1:1:1) will be ignored!
+Warning: Either first or second node have to be non-zero,
+   .probe vd(mp1:0:0) will be ignored
+Warning: Node z is not available for device mn1,
+   .probe i(mn1,z) will be ignored
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+

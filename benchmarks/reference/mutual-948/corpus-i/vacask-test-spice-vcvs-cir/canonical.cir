@@ -1,0 +1,8 @@
+* VCVS amplifier - SPICE controlled source E2E test
+* E1: ideal voltage-controlled voltage source, gain=2
+* V(2) = 2 * V(1) at all times
+Vin 1 0 SIN(0 1 1k)
+E1 2 0 1 0 2.0
+Rl 2 0 1k
+.tran 1u 5m
+.end

@@ -1,0 +1,36 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: * band pass filter - ac simulation stepping with mc()
+
+
+Error in netlist line no. 5, new internal line no. 3:
+
+Undefined parameter [mc]
+Error in netlist line no. 5, new internal line no. 3:
+
+ Expression err: mc(0.6, (tol))}
+Error in netlist line no. 5, new internal line no. 3:
+
+Cannot compute substitute
+Error in netlist line no. 6, new internal line no. 4:
+
+Undefined parameter [mc]
+Error in netlist line no. 6, new internal line no. 4:
+
+ Expression err: mc(10e-6, (tol))}
+Error in netlist line no. 6, new internal line no. 4:
+
+Cannot compute substitute
+Error in netlist line no. 7, new internal line no. 5:
+
+Undefined parameter [mc]
+Error in netlist line no. 7, new internal line no. 5:
+
+ Expression err: mc(1000, (tol))}
+Error in netlist line no. 7, new internal line no. 5:
+
+Cannot compute substitute
+
+ERROR: fatal error in ngspice, exit(1)

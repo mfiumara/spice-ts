@@ -1,0 +1,284 @@
+
+*****
+***** Welcome to the Xyce(TM) Parallel Electronic Simulator
+*****
+***** This is version XyceNF Release 7.10.0
+***** Date: Wed Oct 14 01:40:30 CEST 2026
+
+
+***** Executing netlist input.cir
+
+***** Reading and parsing netlist...
+***** Setting up topology...
+
+***** Device Count Summary ...
+       C level 1 (Capacitor)                    5
+       Q level 1 (Bipolar Junction Transistor)  2
+       R level 1 (Resistor)                    10
+       V level 1 (Independent Voltage Source)   2
+       ------------------------------------------
+       Total Devices                           19
+***** Setting up matrix structure...
+***** Number of Unknowns = 16
+***** Initializing...
+
+------------------------------------------------------------
+Operating point information:
+Number of Bipolar Junction Transistor models: 1
+          name             NPN
+          type             NPN
+         level               1
+             C4              0
+             FC            0.5
+             PT              3
+             EG           1.11
+            XTB              0
+           ESUB              0
+             TB              0
+
+           PSUB           0.75
+            VJS           0.75
+             NK            0.5
+            CCS              0
+            CJS              0
+             TR              0
+             MS              0
+            MJC           0.33
+
+             PC           0.75
+            VJC           0.75
+            PTF              0
+            XTF              0
+             ME           0.33
+             RC              0
+            IRB              0
+           CSUB              0
+
+            ITF              0
+             PE           0.75
+             AF              1
+            JRB              0
+             C2              0
+             BV              0
+             RB              0
+            MJE           0.33
+
+             NC              2
+            IKF              0
+             RE              0
+            JLC              0
+            CJC              0
+            IKR              0
+            VTF              0
+            ISC              0
+
+             KF              0
+            MJS              0
+            JBR              0
+             VB              0
+      TEMPMODEL           NONE
+             IK              0
+            JTF              0
+            BRM              1
+
+            VAR              0
+             BR              1
+            NKF            0.5
+             MC           0.33
+            NLE            1.5
+             NE            1.5
+            VAF              0
+            IOB              0
+
+            JLE              0
+            CJE              0
+             PS           0.75
+            VBF              0
+            XTI              3
+             IS          1e-16
+            ISE              0
+            RBM              0
+
+            JBF              0
+             VA              0
+           CDIS              1
+             TF              0
+             NF              1
+            TCB              0
+            VJE           0.75
+           XCJC              1
+
+             BF            100
+             NR              1
+           TNOM             27
+            BFM            100
+            VRB              0
+
+Number of Bipolar Junction Transistor instances: 2
+          name            Q_Q1           Q_Q2
+         model             NPN            NPN
+            OFF              0              0
+          DTEMP              0              0
+           TEMP             27             27
+            IC2              0              0
+            IC1              0              0
+              M              1              1
+           AREA              1              1
+
+
+Number of Capacitor models: 1
+          name C level 1 (Capacitor)
+          type                
+         level               1
+           TNOM             27
+            TC2              0
+            TC1              0
+           CJSW              0
+         NARROW              0
+           DEFW          1e-06
+             CJ              0
+
+              C              1
+
+Number of Capacitor instances: 5
+          name            C_C1           C_C2           C_C3           C_C4           C_C6
+         model C level 1 (Capacitor)C level 1 (Capacitor)C level 1 (Capacitor)C level 1 (Capacitor)C level 1 (Capacitor)
+            TC2              0              0              0              0              0
+             IC              0              0              0              0              0
+            TC1              0              0              0              0              0
+              D         0.0233         0.0233         0.0233         0.0233         0.0233
+            AGE              0              0              0              0              0
+              C        2.2e-06          1e-09        4.7e-11          1e-08          1e-06
+              W          1e-06          1e-06          1e-06          1e-06          1e-06
+          DTEMP              0              0              0              0              0
+              L              1              1              1              1              1
+           TEMP             27             27             27             27             27
+              Q              0              0              0              0              0
+              M              1              1              1              1              1
+
+
+Number of Independent Voltage Source models: 1
+          name V level 1 (Independent Voltage Source)
+          type                
+         level               1
+
+Number of Independent Voltage Source instances: 2
+          name            V_V1           V_V2
+         model V level 1 (Independent Voltage Source)V level 1 (Independent Voltage Source)
+           PORT              0              0
+            NUM              0              0
+   DCSOURCETYPE              6              6
+TRANSIENTSOURCETYPE              6              6
+        TSAMPLE              0              0
+            VLO              0              0
+              R              0              0
+   ACSOURCETYPE              7              7
+          ACMAG              0              0
+            VHI              0              0
+           TAU1              0              0
+        ACPHASE              0              0
+             PW              0              0
+           TAU2              0              0
+            TD1              0              0
+          PHASE              0              0
+           FREQ              0              0
+             Z0             50             50
+             V0              0              0
+             VA              0              0
+             TF              0              0
+            PER              0              0
+             V2              0              0
+            TD2              0              0
+             FC              0              0
+             RB              1              1
+             TR              0              0
+          THETA              0              0
+           DCV0              9              0
+             TD              0              0
+           DATA                              
+            MDI              0              0
+              T              0              0
+             FS              0              0
+              V              0              0
+             V1              0              0
+
+
+Number of Resistor models: 1
+          name R level 1 (Resistor)
+          type                
+         level               1
+           TNOM             27
+           DEFW          1e-05
+         NARROW              0
+              R              1
+            RSH              0
+            TC2              0
+            TCE              0
+
+            TC1              0
+
+Number of Resistor instances: 10
+          name            R_R1         R_R100         R_R101           R_R2           R_R3           R_R4           R_R5
+          R_R50          R_R51           R_R6
+         model R level 1 (Resistor)R level 1 (Resistor)R level 1 (Resistor)R level 1 (Resistor)R level 1 (Resistor)R level 1 (Resistor)R level 1 (Resistor)
+R level 1 (Resistor)R level 1 (Resistor)R level 1 (Resistor)
+            TCE              0              0              0              0              0              0              0
+              0              0              0
+            TC2              0              0              0              0              0              0              0
+              0              0              0
+            TC1              0              0              0              0              0              0              0
+              0              0              0
+           TEMP             27             27             27             27             27             27             27
+             27             27             27
+          DTEMP              0              0              0              0              0              0              0
+              0              0              0
+              L              0              0              0              0              0              0              0
+              0              0              0
+              W          1e-05          1e-05          1e-05          1e-05          1e-05          1e-05          1e-05
+          1e-05          1e-05          1e-05
+              M              1              1              1              1              1              1              1
+              1              1              1
+              R         180000            950             50            100          68000          43000            330
+         400000         100000          10000
+
+------------------------------------------------------------
+
+***** Solution Summary *****
+	Number Successful Steps Taken:		1
+	Number Failed Steps Attempted:		0
+	Number Jacobians Evaluated:		16
+	Number Linear Solves:			16
+	Number Failed Linear Solves:		0
+	Number Residual Evaluations:		17
+	Number Nonlinear Convergence Failures:	0
+	Total Residual Load Time:		2.71797e-05 seconds
+	Total Jacobian Load Time:		2.12193e-05 seconds
+	Total Linear Solution Time:		0.000110388 seconds
+
+
+***** Total Simulation Solvers Run Time: 0.00172997 seconds
+***** Total Elapsed Run Time:            0.00422502 seconds
+*****
+***** End of Xyce(TM) Simulation
+*****
+
+Timing summary of 1 processor
+                 Stats                   Count       CPU Time              Wall Time
+---------------------------------------- ----- --------------------- ---------------------
+Xyce                                         1        0.002 (100.0%)        0.006 (100.0%)
+  Analysis                                   1        0.001 (29.07%)        0.002 (26.76%)
+    DC Sweep                                 1        0.001 (28.89%)        0.002 (26.70%)
+      Solve                                  1        0.000 (13.51%)        0.001 ( 9.66%)
+        Residual                            17        0.000 ( 1.42%)        0.000 ( 0.61%)
+        Jacobian                            16        0.000 ( 1.11%)        0.000 ( 0.55%)
+        Linear Solve                        16        0.000 ( 4.47%)        0.000 ( 1.95%)
+      Successful Step                        1        0.000 (14.27%)        0.001 (15.62%)
+  Netlist Import                             1        0.001 (30.22%)        0.001 (16.42%)
+    Parse Context                            1        0.000 ( 3.54%)        0.000 ( 2.92%)
+    Distribute Devices                       1        0.000 (14.09%)        0.000 ( 5.76%)
+    Verify Devices                           1        0.000 ( 0.13%)        0.000 ( 0.13%)
+    Instantiate                              1        0.000 ( 4.16%)        0.000 ( 1.64%)
+  Late Initialization                        1        0.000 (16.08%)        0.001 (14.78%)
+    Global Indices                           1        0.000 ( 1.77%)        0.000 ( 0.69%)
+  Setup Matrix Structure                     1        0.000 ( 3.81%)        0.001 ( 9.06%)
+

@@ -1,0 +1,132 @@
+spice-heavy: all 2 heavy slots busy, waiting...
+spice-heavy: got slot 1
+1/100 ngspice/vbic-fo ngspice=success Xyce=failed native-failure
+2/100 ngspice/vbic-temperature ngspice=success Xyce=failed native-failure
+3/100 ngspice/mos6-inverter-transient ngspice=success Xyce=failed transformed-with-loss
+4/100 ngspice/jfet-vds-vgs ngspice=success Xyce=success comparable
+5/100 ngspice/rc-lowpass-ac ngspice=success Xyce=success comparable
+6/100 ngspice/ac-zero-frequency ngspice=failed Xyce=unsupported unsupported
+7/100 ngspice/vbic-common-emitter-ac ngspice=success Xyce=unsupported unsupported
+8/100 ngspice/probe-ac ngspice=success Xyce=success comparable
+9/100 ngspice/rc-transient ngspice=success Xyce=success comparable
+10/100 ngspice/mos-amplifier-transient ngspice=success Xyce=unsupported unsupported
+11/100 ngspice/mos6-simple-inverter-transient ngspice=success Xyce=success comparable
+12/100 ngspice/ltra-line-transient ngspice=success Xyce=failed native-failure
+13/100 ngspice/hfet-inverter ngspice=success Xyce=failed native-failure
+14/100 ngspice/mesa-oscillator ngspice=success Xyce=failed native-failure
+15/100 ngspice/jimi-fuzz ngspice=success Xyce=success comparable
+16/100 ngspice/schmitt-trigger ngspice=success Xyce=unsupported unsupported
+17/100 ngspice/inductive-positive-definite-2x2 ngspice=success Xyce=failed native-failure
+18/100 ngspice/inductive-positive-definite-3x3 ngspice=success Xyce=failed native-failure
+19/100 ngspice/inductive-positive-definite-4x4 ngspice=success Xyce=failed native-failure
+20/100 ngspice/inductive-positive-definite-ac ngspice=failed Xyce=unsupported unsupported
+21/100 classic/bjt-noise ngspice=success Xyce=unsupported unsupported
+22/100 classic/bsim1-device-sweep ngspice=success Xyce=unsupported unsupported
+23/100 classic/bsim2-device-sweep ngspice=success Xyce=unsupported unsupported
+24/100 classic/bjt-differential-pair ngspice=success Xyce=unsupported unsupported
+25/100 classic/diode-distortion ngspice=success Xyce=unsupported unsupported
+26/100 classic/lossy-line-24-inch ngspice=success Xyce=unsupported unsupported
+27/100 classic/lossy-line-aluminium ngspice=success Xyce=failed native-failure
+28/100 classic/coupled-lossy-lines ngspice=success Xyce=unsupported unsupported
+29/100 classic/bjt-mixer-distortion ngspice=failed Xyce=unsupported unsupported
+30/100 classic/mos6-inverter-chain ngspice=success Xyce=failed transformed-with-loss
+31/100 classic/mos-amplifier ngspice=success Xyce=unsupported unsupported
+32/100 classic/mos-memory-cell ngspice=success Xyce=unsupported unsupported
+33/100 classic/pole-zero-four-stage ngspice=success Xyce=unsupported unsupported
+34/100 classic/pole-zero-three-stage ngspice=success Xyce=unsupported unsupported
+35/100 classic/rc-transient ngspice=success Xyce=success comparable
+36/100 classic/rca3040-wideband-amplifier ngspice=success Xyce=success comparable
+37/100 classic/resistor-noise ngspice=success Xyce=unsupported unsupported
+38/100 classic/rtl-inverter-chain ngspice=success Xyce=unsupported unsupported
+39/100 classic/ecl-schmitt-trigger ngspice=success Xyce=unsupported unsupported
+40/100 classic/high-pass-pole-zero ngspice=success Xyce=unsupported unsupported
+41/100 xyce/capacitor-rc-transient ngspice=failed Xyce=unsupported unsupported
+42/100 xyce/capacitor-rc-transient-newlte ngspice=failed Xyce=unsupported unsupported
+43/100 xyce/capacitor-rc-oscillator ngspice=failed Xyce=unsupported unsupported
+44/100 xyce/diode-level2-temperature-breakdown ngspice=failed Xyce=unsupported unsupported
+45/100 xyce/diode-zener-5229 ngspice=failed Xyce=success native-failure
+46/100 xyce/diode-transient ngspice=failed Xyce=unsupported unsupported
+47/100 xyce/diode-sidewall-dc ngspice=success Xyce=success comparable
+48/100 xyce/inductor-transient ngspice=success Xyce=unsupported unsupported
+49/100 xyce/njfet-2109-dc ngspice=success Xyce=success transformed-with-loss
+50/100 xyce/njfet-stepped-dc ngspice=failed Xyce=unsupported unsupported
+51/100 xyce/nmos-level1-dc ngspice=success Xyce=success comparable
+52/100 xyce/npn-dc ngspice=success Xyce=success comparable
+53/100 xyce/pmos-level1-dc ngspice=success Xyce=success comparable
+54/100 xyce/pnp-dc ngspice=success Xyce=success comparable
+55/100 xyce/resistor-dc ngspice=success Xyce=success comparable
+56/100 xyce/resistor-level3-zero ngspice=success Xyce=success comparable
+57/100 xyce/resistor-negative ngspice=success Xyce=success comparable
+58/100 xyce/rlc-transient ngspice=success Xyce=unsupported unsupported
+59/100 xyce/vccs-dc ngspice=success Xyce=success comparable
+60/100 xyce/vcvs-dc ngspice=success Xyce=success comparable
+61/100 corpus-d/ohms-law-op ngspice=success Xyce=success comparable
+62/100 corpus-d/diode-operating-point ngspice=failed Xyce=failed native-failure
+63/100 corpus-d/ekv-bias-sweep ngspice=failed Xyce=unsupported unsupported
+64/100 corpus-d/downscaling-current-mirror ngspice=failed Xyce=unsupported unsupported
+65/100 corpus-d/transresistance-ac ngspice=failed Xyce=unsupported unsupported
+66/100 corpus-d/passive-pole-zero-ac ngspice=failed Xyce=unsupported unsupported
+67/100 corpus-d/resistor-voltage-ac ngspice=failed Xyce=unsupported unsupported
+68/100 corpus-d/series-resonance-ac ngspice=failed Xyce=unsupported unsupported
+69/100 corpus-d/am-source-transient ngspice=failed Xyce=unsupported unsupported
+70/100 corpus-d/fft-source-transient ngspice=failed Xyce=unsupported unsupported
+71/100 corpus-d/coupled-transformer-transient ngspice=failed Xyce=unsupported unsupported
+72/100 corpus-d/rlc-trapezoidal-transient ngspice=failed Xyce=unsupported unsupported
+73/100 corpus-d/diode-voltage-doubler ngspice=failed Xyce=unsupported unsupported
+74/100 corpus-d/ekv-ring-oscillator ngspice=failed Xyce=unsupported unsupported
+75/100 corpus-d/cockcroft-walton-x8 ngspice=failed Xyce=unsupported unsupported
+76/100 corpus-d/pwm-switch ngspice=failed Xyce=unsupported unsupported
+77/100 corpus-d/rlc-gear3 ngspice=failed Xyce=unsupported unsupported
+78/100 corpus-d/rlc-gear5 ngspice=failed Xyce=unsupported unsupported
+79/100 corpus-d/rlc-gear6 ngspice=failed Xyce=unsupported unsupported
+80/100 corpus-d/colpitts-oscillator ngspice=failed Xyce=unsupported unsupported
+81/100 corpus-e/cccs-mixed-analysis ngspice=success Xyce=success comparable
+82/100 corpus-e/vcvs-operating-point ngspice=failed Xyce=failed transformed-with-loss
+83/100 corpus-e/diode-bias-sweep ngspice=success Xyce=success comparable
+84/100 corpus-e/mos1-inverter-sweep ngspice=success Xyce=unsupported unsupported
+85/100 corpus-e/transmission-line-ac ngspice=failed Xyce=unsupported unsupported
+86/100 corpus-e/mutual-inductance-ac ngspice=success Xyce=success comparable
+87/100 corpus-e/bjt-diffpair-ac ngspice=failed Xyce=unsupported unsupported
+88/100 corpus-e/opamp-open-loop-ac ngspice=failed Xyce=unsupported unsupported
+89/100 corpus-e/capacitor-step-transient ngspice=success Xyce=success comparable
+90/100 corpus-e/capacitor-initial-condition ngspice=success Xyce=success transformed-with-loss
+91/100 corpus-e/lc-oscillator-transient ngspice=success Xyce=success comparable
+92/100 corpus-e/bjt-diffpair-transient ngspice=success Xyce=failed transformed-with-loss
+93/100 corpus-e/bjt-schmitt-trigger ngspice=failed Xyce=success transformed-with-loss
+94/100 corpus-e/diode-temperature-sweep ngspice=success Xyce=success comparable
+95/100 corpus-e/mos1-nand-transient ngspice=failed Xyce=unsupported unsupported
+96/100 corpus-e/bjt-rtl-inverter-chain ngspice=success Xyce=success comparable
+97/100 corpus-e/dual-lc-uic-rejection ngspice=success Xyce=failed transformed-with-loss
+98/100 corpus-e/opamp-voltage-follower ngspice=failed Xyce=unsupported unsupported
+99/100 corpus-e/mos7-nand-no-bypass ngspice=failed Xyce=unsupported unsupported
+100/100 corpus-e/bjt-diffpair-current-source ngspice=success Xyce=failed transformed-with-loss
+{
+  "before": {
+    "attemptedFixtures": 100,
+    "xyce": {
+      "success": 28,
+      "failed": 2,
+      "unsupported": 70
+    },
+    "ngspice": {
+      "success": 52,
+      "failed": 48,
+      "unsupported": 0
+    },
+    "comparedFixtures": 19
+  },
+  "after": {
+    "attemptedFixtures": 100,
+    "xyce": {
+      "success": 30,
+      "failed": 16,
+      "unsupported": 54
+    },
+    "ngspice": {
+      "success": 63,
+      "failed": 37,
+      "unsupported": 0
+    },
+    "comparedFixtures": 26
+  }
+}

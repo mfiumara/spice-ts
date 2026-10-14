@@ -1,0 +1,39 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: demonstration of broken g source.  (morannon bug 696)
+
+ASCII raw file "output.raw"
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 9  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+1                                            0
+8                                            5
+9                                            0
+10                                           5
+11                                           0
+v3#branch                                    0
+v2#branch                                    0
+v1#branch                                    0
+
+
+No. of Data Rows : 10018
+
+Total analysis time (seconds) = 0.040328
+
+Total elapsed time (seconds) = 0.045 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13550.125 MB.
+Maximum ngspice program size =   10.250 MB.
+Current ngspice program size =   10.250 MB.
+

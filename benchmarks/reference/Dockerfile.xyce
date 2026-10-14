@@ -1,0 +1,7 @@
+# Linux arm64 reference build; base image and every installed package are pinned.
+FROM ubuntu@sha256:786a8b558f7be160c6c8c4a54f9a57274f3b4fb1491cf65146521ae77ff1dc54
+COPY benchmarks/reference/linux-build/packages.lock /tmp/xyce-packages.lock
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive \
+    xargs -a /tmp/xyce-packages.lock apt-get install -y --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
+WORKDIR /work

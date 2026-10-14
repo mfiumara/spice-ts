@@ -1,0 +1,17 @@
+Resistor Circuit Netlist - lower level.
+********************************************************************************
+* Total resistance is 1.0e+1, so total G = 1.0e-1.
+R1a  1 a 1
+Rab1 a b 3
+Rab2 a b 6
+Rbc  b c 3
+Rcd  c 2 4
+vconnect0000   2 0 1
+vconnect0001   1 0 2
+.tran 0.001 1
+.options timeint debuglevel=-100
+.options nonlin nox=0  debuglevel=-100
+.options device debuglevel=-100
+.print tran I(vconnect0000) I(vconnect0001)
+.END
+

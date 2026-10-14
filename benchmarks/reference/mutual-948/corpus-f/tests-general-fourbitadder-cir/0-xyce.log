@@ -1,0 +1,90 @@
+
+*****
+***** Welcome to the Xyce(TM) Parallel Electronic Simulator
+*****
+***** This is version XyceNF Release 7.10.0
+***** Date: Wed Oct 14 01:52:33 CEST 2026
+
+
+***** Executing netlist input.cir
+
+***** Reading and parsing netlist...
+Netlist error: There were 247 undefined symbols in .PRINT command: node X1.16,
+ node X1.X1.10, node X1.X1.X1.10, node X1.X1.X1.11, node X1.X1.X1.12, node
+ X1.X1.X1.13, node X1.X1.X1.7, node X1.X1.X1.8, node X1.X1.X1.9, node
+ X1.X1.X1.X1.10, node X1.X1.X1.X1.5, node X1.X1.X1.X1.6, node X1.X1.X1.X1.7,
+ node X1.X1.X1.X1.8, node X1.X1.X1.X1.9, node X1.X1.X1.X2.10, node
+ X1.X1.X1.X2.5, node X1.X1.X1.X2.6, node X1.X1.X1.X2.7, node X1.X1.X1.X2.8,
+ node X1.X1.X1.X2.9, node X1.X1.X1.X3.10, node X1.X1.X1.X3.5, node
+ X1.X1.X1.X3.6, node X1.X1.X1.X3.7, node X1.X1.X1.X3.8, node X1.X1.X1.X3.9,
+ node X1.X1.X1.X4.10, node X1.X1.X1.X4.5, node X1.X1.X1.X4.6, node
+ X1.X1.X1.X4.7, node X1.X1.X1.X4.8, node X1.X1.X1.X4.9, node X1.X1.X1.X5.10,
+ node X1.X1.X1.X5.5, node X1.X1.X1.X5.6, node X1.X1.X1.X5.7, node
+ X1.X1.X1.X5.8, node X1.X1.X1.X5.9, node X1.X1.X1.X6.10, node X1.X1.X1.X6.5,
+ node X1.X1.X1.X6.6, node X1.X1.X1.X6.7, node X1.X1.X1.X6.8, node
+ X1.X1.X1.X6.9, node X1.X1.X1.X7.10, node X1.X1.X1.X7.5, node X1.X1.X1.X7.6,
+ node X1.X1.X1.X7.7, node X1.X1.X1.X7.8, node X1.X1.X1.X7.9, node
+ X1.X1.X1.X8.10, node X1.X1.X1.X8.5, node X1.X1.X1.X8.6, node X1.X1.X1.X8.7,
+ node X1.X1.X1.X8.8, node X1.X1.X1.X8.9, node X1.X1.X1.X9.10, node
+ X1.X1.X1.X9.5, node X1.X1.X1.X9.6, node X1.X1.X1.X9.7, node X1.X1.X1.X9.8,
+ node X1.X1.X1.X9.9, node X1.X1.X2.10, node X1.X1.X2.11, node X1.X1.X2.12,
+ node X1.X1.X2.13, node X1.X1.X2.7, node X1.X1.X2.8, node X1.X1.X2.9, node
+ X1.X1.X2.X1.10, node X1.X1.X2.X1.5, node X1.X1.X2.X1.6, node X1.X1.X2.X1.7,
+ node X1.X1.X2.X1.8, node X1.X1.X2.X1.9, node X1.X1.X2.X2.10, node
+ X1.X1.X2.X2.5, node X1.X1.X2.X2.6, node X1.X1.X2.X2.7, node X1.X1.X2.X2.8,
+ node X1.X1.X2.X2.9, node X1.X1.X2.X3.10, node X1.X1.X2.X3.5, node
+ X1.X1.X2.X3.6, node X1.X1.X2.X3.7, node X1.X1.X2.X3.8, node X1.X1.X2.X3.9,
+ node X1.X1.X2.X4.10, node X1.X1.X2.X4.5, node X1.X1.X2.X4.6, node
+ X1.X1.X2.X4.7, node X1.X1.X2.X4.8, node X1.X1.X2.X4.9, node X1.X1.X2.X5.10,
+ node X1.X1.X2.X5.5, node X1.X1.X2.X5.6, node X1.X1.X2.X5.7, node
+ X1.X1.X2.X5.8, node X1.X1.X2.X5.9, node X1.X1.X2.X6.10, node X1.X1.X2.X6.5,
+ node X1.X1.X2.X6.6, node X1.X1.X2.X6.7, node X1.X1.X2.X6.8, node
+ X1.X1.X2.X6.9, node X1.X1.X2.X7.10, node X1.X1.X2.X7.5, node X1.X1.X2.X7.6,
+ node X1.X1.X2.X7.7, node X1.X1.X2.X7.8, node X1.X1.X2.X7.9, node
+ X1.X1.X2.X8.10, node X1.X1.X2.X8.5, node X1.X1.X2.X8.6, node X1.X1.X2.X8.7,
+ node X1.X1.X2.X8.8, node X1.X1.X2.X8.9, node X1.X1.X2.X9.10, node
+ X1.X1.X2.X9.5, node X1.X1.X2.X9.6, node X1.X1.X2.X9.7, node X1.X1.X2.X9.8,
+ node X1.X1.X2.X9.9, node X1.X2.10, node X1.X2.X1.10, node X1.X2.X1.11, node
+ X1.X2.X1.12, node X1.X2.X1.13, node X1.X2.X1.7, node X1.X2.X1.8, node
+ X1.X2.X1.9, node X1.X2.X1.X1.10, node X1.X2.X1.X1.5, node X1.X2.X1.X1.6, node
+ X1.X2.X1.X1.7, node X1.X2.X1.X1.8, node X1.X2.X1.X1.9, node X1.X2.X1.X2.10,
+ node X1.X2.X1.X2.5, node X1.X2.X1.X2.6, node X1.X2.X1.X2.7, node
+ X1.X2.X1.X2.8, node X1.X2.X1.X2.9, node X1.X2.X1.X3.10, node X1.X2.X1.X3.5,
+ node X1.X2.X1.X3.6, node X1.X2.X1.X3.7, node X1.X2.X1.X3.8, node
+ X1.X2.X1.X3.9, node X1.X2.X1.X4.10, node X1.X2.X1.X4.5, node X1.X2.X1.X4.6,
+ node X1.X2.X1.X4.7, node X1.X2.X1.X4.8, node X1.X2.X1.X4.9, node
+ X1.X2.X1.X5.10, node X1.X2.X1.X5.5, node X1.X2.X1.X5.6, node X1.X2.X1.X5.7,
+ node X1.X2.X1.X5.8, node X1.X2.X1.X5.9, node X1.X2.X1.X6.10, node
+ X1.X2.X1.X6.5, node X1.X2.X1.X6.6, node X1.X2.X1.X6.7, node X1.X2.X1.X6.8,
+ node X1.X2.X1.X6.9, node X1.X2.X1.X7.10, node X1.X2.X1.X7.5, node
+ X1.X2.X1.X7.6, node X1.X2.X1.X7.7, node X1.X2.X1.X7.8, node X1.X2.X1.X7.9,
+ node X1.X2.X1.X8.10, node X1.X2.X1.X8.5, node X1.X2.X1.X8.6, node
+ X1.X2.X1.X8.7, node X1.X2.X1.X8.8, node X1.X2.X1.X8.9, node X1.X2.X1.X9.10,
+ node X1.X2.X1.X9.5, node X1.X2.X1.X9.6, node X1.X2.X1.X9.7, node
+ X1.X2.X1.X9.8, node X1.X2.X1.X9.9, node X1.X2.X2.10, node X1.X2.X2.11, node
+ X1.X2.X2.12, node X1.X2.X2.13, node X1.X2.X2.7, node X1.X2.X2.8, node
+ X1.X2.X2.9, node X1.X2.X2.X1.10, node X1.X2.X2.X1.5, node X1.X2.X2.X1.6, node
+ X1.X2.X2.X1.7, node X1.X2.X2.X1.8, node X1.X2.X2.X1.9, node X1.X2.X2.X2.10,
+ node X1.X2.X2.X2.5, node X1.X2.X2.X2.6, node X1.X2.X2.X2.7, node
+ X1.X2.X2.X2.8, node X1.X2.X2.X2.9, node X1.X2.X2.X3.10, node X1.X2.X2.X3.5,
+ node X1.X2.X2.X3.6, node X1.X2.X2.X3.7, node X1.X2.X2.X3.8, node
+ X1.X2.X2.X3.9, node X1.X2.X2.X4.10, node X1.X2.X2.X4.5, node X1.X2.X2.X4.6,
+ node X1.X2.X2.X4.7, node X1.X2.X2.X4.8, node X1.X2.X2.X4.9, node
+ X1.X2.X2.X5.10, node X1.X2.X2.X5.5, node X1.X2.X2.X5.6, node X1.X2.X2.X5.7,
+ node X1.X2.X2.X5.8, node X1.X2.X2.X5.9, node X1.X2.X2.X6.10, node
+ X1.X2.X2.X6.5, node X1.X2.X2.X6.6, node X1.X2.X2.X6.7, node X1.X2.X2.X6.8,
+ node X1.X2.X2.X6.9, node X1.X2.X2.X7.10, node X1.X2.X2.X7.5, node
+ X1.X2.X2.X7.6, node X1.X2.X2.X7.7, node X1.X2.X2.X7.8, node X1.X2.X2.X7.9,
+ node X1.X2.X2.X8.10, node X1.X2.X2.X8.5, node X1.X2.X2.X8.6, node
+ X1.X2.X2.X8.7, node X1.X2.X2.X8.8, node X1.X2.X2.X8.9, node X1.X2.X2.X9.10,
+ node X1.X2.X2.X9.5, node X1.X2.X2.X9.6, node X1.X2.X2.X9.7, node
+ X1.X2.X2.X9.8, node X1.X2.X2.X9.9
+Simulation aborted due to error.  There are 0 MSG_FATAL errors and 1 MSG_ERROR
+ errors
+*** Xyce Abort ***
+
+Simulation aborted due to error.  There are 0 MSG_FATAL errors and 1 MSG_ERROR
+ errors
+
+
+*** Xyce Abort ***

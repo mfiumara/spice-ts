@@ -1,0 +1,79 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: complimentary cross quad cmos oscillator
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+Operating point simulation skipped by 'uic',
+  now using transient initial conditions.
+
+No. of Data Rows : 20021
+Reset re-loads circuit complimentary cross quad cmos oscillator
+
+Circuit: complimentary cross quad cmos oscillator
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+Periodic Steady State Analysis Started
+
+PSS Guessed Frequency 4e+08
+PSS Points 1024
+PSS Harmonics number 10
+PSS Steady Coefficient 0.005
+PSS sc_iter 10
+PSS Stabilization Time 1e-07
+Exiting from stabilization
+Time of first shooting evaluation will be 1.025e-07
+In shooting...
+Updated guessed frequency: 552.4188635e6 Hz.
+Next shooting evaluation time is 1.043102206e-07 and current time is 1.025e-07.
+----------------
+
+Updated guessed frequency: 559.2046474e6 Hz.
+Next shooting evaluation time is 1.060984747e-07 and current time is 1.043102206e-07.
+----------------
+
+Updated guessed frequency: 559.2106507e6 Hz.
+Next shooting evaluation time is 1.078867096e-07 and current time is 1.060984747e-07.
+----------------
+
+0   -> FE: 552418863.5     || RR:     1.925783256 || predsum/dynamic_test: 3.934492327e-10 || minimum: 3.934492327e-10
+1   -> FE: 559204647.4     || RR:   0.06129329227 || predsum/dynamic_test: 2.873366013e-11 || minimum: 2.873366013e-11
+2   -> FE: 559210650.7     || RR: 5.587237252e-05 || predsum/dynamic_test: 3.973897986e-11 || minimum: 2.873366013e-11
+ Reference value :  1.06098e-07
+Convergence reached. Final circuit time is 1.060984747e-07 seconds (iteration n° 2) and predicted fundamental frequency is 559.2106507e6 Hz
+
+No. of Data Rows : 1025
+
+No. of Data Rows : 10
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Total analysis time (seconds) = 0.351291
+
+Total elapsed time (seconds) = 0.488 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13914.312 MB.
+Maximum ngspice program size =   13.125 MB.
+Current ngspice program size =   13.125 MB.
+
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+

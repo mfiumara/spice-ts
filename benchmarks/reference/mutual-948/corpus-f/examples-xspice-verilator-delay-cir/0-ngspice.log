@@ -1,0 +1,35 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: * waveform generation by verilog delays
+
+ASCII raw file "output.raw"
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 1  
+
+Instance: adut   Message: d_cosim failed to load simulation binary ./delay.
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+
+
+No. of Data Rows : 59
+
+Total analysis time (seconds) = 0.001319
+
+Total elapsed time (seconds) = 0.005 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13254.797 MB.
+Maximum ngspice program size =   10.172 MB.
+Current ngspice program size =   10.172 MB.
+
+
+Cannot open dynamic library ./delay: dlopen(/opt/homebrew/Cellar/libngspice/47/lib/ngspice/./delay.dylib, 0x000A): tried: '/opt/homebrew/Cellar/libngspice/47/lib/ngspice/./delay.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/opt/homebrew/Cellar/libngspice/47/lib/ngspice/./delay.dylib' (no such file), '/opt/homebrew/Cellar/libngspice/47/lib/ngspice/./delay.dylib' (no such file), '/opt/homebrew/Cellar/libngspice/47/lib/ngspice/delay.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/opt/homebrew/Cellar/libngspice/47/lib/ngspice/delay.dylib' (no such file), '/opt/homebrew/Cellar/libngspice/47/lib/ngspice/delay.dylib' (no such file)

@@ -1,0 +1,55 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: fft_leakage_tests http://www.idea2ic.com/
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+vtime                                        0
+vfreq                                     5500
+in                                           0
+bvac#branch                                  0
+vfreq#branch                                 0
+vtime#branch                                 0
+
+
+No. of Data Rows : 1007
+numb2 = 1.000000e+03
+FFT: Time span: 0.000999 s, input length: 1000
+FFT: Frequency resolution: 1001 Hz, output length: 1000
+IFFT: Frequency span: 1.001e+06 Hz, input length: 1000
+IFFT: Time resolution: 1e-06 s, output length: 1000
+IFFT: Frequency span: 1.001e+06 Hz, input length: 1000
+IFFT: Time resolution: 1e-06 s, output length: 1000
+Freq_Hz=5500 THD_percent=-111.05 Fund_rms=0.471811 THD_rms=-0.523946 
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Total analysis time (seconds) = 0.002009
+
+Total elapsed time (seconds) = 0.019 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13485.297 MB.
+Maximum ngspice program size =   11.297 MB.
+Current ngspice program size =   11.297 MB.
+
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+

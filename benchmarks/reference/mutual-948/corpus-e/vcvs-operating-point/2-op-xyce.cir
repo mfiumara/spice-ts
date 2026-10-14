@@ -1,0 +1,12 @@
+# voltage source test
+v1 1 0 1 ac 1
+r1 1 2 1k
+r2 2 0 1k
+e1 3 0 2 0 4.
+r3 3 0 1k
+g1 4 0 2 0 4.
+r3 4 0 1k
+.op
+*>.status notime
+.print DC format=csv file=output.csv precision=17 V(0)
+.end

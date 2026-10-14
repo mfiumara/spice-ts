@@ -1,0 +1,109 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: mos charge pump
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 13  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+4                                            0
+5                                            1
+6                                            1
+7                                            0
+2                                            1
+3                                            1
+1                                            1
+vc#branch                                    0
+vs#branch                         -1.46927e-11
+vbb#branch                         1.45234e-11
+vdd#branch                         1.46927e-11
+vin#branch                         3.03589e-19
+
+ Reference value :  8.10706e-09 Reference value :  7.33402e-08 Reference value :  7.37366e-08 Reference value :  7.39923e-08 Reference value :  7.43123e-08 Reference value :  7.45347e-08 Reference value :  7.47571e-08 Reference value :  9.82437e-08 Reference value :  1.03990e-07 Reference value :  1.73264e-07 Reference value :  1.73611e-07 Reference value :  1.73886e-07 Reference value :  1.74238e-07 Reference value :  1.74461e-07 Reference value :  1.74683e-07 Reference value :  1.74930e-07
+No. of Data Rows : 403
+.print line ignored since rawfile was produced.
+Total elapsed time (seconds) = 4.548 
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13982.047 MB.
+Maximum ngspice program size =   12.688 MB.
+Current ngspice program size =   12.688 MB.
+24 page faults, 0 vol + 456 invol = 456 context switches.
+
+Number of lines in the deck = 15
+Netlist loading time = 0.000201
+Subckt and Param expansion time = 0.000275
+Netlist parsing time = 0.00025
+
+Nominal temperature = 27
+Operating temperature = 27
+Total iterations = 5492
+Transient iterations = 5484
+Circuit Equations = 13
+Circuit original non-zeroes = 37
+Circuit fill-in non-zeroes = 5
+Circuit total non-zeroes = 0
+Transient timepoints = 473
+Accepted timepoints = 403
+Rejected timepoints = 70
+Total analysis time (seconds) = 4.5445
+Matrix load time = 4.52828
+Matrix synchronize time = 0
+Matrix reorder time = 7.99999E-06
+Matrix factor time = 0.000956
+Matrix solve time = 0.000231
+Transient analysis time = 4.51333
+Transient load time = 4.49787
+Transient sync time = 0
+Transient factor time = 0.000956
+Transient solve time = 0.00023
+Transient trunc time = 0.002174
+Transient iterations for the last time point = 0
+AC analysis time = 0
+AC load time = 0
+AC sync time = 0
+AC factor time = 0
+AC solve time = 0
+----------------------------------------
+Device m1 Memory Usage:
+Item                     Count     Bytes
+----------------------------------------
+Device                       1       240
+Elements                   376    153408
+Nodes                      417    477048
+Edges                      792    158400
+Misc Mesh                  n/a      8400
+Equil Orig NZ             1795     71800
+Equil Fill NZ             4558    182320
+Equil Tot  NZ             6353    254120
+Equil Vectors              376     12032
+Bias Orig NZ              5482    219280
+Bias Fill NZ             17206    688240
+Bias Tot  NZ             22688    907520
+Bias Vectors               725     29000
+State Vector              3669     29352
+----------------------------------------------------------------------
+Device m1 Time Usage:
+Item                     SETUP        DC      TRAN        AC     TOTAL
+----------------------------------------------------------------------
+Setup Time             5.7e-05  0.000125  0.000115         0  0.000297
+Load Time             0.000183  0.002653  0.583233         0  0.586069
+Order Time            0.001136  0.007441         0         0  0.008577
+Factor Time           0.000545  0.014785   2.98168         0   2.99701
+Solve Time             7.6e-05  0.001349  0.281387         0  0.282812
+Update Time         1.99999e-06  0.000385  0.001484         0  0.001871
+Check Time             3.3e-05   0.00022  0.010273         0  0.010526
+Misc Time           5.99999e-06  0.000136  0.022777         0  0.000297
+LTE Time                                  0.001973            0.001973
+Total Time             0.00223  0.028355   4.49992         0   4.53051
+Iterations                   8        27      5480         0      5515
+
+ngspice-47 done

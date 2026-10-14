@@ -1,0 +1,50 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: redundant power input with ideal-diode or-ing and automatic failover
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 4  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+primary_raw                                 12
+primary_input                          11.9077
+backup_raw                                11.5
+backup_input                              11.5
+output                                  11.076
+vbackup#branch                    -1.31693e-07
+vprimary#branch                      -0.922999
+
+
+No. of Data Rows : 12018
+.plot line ignored since rawfile was produced.
+
+Total analysis time (seconds) = 0.038063
+
+Total elapsed time (seconds) = 0.042 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13617.438 MB.
+Maximum ngspice program size =   10.141 MB.
+Current ngspice program size =   10.141 MB.
+
+
+Warning: Model issue on line 14 :
+  .model ideal_or d(ron=50m roff=1g vfwd=10m) ...
+unrecognized parameter (ron) - ignored
+unrecognized parameter (roff) - ignored
+unrecognized parameter (vfwd) - ignored
+
+
+No .measure possible in batch mode (-b) with -r rawfile set!
+Remove rawfile and use .print or .plot or
+select interactive mode (optionally with .control section) instead.
+

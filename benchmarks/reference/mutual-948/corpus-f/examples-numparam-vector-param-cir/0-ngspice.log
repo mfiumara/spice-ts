@@ -1,0 +1,35 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: SUBCKT VECTOR PARAM TEST
+
+ASCII raw file "output.raw"
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 5  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+vss                                        3.3
+sine                                         0
+v_pulse#branch                               0
+v_vss#branch                                 0
+
+
+No. of Data Rows : 208
+
+Total analysis time (seconds) = 0.001237
+
+Total elapsed time (seconds) = 0.005 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13839.328 MB.
+Maximum ngspice program size =   10.203 MB.
+Current ngspice program size =   10.203 MB.
+

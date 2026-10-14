@@ -1,0 +1,142 @@
+
+*****
+***** Welcome to the Xyce(TM) Parallel Electronic Simulator
+*****
+***** This is version XyceNF Release 7.10.0
+***** Date: Wed Oct 14 00:58:20 CEST 2026
+
+
+***** Executing netlist input.cir
+
+***** Reading and parsing netlist...
+***** Setting up topology...
+
+***** Device Count Summary ...
+       J level 1,2 (JFET)                     1
+       V level 1 (Independent Voltage Source) 2
+       ----------------------------------------
+       Total Devices                          3
+***** Setting up matrix structure...
+***** Number of Unknowns = 5
+***** Initializing...
+
+------------------------------------------------------------
+Operating point information:
+Number of Independent Voltage Source models: 1
+          name V level 1 (Independent Voltage Source)
+          type                
+         level               1
+
+Number of Independent Voltage Source instances: 2
+          name              VD             VG
+         model V level 1 (Independent Voltage Source)V level 1 (Independent Voltage Source)
+           PORT              0              0
+            NUM              0              0
+   DCSOURCETYPE              6              6
+TRANSIENTSOURCETYPE              6              6
+        TSAMPLE              0              0
+            VLO              0              0
+              R              0              0
+   ACSOURCETYPE              7              7
+          ACMAG              0              0
+            VHI              0              0
+           TAU1              0              0
+        ACPHASE              0              0
+             PW              0              0
+           TAU2              0              0
+            TD1              0              0
+          PHASE              0              0
+           FREQ              0              0
+             Z0             50             50
+             V0              0              0
+             VA              0              0
+             TF              0              0
+            PER              0              0
+             V2              0              0
+            TD2              0              0
+             FC              0              0
+             RB              1              1
+             TR              0              0
+          THETA              0              0
+           DCV0             25             -2
+             TD              0              0
+           DATA                              
+            MDI              0              0
+              T              0              0
+             FS              0              0
+              V              0              0
+             V1              0              0
+
+
+Number of JFET models: 1
+          name            MODJ
+          type             NJF
+         level               1
+      TEMPMODEL           NONE
+          DELTA              0
+          THETA              0
+            VTO           -3.5
+           TNOM             27
+             RS              0
+         LAMBDA          0.002
+
+             PB              1
+             KF           0.05
+            CGD              0
+             AF              1
+             RD            200
+            CGS              0
+             IS          1e-14
+             FC            0.5
+
+           BETA        0.00041
+              B              1
+
+Number of JFET instances: 1
+          name              J1
+         model            MODJ
+          DTEMP              0
+           AREA              1
+           TEMP             27
+
+------------------------------------------------------------
+
+***** Solution Summary *****
+	Number Successful Steps Taken:		1
+	Number Failed Steps Attempted:		0
+	Number Jacobians Evaluated:		4
+	Number Linear Solves:			4
+	Number Failed Linear Solves:		0
+	Number Residual Evaluations:		6
+	Number Nonlinear Convergence Failures:	0
+	Total Residual Load Time:		9.77516e-06 seconds
+	Total Jacobian Load Time:		0.000144005 seconds
+	Total Linear Solution Time:		0.000373602 seconds
+
+
+***** Total Simulation Solvers Run Time: 0.00201488 seconds
+***** Total Elapsed Run Time:            0.00690103 seconds
+*****
+***** End of Xyce(TM) Simulation
+*****
+
+Timing summary of 1 processor
+                 Stats                   Count       CPU Time              Wall Time
+---------------------------------------- ----- --------------------- ---------------------
+Xyce                                         1        0.001 (100.0%)        0.007 (100.0%)
+  Analysis                                   1        0.000 (19.92%)        0.002 (26.61%)
+    DC Sweep                                 1        0.000 (19.67%)        0.002 (26.57%)
+      Solve                                  1        0.000 (11.58%)        0.002 (21.83%)
+        Residual                             6        0.000 ( 1.17%)        0.000 ( 0.20%)
+        Jacobian                             4        0.000 ( 0.50%)        0.000 ( 1.96%)
+        Linear Solve                         4        0.000 ( 1.92%)        0.000 ( 5.02%)
+      Successful Step                        1        0.000 ( 6.67%)        0.000 ( 3.82%)
+  Netlist Import                             1        0.000 (25.83%)        0.001 ( 9.97%)
+    Parse Context                            1        0.000 ( 4.17%)        0.000 ( 1.29%)
+    Distribute Devices                       1        0.000 ( 6.92%)        0.000 ( 1.42%)
+    Verify Devices                           1        0.000 ( 0.17%)        0.000 ( 2.63%)
+    Instantiate                              1        0.000 ( 2.58%)        0.000 ( 0.93%)
+  Late Initialization                        1        0.000 (19.00%)        0.004 (49.45%)
+    Global Indices                           1        0.000 ( 1.33%)        0.000 ( 4.15%)
+  Setup Matrix Structure                     1        0.000 ( 4.58%)        0.002 (28.92%)
+

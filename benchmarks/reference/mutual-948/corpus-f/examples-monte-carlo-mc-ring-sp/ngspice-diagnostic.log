@@ -1,0 +1,548 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: perform monte carlo simulation in ngspice
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+ Reference value :  7.01325e-08
+No. of Data Rows : 6681
+Simulation status 0
+simulation run no. 0 of 30
+FFT: Time span: 1.0002e-07 s, input length: 6668
+FFT: Frequency resolution: 9.998e+06 Hz, output length: 3335
+fft_max             =  4.49910e+08 with=  3.35758e+00
+fft_40              =  4.11838e+08
+
+
+Reset re-loads circuit perform monte carlo simulation in ngspice
+
+Circuit: perform monte carlo simulation in ngspice
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+ Reference value :  4.37625e-08
+No. of Data Rows : 6681
+Simulation status 0
+simulation run no. 1 of 30
+FFT: Time span: 1.0002e-07 s, input length: 6668
+FFT: Frequency resolution: 9.998e+06 Hz, output length: 3335
+fft_max             =  4.49910e+08 with=  3.72308e+00
+fft_40              =  4.21038e+08
+
+
+Reset re-loads circuit perform monte carlo simulation in ngspice
+
+Circuit: perform monte carlo simulation in ngspice
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+ Reference value :  1.76925e-08 Reference value :  9.14625e-08
+No. of Data Rows : 6681
+Simulation status 0
+simulation run no. 2 of 30
+FFT: Time span: 1.0002e-07 s, input length: 6668
+FFT: Frequency resolution: 9.998e+06 Hz, output length: 3335
+fft_max             =  4.49910e+08 with=  3.17175e+00
+fft_40              =  4.17414e+08
+
+
+Reset re-loads circuit perform monte carlo simulation in ngspice
+
+Circuit: perform monte carlo simulation in ngspice
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+ Reference value :  4.45406e-08
+No. of Data Rows : 6763
+Simulation status 0
+simulation run no. 3 of 30
+FFT: Time span: 1.0002e-07 s, input length: 6668
+FFT: Frequency resolution: 9.998e+06 Hz, output length: 3335
+fft_max             =  4.39912e+08 with=  3.85194e+00
+fft_40              =  4.20264e+08
+
+
+Reset re-loads circuit perform monte carlo simulation in ngspice
+
+Circuit: perform monte carlo simulation in ngspice
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+ Reference value :  1.41975e-08 Reference value :  8.71275e-08
+No. of Data Rows : 6681
+Simulation status 0
+simulation run no. 4 of 30
+FFT: Time span: 1.0002e-07 s, input length: 6668
+FFT: Frequency resolution: 9.998e+06 Hz, output length: 3335
+fft_max             =  4.59908e+08 with=  3.61063e+00
+fft_40              =  4.30444e+08
+
+
+Reset re-loads circuit perform monte carlo simulation in ngspice
+
+Circuit: perform monte carlo simulation in ngspice
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+ Reference value :  2.59725e-08 Reference value :  9.75450e-08
+No. of Data Rows : 6853
+Simulation status 0
+simulation run no. 5 of 30
+FFT: Time span: 1.0002e-07 s, input length: 6668
+FFT: Frequency resolution: 9.998e+06 Hz, output length: 3335
+fft_max             =  4.49910e+08 with=  3.78627e+00
+fft_40              =  4.28870e+08
+
+
+Reset re-loads circuit perform monte carlo simulation in ngspice
+
+Circuit: perform monte carlo simulation in ngspice
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+ Reference value :  7.18575e-08
+No. of Data Rows : 6681
+Simulation status 0
+simulation run no. 6 of 30
+FFT: Time span: 1.0002e-07 s, input length: 6668
+FFT: Frequency resolution: 9.998e+06 Hz, output length: 3335
+fft_max             =  4.39912e+08 with=  2.58562e+00
+fft_40              =  3.97837e+08
+
+
+Reset re-loads circuit perform monte carlo simulation in ngspice
+
+Circuit: perform monte carlo simulation in ngspice
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+ Reference value :  4.58775e-08
+No. of Data Rows : 6681
+Simulation status 0
+simulation run no. 7 of 30
+FFT: Time span: 1.0002e-07 s, input length: 6668
+FFT: Frequency resolution: 9.998e+06 Hz, output length: 3335
+fft_max             =  4.39912e+08 with=  3.42107e+00
+fft_40              =  4.03867e+08
+
+
+Reset re-loads circuit perform monte carlo simulation in ngspice
+
+Circuit: perform monte carlo simulation in ngspice
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+ Reference value :  1.95825e-08 Reference value :  9.41925e-08
+No. of Data Rows : 6681
+Simulation status 0
+simulation run no. 8 of 30
+FFT: Time span: 1.0002e-07 s, input length: 6668
+FFT: Frequency resolution: 9.998e+06 Hz, output length: 3335
+fft_max             =  4.69906e+08 with=  3.73034e+00
+fft_40              =  4.38603e+08
+
+
+Reset re-loads circuit perform monte carlo simulation in ngspice
+
+Circuit: perform monte carlo simulation in ngspice
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+ Reference value :  6.77175e-08
+No. of Data Rows : 6681
+Simulation status 0
+simulation run no. 9 of 30
+FFT: Time span: 1.0002e-07 s, input length: 6668
+FFT: Frequency resolution: 9.998e+06 Hz, output length: 3335
+fft_max             =  4.49910e+08 with=  3.19192e+00
+fft_40              =  4.10122e+08
+
+
+Reset re-loads circuit perform monte carlo simulation in ngspice
+
+Circuit: perform monte carlo simulation in ngspice
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+ Reference value :  4.11075e-08
+No. of Data Rows : 6681
+Simulation status 0
+simulation run no. 10 of 30
+FFT: Time span: 1.0002e-07 s, input length: 6668
+FFT: Frequency resolution: 9.998e+06 Hz, output length: 3335
+fft_max             =  4.39912e+08 with=  3.72858e+00
+fft_40              =  4.20340e+08
+
+
+Reset re-loads circuit perform monte carlo simulation in ngspice
+
+Circuit: perform monte carlo simulation in ngspice
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+ Reference value :  1.41225e-08 Reference value :  9.02175e-08
+No. of Data Rows : 6681
+Simulation status 0
+simulation run no. 11 of 30
+FFT: Time span: 1.0002e-07 s, input length: 6668
+FFT: Frequency resolution: 9.998e+06 Hz, output length: 3335
+fft_max             =  4.59908e+08 with=  3.15164e+00
+fft_40              =  4.27206e+08
+
+
+Reset re-loads circuit perform monte carlo simulation in ngspice
+
+Circuit: perform monte carlo simulation in ngspice
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+ Reference value :  6.36825e-08
+No. of Data Rows : 6681
+Simulation status 0
+simulation run no. 12 of 30
+FFT: Time span: 1.0002e-07 s, input length: 6668
+FFT: Frequency resolution: 9.998e+06 Hz, output length: 3335
+fft_max             =  4.29914e+08 with=  3.06094e+00
+fft_40              =  3.97013e+08
+
+
+Reset re-loads circuit perform monte carlo simulation in ngspice
+
+Circuit: perform monte carlo simulation in ngspice
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+ Reference value :  3.71475e-08
+No. of Data Rows : 6681
+Simulation status 0
+simulation run no. 13 of 30
+FFT: Time span: 1.0002e-07 s, input length: 6668
+FFT: Frequency resolution: 9.998e+06 Hz, output length: 3335
+fft_max             =  4.59908e+08 with=  2.92265e+00
+fft_40              =  4.26822e+08
+
+
+Reset re-loads circuit perform monte carlo simulation in ngspice
+
+Circuit: perform monte carlo simulation in ngspice
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+ Reference value :  1.16025e-08 Reference value :  8.63475e-08
+No. of Data Rows : 6681
+Simulation status 0
+simulation run no. 14 of 30
+FFT: Time span: 1.0002e-07 s, input length: 6668
+FFT: Frequency resolution: 9.998e+06 Hz, output length: 3335
+fft_max             =  4.39912e+08 with=  3.50866e+00
+fft_40              =  4.07226e+08
+
+
+Reset re-loads circuit perform monte carlo simulation in ngspice
+
+Circuit: perform monte carlo simulation in ngspice
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+ Reference value :  6.05025e-08
+No. of Data Rows : 6681
+Simulation status 0
+simulation run no. 15 of 30
+FFT: Time span: 1.0002e-07 s, input length: 6668
+FFT: Frequency resolution: 9.998e+06 Hz, output length: 3335
+fft_max             =  4.29914e+08 with=  2.71909e+00
+fft_40              =  3.88123e+08
+
+
+Reset re-loads circuit perform monte carlo simulation in ngspice
+
+Circuit: perform monte carlo simulation in ngspice
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+ Reference value :  2.02275e-08 Reference value :  9.00413e-08
+No. of Data Rows : 6753
+Simulation status 0
+simulation run no. 16 of 30
+FFT: Time span: 1.0002e-07 s, input length: 6668
+FFT: Frequency resolution: 9.998e+06 Hz, output length: 3335
+fft_max             =  4.39912e+08 with=  3.73257e+00
+fft_40              =  4.13061e+08
+
+
+Reset re-loads circuit perform monte carlo simulation in ngspice
+
+Circuit: perform monte carlo simulation in ngspice
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+ Reference value :  6.46725e-08
+No. of Data Rows : 6681
+Simulation status 0
+simulation run no. 17 of 30
+FFT: Time span: 1.0002e-07 s, input length: 6668
+FFT: Frequency resolution: 9.998e+06 Hz, output length: 3335
+fft_max             =  4.49910e+08 with=  3.76788e+00
+fft_40              =  4.29585e+08
+
+
+Reset re-loads circuit perform monte carlo simulation in ngspice
+
+Circuit: perform monte carlo simulation in ngspice
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+ Reference value :  3.83625e-08
+No. of Data Rows : 6681
+Simulation status 0
+simulation run no. 18 of 30
+FFT: Time span: 1.0002e-07 s, input length: 6668
+FFT: Frequency resolution: 9.998e+06 Hz, output length: 3335
+fft_max             =  4.39912e+08 with=  3.27558e+00
+fft_40              =  4.00827e+08
+
+
+Reset re-loads circuit perform monte carlo simulation in ngspice
+
+Circuit: perform monte carlo simulation in ngspice
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+ Reference value :  1.38975e-08 Reference value :  8.84325e-08
+No. of Data Rows : 6681
+Simulation status 0
+simulation run no. 19 of 30
+FFT: Time span: 1.0002e-07 s, input length: 6668
+FFT: Frequency resolution: 9.998e+06 Hz, output length: 3335
+fft_max             =  4.49910e+08 with=  3.68956e+00
+fft_40              =  4.24890e+08
+
+
+Reset re-loads circuit perform monte carlo simulation in ngspice
+
+Circuit: perform monte carlo simulation in ngspice
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+ Reference value :  6.20175e-08
+No. of Data Rows : 6681
+Simulation status 0
+simulation run no. 20 of 30
+FFT: Time span: 1.0002e-07 s, input length: 6668
+FFT: Frequency resolution: 9.998e+06 Hz, output length: 3335
+fft_max             =  4.39912e+08 with=  3.60851e+00
+fft_40              =  4.10413e+08
+
+
+Reset re-loads circuit perform monte carlo simulation in ngspice
+
+Circuit: perform monte carlo simulation in ngspice
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+ Reference value :  3.71775e-08
+No. of Data Rows : 6681
+Simulation status 0
+simulation run no. 21 of 30
+FFT: Time span: 1.0002e-07 s, input length: 6668
+FFT: Frequency resolution: 9.998e+06 Hz, output length: 3335
+fft_max             =  4.49910e+08 with=  3.50794e+00
+fft_40              =  4.18931e+08
+
+
+Reset re-loads circuit perform monte carlo simulation in ngspice
+
+Circuit: perform monte carlo simulation in ngspice
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+ Reference value :  1.06425e-08 Reference value :  8.41125e-08
+No. of Data Rows : 6681
+Simulation status 0
+simulation run no. 22 of 30
+FFT: Time span: 1.0002e-07 s, input length: 6668
+FFT: Frequency resolution: 9.998e+06 Hz, output length: 3335
+fft_max             =  4.49910e+08 with=  3.58155e+00
+fft_40              =  4.21414e+08
+
+
+Reset re-loads circuit perform monte carlo simulation in ngspice
+
+Circuit: perform monte carlo simulation in ngspice
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+ Reference value :  5.80275e-08
+No. of Data Rows : 6681
+Simulation status 0
+simulation run no. 23 of 30
+FFT: Time span: 1.0002e-07 s, input length: 6668
+FFT: Frequency resolution: 9.998e+06 Hz, output length: 3335
+fft_max             =  4.29914e+08 with=  3.24272e+00
+fft_40              =  3.97560e+08
+
+
+Reset re-loads circuit perform monte carlo simulation in ngspice
+
+Circuit: perform monte carlo simulation in ngspice
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+ Reference value :  3.31725e-08
+No. of Data Rows : 6681
+Simulation status 0
+simulation run no. 24 of 30
+FFT: Time span: 1.0002e-07 s, input length: 6668
+FFT: Frequency resolution: 9.998e+06 Hz, output length: 3335
+fft_max             =  4.49910e+08 with=  2.61805e+00
+fft_40              =  4.07177e+08
+
+
+Reset re-loads circuit perform monte carlo simulation in ngspice
+
+Circuit: perform monte carlo simulation in ngspice
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+ Reference value :  7.31250e-09 Reference value :  8.06925e-08
+No. of Data Rows : 6681
+Simulation status 0
+simulation run no. 25 of 30
+FFT: Time span: 1.0002e-07 s, input length: 6668
+FFT: Frequency resolution: 9.998e+06 Hz, output length: 3335
+fft_max             =  4.49910e+08 with=  3.75560e+00
+fft_40              =  4.29968e+08
+
+
+Reset re-loads circuit perform monte carlo simulation in ngspice
+
+Circuit: perform monte carlo simulation in ngspice
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+ Reference value :  5.42325e-08
+No. of Data Rows : 6681
+Simulation status 0
+simulation run no. 26 of 30
+FFT: Time span: 1.0002e-07 s, input length: 6668
+FFT: Frequency resolution: 9.998e+06 Hz, output length: 3335
+fft_max             =  4.19916e+08 with=  3.50098e+00
+fft_40              =  3.87763e+08
+
+
+Reset re-loads circuit perform monte carlo simulation in ngspice
+
+Circuit: perform monte carlo simulation in ngspice
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+ Reference value :  2.80125e-08
+No. of Data Rows : 6681
+Simulation status 0
+simulation run no. 27 of 30
+FFT: Time span: 1.0002e-07 s, input length: 6668
+FFT: Frequency resolution: 9.998e+06 Hz, output length: 3335
+fft_max             =  4.39912e+08 with=  3.02357e+00
+fft_40              =  3.99811e+08
+
+
+Reset re-loads circuit perform monte carlo simulation in ngspice
+
+Circuit: perform monte carlo simulation in ngspice
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+ Reference value :  2.04250e-09 Reference value :  7.53975e-08
+No. of Data Rows : 6681
+Simulation status 0
+simulation run no. 28 of 30
+FFT: Time span: 1.0002e-07 s, input length: 6668
+FFT: Frequency resolution: 9.998e+06 Hz, output length: 3335
+fft_max             =  4.49910e+08 with=  3.69173e+00
+fft_40              =  4.30431e+08
+
+
+Reset re-loads circuit perform monte carlo simulation in ngspice
+
+Circuit: perform monte carlo simulation in ngspice
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+ Reference value :  4.95675e-08
+No. of Data Rows : 6681
+Simulation status 0
+simulation run no. 29 of 30
+FFT: Time span: 1.0002e-07 s, input length: 6668
+FFT: Frequency resolution: 9.998e+06 Hz, output length: 3335
+fft_max             =  4.49910e+08 with=  2.86097e+00
+fft_40              =  4.16589e+08
+
+
+Reset re-loads circuit perform monte carlo simulation in ngspice
+
+Circuit: perform monte carlo simulation in ngspice
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+ Reference value :  2.39775e-08 Reference value :  9.84825e-08
+No. of Data Rows : 6681
+Simulation status 0
+simulation run no. 30 of 30
+FFT: Time span: 1.0002e-07 s, input length: 6668
+FFT: Frequency resolution: 9.998e+06 Hz, output length: 3335
+fft_max             =  4.59908e+08 with=  2.76819e+00
+fft_40              =  4.26662e+08
+
+
+Reset re-loads circuit perform monte carlo simulation in ngspice
+
+Circuit: perform monte carlo simulation in ngspice
+
+
+Plotting not available in batch mode
+Write linearized vout0 to vout30 to rawfile output.raw
+
+ASCII raw file "output.raw"
+
+Total analysis time (seconds) = 0
+
+Total elapsed time (seconds) = 10.833 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13694.781 MB.
+Maximum ngspice program size =   23.562 MB.
+Current ngspice program size =   23.562 MB.
+ngspice-47 done

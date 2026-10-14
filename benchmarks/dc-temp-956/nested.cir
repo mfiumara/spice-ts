@@ -1,0 +1,6 @@
+DC temperature diode
+V out 0 0.6
+D out 0 dm
+.model dm d is=1e-14 n=2
+.dc V 0 1 0.5 temp -40 160 100
+.end

@@ -1,0 +1,92 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: pre-pin-diode two-dimensional pin-diode circuit
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 9  
+TWObiasSolve: No Convergence
+
+No. of Data Rows : 1
+Total elapsed time (seconds) = 0.417 
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13825.969 MB.
+Maximum ngspice program size =   15.516 MB.
+Current ngspice program size =   15.516 MB.
+24 page faults, 0 vol + 22 invol = 22 context switches.
+
+Number of lines in the deck = 15
+Netlist loading time = 0.000194
+Subckt and Param expansion time = 0.000204
+Netlist parsing time = 0.000179
+
+Nominal temperature = 27
+Operating temperature = 27
+Total iterations = 6
+Transient iterations = 0
+Circuit Equations = 10
+Circuit original non-zeroes = 20
+Circuit fill-in non-zeroes = 3
+Circuit total non-zeroes = 0
+Transient timepoints = 0
+Accepted timepoints = 0
+Rejected timepoints = 0
+Total analysis time (seconds) = 0.412694
+Matrix load time = 0.410391
+Matrix synchronize time = 0
+Matrix reorder time = 6.00002E-06
+Matrix factor time = 9.99993E-07
+Matrix solve time = 1.00001E-06
+Transient analysis time = 0
+Transient load time = 0
+Transient sync time = 0
+Transient factor time = 0
+Transient solve time = 0
+Transient trunc time = 0
+Transient iterations for the last time point = 6
+AC analysis time = 0
+AC load time = 0
+AC sync time = 0
+AC factor time = 0
+AC solve time = 0
+----------------------------------------
+Device d1 Memory Usage:
+Item                     Count     Bytes
+----------------------------------------
+Device                       1       240
+Elements                   396    161568
+Nodes                      442    505648
+Edges                      837    167400
+Misc Mesh                  n/a      7664
+Equil Orig NZ             2023     80920
+Equil Fill NZ             5018    200720
+Equil Tot  NZ             7041    281640
+Equil Vectors              424     13568
+Bias Orig NZ             11807    472280
+Bias Fill NZ             78521   3140840
+Bias Tot  NZ             90328   3613120
+Bias Vectors              1270     50800
+State Vector              3884     31072
+----------------------------------------------------------------------
+Device d1 Time Usage:
+Item                     SETUP        DC      TRAN        AC     TOTAL
+----------------------------------------------------------------------
+Setup Time             5.3e-05  0.000299         0         0  0.000352
+Load Time             0.000235  0.011116         05.99999e-06  0.011357
+Order Time            0.001599  0.129903         0         0  0.131502
+Factor Time           0.000678  0.233334         0         0  0.234012
+Solve Time            0.000106  0.013772         0  0.002158  0.016036
+Update Time                  0  0.001608         0         0  0.001608
+Check Time               4e-05  0.000364         0         0  0.000404
+Misc Time                7e-06   0.00019         0         0  0.000352
+LTE Time                                         0                   0
+Total Time            0.002906  0.405491         0  0.002164  0.410561
+Iterations                   8        21         0         1        30
+
+ngspice-47 done
+
+Note: vin: dc value used for op instead of transient time=0 value.

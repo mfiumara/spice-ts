@@ -1,0 +1,26 @@
+Mutual inductance test circuit
+v1 1 0  pulse(0 1 .002 .002 .002 .002 .01) ac 1
+r1a 1 2 22
+k1 l1a l1b .75
+l1a 2 0 .56
+l1b 3 0 .79
+r1b 3 0 75
+
+v2 4 0  pulse(0 1 .002 .002 .002 .002 .01) ac 1
+r2a 4 5 22
+l2a 5 6 .061151326
+l2b 6 0 .498848674
+l2c 6 7 .291151326
+r2b 7 0 75
+
+v3 8 0  pulse(0 1 .002 .002 .002 .002 .01) ac 1
+r3a 8 9 22
+l3a 10 0 .56
+l3b 11 0 .79
+e3a 9 10 11 0 .631454018
+e3b 12 11 10 0 .890801204
+r3b 12 0 75
+
+.ac dec 2 .1 1k
+.print AC format=csv file=output.csv precision=17 IR(e3a) II(e3a) IR(e3b) II(e3b) IR(l1a) II(l1a) IR(l1b) II(l1b) IR(l2a) II(l2a) IR(l2b) II(l2b) IR(l2c) II(l2c) IR(l3a) II(l3a) IR(l3b) II(l3b) IR(v1) II(v1) IR(v2) II(v2) IR(v3) II(v3) VR(1) VI(1) VR(10) VI(10) VR(11) VI(11) VR(12) VI(12) VR(2) VI(2) VR(3) VI(3) VR(4) VI(4) VR(5) VI(5) VR(6) VI(6) VR(7) VI(7) VR(8) VI(8) VR(9) VI(9)
+.end

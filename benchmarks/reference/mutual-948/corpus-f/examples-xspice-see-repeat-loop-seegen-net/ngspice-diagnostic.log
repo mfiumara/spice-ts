@@ -1,0 +1,449 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: * repeat loop, double exponential current pulses
+
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+n1                                           0
+n2                                           0
+n3                                           0
+n4                                           0
+mon                                          0
+aseegen1#branch_1_0                          0
+
+
+Instance: aseegen1   Message: port name: out, node pair no.: 1, 
+node names: n1, 0, pulse time: 1.100000e-08
+
+Instance: aseegen1   Message: port name: out, node pair no.: 2, 
+node names: n2, 0, pulse time: 3.600000e-08
+
+Instance: aseegen1   Message: port name: out, node pair no.: 3, 
+node names: n3, 0, pulse time: 6.100000e-08
+
+Instance: aseegen1   Message: port name: out, node pair no.: 4, 
+node names: n4, 0, pulse time: 8.600000e-08
+
+No. of Data Rows : 1243
+Reset re-loads circuit * repeat loop, double exponential current pulses
+
+Circuit: * repeat loop, double exponential current pulses
+
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+n1                                           0
+n2                                           0
+n3                                           0
+n4                                           0
+mon                                          0
+aseegen1#branch_1_0                          0
+
+
+Instance: aseegen1   Message: port name: out, node pair no.: 1, 
+node names: n1, 0, pulse time: 1.100000e-08
+
+Instance: aseegen1   Message: port name: out, node pair no.: 2, 
+node names: n2, 0, pulse time: 3.600000e-08
+
+Instance: aseegen1   Message: port name: out, node pair no.: 3, 
+node names: n3, 0, pulse time: 6.100000e-08
+
+Instance: aseegen1   Message: port name: out, node pair no.: 4, 
+node names: n4, 0, pulse time: 8.600000e-08
+
+No. of Data Rows : 1243
+Reset re-loads circuit * repeat loop, double exponential current pulses
+
+Circuit: * repeat loop, double exponential current pulses
+
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+n1                                           0
+n2                                           0
+n3                                           0
+n4                                           0
+mon                                          0
+aseegen1#branch_1_0                          0
+
+
+Instance: aseegen1   Message: port name: out, node pair no.: 1, 
+node names: n1, 0, pulse time: 1.100000e-08
+
+Instance: aseegen1   Message: port name: out, node pair no.: 2, 
+node names: n2, 0, pulse time: 3.600000e-08
+
+Instance: aseegen1   Message: port name: out, node pair no.: 3, 
+node names: n3, 0, pulse time: 6.100000e-08
+
+Instance: aseegen1   Message: port name: out, node pair no.: 4, 
+node names: n4, 0, pulse time: 8.600000e-08
+
+No. of Data Rows : 1243
+Reset re-loads circuit * repeat loop, double exponential current pulses
+
+Circuit: * repeat loop, double exponential current pulses
+
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+n1                                           0
+n2                                           0
+n3                                           0
+n4                                           0
+mon                                          0
+aseegen1#branch_1_0                          0
+
+
+Instance: aseegen1   Message: port name: out, node pair no.: 1, 
+node names: n1, 0, pulse time: 1.100000e-08
+
+Instance: aseegen1   Message: port name: out, node pair no.: 2, 
+node names: n2, 0, pulse time: 3.600000e-08
+
+Instance: aseegen1   Message: port name: out, node pair no.: 3, 
+node names: n3, 0, pulse time: 6.100000e-08
+
+Instance: aseegen1   Message: port name: out, node pair no.: 4, 
+node names: n4, 0, pulse time: 8.600000e-08
+
+No. of Data Rows : 1243
+Reset re-loads circuit * repeat loop, double exponential current pulses
+
+Circuit: * repeat loop, double exponential current pulses
+
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+n1                                           0
+n2                                           0
+n3                                           0
+n4                                           0
+mon                                          0
+aseegen1#branch_1_0                          0
+
+
+Instance: aseegen1   Message: port name: out, node pair no.: 1, 
+node names: n1, 0, pulse time: 1.100000e-08
+
+Instance: aseegen1   Message: port name: out, node pair no.: 2, 
+node names: n2, 0, pulse time: 3.600000e-08
+
+Instance: aseegen1   Message: port name: out, node pair no.: 3, 
+node names: n3, 0, pulse time: 6.100000e-08
+
+Instance: aseegen1   Message: port name: out, node pair no.: 4, 
+node names: n4, 0, pulse time: 8.600000e-08
+
+No. of Data Rows : 1243
+Reset re-loads circuit * repeat loop, double exponential current pulses
+
+Circuit: * repeat loop, double exponential current pulses
+
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+n1                                           0
+n2                                           0
+n3                                           0
+n4                                           0
+mon                                          0
+aseegen1#branch_1_0                          0
+
+
+Instance: aseegen1   Message: port name: out, node pair no.: 1, 
+node names: n1, 0, pulse time: 1.100000e-08
+
+Instance: aseegen1   Message: port name: out, node pair no.: 2, 
+node names: n2, 0, pulse time: 3.600000e-08
+
+Instance: aseegen1   Message: port name: out, node pair no.: 3, 
+node names: n3, 0, pulse time: 6.100000e-08
+
+Instance: aseegen1   Message: port name: out, node pair no.: 4, 
+node names: n4, 0, pulse time: 8.600000e-08
+
+No. of Data Rows : 1243
+Reset re-loads circuit * repeat loop, double exponential current pulses
+
+Circuit: * repeat loop, double exponential current pulses
+
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+n1                                           0
+n2                                           0
+n3                                           0
+n4                                           0
+mon                                          0
+aseegen1#branch_1_0                          0
+
+
+Instance: aseegen1   Message: port name: out, node pair no.: 1, 
+node names: n1, 0, pulse time: 1.100000e-08
+
+Instance: aseegen1   Message: port name: out, node pair no.: 2, 
+node names: n2, 0, pulse time: 3.600000e-08
+
+Instance: aseegen1   Message: port name: out, node pair no.: 3, 
+node names: n3, 0, pulse time: 6.100000e-08
+
+Instance: aseegen1   Message: port name: out, node pair no.: 4, 
+node names: n4, 0, pulse time: 8.600000e-08
+
+No. of Data Rows : 1243
+Reset re-loads circuit * repeat loop, double exponential current pulses
+
+Circuit: * repeat loop, double exponential current pulses
+
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+n1                                           0
+n2                                           0
+n3                                           0
+n4                                           0
+mon                                          0
+aseegen1#branch_1_0                          0
+
+
+Instance: aseegen1   Message: port name: out, node pair no.: 1, 
+node names: n1, 0, pulse time: 1.100000e-08
+
+Instance: aseegen1   Message: port name: out, node pair no.: 2, 
+node names: n2, 0, pulse time: 3.600000e-08
+
+Instance: aseegen1   Message: port name: out, node pair no.: 3, 
+node names: n3, 0, pulse time: 6.100000e-08
+
+Instance: aseegen1   Message: port name: out, node pair no.: 4, 
+node names: n4, 0, pulse time: 8.600000e-08
+
+No. of Data Rows : 1243
+Reset re-loads circuit * repeat loop, double exponential current pulses
+
+Circuit: * repeat loop, double exponential current pulses
+
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+n1                                           0
+n2                                           0
+n3                                           0
+n4                                           0
+mon                                          0
+aseegen1#branch_1_0                          0
+
+
+Instance: aseegen1   Message: port name: out, node pair no.: 1, 
+node names: n1, 0, pulse time: 1.100000e-08
+
+Instance: aseegen1   Message: port name: out, node pair no.: 2, 
+node names: n2, 0, pulse time: 3.600000e-08
+
+Instance: aseegen1   Message: port name: out, node pair no.: 3, 
+node names: n3, 0, pulse time: 6.100000e-08
+
+Instance: aseegen1   Message: port name: out, node pair no.: 4, 
+node names: n4, 0, pulse time: 8.600000e-08
+
+No. of Data Rows : 1243
+Reset re-loads circuit * repeat loop, double exponential current pulses
+
+Circuit: * repeat loop, double exponential current pulses
+
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+n1                                           0
+n2                                           0
+n3                                           0
+n4                                           0
+mon                                          0
+aseegen1#branch_1_0                          0
+
+
+Instance: aseegen1   Message: port name: out, node pair no.: 1, 
+node names: n1, 0, pulse time: 1.100000e-08
+
+Instance: aseegen1   Message: port name: out, node pair no.: 2, 
+node names: n2, 0, pulse time: 3.600000e-08
+
+Instance: aseegen1   Message: port name: out, node pair no.: 3, 
+node names: n3, 0, pulse time: 6.100000e-08
+
+Instance: aseegen1   Message: port name: out, node pair no.: 4, 
+node names: n4, 0, pulse time: 8.600000e-08
+
+No. of Data Rows : 1243
+Reset re-loads circuit * repeat loop, double exponential current pulses
+
+Circuit: * repeat loop, double exponential current pulses
+
+
+Total analysis time (seconds) = 0
+
+Total elapsed time (seconds) = 0.027 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 12467.062 MB.
+Maximum ngspice program size =   11.328 MB.
+Current ngspice program size =   11.328 MB.
+ASCII raw file "output.raw"
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 7  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+n1                                           0
+n2                                           0
+n3                                           0
+n4                                           0
+mon                                          0
+aseegen1#branch_1_0                          0
+
+
+Instance: aseegen1   Message: port name: out, node pair no.: 1, 
+node names: n1, 0, pulse time: 1.100000e-08
+
+Instance: aseegen1   Message: port name: out, node pair no.: 2, 
+node names: n2, 0, pulse time: 3.600000e-08
+
+Instance: aseegen1   Message: port name: out, node pair no.: 3, 
+node names: n3, 0, pulse time: 6.100000e-08
+
+Instance: aseegen1   Message: port name: out, node pair no.: 4, 
+node names: n4, 0, pulse time: 8.600000e-08
+
+No. of Data Rows : 1243
+
+Total analysis time (seconds) = 0.004211
+
+Total elapsed time (seconds) = 0.032 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 12467.062 MB.
+Maximum ngspice program size =   11.328 MB.
+Current ngspice program size =   11.328 MB.
+
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+

@@ -1,0 +1,4 @@
+Error: unknown subckt: x1 name={inv1} in=1 out=3 psupply=2 nsupply=0
+    in line no. 3 from file input.cir
+    Simulation interrupted due to error!
+

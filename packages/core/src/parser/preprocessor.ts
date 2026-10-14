@@ -793,7 +793,7 @@ function* collectStatements(
   let inSubckt = 0;
   let inControl = false;
   let inOutputCard = false;
-  let inSubcircuitCall = false;
+  const foldedCallContinuations = new Set<number>();
   // A card ngspice-47 comments out takes its `+` continuations with it (#843).
   let inCommentedOutCard = false;
 
@@ -806,6 +806,11 @@ function* collectStatements(
     const passThrough = () => statements.push({ text: line, substitute: false, line: lineNumber, scope });
     // Consumed numparam cards and unselected `.if` branches keep their line, blank.
     const blank = () => statements.push({ text: '', substitute: false, line: lineNumber });
+
+    if (foldedCallContinuations.has(index)) {
+      blank();
+      continue;
+    }
 
     // Comments are metadata, not expression-bearing netlist statements.
     if (trimmed.startsWith('*')) {
@@ -837,10 +842,22 @@ function* collectStatements(
     // A `+` continuation (blank and comment lines may sit in between) belongs to the preceding card.
     if (trimmed !== '' && !trimmed.startsWith('+')) {
       inOutputCard = OUTPUT_CARD.test(trimmed);
-      inSubcircuitCall = /^x/i.test(trimmed);
     }
-    // An X card and its `+` continuations, with bare `name=value` values braced (#788).
-    const card = inSubcircuitCall ? bracedSubcircuitCallValues(line, commentStart(line)) : line;
+    let card = line;
+    if (!inControl && /^x/i.test(trimmed)) {
+      // Scan the logical X card, not physical fragments. An RHS may start
+      // after '=' on the next line, or a brace/quote may span continuations.
+      // Leave consumed lines blank so subsequent source line numbers survive.
+      card = line.slice(0, commentStart(line));
+      for (let next = index + 1; next < lines.length; next++) {
+        const continuation = lines[next].slice(0, commentStart(lines[next])).trim();
+        if (continuation === '' || continuation.startsWith('*')) continue;
+        if (!continuation.startsWith('+')) break;
+        card += ' ' + continuation.slice(1);
+        foldedCallContinuations.add(next);
+      }
+      card = bracedSubcircuitCallValues(card, card.length);
+    }
 
     const conditional = inControl ? null : CONDITIONAL_CARD.exec(trimmed);
     if (conditional) {
