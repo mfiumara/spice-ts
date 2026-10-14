@@ -9,6 +9,8 @@ const { join } = await import('node:path');
 const { pathToFileURL } = await import('node:url');
 const { spawn } = await import('node:child_process');
 const { hashVectors } = await import('./rc1k-attribution-data.mjs');
+const { parsePhases } = await import('./parse-1000-targets.mjs');
+const parserAttribution = JSON.parse(readFileSync(join(directory, 'prepared.json'), 'utf8')).attribution === 'parse';
 const totals = {}, calls = {}, stack = [];
 globalThis.__rc1k = {
   enter(key) { const span = { key, start: process.hrtime.bigint(), children: 0n }; stack.push(span); return span; },
@@ -60,9 +62,24 @@ try {
     const circuit = await core.parseAsync(text);
     const parsed = process.hrtime.bigint();
     boundaries.parse = ms(parsed, parseStart);
+    if (mode === 'instrumented' && parserAttribution) {
+      for (const key of parsePhases.filter(k => k !== 'parseResidual')) boundaries[key] = totals[key] ?? 0;
+      for (const [key, value] of Object.entries(totals).filter(([key]) => key.startsWith('numparam.'))) {
+        boundaries[key] = value;
+        boundaries.numparam += value;
+      }
+      boundaries.parseResidual = boundaries.parse - Object.values(totals).reduce((a, b) => a + b, 0);
+      evidence.parseCalls = { ...calls };
+      // Freeze parser spans before simulation can invoke Circuit/numparam helpers again.
+      globalThis.__rc1k = { enter() { return null; }, leave() {} };
+    }
+    if (parserAttribution) evidence.parseSha256 = createHash('sha256').update(JSON.stringify(circuit, (_key, value) =>
+      value instanceof Map ? { map: [...value] } : value instanceof Set ? { set: [...value] } : value)).digest('hex');
+    const simulationStart = process.hrtime.bigint();
+    if (parserAttribution) boundaries.parseEqualityHash = ms(simulationStart, parsed);
     const result = await core.simulate(circuit);
     const simulated = process.hrtime.bigint();
-    boundaries.simulate = ms(simulated, parsed);
+    boundaries.simulate = ms(simulated, parserAttribution ? simulationStart : parsed);
     const vectors = [];
     if (result.dc) {
       for (const [name, value] of result.dc.voltages) vectors.push(['dc-v:' + name, [value]]);
@@ -76,8 +93,8 @@ try {
     evidence.output = hashVectors(vectors);
     boundaries.outputHash = ms(process.hrtime.bigint(), simulated);
     evidence.convergence = result.convergence;
-    for (const key of ['compile', 'matrixBuild', 'ordering', 'loadStamp', 'factor', 'solve', 'outputMaterialization']) boundaries[key] = mode === 'instrumented' ? totals[key] ?? 0 : null;
-    if (mode === 'instrumented') boundaries.simulateResidual = boundaries.simulate - Object.values(totals).reduce((a, b) => a + b, 0);
+    for (const key of ['compile', 'matrixBuild', 'ordering', 'loadStamp', 'factor', 'solve', 'outputMaterialization']) boundaries[key] = mode === 'instrumented' && !parserAttribution ? totals[key] ?? 0 : null;
+    if (mode === 'instrumented' && !parserAttribution) boundaries.simulateResidual = boundaries.simulate - Object.values(totals).reduce((a, b) => a + b, 0);
     evidence.calls = calls;
   }
 } catch (error) {

@@ -1,0 +1,22 @@
+{
+  "09-rc-ladder-tran-10000-ngspice": "53d199992720d17c3ea45304f73c0f59acd52830f73b249063fd67be23570cf4",
+  "06-rc-ladder-tran-10000-ngspice": "421045362dc7c19347178a9fcd28324b6170f6f19850b4a3999b6079a6b93372",
+  "05-rc-ladder-tran-10000-ngspice": "535c414040ffc6df735d6520a3f1b5ba29498e3036e0c1dbd1dddda12c66d401",
+  "03-resistor-mesh-op-10000-ngspice": "f7191657e62f70b56ba0df6e9c222dcffb95c124922f0faec453bf1bfeb84351",
+  "02-resistor-mesh-op-10000-ngspice": "2a6a5b27f18a60f3101bdd96a7840bec83ad0078dc4c1e2e837160523fd0d0a2",
+  "01-resistor-mesh-op-10000-ngspice": "0002c000463ea8a6baa8f415371216ecc0b32a77ddacdfb9549f37e19dec5747",
+  "06-resistor-mesh-op-10000-ngspice": "1f76d4ad96ff7f3f24e7f3b8411fd6567d943912e537c26f4e12e1cd97df2f40",
+  "07-resistor-mesh-op-10000-ngspice": "32f8e3674039392edd83a8c888b1bc5d1a0e63c3435a38f4ce3dda5551ced551",
+  "04-resistor-mesh-op-10000-ngspice": "974b07a4406ba8d64373de63f1e0e2c54a5c57949b69750459dc0a8af40bb8e7",
+  "05-resistor-mesh-op-10000-ngspice": "023f2173107fd695b1c1e5b657d94e6b2032ab1d1823e0594310ad2f2433eeee",
+  "03-rc-ladder-tran-10000-ngspice": "1848b792606a3a8fa835c463daf4516be404d308b18f478872a18932a0055d2b",
+  "10-rc-ladder-tran-10000-ngspice": "82054493fcb6a44456877060abe44a1f2ea214a3d4d32b4707d0c4d1a4f6233a",
+  "08-rc-ladder-tran-10000-ngspice": "4ed718f8c990f7dd4a1b3cb4d215510969e0365b55d7e0df37365b946a67fad6",
+  "07-rc-ladder-tran-10000-ngspice": "d8c4073f29957f5bcdc9e6a20e6aafe85a2c5e7ee2db3bc9f78cff5aed7910cf",
+  "04-rc-ladder-tran-10000-ngspice": "ba18038e968174141cd60d52a584fa56e86efa345b2cc627685595177536d69a",
+  "10-resistor-mesh-op-10000-ngspice": "c65965e45f820d18496c0dd7efb4aa3f94f4d5f497905673b50a6b8eec894f3b",
+  "08-resistor-mesh-op-10000-ngspice": "2b3f05bf8f8db4ef3357c6f5ff35f004c9abf5bc6a7a47de7a57ca5a67d274d5",
+  "09-resistor-mesh-op-10000-ngspice": "1bee84e47f3d7371b40d51a4ff8021b76bbed8aa7735f74071064df0a691991b",
+  "01-rc-ladder-tran-10000-ngspice": "978367285634ab4779a3e1a8ab455326b7ea7c36afdc374a24e8fc27b8991ed2",
+  "02-rc-ladder-tran-10000-ngspice": "f203668e5466b83ffbd6f46013d16000c10c02a2a7922684095b05c6d3d580e1"
+}

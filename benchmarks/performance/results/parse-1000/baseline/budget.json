@@ -1,0 +1,20 @@
+{
+  "planned": 60,
+  "started": 60,
+  "completed": 60,
+  "nativeAttempted": 20,
+  "stopReason": null,
+  "actualRunSeconds": 23.98333083333273,
+  "sumChildActualSeconds": 23.922940916687367,
+  "deadlineAndBudgetCertified": true,
+  "start": {
+    "continuous": 121805.89071225,
+    "monotonic": 63110.390410083,
+    "realtime": 1791946091.050915
+  },
+  "end": {
+    "continuous": 121829.87404308333,
+    "monotonic": 63134.3737365,
+    "realtime": 1791946115.0344121
+  }
+}

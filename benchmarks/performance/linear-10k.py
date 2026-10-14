@@ -17,12 +17,12 @@ sys.path.insert(0, str(ROOT / 'benchmarks/performance/results/elapsed-controls-9
 from controls import ContinuousClock, Budget, clock_error, node_error, CHILD_SECONDS, RUN_SECONDS
 
 
-def plan():
+def plan(comparison=False):
+    modes = ('control', 'candidate', 'ngspice') if comparison else ('control', 'instrumented', 'ngspice')
     return [dict(round=r + 1, circuit=c, size=s, mode=m)
-            for r in range(10) for s in (10000,)
+            for r in range(10) for s in ((1000, 10000, 50000) if comparison else (10000,))
             for c in ('rc-ladder-tran', 'resistor-mesh-op')
-            for m in (('control', 'instrumented', 'ngspice')[r % 3:] +
-                      ('control', 'instrumented', 'ngspice')[:r % 3])]
+            for m in (modes[r % 3:] + modes[:r % 3])]
 
 
 def stop_reason(budget, child_start, previous, now):
@@ -32,21 +32,23 @@ def stop_reason(budget, child_start, previous, now):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('out', type=Path)
+    parser.add_argument('--parse', action='store_true', help='attribute parser instead of solver phases')
+    parser.add_argument('--before', type=Path, help='compare archived control against current uninstrumented build at 1k/10k/50k')
     args = parser.parse_args()
     out = args.out.resolve()
     if (out / 'receipts.jsonl').exists():
         raise RuntimeError('immutable attempted matrix; no retries')
-    subprocess.run(['node', str(ROOT / 'benchmarks/performance/linear-10k-prepare.mjs'), str(out)], cwd=ROOT, check=True)
+    subprocess.run(['node', str(ROOT / 'benchmarks/performance/linear-10k-prepare.mjs'), str(out)] + (['--parse'] if args.parse else []) + (['--before', str(args.before)] if args.before else []), cwd=ROOT, check=True)
     clock = ContinuousClock()
     start = clock.read()
     budget = Budget(start)
-    cells = plan()
+    cells = plan(bool(args.before))
     host = dict(baseSha=json.loads((out / 'prepared.json').read_text())['baseSha'],
                 node=subprocess.check_output(['node', '--version'], text=True).strip(),
                 ngspice=subprocess.check_output(['ngspice', '--version'], text=True),
                 uname=list(os.uname()), clock=clock.name, childSeconds=CHILD_SECONDS,
                 runSeconds=RUN_SECONDS, planned=len(cells), nativePlanned=len(cells)//3,
-                order='rotating control/instrumented/ngspice, serial cold children', start=asdict(start))
+                order='rotating control/' + ('candidate' if args.before else 'instrumented') + '/ngspice, serial cold children', start=asdict(start))
     (out / 'host.json').write_text(json.dumps(host, indent=2) + '\n')
     previous = start
     stop = None

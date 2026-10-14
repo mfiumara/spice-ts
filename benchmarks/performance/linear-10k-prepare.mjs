@@ -1,7 +1,9 @@
 // Prepared = {baseSha, counts, hashes, decks}; copies are benchmark-only.
 import { targets, instrument } from './rc1k-attribution-prepare.mjs';
+import { parseTargets } from './parse-1000-targets.mjs';
 import { m2Netlist } from './scaling-m2-fixture.mjs';
-import { readFileSync, readdirSync, mkdirSync, writeFileSync } from 'node:fs';
+import { readFileSync, readdirSync, mkdirSync, writeFileSync, existsSync } from 'node:fs';
+import { gunzipSync } from 'node:zlib';
 import { join, resolve } from 'node:path';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
@@ -12,19 +14,26 @@ Object.assign(targets, {
   'DCResult.constructor': 'outputMaterialization',
 });
 const out = resolve(process.argv[2]);
+const beforeIndex = process.argv.indexOf('--before');
+const before = beforeIndex < 0 ? undefined : resolve(process.argv[beforeIndex + 1]);
+const beforeHashes = before ? JSON.parse(readFileSync(join(before, 'prepared.json'), 'utf8')).hashes : undefined;
+const selectedTargets = process.argv.includes('--parse') ? parseTargets : targets;
 mkdirSync(out, { recursive: true });
 const counts = {}, hashes = {};
-for (const mode of ['control', 'instrumented']) {
+for (const mode of before ? ['control', 'candidate'] : ['control', 'instrumented']) {
   mkdirSync(join(out, mode), { recursive: true });
   writeFileSync(join(out, mode, 'package.json'), '{"type":"module"}\n');
-  for (const name of readdirSync('packages/core/dist').filter(n => n.endsWith('.js'))) {
-    const source = readFileSync(join('packages/core/dist', name), 'utf8');
-    const code = mode === 'instrumented' ? instrument(source, name, counts) : source;
+  const sourceDirectory = before && mode === 'control' ? join(before, 'control') : 'packages/core/dist';
+  for (const name of new Set(readdirSync(sourceDirectory).map(n => n.replace(/\.gz$/, '')).filter(n => n.endsWith('.js')))) {
+    const sourcePath = join(sourceDirectory, name);
+    const source = existsSync(sourcePath) ? readFileSync(sourcePath, 'utf8') : gunzipSync(readFileSync(sourcePath + '.gz')).toString('utf8');
+    const code = mode === 'instrumented' ? instrument(source, name, counts, selectedTargets) : source;
     writeFileSync(join(out, mode, name), code);
     hashes[mode + '/' + name] = createHash('sha256').update(code).digest('hex');
+    if (before && mode === 'control' && hashes[mode + '/' + name] !== beforeHashes[mode + '/' + name]) throw new Error('before bundle drift');
   }
 }
-for (const name of Object.keys(targets)) if (counts[name] !== 1) throw new Error(`expected one ${name}, got ${counts[name]}`);
+if (!before) for (const name of Object.keys(selectedTargets)) if (counts[name] !== 1) throw new Error(`expected one ${name}, got ${counts[name]}`);
 const previous = JSON.parse(readFileSync('benchmarks/performance/results/scaling-matrix-2026-10-13/decks.json'));
 const decks = [];
 for (const size of [1000, 10000, 50000]) for (const circuit of ['rc-ladder-tran', 'resistor-mesh-op']) {
@@ -36,4 +45,4 @@ for (const size of [1000, 10000, 50000]) for (const circuit of ['rc-ladder-tran'
   decks.push({ circuit, size, file, deckSha256, actualNodes: fixture.actualNodes, probe: fixture.probe });
 }
 writeFileSync(join(out, '.spiceinit'), 'option klu\n');
-writeFileSync(join(out, 'prepared.json'), JSON.stringify({ baseSha: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(), counts, hashes, decks }, null, 2) + '\n');
+writeFileSync(join(out, 'prepared.json'), JSON.stringify({ baseSha: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(), counts, hashes, decks, targets: selectedTargets, attribution: process.argv.includes('--parse') ? 'parse' : 'solver', ...(before ? { comparison: true, before, runSizes: [1000, 10000, 50000] } : {}) }, null, 2) + '\n');
