@@ -1,0 +1,11 @@
+{
+  "node": "v22.23.1",
+  "uname": [
+    "Darwin",
+    "Mattias-MacBook-Pro.local",
+    "27.0.0",
+    "Darwin Kernel Version 27.0.0: Tue Aug 11 21:06:40 PDT 2026; root:xnu-13432.1.9~1/RELEASE_ARM64_T6050",
+    "arm64"
+  ],
+  "planned": 4
+}

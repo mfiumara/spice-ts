@@ -1,0 +1,286 @@
+{
+  "cells": 80,
+  "rounds": 10,
+  "bitIdentical": true,
+  "targetPass": false,
+  "controlsPass": false,
+  "ship": false,
+  "results": [
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 1000,
+      "file": "cmos-inverter-chain-tran-1000.cir",
+      "deckSha256": "1a9866593c778a9fa26e23c1916c7b00b1bdb1adc2e7a246d9e3f4aa4f1ca1e1",
+      "control": {
+        "medianMs": 348.7019375,
+        "q1Ms": 342.33500975,
+        "q3Ms": 373.3053235,
+        "iqrMs": 30.970313750000003,
+        "samples": [
+          336.707875,
+          345.636791,
+          339.23920799999996,
+          351.767084,
+          385.617958,
+          411.895167,
+          343.425416,
+          361.807417,
+          377.137959,
+          341.971541
+        ]
+      },
+      "candidate": {
+        "medianMs": 370.978187,
+        "q1Ms": 361.22780274999997,
+        "q3Ms": 374.4174582499999,
+        "iqrMs": 13.189655499999958,
+        "samples": [
+          374.050583,
+          371.838625,
+          359.34333399999997,
+          341.95270899999997,
+          410.512126,
+          366.881209,
+          370.117749,
+          374.5397499999999,
+          389.36125000000004,
+          333.37087599999995
+        ]
+      },
+      "changePercent": 6.388335453398497,
+      "output": {
+        "outputSha256": "8301f2834fc8157f9c23bc1eb9044e09fdd90e180a32271104a1d1ad600d1f11",
+        "vectors": 1003,
+        "count": 214642
+      },
+      "convergence": {
+        "dc": {
+          "newtonIterations": 138,
+          "acceptedSolves": 18,
+          "rejectedSolves": 0,
+          "sourceStepAttempts": 0,
+          "sourceStepFailures": 0,
+          "gminStepAttempts": 20,
+          "gminStepFailures": 2,
+          "failure": null
+        },
+        "transient": {
+          "acceptedSteps": 213,
+          "rejectedSteps": 0,
+          "newtonIterations": 466,
+          "nrRetries": 0,
+          "lteRetries": 0,
+          "minimumAcceptedTimestep": 1e-13,
+          "failure": null
+        }
+      }
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 10000,
+      "file": "cmos-inverter-chain-tran-10000.cir",
+      "deckSha256": "2ce663326238609299d8628016b1211632f1474e9d40b6c39747fff964999a18",
+      "control": {
+        "medianMs": 2918.1577500000003,
+        "q1Ms": 2800.579094,
+        "q3Ms": 3029.74415625,
+        "iqrMs": 229.16506224999966,
+        "samples": [
+          2904.474583,
+          2789.5913750000004,
+          2939.7495,
+          3059.742375,
+          3100.228584,
+          2781.286376,
+          2833.542251,
+          2931.840917,
+          3304,
+          2709.028
+        ]
+      },
+      "candidate": {
+        "medianMs": 2888.1190625,
+        "q1Ms": 2815.92585425,
+        "q3Ms": 2962.9686142500004,
+        "iqrMs": 147.04276000000027,
+        "samples": [
+          3161.037374,
+          2819.4222919999997,
+          2898.9753330000003,
+          2877.262792,
+          2814.7603750000003,
+          2969.9140410000005,
+          2791.305875,
+          2942.1323340000004,
+          3054.2417499999997,
+          2785.213333
+        ]
+      },
+      "changePercent": -1.0293716129637032,
+      "output": {
+        "outputSha256": "43bfa25cd2463b7b6ee4b14961087467de6fc8379be8a7ffaec45e83dcdd6915",
+        "vectors": 10003,
+        "count": 2140642
+      },
+      "convergence": {
+        "dc": {
+          "newtonIterations": 226,
+          "acceptedSolves": 25,
+          "rejectedSolves": 1,
+          "sourceStepAttempts": 0,
+          "sourceStepFailures": 0,
+          "gminStepAttempts": 29,
+          "gminStepFailures": 4,
+          "failure": null
+        },
+        "transient": {
+          "acceptedSteps": 213,
+          "rejectedSteps": 0,
+          "newtonIterations": 466,
+          "nrRetries": 0,
+          "lteRetries": 0,
+          "minimumAcceptedTimestep": 1e-13,
+          "failure": null
+        }
+      }
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 10000,
+      "file": "rc-ladder-tran-10000.cir",
+      "deckSha256": "eb21933fd99fcbc32276816a4f389ba216dcdddc29683551a67f606f352dfca7",
+      "control": {
+        "medianMs": 434.336167,
+        "q1Ms": 417.19353175000003,
+        "q3Ms": 453.43985375,
+        "iqrMs": 36.246321999999964,
+        "samples": [
+          468.039125,
+          434.325292,
+          441.996167,
+          457.254416,
+          434.347042,
+          378.408542,
+          413.378666,
+          479.57224999999994,
+          414.461459,
+          425.38975000000005
+        ]
+      },
+      "candidate": {
+        "medianMs": 420.907104,
+        "q1Ms": 417.49016625,
+        "q3Ms": 459.866167,
+        "iqrMs": 42.37600075,
+        "samples": [
+          444.422917,
+          417.338833,
+          420.121958,
+          472.15316599999994,
+          465.013917,
+          406.793208,
+          421.69224999999994,
+          472.714292,
+          417.944166,
+          403.49179100000003
+        ]
+      },
+      "changePercent": -3.091859260248986,
+      "output": {
+        "outputSha256": "cfed768fddaa3d8f6f44396c0b98d1e1101231083774afcf4f993b888a787ede",
+        "vectors": 10002,
+        "count": 1200240
+      },
+      "convergence": {
+        "dc": {
+          "newtonIterations": 1,
+          "acceptedSolves": 1,
+          "rejectedSolves": 0,
+          "sourceStepAttempts": 0,
+          "sourceStepFailures": 0,
+          "gminStepAttempts": 0,
+          "gminStepFailures": 0,
+          "failure": null
+        },
+        "transient": {
+          "acceptedSteps": 119,
+          "rejectedSteps": 0,
+          "newtonIterations": 238,
+          "nrRetries": 0,
+          "lteRetries": 0,
+          "minimumAcceptedTimestep": 1.0000000000000001e-11,
+          "failure": null
+        }
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "file": "resistor-mesh-op-10000.cir",
+      "deckSha256": "c88e6076daf2523437e3da014d7a3c329f679a7405f789530c5c805f447ed0dc",
+      "control": {
+        "medianMs": 289.287145,
+        "q1Ms": 279.980021,
+        "q3Ms": 296.201459,
+        "iqrMs": 16.221437999999978,
+        "samples": [
+          296.94800100000003,
+          288.091791,
+          286.320083,
+          322.981708,
+          266.552334,
+          290.482499,
+          293.961833,
+          317.099791,
+          277.866667,
+          265.00304199999994
+        ]
+      },
+      "candidate": {
+        "medianMs": 299.88456249999996,
+        "q1Ms": 285.460948,
+        "q3Ms": 321.16252099999997,
+        "iqrMs": 35.701572999999996,
+        "samples": [
+          321.254417,
+          287.29495799999995,
+          286.0096659999999,
+          338.012207,
+          320.886833,
+          312.47416699999997,
+          283.030792,
+          322.225125,
+          255.645999,
+          285.27804199999997
+        ]
+      },
+      "changePercent": 3.663286697374657,
+      "output": {
+        "outputSha256": "7fe66c8319033d70158a6b010fa0f98b7d9374c27dbd0a855515f8087f43628f",
+        "vectors": 10001,
+        "count": 10001
+      },
+      "convergence": {
+        "dc": {
+          "newtonIterations": 2,
+          "acceptedSolves": 1,
+          "rejectedSolves": 0,
+          "sourceStepAttempts": 0,
+          "sourceStepFailures": 0,
+          "gminStepAttempts": 0,
+          "gminStepFailures": 0,
+          "failure": null
+        },
+        "transient": {
+          "acceptedSteps": 0,
+          "rejectedSteps": 0,
+          "newtonIterations": 0,
+          "nrRetries": 0,
+          "lteRetries": 0,
+          "minimumAcceptedTimestep": null,
+          "failure": null
+        }
+      }
+    }
+  ]
+}

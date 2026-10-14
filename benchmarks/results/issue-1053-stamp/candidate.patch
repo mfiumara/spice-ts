@@ -1,0 +1,42 @@
+diff --git a/packages/core/src/devices/mosfet.ts b/packages/core/src/devices/mosfet.ts
+index 431aea4d..903cba63 100644
+--- a/packages/core/src/devices/mosfet.ts
++++ b/packages/core/src/devices/mosfet.ts
+@@ -1452,29 +1452,18 @@ export class MOSFET implements DeviceModel {
+         b[jD] += ceqbd;
+       }
+ 
+-      let slotDG = allSlots[s + SLOT_DG], slotDD = allSlots[s + SLOT_DD];
+-      let slotDS = allSlots[s + SLOT_DS], slotDB = allSlots[s + SLOT_DB];
+-      let slotSG = allSlots[s + SLOT_SG], slotSD = allSlots[s + SLOT_SD];
+-      let slotSS = allSlots[s + SLOT_SS], slotSB = allSlots[s + SLOT_SB];
+-      if (reverse) {
+-        slotDG = allSlots[s + SLOT_SG]; slotDD = allSlots[s + SLOT_SS];
+-        slotDS = allSlots[s + SLOT_SD]; slotDB = allSlots[s + SLOT_SB];
+-        slotSG = allSlots[s + SLOT_DG]; slotSD = allSlots[s + SLOT_DS];
+-        slotSS = allSlots[s + SLOT_DD]; slotSB = allSlots[s + SLOT_DB];
+-      }
+-
+       if (nD >= 0) {
+-        if (nG >= 0) gValues[slotDG] += gm;
+-        gValues[slotDD] += gds;
+-        if (nS >= 0) gValues[slotDS] -= gm + gds + gmbs;
+-        if (jB >= 0 && gmbs !== 0) gValues[slotDB] += gmbs;
++        if (nG >= 0) gValues[allSlots[s + (reverse ? SLOT_SG : SLOT_DG)]] += gm;
++        gValues[allSlots[s + (reverse ? SLOT_SS : SLOT_DD)]] += gds;
++        if (nS >= 0) gValues[allSlots[s + (reverse ? SLOT_SD : SLOT_DS)]] -= gm + gds + gmbs;
++        if (jB >= 0 && gmbs !== 0) gValues[allSlots[s + (reverse ? SLOT_SB : SLOT_DB)]] += gmbs;
+         b[nD] -= polarity * Ieq;
+       }
+       if (nS >= 0) {
+-        if (nG >= 0) gValues[slotSG] -= gm;
+-        if (nD >= 0) gValues[slotSD] -= gds;
+-        gValues[slotSS] += gm + gds + gmbs;
+-        if (jB >= 0 && gmbs !== 0) gValues[slotSB] -= gmbs;
++        if (nG >= 0) gValues[allSlots[s + (reverse ? SLOT_DG : SLOT_SG)]] -= gm;
++        if (nD >= 0) gValues[allSlots[s + (reverse ? SLOT_DS : SLOT_SD)]] -= gds;
++        gValues[allSlots[s + (reverse ? SLOT_DD : SLOT_SS)]] += gm + gds + gmbs;
++        if (jB >= 0 && gmbs !== 0) gValues[allSlots[s + (reverse ? SLOT_DB : SLOT_SB)]] -= gmbs;
+         b[nS] += polarity * Ieq;
+       }
+     }
