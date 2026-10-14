@@ -120,8 +120,11 @@ test('EKV evidence uses published decks and never labels MOS1 fallback as parity
       assert.equal(digest, engine === 'ngspice' ? f.ngspice.analyses[0].seriesSha256 : f[engine].seriesSha256);
     }
     const signals = f.xyce.signals;
-    if (f.series.spiceTs) assert.deepEqual(f.spiceTsVsXyce, alignAndMeasure(f.series.spiceTs, f.series.xyce, signals));
-    if (f.series.ngspice) assert.deepEqual(f.ngspiceVsXyce, alignAndMeasure(f.series.ngspice, f.series.xyce, signals));
+    // Historical EKV receipts predate #970's additive sweep diagnostics. Verify every
+    // numeric metric unchanged, without rewriting saved losses to add new metadata.
+    const historicalMetrics = (metric: ReturnType<typeof alignAndMeasure>) => ({ grid: metric.grid, signals: metric.signals });
+    if (f.series.spiceTs) assert.deepEqual(f.spiceTsVsXyce, historicalMetrics(alignAndMeasure(f.series.spiceTs, f.series.xyce, signals)));
+    if (f.series.ngspice) assert.deepEqual(f.ngspiceVsXyce, historicalMetrics(alignAndMeasure(f.series.ngspice, f.series.xyce, signals)));
     // A successful MOS1 run is still an EKV coverage loss.
     assert.ok(Object.values(f.spiceTsVsXyce.signals).some((m: any) => m.absoluteError.max > 1e-5));
   }
