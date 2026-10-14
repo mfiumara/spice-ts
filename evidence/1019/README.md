@@ -105,8 +105,14 @@ From repository root after `pnpm install --frozen-lockfile`:
     pnpm exec tsx evidence/1019/trace.ts
     python3 evidence/1019/localize.py
     python3 evidence/1019/check.py
+    python3 -m unittest discover -s evidence/1019 -p test_check.py
     pnpm lint
     spice-heavy pnpm test
+
+The checker compares every pump report field except `runtime`: wall-clock
+timings vary between runs and are retained only as observations. Error metrics,
+point counts, hashes and outcomes must still match exactly. The regression tests
+verify that timing-only changes pass while error and point-count changes fail.
 
 Related guards use the existing `evidence/1002/run.ts pump-1019` and
 `evidence/1002/mosamp.ts pump-1019` scripts. Move their generated receipts from
