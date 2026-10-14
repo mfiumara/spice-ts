@@ -30,7 +30,7 @@ AC sensitivity solves the differentiated linear system A dx/dp=db/dp-(dA/dp)x an
 |---|---|---|
 | ngspice-47 | error | KLU SIGSEGV exit139; Sparse and unqualified deck complete16 AC sensitivity rows and two TF results. |
 | ngspice master | error | Identical to 47: KLU AC-sensitivity deck segfaults (exit 139); Sparse deck runs. [ngspice pre-master-48 HEAD 3ef069fb (2026-10-09), built in scratch] |
-| spice-ts | unsupported | Native unqualified deck: Unsupported .sens form for differential v(5,4); solver variants unsupported .options klu/sparse. |
+| spice-ts | unsupported | #812 refresh d8ab9d33: all three reconstructed decks match pinned SHA256. klu.cir/sparse.cir first fail at Unsupported .options field klu/sparse (line 2); unqualified diffpair.cir first fails at Unsupported .sens form (line 27: .sens v(5,4) ac dec 5 10k 10meg). Native ngspice KLU crashes; unqualified/Sparse produce no operating-point raw plot for this adapter. No spice-ts metrics. Both gaps remain in existing #812. |
 
 Reproduces on ngspice-47: yes. Check: Running klu.cir produces SIGSEGV/exit139 during AC sensitivity; sparse.cir completes16 rows.
 
