@@ -25,7 +25,7 @@ function interpolate(time: ArrayLike<number>, values: ArrayLike<number>, at: num
 }
 
 describe('MOS2 .options TEMP ngspice-47 parity (#995)', () => {
-  for (const level of [3, 6]) {
+  for (const level of [6]) {
     it(`does not admit unvalidated MOS level ${level}`, async () => {
       await expect(simulate(references[0].deck.replace('LEVEL=2', `LEVEL=${level}`)
         .replace('TEMP=27', 'TEMP=125'))).rejects.toBeInstanceOf(UnsupportedTemperatureError);
