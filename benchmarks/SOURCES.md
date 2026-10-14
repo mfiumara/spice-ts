@@ -3,6 +3,17 @@
 This file records the provenance and redistribution decision for benchmark fixtures.
 The machine-readable catalogue is `benchmarks/corpus/ngspice/manifest.json`.
 
+## BSIM4 implementation source (#3), partial junction port
+
+| Port destination / upstream subset | Pinned upstream revision | Licence / notices |
+| --- | --- | --- |
+| `packages/core/src/devices/bsim4-junction.ts`: default DIOMOD=1 junction defaults from `src/spicelib/devices/bsim4/b4set.c`, silicon junction temperature scaling/forward limiting from `b4temp.c`, and source/drain DC junction current/conductance from `b4ld.c`. Not a complete or registered transistor model. | [ngspice-47 bsim4/](https://github.com/imr/ngspice/tree/a80f6e3e95d51534905b1f23410a951802666656/src/spicelib/devices/bsim4), SHA `a80f6e3e95d51534905b1f23410a951802666656` | ECL-2.0, Copyright (c) 2025 University of California. Original per-file notices retained verbatim in the port, with a TypeScript modification notice. Full licence in `packages/core/src/devices/bsim4/LICENSE-ECL-2.0`, obtained from [SPDX licence text](https://github.com/spdx/license-list-data/blob/main/text/ECL-2.0.txt). The per-file ECL notice overrides ngspice's project-level BSD default for these files. |
+
+This intermediate port is not imported by the simulator or shipped in its bundle.
+Any future integration must include the full ECL-2.0 licence in the distributed
+artifact before publication. Package licence metadata and npm publication remain
+owner-gated. Unit tests are not whole-transistor ngspice parity or speed evidence.
+
 ## Xyce second-reference bootstrap (#948)
 
 - `benchmarks/reference/ekv/fixtures/*.cir` are byte-identical copies of the three
