@@ -64,6 +64,42 @@ X1 c b 0 stage`);
     expect(withIC.transient!.voltage('b')).toEqual(ordinary.transient!.voltage('b'));
   });
 
+  describe.each(['NPN', 'PNP'] as const)('%s external-terminal IC defaults', (polarity) => {
+    const sign = polarity === 'NPN' ? 1 : -1;
+    const withResistance = (ic: string, uic = true) => deck(ic, uic, polarity)
+      .replace('Q1 c b 0 QMOD', 'Q1 c b e QMOD')
+      .replace('CJC=1n)', 'CJC=1n RC=100 RB=50 RE=100)')
+      .replace('.tran', `REX e 0 1k\n.ic v(c)=${sign} v(b)=${sign * 0.2} v(e)=${sign * 0.1}\n.tran`);
+
+    it.each(['', `IC=${sign * 0.1}`])('uses external node IC for omitted components (%s)', async (ic) => {
+      const implicit = await simulate(withResistance(ic));
+      const explicit = await simulate(withResistance(`IC=${sign * 0.1},${sign * 0.9}`));
+      expect(implicit.transient!.time).toEqual(explicit.transient!.time);
+      for (const node of ['c', 'b', 'e']) {
+        expect(implicit.transient!.voltage(node)).toEqual(explicit.transient!.voltage(node));
+      }
+    });
+
+    it('preserves the RC-only review reproduction', async () => {
+      const input = deck(`IC=${sign * 0.2}`, true, polarity)
+        .replace('CJC=1n)', 'CJC=1n RC=100)')
+        .replace('.tran', `.ic v(c)=${sign}\n.tran`);
+      const result = await simulate(input);
+      // ngspice-47, identical deck: t=2ps, v(c)=+/-1.090913V.
+      expect(result.transient!.time[0]).toBeCloseTo(2e-12, 20);
+      expect(result.transient!.voltage('c')[0]).toBeCloseTo(sign * 1.090913, 6);
+    });
+
+    it('ignores instance IC without UIC with RC/RB/RE present', async () => {
+      const ordinary = await simulate(withResistance('', false));
+      const explicit = await simulate(withResistance(`IC=${sign * 0.1},${sign * 0.9}`, false));
+      expect(explicit.transient!.time).toEqual(ordinary.transient!.time);
+      for (const node of ['c', 'b', 'e']) {
+        expect(explicit.transient!.voltage(node)).toEqual(ordinary.transient!.voltage(node));
+      }
+    });
+  });
+
   it.each(['NPN', 'PNP'] as const)('initializes stored junction charge only with UIC for %s', async (polarity) => {
     const sign = polarity === 'NPN' ? 1 : -1;
     const zeroIC = await simulate(deck('IC=0,0', true, polarity));
