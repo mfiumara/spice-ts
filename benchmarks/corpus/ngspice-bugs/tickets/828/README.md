@@ -35,7 +35,7 @@ Ordinary real sqrt(-4) has no value, so native mathematical-domain rejection is 
 |---|---|---|
 | ngspice-47 | wrong | Native -2/-4 out of range for sqrt; confirmed ps and lt modes both -4 out of range, no y result. |
 | ngspice master | wrong | Identical to 47: "Error: -4 out of range for sqrt" under the compatibility-mode .spiceinit. [ngspice pre-master-48 HEAD 3ef069fb (2026-10-09), built in scratch] |
-| spice-ts | unsupported | spice-ts has no PSpice/LTspice compatibility mode, so the documented ps/lt sqrt extensions the ticket is about cannot be exercised. In native mode spice-ts rejects sqrt(-4) (InvalidCircuitError: Behavioral expression ... out of range for sqrt), the same as native ngspice; that is mathematically valid but not the case under test. |
+| spice-ts | unsupported | #812 refresh d8ab9d33: pinned foo.cir and sqrt_neg_cards.cir first fail with InvalidCircuitError B-source b1: -2/-4 out of range for sqrt, respectively; native ngspice also rejects the domain. Native rejection is mathematically correct but does not exercise the ps/lt compatibility extension, still an existing #812 gap. No metrics or win. Historical evidence: spice-ts has no PSpice/LTspice compatibility mode, so the documented ps/lt sqrt extensions the ticket is about cannot be exercised. In native mode spice-ts rejects sqrt(-4) (InvalidCircuitError: Behavioral expression ... out of range for sqrt), the same as native ngspice; that is mathematically valid but not the case under test. |
 
 Reproduces on ngspice-47: yes. Check: In confirmed ps/lt modes, sqrt_neg.cir errors -4 out of range instead of returning y=5/y=3 respectively.
 

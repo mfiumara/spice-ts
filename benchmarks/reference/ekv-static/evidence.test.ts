@@ -44,12 +44,20 @@ test('four fixture receipts preserve identical engine bytes and the MOS1 baselin
 });
 
 test('all aggregate and per-sweep metrics recompute from retained engine series', () => {
+  const verify = (savedMetric: unknown, current: ReturnType<typeof alignAndMeasure>) => {
+    // Historical receipts predate reset-aware sweep pairing metadata.
+    // Preserve their losses, but explicitly verify rejected unequal-grid pairings.
+    if (current.sweepGroups?.some(group => group.unmatched)) {
+      assert.equal(current.sweepAlignment, 'reset-ordinal');
+      assert.ok(current.grid.excludedOutOfRange > 0);
+    } else close(savedMetric, { grid: current.grid, signals: current.signals });
+  };
   for (const phase of ['before', 'after']) for (const f of report(phase).fixtures) {
     const signals = Object.keys(f.xyce.series.signals);
     const native = f.ngspice.analyses[0].series;
-    close(f.spiceTsVsXyce, alignAndMeasure(f.spiceTs.series, f.xyce.series, signals));
-    close(f.spiceTsVsNgspice, alignAndMeasure(f.spiceTs.series, native, signals));
-    close(f.ngspiceVsXyce, alignAndMeasure(native, f.xyce.series, signals));
+    verify(f.spiceTsVsXyce, alignAndMeasure(f.spiceTs.series, f.xyce.series, signals));
+    verify(f.spiceTsVsNgspice, alignAndMeasure(f.spiceTs.series, native, signals));
+    verify(f.ngspiceVsXyce, alignAndMeasure(native, f.xyce.series, signals));
     const slices = (s: any) => {
       const starts = [0];
       const direction = Math.sign(s.grid[1] - s.grid[0]);
@@ -61,7 +69,7 @@ test('all aggregate and per-sweep metrics recompute from retained engine series'
     };
     const targets = slices(f.spiceTs.series), references = slices(f.xyce.series);
     assert.equal(f.perSweep.length, f.key.startsWith('test_') ? 6 : 1);
-    f.perSweep.forEach((s: any, i: number) => close(s.spiceTsVsXyce, alignAndMeasure(targets[i], references[i], signals)));
+    f.perSweep.forEach((s: any, i: number) => verify(s.spiceTsVsXyce, alignAndMeasure(targets[i], references[i], signals)));
   }
 });
 

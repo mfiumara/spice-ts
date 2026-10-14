@@ -109,12 +109,12 @@ async function preprocessError(netlist: string): Promise<ParseError> {
 describe('numparam .func', () => {
   it('expands nested user functions and keeps the line count', async () => {
     const out = await preprocess(".func sq(x) 'x*x'\n.func hyp(a, b) {sqrt(sq(a)+sq(b))}\nR1 1 0 {hyp(3,4)}\n.op");
-    expect(out.split('\n')).toEqual(['', '', 'R1 1 0 5', '.op']);
+    expect(out.split('\n')).toEqual(['', '', 'R1 1 0 5.000000000000000e+0', '.op']);
   });
 
   it('accepts a whitespace-separated argument list', async () => {
     const out = await preprocess(".func f ( A B ) 'A-B'\nR1 1 0 {f(5,2)}");
-    expect(out.split('\n')[1]).toBe('R1 1 0 3');
+    expect(out.split('\n')[1]).toBe('R1 1 0 3.000000000000000e+0');
   });
 
   it('reports an argument-count mismatch at the calling card', async () => {
@@ -161,7 +161,7 @@ describe('numparam .if/.elseif/.else/.endif', () => {
 
   it('blanks the unselected branches and keeps the line count', async () => {
     const out = await preprocess('.if (0)\nR1 1 0 1\n.else\nR1 1 0 2\n.endif\nR2 2 0 {r}\n.param r = 3');
-    expect(out.split('\n').map(line => line.trim())).toEqual(['', '', '', 'R1 1 0 2', '', 'R2 2 0 3', '']);
+    expect(out.split('\n').map(line => line.trim())).toEqual(['', '', '', 'R1 1 0 2', '', 'R2 2 0 3.000000000000000e+0', '']);
   });
 
   it('does not substitute or expand cards of an unselected branch', async () => {

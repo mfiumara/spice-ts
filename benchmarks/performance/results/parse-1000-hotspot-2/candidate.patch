@@ -1,0 +1,47 @@
+diff --git a/packages/core/src/parser/numparam.ts b/packages/core/src/parser/numparam.ts
+index 91e6c46b..8becef83 100644
+--- a/packages/core/src/parser/numparam.ts
++++ b/packages/core/src/parser/numparam.ts
+@@ -270,10 +270,11 @@ function addNames(frame: ParamFrame, text: string, header: boolean): void {
+  */
+ function braceTokens(segment: string, visible: (name: string) => boolean, state: { skip: number }): string {
+   let output = '';
++  let copied = 0;
+   let index = 0;
+   while (index < segment.length) {
+     if (/\s/.test(segment[index])) {
+-      output += segment[index++];
++      index++;
+       continue;
+     }
+     let end = index;
+@@ -289,20 +290,21 @@ function braceTokens(segment: string, visible: (name: string) => boolean, state:
+       else if (depth <= 0 && /\s/.test(ch)) break;
+     }
+     const token = segment.slice(index, end);
+-    index = end;
+     if (token === '(' || token === ')') {
+-      output += token;
++      // Parentheses do not consume the element/node skip count.
+     } else if (state.skip > 0) {
+       state.skip--;
+-      output += token;
+-    } else if (/[{']/.test(token)) {
+-      output += token;
+-    } else {
+-      output += token.replace(ISOLATED_IDENTIFIER, (match, lead: string, name: string) =>
++    } else if (!/[{']/.test(token)) {
++      const rewritten = token.replace(ISOLATED_IDENTIFIER, (match, lead: string, name: string) =>
+         visible(name) ? `${lead}{${name}}` : match);
++      if (rewritten !== token) {
++        output += segment.slice(copied, index) + rewritten;
++        copied = end;
++      }
+     }
++    index = end;
+   }
+-  return output;
++  return copied === 0 ? segment : output + segment.slice(copied);
+ }
+ 
+ /**

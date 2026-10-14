@@ -35,7 +35,7 @@ For time>=0.5 s KCL is v/1000=0.001-( (v-1.1)/0.01 )^3+(v-1.1)/1000+0.0001, whic
 |---|---|---|
 | ngspice-47 | error | Timestep too small at time0.5, timestep1.25e-15, node y; raw stops before0.5 with v(y)=1 and B2current0. |
 | ngspice master | error | Identical to 47: "Timestep too small; time = 0.5 ... trouble with node y". [ngspice pre-master-48 HEAD 3ef069fb (2026-10-09), built in scratch] |
-| spice-ts | unsupported | ParseError Unsupported .options field: 'ngbehavior' (psa). |
+| spice-ts | unsupported | #812 refresh d8ab9d33: pinned dot.cir first fails at ParseError line 2, Unsupported .options field ngbehavior, on .options ngbehavior=psa. Native ngspice-47 fails to converge. No metrics or correctness win. Existing #812 compatibility-option bucket. |
 
 Reproduces on ngspice-47: partially. Check: After t=0.5, accepted points must have v(y)=1.1 and B2current0.1 mA; 47 instead aborts at the discontinuity.
 

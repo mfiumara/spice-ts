@@ -336,14 +336,22 @@ class ExprParser {
         fullNumStr = numStr + '.' + fracMatch[1];
         endPos = afterSuffix + fracMatch[1].length;
       }
+      // fetchnumber swallows alphabetic unit text after the scale. Defaults
+      // and numeric X actuals must retain this previously supported syntax.
+      endPos += this.src.slice(endPos).match(/^[a-zA-Z]*/)![0].length;
       // Only consume if not followed by alphanumeric (not part of an identifier)
       const nextChar = this.src[endPos];
       if (!nextChar || !/[a-zA-Z0-9_]/.test(nextChar)) {
         const exp = suffix.length === 3 ? 'e6' : SI_EXPONENTS[suffix];
         this.pos = endPos;
-        return Number(fullNumStr + exp);
+        // xpressn.c fetchnumber: sscanf("%lG") rounds the decimal first,
+        // then parseunit supplies a separately rounded scale multiplier.
+        // Concatenating the exponent instead changes the last bits (0.05n).
+        return Number(fullNumStr) * Number(`1${exp}`);
       }
     }
+    // Unknown alphabetic units have scale 1 in parseunit.
+    this.pos += this.src.slice(this.pos).match(/^[a-zA-Z]*/)![0].length;
     return Number(numStr);
   }
 

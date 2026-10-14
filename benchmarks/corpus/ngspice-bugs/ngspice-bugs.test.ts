@@ -5,6 +5,7 @@ import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { describe, it } from 'node:test';
+import { gunzipSync } from 'node:zlib';
 import {
   CATEGORIES,
   EXPECTED_BASES,
@@ -85,6 +86,35 @@ describe('ngspice-bugs manifest', () => {
  * against the expected answers (not against ngspice). Requires `pnpm build` (imports packages/core/dist).
  */
 describe('ngspice-bugs spice-ts verdicts', () => {
+  it('#871: unchanged arg/temper cards match independent lexical-shadowing answers', async () => {
+    const manifest = await loadManifest();
+    assert.equal(outcome(entry(manifest, 871)), 'spice-ts-correct');
+    const { simulate } = await core();
+    for (const [name, expected] of [['arg_capture_cards.cir', -1], ['temper_capture_cards.cir', -1 / 6]] as const) {
+      const result = await simulate(await deck(`tickets/871/${name}`));
+      assert.equal(result.dc.current('V1'), expected);
+    }
+  });
+
+  it('#812: receipts cover the original 25 tickets without substituting unpinned decks', async () => {
+    const lines = gunzipSync(await readFile(resolve(HERE, 'refresh-812.jsonl.gz'))).toString('utf8').trim().split('\n').map(line => JSON.parse(line));
+    const rows = lines.slice(1);
+    assert.equal(rows.length, 43);
+    assert.equal(new Set(rows.map(row => row.ticket)).size, 25);
+    const manifest = await loadManifest();
+    for (const row of rows) {
+      const ticket = entry(manifest, row.ticket);
+      assert.ok(ticket.spiceTs.evidence.startsWith('#812 refresh d8ab9d33'));
+      if (row.receipt.status === 'provenance-gap') {
+        assert.equal(row.receipt.actualSha256, null);
+        assert.ok(ticket.uncommittedDecks.some(file => file.sha256 === row.receipt.expectedSha256));
+        assert.equal(ticket.spiceTs.verdict, 'unsupported');
+      } else {
+        assert.ok([...ticket.committedDecks, ...ticket.uncommittedDecks].some(file => file.sha256 === row.receipt.netlistSha256));
+      }
+    }
+  });
+
   for (const [ticket, a, b] of [
     [877, 'tickets/877/repro_a_cards.cir', 'tickets/877/repro_b_cards.cir'],
     [878, 'tickets/878/repro_l2_a_cards.cir', 'tickets/878/repro_l2_b_cards.cir'],

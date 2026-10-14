@@ -5,6 +5,7 @@ Generated from `../../manifest.json` by `render.ts`; do not edit by hand.
 - Ticket: https://sourceforge.net/p/ngspice/bugs/764/ (status `open`, opened 2025-03-21)
 - Category: simulator-numerics
 - Outcome: ngspice defective, spice-ts cannot run the deck (feature unsupported)
+- spice-ts issue: https://github.com/mfiumara/spice-ts/issues/1037
 
 ## Decks
 
@@ -38,7 +39,7 @@ The two netlists are electrically equivalent (series split of an element / extra
 |---|---|---|
 | ngspice-47 | hang | Both variants exceed the 120 s bound (exit 142) in default and LTPS mode; the ticket reports only the split variant timing out on ngspice-43. |
 | ngspice master | not-run | not re-run on master: the defect does not reproduce on ngspice-47 |
-| spice-ts | unsupported | PSpice `VSWITCH` accepted since #825 (ngspice-47 inpcompat.c: VON/VOFF -> XSPICE pswitch, VT/VH -> SW); both decks now stop at the supplied PN2222.mod: Error: Invalid bounded BJT model parameter value: expected VAR, IKR, NC, NKF > 0 and ISC >= 0 (`Ikr=0`, which ngspice-47 bjttemp.c treats as infinite; https://github.com/mfiumara/spice-ts/issues/844). [spice-ts at the #825 branch, simulate() with a filesystem include resolver mapping the D:/spice_lib paths to the attached libraries] Before #825: PSpice `RES` model type accepted since #823; every deck now stops at the next vendor-library construct: UnsupportedModelTypeError .model 'SMOD1' has unsupported type 'VSWITCH' (PSpice switch model, ngspice translates it in PSpice compatibility mode; tracked in https://github.com/mfiumara/spice-ts/issues/825). Before #823: UnsupportedModelTypeError: .model 'Rmod11' has unsupported type 'RES' (vendor PSpice library) |
+| spice-ts | error | #812 refresh d8ab9d33: both pinned variants parse since IKR=0 fix but fail transient: Originalnetlist TimestepTooSmallError t=6.075652244586859e-11 dt=3.466040249313377e-16; InductorSplit t=2.3555640717097648e-12 dt=8.843297084131237e-16. Native ngspice exceeds 120 s on both. No complete waveform metrics and no correctness win. New execution-gap issue https://github.com/mfiumara/spice-ts/issues/1037. Historical evidence: PSpice `VSWITCH` accepted since #825 (ngspice-47 inpcompat.c: VON/VOFF -> XSPICE pswitch, VT/VH -> SW); both decks now stop at the supplied PN2222.mod: Error: Invalid bounded BJT model parameter value: expected VAR, IKR, NC, NKF > 0 and ISC >= 0 (`Ikr=0`, which ngspice-47 bjttemp.c treats as infinite; https://github.com/mfiumara/spice-ts/issues/844). [spice-ts at the #825 branch, simulate() with a filesystem include resolver mapping the D:/spice_lib paths to the attached libraries] Before #825: PSpice `RES` model type accepted since #823; every deck now stops at the next vendor-library construct: UnsupportedModelTypeError .model 'SMOD1' has unsupported type 'VSWITCH' (PSpice switch model, ngspice translates it in PSpice compatibility mode; tracked in https://github.com/mfiumara/spice-ts/issues/825). Before #823: UnsupportedModelTypeError: .model 'Rmod11' has unsupported type 'RES' (vendor PSpice library) |
 
 Reproduces on ngspice-47: partially. Check: Both decks run past 120 s.
 
