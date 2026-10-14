@@ -58,7 +58,7 @@ export class MESA implements DeviceModel {
     const vgd = vG - voltage(ctx, drain);
     const vgspp = vG - voltage(ctx, sourceCharge);
     const vgdpp = vG - voltage(ctx, drainCharge);
-    return { vgs, vgd, vgspp, vgdpp, point: evaluateMESA(vgs, vgd, this.state, this.junctionGmin) };
+    return { vgs, vgd, vgspp, vgdpp, point: evaluateMESA(vgs, vgd, this.state, ctx.gmin ?? this.junctionGmin) };
   }
 
   stamp(ctx: StampContext): void {

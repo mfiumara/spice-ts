@@ -1,0 +1,132 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: weakly grounded diode explicit gmin probe
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+	Node                                  Voltage
+	----                                  -------
+	----	-------
+	weak                             2.398806e+00
+	high                             5.000000e+00
+
+	Source	Current
+	------	-------
+
+	vbias#branch                     -2.60620e-09
+
+ Diode models (Junction Diode model)
+      model                return               generic
+
+      level                     1                     1
+         is                 2e-10                 1e-14
+        jsw                     0                     0
+         rs                     0                     0
+        rsw                     0                     0
+        trs                     0                     0
+       trs2                     0                     0
+          n                   1.3                     1
+         ns                     1                     1
+         tt                     0                     0
+       ttt1                     0                     0
+       ttt2                     0                     0
+        cjo                     0                     0
+         vj                     1                     1
+          m                   0.5                   0.5
+        tm1                     0                     0
+        tm2                     0                     0
+        cjp                     0                     0
+        php                     1                     1
+       mjsw                  0.33                  0.33
+        ikf                     0                     0
+        ikr                     0                     0
+        ikp                     0                     0
+        nbv                   1.3                     1
+       area                     1                     1
+         pj                     0                     0
+       tlev                     0                     0
+      tlevc                     0                     0
+         eg                  1.11                  1.11
+       gap1              0.000702              0.000702
+       gap2                  1108                  1108
+        xti                     3                     3
+        cta                     0                     0
+        ctp                     0                     0
+        tpb                     0                     0
+       tphp                     0                     0
+       jtun                     0                     0
+     jtunsw                     0                     0
+       ntun                    30                    30
+     xtitun                     3                     3
+        keg                     1                     1
+         kf                     0                     0
+         af                     1                     1
+         fc                   0.5                   0.5
+        fcs                   0.5                   0.5
+         bv                     0                     0
+        ibv                 0.001                 0.001
+        tcv                     0                     0
+        isr                 1e-14                 1e-14
+         nr                     2                     2
+         vp                     0                     0
+     fv_max                 1e+99                 1e+99
+     bv_max                 1e+99                 1e+99
+     id_max                 1e+99                 1e+99
+     te_max                 1e+99                 1e+99
+     pd_max                 1e+99                 1e+99
+       rth0                     0                     0
+       cth0                 1e-05                 1e-05
+         lm                     0                     0
+         lp                     0                     0
+         wm                     0                     0
+         wp                     0                     0
+        xom                 10000                 10000
+        xoi                 10000                 10000
+         xm                     0                     0
+         xp                     0                     0
+         xw                     0                     0
+
+ Diode: Junction Diode model
+     device               dreturn              dreverse
+      model                return               generic
+    thermal                     0                     0
+         vd              -2.39881              -2.60119
+         id          -2.59881e-09           -2.6012e-09
+         gd                 1e-09                 1e-09
+         cd                     0                     0
+
+ Vsource: Independent voltage source
+     device                 vbias
+         dc                     5
+      acmag                     0
+      pulse                     -
+        sin                     -
+        exp                     -
+        pwl                     -
+       sffm                     -
+         am                     -
+    trnoise                     -
+   trrandom                     -
+    portnum                     0
+         z0                     0
+        pwr                     0
+       freq                     0
+      phase                     0
+          i           -2.6062e-09
+          p           -1.3031e-08
+
+
+Total analysis time (seconds) = 0.00078
+
+Total elapsed time (seconds) = 0.007 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13134.922 MB.
+Maximum ngspice program size =   10.078 MB.
+Current ngspice program size =   10.078 MB.
+

@@ -29,16 +29,15 @@ describe('BSIM4 PARAMCHK junction correction domain', () => {
         await expect(simulate(row.deck)).rejects.toThrow(UnsupportedModelParameterError);
       });
     } else {
-      it(`matches native conductance and characterizes global-gmin current loss for ${row.name}`, async () => {
+      it(`matches native conductance and junction-gmin current for ${row.name}`, async () => {
         const device = parse(row.deck).compile().devices.find(d => d.name === 'M1') as BSIM4;
         const op = device.evaluate({ vgs: 1, vds: 0.5, vbs: 0.02 }, 1e-12);
         expect(relative(op.gbs, row.native['@m1[gbs]'])).toBeLessThan(1e-8);
         expect(relative(op.gbd, row.native['@m1[gbd]'])).toBeLessThan(1e-8);
         const result = await simulate(row.deck);
-        // Newton adds a global node-ground gmin in addition to device gmin.
-        // Preserve this known loss explicitly, not a near-zero parity claim.
+        // Netlist gmin is junction-only, with no extra node-ground current (#1068).
         const delta = result.dc!.current('Vb') - row.native['i(vb)'];
-        expect(Math.abs(delta + 1e-12 * 0.02)).toBeLessThan(1e-24);
+        expect(Math.abs(delta)).toBeLessThan(1e-24);
       });
     }
   }

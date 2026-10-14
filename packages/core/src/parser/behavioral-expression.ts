@@ -1,4 +1,5 @@
 import { ParseError } from '../errors.js';
+import { DEVICE_GMIN } from '../devices/device.js';
 import { evaluateExpression } from './expression.js';
 import { parseNumber } from './tokenizer.js';
 
@@ -650,6 +651,8 @@ function behavioralControls(expression: BehavioralExpression): { nodes: string[]
 
 /** Simulator state a B-source expression reads besides node voltages. */
 export interface BehavioralEnvironment {
+  /** Junction gmin used by ngspice's PTfudge_factor. Default: 1e-12 S. */
+  gmin?: number;
   /** Simulation time in seconds (0 outside transient analysis). */
   time: number;
   /** True during the Newton iterations of a transient timepoint (ngspice MODETRAN). */
@@ -679,8 +682,10 @@ export interface CompiledBehavioralExpression {
 
 type Evaluator = (voltages: ArrayLike<number>, gradient: Float64Array, environment: BehavioralEnvironment) => number;
 
-// ngspice ifeval.c: PTfudge_factor = gmin * 1e-20 with the default gmin.
-const DIVIDE_FUDGE = 1e-12 * 1e-20;
+// ngspice ifeval.c: PTfudge_factor = CKTgmin * 1e-20.
+function divideFudge(environment: BehavioralEnvironment): number {
+  return (environment.gmin ?? DEVICE_GMIN) * 1e-20;
+}
 const EXP_LIMIT_ARGUMENT = 227.9559242;
 const TWO_PI = 2 * Math.PI;
 
@@ -706,8 +711,8 @@ function checked(value: number, what: string, ...args: number[]): number {
 }
 
 /** ngspice PTdivide. */
-function ptDivide(a: number, b: number): number {
-  const d = b >= 0 ? b + DIVIDE_FUDGE : b - DIVIDE_FUDGE;
+function ptDivide(a: number, b: number, fudge: number): number {
+  const d = b >= 0 ? b + fudge : b - fudge;
   return d === 0 ? HUGE : a / d;
 }
 
@@ -760,8 +765,8 @@ function ptPwr(a: number, b: number): number {
  * spice-ts applies the guard everywhere: only the Jacobian at a = 0 exactly
  * changes, never a value or a slope ngspice computes finitely.
  */
-function ptPwrSlope(a: number, b: number): number {
-  return ptPwr(a === 0 && b < 0 ? DIVIDE_FUDGE : a, b);
+function ptPwrSlope(a: number, b: number, fudge: number): number {
+  return ptPwr(a === 0 && b < 0 ? fudge : a, b);
 }
 
 /** ngspice PTlog / PTlog10: -1e99 at 0, HUGE below. */
@@ -796,15 +801,15 @@ const ustep = (x: number) => (x < 0 ? 0 : x > 0 ? 1 : 0.5);
 const derivativeSqrt = (x: number) => checked(ptSqrt(x), 'sqrt', x);
 
 /** ptfuncs.c value and the inpptree.c PTdifferentiate slope of a one-argument function. */
-function unaryFunction(name: BehavioralFunction, x: number): [value: number, slope: number] {
+function unaryFunction(name: BehavioralFunction, x: number, fudge: number): [value: number, slope: number] {
   switch (name) {
     case 'abs': return [Math.abs(x), sgn(x)];
-    case 'acos': return [Math.acos(x), ptDivide(-1, derivativeSqrt(1 - ptPowerH(x, 2)))];
-    case 'acosh': return [Math.acosh(x), ptDivide(1, derivativeSqrt(ptPowerH(x, 2) - 1))];
-    case 'asin': return [Math.asin(x), ptDivide(1, derivativeSqrt(1 - ptPowerH(x, 2)))];
-    case 'asinh': return [Math.asinh(x), ptDivide(1, derivativeSqrt(ptPowerH(x, 2) + 1))];
-    case 'atan': return [Math.atan(x), ptDivide(1, ptPowerH(x, 2) + 1)];
-    case 'atanh': return [Math.atanh(x), ptDivide(1, 1 - ptPowerH(x, 2))];
+    case 'acos': return [Math.acos(x), ptDivide(-1, derivativeSqrt(1 - ptPowerH(x, 2)), fudge)];
+    case 'acosh': return [Math.acosh(x), ptDivide(1, derivativeSqrt(ptPowerH(x, 2) - 1), fudge)];
+    case 'asin': return [Math.asin(x), ptDivide(1, derivativeSqrt(1 - ptPowerH(x, 2)), fudge)];
+    case 'asinh': return [Math.asinh(x), ptDivide(1, derivativeSqrt(ptPowerH(x, 2) + 1), fudge)];
+    case 'atan': return [Math.atan(x), ptDivide(1, ptPowerH(x, 2) + 1, fudge)];
+    case 'atanh': return [Math.atanh(x), ptDivide(1, 1 - ptPowerH(x, 2), fudge)];
     case 'cos': return [Math.cos(modulus(x, TWO_PI)), -Math.sin(modulus(x, TWO_PI))];
     case 'cosh': return [Math.cosh(x), Math.sinh(x)];
     case 'exp': {
@@ -812,12 +817,12 @@ function unaryFunction(name: BehavioralFunction, x: number): [value: number, slo
       return [value, value];
     }
     case 'ln':
-    case 'log': return [ptLog(x, Math.log), ptDivide(1, x)];
-    case 'log10': return [ptLog(x, Math.log10), ptDivide(Math.LOG10E, x)];
+    case 'log': return [ptLog(x, Math.log), ptDivide(1, x, fudge)];
+    case 'log10': return [ptLog(x, Math.log10), ptDivide(Math.LOG10E, x, fudge)];
     case 'sgn': return [sgn(x), 0];
     case 'sin': return [Math.sin(modulus(x, TWO_PI)), Math.cos(modulus(x, TWO_PI))];
     case 'sinh': return [Math.sinh(x), Math.cosh(x)];
-    case 'sqrt': return [ptSqrt(x), ptDivide(1, 2 * derivativeSqrt(x))];
+    case 'sqrt': return [ptSqrt(x), ptDivide(1, 2 * derivativeSqrt(x), fudge)];
     case 'tan': {
       const value = Math.tan(modulus(x, Math.PI));
       return [value, 1 + ptPowerH(value, 2)];
@@ -897,9 +902,10 @@ export function compileBehavioralExpression(expression: BehavioralExpression): C
     b: number,
     literalExponent: boolean,
     literalBase: boolean,
+    fudge: number,
   ): void => {
     if (literalExponent) {
-      const slope = b * ptPwrSlope(a, b - 1);
+      const slope = b * ptPwrSlope(a, b - 1, fudge);
       for (let i = 0; i < size; i++) gradient[i] = slope * baseGradient[i];
       return;
     }
@@ -910,7 +916,7 @@ export function compileBehavioralExpression(expression: BehavioralExpression): C
       return;
     }
     for (let i = 0; i < size; i++) {
-      gradient[i] = power * (b * ptDivide(baseGradient[i], a) + gradient[i] * logAbs);
+      gradient[i] = power * (b * ptDivide(baseGradient[i], a, fudge) + gradient[i] * logAbs);
     }
   };
 
@@ -1023,7 +1029,7 @@ export function compileBehavioralExpression(expression: BehavioralExpression): C
     const argument = build(argumentNode);
     return (voltages, gradient, environment) => {
       const x = argument(voltages, gradient, environment);
-      const [value, slope] = unaryFunction(name, x);
+      const [value, slope] = unaryFunction(name, x, divideFudge(environment));
       checked(value, name, x);
       for (let i = 0; i < size; i++) gradient[i] *= slope;
       return value;
@@ -1094,7 +1100,7 @@ export function compileBehavioralExpression(expression: BehavioralExpression): C
         }
         case 'pow': {
           const value = checked(ptPower(a, b), name, a, b);
-          powerGradient(gradient, leftGradient, a, b, literalExponent, literalBase);
+          powerGradient(gradient, leftGradient, a, b, literalExponent, literalBase, divideFudge(environment));
           return value;
         }
         case 'pwr': {
@@ -1106,7 +1112,7 @@ export function compileBehavioralExpression(expression: BehavioralExpression): C
           } else {
             const logAbs = ptLog(Math.abs(a), Math.log);
             for (let i = 0; i < size; i++) {
-              gradient[i] = value * (b * ptDivide(leftGradient[i], a) + gradient[i] * logAbs);
+              gradient[i] = value * (b * ptDivide(leftGradient[i], a, divideFudge(environment)) + gradient[i] * logAbs);
             }
           }
           return value;
@@ -1144,13 +1150,13 @@ export function compileBehavioralExpression(expression: BehavioralExpression): C
           // d(a/b) = (da*b - a*db) / b^2, with PTdivide's fudge on b^2.
           const denominator = ptPowerH(b, 2);
           for (let i = 0; i < size; i++) {
-            gradient[i] = ptDivide(leftGradient[i] * b - a * gradient[i], denominator);
+            gradient[i] = ptDivide(leftGradient[i] * b - a * gradient[i], denominator, divideFudge(environment));
           }
-          return checked(ptDivide(a, b), op, a, b);
+          return checked(ptDivide(a, b, divideFudge(environment)), op, a, b);
         }
         case '^': {
           const value = checked(ptPowerH(a, b), op, a, b);
-          powerGradient(gradient, leftGradient, a, b, literalExponent, literalBase);
+          powerGradient(gradient, leftGradient, a, b, literalExponent, literalBase, divideFudge(environment));
           return value;
         }
       }

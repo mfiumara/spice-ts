@@ -167,7 +167,7 @@ function buildLinearizedSystem(
   options: ResolvedOptions,
   dcSolution: Float64Array,
 ): MNAAssembler {
-  const assembler = new MNAAssembler(compiled.nodeCount, compiled.branchCount);
+  const assembler = new MNAAssembler(compiled.nodeCount, compiled.branchCount, { deviceGmin: options.deviceGmin });
   assembler.solution.set(dcSolution);
   const context = assembler.getStampContext();
   for (const device of compiled.devices) {

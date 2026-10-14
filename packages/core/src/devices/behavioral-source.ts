@@ -1,4 +1,5 @@
 import type { ConvergenceTolerances, DeviceModel, StampContext } from './device.js';
+import { DEVICE_GMIN } from './device.js';
 import {
   BehavioralRangeError,
   type BehavioralEnvironment,
@@ -111,6 +112,7 @@ export abstract class BehavioralSource implements DeviceModel {
     this.numNodes = ctx.numNodes;
     this.environment.time = ctx.time;
     this.environment.transient = ctx.dt > 0;
+    this.environment.gmin = ctx.gmin ?? DEVICE_GMIN;
     this.previousValue = this.evaluateExpression();
     return this.previousValue;
   }

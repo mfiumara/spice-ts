@@ -1,0 +1,98 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_19e2e6cb/packages/core
+
+ ❯ src/devices/junction-gmin-remediation-1068.test.ts (10 tests | 8 failed) 46ms
+     × 'mos6' matches ngspice-47 at gmin='1e-9' 14ms
+     × 'mos6' matches ngspice-47 at gmin='0' 6ms
+     ✓ 'mos6' matches ngspice-47 at gmin='default' 2ms
+     × 'hfet1' matches ngspice-47 at gmin='1e-9' 3ms
+     × 'hfet1' matches ngspice-47 at gmin='0' 1ms
+     ✓ 'hfet1' matches ngspice-47 at gmin='default' 1ms
+     × updates both MOS6 junction branches during gmin stepping at Vbulk=-5 1ms
+     × updates both MOS6 junction branches during gmin stepping at Vbulk=-0.01 1ms
+     × updates both MOS6 junction branches during gmin stepping at Vbulk=0.01 1ms
+     × updates both HFET1 reverse gate junctions during gmin stepping 16ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/devices/junction-gmin-remediation-1068.test.ts > configured junction gmin remediation (#1068) > 'mos6' matches ngspice-47 at gmin='1e-9'
+AssertionError: expected 4.995e-9 to be less than 5.0010001e-15
+ ❯ src/devices/junction-gmin-remediation-1068.test.ts:19:44
+     17|     const input = fixture(row.name).replace('.options gmin=1e-9\n', ro…
+     18|     const current = (await simulate(input)).dc!.current(row.source);
+     19|     expect(Math.abs(current - row.native)).toBeLessThan(1e-18 + 1e-6 *…
+       |                                            ^
+     20|   });
+     21|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  src/devices/junction-gmin-remediation-1068.test.ts > configured junction gmin remediation (#1068) > 'mos6' matches ngspice-47 at gmin='0'
+AssertionError: expected 5e-12 to be less than 1.0001e-18
+ ❯ src/devices/junction-gmin-remediation-1068.test.ts:19:44
+     17|     const input = fixture(row.name).replace('.options gmin=1e-9\n', ro…
+     18|     const current = (await simulate(input)).dc!.current(row.source);
+     19|     expect(Math.abs(current - row.native)).toBeLessThan(1e-18 + 1e-6 *…
+       |                                            ^
+     20|   });
+     21|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  src/devices/junction-gmin-remediation-1068.test.ts > configured junction gmin remediation (#1068) > 'hfet1' matches ngspice-47 at gmin='1e-9'
+AssertionError: expected 1.9980009857933875e-9 to be less than 3.8789967082694805e-15
+ ❯ src/devices/junction-gmin-remediation-1068.test.ts:19:44
+     17|     const input = fixture(row.name).replace('.options gmin=1e-9\n', ro…
+     18|     const current = (await simulate(input)).dc!.current(row.source);
+     19|     expect(Math.abs(current - row.native)).toBeLessThan(1e-18 + 1e-6 *…
+       |                                            ^
+     20|   });
+     21|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  src/devices/junction-gmin-remediation-1068.test.ts > configured junction gmin remediation (#1068) > 'hfet1' matches ngspice-47 at gmin='0'
+AssertionError: expected 1.9990142066122483e-12 to be less than 1.8789967082694807e-15
+ ❯ src/devices/junction-gmin-remediation-1068.test.ts:19:44
+     17|     const input = fixture(row.name).replace('.options gmin=1e-9\n', ro…
+     18|     const current = (await simulate(input)).dc!.current(row.source);
+     19|     expect(Math.abs(current - row.native)).toBeLessThan(1e-18 + 1e-6 *…
+       |                                            ^
+     20|   });
+     21|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  src/devices/junction-gmin-remediation-1068.test.ts > configured junction gmin remediation (#1068) > updates both MOS6 junction branches during gmin stepping at Vbulk=-5
+ FAIL  src/devices/junction-gmin-remediation-1068.test.ts > configured junction gmin remediation (#1068) > updates both MOS6 junction branches during gmin stepping at Vbulk=-0.01
+ FAIL  src/devices/junction-gmin-remediation-1068.test.ts > configured junction gmin remediation (#1068) > updates both MOS6 junction branches during gmin stepping at Vbulk=0.01
+AssertionError: expected +0 to be close to 2e-9, received difference is 2e-9, but expected 5e-19
+ ❯ src/devices/junction-gmin-remediation-1068.test.ts:37:47
+     35|       conductances.push(assembler.G.get(body, body));
+     36|     }
+     37|     expect(conductances[1] - conductances[0]).toBeCloseTo(2e-9, 18);
+       |                                               ^
+     38|     expect(conductances[2] - conductances[0]).toBeCloseTo(2e-3, 15);
+     39|     expect(conductances[3]).toBe(conductances[0]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  src/devices/junction-gmin-remediation-1068.test.ts > configured junction gmin remediation (#1068) > updates both HFET1 reverse gate junctions during gmin stepping
+AssertionError: expected +0 to be close to 2e-9, received difference is 2e-9, but expected 5e-19
+ ❯ src/devices/junction-gmin-remediation-1068.test.ts:55:47
+     53|       conductances.push(assembler.G.get(gate, gate));
+     54|     }
+     55|     expect(conductances[1] - conductances[0]).toBeCloseTo(2e-9, 18);
+       |                                               ^
+     56|     expect(conductances[2] - conductances[0]).toBeCloseTo(2e-3, 15);
+     57|     expect(conductances[3]).toBe(conductances[0]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  8 failed | 2 passed (10)
+   Start at  16:25:16
+   Duration  889ms (transform 633ms, setup 0ms, import 757ms, tests 46ms, environment 0ms)
+
+JUNIT report written to /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_19e2e6cb/packages/core/test-results.xml

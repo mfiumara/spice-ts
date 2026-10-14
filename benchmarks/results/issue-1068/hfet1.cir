@@ -1,0 +1,9 @@
+HFET1 reverse gate junction gmin probe
+Vd d 0 0
+Vg g 0 -1
+Vs s 0 0
+Z1 d g s hmod l=1u w=10u
+.model hmod nhfet(level=5 js1s=1e-12 js1d=1e-12)
+.options gmin=1e-9
+.op
+.end

@@ -1,0 +1,66 @@
+{
+  "baseline": "b844a17c8cabc5917ca0627c6e3ba4908c85783b",
+  "ngspiceVersion": "******\n** ngspice-47 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2026, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n******\n",
+  "rows": [
+    {
+      "name": "mos6",
+      "option": "1e-9",
+      "source": "vd",
+      "native": -5.0000001e-9,
+      "spiceTs": -5.0001e-12,
+      "absoluteError": 4.995e-9,
+      "input": "MOS6 reverse junction gmin probe\nVd d 0 5\nVg g 0 0\nVs s 0 0\nVb b 0 0\nM1 d g s b mmod w=10u l=1u\n.model mmod nmos(level=6 vto=1 kc=1e-5 is=1e-16)\n.options gmin=1e-9\n.op\n.control\nset numdgt=17\nop\nprint i(vd)\nquit\n.endc\n.end\n",
+      "nativeOutput": "\nNote: No compatibility mode selected!\n\n\nCircuit: mos6 reverse junction gmin probe\n\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\n\nNo. of Data Rows : 1\ni(vd) = -5.0000001000000001e-09\nngspice-47 done\n"
+    },
+    {
+      "name": "mos6",
+      "option": "0",
+      "source": "vd",
+      "native": -1e-16,
+      "spiceTs": -5.0001e-12,
+      "absoluteError": 5e-12,
+      "input": "MOS6 reverse junction gmin probe\nVd d 0 5\nVg g 0 0\nVs s 0 0\nVb b 0 0\nM1 d g s b mmod w=10u l=1u\n.model mmod nmos(level=6 vto=1 kc=1e-5 is=1e-16)\n.options gmin=0\n.op\n.control\nset numdgt=17\nop\nprint i(vd)\nquit\n.endc\n.end\n",
+      "nativeOutput": "\nNote: No compatibility mode selected!\n\n\nCircuit: mos6 reverse junction gmin probe\n\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\n\nNo. of Data Rows : 1\ni(vd) = -9.9999999999999998e-17\nngspice-47 done\n"
+    },
+    {
+      "name": "mos6",
+      "option": "default",
+      "source": "vd",
+      "native": -5.0001e-12,
+      "spiceTs": -5.0001e-12,
+      "absoluteError": 0,
+      "input": "MOS6 reverse junction gmin probe\nVd d 0 5\nVg g 0 0\nVs s 0 0\nVb b 0 0\nM1 d g s b mmod w=10u l=1u\n.model mmod nmos(level=6 vto=1 kc=1e-5 is=1e-16)\n.op\n.control\nset numdgt=17\nop\nprint i(vd)\nquit\n.endc\n.end\n",
+      "nativeOutput": "\nNote: No compatibility mode selected!\n\n\nCircuit: mos6 reverse junction gmin probe\n\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\n\nNo. of Data Rows : 1\ni(vd) = -5.0001000000000001e-12\nngspice-47 done\n"
+    },
+    {
+      "name": "hfet1",
+      "option": "1e-9",
+      "source": "vg",
+      "native": 3.877996708269481e-9,
+      "spiceTs": 1.8799957224760933e-9,
+      "absoluteError": 1.9980009857933875e-9,
+      "input": "HFET1 reverse gate junction gmin probe\nVd d 0 0\nVg g 0 -1\nVs s 0 0\nZ1 d g s hmod l=1u w=10u\n.model hmod nhfet(level=5 js1s=1e-12 js1d=1e-12)\n.options gmin=1e-9\n.op\n.control\nset numdgt=17\nop\nprint i(vg)\nquit\n.endc\n.end\n",
+      "nativeOutput": "\nNote: No compatibility mode selected!\n\n\nCircuit: hfet1 reverse gate junction gmin probe\n\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\n\nNo. of Data Rows : 1\ni(vg) = 3.87799670826948075e-09\nngspice-47 done\n"
+    },
+    {
+      "name": "hfet1",
+      "option": "0",
+      "source": "vg",
+      "native": 1.877996708269481e-9,
+      "spiceTs": 1.8799957224760933e-9,
+      "absoluteError": 1.9990142066122483e-12,
+      "input": "HFET1 reverse gate junction gmin probe\nVd d 0 0\nVg g 0 -1\nVs s 0 0\nZ1 d g s hmod l=1u w=10u\n.model hmod nhfet(level=5 js1s=1e-12 js1d=1e-12)\n.options gmin=0\n.op\n.control\nset numdgt=17\nop\nprint i(vg)\nquit\n.endc\n.end\n",
+      "nativeOutput": "\nNote: No compatibility mode selected!\n\n\nCircuit: hfet1 reverse gate junction gmin probe\n\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\n\nNo. of Data Rows : 1\ni(vg) = 1.87799670826948104e-09\nngspice-47 done\n"
+    },
+    {
+      "name": "hfet1",
+      "option": "default",
+      "source": "vg",
+      "native": 1.879996708269481e-9,
+      "spiceTs": 1.8799957224760933e-9,
+      "absoluteError": 9.857933875379517e-16,
+      "input": "HFET1 reverse gate junction gmin probe\nVd d 0 0\nVg g 0 -1\nVs s 0 0\nZ1 d g s hmod l=1u w=10u\n.model hmod nhfet(level=5 js1s=1e-12 js1d=1e-12)\n.op\n.control\nset numdgt=17\nop\nprint i(vg)\nquit\n.endc\n.end\n",
+      "nativeOutput": "\nNote: No compatibility mode selected!\n\n\nCircuit: hfet1 reverse gate junction gmin probe\n\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\n\nNo. of Data Rows : 1\ni(vg) = 1.87999670826948082e-09\nngspice-47 done\n"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+MOS1 reverse junction gmin probe
+Vd d 0 5
+Vg g 0 0
+Vs s 0 0
+Vb b 0 0
+M1 d g s b mmod w=10u l=1u
+.model mmod nmos(level=1 vto=1 kp=1e-5 is=1e-16)
+.options gmin=1e-9
+.op
+.end

@@ -50,6 +50,7 @@ use unchanged hash-pinned decks under the existing ngspice-bugs provenance below
 ngspice-47 source is cited, not redistributed. The report preserves the 695
 savecurrents gap and 828 domain rejections; neither is scored as numerical parity.
 
+
 ## #1049 weak-node OP root cause
 
 The one-source `results/issue-1049/shunt-control.cir` and generic two-diode
@@ -63,6 +64,16 @@ SHA256 `894e649651f1838a14095e5a5439e7d3aa63e87ede14d283173fda4fcdef675f`)
 is inspected and cited, not copied into the repository. See
 [ROOTCAUSE.md](results/issue-1049/ROOTCAUSE.md) for identical-byte comparisons,
 the native option-narrowing evidence and the unchanged original benchmark loss.
+
+## Explicit junction GMIN regression (#1068)
+
+The diode/BJT/MOS1/MOS6/JFET/HFET1 probes in [results/issue-1068](results/issue-1068/README.md)
+are original spice-ts project work under the repository MIT licence, not vendor
+models. Source context: https://github.com/mfiumara/spice-ts/issues/1068.
+Both simulators receive identical bytes. The scoped comparison also reruns the
+unchanged CC0 convergence fixtures and existing GPL-3.0-or-later Xyce corpus-g /
+xyce fixtures under their provenance below. It retains native failures and
+per-signal regressions. No benchmark input, tolerance, outcome or pin is edited.
 
 
 ## SINE after DC/AC expressions (#994)
@@ -1170,3 +1181,4 @@ ngspice-47 source citations use pinned object
 No upstream native source or binary is redistributed. Scripts/tests are
 project-authored MIT; captures are generated simulation evidence containing
 the licensed input text. Losses and passing controls are both retained.
+

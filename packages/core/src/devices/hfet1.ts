@@ -1,5 +1,5 @@
-import type {
-  ChargeIntegration, ChargeTruncation, DeviceModel, StampContext,
+import {
+  DEVICE_GMIN, type ChargeIntegration, type ChargeTruncation, type DeviceModel, type StampContext,
 } from './device.js';
 import { stampChargeBranch, stampChargeCurrent, TransientChargeState } from './charge-state.js';
 import {
@@ -34,7 +34,7 @@ export class HFET1 implements DeviceModel {
     const vS = voltage(ctx, source);
     const vGS = vG - vS;
     const vDS = vD - vS;
-    const evaluated = evaluateHFET1(vGS, vDS, this.model, this.instance);
+    const evaluated = evaluateHFET1(vGS, vDS, this.model, this.instance, ctx.gmin ?? DEVICE_GMIN);
     const equivalentDrainCurrent = evaluated.drainCurrent
       - evaluated.gm * vGS - evaluated.gds * vDS;
 
@@ -71,6 +71,7 @@ export class HFET1 implements DeviceModel {
       voltage(ctx, drain) - voltage(ctx, source),
       this.model,
       this.instance,
+      ctx.gmin ?? DEVICE_GMIN,
     );
     stampCapacitance(ctx, gate, source, evaluated.capGS);
     stampCapacitance(ctx, gate, drain, evaluated.capGD);
@@ -84,7 +85,7 @@ export class HFET1 implements DeviceModel {
     const [drain, gate, source] = this.nodes;
     const vGS = voltage(ctx, gate) - voltage(ctx, source);
     const vGD = voltage(ctx, gate) - voltage(ctx, drain);
-    const { capGS, capGD } = evaluateHFET1(vGS, vGS - vGD, this.model, this.instance);
+    const { capGS, capGD } = evaluateHFET1(vGS, vGS - vGD, this.model, this.instance, ctx.gmin ?? DEVICE_GMIN);
     const charges = this.charges;
     charges.begin(integration);
     const qGS = charges.incrementalCharge(GATE_SOURCE, vGS, capGS);
@@ -103,7 +104,7 @@ export class HFET1 implements DeviceModel {
     const [drain, gate, source] = this.nodes;
     const vGS = voltage(ctx, gate) - voltage(ctx, source);
     const vGD = voltage(ctx, gate) - voltage(ctx, drain);
-    const { capGS, capGD } = evaluateHFET1(vGS, vGS - vGD, this.model, this.instance);
+    const { capGS, capGD } = evaluateHFET1(vGS, vGS - vGD, this.model, this.instance, ctx.gmin ?? DEVICE_GMIN);
     const charges = this.charges;
     charges.accept(GATE_SOURCE, charges.incrementalCharge(GATE_SOURCE, vGS, capGS), vGS, capGS);
     charges.accept(GATE_DRAIN, charges.incrementalCharge(GATE_DRAIN, vGD, capGD), vGD, capGD);

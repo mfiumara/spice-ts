@@ -1135,7 +1135,7 @@ function parseSimulationOptions(
       abstol: 'abstol',
       vntol: 'vntol',
       reltol: 'reltol',
-      gmin: 'gmin',
+      gmin: 'deviceGmin',
       itl1: 'maxIterations',
       itl4: 'maxTransientIterations',
       trtol: 'trtol',

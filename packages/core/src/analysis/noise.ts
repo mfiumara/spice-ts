@@ -170,7 +170,7 @@ export function solveNoise(
     );
   }
 
-  const assembler = new MNAAssembler(nodeCount, branchCount);
+  const assembler = new MNAAssembler(nodeCount, branchCount, { deviceGmin: options.deviceGmin });
   assembler.solution.set(dcSolution);
   const ctx = assembler.getStampContext();
   for (const device of devices) {
@@ -251,7 +251,7 @@ export function solveNoise(
   const bjtSources = devices
     .filter((device): device is BJT => device instanceof BJT)
     .flatMap(bjt => {
-      const operatingPoint = bjt.noiseOperatingPoint(dcSolution);
+      const operatingPoint = bjt.noiseOperatingPoint(dcSolution, options.deviceGmin);
       const sources = [{
         positive: operatingPoint.collectorNode,
         negative: operatingPoint.emitterNode,
@@ -277,7 +277,7 @@ export function solveNoise(
   const diodeSources = devices
     .filter((device): device is Diode => device instanceof Diode)
     .flatMap(diode => {
-      const operatingPoint = diode.noiseOperatingPoint(dcSolution);
+      const operatingPoint = diode.noiseOperatingPoint(dcSolution, options.deviceGmin);
       const current = Math.abs(operatingPoint.current);
       const sources: Array<{
         nodes: number[];

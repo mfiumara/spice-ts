@@ -1,0 +1,9 @@
+JFET reverse gate gmin probe
+Vd d 0 5
+Vg g 0 -5
+Vs s 0 0
+J1 d g s jmod
+.model jmod njf(vto=-2 beta=1e-4 is=1e-16)
+.options gmin=1e-9
+.op
+.end

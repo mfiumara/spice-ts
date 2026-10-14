@@ -1,0 +1,9 @@
+Diode reverse diffusion gmin AC probe
+V1 in 0 dc -5 ac 1
+D1 in 0 dmod
+.model dmod d(is=1e-16 tt=1m)
+.options gmin=1u
+.op
+.ac lin 1 1k 1k
+.print ac real(i(v1)) imag(i(v1))
+.end

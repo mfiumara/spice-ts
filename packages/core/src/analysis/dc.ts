@@ -6,7 +6,7 @@ import { DCResult } from '../results.js';
 import { createConvergenceTelemetry, snapshotConvergenceTelemetry } from '../convergence-telemetry.js';
 import { ConvergenceError, SingularMatrixError } from '../errors.js';
 import { createNodeStateSolution, initialConditionHolds, nodeSetHolds } from './initial-state.js';
-import { DEVICE_GMIN } from '../devices/device.js';
+
 import { Capacitor } from '../devices/capacitor.js';
 import { Resistor } from '../devices/resistor.js';
 import { VoltageSource } from '../devices/voltage-source.js';
@@ -30,6 +30,7 @@ export function solveDCOperatingPoint(
   const { nodeCount, branchCount, nodeNames, branchNames } = compiled;
   const devices = compiled.devices;
   const assembler = new MNAAssembler(nodeCount, branchCount, {
+    deviceGmin: options.deviceGmin,
     variables: createMatrixVariableIdentities(nodeNames, branchNames),
     useDcSourceValue: sourceMode === 'operating-point',
   });
@@ -309,7 +310,7 @@ function dynamicGminStepping(
   guard?: ProtocolExecutionGuard,
 ): boolean {
   const reachedTarget = stepGmin(
-    assembler, Math.max(DEVICE_GMIN, options.gmin), 1.00005, convergence,
+    assembler, Math.max(options.deviceGmin, options.gmin), 1.00005, convergence,
     diagGmin => newtonRaphson(
       assembler, devices, { ...options, gmin: diagGmin }, HOMOTOPY_STEP_MAX_ITER, nodeNames, convergence.dc, guard,
     ),
@@ -325,8 +326,7 @@ function dynamicGminStepping(
  * reduction factor of at least 3. For a CMOS stage the junction gmin ties the
  * output to both rails, rather than pulling every node to ground.
  *
- * Devices that read `StampContext.gmin` take part (MOS1 bulk
- * junctions); other models keep their fixed 1e-12 S junction gmin.
+ * The final target and restored baseline are the configured junction gmin.
  */
 function trueGminStepping(
   assembler: MNAAssembler,
@@ -339,7 +339,7 @@ function trueGminStepping(
   let reachedTarget: boolean;
   try {
     reachedTarget = stepGmin(
-      assembler, DEVICE_GMIN, 3, convergence,
+      assembler, options.deviceGmin, 3, convergence,
       deviceGmin => {
         assembler.deviceGmin = deviceGmin;
         return newtonRaphson(
@@ -348,7 +348,7 @@ function trueGminStepping(
       },
     );
   } finally {
-    assembler.deviceGmin = DEVICE_GMIN;
+    assembler.deviceGmin = options.deviceGmin;
   }
   return reachedTarget && finalGminSolve(assembler, devices, options, nodeNames, convergence, guard);
 }

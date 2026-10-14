@@ -47,8 +47,8 @@ describe('protocol v1 core adapter', () => {
     const result = await simulateProtocolV1({ apiVersion: '1', input: { format: 'spice', source } });
     const op = result.analyses[0];
     if (op?.type !== 'op') throw new Error('expected OP result');
-    // gmin=1e-3 S on node b halves R2's 1k to 500 ohm: 1 V * 500 / 1500.
-    expect(op.voltagesV.b).toBeCloseTo(1 / 3, 9);
+    // Netlist gmin changes junctions, not a purely resistive divider (#1068).
+    expect(op.voltagesV.b).toBeCloseTo(0.5, 9);
     expect(op.voltagesV.b).toBeCloseTo(direct.dc!.voltage('b'), 12);
   });
 

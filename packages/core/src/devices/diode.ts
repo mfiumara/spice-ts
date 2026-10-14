@@ -131,7 +131,7 @@ const BOLTZMANN = 1.38064852e-23;
 const ELEMENTARY_CHARGE = 1.6021766208e-19;
 const KELVIN_OFFSET = 273.15;
 const K_OVER_Q = BOLTZMANN / ELEMENTARY_CHARGE;
-const GMIN = DEVICE_GMIN;
+
 /** ngspice CKTepsmin: smaller IKF/IKR/IKP values disable the knee (diosetup.c). */
 const MIN_KNEE_CURRENT = 1e-28;
 /**
@@ -455,7 +455,7 @@ export class Diode implements DeviceModel {
     this.inTransientNewton = false;
     this.predictJunction = false;
     this.newtonJunctionVoltage = undefined;
-    if (this.integratesTransientCharge) this.acceptCharge(this.acceptedJunctionVoltage);
+    if (this.integratesTransientCharge) this.acceptCharge(this.acceptedJunctionVoltage, ctx.gmin ?? DEVICE_GMIN);
   }
 
   resetTransient(): void {
@@ -641,7 +641,7 @@ export class Diode implements DeviceModel {
   }
 
   /** DC junction current used by the small-signal shot/flicker noise model. */
-  noiseOperatingPoint(solution: Float64Array): {
+  noiseOperatingPoint(solution: Float64Array, gmin = DEVICE_GMIN): {
     current: number;
     flickerCoefficient: number;
     flickerExponent: number;
@@ -653,7 +653,7 @@ export class Diode implements DeviceModel {
     const { current, junctionVoltage } = diodeCurrent(terminalVoltage, this.junction(), RS);
     return {
       // dionoise.c takes the shot noise from DIOcurrent, cdb + cdsw + GMIN*vd.
-      current: current + GMIN * junctionVoltage,
+      current: current + gmin * junctionVoltage,
       flickerCoefficient: KF!,
       flickerExponent: AF!,
       parallelMultiplier: this.instanceParams.M ?? 1,
@@ -691,7 +691,7 @@ export class Diode implements DeviceModel {
       junction,
       this.params.RS,
     );
-    const gmin = ctx.gmin ?? GMIN;
+    const gmin = ctx.gmin ?? DEVICE_GMIN;
     // ngspice dioload.c: cd = cdb + cdsw + CKTgmin*vd, gd = gdb + gdsw + CKTgmin.
     const gd = conductance + gmin;
 
@@ -736,7 +736,7 @@ export class Diode implements DeviceModel {
       // ngspice: diffcap = TT*gd, with gd including GMIN.
       const junctionConductance = operatingPoint?.junctionConductance
         ?? junctionCurrent(terminalVoltage, junction).conductance;
-      cj += TT * (junctionConductance + GMIN);
+      cj += TT * (junctionConductance + (ctx.gmin ?? DEVICE_GMIN));
     }
 
     // A two-terminal fallback can only represent the low-frequency reduction.
@@ -760,7 +760,7 @@ export class Diode implements DeviceModel {
    */
   stampTransientCharge(ctx: StampContext, integration: ChargeIntegration): void {
     const voltage = this.stampedJunctionVoltage;
-    const { charge, capacitance } = this.junctionCharge(voltage);
+    const { charge, capacitance } = this.junctionCharge(voltage, ctx.gmin ?? DEVICE_GMIN);
     const { current, conductance } = this.integrateCharge(charge, capacitance, integration);
     this.pendingIntegration = integration;
 
@@ -783,8 +783,8 @@ export class Diode implements DeviceModel {
   }
 
   /** Commit the junction charge and its integrated current at an accepted timepoint. */
-  private acceptCharge(junctionVoltage: number): void {
-    const { charge, capacitance } = this.junctionCharge(junctionVoltage);
+  private acceptCharge(junctionVoltage: number, gmin: number): void {
+    const { charge, capacitance } = this.junctionCharge(junctionVoltage, gmin);
     const integration = this.pendingIntegration;
     this.pendingIntegration = undefined;
     if (integration === undefined || this.acceptedCharge === undefined) {
@@ -826,7 +826,7 @@ export class Diode implements DeviceModel {
     if (previous === undefined || (secondOrder && this.olderAcceptedCharge === undefined)) return Infinity;
     const [nA, nK] = this.nodes;
     const voltage = (nA >= 0 ? ctx.getVoltage(nA) : 0) - (nK >= 0 ? ctx.getVoltage(nK) : 0);
-    const { charge, capacitance } = this.junctionCharge(voltage);
+    const { charge, capacitance } = this.junctionCharge(voltage, ctx.gmin ?? DEVICE_GMIN);
     const { current } = this.integrateCharge(charge, capacitance, integration);
     return chargeTruncationTimestep(
       secondOrder ? integration.method : 'euler', secondOrder ? 2 : 1,
@@ -836,7 +836,7 @@ export class Diode implements DeviceModel {
   }
 
   /** Depletion (bottom + sidewall) plus diffusion charge and dQ/dV (ngspice dioload.c). */
-  private junctionCharge(voltage: number): { charge: number; capacitance: number } {
+  private junctionCharge(voltage: number, gmin: number): { charge: number; capacitance: number } {
     const { CJ0, CJSW, VJ, VJSW, M, MJSW, FC, FCS, TT } = this.params;
     const bottom = depletionCharge(voltage, CJ0!, VJ!, M!, FC!);
     // ngspice-47 dioload.c:559 offsets the sidewall charge above FCS*VJSW with
@@ -851,8 +851,8 @@ export class Diode implements DeviceModel {
     if (TT) {
       // ngspice: diffcharge = TT*cd, diffcap = TT*gd, with cd and gd including GMIN.
       const { current, conductance } = junctionCurrent(voltage, this.junction());
-      charge += TT * (current + GMIN * voltage);
-      capacitance += TT * (conductance + GMIN);
+      charge += TT * (current + gmin * voltage);
+      capacitance += TT * (conductance + gmin);
     }
     return { charge, capacitance };
   }

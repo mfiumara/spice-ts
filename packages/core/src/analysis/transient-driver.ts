@@ -719,6 +719,7 @@ class TransientSimImpl implements TransientSim {
 
   private createAssembler(): MNAAssembler {
     return new MNAAssembler(this.compiled.nodeCount, this.compiled.branchCount, {
+      deviceGmin: this.options.deviceGmin,
       variables: createMatrixVariableIdentities(
         this.compiled.nodeNames,
         this.compiled.branchNames,
