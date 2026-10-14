@@ -1,0 +1,176 @@
+diff --git a/packages/core/src/index.ts b/packages/core/src/index.ts
+index a509ac6b..83e3801e 100644
+--- a/packages/core/src/index.ts
++++ b/packages/core/src/index.ts
+@@ -1,4 +1,4 @@
+-export { simulate, simulateStream, simulateStepStream, createSimulator } from './simulate.js';
++export { simulate, simulateStream, simulateStepStream, createSimulator } from './simulate-lazy.js';
+ export {
+   simulateProtocolV1, validateProtocolV1, mapProtocolErrorV1, estimateProtocolResultPointsV1,
+ } from './protocol/adapter.js';
+diff --git a/packages/core/src/protocol/adapter.ts b/packages/core/src/protocol/adapter.ts
+index 3738eb0b..fb23511a 100644
+--- a/packages/core/src/protocol/adapter.ts
++++ b/packages/core/src/protocol/adapter.ts
+@@ -32,7 +32,7 @@ import {
+ import { parseTitlelessAsync } from '../parser/index.js';
+ import { VOLTAGE_SOURCE_MULTIPLIER_ERROR } from '../parser/waveform-parser.js';
+ import type { ACResult, DCSweepResult, DCResult, SimulationResult, StepResult, TransientResult } from '../results.js';
+-import { simulate } from '../simulate.js';
++import { simulate } from '../simulate-lazy.js';
+ import type {
+   AnalysisCommand, AnalysisDirective, SimulationOptions, SourceWaveform, StepAnalysis,
+ } from '../types.js';
+diff --git a/packages/core/src/simulate-lazy.test.ts b/packages/core/src/simulate-lazy.test.ts
+new file mode 100644
+index 00000000..a7d5e70c
+--- /dev/null
++++ b/packages/core/src/simulate-lazy.test.ts
+@@ -0,0 +1,35 @@
++import { describe, expect, it, vi } from 'vitest';
++
++const loaded = vi.hoisted(() => ({ count: 0 }));
++vi.mock('./simulate.js', async (original) => {
++  loaded.count++;
++  return original();
++});
++
++import { createSimulator, simulate, simulateStream, simulateStepStream } from './index.js';
++
++const netlist = 'lazy entry\nV1 in 0 1\nR1 in 0 1k\n.op\n.end';
++
++describe('lazy public simulation entry', () => {
++  it('defers the analysis engine through synchronous factory construction', async () => {
++    expect(loaded.count).toBe(0);
++    const backend = createSimulator();
++    expect(backend.name).toBe('spice-ts');
++    expect(loaded.count).toBe(0);
++    const result = await backend.simulate(netlist);
++    expect(result.dc?.voltage('in')).toBe(1);
++    expect(loaded.count).toBe(1);
++    expect((await simulate(netlist)).dc?.voltage('in')).toBe(1);
++  });
++
++  it('forwards async stream results and errors', async () => {
++    const deck = 'stream\nV1 in 0 1\nR1 in out 1k\nC1 out 0 1n\n.tran 1n 10n\n.end';
++    const points = [];
++    for await (const point of simulateStream(deck)) points.push(point);
++    expect(points.length).toBeGreaterThan(1);
++    const events = [];
++    for await (const event of simulateStepStream(deck)) events.push(event);
++    expect(events.length).toBe(points.length);
++    await expect(simulate('invalid\nR1 a 0 unknown\n.op')).rejects.toMatchObject({ name: 'InvalidCircuitError' });
++  });
++});
+diff --git a/packages/core/src/simulate-lazy.ts b/packages/core/src/simulate-lazy.ts
+new file mode 100644
+index 00000000..944c593f
+--- /dev/null
++++ b/packages/core/src/simulate-lazy.ts
+@@ -0,0 +1,55 @@
++import type { Circuit } from './circuit.js';
++import type { SimulationResult } from './results.js';
++import type {
++  ACPoint, SimulationOptions, SimulatorAdapter, SimulatorBackend, StepStreamEvent, TransientStep,
++} from './types.js';
++import type { ProtocolExecutionGuard } from './protocol/execution-guard.js';
++import { InvalidCircuitError } from './errors.js';
++import { WasmNgspiceSimulator } from './simulators/ngspice-wasm.js';
++
++/** Load analysis engines only when an asynchronous simulation is requested. */
++export async function simulate(
++  input: string | Circuit,
++  options?: SimulationOptions,
++  guard?: ProtocolExecutionGuard,
++): Promise<SimulationResult> {
++  const engine = await import('./simulate.js');
++  return engine.simulate(input, options, guard);
++}
++
++export async function* simulateStream(
++  input: string | Circuit,
++  options?: SimulationOptions,
++): AsyncIterableIterator<TransientStep | ACPoint> {
++  const engine = await import('./simulate.js');
++  yield* engine.simulateStream(input, options);
++}
++
++export async function* simulateStepStream(
++  input: string | Circuit,
++  options?: SimulationOptions,
++): AsyncIterableIterator<StepStreamEvent> {
++  const engine = await import('./simulate.js');
++  yield* engine.simulateStepStream(input, options);
++}
++
++class SpiceTsSimulator implements SimulatorAdapter {
++  readonly name = 'spice-ts';
++
++  async simulate(input: string | Circuit, options?: SimulationOptions): Promise<SimulationResult> {
++    return simulate(input, { ...options, simulator: 'spice-ts' });
++  }
++}
++
++export function createSimulator(simulator: SimulatorBackend = 'spice-ts'): SimulatorAdapter {
++  if (typeof simulator !== 'string') return simulator;
++
++  switch (simulator) {
++    case 'spice-ts':
++      return new SpiceTsSimulator();
++    case 'ngspice-wasm':
++      return new WasmNgspiceSimulator();
++    default:
++      throw new InvalidCircuitError(`Unknown simulator backend '${simulator}'`);
++  }
++}
+diff --git a/packages/core/src/simulate.ts b/packages/core/src/simulate.ts
+index ac0457d9..16b2af93 100644
+--- a/packages/core/src/simulate.ts
++++ b/packages/core/src/simulate.ts
+@@ -8,7 +8,7 @@ import { runControlScript, type ControlHost, type ControlHostRun } from './parse
+ import { ControlScriptError, UnsupportedControlCommandError } from './parser/control/errors.js';
+ import { controlOperatingState, deviceOutputVector, type ControlOperatingState } from './control-device-output.js';
+ import type { ConvergenceTelemetry, SimulationOptions, SimulationWarning, TransientStep, ACPoint } from './types.js';
+-import type { TransientAnalysis, ACAnalysis, ResolvedOptions, SimulatorAdapter, SimulatorBackend } from './types.js';
++import type { TransientAnalysis, ACAnalysis, ResolvedOptions, SimulatorAdapter } from './types.js';
+ import { resolveOptions, withNetlistOptions } from './types.js';
+ import { solveDCOperatingPoint } from './analysis/dc.js';
+ import { isSavedTransientPoint, runnableTransient, solveTransient } from './analysis/transient.js';
+@@ -32,7 +32,8 @@ import { createMatrixVariableIdentities, MNAAssembler } from './mna/assembler.js
+ import { toCsc } from './solver/csc-matrix.js';
+ import { ComplexSparseSolver } from './solver/complex-sparse-solver.js';
+ import { createDriverFromCompiled } from './analysis/transient-driver.js';
+-import { WasmNgspiceSimulator } from './simulators/ngspice-wasm.js';
++import { createSimulator } from './simulate-lazy.js';
++export { createSimulator } from './simulate-lazy.js';
+ import { computeUICInitialSolution } from './analysis/uic.js';
+ import { frequencyGrid } from './analysis/frequency-grid.js';
+ import { createConvergenceTelemetry } from './convergence-telemetry.js';
+@@ -53,27 +54,6 @@ class UnsupportedStreamAnalysisError extends InvalidCircuitError {
+   }
+ }
+ 
+-class SpiceTsSimulator implements SimulatorAdapter {
+-  readonly name = 'spice-ts';
+-
+-  async simulate(input: string | Circuit, options?: SimulationOptions): Promise<SimulationResult> {
+-    return simulate(input, { ...options, simulator: 'spice-ts' });
+-  }
+-}
+-
+-export function createSimulator(simulator: SimulatorBackend = 'spice-ts'): SimulatorAdapter {
+-  if (typeof simulator !== 'string') return simulator;
+-
+-  switch (simulator) {
+-    case 'spice-ts':
+-      return new SpiceTsSimulator();
+-    case 'ngspice-wasm':
+-      return new WasmNgspiceSimulator();
+-    default:
+-      throw new InvalidCircuitError(`Unknown simulator backend '${simulator}'`);
+-  }
+-}
+-
+ function withoutSimulator(options?: SimulationOptions): SimulationOptions | undefined {
+   if (!options) return undefined;
+   const { simulator: _simulator, ...rest } = options;
