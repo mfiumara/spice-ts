@@ -1,0 +1,419 @@
+{
+  "schemaVersion": 1,
+  "issue": "https://github.com/mfiumara/spice-ts/issues/980",
+  "mechanicalAdaptation": "none",
+  "sources": [
+    {
+      "key": "xyce",
+      "repository": "https://github.com/Xyce/Xyce_Regression",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "license": "GPL-3.0-or-later",
+      "licensePath": "benchmarks/corpus/corpus-k/licenses/xyce/README.md",
+      "licenseSha256": "82ff6df7bddcdf639483d261949a02a5f43da85d579f1242b05c3aa0c430f7cb",
+      "licenseTextPath": "benchmarks/corpus/corpus-k/licenses/xyce/GPL-3.0.txt",
+      "licenseTextSha256": "12ac5047f2af0522f06798b1589ffc4599bc29c91f954d7874e0320634e777c0",
+      "basis": "Repository README Copyright and license explicitly grants GPL version 3 or later. Selected suite files carry no separate copyright/licence restrictions. Original MCNC process parameters are supplied within the suite decks, not fetched vendor libraries. README notice retained unchanged; GPL text retained separately."
+    }
+  ],
+  "selection": "All 18 novel standalone CircuitSim90/MOS2 decks plus the novel ACtests/mos/opamp-ol and WAMPDE/HARTLEY/hartley decks. Static/hash selection only, no engine probe or success filter. Related circuit variants supplied by upstream, not generated here. Every outcome retained.",
+  "circuits": [
+    {
+      "id": "k-1",
+      "source": "xyce",
+      "upstreamPath": "Netlists/ACtests/mos/opamp-ol.cir",
+      "sourcePath": "xyce/Netlists/ACtests/mos/opamp-ol.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/ACtests/mos/opamp-ol.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-k/fixtures/xyce/Netlists/ACtests/mos/opamp-ol.cir",
+      "sha256": "602ee034438f846e8d9f80654133b0aa7571b07f843fcd0a7e933f5c04790511",
+      "bytes": 1910,
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "k-2",
+      "source": "xyce",
+      "upstreamPath": "Netlists/CircuitSim90/MOS2/ab_ac.cir",
+      "sourcePath": "xyce/Netlists/CircuitSim90/MOS2/ab_ac.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS2/ab_ac.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-k/fixtures/xyce/Netlists/CircuitSim90/MOS2/ab_ac.cir",
+      "sha256": "4629e860befe1b77ab22ec34ac1d9f04c3b0d763a9d1d5ab3daeefa63998bd4a",
+      "bytes": 3608,
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "k-3",
+      "source": "xyce",
+      "upstreamPath": "Netlists/CircuitSim90/MOS2/ab_integ.cir",
+      "sourcePath": "xyce/Netlists/CircuitSim90/MOS2/ab_integ.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS2/ab_integ.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-k/fixtures/xyce/Netlists/CircuitSim90/MOS2/ab_integ.cir",
+      "sha256": "0b26c63471ad65f26d60b29461161589a6a8ffaf7975533fdc912aff17662e32",
+      "bytes": 4002,
+      "analyses": [
+        "op",
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "k-4",
+      "source": "xyce",
+      "upstreamPath": "Netlists/CircuitSim90/MOS2/ab_opamp.cir",
+      "sourcePath": "xyce/Netlists/CircuitSim90/MOS2/ab_opamp.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS2/ab_opamp.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-k/fixtures/xyce/Netlists/CircuitSim90/MOS2/ab_opamp.cir",
+      "sha256": "22254a57e4e976712960fd5c21bbbbf2f72e41e28301d567362ac9c95a75352e",
+      "bytes": 3745,
+      "analyses": [
+        "op",
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "k-5",
+      "source": "xyce",
+      "upstreamPath": "Netlists/CircuitSim90/MOS2/cram.cir",
+      "sourcePath": "xyce/Netlists/CircuitSim90/MOS2/cram.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS2/cram.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-k/fixtures/xyce/Netlists/CircuitSim90/MOS2/cram.cir",
+      "sha256": "60e91211c78a3becfe8f3765872af9f715e2db5e79bf94268e69729356636d0e",
+      "bytes": 5502,
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "k-6",
+      "source": "xyce",
+      "upstreamPath": "Netlists/CircuitSim90/MOS2/e1480.cir",
+      "sourcePath": "xyce/Netlists/CircuitSim90/MOS2/e1480.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS2/e1480.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-k/fixtures/xyce/Netlists/CircuitSim90/MOS2/e1480.cir",
+      "sha256": "ba099fbc45a07ca21e33d5e2be8faabd1e37ade40f6e8e8be912843b3ea80577",
+      "bytes": 8138,
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "k-7",
+      "source": "xyce",
+      "upstreamPath": "Netlists/CircuitSim90/MOS2/g1310.cir",
+      "sourcePath": "xyce/Netlists/CircuitSim90/MOS2/g1310.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS2/g1310.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-k/fixtures/xyce/Netlists/CircuitSim90/MOS2/g1310.cir",
+      "sha256": "86a52428bb1c6244b3942ddc2de5eba3254a323109336db8aab26ff8b04c08ba",
+      "bytes": 1794,
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "k-8",
+      "source": "xyce",
+      "upstreamPath": "Netlists/CircuitSim90/MOS2/gm6.cir",
+      "sourcePath": "xyce/Netlists/CircuitSim90/MOS2/gm6.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS2/gm6.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-k/fixtures/xyce/Netlists/CircuitSim90/MOS2/gm6.cir",
+      "sha256": "e0a5f86b6d1daebb364f3a156d2d2f411c9383bd61dbaca33bc2fae2692b3e70",
+      "bytes": 1207,
+      "analyses": [
+        "op",
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "k-9",
+      "source": "xyce",
+      "upstreamPath": "Netlists/CircuitSim90/MOS2/hussamp.cir",
+      "sourcePath": "xyce/Netlists/CircuitSim90/MOS2/hussamp.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS2/hussamp.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-k/fixtures/xyce/Netlists/CircuitSim90/MOS2/hussamp.cir",
+      "sha256": "262e04cd3954f5d1e87f9a6c7158c8c706cfd0763c6b8def5359c6ec528d4cf4",
+      "bytes": 1781,
+      "analyses": [
+        "op",
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "k-10",
+      "source": "xyce",
+      "upstreamPath": "Netlists/CircuitSim90/MOS2/mosrect.cir",
+      "sourcePath": "xyce/Netlists/CircuitSim90/MOS2/mosrect.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS2/mosrect.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-k/fixtures/xyce/Netlists/CircuitSim90/MOS2/mosrect.cir",
+      "sha256": "edad518d693e1771f5a70bedaa4a23ad88e1cca0a21b9bf37f978da7c91ce801",
+      "bytes": 1213,
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "k-11",
+      "source": "xyce",
+      "upstreamPath": "Netlists/CircuitSim90/MOS2/mux8.cir",
+      "sourcePath": "xyce/Netlists/CircuitSim90/MOS2/mux8.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS2/mux8.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-k/fixtures/xyce/Netlists/CircuitSim90/MOS2/mux8.cir",
+      "sha256": "68e478bafb2daf900300d319c665e63e9482afa6766573fee913c8a033f1e2bc",
+      "bytes": 15346,
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "k-12",
+      "source": "xyce",
+      "upstreamPath": "Netlists/CircuitSim90/MOS2/nand.cir",
+      "sourcePath": "xyce/Netlists/CircuitSim90/MOS2/nand.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS2/nand.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-k/fixtures/xyce/Netlists/CircuitSim90/MOS2/nand.cir",
+      "sha256": "14ae4051e24d8f2077d2b723cc66a326e922d419accb3bdc3065f55839e86791",
+      "bytes": 3175,
+      "analyses": [
+        "op",
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "k-13",
+      "source": "xyce",
+      "upstreamPath": "Netlists/CircuitSim90/MOS2/pump.cir",
+      "sourcePath": "xyce/Netlists/CircuitSim90/MOS2/pump.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS2/pump.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-k/fixtures/xyce/Netlists/CircuitSim90/MOS2/pump.cir",
+      "sha256": "142a0df7fc79780e9eb85491b0307224a5e0fa745e15dffb3c27bb6f38bb668f",
+      "bytes": 2295,
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "k-14",
+      "source": "xyce",
+      "upstreamPath": "Netlists/CircuitSim90/MOS2/reg0.cir",
+      "sourcePath": "xyce/Netlists/CircuitSim90/MOS2/reg0.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS2/reg0.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-k/fixtures/xyce/Netlists/CircuitSim90/MOS2/reg0.cir",
+      "sha256": "462e2c81437c1cb084882cefa4d78de936a987e9d8d5fa3485c99123804f98b8",
+      "bytes": 1055,
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "k-15",
+      "source": "xyce",
+      "upstreamPath": "Netlists/CircuitSim90/MOS2/ring.cir",
+      "sourcePath": "xyce/Netlists/CircuitSim90/MOS2/ring.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS2/ring.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-k/fixtures/xyce/Netlists/CircuitSim90/MOS2/ring.cir",
+      "sha256": "42c2b03804914eeadade29b6bbaea94d9bae575a2eba165e3a8d4a806ae23475",
+      "bytes": 3781,
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "k-16",
+      "source": "xyce",
+      "upstreamPath": "Netlists/CircuitSim90/MOS2/schmitfast.cir",
+      "sourcePath": "xyce/Netlists/CircuitSim90/MOS2/schmitfast.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS2/schmitfast.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-k/fixtures/xyce/Netlists/CircuitSim90/MOS2/schmitfast.cir",
+      "sha256": "cc2034ae509345822e9a83835d8d1d7854b112fa86a512a9bfbd887f8c6afd8c",
+      "bytes": 2035,
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "k-17",
+      "source": "xyce",
+      "upstreamPath": "Netlists/CircuitSim90/MOS2/schmitslow.cir",
+      "sourcePath": "xyce/Netlists/CircuitSim90/MOS2/schmitslow.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS2/schmitslow.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-k/fixtures/xyce/Netlists/CircuitSim90/MOS2/schmitslow.cir",
+      "sha256": "7ebd52837e56e13a4bfa0718dba5aa3df93a7a4019cd7c5c92cfbf4be8420798",
+      "bytes": 2033,
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "k-18",
+      "source": "xyce",
+      "upstreamPath": "Netlists/CircuitSim90/MOS2/slowlatch.cir",
+      "sourcePath": "xyce/Netlists/CircuitSim90/MOS2/slowlatch.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS2/slowlatch.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-k/fixtures/xyce/Netlists/CircuitSim90/MOS2/slowlatch.cir",
+      "sha256": "2ff69abefa7df895e24efadfa4822b39d7ce19cc32c490a6e6bcc58b22eb8a38",
+      "bytes": 2172,
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "k-19",
+      "source": "xyce",
+      "upstreamPath": "Netlists/CircuitSim90/MOS2/toronto.cir",
+      "sourcePath": "xyce/Netlists/CircuitSim90/MOS2/toronto.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS2/toronto.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-k/fixtures/xyce/Netlists/CircuitSim90/MOS2/toronto.cir",
+      "sha256": "efa07962b99021c701d850797b8fca0dea204a722b8ef02ea79cfeac0ae86018",
+      "bytes": 4689,
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    },
+    {
+      "id": "k-20",
+      "source": "xyce",
+      "upstreamPath": "Netlists/WAMPDE/HARTLEY/hartley.cir",
+      "sourcePath": "xyce/Netlists/WAMPDE/HARTLEY/hartley.cir",
+      "sourceUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/WAMPDE/HARTLEY/hartley.cir",
+      "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+      "licence": "GPL-3.0-or-later",
+      "localPath": "benchmarks/corpus/corpus-k/fixtures/xyce/Netlists/WAMPDE/HARTLEY/hartley.cir",
+      "sha256": "bee9adf8eb33b1161d674fb172946189cef9e82ace35e08a1ada8fdbce886e84",
+      "bytes": 367,
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "includeClosure": []
+    }
+  ],
+  "exclusions": {
+    "receipt": "benchmarks/corpus/corpus-k/survey-xyce.json",
+    "selectedPaths": [
+      "Netlists/ACtests/mos/opamp-ol.cir",
+      "Netlists/CircuitSim90/MOS2/ab_ac.cir",
+      "Netlists/CircuitSim90/MOS2/ab_integ.cir",
+      "Netlists/CircuitSim90/MOS2/ab_opamp.cir",
+      "Netlists/CircuitSim90/MOS2/cram.cir",
+      "Netlists/CircuitSim90/MOS2/e1480.cir",
+      "Netlists/CircuitSim90/MOS2/g1310.cir",
+      "Netlists/CircuitSim90/MOS2/gm6.cir",
+      "Netlists/CircuitSim90/MOS2/hussamp.cir",
+      "Netlists/CircuitSim90/MOS2/mosrect.cir",
+      "Netlists/CircuitSim90/MOS2/mux8.cir",
+      "Netlists/CircuitSim90/MOS2/nand.cir",
+      "Netlists/CircuitSim90/MOS2/pump.cir",
+      "Netlists/CircuitSim90/MOS2/reg0.cir",
+      "Netlists/CircuitSim90/MOS2/ring.cir",
+      "Netlists/CircuitSim90/MOS2/schmitfast.cir",
+      "Netlists/CircuitSim90/MOS2/schmitslow.cir",
+      "Netlists/CircuitSim90/MOS2/slowlatch.cir",
+      "Netlists/CircuitSim90/MOS2/toronto.cir",
+      "Netlists/WAMPDE/HARTLEY/hartley.cir"
+    ],
+    "rule": "Every surveyed path not in selectedPaths is excluded for its static reason, or batch-deferred when reason is null.",
+    "receiptSha256": "628303e7fe0fe241d1925c3f5e3da4e93bbd4d50b65e4347125dcd095cc6766b"
+  },
+  "rejectedSourceSurvey": {
+    "receipt": "benchmarks/corpus/corpus-k/survey-current.json",
+    "receiptSha256": "fd8a6f68e699d133990651f7f1ddbf91bc256c342ee25287af6195ac0d082da7",
+    "licensePath": "benchmarks/corpus/corpus-k/licenses/ngspice/COPYING",
+    "licenseSha256": "6d939001e899ede403277fb37124c2af6f1cf92926465cd8f4bf59859e06f579"
+  }
+}

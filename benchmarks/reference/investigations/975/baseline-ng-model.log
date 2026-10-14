@@ -1,0 +1,346 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: rca3040 ckt - rca 3040 wideband amplifier
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+	Node                                  Voltage
+	----                                  -------
+	----	-------
+	V(13)                            8.044376e-01
+	V(11)                            7.847051e-01
+	V(7)                             -1.65444e+00
+	V(10)                            7.847051e-01
+	V(17)                            6.388781e+00
+	V(16)                            6.388781e+00
+	V(15)                            7.165346e+00
+	V(12)                            1.608875e+00
+	V(14)                            7.165346e+00
+	V(8)                             -4.19950e+00
+	V(9)                             -5.05139e+00
+	V(6)                             -8.27492e-01
+	V(5)                             -8.27492e-01
+	V(31)                            -2.87967e-02
+	V(30)                            -2.87967e-02
+	V(3)                             -1.50000e+01
+	V(2)                             1.500000e+01
+	V(1)                             0.000000e+00
+
+	Source	Current
+	------	-------
+
+	@q11[ic]                         1.203901e-03
+	@q10[ic]                         1.203901e-03
+	@q9[ic]                          1.212293e-02
+	@q8[ic]                          2.807480e-03
+	@q7[ic]                          2.807480e-03
+	@q6[ic]                          5.922334e-03
+	@q5[ic]                          5.922334e-03
+	@q4[ic]                          5.988951e-03
+	@q3[ic]                          5.988951e-03
+	@q2[ic]                          2.996322e-03
+	@q1[ic]                          2.996322e-03
+	vin#branch                       -2.87967e-05
+	vcc#branch                       -2.32469e-02
+	vee#branch                       2.314949e-02
+
+ BJT models (Bipolar Junction Transistor)
+      model                   qnl
+
+       type                   npn
+       tnom                    27
+         is                 1e-16
+        ibe                     0
+        ibc                     0
+         bf                    80
+         nf                     1
+        vaf                    50
+        ikf                     0
+        ise                     0
+         ne                   1.5
+         br                     1
+         nr                     1
+        var                     0
+        ikr                     0
+        isc                     0
+         nc                     2
+         rb                   100
+        irb                     0
+        rbm                   100
+         re                     0
+         rc                     0
+        cje                 3e-12
+        vje                  0.75
+        mje                  0.33
+         tf                 3e-10
+        xtf                     0
+        vtf                     0
+        itf                     0
+        ptf                     0
+        cjc                 2e-12
+        vjc                  0.75
+        mjc                  0.33
+       xcjc                     1
+         tr                 6e-09
+        cjs                 2e-12
+        vjs                  0.75
+        mjs                     0
+        xtb                     0
+         eg                  1.11
+        xti                     3
+         fc                   0.5
+         kf                     0
+         af                     0
+        iss                     0
+         ns                     1
+        rco                  0.01
+         vo                    10
+      gamma                 1e-11
+        qco                     0
+       tlev                     0
+      tlevc                     0
+       tbf1                     0
+       tbf2                     0
+       tbr1                     0
+       tbr2                     0
+      tikf1                     0
+      tikf2                     0
+      tikr1                     0
+      tikr2                     0
+      tirb1                     0
+      tirb2                     0
+       tnc1                     0
+       tnc2                     0
+       tne1                     0
+       tne2                     0
+       tnf1                     0
+       tnf2                     0
+       tnr1                     0
+       tnr2                     0
+       trb1                     0
+       trb2                     0
+       trc1                     0
+       trc2                     0
+       tre1                     0
+       tre2                     0
+       trm1                     0
+       trm2                     0
+      tvaf1                     0
+      tvaf2                     0
+      tvar1                     0
+      tvar2                     0
+        ctc                     0
+        cte                     0
+        cts                     0
+       tvjc                     0
+       tvje                     0
+       tvjs                     0
+      titf1                     0
+      titf2                     0
+       ttf1                     0
+       ttf2                     0
+       ttr1                     0
+       ttr2                     0
+      tmje1                     0
+      tmje2                     0
+      tmjc1                     0
+      tmjc2                     0
+      tmjs1                     0
+      tmjs2                     0
+       tns1                     0
+       tns2                     0
+        nkf                   0.5
+       tis1                     0
+       tis2                     0
+      tise1                     0
+      tise2                     0
+      tisc1                     0
+      tisc2                     0
+      tiss1                     0
+      tiss2                     0
+   quasimod                     0
+         vg                 1.206
+         cn                  2.42
+          d                  0.87
+    vbe_max                 1e+99
+    vbc_max                 1e+99
+    vce_max                 1e+99
+     pd_max                 1e+99
+     ic_max                 1e+99
+     ib_max                 1e+99
+     te_max                 1e+99
+       rth0                     0
+
+ Resistor models (Simple linear resistor)
+      model                     R
+
+        rsh                     0
+     narrow                     0
+      short                     0
+        tc1                     0
+        tc2                     0
+        tce                     0
+       defw                 1e-05
+          l                 1e-05
+         kf                     0
+         af                     0
+          r                     0
+     bv_max                 1e+99
+         lf                     1
+         wf                     1
+         ef                     1
+
+ BJT: Bipolar Junction Transistor
+     device                   q11                   q10                    q9
+      model                   qnl                   qnl                   qnl
+         ic             0.0012039             0.0012039             0.0121229
+         ib           1.30099e-05           1.30099e-05           0.000144157
+         ie           -0.00121691           -0.00121691            -0.0122671
+        vbe              0.775264              0.775264              0.837475
+        vbc              -7.83595              -7.83595              -2.55947
+         gm             0.0465249             0.0465249              0.468471
+        gpi           0.000502993           0.000502993            0.00557347
+        gmu                 1e-12                 1e-12                 1e-12
+         gx                  0.01                  0.01                  0.01
+         go           2.08158e-05           2.08158e-05           0.000230652
+        cpi            1.9063e-11            1.9063e-11           1.45916e-10
+        cmu           8.94643e-13           8.94643e-13           1.22541e-12
+        cbx                     0                     0                     0
+       csub                 2e-12                 2e-12                 2e-12
+
+ BJT: Bipolar Junction Transistor
+     device                    q8                    q7                    q6
+      model                   qnl                   qnl                   qnl
+         ic            0.00280748            0.00280748            0.00592233
+         ib            3.5091e-05            3.5091e-05           6.66172e-05
+         ie           -0.00284257           -0.00284257           -0.00598895
+        vbe              0.800928              0.800928              0.817508
+        vbc            -0.0035091            -0.0035091              -5.56313
+         gm              0.108488              0.108488              0.228865
+        gpi             0.0013567             0.0013567            0.00257558
+        gmu           1.00338e-12           1.00338e-12                 1e-12
+         gx                  0.01                  0.01                  0.01
+         go           5.61457e-05           5.61457e-05           0.000106587
+        cpi           3.77477e-11           3.77477e-11            7.3931e-11
+        cmu           1.99692e-12           1.99692e-12           9.90192e-13
+        cbx                     0                     0                     0
+       csub                 2e-12                 2e-12                 2e-12
+
+ BJT: Bipolar Junction Transistor
+     device                    q5                    q4                    q3
+      model                   qnl                   qnl                   qnl
+         ic            0.00592233            0.00598895            0.00598895
+         ib           6.66172e-05           7.25133e-05           7.25133e-05
+         ie           -0.00598895           -0.00606146           -0.00606146
+        vbe              0.817508              0.819702              0.819702
+        vbc              -5.56313              -1.61945              -1.61945
+         gm              0.228865              0.231431              0.231431
+        gpi            0.00257558            0.00280354            0.00280354
+        gmu                 1e-12                 1e-12                 1e-12
+         gx                  0.01                  0.01                  0.01
+         go           0.000106587           0.000116021           0.000116021
+        cpi            7.3931e-11            7.4711e-11            7.4711e-11
+        cmu           9.90192e-13           1.36825e-12           1.36825e-12
+        cbx                     0                     0                     0
+       csub                 2e-12                 2e-12                 2e-12
+
+ BJT: Bipolar Junction Transistor
+     device                    q2                    q1
+      model                   qnl                   qnl
+         ic            0.00299632            0.00299632
+         ib           2.87967e-05           2.87967e-05
+         ie           -0.00302512           -0.00302512
+        vbe              0.795815              0.795815
+        vbc              -15.0317              -15.0317
+         gm              0.115799              0.115799
+        gpi            0.00111335            0.00111335
+        gmu                 1e-12                 1e-12
+         gx                  0.01                  0.01
+         go           4.60748e-05           4.60748e-05
+        cpi            3.9921e-11            3.9921e-11
+        cmu           7.31829e-13           7.31829e-13
+        cbx                     0                     0
+       csub                 2e-12                 2e-12
+
+ Resistor: Simple linear resistor
+     device                   r10                    r9                    r8
+      model                     R                     R                     R
+ resistance                  5250                  5250                  1320
+         ac                  5250                  5250                  1320
+      dtemp                     0                     0                     0
+     bv_max                 1e+99                 1e+99                 1e+99
+      noisy                     1                     1                     1
+          i            0.00121691            0.00121691            0.00593534
+          p            0.00777458            0.00777458             0.0465014
+
+ Resistor: Simple linear resistor
+     device                    r7                    r6                    r5
+      model                     R                     R                     R
+ resistance                  4500                  1320                   820
+         ac                  4500                  1320                   820
+      dtemp                     0                     0                     0
+     bv_max                 1e+99                 1e+99                 1e+99
+      noisy                     1                     1                     1
+          i            0.00297581            0.00593534           -0.00512134
+          p             0.0398494             0.0465014             0.0215071
+
+ Resistor: Simple linear resistor
+     device                    r4                    r3                    r2
+      model                     R                     R                     R
+ resistance                  2170                   811                  4800
+         ac                  2170                   811                  4800
+      dtemp                     0                     0                     0
+     bv_max                 1e+99                 1e+99                 1e+99
+      noisy                     1                     1                     1
+          i            0.00497719             0.0122671            0.00295261
+          p             0.0537561               0.12204             0.0418458
+
+ Resistor: Simple linear resistor
+     device                    r1                   rs2                   rs1
+      model                     R                     R                     R
+ resistance                  4800                  1000                  1000
+         ac                  4800                  1000                  1000
+      dtemp                     0                     0                     0
+     bv_max                 1e+99                 1e+99                 1e+99
+      noisy                     1                     1                     1
+          i            0.00295261          -2.87967e-05          -2.87967e-05
+          p             0.0418458           8.29252e-07           8.29252e-07
+
+ Vsource: Independent voltage source
+     device                   vee                   vcc                   vin
+         dc                   -15                    15                     0
+      acmag                     0                     0                     1
+      pulse                     -                     -                     -
+        sin                     -                     -                     0
+                                                                          0.1
+                                                                        5e+07
+                                                                        5e-10
+        exp                     -                     -                     -
+        pwl                     -                     -                     -
+       sffm                     -                     -                     -
+         am                     -                     -                     -
+    trnoise                     -                     -                     -
+   trrandom                     -                     -                     -
+    portnum                     0                     0                     0
+         z0                     0                     0                     0
+        pwr                     0                     0                     0
+       freq                     0                     0                     0
+      phase                     0                     0                     0
+          i             0.0231495            -0.0232469          -2.87967e-05
+          p             -0.347242             -0.348704                    -0
+
+
+Total analysis time (seconds) = 0.000642
+
+Total elapsed time (seconds) = 0.005 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 14441.531 MB.
+Maximum ngspice program size =   10.312 MB.
+Current ngspice program size =   10.312 MB.
+

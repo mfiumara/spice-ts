@@ -1,0 +1,57 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_832f6221/packages/core
+
+ ✓ src/subcircuit-port-parens-864.test.ts (4 tests) 21ms
+ ✓ src/parser/subckt-param-order-857.test.ts (12 tests) 25ms
+ ❯ src/parser/comma-numparam-797.test.ts (23 tests | 1 failed) 47ms
+     ✓ normalizes comma-separated formal defaults without changing expressions 2ms
+     × ignores unmatched comma words before positional validation, including nested calls 10ms
+     ✓ issue-1 2ms
+     ✓ issue-2 6ms
+     ✓ issue-3 1ms
+     ✓ issue-4 2ms
+     ✓ issue-5 1ms
+     ✓ issue-6 2ms
+     ✓ issue-7 3ms
+     ✓ defaults 2ms
+     ✓ plain-whitespace 1ms
+     ✓ braced-whitespace 1ms
+     ✓ braced-comma-space 1ms
+     ✓ braced-comma-tab 1ms
+     ✓ explicit-first 1ms
+     ✓ reordered-glued 1ms
+     ✓ function-comma 1ms
+     ✓ unbraced-trailing 0ms
+     ✓ example01 6ms
+     ✓ example01_stringwriter 2ms
+     ✓ example01_without_params 2ms
+     ✓ uses arbitrary names and caller expressions in a nested call 0ms
+     ✓ does not evaluate comma-prefixed ignored expressions 0ms
+ ✓ src/subcircuit-params.test.ts (10 tests) 42ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/parser/comma-numparam-797.test.ts > #797 source-derived X-card assignment boundaries > ignores unmatched comma words before positional validation, including nested calls
+Error: Undefined subcircuit '3'
+ ❯ Circuit.expandSubcircuit src/circuit.ts:3344:13
+    3342|     const definitionScopes = scopeIndex >= 0 ? scopes.slice(scopeIndex…
+    3343|     if (!def) {
+    3344|       throw new Error(`Undefined subcircuit '${subcktName}'`);
+       |             ^
+    3345|     }
+    3346|     if (rawCall !== undefined) validateSubcircuitCallCommas(rawCall, d…
+ ❯ Circuit.expandSubcircuit src/circuit.ts:3756:31
+ ❯ Circuit.expandAllSubcircuits src/circuit.ts:2716:31
+ ❯ Circuit.compile src/circuit.ts:2021:34
+ ❯ simulate src/simulate.ts:132:28
+ ❯ src/parser/comma-numparam-797.test.ts:20:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 3 passed (4)
+      Tests  1 failed | 48 passed (49)
+   Start at  23:36:33
+   Duration  891ms (transform 2.42s, setup 0ms, import 2.96s, tests 135ms, environment 0ms)
+
+JUNIT report written to /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_832f6221/packages/core/test-results.xml

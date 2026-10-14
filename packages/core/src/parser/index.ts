@@ -36,7 +36,7 @@ import {
 import { UnsupportedControlCommandError } from './control/errors.js';
 import { parseBehavioralSourceCard } from './behavioral-expression.js';
 import { parseZInstance } from './z-device-parser.js';
-import { locateSubcircuitCall, parseSubcircuitHeader, type SubcircuitHeader } from './subcircuit-syntax.js';
+import { locateSubcircuitCall, parseSubcircuitCallParams, parseSubcircuitHeader, type SubcircuitHeader } from './subcircuit-syntax.js';
 import { parseSwitchInstance } from './switch-parser.js';
 import { parseXspiceInstance, parseXspiceModelCard, xspiceModelType } from './xspice-parser.js';
 import { isPspiceSwitchModel, translatePspiceSwitchModel } from './pspice-switch.js';
@@ -1305,11 +1305,11 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number, raw
     }
     case 'X': {
       // X<name> <port1> <port2> ... <subcktName> [params:] [param=val ...]
-      const call = locateSubcircuitCall(tokens);
+      const call = locateSubcircuitCall(tokens, raw);
       const subcktName = tokens[call.nameIndex];
       const ports = call.ports;
-      const xParams = parseInstanceParams(tokens, call.paramStart);
-      circuit.addSubcircuitInstance(name, ports, subcktName, xParams);
+      const xParams = parseSubcircuitCallParams(raw);
+      circuit.addSubcircuitInstance(name, ports, subcktName, xParams, raw);
       break;
     }
     case 'E':
