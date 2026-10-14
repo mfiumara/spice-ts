@@ -89,6 +89,13 @@ export class TransientChargeState {
       : capacitance;
   }
 
+  /** Meyer MODEINITPRED charge extrapolation, from accepted points only. */
+  predictedCharge(index: number, factor: number): number {
+    return this.hasPrevious
+      ? (1 + factor) * this.acceptedCharge[index] - factor * this.previousCharge[index]
+      : this.acceptedCharge[index];
+  }
+
   /** Charge current accepted at the last committed timepoint. */
   acceptedChargeCurrent(index: number): number {
     return this.acceptedCurrent[index];

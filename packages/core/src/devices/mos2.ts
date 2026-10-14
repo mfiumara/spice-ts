@@ -344,6 +344,17 @@ export class MOS2 implements DeviceModel {
   private readonly charges = new TransientChargeState(CHARGE_BRANCHES.length);
   private readonly chargeScratch = new Float64Array(CHARGE_BRANCHES.length);
   private readonly capacitanceScratch = new Float64Array(CHARGE_BRANCHES.length);
+  /** Accepted polarity-domain [vgs, vds, vbs], used only for MODEINITPRED. */
+  private acceptedTerminals: [number, number, number] | undefined;
+  private previousTerminals: [number, number, number] | undefined;
+  private acceptedDt = 0;
+  private predictedTerminals: [number, number, number] | undefined;
+  private predictorFactor = 0;
+  private transientLoadContext: StampContext | undefined;
+  private readonly loadedCharge = new Float64Array(CHARGE_BRANCHES.length);
+  private readonly loadedVoltage = new Float64Array(CHARGE_BRANCHES.length);
+  private readonly loadedCapacitance = new Float64Array(CHARGE_BRANCHES.length);
+  private hasLoadedCharge = false;
 
   constructor(
     readonly name: string,
@@ -931,7 +942,50 @@ export class MOS2 implements DeviceModel {
     return Math.min(gateScale, drainScale);
   }
 
+  /**
+   * mos2load.c MODEINITPRED: extrapolate the first load of each timepoint,
+   * retries included. The first step has only the OP, so it is unextrapolated.
+   * Rotate the last-loaded terminal state, not a post-solve reevaluation.
+   */
+  beginTransientNewton(dt: number, _accepted: Float64Array): void {
+    const accepted = this.acceptedTerminals;
+    const previous = this.previousTerminals;
+    const factor = previous && this.acceptedDt > 0 ? dt / this.acceptedDt : 0;
+    this.predictorFactor = factor;
+    this.predictedTerminals = accepted?.map((v, i) =>
+      factor === 0 ? v : (1 + factor) * v - factor * previous![i],
+    ) as [number, number, number] | undefined;
+    // MODEINITPRED restores the junction limiting references from state1.
+    if (accepted) {
+      this.lastVbs = accepted[2];
+      this.lastVbd = accepted[2] - accepted[1];
+    }
+  }
+
   stamp(ctx: StampContext): void {
+    const predicted = this.predictedTerminals;
+    this.predictedTerminals = undefined;
+    if (predicted && ctx.dt > 0) {
+      const [d, g, s, b] = this.nodes;
+      const type = this.model.polarity;
+      // A grounded non-source terminal anchors the predicted source too.
+      // Otherwise its fixed zero would undo the predicted branch voltage.
+      const source = s < 0 ? 0
+        : b < 0 ? -type * predicted[2]
+          : d < 0 ? -type * predicted[1]
+            : g < 0 ? -type * predicted[0] : ctx.getVoltage(s);
+      const original = ctx;
+      ctx = { ...ctx, getVoltage: node => {
+        if (node < 0) return 0;
+        if (node === g) return source + type * predicted[0];
+        if (node === d) return source + type * predicted[1];
+        if (node === b) return source + type * predicted[2];
+        if (node === s) return source;
+        return original.getVoltage(node);
+      } };
+    }
+    // The static and charge loads must linearise at the same first iterate.
+    this.transientLoadContext = predicted && ctx.dt > 0 ? ctx : undefined;
     const type = this.model.polarity;
     const { vt, sourceVcrit, drainVcrit, sourceSatCur, drainSatCur } = this.temp;
     const gmin = ctx.gmin ?? DEVICE_GMIN;
@@ -1126,20 +1180,29 @@ export class MOS2 implements DeviceModel {
   }
 
   stampTransientCharge(ctx: StampContext, integration: ChargeIntegration): void {
+    ctx = this.transientLoadContext ?? ctx;
     const charges = this.charges;
     const capacitances = this.capacitanceScratch;
     const junctionCharges = this.chargeScratch;
     this.evaluateCharges(ctx, capacitances, junctionCharges);
     charges.begin(integration);
+    this.loadedCapacitance.set(capacitances);
+    this.hasLoadedCharge = true;
     for (let index = 0; index < CHARGE_BRANCHES.length; index++) {
       const [p, n] = CHARGE_BRANCHES[index];
       const positive = this.nodes[p];
       const negative = this.nodes[n];
-      if (positive === negative) continue;
       const voltage = branchVoltage(ctx, positive, negative);
       const capacitance = capacitances[index];
+      const charge = index < GATE_CHARGES
+        ? this.transientLoadContext
+          ? charges.predictedCharge(index, this.predictorFactor)
+          : charges.incrementalCharge(index, voltage, capacitance, true)
+        : junctionCharges[index];
+      this.loadedCharge[index] = charge;
+      this.loadedVoltage[index] = voltage;
+      if (positive === negative) continue;
       if (index < GATE_CHARGES) {
-        const charge = charges.incrementalCharge(index, voltage, capacitance, true);
         const effective = charges.factor * charges.incrementalCapacitance(index, capacitance, true);
         stampChargeBranch(ctx, positive, negative, charges.current(index, charge), effective, voltage);
       } else {
@@ -1178,6 +1241,24 @@ export class MOS2 implements DeviceModel {
   }
 
   acceptTransientStep(ctx: StampContext): void {
+    this.acceptCharges(ctx);
+    this.previousTerminals = this.acceptedTerminals;
+    this.acceptedTerminals = ctx.dt > 0
+      ? [this.lastLoad.vgs, this.lastLoad.vds, this.lastLoad.vbs]
+      : this.terminalVoltages(node => node >= 0 ? ctx.getVoltage(node) : 0);
+    this.acceptedDt = ctx.dt;
+  }
+
+  private acceptCharges(ctx: StampContext): void {
+    if (this.hasLoadedCharge) {
+      // NIiter returns without a final load. Keep its q, voltage and Meyer C
+      // together when rotating state0 to state1, including the truncation trial.
+      for (let index = 0; index < CHARGE_BRANCHES.length; index++) {
+        this.charges.accept(index, this.loadedCharge[index], this.loadedVoltage[index], this.loadedCapacitance[index]);
+      }
+      this.charges.commit();
+      return;
+    }
     const charges = this.charges;
     const capacitances = this.capacitanceScratch;
     const junctionCharges = this.chargeScratch;
@@ -1196,11 +1277,17 @@ export class MOS2 implements DeviceModel {
 
   /** ngspice MOS2trunc: CKTterr on the three Meyer gate charges. */
   truncateTransientStep(ctx: StampContext, truncation: ChargeTruncation): number {
-    return this.charges.truncationTimestep(truncation, () => this.acceptTransientStep(ctx), TRUNCATED_CHARGES);
+    return this.charges.truncationTimestep(truncation, () => this.acceptCharges(ctx), TRUNCATED_CHARGES);
   }
 
   resetTransient(): void {
     this.charges.reset();
+    this.acceptedTerminals = undefined;
+    this.previousTerminals = undefined;
+    this.acceptedDt = 0;
+    this.predictedTerminals = undefined;
+    this.transientLoadContext = undefined;
+    this.hasLoadedCharge = false;
   }
 
   /**

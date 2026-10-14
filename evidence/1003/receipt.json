@@ -1,0 +1,28 @@
+{
+  "baseline": "e119f478428f15e34d5cd3d447607395a56ca6f8",
+  "fixedSourceCommit": "a257c333f36b7ea854ae997114dafa1405f0a299",
+  "normallyMergedMain": "3c046c829d82a9c2213bbe94b11df0cddeabc472",
+  "commands": [
+    {"command": "pnpm install --frozen-lockfile", "exit": 0},
+    {"command": "pnpm -C packages/core exec vitest run src/analysis/transient-ring-startup-1003.test.ts", "stage": "initial baseline RED before production edits", "exit": 1, "worstNormalized": 0.32446133275386674},
+    {"command": "baseline snapshot: targeted ring/mosrect, predictor and charge-history tests", "exit": 1, "failed": 10, "passed": 2, "log": "red.log.gz"},
+    {"command": "focused nine-file vitest run", "exit": 0, "passed": 91, "log": "focused.log.gz"},
+    {"command": "spice-heavy pnpm test", "stage": "final MOS2 source before later main merge", "exit": 0, "corePassed": 4045, "coreSkipped": 2, "log": "final-full-test.log.gz"},
+    {"command": "pnpm build && pnpm lint", "stage": "after normal main merge", "exit": 0, "logs": ["build.log.gz", "lint.log.gz"]},
+    {"command": "pnpm -C packages/core exec tsc --noEmit", "stage": "after normal main merge", "exit": 0},
+    {"command": "focused four-file ring/mosrect/predictor/history/mosamp2 vitest run", "stage": "after normal main merge", "exit": 0, "passed": 15, "log": "post-main-focused.log.gz"},
+    {"command": "spice-heavy pnpm exec tsx evidence/1003/measure.ts after", "exit": 0, "runs": 4},
+    {"command": "pnpm exec tsx evidence/1003/related.ts", "stage": "after normal main merge", "exit": 0},
+    {"command": "spice-heavy make -j2", "stage": "corrected full native build with -lomp in configure LDFLAGS, not a global make override", "exit": 0},
+    {"command": "python3 evidence/1003/summarize-native.py", "exit": 0, "points": 1010, "commonSignals": 19, "maxAbsoluteDifferenceFromRecordedReference": 0},
+    {"command": "python3 evidence/1003/check.py", "exit": 0}
+  ],
+  "ring": {"beforeNormalized": 0.32446133275386674, "afterNormalized": 0.00011575688740904232, "beforeOffsetPs": 94.89508726225692, "afterOffsetPs": -0.0007915482024642431, "phaseAlignmentApplied": false},
+  "minimalTestedStages": 15,
+  "mosrect": {"beforeNormalized": 0.015832540193349596, "afterNormalized": 0.00014821704250817352},
+  "mosamp2": {"finalV5": 9.463972504056203, "absoluteError": 0.0000027059437961440835, "unchangedBound": 0.000005},
+  "fixtureToleranceOrMaxstepChanges": false,
+  "dcOpChanges": false,
+  "performanceClaim": false,
+  "publicationGate": {"status": "blocked on unrelated main CI EKV metadata failure", "issue": 1022, "repairMergeCard": "t_866e9769", "requiredExactHeadCI": "not yet green", "independentExactHeadReview": "not yet requested", "merged": false}
+}
