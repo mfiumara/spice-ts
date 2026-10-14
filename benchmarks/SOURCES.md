@@ -1193,3 +1193,54 @@ No upstream native source or binary is redistributed. Scripts/tests are
 project-authored MIT; captures are generated simulation evidence containing
 the licensed input text. Losses and passing controls are both retained.
 
+## Public corpus-n application/regression decks (#1045)
+
+24 byte-identical standalone decks, 13 BSD-3-Clause ngspice examples/tests and
+11 GPL-3.0-or-later Xyce regression inputs. Both engines receive the original
+bytes. No core, harness, tolerance or aggregate-report change. Licences,
+selection/exclusion receipts and every outcome are retained under
+`benchmarks/corpus/corpus-n/`. GPL inputs are separate from MIT package code.
+The supervisor explicitly approved GPL inputs under CHARTER's redistribution
+policy. The ngspice COPYING document itself is CC-BY-SA-4.0, retained unchanged
+with attribution to its pinned source. Notices are retained in
+`corpus-n/licenses/ngspice/COPYING` and `corpus-n/licenses/xyce/{README.md,GPL-3.0.txt}`.
+
+Pinned repositories and grants:
+- ngspice `a80f6e3e95d51534905b1f23410a951802666656`:
+  [COPYING](https://github.com/imr/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/COPYING)
+  explicitly grants Modified BSD for test/example files; selected paths are not exceptions.
+- Xyce `7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2`:
+  [README grant](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/README.md#copyright-and-license).
+
+| ID | Pinned upstream URL | SHA-256 | Licence |
+|---|---|---|---|
+| n-1 | [examples/pss/vdp_osc_pss.cir](https://github.com/imr/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/examples/pss/vdp_osc_pss.cir) | 501888a16ddd9741b851953c010e7de6c8b11ea70071909db9a5b192d0571511 | BSD-3-Clause |
+| n-2 | [paranoia_parallel/examples/Monte_Carlo/OpWien_s.sp](https://github.com/imr/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/paranoia_parallel/examples/Monte_Carlo/OpWien_s.sp) | 4c74766c70cff535f141edb749dab6300bcbafd8db65243f1eef3061ed01b860 | BSD-3-Clause |
+| n-3 | [paranoia_parallel/examples/transient-noise/noise_vnoi_test.cir](https://github.com/imr/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/paranoia_parallel/examples/transient-noise/noise_vnoi_test.cir) | 296b5af65bedcd8793498d732411f36191217f94b89a7eb37275f9f4c7392ef8 | BSD-3-Clause |
+| n-4 | [paranoia_parallel/examples/transient-noise/simple-noise.cir](https://github.com/imr/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/paranoia_parallel/examples/transient-noise/simple-noise.cir) | 5cb8c9d9856777689b944076fc07bd77ae92e70ce6731cd0db0fc04d23adeb44 | BSD-3-Clause |
+| n-5 | [paranoia_parallel/examples/various/adder_mos.cir](https://github.com/imr/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/paranoia_parallel/examples/various/adder_mos.cir) | 837642247b44a0c70ac952e4d24a6fa52a4132ed50c1f5c6a4cbd35bd1747f7e | BSD-3-Clause |
+| n-6 | [paranoia_parallel/examples/vdmos/inv_vdmos_dc.cir](https://github.com/imr/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/paranoia_parallel/examples/vdmos/inv_vdmos_dc.cir) | b20eb59e3de6e8ac27f44097b7b19f2ebd1f821425c69b731f9b1c8a11a862e1 | BSD-3-Clause |
+| n-7 | [paranoia_parallel/examples/vdmos/inv_vdmos.cir](https://github.com/imr/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/paranoia_parallel/examples/vdmos/inv_vdmos.cir) | 7ba5f6c24e3c6c5c1b22595173e635c0106e734232c170b8ea110d4f3480f737 | BSD-3-Clause |
+| n-8 | [paranoia_parallel/examples/vdmos/VDMOS-DIO-AC.cir](https://github.com/imr/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/paranoia_parallel/examples/vdmos/VDMOS-DIO-AC.cir) | 5353769bf39031ee971d955dd92bdaae8ef827d99fdb0242d635ef4fc56b3d99 | BSD-3-Clause |
+| n-9 | [paranoia_parallel/examples/vdmos/VDMOS-DIO.cir](https://github.com/imr/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/paranoia_parallel/examples/vdmos/VDMOS-DIO.cir) | 3e571540caef808b4acd9346962846cf0c974f9e95046f1b1cae7b9940b5687c | BSD-3-Clause |
+| n-10 | [paranoia_parallel/examples/vdmos/vdmos-out_ir_mtr.cir](https://github.com/imr/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/paranoia_parallel/examples/vdmos/vdmos-out_ir_mtr.cir) | 63b7483ca8406aef8f80b44443be204b367a5dc81f86697d15c4138f07455303 | BSD-3-Clause |
+| n-11 | [paranoia_parallel/examples/vdmos/vdmos-out_ir.cir](https://github.com/imr/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/paranoia_parallel/examples/vdmos/vdmos-out_ir.cir) | e991fe10546a7b7b0dc0a60d597782b35d9a5087682f5724b02e145fb5a27b1b | BSD-3-Clause |
+| n-12 | [paranoia_parallel/examples/vdmos/vdmosp-out-mtr.cir](https://github.com/imr/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/paranoia_parallel/examples/vdmos/vdmosp-out-mtr.cir) | 64176908ef6c543b9bfbc15195e75aaebd446c6c89bed69bca01eb6a647909fe | BSD-3-Clause |
+| n-13 | [paranoia_parallel/examples/vdmos/vdmosp-out.cir](https://github.com/imr/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/paranoia_parallel/examples/vdmos/vdmosp-out.cir) | 8c0ed92645e2876fe915703215dd208a8fdf93c9e365c5ec561760bbc3ce0e5c | BSD-3-Clause |
+| n-14 | [Netlists/ACSENS/bsim3/op-amp_expr_fd.cir](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/ACSENS/bsim3/op-amp_expr_fd.cir) | 1667c34c9cd58942432fb21c93943b6f12b0138a1460f576acaaaaad82d61519 | GPL-3.0-or-later |
+| n-15 | [Netlists/ACSENS/bsim3/op-amp_unique_fd.cir](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/ACSENS/bsim3/op-amp_unique_fd.cir) | 31770a8ccf83d8d1e4d84d32a80c5cb035d53c72b887cccf0a92409a598523ef | GPL-3.0-or-later |
+| n-16 | [Netlists/Output/TRAN/tran-prn-filter.cir](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/Output/TRAN/tran-prn-filter.cir) | e2c25889d90fd5aa9f86793c969bd36a448e516637af2f1b741822170bdf369e | GPL-3.0-or-later |
+| n-17 | [Netlists/BJT_IC/bjt_ic.cir](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/BJT_IC/bjt_ic.cir) | b2f414dea73a0fb66b61335fe83320fecac2b7bbf1f12e0438b6893c363c5534 | GPL-3.0-or-later |
+| n-18 | [Netlists/CircuitSim90/MOS2_LARGE/add20.cir](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS2_LARGE/add20.cir) | 197b34fcac1376f5351f3c3c8508b30cec83f0ba45540c233aac8b9856340bc1 | GPL-3.0-or-later |
+| n-19 | [Netlists/CircuitSim90/MOS2_LARGE/add32.cir](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS2_LARGE/add32.cir) | 120cbd0023c06993224b862be199f095226ce4a0efa587dc8c46cebd21181138 | GPL-3.0-or-later |
+| n-20 | [Netlists/CircuitSim90/MOS2_LARGE/dac.cir](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS2_LARGE/dac.cir) | daff3bedde91fafd24d5a4123738d7845cd2f067d1c918f73dc07f8d9c3ab637 | GPL-3.0-or-later |
+| n-21 | [Netlists/CircuitSim90/MOS2_LARGE/fadd32.cir](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS2_LARGE/fadd32.cir) | e0056c1c0e9f7c9c1fd917affec058d32001c6172251359068506b165dc5a12d | GPL-3.0-or-later |
+| n-22 | [Netlists/CircuitSim90/MOS2_LARGE/pchip.cir](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS2_LARGE/pchip.cir) | 6abe8ffc3bb0e664b465bbb0ebc9d202265df9eb39608140bc976f28202bcb21 | GPL-3.0-or-later |
+| n-23 | [Netlists/CircuitSim90/MOS2_LARGE/sqrt.cir](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS2_LARGE/sqrt.cir) | efec05bb614eedd46c39b85f3e8430e3c0955230909ab2adb2542667306ee791 | GPL-3.0-or-later |
+| n-24 | [Netlists/CircuitSim90/MOS2_LARGE/sram.cir](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS2_LARGE/sram.cir) | f7199d0ba58e8b3563f9910511b7a1954f86ea647e276bb517eb49acdcf1fdd4 | GPL-3.0-or-later |
+
+Reproduce parity with `spice-heavy pnpm exec tsx benchmarks/corpus/corpus-n/parity.ts`;
+offline guards with `pnpm exec tsx --test benchmarks/corpus/corpus-n/corpus-n.test.ts`.
+All 87 non-reference BSD probes, every Xyce probe failure, static exclusions
+and deferred candidates are retained in the batch's survey/probe receipts.
+
