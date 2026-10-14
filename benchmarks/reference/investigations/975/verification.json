@@ -1,0 +1,72 @@
+{
+  "sourceHead": "c4858434e58fedeeedab142f2479252e0a59e851",
+  "local": [
+    {
+      "command": "pnpm build",
+      "exitCode": 0,
+      "processReceipt": "proc_00c75fb31011",
+      "logSha256": "bd9f53fdc02afa2234c2e7dfd925f091ae514c6f028dd3c976b27b53adc8ddda",
+      "summaries": []
+    },
+    {
+      "command": "pnpm lint",
+      "exitCode": 0,
+      "processReceipt": "proc_00c75fb31011",
+      "logSha256": "e1de9091f176c78b81f96b408d2f32337c4b676b11539fe8f35b0f2b25741650",
+      "summaries": []
+    },
+    {
+      "command": "spice-heavy pnpm test",
+      "exitCode": 0,
+      "processReceipt": "proc_00c75fb31011",
+      "logSha256": "d0ff626458111b5fac74b1535337e26aeabba3abd4aafa23d2a9a934145b02cd",
+      "summaries": [
+        " Test Files  278 passed (278)",
+        "      Tests  3590 passed | 2 skipped (3592)",
+        " Test Files  1 passed (1)",
+        "      Tests  17 passed (17)",
+        " Test Files  2 passed (2)",
+        "      Tests  11 passed (11)",
+        " Test Files  4 passed (4)",
+        "      Tests  76 passed (76)",
+        " Test Files  17 passed (17)",
+        "      Tests  209 passed (209)",
+        " Test Files  6 passed (6)",
+        "      Tests  64 passed (64)",
+        "# tests 4",
+        "# pass 4",
+        "# fail 0",
+        "# skipped 0",
+        "# tests 1",
+        "# pass 1",
+        "# fail 0",
+        "# skipped 0",
+        "# tests 1",
+        "# pass 1",
+        "# fail 0",
+        "# skipped 0",
+        "# tests 3",
+        "# pass 3",
+        "# fail 0",
+        "# skipped 0",
+        "# tests 3",
+        "# pass 3",
+        "# fail 0",
+        "# skipped 0",
+        " Test Files  2 passed (2)",
+        "      Tests  20 passed (20)",
+        "# tests 148",
+        "# pass 144",
+        "# fail 0",
+        "# skipped 4"
+      ]
+    }
+  ],
+  "offlineReceiptTests": {
+    "command": "pnpm exec tsx --test benchmarks/reference/investigations/975/receipt.test.ts",
+    "passed": 4,
+    "failed": 0
+  },
+  "coreRedRegression": null,
+  "reason": "No current spice-ts defect established"
+}

@@ -1,0 +1,13 @@
+X-call continuation
+.param seed=2.5
+.subckt cell o params: alpha=1
+I1 0 o {alpha}
+R1 o 0 1
+.ends
+.subckt caller o params: seed=2.5
+Xchild o cell alpha='seed
++*2'
+.ends
+Xouter o caller
+.op
+.end

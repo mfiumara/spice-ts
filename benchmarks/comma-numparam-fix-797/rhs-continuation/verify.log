@@ -1,0 +1,33 @@
+top-numeric: before native failure; ngspice=5 V; after native=5 V
+top-bare: before native failure; ngspice=5 V; after native=5 V
+top-braced: before native failure; ngspice=5 V; after native=5 V
+top-quoted: before native failure; ngspice=5 V; after native=5 V
+top-comments: before native failure; ngspice=5 V; after native=5 V
+nested-numeric: before native failure; ngspice=5 V; after native=5 V
+nested-bare: before native failure; ngspice=5 V; after native=5 V
+nested-braced: before native failure; ngspice=5 V; after native=5 V
+nested-quoted: before native failure; ngspice=5 V; after native=5 V
+nested-comments: before native failure; ngspice=5 V; after native=5 V
+issue-1: bothFailed; metrics=None
+issue-2: agree; metrics={'nodes': ['v(o)'], 'count': 1, 'maxAbsolute': 0.0, 'rmsAbsolute': 0.0, 'maxRelative': 0.0, 'rmsRelative': 0.0}
+issue-3: bothFailed; metrics=None
+issue-4: agree; metrics={'nodes': ['v(o)'], 'count': 1, 'maxAbsolute': 0.0, 'rmsAbsolute': 0.0, 'maxRelative': 0.0, 'rmsRelative': 0.0}
+issue-5: bothFailed; metrics=None
+issue-6: agree; metrics={'nodes': ['v(o)'], 'count': 1, 'maxAbsolute': 0.0, 'rmsAbsolute': 0.0, 'maxRelative': 0.0, 'rmsRelative': 0.0}
+issue-7: agree; metrics={'nodes': ['v(o)'], 'count': 1, 'maxAbsolute': 0.0, 'rmsAbsolute': 0.0, 'maxRelative': 0.0, 'rmsRelative': 0.0}
+defaults: agree; metrics={'nodes': ['v(o)'], 'count': 1, 'maxAbsolute': 0.0, 'rmsAbsolute': 0.0, 'maxRelative': 0.0, 'rmsRelative': 0.0}
+plain-whitespace: agree; metrics={'nodes': ['v(o)'], 'count': 1, 'maxAbsolute': 0.0, 'rmsAbsolute': 0.0, 'maxRelative': 0.0, 'rmsRelative': 0.0}
+braced-whitespace: agree; metrics={'nodes': ['v(o)'], 'count': 1, 'maxAbsolute': 0.0, 'rmsAbsolute': 0.0, 'maxRelative': 0.0, 'rmsRelative': 0.0}
+braced-comma-space: agree; metrics={'nodes': ['v(o)'], 'count': 1, 'maxAbsolute': 0.0, 'rmsAbsolute': 0.0, 'maxRelative': 0.0, 'rmsRelative': 0.0}
+braced-comma-tab: agree; metrics={'nodes': ['v(o)'], 'count': 1, 'maxAbsolute': 0.0, 'rmsAbsolute': 0.0, 'maxRelative': 0.0, 'rmsRelative': 0.0}
+explicit-first: agree; metrics={'nodes': ['v(o)'], 'count': 1, 'maxAbsolute': 0.0, 'rmsAbsolute': 0.0, 'maxRelative': 0.0, 'rmsRelative': 0.0}
+reordered-glued: agree; metrics={'nodes': ['v(o)'], 'count': 1, 'maxAbsolute': 0.0, 'rmsAbsolute': 0.0, 'maxRelative': 0.0, 'rmsRelative': 0.0}
+function-comma: agree; metrics={'nodes': ['v(o)'], 'count': 1, 'maxAbsolute': 0.0, 'rmsAbsolute': 0.0, 'maxRelative': 0.0, 'rmsRelative': 0.0}
+unbraced-trailing: bothFailed; metrics=None
+unbraced-missing-value: statusLoss; metrics=None
+example01: agree; metrics={'nodes': ['v(n1)', 'v(n2)', 'v(n3)'], 'count': 3, 'maxAbsolute': 8.881784197001252e-16, 'rmsAbsolute': 5.127978741977898e-16, 'maxRelative': 2.359223927328457e-16, 'rmsRelative': 2.0526421133915498e-16}
+example01_stringwriter: agree; metrics={'nodes': ['v(n1)', 'v(n2)', 'v(n3)'], 'count': 3, 'maxAbsolute': 2.2238328956092346e-08, 'rmsAbsolute': 1.2839942664655665e-08, 'maxRelative': 2.02702507580167e-08, 'rmsRelative': 1.4582630755065776e-08}
+example01_without_params: agree; metrics={'nodes': ['v(n1)', 'v(n2)', 'v(n3)'], 'count': 3, 'maxAbsolute': 2.2238328956092346e-08, 'rmsAbsolute': 1.2839942664655665e-08, 'maxRelative': 2.02702507580167e-08, 'rmsRelative': 1.4582630755065776e-08}
+Legacy twenty-case table: {'agree': 15, 'bothFailed': 4, 'statusLoss': 1, 'numericalLoss': 0}
+Recorded child wall seconds: 4.570986837000001 11.489855916000003
+PASS: 40 fresh receipt rows; 10 continuation agreements; 20-case table unchanged

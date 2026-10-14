@@ -8,12 +8,19 @@ import { gminSteppingHomotopy } from './dc.js';
 import { DCSweepResult } from '../results.js';
 import { VoltageSource } from '../devices/voltage-source.js';
 import { CurrentSource } from '../devices/current-source.js';
-import { ConvergenceError, InvalidCircuitError } from '../errors.js';
+import { Resistor } from '../devices/resistor.js';
+import { NOMINAL_TEMPERATURE_C } from '../devices/junction-temperature.js';
+import { ConvergenceError, InvalidCircuitError, UnsupportedTemperatureError } from '../errors.js';
 import {
   createConvergenceTelemetry, snapshotConvergenceTelemetry,
 } from '../convergence-telemetry.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 import { accumulatedLinearGrid } from './directed-linear-grid.js';
+
+interface SweepTarget {
+  set(value: number): void;
+  restore(): void;
+}
 
 export function solveDCSweep(
   compiled: CompiledCircuit,
@@ -26,20 +33,18 @@ export function solveDCSweep(
 
   assertDCSweepDimension(analysis);
   if (analysis.secondary !== undefined) assertDCSweepDimension(analysis.secondary);
-  const source = resolveSweepSource(devices, analysis);
-  const secondarySource = analysis.secondary === undefined
-    ? undefined
-    : resolveSweepSource(devices, analysis.secondary);
-  if (secondarySource === source) {
+  if (analysis.secondary?.source.toUpperCase() === analysis.source.toUpperCase()) {
     throw new InvalidCircuitError(`DC sweep source '${analysis.secondary!.source}' is repeated`);
   }
 
-  const originalWaveform = source.waveform;
-  const secondaryOriginalWaveform = secondarySource?.waveform;
   // ngspice-47 dctrcurv.c accumulates each level by `+= step` and resets inner levels to start,
   // so every outer value reuses the same accumulated inner grid.
   const primaryGrid = sweepGrid(analysis);
   const secondaryGrid = analysis.secondary === undefined ? [undefined] : sweepGrid(analysis.secondary);
+  const source = resolveSweepTarget(devices, analysis, primaryGrid);
+  const secondarySource = analysis.secondary === undefined
+    ? undefined
+    : resolveSweepTarget(devices, analysis.secondary, secondaryGrid as number[]);
   const primaryPoints = primaryGrid.length;
   const secondaryPoints = secondaryGrid.length;
   const numPoints = primaryPoints * secondaryPoints;
@@ -64,7 +69,7 @@ export function solveDCSweep(
     for (let outer = 0; outer < secondaryPoints; outer++) {
       const secondarySweepValue = secondaryGrid[outer];
       if (secondarySource !== undefined && secondarySweepValue !== undefined) {
-        secondarySource.waveform = { type: 'dc', value: secondarySweepValue };
+        secondarySource.set(secondarySweepValue);
       }
       for (let inner = 0; inner < primaryPoints; inner++) {
         guard?.recordResultPoint();
@@ -75,7 +80,7 @@ export function solveDCSweep(
           secondarySweepValues[i] = secondarySweepValue!;
         }
 
-        source.waveform = { type: 'dc', value: sweepValue };
+        source.set(sweepValue);
 
         solveSweepPoint(assembler, devices, options, nodeNames, convergence, guard);
 
@@ -95,10 +100,8 @@ export function solveDCSweep(
     }
     throw error;
   } finally {
-    source.waveform = originalWaveform;
-    if (secondarySource !== undefined && secondaryOriginalWaveform !== undefined) {
-      secondarySource.waveform = secondaryOriginalWaveform;
-    }
+    source.restore();
+    secondarySource?.restore();
   }
 
   return new DCSweepResult(sweepValues, voltageArrays, currentArrays, secondarySweepValues);
@@ -133,13 +136,28 @@ function solveSweepPoint(
   }
 }
 
-function resolveSweepSource(
+function resolveSweepTarget(
   devices: CompiledCircuit['devices'],
   sweep: DCSweepDimension,
-): VoltageSource | CurrentSource {
+  grid: readonly number[],
+): SweepTarget {
   // SPICE identifiers are case-insensitive, but retain declaration spelling in
   // result maps and diagnostics.
   const normalizedSourceName = sweep.source.toUpperCase();
+  if (normalizedSourceName === 'TEMP') {
+    const fixed = devices.find(device => device.isNonlinear && !device.setTemperature);
+    const offNominal = grid.find(value => value !== NOMINAL_TEMPERATURE_C);
+    if (fixed && offNominal !== undefined) throw new UnsupportedTemperatureError(fixed.name, offNominal);
+    const thermalDevices = devices.filter(device => device.setTemperature && device.getTemperature);
+    // Resistor getTemperature includes instance TEMP/DTEMP. Restore CKTtemp,
+    // not the effective instance temperature, to avoid applying DTEMP twice.
+    const original = thermalDevices.map(device => device instanceof Resistor
+      ? device.getCircuitTemperature() : device.getTemperature!());
+    return {
+      set: value => thermalDevices.forEach(device => device.setTemperature!(value)),
+      restore: () => thermalDevices.forEach((device, index) => device.setTemperature!(original[index])),
+    };
+  }
   const matchingSources = devices.filter(
     (device): device is VoltageSource | CurrentSource =>
       (device instanceof VoltageSource || device instanceof CurrentSource)
@@ -154,7 +172,12 @@ function resolveSweepSource(
       `DC sweep source '${sweep.source}' is ambiguous; matches: ${names}`,
     );
   }
-  return matchingSources[0]!;
+  const source = matchingSources[0]!;
+  const waveform = source.waveform;
+  return {
+    set: value => { source.waveform = { type: 'dc', value }; },
+    restore: () => { source.waveform = waveform; },
+  };
 }
 
 function sweepGrid(sweep: DCSweepDimension): number[] {
