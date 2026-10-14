@@ -17,6 +17,15 @@
     {"command": "pnpm build", "exitCode": 0},
     {"command": "pnpm lint", "exitCode": 0}
   ],
+  "fullSuite": {
+    "preMainIntegration": {"command": "spice-heavy pnpm test", "exitCode": 0},
+    "postMainIntegration": {
+      "head": "e3643c955e244f564dc67350b6137356ba926493",
+      "command": "spice-heavy pnpm test", "exitCode": 1,
+      "failed": 6, "passed": 4330, "expectedFailure": 5, "skipped": 8, "total": 4349,
+      "reason": "All six failures are wall-clock test timeouts under shared-host load; no assertion/convergence failure. Required exact-head GitHub CI is the authoritative full gate."
+    }
+  },
   "exactHeadCi": "Recorded on PR/card after publication; not inferred here",
   "hotspots": ["benchmarks/SOURCES.md"],
   "limitations": ["Diode-local and three-row trace, not every vendor model state", "No matched TS timepoint exists at native first failed attempt3", "Neither vendor base OP parity nor variant structured error parity is fixed"]
