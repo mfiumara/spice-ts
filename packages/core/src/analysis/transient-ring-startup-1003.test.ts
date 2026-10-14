@@ -12,6 +12,7 @@ type Receipt = {
 };
 
 describe('MOS2 ring startup trajectory (#1003)', () => {
+  // Coverage-instrumented CI can exceed Vitest's default 5 s wall-clock limit.
   it.each([['k-15', 19], ['k-10', 10]] as const)('matches every %s original common signal within the unchanged 1% reference-peak rule', async (id, signalCount) => {
     const receipt = JSON.parse(gunzipSync(readFileSync(new URL(`../../../../evidence/996/runs/${id}-original.json.gz`, import.meta.url))).toString()) as Receipt;
     const result = (await simulate(receipt.deck)).transient!;
@@ -35,5 +36,5 @@ describe('MOS2 ring startup trajectory (#1003)', () => {
       }
     }
     expect(worst).toBeLessThanOrEqual(0.01);
-  });
+  }, 30_000);
 });
