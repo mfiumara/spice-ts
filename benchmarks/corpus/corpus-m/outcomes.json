@@ -14,7 +14,7 @@
     }
   ],
   "manifestSha256": "33b9e518a546d12e1e16290b192a5764bd6d72b5389ae142902f536b69553596",
-  "coreTree": "bf5b06211a9dbc887319a4def7c0c98cbeb020cc",
+  "coreTree": "445dc70f4efa4c25421b28eb9d76ae8f911c91ba",
   "tools": {
     "ngspice": "ngspice-47",
     "spiceTs": "0.3.0",
@@ -56,40 +56,30 @@
       "unsupported": 0
     },
     "spiceTs": {
-      "success": 21,
-      "failed": 2,
+      "success": 23,
+      "failed": 0,
       "unsupported": 1
     },
     "outcomes": {
       "matched": 15,
-      "mismatch": 6,
+      "mismatch": 8,
       "not-compared": 0,
-      "spice-ts-loss": 3,
+      "spice-ts-loss": 1,
       "ngspice-failed": 0,
       "both-failed": 0
     },
     "bySource": {
       "xyce": {
         "matched": 15,
-        "mismatch": 6,
+        "mismatch": 8,
         "not-compared": 0,
-        "spice-ts-loss": 3,
+        "spice-ts-loss": 1,
         "ngspice-failed": 0,
         "both-failed": 0
       }
     }
   },
   "gapBuckets": [
-    {
-      "bucket": "execution: other failure",
-      "fixtures": 2,
-      "ngspiceSuccess": 2,
-      "ids": [
-        "m-23",
-        "m-24"
-      ],
-      "issue": null
-    },
     {
       "bucket": "model: compact MOSFET model B3SOI (LEVEL=10)",
       "fixtures": 1,
@@ -185,8 +175,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 396.2894580000001,
-        "spiceTsChildWallMs": 1031.033334
+        "ngspiceChildWallMs": 1706.0665,
+        "spiceTsChildWallMs": 7629.823125
       }
     },
     {
@@ -360,8 +350,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 404.982833,
-        "spiceTsChildWallMs": 1004.1683330000001
+        "ngspiceChildWallMs": 2777.723917000001,
+        "spiceTsChildWallMs": 5260.256583
       }
     },
     {
@@ -883,8 +873,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 402.4671250000001,
-        "spiceTsChildWallMs": 1013.9472089999999
+        "ngspiceChildWallMs": 1400.4170840000006,
+        "spiceTsChildWallMs": 2153.0371659999983
       }
     },
     {
@@ -915,8 +905,8 @@
       "gapBucket": "model: compact MOSFET model B3SOI (LEVEL=10)",
       "comparisons": [],
       "runtime": {
-        "ngspiceChildWallMs": 406.61370799999986,
-        "spiceTsChildWallMs": 936.9207079999996
+        "ngspiceChildWallMs": 724.1755410000005,
+        "spiceTsChildWallMs": 1808.1915000000008
       }
     },
     {
@@ -1148,8 +1138,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 371.9036249999999,
-        "spiceTsChildWallMs": 1004.929459
+        "ngspiceChildWallMs": 657.2120000000032,
+        "spiceTsChildWallMs": 1842.3946250000008
       }
     },
     {
@@ -1526,8 +1516,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 392.7128329999996,
-        "spiceTsChildWallMs": 923.706792
+        "ngspiceChildWallMs": 1381.1108340000028,
+        "spiceTsChildWallMs": 2312.3248329999988
       }
     },
     {
@@ -1904,8 +1894,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 342.1470420000005,
-        "spiceTsChildWallMs": 856.9508750000005
+        "ngspiceChildWallMs": 1569.159040999999,
+        "spiceTsChildWallMs": 6622.073958000001
       }
     },
     {
@@ -2282,8 +2272,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 314.81574999999975,
-        "spiceTsChildWallMs": 812.4003749999993
+        "ngspiceChildWallMs": 1794.733834000006,
+        "spiceTsChildWallMs": 5618.894249999998
       }
     },
     {
@@ -2428,8 +2418,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 309.1677920000002,
-        "spiceTsChildWallMs": 811.8680839999997
+        "ngspiceChildWallMs": 2256.640333000003,
+        "spiceTsChildWallMs": 4688.001792000003
       }
     },
     {
@@ -3096,8 +3086,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 325.5791249999984,
-        "spiceTsChildWallMs": 837.1705420000017
+        "ngspiceChildWallMs": 2108.9743329999983,
+        "spiceTsChildWallMs": 4709.877582999994
       }
     },
     {
@@ -3619,8 +3609,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 351.2574999999997,
-        "spiceTsChildWallMs": 899.2912500000002
+        "ngspiceChildWallMs": 2028.4194169999973,
+        "spiceTsChildWallMs": 5974.472291999991
       }
     },
     {
@@ -3794,8 +3784,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 356.0109170000014,
-        "spiceTsChildWallMs": 1011.1533330000002
+        "ngspiceChildWallMs": 1950.6064170000027,
+        "spiceTsChildWallMs": 6108.088624999989
       }
     },
     {
@@ -3969,8 +3959,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 420.896999999999,
-        "spiceTsChildWallMs": 1021.5121660000004
+        "ngspiceChildWallMs": 2707.8184170000022,
+        "spiceTsChildWallMs": 3986.8226670000004
       }
     },
     {
@@ -4144,8 +4134,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 357.75658300000214,
-        "spiceTsChildWallMs": 865.5898750000015
+        "ngspiceChildWallMs": 1628.0809169999993,
+        "spiceTsChildWallMs": 3454.2570829999895
       }
     },
     {
@@ -4319,8 +4309,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 324.4322920000013,
-        "spiceTsChildWallMs": 814.5167080000028
+        "ngspiceChildWallMs": 1105.0073330000014,
+        "spiceTsChildWallMs": 2459.0536250000005
       }
     },
     {
@@ -4598,8 +4588,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 333.64679199999955,
-        "spiceTsChildWallMs": 828.0475829999996
+        "ngspiceChildWallMs": 1272.348582999999,
+        "spiceTsChildWallMs": 2553.0877920000057
       }
     },
     {
@@ -4831,8 +4821,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 322.4885830000021,
-        "spiceTsChildWallMs": 805.4047920000012
+        "ngspiceChildWallMs": 1128.7755830000096,
+        "spiceTsChildWallMs": 2930.0677079999878
       }
     },
     {
@@ -5064,8 +5054,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 329.3447500000002,
-        "spiceTsChildWallMs": 856.2245419999999
+        "ngspiceChildWallMs": 1077.700291000001,
+        "spiceTsChildWallMs": 2841.8227079999924
       }
     },
     {
@@ -5297,8 +5287,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 380.5532920000005,
-        "spiceTsChildWallMs": 1010.9974580000016
+        "ngspiceChildWallMs": 1372.1089169999905,
+        "spiceTsChildWallMs": 3025.4646670000075
       }
     },
     {
@@ -5530,8 +5520,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 348.2649170000004,
-        "spiceTsChildWallMs": 902.2404169999973
+        "ngspiceChildWallMs": 1229.078125,
+        "spiceTsChildWallMs": 3412.779833000008
       }
     },
     {
@@ -5763,8 +5753,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 354.0116249999992,
-        "spiceTsChildWallMs": 903.9513339999976
+        "ngspiceChildWallMs": 1261.8160420000058,
+        "spiceTsChildWallMs": 4222.707916999992
       }
     },
     {
@@ -5996,8 +5986,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 361.5277079999978,
-        "spiceTsChildWallMs": 896.7396249999983
+        "ngspiceChildWallMs": 1863.8743340000074,
+        "spiceTsChildWallMs": 5611.592082999996
       }
     },
     {
@@ -6016,20 +6006,221 @@
         ]
       },
       "spiceTs": {
-        "status": "failed",
-        "analyses": [],
-        "firstErrorLine": "MOSFET level 6 model 'CD4012_NMOS': series resistance parameter RD is not supported"
+        "status": "success",
+        "analyses": [
+          "tran:1884"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "execution: other failure",
-      "comparisons": [],
+      "comparedAnalyses": 1,
+      "comparedSignals": 6,
+      "worstNormalizedError": 0.172,
+      "worstSignal": "tran v(vout)",
+      "outcome": "mismatch",
+      "gapBucket": null,
+      "comparisons": [
+        {
+          "analysis": "tran",
+          "signals": [
+            "i(vdddev)",
+            "i(vin1)",
+            "v(1)",
+            "v(in)",
+            "v(vdd)",
+            "v(vout)"
+          ],
+          "metrics": {
+            "grid": {
+              "spiceTsPoints": 1884,
+              "ngspicePoints": 1885,
+              "alignedPoints": 1884,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "i(vdddev)": {
+                "status": "compared",
+                "sampleCount": 1884,
+                "absoluteError": {
+                  "max": 0.00022127048424740593,
+                  "rms": 0.000010861854964277231
+                },
+                "relativeError": {
+                  "max": 230.4975655942319,
+                  "rms": 7.583646147311541,
+                  "sampleCount": 1884,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "i(vin1)": {
+                "status": "compared",
+                "sampleCount": 1884,
+                "absoluteError": {
+                  "max": 0.00010628305789373146,
+                  "rms": 0.000008556126151189058
+                },
+                "relativeError": {
+                  "max": 1136.6433204025345,
+                  "rms": 29.72587812204635,
+                  "sampleCount": 1801,
+                  "excludedZeroReferences": 83
+                }
+              },
+              "v(1)": {
+                "status": "compared",
+                "sampleCount": 1884,
+                "absoluteError": {
+                  "max": 4.844902257161721e-12,
+                  "rms": 4.865875028496517e-13
+                },
+                "relativeError": {
+                  "max": 1,
+                  "rms": 0.056254395046286536,
+                  "sampleCount": 1027,
+                  "excludedZeroReferences": 857
+                }
+              },
+              "v(in)": {
+                "status": "compared",
+                "sampleCount": 1884,
+                "absoluteError": {
+                  "max": 0.10628305789373149,
+                  "rms": 0.008556126151145885
+                },
+                "relativeError": {
+                  "max": 1136.6433204024436,
+                  "rms": 26.44308751700466,
+                  "sampleCount": 1884,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(vdd)": {
+                "status": "compared",
+                "sampleCount": 1884,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1884,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(vout)": {
+                "status": "compared",
+                "sampleCount": 1884,
+                "absoluteError": {
+                  "max": 0.8110172584553081,
+                  "rms": 0.04395228726884042
+                },
+                "relativeError": {
+                  "max": 18.13790808703647,
+                  "rms": 2.6605549224218454,
+                  "sampleCount": 1884,
+                  "excludedZeroReferences": 0
+                }
+              }
+            }
+          },
+          "linearMetrics": {
+            "grid": {
+              "spiceTsPoints": 1884,
+              "ngspicePoints": 1885,
+              "alignedPoints": 1884,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "i(vdddev)": {
+                "status": "compared",
+                "sampleCount": 1884,
+                "absoluteError": {
+                  "max": 0.00022127048424740593,
+                  "rms": 0.000010963960574069866
+                },
+                "relativeError": {
+                  "max": 230.4975655942319,
+                  "rms": 7.583648762403142,
+                  "sampleCount": 1884,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "i(vin1)": {
+                "status": "compared",
+                "sampleCount": 1884,
+                "absoluteError": {
+                  "max": 0.00010628305789373146,
+                  "rms": 0.000008575863764159338
+                },
+                "relativeError": {
+                  "max": 1136.6433204025345,
+                  "rms": 29.725878193729162,
+                  "sampleCount": 1801,
+                  "excludedZeroReferences": 83
+                }
+              },
+              "v(1)": {
+                "status": "compared",
+                "sampleCount": 1884,
+                "absoluteError": {
+                  "max": 4.844902257161721e-12,
+                  "rms": 4.865875107760145e-13
+                },
+                "relativeError": {
+                  "max": 1,
+                  "rms": 0.06429806564069045,
+                  "sampleCount": 1028,
+                  "excludedZeroReferences": 856
+                }
+              },
+              "v(in)": {
+                "status": "compared",
+                "sampleCount": 1884,
+                "absoluteError": {
+                  "max": 0.10628305789373149,
+                  "rms": 0.00857586376411761
+                },
+                "relativeError": {
+                  "max": 1136.6433204024436,
+                  "rms": 26.44308769387254,
+                  "sampleCount": 1884,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(vdd)": {
+                "status": "compared",
+                "sampleCount": 1884,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1884,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(vout)": {
+                "status": "compared",
+                "sampleCount": 1884,
+                "absoluteError": {
+                  "max": 0.8110172584553081,
+                  "rms": 0.0439552307152788
+                },
+                "relativeError": {
+                  "max": 18.13790808703647,
+                  "rms": 2.660562316879365,
+                  "sampleCount": 1884,
+                  "excludedZeroReferences": 0
+                }
+              }
+            }
+          }
+        }
+      ],
       "runtime": {
-        "ngspiceChildWallMs": 329.4238329999971,
-        "spiceTsChildWallMs": 784.9237080000021
+        "ngspiceChildWallMs": 1772.1948330000014,
+        "spiceTsChildWallMs": 4896.7384170000005
       }
     },
     {
@@ -6048,20 +6239,221 @@
         ]
       },
       "spiceTs": {
-        "status": "failed",
-        "analyses": [],
-        "firstErrorLine": "MOSFET level 6 model 'CD4012_NMOS': series resistance parameter RD is not supported"
+        "status": "success",
+        "analyses": [
+          "tran:1884"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "execution: other failure",
-      "comparisons": [],
+      "comparedAnalyses": 1,
+      "comparedSignals": 6,
+      "worstNormalizedError": 0.172,
+      "worstSignal": "tran v(vout)",
+      "outcome": "mismatch",
+      "gapBucket": null,
+      "comparisons": [
+        {
+          "analysis": "tran",
+          "signals": [
+            "i(vdddev)",
+            "i(vin1)",
+            "v(1)",
+            "v(in)",
+            "v(vdd)",
+            "v(vout)"
+          ],
+          "metrics": {
+            "grid": {
+              "spiceTsPoints": 1884,
+              "ngspicePoints": 1885,
+              "alignedPoints": 1884,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "i(vdddev)": {
+                "status": "compared",
+                "sampleCount": 1884,
+                "absoluteError": {
+                  "max": 0.00022127048424740593,
+                  "rms": 0.000010861854964277231
+                },
+                "relativeError": {
+                  "max": 230.4975655942319,
+                  "rms": 7.583646147311541,
+                  "sampleCount": 1884,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "i(vin1)": {
+                "status": "compared",
+                "sampleCount": 1884,
+                "absoluteError": {
+                  "max": 0.00010628305789373146,
+                  "rms": 0.000008556126151189058
+                },
+                "relativeError": {
+                  "max": 1136.6433204025345,
+                  "rms": 29.72587812204635,
+                  "sampleCount": 1801,
+                  "excludedZeroReferences": 83
+                }
+              },
+              "v(1)": {
+                "status": "compared",
+                "sampleCount": 1884,
+                "absoluteError": {
+                  "max": 4.844902257161721e-12,
+                  "rms": 4.865875028496517e-13
+                },
+                "relativeError": {
+                  "max": 1,
+                  "rms": 0.056254395046286536,
+                  "sampleCount": 1027,
+                  "excludedZeroReferences": 857
+                }
+              },
+              "v(in)": {
+                "status": "compared",
+                "sampleCount": 1884,
+                "absoluteError": {
+                  "max": 0.10628305789373149,
+                  "rms": 0.008556126151145885
+                },
+                "relativeError": {
+                  "max": 1136.6433204024436,
+                  "rms": 26.44308751700466,
+                  "sampleCount": 1884,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(vdd)": {
+                "status": "compared",
+                "sampleCount": 1884,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1884,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(vout)": {
+                "status": "compared",
+                "sampleCount": 1884,
+                "absoluteError": {
+                  "max": 0.8110172584553081,
+                  "rms": 0.04395228726884042
+                },
+                "relativeError": {
+                  "max": 18.13790808703647,
+                  "rms": 2.6605549224218454,
+                  "sampleCount": 1884,
+                  "excludedZeroReferences": 0
+                }
+              }
+            }
+          },
+          "linearMetrics": {
+            "grid": {
+              "spiceTsPoints": 1884,
+              "ngspicePoints": 1885,
+              "alignedPoints": 1884,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "i(vdddev)": {
+                "status": "compared",
+                "sampleCount": 1884,
+                "absoluteError": {
+                  "max": 0.00022127048424740593,
+                  "rms": 0.000010963960574069866
+                },
+                "relativeError": {
+                  "max": 230.4975655942319,
+                  "rms": 7.583648762403142,
+                  "sampleCount": 1884,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "i(vin1)": {
+                "status": "compared",
+                "sampleCount": 1884,
+                "absoluteError": {
+                  "max": 0.00010628305789373146,
+                  "rms": 0.000008575863764159338
+                },
+                "relativeError": {
+                  "max": 1136.6433204025345,
+                  "rms": 29.725878193729162,
+                  "sampleCount": 1801,
+                  "excludedZeroReferences": 83
+                }
+              },
+              "v(1)": {
+                "status": "compared",
+                "sampleCount": 1884,
+                "absoluteError": {
+                  "max": 4.844902257161721e-12,
+                  "rms": 4.865875107760145e-13
+                },
+                "relativeError": {
+                  "max": 1,
+                  "rms": 0.06429806564069045,
+                  "sampleCount": 1028,
+                  "excludedZeroReferences": 856
+                }
+              },
+              "v(in)": {
+                "status": "compared",
+                "sampleCount": 1884,
+                "absoluteError": {
+                  "max": 0.10628305789373149,
+                  "rms": 0.00857586376411761
+                },
+                "relativeError": {
+                  "max": 1136.6433204024436,
+                  "rms": 26.44308769387254,
+                  "sampleCount": 1884,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(vdd)": {
+                "status": "compared",
+                "sampleCount": 1884,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1884,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(vout)": {
+                "status": "compared",
+                "sampleCount": 1884,
+                "absoluteError": {
+                  "max": 0.8110172584553081,
+                  "rms": 0.0439552307152788
+                },
+                "relativeError": {
+                  "max": 18.13790808703647,
+                  "rms": 2.660562316879365,
+                  "sampleCount": 1884,
+                  "excludedZeroReferences": 0
+                }
+              }
+            }
+          }
+        }
+      ],
       "runtime": {
-        "ngspiceChildWallMs": 323.1944999999978,
-        "spiceTsChildWallMs": 789.5020829999994
+        "ngspiceChildWallMs": 1824.3738339999982,
+        "spiceTsChildWallMs": 4522.590333999979
       }
     }
   ],
@@ -6082,23 +6474,17 @@
     },
     {
       "bucket": "waveform: tran mismatch above uniform threshold (root cause not diagnosed)",
-      "count": 5,
+      "count": 7,
       "ids": [
         "m-18",
         "m-19",
         "m-20",
         "m-21",
-        "m-22"
-      ]
-    },
-    {
-      "bucket": "execution: other failure",
-      "count": 2,
-      "ids": [
+        "m-22",
         "m-23",
         "m-24"
       ]
     }
   ],
-  "outcomeSha256": "d4f32ef64da4c542f9b4d63241613f53c99d9ce80013b99e0e174ec75a9818e3"
+  "outcomeSha256": "34c87ed696dc5a011b45ab0cd21229e8a62eb97d77e4b30a90cd717c5d30d7d1"
 }
