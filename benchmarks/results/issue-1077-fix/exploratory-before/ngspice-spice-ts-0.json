@@ -1,0 +1,28 @@
+{
+  "inputSha256": "a6d0f4220bde7a548209e0e845e3c9bb731b2819f7f7e256d284e5a85e10fa7c",
+  "mode": "cold",
+  "wallMs": 4494.165540999999,
+  "points": 2429,
+  "telemetry": {
+    "dc": {
+      "newtonIterations": 143,
+      "acceptedSolves": 12,
+      "rejectedSolves": 1,
+      "sourceStepAttempts": 0,
+      "sourceStepFailures": 0,
+      "gminStepAttempts": 12,
+      "gminStepFailures": 0,
+      "failure": null
+    },
+    "transient": {
+      "acceptedSteps": 2428,
+      "rejectedSteps": 766,
+      "newtonIterations": 82710,
+      "nrRetries": 756,
+      "lteRetries": 10,
+      "minimumAcceptedTimestep": 7.569444300496845e-12,
+      "failure": null
+    }
+  },
+  "waveformSha256": "ad51749fb28e86d6890e18d6bd65f71781c311de3a8724ef90d4c176cc37168f"
+}

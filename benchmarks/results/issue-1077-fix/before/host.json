@@ -1,0 +1,20 @@
+{
+  "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+  "machine": "arm64",
+  "node": "v22.23.1",
+  "ngspice": "******\n** ngspice-47 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2026, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n******",
+  "base": "4f4d957c3d0e52827a255861e56069a55135c110",
+  "diff": "",
+  "core": "/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T//t_3aca3607-before-dist/index.js",
+  "buildHashes": {
+    "chunk-JLBPI3GR.js": "74aa8d9540c509e3df434ce0401360ecd10f458a7ed98e8c462fca08b20afcce",
+    "chunk-QAS5N3VI.js": "208584a4f6161542d378b1941a65813a3020e1002f8f0d4e913354f0e1537502",
+    "index.js": "c2f3cfbb19f4bdaa35cba51c547b2f44ddc8472b8622c79cee235fab26fbf8c2",
+    "step-worker-browser.js": "0128b737c208aa02df99894a1527e3c42ee1a8c8405cda91e0334cd7d40fcf50",
+    "step-worker.js": "58779f57fd2b78cca2a3eb77d44968e2fac6503921830fae2ca690d8fc0a20cd"
+  },
+  "inputs": {
+    "ngspice": "a6d0f4220bde7a548209e0e845e3c9bb731b2819f7f7e256d284e5a85e10fa7c",
+    "classic": "d8b0e627f7742490ac6e841ffb176c9b02ffe6de1246bb57d1db793f58027469"
+  }
+}
