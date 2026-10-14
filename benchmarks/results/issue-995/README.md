@@ -4,15 +4,41 @@ Production change: admit only MOS2 to Circuit's validated `.options TEMP` guard.
 The existing mos2temp.c port required no law correction on these probes.
 MOS3/MOS6 remain rejected at non-nominal circuit temperature.
 
-## Raw temperature question
+## Temperature question and scalar receipts
 
-`python3 benchmarks/results/issue-995/probe.py` runs ngspice-47 on temporary
-copies of the original gm6 deck, adding only diagnostic control commands.
-`gm6-device125.log` and `gm6-plain125.log` report both `@mp2[temp]` and
+`spice-heavy python3 benchmarks/results/issue-995/probe.py` runs ngspice-47 on
+temporary copies of the original gm6 deck, adding only diagnostic control
+commands. It emits JSON to stdout, never tracked raw logs or temporary decks.
+`receipts.json` preserves the historical temperature/OP scalars and test
+counts from PR998, with the source commit and SHA256 of each removed log.
+The device125 and plain125 receipts report both `@mp2[temp]` and
 `@mn3[temp]` as `1.250000000000000e+02`. The plain27 probe reports
 `2.700000000000000e+01`. Device125 and plain125 OP node outputs are identical.
 Thus ngspice interprets gm6's `.options device temp=125` as 125 C, not 27 C.
 Original fixture bytes are untouched.
+
+The native diagnostic probes also report `no such function as {v,` /
+`or {v(2) is not available.` from the original deck's output expression.
+These errors are preserved in the receipts: the temperature/OP observation
+is not a claim that the diagnostic batch was error-free. Historical exit
+codes were not captured in the removed logs, so they are `null`; new runs
+record the actual native exit code. The corpus comparison below is separate.
+Verbose model/device tables and host timing are not parity assertions;
+the original output remains recoverable from the source commit, for example:
+
+```
+git show 57920d6243539ef151459fc7ba6e838b58ed00ae:benchmarks/results/issue-995/gm6-device125.log
+```
+
+No guard policy, fixture, scalar reference or comparison metric was changed
+by the #1006 receipt conversion.
+
+Offline receipt checks: `node --test benchmarks/results/issue-995/receipts.test.mjs`.
+To save a fresh native scalar run outside the repository:
+
+```
+spice-heavy python3 benchmarks/results/issue-995/probe.py > "$TMPDIR/issue-995-probes.json"
+```
 
 ## Tests
 
@@ -30,7 +56,7 @@ is the allowlist, not an unverified temperature-law discrepancy.
 GREEN: 38 new tests including two non-admission checks, 123 targeted tests
 across five files. No existing tolerance was edited. New OP assertions use
 1e-12 + 1e-7 relative and transient assertions 1e-12 + 1e-4 relative uniformly.
-The first RED attempt had incorrect result-property names; red.log records
+The first RED attempt had incorrect result-property names; the RED receipt records
 the corrected behavioral reproduction, not that test-authoring error.
 
 Targeted command:
