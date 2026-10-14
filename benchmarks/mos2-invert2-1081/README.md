@@ -125,9 +125,19 @@ Run from repository root:
     spice-heavy pnpm exec tsx benchmarks/mos2-invert2-1081/run.ts fine fine
     spice-heavy pnpm exec tsx benchmarks/mos2-invert2-1081/run.ts tight tight
     python3 benchmarks/mos2-invert2-1081/check.py --check
+    python3 benchmarks/mos2-invert2-1081/check_test.py
     pnpm -C packages/core exec vitest run src/devices/mos2-invert2-1081.test.ts src/devices/mos2.test.ts src/devices/mos2-temperature-995.test.ts src/devices/mos2-series-resistance-982.test.ts src/devices/mos2-convergence-799.test.ts src/devices/mos2-charge-history-1003.test.ts src/devices/mos2-predictor-1003.test.ts
     pnpm lint
     spice-heavy pnpm test
+
+The offline checker permits only 1e-13 relative roundoff (zero absolute tolerance)
+in the six recomputed RMS metrics per fixture. Python's floating-point `sum`
+algorithm changed in 3.12; observed cross-version receipt drift is below 1e-14
+relative. All other fields, including hashes, fixture identities, point counts,
+maxima and first-divergence rows, remain exact. This portability allowance is not
+a simulator parity tolerance and does not modify the retained receipts.
+The checker tests cover roundoff acceptance, material RMS/nonfinite rejection,
+exact-field rejection and the complete retained-waveform receipt.
 
 RED commit `d3d147c8` runs ordinary assertions: 2 failed, 1 passed, both failures
 at 0.38022371053385456 vs 0.01. Final tests expose the same RED via

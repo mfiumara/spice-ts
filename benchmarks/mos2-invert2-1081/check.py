@@ -62,11 +62,41 @@ def summarize():
     return result
 
 
+RMS_METRICS = {
+    "before", "after", "diagnosticFine", "diagnosticTight",
+    "defaultTsAgainstFineNative", "defaultNativeAgainstFineNative",
+}
+
+
+def assert_receipt(actual, expected, path=()):
+    """Allow reduction roundoff only at the six recomputed RMS leaves."""
+    message = f"summary receipt drift at {path}"
+    assert type(actual) is type(expected), message
+    if isinstance(expected, dict):
+        assert actual.keys() == expected.keys(), message
+        for key in expected:
+            assert_receipt(actual[key], expected[key], path + (key,))
+    elif isinstance(expected, list):
+        assert len(actual) == len(expected), message
+        for index, (a, e) in enumerate(zip(actual, expected)):
+            assert_receipt(a, e, path + (index,))
+    elif (len(path) == 4 and path[0] == "fixtures"
+          and isinstance(path[1], int) and path[2] in RMS_METRICS
+          and path[3] == "rms" and isinstance(expected, float)):
+        # CPython 3.12+ uses compensated float sum, unlike older versions.
+        # 1e-13 relative permits tiny reduction differences (observed <1e-14)
+        # without an absolute floor that could mask changes near zero.
+        assert math.isfinite(actual) and math.isfinite(expected), message
+        assert math.isclose(actual, expected, rel_tol=1e-13, abs_tol=0.0), message
+    else:
+        assert actual == expected, message
+
+
 if __name__ == "__main__":
     summary = summarize()
     path = ROOT / "summary.json"
     if "--check" in sys.argv:
-        assert summary == json.loads(path.read_text()), "summary receipt drift"
+        assert_receipt(summary, json.loads(path.read_text()))
         print("PASS: unchanged original losses, identical aliases, diagnostic errors and waveform hashes")
     else:
         path.write_text(json.dumps(summary, indent=2) + "\n")
