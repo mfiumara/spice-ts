@@ -189,6 +189,9 @@ export function braceBareParameters(lines: readonly DeckLine[], topLevel: Readon
   const frames = collectParamFrames(lines, root);
 
   const output = lines.map(line => line.text);
+  // No visible names means no token can need auto braces. Collect all
+  // frames first: a later .param or nested header can populate an empty root.
+  if (frames.every(frame => frame.names.size === 0)) return output;
   let active = false;
   let skip = 0;
   for (const [index, line] of lines.entries()) {
