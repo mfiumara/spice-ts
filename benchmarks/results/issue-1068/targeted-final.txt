@@ -1,26 +1,27 @@
 
  RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/packages/core
 
- ✓ src/parser/behavioral-expression.test.ts (36 tests) 17ms
- ✓ src/analysis/gmin-baseline-1068.test.ts (3 tests) 19ms
- ✓ src/parser/options-xyce-packages-713.test.ts (47 tests) 26ms
- ✓ src/devices/jfet.test.ts (12 tests) 34ms
- ✓ src/devices/diode.test.ts (27 tests) 37ms
- ✓ src/options-gmin-1068.test.ts (11 tests) 47ms
- ✓ src/devices/vbic.test.ts (5 tests) 65ms
- ✓ src/protocol/adapter.test.ts (16 tests) 50ms
- ✓ src/parser/options-directives.test.ts (115 tests) 70ms
- ✓ src/parser/temp-directive-871.test.ts (33 tests) 74ms
- ✓ src/devices/bsim4/paramchk.test.ts (19 tests) 223ms
- ✓ src/devices/bjt.test.ts (34 tests) 447ms
-     ✓ runs the unchanged bounded VBIC forward-output DC fixture  384ms
- ✓ src/mos1-inverter-chain-op.test.ts (6 tests | 2 skipped) 4467ms
-     ✓ matches ngspice-47 node voltages for a 20000-stage chain  1752ms
-     ✓ matches ngspice-47 node voltages for a 6000-stage chain  2601ms
+ ✓ src/parser/behavioral-expression.test.ts (36 tests) 29ms
+ ✓ src/analysis/gmin-baseline-1068.test.ts (3 tests) 23ms
+ ✓ src/parser/options-xyce-packages-713.test.ts (47 tests) 32ms
+ ✓ src/devices/jfet.test.ts (12 tests) 49ms
+ ✓ src/devices/diode.test.ts (27 tests) 50ms
+ ✓ src/options-gmin-1068.test.ts (11 tests) 106ms
+ ✓ src/devices/vbic.test.ts (5 tests) 131ms
+ ✓ src/parser/options-directives.test.ts (115 tests) 140ms
+ ✓ src/parser/temp-directive-871.test.ts (33 tests) 145ms
+ ✓ src/protocol/adapter.test.ts (16 tests) 135ms
+ ✓ src/devices/bsim4/paramchk.test.ts (19 tests) 448ms
+     ✓ rejects native correction domain source at integrated compile and simulate  312ms
+ ✓ src/devices/bjt.test.ts (34 tests) 775ms
+     ✓ runs the unchanged bounded VBIC forward-output DC fixture  644ms
+ ✓ src/mos1-inverter-chain-op.test.ts (6 tests | 2 skipped) 5195ms
+     ✓ matches ngspice-47 node voltages for a 20000-stage chain  2431ms
+     ✓ matches ngspice-47 node voltages for a 6000-stage chain  2545ms
 
  Test Files  13 passed (13)
       Tests  362 passed | 2 skipped (364)
-   Start at  15:26:04
-   Duration  5.68s (transform 10.10s, setup 0ms, import 13.29s, tests 5.58s, environment 1ms)
+   Start at  15:37:14
+   Duration  6.95s (transform 14.27s, setup 0ms, import 18.31s, tests 7.26s, environment 1ms)
 
 JUNIT report written to /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_b1732cf8/packages/core/test-results.xml

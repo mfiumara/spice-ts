@@ -41,6 +41,7 @@ import { parseSwitchInstance } from './switch-parser.js';
 import { parseXspiceInstance, parseXspiceModelCard, xspiceModelType } from './xspice-parser.js';
 import { isPspiceSwitchModel, translatePspiceSwitchModel } from './pspice-switch.js';
 import { isNgspiceOptionField, splitXyceOptionPackage } from './xyce-option-packages.js';
+import { parseNgbehavior } from './ngbehavior.js';
 import type { AnalysisDirective, IncludeResolver, IntegrationMethod, SimulationOptions } from '../types.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 import { measureCard } from '../measure/dot-measure.js';
@@ -994,6 +995,10 @@ function parseSimulationOptions(
     const separator = token.indexOf('=');
     const name = token.slice(0, separator < 0 ? token.length : separator).toLowerCase();
     if (OUTPUT_ONLY_OPTION_FLAGS.has(name) && separator < 0) continue;
+    if (name === 'ngbehavior') {
+      options.ngbehavior = parseNgbehavior(separator < 0 ? '' : token.slice(separator + 1), lineNumber, context);
+      continue;
+    }
     if (name === 'klu' || name === 'sparse') {
       if (separator >= 0) {
         throw new ParseError(`Unsupported .options field: '${token}'`, lineNumber, context);

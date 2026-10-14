@@ -14,6 +14,11 @@ point counts and per-signal absolute/relative max and RMS error. `compare.ts`
 uses the existing native engine runners and linear-alignment harness. Both
 engines receive the same input Buffer; no fixture or tolerance is adapted.
 
+The implementation branch subsequently merged main at
+`9b14263187c37864758321ef4d80962b339bb949`. Only the additive SOURCES conflict
+needed resolution; the probe section is appended to avoid the shared prepend
+hotspot. The scoped delta and targeted run were repeated after integration.
+
 Measured on darwin 27.0.0 / arm64 / Apple M5 Pro, Node v22.23.1,
 pnpm 10.28.1, `/opt/homebrew/bin/ngspice` version 47. Timings are not a speed claim.
 
@@ -137,6 +142,11 @@ distinct absolute URLs. This is correctness evidence, not a runtime comparison.
 - Targeted core/device/parser/convergence/homotopy run: 362 pass, 2 slow tests
   skipped, exit 0 (`targeted-final.txt`).
 - `spice-heavy pnpm test`: exit 0 (`full-test-final.txt`).
+- Post-integration full-suite attempt exceeded the enclosing tool's 420-second
+  limit after its heavy-slot queue and package suites. The integrated core had
+  4310 passing tests and no failures; the root benchmark TAP run was interrupted.
+  `full-test-integrated-timeout.txt` retains the partial output. Required exact-head
+  GitHub CI, not this host-load timeout, is the final full-suite gate.
 - Scoped identical-input runner: exit 0 (`compare.txt`, `delta.json`).
 - Aggregate check: exit 1 before and after for the pre-existing stale provenance.
 

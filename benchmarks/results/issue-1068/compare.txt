@@ -1,3 +1,5 @@
+spice-heavy: all 2 heavy slots busy, waiting...
+spice-heavy: got slot 1
 benchmarks/results/issue-1068/weak-diode.cir success success success
 benchmarks/results/issue-1068/weak-diode-default.cir success success success
 benchmarks/results/issue-1068/bjt.cir success success success

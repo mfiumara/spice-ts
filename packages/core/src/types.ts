@@ -200,12 +200,21 @@ export type AnalysisDirective =
 /** Integration methods for transient analysis */
 export type IntegrationMethod = 'euler' | 'trapezoidal' | 'gear2';
 
+/** Canonical ngbehavior request and ngspice-47 set_compat_mode flags.
+ * This does not claim support for every vendor's netlist translation.
+ */
+export interface Ngbehavior {
+  readonly mode: string;
+  readonly flags: Readonly<Record<'hs' | 'ps' | 'xs' | 'lt' | 'ki' | 'a' | 'll' | 's3' | 'eg' | 'spe' | 'mc', boolean>>;
+}
+
 /**
  * Options for controlling simulation behavior.
- *
  * All fields are optional; SPICE-convention defaults are used when omitted.
  */
 export interface SimulationOptions {
+  /** Parsed compatibility request; existing expression extensions remain available in all modes. */
+  ngbehavior?: Ngbehavior;
   /** Parsed ngspice solver-selection hint. Native analyses always use spice-ts's sparse LU solver. */
   solverSelection?: 'klu' | 'sparse';
   /** ngspice nonlinear-device bypass request. Native solver always evaluates devices and warns when nonzero. */

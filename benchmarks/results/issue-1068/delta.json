@@ -3442,7 +3442,7 @@
       "ngspice": {
         "status": "failed",
         "convergence": "failed",
-        "error": "Error on line 45 or its substitute: .tran 0 0.5ms TSTEP is invalid, must be greater than zero. Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: diode circuit netlist Total elapsed time (seconds) = 0.010 Total DRAM available = 49152.000 MB. DRAM currently available = 11588.844 MB. Maximum ngspice program size = 9.891 MB. Current ngspice program size = 9.891 MB.",
+        "error": "Error on line 45 or its substitute: .tran 0 0.5ms TSTEP is invalid, must be greater than zero. Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: diode circuit netlist Total elapsed time (seconds) = 0.038 Total DRAM available = 49152.000 MB. DRAM currently available = 13128.359 MB. Maximum ngspice program size = 9.891 MB. Current ngspice program size = 9.891 MB.",
         "analyses": []
       },
       "before": {

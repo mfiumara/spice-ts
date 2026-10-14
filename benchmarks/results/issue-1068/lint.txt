@@ -7,37 +7,37 @@ TAP version 13
 # Subtest: preserves historical tracked receipts and allows ordinary additions
 ok 1 - preserves historical tracked receipts and allows ordinary additions
   ---
-  duration_ms: 534.931417
+  duration_ms: 497.95775
   type: 'test'
   ...
 # Subtest: rejects staged logs and nested POTETO notes, including spaces
 ok 2 - rejects staged logs and nested POTETO notes, including spaces
   ---
-  duration_ms: 474.009041
+  duration_ms: 508.639375
   type: 'test'
   ...
 # Subtest: rejects committed additions and renamed ordinary files
 ok 3 - rejects committed additions and renamed ordinary files
   ---
-  duration_ms: 1103.115708
+  duration_ms: 1192.717
   type: 'test'
   ...
 # Subtest: permits modification and removal of grandfathered evidence
 ok 4 - permits modification and removal of grandfathered evidence
   ---
-  duration_ms: 574.293958
+  duration_ms: 532.482417
   type: 'test'
   ...
 # Subtest: checks the staged index when no remote main exists
 ok 5 - checks the staged index when no remote main exists
   ---
-  duration_ms: 663.29725
+  duration_ms: 508.051291
   type: 'test'
   ...
 # Subtest: invalid base fails closed
 ok 6 - invalid base fails closed
   ---
-  duration_ms: 526.624
+  duration_ms: 439.425875
   type: 'test'
   ...
 1..6
@@ -48,17 +48,17 @@ ok 6 - invalid base fails closed
 # cancelled 0
 # skipped 0
 # todo 0
-# duration_ms 3941.645959
+# duration_ms 3718.808458
 Scope: 9 of 10 workspace projects
-packages/core lint$ tsc --noEmit
 packages/protocol lint$ tsc --noEmit
+packages/core lint$ tsc --noEmit
 packages/protocol lint: Done
 packages/core lint: Done
 packages/circuit-json lint$ tsc --noEmit
-packages/ui lint$ tsc --noEmit
 packages/mcp lint$ tsc --noEmit
 packages/wasm lint$ tsc --noEmit
+packages/ui lint$ tsc --noEmit
 packages/circuit-json lint: Done
 packages/ui lint: Done
-packages/wasm lint: Done
 packages/mcp lint: Done
+packages/wasm lint: Done
