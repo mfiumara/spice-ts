@@ -202,6 +202,13 @@ const ulpDistance = (a: number, b: number) => {
 /** Values ngspice-47 INPevaluate has no literal for (see formatNumber): all below 1e-297. */
 const UNREACHABLE_BELOW = 1e-297;
 
+// #1054: keep the complete seeded sweep in the required CI test jobs, without
+// V8 coverage bookkeeping. The coverage suite still exercises the same oracle
+// on its first 20k patterns, plus the separate 20k subnormal sweep below.
+// Run the full corpus locally with SPICE_FULL_NUMBER_FUZZ=1 vitest run <this file>.
+const fullNumberFuzz = process.env.SPICE_FULL_NUMBER_FUZZ === '1';
+const bitPatternSamples = fullNumberFuzz ? 1_000_000 : 20_000;
+
 describe('formatNumber reaches every double that INPevaluate can produce (#806)', () => {
   it.each([
     // #806 examples that drifted one ulp: the 17-digit search missed them.
@@ -216,11 +223,11 @@ describe('formatNumber reaches every double that INPevaluate can produce (#806)'
     expectReadsBack(-value, String(-value));
   });
 
-  it('round-trips 1M random bit patterns with 0 ulp drift, except the unreachable values below 1e-297', () => {
+  it(`round-trips ${bitPatternSamples} random bit patterns with 0 ulp drift, except the unreachable values below 1e-297`, () => {
     const next = bitPatterns(806n);
     let checked = 0;
     let unreachable = 0;
-    for (let i = 0; i < 1_000_000; i++) {
+    for (let i = 0; i < bitPatternSamples; i++) {
       const value = fromBits(next());
       if (!Number.isFinite(value)) continue;
       checked++;
@@ -232,10 +239,10 @@ describe('formatNumber reaches every double that INPevaluate can produce (#806)'
         `bits #${i}: ${value} written as ${text} reads back as ${read}`).toBe(true);
       unreachable++;
     }
-    expect(checked).toBeGreaterThan(999_000);
+    expect(checked).toBeGreaterThan(fullNumberFuzz ? 999_000 : 19_980);
     // About 1 in 1024 bit patterns is below 2^-1021 (exponent field 0 or 1), and about half of
     // those are odd multiples of 2^-1074 that no literal reaches: 518 of 1M for this seed.
-    expect(unreachable).toBeLessThan(600);
+    expect(unreachable).toBeLessThan(fullNumberFuzz ? 600 : 20);
   }, 120_000);
 
   it('writes every value around the subnormal range within one ulp, exactly when a literal exists', () => {
