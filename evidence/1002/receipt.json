@@ -1,0 +1,41 @@
+{
+  "mode": "evidence-only; rejected candidate not applied",
+  "baseline": "43aefef1a1105696cdce74acbfd3144e5cff3b7d",
+  "redCommit": "195c115c",
+  "results": [
+    {"command": "pnpm install --frozen-lockfile", "exit": 0},
+    {"command": "pnpm -C packages/core exec vitest run src/analysis/transient-mosrect-1002.test.ts", "stage": "RED", "exit": 1, "worstNormalized": 0.015832540193349596},
+    {"command": "pnpm -C packages/core exec vitest run src/devices/mos2-charge-history-1002.test.ts", "stage": "baseline RED", "exit": 1, "failed": 3, "passed": 2},
+    {"command": "focused seven-file vitest run documented in README", "stage": "candidate", "exit": 0, "passed": 82},
+    {"command": "spice-heavy pnpm test", "stage": "candidate", "exit": 1, "corePassed": 3735, "coreSkipped": 2, "coreFailed": 1, "failure": "classic-mos-convergence.test.ts:54 unchanged mosamp2 5uV bound"},
+    {"command": "pnpm -C packages/core exec vitest run src/classic-mos-convergence.test.ts src/analysis/transient-mosrect-1002.test.ts", "stage": "bulk-only diagnostic", "exit": 1, "passed": 3, "failed": 1, "failure": "mosrect unchanged 1% rule"},
+    {"command": "pnpm build && pnpm lint", "stage": "final baseline production source", "exit": 0},
+    {"command": "python3 evidence/1002/check.py", "exit": 0},
+    {"command": "spice-heavy pnpm test", "stage": "final baseline production source", "status": "tool timeout after 420 seconds; packages passed, root benchmark tests interrupted; exact-head CI is authoritative"}
+  ],
+  "nativeReferenceVerification": {"ngspice": "47", "sourceSha256": "894e649651f1838a14095e5a5439e7d3aa63e87ede14d283173fda4fcdef675f", "points": 1008, "commonSignals": 10, "maxAbsoluteDifferenceFromRecordedReference": 0},
+  "productionFixtureToleranceChanges": false,
+  "productionSimulatorChanges": false,
+  "remaining": "Preserve mosamp2 default-step guard while investigating MOS2 Meyer last-load acceptance/predictor/bypass history semantics; direct history effects and retry-induced integration fallback remain causally confounded. #1002 and #1003 remain unresolved.",
+  "remediation": {
+    "rejectedHead": "75f6f756905106db37fa4c346381ec6a71fc65cb",
+    "baselineFallback": {"from": "trapezoidal", "to": "euler", "lastAcceptedTime": 4.372800000000037e-7, "failedTrialTime": 4.3828000000000374e-7, "retryTime": 4.3828000000000374e-7, "nrRetries": 1},
+    "candidateFallbacks": [],
+    "interpretation": "Matching accepted grids and iterations does not establish matching integration methods. Direct history effects and avoiding permanent Euler fallback have not been separated.",
+    "results": [
+      {"command": "python3 evidence/1002/check.py", "stage": "method/fallback assertions RED on old traces", "exit": 1, "failure": "KeyError: fallbacks"},
+      {"command": "spice-heavy pnpm exec tsx evidence/1002/run.ts before", "exit": 0},
+      {"command": "git init -q && git apply ../../rejected-candidate.patch && spice-heavy pnpm exec tsx evidence/1002/run.ts after", "cwd": "evidence/1002/.run/candidate (git archive HEAD, updated run.ts, linked dependencies)", "exit": 0},
+      {"command": "cmp evidence/1002/.run/candidate/evidence/1002/after.json evidence/1002/after.json", "exit": 0},
+      {"check": "Parsed baseline and candidate traces match rejected-head traces exactly after removing new method/order/configuredMethod/fallback fields", "exit": 0},
+      {"command": "spice-heavy make -j2 LIBS='-lm /opt/homebrew/opt/libomp/lib/libomp.dylib'", "stage": "fresh native build", "exit": 2, "failure": "HICUM2 C++ std::__1 symbols unresolved"},
+      {"command": "spice-heavy make -j2 LIBS='-lm -lc++ /opt/homebrew/opt/libomp/lib/libomp.dylib'", "stage": "native build preserving XSPICE module LDFLAGS", "exit": 0},
+      {"command": "SPICE_ASCIIRAWFILE=1 evidence/1002/.run/ngspice-47/src/ngspice -n -b -r evidence/1002/.run/native.raw evidence/996/repro/mosrect.cir", "exit": 0},
+      {"command": "python3 evidence/1002/summarize.py && python3 evidence/1002/check.py", "exit": 0, "points": 1008, "commonSignals": 10, "nativeMaxAbs": 0},
+      {"command": "pnpm build && pnpm lint", "exit": 0},
+      {"command": "pnpm -C packages/core exec vitest run src/classic-mos-convergence.test.ts src/analysis/transient-order-control-742.test.ts src/analysis/transient-charge-lte.test.ts", "exit": 0, "passed": 9},
+      {"command": "spice-heavy pnpm test", "stage": "remediated evidence with unchanged production baseline", "exit": 0, "corePassed": 3730, "coreSkipped": 2, "rootBenchmarkPassed": 144},
+      {"stage": "CI on intermediate remediation head 95a3a7cef565a1aae5b140df8676078fe2f89a51", "run": "https://github.com/mfiumara/spice-ts/actions/runs/38518011191", "build": "failed in unrelated EKV historical metric schema comparison on synthetic merge; fixed on main by PR1027 / 5903f10b", "accuracy": "skipped due to build dependency; new head requires fresh checks"}
+    ]
+  }
+}
