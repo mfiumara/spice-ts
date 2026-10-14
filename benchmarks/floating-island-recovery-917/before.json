@@ -1,0 +1,724 @@
+{
+  "baseline": "fd22b16a9606e2ab1f6fc3af05bf00fa4164118f",
+  "node": "v22.23.1",
+  "ngspice": "******\n** ngspice-47 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2026, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n******\n",
+  "receipts": [
+    {
+      "name": "base_37.local.cir",
+      "sha256": "d9310705e01c9ead00f033a7418e3c9cc5e5badc4699081fa0841f89031373a5",
+      "includes": {
+        "spice_lib/MicroCap-LIBRARY-for-ngspice/DiodesInc.lib": "a4cb4e425cdc364291d7be51c9335a9242ae98753c5e6322360b650940641cda",
+        "spice_lib/MicroCap-LIBRARY-for-ngspice/DiodesInc_FET.lib": "956632bc5a1ed7ee02659e697171e34e8db51019468b28123788f7f5a8669cb0",
+        "spice_lib/MicroCap-LIBRARY-for-ngspice/DiodesInc_MOSFET.LIB": "497031f9a538989356600f77a91223135313feb62e7d1aab9824eacbf1f0845c",
+        "spice_lib/basic_models/LED/SnapLED150.mod": "8994db53b11beabf4ab7ba676366c708d9ca0fe09303e63195e3c710d75967f4",
+        "spice_lib/ic_lib/AD620/AD620.mod": "99c3a83c8e4a44fc1c2e5b878a061e03f959e223fa646bb849589e68f603f395",
+        "spice_lib/ic_lib/INA326/INA326.LIB": "2687e8ab0e2de09750fd53b7564108d90f30c1e8bf278b2f26b42bd50436d722",
+        "spice_lib/modelos_subckt/PN2222.mod": "fade93cf84dcd8ef9e539bc6a5f9ffcf40e6e1cf3383a32811aa8080a711af05"
+      },
+      "nodeCount": 289,
+      "branchCount": 102,
+      "targets": [
+        "D183.rs",
+        "Net-_D183-A_",
+        "Net-_D183-K_"
+      ],
+      "attached": [
+        {
+          "name": "C267",
+          "type": "Capacitor",
+          "nodes": [
+            "Net-_Q188-B_",
+            "Net-_D183-A_"
+          ]
+        },
+        {
+          "name": "C269",
+          "type": "Capacitor",
+          "nodes": [
+            "Net-_D183-K_",
+            "Net-_C269-Pad2_"
+          ]
+        },
+        {
+          "name": "D183.RS",
+          "type": "Resistor",
+          "nodes": [
+            "Net-_D183-K_",
+            "D183.rs"
+          ]
+        },
+        {
+          "name": "D183",
+          "type": "Diode",
+          "nodes": [
+            "D183.rs",
+            "Net-_D183-A_"
+          ]
+        }
+      ],
+      "spiceTs": {
+        "error": "SingularMatrixError: Singular matrix: zero pivot at matrix column 10 (nodes: Net-_D183-K_)",
+        "stack": "SingularMatrixError: Singular matrix: zero pivot at matrix column 10 (nodes: Net-_D183-K_)\n    at Function.atPivot (<repo>/packages/core/src/errors.ts:78:12)\n    at GilbertPeierlsSolver.factorize (<repo>/packages/core/src/solver/gilbert-peierls.ts:476:35)\n    at GilbertPeierlsSolver.GilbertPeierlsSolver.factorize (<repo>/benchmarks/ticket795-singular-917/probe.mts:42:31)\n    at newtonRaphson (<repo>/packages/core/src/analysis/newton-raphson.ts:139:12)\n    at solveOperatingPoint (<repo>/packages/core/src/analysis/dc.ts:65:7)\n    at solveDCOperatingPoint (<repo>/packages/core/src/analysis/dc.ts:112:5)\n    at solveCompiledAnalyses (<repo>/packages/core/src/simulate.ts:218:38)\n    at simulate (<repo>/packages/core/src/simulate.ts:166:18)\n    at async <anonymous> (<repo>/benchmarks/ticket795-singular-917/probe.mts:76:11)",
+        "factorAttempts": 173,
+        "first": {
+          "deviceGmin": 1e-12,
+          "sourceScale": 1,
+          "nonfinite": 0,
+          "rows": [
+            [
+              "D183.rs",
+              "D183.rs",
+              485.4369090442113
+            ],
+            [
+              "Net-_D183-A_",
+              "D183.rs",
+              -0.00001584032779287937
+            ],
+            [
+              "Net-_D183-K_",
+              "D183.rs",
+              -485.43689320388347
+            ],
+            [
+              "D183.rs",
+              "Net-_D183-A_",
+              -0.00001584032779287937
+            ],
+            [
+              "Net-_D183-A_",
+              "Net-_D183-A_",
+              0.00001584032779287937
+            ],
+            [
+              "D183.rs",
+              "Net-_D183-K_",
+              -485.43689320388347
+            ],
+            [
+              "Net-_D183-K_",
+              "Net-_D183-K_",
+              485.43689320388347
+            ]
+          ],
+          "error": "SingularMatrixError: Singular matrix: zero pivot at matrix column 10 (nodes: Net-_D183-K_)"
+        },
+        "last": {
+          "deviceGmin": 1e-12,
+          "sourceScale": 1,
+          "nonfinite": 0,
+          "rows": [
+            [
+              "D183.rs",
+              "D183.rs",
+              485.4369090442113
+            ],
+            [
+              "Net-_D183-A_",
+              "D183.rs",
+              -0.00001584032779287937
+            ],
+            [
+              "Net-_D183-K_",
+              "D183.rs",
+              -485.43689320388347
+            ],
+            [
+              "D183.rs",
+              "Net-_D183-A_",
+              -0.00001584032779287937
+            ],
+            [
+              "Net-_D183-A_",
+              "Net-_D183-A_",
+              0.00001584032779287937
+            ],
+            [
+              "D183.rs",
+              "Net-_D183-K_",
+              -485.43689320388347
+            ],
+            [
+              "Net-_D183-K_",
+              "Net-_D183-K_",
+              485.43689320388347
+            ]
+          ],
+          "error": "SingularMatrixError: Singular matrix: zero pivot at matrix column 10 (nodes: Net-_D183-K_)"
+        },
+        "failedFactors": 33,
+        "maxError": null,
+        "rmsError": null
+      },
+      "ngspice": [
+        {
+          "mode": "default",
+          "configuration": "set filetype=ascii\n",
+          "command": [
+            "ngspice",
+            "-b",
+            "-r",
+            "<raw>",
+            "base_37.local.cir"
+          ],
+          "exitCode": 0,
+          "error": null,
+          "summary": [
+            "Note: No compatibility mode selected!",
+            "Using SPARSE 1.3 as Direct Linear Solver",
+            "No. of Data Rows : 1",
+            "Note: Starting dynamic gmin stepping",
+            "Warning: Dynamic gmin stepping failed",
+            "Note: Starting true gmin stepping",
+            "Warning: True gmin stepping failed",
+            "Note: Starting source stepping",
+            "Note: Source stepping completed"
+          ],
+          "plots": [
+            {
+              "name": "Operating Point",
+              "points": 1,
+              "nonfinite": 0,
+              "targetVoltages": {
+                "D183.rs": null,
+                "Net-_D183-A_": 2.08462319234025e-19,
+                "Net-_D183-K_": 1.256315622488741e-28
+              }
+            }
+          ]
+        },
+        {
+          "mode": "ltps",
+          "configuration": "set filetype=ascii\nset ngbehavior=ltps\n",
+          "command": [
+            "ngspice",
+            "-b",
+            "-r",
+            "<raw>",
+            "base_37.local.cir"
+          ],
+          "exitCode": 0,
+          "error": null,
+          "summary": [
+            "Using SPARSE 1.3 as Direct Linear Solver",
+            "No. of Data Rows : 1",
+            "Note: Starting dynamic gmin stepping",
+            "Warning: Dynamic gmin stepping failed",
+            "Note: Starting true gmin stepping",
+            "Warning: True gmin stepping failed",
+            "Note: Starting source stepping",
+            "Note: Source stepping completed"
+          ],
+          "plots": [
+            {
+              "name": "Operating Point",
+              "points": 1,
+              "nonfinite": 0,
+              "targetVoltages": {
+                "D183.rs": null,
+                "Net-_D183-A_": 2.08462319234025e-19,
+                "Net-_D183-K_": 1.256315622488741e-28
+              }
+            }
+          ]
+        },
+        {
+          "mode": "no-optran",
+          "configuration": "set filetype=ascii\noptran 1 1 1 0 0 0\n",
+          "command": [
+            "ngspice",
+            "-b",
+            "-r",
+            "<raw>",
+            "base_37.local.cir"
+          ],
+          "exitCode": 0,
+          "error": null,
+          "summary": [
+            "Note: Optran is deselected.",
+            "Note: No compatibility mode selected!",
+            "Using SPARSE 1.3 as Direct Linear Solver",
+            "No. of Data Rows : 1",
+            "Note: Starting dynamic gmin stepping",
+            "Warning: Dynamic gmin stepping failed",
+            "Note: Starting true gmin stepping",
+            "Warning: True gmin stepping failed",
+            "Note: Starting source stepping",
+            "Note: Source stepping completed"
+          ],
+          "plots": [
+            {
+              "name": "Operating Point",
+              "points": 1,
+              "nonfinite": 0,
+              "targetVoltages": {
+                "D183.rs": null,
+                "Net-_D183-A_": 2.08462319234025e-19,
+                "Net-_D183-K_": 1.256315622488741e-28
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "variant_37.local.cir",
+      "sha256": "fb1a6f8645a33268ab5a614a10b42d358b99f500d6d38b9add4c3cfd11d71562",
+      "includes": {
+        "spice_lib/MicroCap-LIBRARY-for-ngspice/DiodesInc.lib": "a4cb4e425cdc364291d7be51c9335a9242ae98753c5e6322360b650940641cda",
+        "spice_lib/MicroCap-LIBRARY-for-ngspice/DiodesInc_FET.lib": "956632bc5a1ed7ee02659e697171e34e8db51019468b28123788f7f5a8669cb0",
+        "spice_lib/MicroCap-LIBRARY-for-ngspice/DiodesInc_MOSFET.LIB": "497031f9a538989356600f77a91223135313feb62e7d1aab9824eacbf1f0845c",
+        "spice_lib/basic_models/LED/SnapLED150.mod": "8994db53b11beabf4ab7ba676366c708d9ca0fe09303e63195e3c710d75967f4",
+        "spice_lib/ic_lib/AD620/AD620.mod": "99c3a83c8e4a44fc1c2e5b878a061e03f959e223fa646bb849589e68f603f395",
+        "spice_lib/ic_lib/INA326/INA326.LIB": "2687e8ab0e2de09750fd53b7564108d90f30c1e8bf278b2f26b42bd50436d722",
+        "spice_lib/modelos_subckt/PN2222.mod": "fade93cf84dcd8ef9e539bc6a5f9ffcf40e6e1cf3383a32811aa8080a711af05"
+      },
+      "nodeCount": 292,
+      "branchCount": 105,
+      "targets": [
+        "D183.rs",
+        "Net-_D183-A_",
+        "Net-_D183-K_"
+      ],
+      "attached": [
+        {
+          "name": "C269",
+          "type": "Capacitor",
+          "nodes": [
+            "Net-_D183-K_",
+            "Net-_C269-Pad2_"
+          ]
+        },
+        {
+          "name": "C267",
+          "type": "Capacitor",
+          "nodes": [
+            "Net-_Q188-B_",
+            "Net-_D183-A_"
+          ]
+        },
+        {
+          "name": "D183.RS",
+          "type": "Resistor",
+          "nodes": [
+            "Net-_D183-K_",
+            "D183.rs"
+          ]
+        },
+        {
+          "name": "D183",
+          "type": "Diode",
+          "nodes": [
+            "D183.rs",
+            "Net-_D183-A_"
+          ]
+        }
+      ],
+      "spiceTs": {
+        "error": "SingularMatrixError: Singular matrix: zero pivot at matrix column 10 (nodes: Net-_D183-K_)",
+        "stack": "SingularMatrixError: Singular matrix: zero pivot at matrix column 10 (nodes: Net-_D183-K_)\n    at Function.atPivot (<repo>/packages/core/src/errors.ts:78:12)\n    at GilbertPeierlsSolver.factorize (<repo>/packages/core/src/solver/gilbert-peierls.ts:476:35)\n    at GilbertPeierlsSolver.GilbertPeierlsSolver.factorize (<repo>/benchmarks/ticket795-singular-917/probe.mts:42:31)\n    at newtonRaphson (<repo>/packages/core/src/analysis/newton-raphson.ts:139:12)\n    at solveOperatingPoint (<repo>/packages/core/src/analysis/dc.ts:65:7)\n    at solveDCOperatingPoint (<repo>/packages/core/src/analysis/dc.ts:112:5)\n    at solveCompiledAnalyses (<repo>/packages/core/src/simulate.ts:218:38)\n    at simulate (<repo>/packages/core/src/simulate.ts:166:18)\n    at async <anonymous> (<repo>/benchmarks/ticket795-singular-917/probe.mts:76:11)",
+        "factorAttempts": 173,
+        "first": {
+          "deviceGmin": 1e-12,
+          "sourceScale": 1,
+          "nonfinite": 0,
+          "rows": [
+            [
+              "D183.rs",
+              "D183.rs",
+              485.4369090442113
+            ],
+            [
+              "Net-_D183-A_",
+              "D183.rs",
+              -0.00001584032779287937
+            ],
+            [
+              "Net-_D183-K_",
+              "D183.rs",
+              -485.43689320388347
+            ],
+            [
+              "D183.rs",
+              "Net-_D183-A_",
+              -0.00001584032779287937
+            ],
+            [
+              "Net-_D183-A_",
+              "Net-_D183-A_",
+              0.00001584032779287937
+            ],
+            [
+              "D183.rs",
+              "Net-_D183-K_",
+              -485.43689320388347
+            ],
+            [
+              "Net-_D183-K_",
+              "Net-_D183-K_",
+              485.43689320388347
+            ]
+          ],
+          "error": "SingularMatrixError: Singular matrix: zero pivot at matrix column 10 (nodes: Net-_D183-K_)"
+        },
+        "last": {
+          "deviceGmin": 1e-12,
+          "sourceScale": 1,
+          "nonfinite": 0,
+          "rows": [
+            [
+              "D183.rs",
+              "D183.rs",
+              485.4369090442113
+            ],
+            [
+              "Net-_D183-A_",
+              "D183.rs",
+              -0.00001584032779287937
+            ],
+            [
+              "Net-_D183-K_",
+              "D183.rs",
+              -485.43689320388347
+            ],
+            [
+              "D183.rs",
+              "Net-_D183-A_",
+              -0.00001584032779287937
+            ],
+            [
+              "Net-_D183-A_",
+              "Net-_D183-A_",
+              0.00001584032779287937
+            ],
+            [
+              "D183.rs",
+              "Net-_D183-K_",
+              -485.43689320388347
+            ],
+            [
+              "Net-_D183-K_",
+              "Net-_D183-K_",
+              485.43689320388347
+            ]
+          ],
+          "error": "SingularMatrixError: Singular matrix: zero pivot at matrix column 10 (nodes: Net-_D183-K_)"
+        },
+        "failedFactors": 33,
+        "maxError": null,
+        "rmsError": null
+      },
+      "ngspice": [
+        {
+          "mode": "default",
+          "configuration": "set filetype=ascii\n",
+          "command": [
+            "ngspice",
+            "-b",
+            "-r",
+            "<raw>",
+            "variant_37.local.cir"
+          ],
+          "exitCode": 1,
+          "error": null,
+          "summary": [
+            "Note: No compatibility mode selected!",
+            "Using SPARSE 1.3 as Direct Linear Solver",
+            "DC solution failed -",
+            "Note: Starting dynamic gmin stepping",
+            "Warning: Dynamic gmin stepping failed",
+            "Note: Starting true gmin stepping",
+            "Warning: True gmin stepping failed",
+            "Note: Starting source stepping",
+            "Warning: source stepping failed",
+            "Note: Transient op started",
+            "Error: Transient op failed, timestep too small",
+            "Error: The operating point could not be simulated successfully.",
+            "doAnalyses: OP:  Timestep too small; trouble with xq190:dmos-instance m.xq190.m1",
+            "run simulation(s) aborted"
+          ],
+          "plots": []
+        },
+        {
+          "mode": "ltps",
+          "configuration": "set filetype=ascii\nset ngbehavior=ltps\n",
+          "command": [
+            "ngspice",
+            "-b",
+            "-r",
+            "<raw>",
+            "variant_37.local.cir"
+          ],
+          "exitCode": 1,
+          "error": null,
+          "summary": [
+            "Using SPARSE 1.3 as Direct Linear Solver",
+            "DC solution failed -",
+            "Note: Starting dynamic gmin stepping",
+            "Warning: Dynamic gmin stepping failed",
+            "Note: Starting true gmin stepping",
+            "Warning: True gmin stepping failed",
+            "Note: Starting source stepping",
+            "Warning: source stepping failed",
+            "Note: Transient op started",
+            "Error: Transient op failed, timestep too small",
+            "Error: The operating point could not be simulated successfully.",
+            "doAnalyses: OP:  Timestep too small; trouble with xq190:dmos-instance m.xq190.m1",
+            "run simulation(s) aborted"
+          ],
+          "plots": []
+        },
+        {
+          "mode": "no-optran",
+          "configuration": "set filetype=ascii\noptran 1 1 1 0 0 0\n",
+          "command": [
+            "ngspice",
+            "-b",
+            "-r",
+            "<raw>",
+            "variant_37.local.cir"
+          ],
+          "exitCode": 1,
+          "error": null,
+          "summary": [
+            "Note: Optran is deselected.",
+            "Note: No compatibility mode selected!",
+            "Using SPARSE 1.3 as Direct Linear Solver",
+            "DC solution failed -",
+            "Note: Starting dynamic gmin stepping",
+            "Warning: Dynamic gmin stepping failed",
+            "Note: Starting true gmin stepping",
+            "Warning: True gmin stepping failed",
+            "Note: Starting source stepping",
+            "Warning: source stepping failed",
+            "Error: The operating point could not be simulated successfully.",
+            "run simulation(s) aborted"
+          ],
+          "plots": []
+        }
+      ]
+    },
+    {
+      "name": "floating-diode.cir",
+      "sha256": "3d5ed0d1b1df24f789b506ef37bad553981167e92ae3902ed31a48d86fa46e32",
+      "includes": {},
+      "nodeCount": 3,
+      "branchCount": 1,
+      "targets": [
+        "a",
+        "k"
+      ],
+      "attached": [
+        {
+          "name": "C1",
+          "type": "Capacitor",
+          "nodes": [
+            "a",
+            "0"
+          ]
+        },
+        {
+          "name": "C2",
+          "type": "Capacitor",
+          "nodes": [
+            "k",
+            "0"
+          ]
+        },
+        {
+          "name": "D1",
+          "type": "Diode",
+          "nodes": [
+            "k",
+            "a"
+          ]
+        }
+      ],
+      "spiceTs": {
+        "error": "SingularMatrixError: Singular matrix: zero pivot at matrix column 1 (nodes: k)",
+        "stack": "SingularMatrixError: Singular matrix: zero pivot at matrix column 1 (nodes: k)\n    at Function.atPivot (<repo>/packages/core/src/errors.ts:78:12)\n    at GilbertPeierlsSolver.factorize (<repo>/packages/core/src/solver/gilbert-peierls.ts:476:35)\n    at GilbertPeierlsSolver.GilbertPeierlsSolver.factorize (<repo>/benchmarks/ticket795-singular-917/probe.mts:42:31)\n    at newtonRaphson (<repo>/packages/core/src/analysis/newton-raphson.ts:139:12)\n    at solveOperatingPoint (<repo>/packages/core/src/analysis/dc.ts:65:7)\n    at solveDCOperatingPoint (<repo>/packages/core/src/analysis/dc.ts:112:5)\n    at solveCompiledAnalyses (<repo>/packages/core/src/simulate.ts:218:38)\n    at simulate (<repo>/packages/core/src/simulate.ts:166:18)\n    at async <anonymous> (<repo>/benchmarks/ticket795-singular-917/probe.mts:76:11)",
+        "factorAttempts": 40,
+        "first": {
+          "deviceGmin": 1e-12,
+          "sourceScale": 1,
+          "nonfinite": 0,
+          "rows": [
+            [
+              "a",
+              "a",
+              1.3866240899683828e-12
+            ],
+            [
+              "k",
+              "a",
+              -1.3866240899683828e-12
+            ],
+            [
+              "a",
+              "k",
+              -1.3866240899683828e-12
+            ],
+            [
+              "k",
+              "k",
+              1.3866240899683828e-12
+            ]
+          ],
+          "error": "SingularMatrixError: Singular matrix: zero pivot at matrix column 1 (nodes: k)"
+        },
+        "last": {
+          "deviceGmin": 1e-12,
+          "sourceScale": 1,
+          "nonfinite": 0,
+          "rows": [
+            [
+              "a",
+              "a",
+              1.3866240899683828e-12
+            ],
+            [
+              "k",
+              "a",
+              -1.3866240899683828e-12
+            ],
+            [
+              "a",
+              "k",
+              -1.3866240899683828e-12
+            ],
+            [
+              "k",
+              "k",
+              1.3866240899683828e-12
+            ]
+          ],
+          "error": "SingularMatrixError: Singular matrix: zero pivot at matrix column 1 (nodes: k)"
+        },
+        "failedFactors": 25,
+        "maxError": null,
+        "rmsError": null
+      },
+      "ngspice": [
+        {
+          "mode": "default",
+          "configuration": "set filetype=ascii\n",
+          "command": [
+            "ngspice",
+            "-b",
+            "-r",
+            "<raw>",
+            "floating-diode.cir"
+          ],
+          "exitCode": 0,
+          "error": null,
+          "summary": [
+            "Note: No compatibility mode selected!",
+            "Using SPARSE 1.3 as Direct Linear Solver",
+            "No. of Data Rows : 1",
+            "Warning: singular matrix:  check node k",
+            "Note: Starting dynamic gmin stepping",
+            "Warning: singular matrix:  check node k",
+            "Warning: Dynamic gmin stepping failed",
+            "Note: Starting true gmin stepping",
+            "Warning: singular matrix:  check node k",
+            "Warning: singular matrix:  check node k",
+            "Warning: singular matrix:  check node k",
+            "Warning: singular matrix:  check node k",
+            "Warning: True gmin stepping failed",
+            "Note: Starting source stepping",
+            "Warning: source stepping failed",
+            "Note: Transient op started",
+            "Note: Transient op finished successfully"
+          ],
+          "plots": [
+            {
+              "name": "Operating Point",
+              "points": 1,
+              "nonfinite": 0,
+              "targetVoltages": {
+                "a": -1.456108652099315e-75,
+                "k": 1.456108652099315e-75
+              }
+            }
+          ]
+        },
+        {
+          "mode": "ltps",
+          "configuration": "set filetype=ascii\nset ngbehavior=ltps\n",
+          "command": [
+            "ngspice",
+            "-b",
+            "-r",
+            "<raw>",
+            "floating-diode.cir"
+          ],
+          "exitCode": 0,
+          "error": null,
+          "summary": [
+            "Using SPARSE 1.3 as Direct Linear Solver",
+            "No. of Data Rows : 1",
+            "Warning: singular matrix:  check node k",
+            "Note: Starting dynamic gmin stepping",
+            "Warning: singular matrix:  check node k",
+            "Warning: Dynamic gmin stepping failed",
+            "Note: Starting true gmin stepping",
+            "Warning: singular matrix:  check node k",
+            "Warning: singular matrix:  check node k",
+            "Warning: singular matrix:  check node k",
+            "Warning: singular matrix:  check node k",
+            "Warning: True gmin stepping failed",
+            "Note: Starting source stepping",
+            "Warning: source stepping failed",
+            "Note: Transient op started",
+            "Note: Transient op finished successfully"
+          ],
+          "plots": [
+            {
+              "name": "Operating Point",
+              "points": 1,
+              "nonfinite": 0,
+              "targetVoltages": {
+                "a": -1.456108652099315e-75,
+                "k": 1.456108652099315e-75
+              }
+            }
+          ]
+        },
+        {
+          "mode": "no-optran",
+          "configuration": "set filetype=ascii\noptran 1 1 1 0 0 0\n",
+          "command": [
+            "ngspice",
+            "-b",
+            "-r",
+            "<raw>",
+            "floating-diode.cir"
+          ],
+          "exitCode": 1,
+          "error": null,
+          "summary": [
+            "Note: Optran is deselected.",
+            "Note: No compatibility mode selected!",
+            "Using SPARSE 1.3 as Direct Linear Solver",
+            "DC solution failed -",
+            "Warning: singular matrix:  check node k",
+            "Note: Starting dynamic gmin stepping",
+            "Warning: singular matrix:  check node k",
+            "Warning: Dynamic gmin stepping failed",
+            "Note: Starting true gmin stepping",
+            "Warning: singular matrix:  check node k",
+            "Warning: singular matrix:  check node k",
+            "Warning: singular matrix:  check node k",
+            "Warning: singular matrix:  check node k",
+            "Warning: True gmin stepping failed",
+            "Note: Starting source stepping",
+            "Warning: source stepping failed",
+            "Error: The operating point could not be simulated successfully.",
+            "run simulation(s) aborted"
+          ],
+          "plots": []
+        }
+      ]
+    }
+  ]
+}
