@@ -1,0 +1,2 @@
+# Preserve original upstream circuit bytes, including trailing whitespace.
+*.cir -whitespace
