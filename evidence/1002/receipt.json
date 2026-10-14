@@ -33,7 +33,9 @@
       {"command": "SPICE_ASCIIRAWFILE=1 evidence/1002/.run/ngspice-47/src/ngspice -n -b -r evidence/1002/.run/native.raw evidence/996/repro/mosrect.cir", "exit": 0},
       {"command": "python3 evidence/1002/summarize.py && python3 evidence/1002/check.py", "exit": 0, "points": 1008, "commonSignals": 10, "nativeMaxAbs": 0},
       {"command": "pnpm build && pnpm lint", "exit": 0},
-      {"command": "pnpm -C packages/core exec vitest run src/classic-mos-convergence.test.ts src/analysis/transient-order-control-742.test.ts src/analysis/transient-charge-lte.test.ts", "exit": 0, "passed": 9}
+      {"command": "pnpm -C packages/core exec vitest run src/classic-mos-convergence.test.ts src/analysis/transient-order-control-742.test.ts src/analysis/transient-charge-lte.test.ts", "exit": 0, "passed": 9},
+      {"command": "spice-heavy pnpm test", "stage": "remediated evidence with unchanged production baseline", "exit": 0, "corePassed": 3730, "coreSkipped": 2, "rootBenchmarkPassed": 144},
+      {"stage": "CI on intermediate remediation head 95a3a7cef565a1aae5b140df8676078fe2f89a51", "run": "https://github.com/mfiumara/spice-ts/actions/runs/38518011191", "build": "failed in unrelated EKV historical metric schema comparison on synthetic merge; fixed on main by PR1027 / 5903f10b", "accuracy": "skipped due to build dependency; new head requires fresh checks"}
     ]
   }
 }
