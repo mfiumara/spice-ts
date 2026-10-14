@@ -1,7 +1,7 @@
 {
   "schemaVersion": "maxord-983/v1",
   "command": "spice-heavy pnpm exec tsx benchmarks/reference/maxord-983/run.ts",
-  "coreTree": "12a091ed20025e694005c43bb62d56e255e780b1",
+  "coreTree": "4871c8e2bd4b7778019e5a0ea4d9791990c29547",
   "node": "v22.23.1",
   "ngspice": "47",
   "machine": {
@@ -69,12 +69,12 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:869"
+          "tran:867"
         ]
       },
       "comparedAnalyses": 1,
       "comparedSignals": 4,
-      "worstNormalizedError": 0.0585,
+      "worstNormalizedError": 0.063,
       "worstSignal": "tran i(vnin)",
       "outcome": "mismatch",
       "gapBucket": null,
@@ -89,65 +89,65 @@
           ],
           "metrics": {
             "grid": {
-              "spiceTsPoints": 869,
+              "spiceTsPoints": 867,
               "ngspicePoints": 868,
-              "alignedPoints": 869,
+              "alignedPoints": 867,
               "excludedOutOfRange": 0
             },
             "signals": {
               "i(vnin)": {
                 "status": "compared",
-                "sampleCount": 869,
+                "sampleCount": 867,
                 "absoluteError": {
-                  "max": 0.000018148676523257204,
-                  "rms": 0.000001759707422927546
+                  "max": 0.000019539446179088065,
+                  "rms": 0.0000017369361337686317
                 },
                 "relativeError": {
-                  "max": 0.9625120915221232,
-                  "rms": 0.1669454675836345,
-                  "sampleCount": 612,
-                  "excludedZeroReferences": 257
+                  "max": 4.599885920491787,
+                  "rms": 1.578795711984099,
+                  "sampleCount": 611,
+                  "excludedZeroReferences": 256
                 }
               },
               "v(2)": {
                 "status": "compared",
-                "sampleCount": 869,
+                "sampleCount": 867,
                 "absoluteError": {
-                  "max": 1.6542323066914832e-13,
-                  "rms": 2.8890454713415104e-14
+                  "max": 1.6581180872776713e-13,
+                  "rms": 3.113038290715107e-14
                 },
                 "relativeError": {
                   "max": 1,
-                  "rms": 0.06013850502060455,
-                  "sampleCount": 553,
+                  "rms": 0.06024755045017329,
+                  "sampleCount": 551,
                   "excludedZeroReferences": 316
                 }
               },
               "v(5)": {
                 "status": "compared",
-                "sampleCount": 869,
+                "sampleCount": 867,
                 "absoluteError": {
-                  "max": 0.001453041810509148,
-                  "rms": 0.0006777194730935159
+                  "max": 0.0009900706240110208,
+                  "rms": 0.0004546618020927653
                 },
                 "relativeError": {
-                  "max": 48.88289349824105,
-                  "rms": 1.7094167420424917,
-                  "sampleCount": 836,
+                  "max": 28.314176331245527,
+                  "rms": 1.0111675879283168,
+                  "sampleCount": 834,
                   "excludedZeroReferences": 33
                 }
               },
               "v(6)": {
                 "status": "compared",
-                "sampleCount": 869,
+                "sampleCount": 867,
                 "absoluteError": {
-                  "max": 0.0014530418105336285,
-                  "rms": 0.0006777194731232649
+                  "max": 0.000990070623658735,
+                  "rms": 0.00045466180161961805
                 },
                 "relativeError": {
-                  "max": 48.88289361576186,
-                  "rms": 1.7094167460752145,
-                  "sampleCount": 836,
+                  "max": 28.31417612538033,
+                  "rms": 1.0111675809823215,
+                  "sampleCount": 834,
                   "excludedZeroReferences": 33
                 }
               }
@@ -155,65 +155,65 @@
           },
           "linearMetrics": {
             "grid": {
-              "spiceTsPoints": 869,
+              "spiceTsPoints": 867,
               "ngspicePoints": 868,
-              "alignedPoints": 869,
+              "alignedPoints": 867,
               "excludedOutOfRange": 0
             },
             "signals": {
               "i(vnin)": {
                 "status": "compared",
-                "sampleCount": 869,
+                "sampleCount": 867,
                 "absoluteError": {
-                  "max": 0.00005240878542752453,
-                  "rms": 0.0000031435715615903785
+                  "max": 0.00006914257947383889,
+                  "rms": 0.000004440031060924037
                 },
                 "relativeError": {
-                  "max": 0.9625120915221232,
-                  "rms": 0.1745009815099693,
-                  "sampleCount": 612,
-                  "excludedZeroReferences": 257
+                  "max": 4.599885920491787,
+                  "rms": 1.5807449901379087,
+                  "sampleCount": 611,
+                  "excludedZeroReferences": 256
                 }
               },
               "v(2)": {
                 "status": "compared",
-                "sampleCount": 869,
+                "sampleCount": 867,
                 "absoluteError": {
-                  "max": 1.6542323066914832e-13,
-                  "rms": 2.889637593072994e-14
+                  "max": 1.6581180872776713e-13,
+                  "rms": 3.113436674503415e-14
                 },
                 "relativeError": {
                   "max": 1,
-                  "rms": 0.06013850502060455,
-                  "sampleCount": 553,
+                  "rms": 0.06024755045017329,
+                  "sampleCount": 551,
                   "excludedZeroReferences": 316
                 }
               },
               "v(5)": {
                 "status": "compared",
-                "sampleCount": 869,
+                "sampleCount": 867,
                 "absoluteError": {
-                  "max": 0.001453041810509148,
-                  "rms": 0.0006777735803914802
+                  "max": 0.0009900706240110208,
+                  "rms": 0.00045511765181558816
                 },
                 "relativeError": {
-                  "max": 48.88289349824105,
-                  "rms": 1.7094167421407236,
-                  "sampleCount": 836,
+                  "max": 28.314176331245527,
+                  "rms": 1.0111675888722838,
+                  "sampleCount": 834,
                   "excludedZeroReferences": 33
                 }
               },
               "v(6)": {
                 "status": "compared",
-                "sampleCount": 869,
+                "sampleCount": 867,
                 "absoluteError": {
-                  "max": 0.0014530418105336285,
-                  "rms": 0.0006777735804212299
+                  "max": 0.000990070623658735,
+                  "rms": 0.0004551176513424122
                 },
                 "relativeError": {
-                  "max": 48.88289361576186,
-                  "rms": 1.7094167461734462,
-                  "sampleCount": 836,
+                  "max": 28.31417612538033,
+                  "rms": 1.0111675819262886,
+                  "sampleCount": 834,
                   "excludedZeroReferences": 33
                 }
               }
@@ -222,8 +222,8 @@
         }
       ],
       "runtime": {
-        "ngspiceWallMs": 22.521208,
-        "spiceTsWallMs": 478.133
+        "ngspiceWallMs": 33.91429199999999,
+        "spiceTsWallMs": 576.013292
       }
     },
     {
@@ -368,8 +368,8 @@
         }
       ],
       "runtime": {
-        "ngspiceWallMs": 16.31812500000001,
-        "spiceTsWallMs": 473.2662500000001
+        "ngspiceWallMs": 17.768125000000055,
+        "spiceTsWallMs": 520.905667
       }
     },
     {
@@ -514,8 +514,8 @@
         }
       ],
       "runtime": {
-        "ngspiceWallMs": 13.829250000000002,
-        "spiceTsWallMs": 477.3615829999999
+        "ngspiceWallMs": 16.05004199999985,
+        "spiceTsWallMs": 522.9594579999998
       }
     },
     {
@@ -660,8 +660,8 @@
         }
       ],
       "runtime": {
-        "ngspiceWallMs": 15.452458999999862,
-        "spiceTsWallMs": 445.4923329999999
+        "ngspiceWallMs": 16.47875000000022,
+        "spiceTsWallMs": 496.6274159999998
       }
     },
     {
@@ -806,8 +806,8 @@
         }
       ],
       "runtime": {
-        "ngspiceWallMs": 15.593834000000243,
-        "spiceTsWallMs": 433.7899160000002
+        "ngspiceWallMs": 15.00054100000034,
+        "spiceTsWallMs": 477.720417
       }
     }
   ]

@@ -1,0 +1,31 @@
+{
+  "inputSha256": "d8b0e627f7742490ac6e841ffb176c9b02ffe6de1246bb57d1db793f58027469",
+  "lastTime": 0.000009999999999999999,
+  "voltage": 9.46397250405648,
+  "defaultReference": 9.46397521,
+  "originalTestBound": 0.000005,
+  "maxAbsAtStop": 0.0000027059435190324166,
+  "points": 2429,
+  "convergence": {
+    "dc": {
+      "newtonIterations": 143,
+      "acceptedSolves": 12,
+      "rejectedSolves": 1,
+      "sourceStepAttempts": 0,
+      "sourceStepFailures": 0,
+      "gminStepAttempts": 12,
+      "gminStepFailures": 0,
+      "failure": null
+    },
+    "transient": {
+      "acceptedSteps": 2428,
+      "rejectedSteps": 766,
+      "newtonIterations": 82710,
+      "nrRetries": 756,
+      "lteRetries": 10,
+      "minimumAcceptedTimestep": 7.569444300496845e-12,
+      "failure": null
+    }
+  },
+  "command": "pnpm exec tsx evidence/1002/mosamp.ts pump-1019"
+}

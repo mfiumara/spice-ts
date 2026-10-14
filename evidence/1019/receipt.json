@@ -1,0 +1,908 @@
+{
+  "baseSha": "d8ab9d3374d8ada21f7d9dd221c3fc3595aa5783",
+  "beforeSha": "a521e9e221f4445639d899265589e5893a07e165",
+  "coreTree": "4871c8e2bd4b7778019e5a0ea4d9791990c29547",
+  "productionFilesChanged": [],
+  "outcome": "unresolved loss, evidence-only investigation; #1019 remains open",
+  "pump": {
+    "before": {
+      "id": "k-13",
+      "sourcePath": "xyce/Netlists/CircuitSim90/MOS2/pump.cir",
+      "sha256": "142a0df7fc79780e9eb85491b0307224a5e0fa745e15dffb3c27bb6f38bb668f",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:868"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:869"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 4,
+      "worstNormalizedError": 0.0585,
+      "worstSignal": "tran i(vnin)",
+      "outcome": "mismatch",
+      "gapBucket": null,
+      "comparisons": [
+        {
+          "analysis": "tran",
+          "signals": [
+            "i(vnin)",
+            "v(2)",
+            "v(5)",
+            "v(6)"
+          ],
+          "metrics": {
+            "grid": {
+              "spiceTsPoints": 869,
+              "ngspicePoints": 868,
+              "alignedPoints": 869,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "i(vnin)": {
+                "status": "compared",
+                "sampleCount": 869,
+                "absoluteError": {
+                  "max": 1.8148676523257204e-05,
+                  "rms": 1.759707422927546e-06
+                },
+                "relativeError": {
+                  "max": 0.9625120915221232,
+                  "rms": 0.1669454675836345,
+                  "sampleCount": 612,
+                  "excludedZeroReferences": 257
+                }
+              },
+              "v(2)": {
+                "status": "compared",
+                "sampleCount": 869,
+                "absoluteError": {
+                  "max": 1.6542323066914832e-13,
+                  "rms": 2.8890454713415104e-14
+                },
+                "relativeError": {
+                  "max": 1,
+                  "rms": 0.06013850502060455,
+                  "sampleCount": 553,
+                  "excludedZeroReferences": 316
+                }
+              },
+              "v(5)": {
+                "status": "compared",
+                "sampleCount": 869,
+                "absoluteError": {
+                  "max": 0.001453041810509148,
+                  "rms": 0.0006777194730935159
+                },
+                "relativeError": {
+                  "max": 48.88289349824105,
+                  "rms": 1.7094167420424917,
+                  "sampleCount": 836,
+                  "excludedZeroReferences": 33
+                }
+              },
+              "v(6)": {
+                "status": "compared",
+                "sampleCount": 869,
+                "absoluteError": {
+                  "max": 0.0014530418105336285,
+                  "rms": 0.0006777194731232649
+                },
+                "relativeError": {
+                  "max": 48.88289361576186,
+                  "rms": 1.7094167460752145,
+                  "sampleCount": 836,
+                  "excludedZeroReferences": 33
+                }
+              }
+            }
+          },
+          "linearMetrics": {
+            "grid": {
+              "spiceTsPoints": 869,
+              "ngspicePoints": 868,
+              "alignedPoints": 869,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "i(vnin)": {
+                "status": "compared",
+                "sampleCount": 869,
+                "absoluteError": {
+                  "max": 5.240878542752453e-05,
+                  "rms": 3.1435715615903785e-06
+                },
+                "relativeError": {
+                  "max": 0.9625120915221232,
+                  "rms": 0.1745009815099693,
+                  "sampleCount": 612,
+                  "excludedZeroReferences": 257
+                }
+              },
+              "v(2)": {
+                "status": "compared",
+                "sampleCount": 869,
+                "absoluteError": {
+                  "max": 1.6542323066914832e-13,
+                  "rms": 2.889637593072994e-14
+                },
+                "relativeError": {
+                  "max": 1,
+                  "rms": 0.06013850502060455,
+                  "sampleCount": 553,
+                  "excludedZeroReferences": 316
+                }
+              },
+              "v(5)": {
+                "status": "compared",
+                "sampleCount": 869,
+                "absoluteError": {
+                  "max": 0.001453041810509148,
+                  "rms": 0.0006777735803914802
+                },
+                "relativeError": {
+                  "max": 48.88289349824105,
+                  "rms": 1.7094167421407236,
+                  "sampleCount": 836,
+                  "excludedZeroReferences": 33
+                }
+              },
+              "v(6)": {
+                "status": "compared",
+                "sampleCount": 869,
+                "absoluteError": {
+                  "max": 0.0014530418105336285,
+                  "rms": 0.0006777735804212299
+                },
+                "relativeError": {
+                  "max": 48.88289361576186,
+                  "rms": 1.7094167461734462,
+                  "sampleCount": 836,
+                  "excludedZeroReferences": 33
+                }
+              }
+            }
+          }
+        }
+      ],
+      "runtime": {
+        "ngspiceWallMs": 22.521208,
+        "spiceTsWallMs": 478.133
+      }
+    },
+    "after": {
+      "id": "k-13",
+      "sourcePath": "xyce/Netlists/CircuitSim90/MOS2/pump.cir",
+      "sha256": "142a0df7fc79780e9eb85491b0307224a5e0fa745e15dffb3c27bb6f38bb668f",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:868"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:867"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 4,
+      "worstNormalizedError": 0.063,
+      "worstSignal": "tran i(vnin)",
+      "outcome": "mismatch",
+      "gapBucket": null,
+      "comparisons": [
+        {
+          "analysis": "tran",
+          "signals": [
+            "i(vnin)",
+            "v(2)",
+            "v(5)",
+            "v(6)"
+          ],
+          "metrics": {
+            "grid": {
+              "spiceTsPoints": 867,
+              "ngspicePoints": 868,
+              "alignedPoints": 867,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "i(vnin)": {
+                "status": "compared",
+                "sampleCount": 867,
+                "absoluteError": {
+                  "max": 1.9539446179088065e-05,
+                  "rms": 1.7369361337686317e-06
+                },
+                "relativeError": {
+                  "max": 4.599885920491787,
+                  "rms": 1.578795711984099,
+                  "sampleCount": 611,
+                  "excludedZeroReferences": 256
+                }
+              },
+              "v(2)": {
+                "status": "compared",
+                "sampleCount": 867,
+                "absoluteError": {
+                  "max": 1.6581180872776713e-13,
+                  "rms": 3.113038290715107e-14
+                },
+                "relativeError": {
+                  "max": 1,
+                  "rms": 0.06024755045017329,
+                  "sampleCount": 551,
+                  "excludedZeroReferences": 316
+                }
+              },
+              "v(5)": {
+                "status": "compared",
+                "sampleCount": 867,
+                "absoluteError": {
+                  "max": 0.0009900706240110208,
+                  "rms": 0.0004546618020927653
+                },
+                "relativeError": {
+                  "max": 28.314176331245527,
+                  "rms": 1.0111675879283168,
+                  "sampleCount": 834,
+                  "excludedZeroReferences": 33
+                }
+              },
+              "v(6)": {
+                "status": "compared",
+                "sampleCount": 867,
+                "absoluteError": {
+                  "max": 0.000990070623658735,
+                  "rms": 0.00045466180161961805
+                },
+                "relativeError": {
+                  "max": 28.31417612538033,
+                  "rms": 1.0111675809823215,
+                  "sampleCount": 834,
+                  "excludedZeroReferences": 33
+                }
+              }
+            }
+          },
+          "linearMetrics": {
+            "grid": {
+              "spiceTsPoints": 867,
+              "ngspicePoints": 868,
+              "alignedPoints": 867,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "i(vnin)": {
+                "status": "compared",
+                "sampleCount": 867,
+                "absoluteError": {
+                  "max": 6.914257947383889e-05,
+                  "rms": 4.440031060924037e-06
+                },
+                "relativeError": {
+                  "max": 4.599885920491787,
+                  "rms": 1.5807449901379087,
+                  "sampleCount": 611,
+                  "excludedZeroReferences": 256
+                }
+              },
+              "v(2)": {
+                "status": "compared",
+                "sampleCount": 867,
+                "absoluteError": {
+                  "max": 1.6581180872776713e-13,
+                  "rms": 3.113436674503415e-14
+                },
+                "relativeError": {
+                  "max": 1,
+                  "rms": 0.06024755045017329,
+                  "sampleCount": 551,
+                  "excludedZeroReferences": 316
+                }
+              },
+              "v(5)": {
+                "status": "compared",
+                "sampleCount": 867,
+                "absoluteError": {
+                  "max": 0.0009900706240110208,
+                  "rms": 0.00045511765181558816
+                },
+                "relativeError": {
+                  "max": 28.314176331245527,
+                  "rms": 1.0111675888722838,
+                  "sampleCount": 834,
+                  "excludedZeroReferences": 33
+                }
+              },
+              "v(6)": {
+                "status": "compared",
+                "sampleCount": 867,
+                "absoluteError": {
+                  "max": 0.000990070623658735,
+                  "rms": 0.0004551176513424122
+                },
+                "relativeError": {
+                  "max": 28.31417612538033,
+                  "rms": 1.0111675819262886,
+                  "sampleCount": 834,
+                  "excludedZeroReferences": 33
+                }
+              }
+            }
+          }
+        }
+      ],
+      "runtime": {
+        "ngspiceWallMs": 33.91429199999999,
+        "spiceTsWallMs": 576.013292
+      }
+    }
+  },
+  "rc": [
+    {
+      "id": "rc-trap-1",
+      "outcome": "matched",
+      "worstNormalizedError": 1.24e-15,
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:97"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:97"
+        ]
+      }
+    },
+    {
+      "id": "rc-trap-2",
+      "outcome": "matched",
+      "worstNormalizedError": 2.99e-15,
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:67"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:67"
+        ]
+      }
+    },
+    {
+      "id": "rc-gear-1",
+      "outcome": "matched",
+      "worstNormalizedError": 1.24e-15,
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:97"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:97"
+        ]
+      }
+    },
+    {
+      "id": "rc-gear-2",
+      "outcome": "matched",
+      "worstNormalizedError": 2.01e-07,
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:67"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:67"
+        ]
+      }
+    }
+  ],
+  "guards": {
+    "mosamp2": {
+      "errorV": 2.7059435190324166e-06,
+      "boundV": 5e-06,
+      "points": 2429
+    },
+    "related": {
+      "k-10": {
+        "points": 1008,
+        "worstNormalized": 0.00014821670590837676
+      },
+      "k-15": {
+        "points": 1010,
+        "worstNormalized": 0.0001157572486297565
+      }
+    }
+  },
+  "nativeVerification": {
+    "points": 868,
+    "signals": [
+      "v(5)",
+      "v(2)",
+      "v(6)",
+      "i(vnin)"
+    ],
+    "maxAbsDelta": 0.0,
+    "maxTimeDelta": 0
+  },
+  "currentLocalization": {
+    "peak": 0.0003101259607419718,
+    "maxAbs": 1.9539446179088065e-05,
+    "worstTime": 4.502373230181537e-08,
+    "firstOnePercent": {
+      "index": 133,
+      "time": 1.5208922042773343e-08,
+      "error": 3.6502048935892987e-06
+    },
+    "firstViolationWindow": [
+      {
+        "index": 129,
+        "time": 1.5050722721337335e-08,
+        "actual": -0.00027884311945483575,
+        "error": 3.1754857348557756e-08
+      },
+      {
+        "index": 130,
+        "time": 1.5073027828270685e-08,
+        "actual": -0.00027885240693758596,
+        "error": 1.2608258690024153e-09
+      },
+      {
+        "index": 131,
+        "time": 1.5117638042137388e-08,
+        "actual": -0.00027876888162242533,
+        "error": 1.9730280235129294e-10
+      },
+      {
+        "index": 132,
+        "time": 1.5200000000000004e-08,
+        "actual": -0.00027864169586334166,
+        "error": 1.1780194573182516e-09
+      },
+      {
+        "index": 133,
+        "time": 1.5208922042773343e-08,
+        "actual": -9.216922116357489e-06,
+        "error": 3.6502048935892987e-06
+      },
+      {
+        "index": 134,
+        "time": 1.5226766128320025e-08,
+        "actual": -2.1287132307215573e-07,
+        "error": 1.8088617147363304e-07
+      },
+      {
+        "index": 135,
+        "time": 1.5262454299413386e-08,
+        "actual": -2.4880485276213005e-09,
+        "error": 4.9170376716620205e-09
+      },
+      {
+        "index": 136,
+        "time": 1.533383064160011e-08,
+        "actual": -1.4244683232446376e-11,
+        "error": 6.199945058208599e-11
+      },
+      {
+        "index": 137,
+        "time": 1.547658332597356e-08,
+        "actual": -1.462426642458159e-13,
+        "error": 3.718809307115371e-13
+      }
+    ]
+  },
+  "firstEdge": [
+    {
+      "index": 30,
+      "native": {
+        "time": 4.828e-09,
+        "dt": 1.719999999999994e-10,
+        "order": 1,
+        "iterations": 2,
+        "converged": true
+      },
+      "spiceTs": {
+        "time": 4.828e-09,
+        "dt": 1.71999999999999e-10,
+        "iterations": 1
+      },
+      "nativeLastLoad": {
+        "time": 4.828e-09,
+        "device": "md2",
+        "mode": 257,
+        "qgs": 1.0855043702201513e-30,
+        "qgd": -1.0861141268448008e-30,
+        "qgb": 0.0,
+        "qbs": 6.911241765219208e-31,
+        "qbd": -2.8585446484767377e-30,
+        "cqgs": -2.927058807249858e-29,
+        "cqgd": 2.928247185132755e-29,
+        "cqgb": 0.0,
+        "cqbs": -8.724593646390617e-38,
+        "cqbd": -1.3207123783435672e-37,
+        "vgs": 7.512140970381662e-16,
+        "vds": 1.502850170979205e-15,
+        "vbs": 7.512140970381662e-16,
+        "capgs": 0.0,
+        "capgd": 0.0,
+        "capgb": 4.796033055125e-15
+      },
+      "spiceTsAccepted": {
+        "time": 4.828e-09,
+        "device": "md2",
+        "integration": {
+          "method": "euler",
+          "dt": 1.719999999999994e-10
+        },
+        "charge": [
+          2.421734646528391e-34,
+          2.421734646528391e-34,
+          0,
+          0,
+          0
+        ],
+        "current": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "voltage": [
+          1.6759409318535687e-19,
+          1.6759409318535687e-19,
+          0,
+          1.6759409318535687e-19,
+          1.6759409318535687e-19
+        ],
+        "capacitance": [
+          1.4449999999999998e-15,
+          1.4449999999999998e-15,
+          9.59206611025e-15,
+          2.6789999999999996e-15,
+          2.6789999999999996e-15
+        ]
+      }
+    },
+    {
+      "index": 31,
+      "native": {
+        "time": 5e-09,
+        "dt": 1.7199999999999982e-10,
+        "order": 1,
+        "iterations": 2,
+        "converged": true
+      },
+      "spiceTs": {
+        "time": 5e-09,
+        "dt": 1.7199999999999982e-10,
+        "iterations": 1
+      },
+      "nativeLastLoad": {
+        "time": 5e-09,
+        "device": "md2",
+        "mode": 257,
+        "qgs": 1.0855043651856185e-30,
+        "qgd": -1.0861141218082252e-30,
+        "qgb": 0.0,
+        "qbs": 6.911241765219208e-31,
+        "qbd": -2.8585446484767377e-30,
+        "cqgs": -2.9270539058116966e-29,
+        "cqgd": 2.928241668628347e-29,
+        "cqgb": 0.0,
+        "cqbs": -1.937435865681033e-37,
+        "cqbd": -1.369979568013186e-36,
+        "vgs": 7.512140935540605e-16,
+        "vds": 1.50285016400958e-15,
+        "vbs": 7.512140935540605e-16,
+        "capgs": 0.0,
+        "capgd": 0.0,
+        "capgb": 4.796033055125e-15
+      },
+      "spiceTsAccepted": {
+        "time": 5e-09,
+        "device": "md2",
+        "integration": {
+          "method": "euler",
+          "dt": 1.7199999999999982e-10
+        },
+        "charge": [
+          2.4217346465283918e-34,
+          2.4217346465283918e-34,
+          0,
+          0,
+          0
+        ],
+        "current": [
+          4.972585507148276e-40,
+          4.972585507148276e-40,
+          0,
+          0,
+          0
+        ],
+        "voltage": [
+          1.6759409318535692e-19,
+          1.6759409318535692e-19,
+          0,
+          1.6759409318535692e-19,
+          1.6759409318535692e-19
+        ],
+        "capacitance": [
+          1.4449999999999998e-15,
+          1.4449999999999998e-15,
+          9.59206611025e-15,
+          2.6789999999999996e-15,
+          2.6789999999999996e-15
+        ]
+      }
+    },
+    {
+      "index": 32,
+      "native": {
+        "time": 5.006173196363713e-09,
+        "dt": 6.173196363713541e-12,
+        "order": 1,
+        "iterations": 2,
+        "converged": true
+      },
+      "spiceTs": {
+        "time": 5.006173196363713e-09,
+        "dt": 6.173196363713176e-12,
+        "iterations": 5
+      },
+      "nativeLastLoad": {
+        "time": 5.006173196363713e-09,
+        "device": "md2",
+        "mode": 257,
+        "qgs": 2.1447540949733896e-16,
+        "qgd": 2.144754094973368e-16,
+        "qgb": 1.4803426908072913e-15,
+        "qbs": -1.5774633510033082e-17,
+        "qbd": -1.577463351003746e-17,
+        "cqgs": 3.4743007813268115e-05,
+        "cqgd": 3.4743007813268115e-05,
+        "cqgb": 0.00023980165275623566,
+        "cqbs": -2.5553429018973247e-06,
+        "cqbd": -2.555342901897459e-06,
+        "vgs": 0.1484258889254941,
+        "vds": 1.4988010832439613e-15,
+        "vbs": -0.005904020167335219,
+        "capgs": 0.0,
+        "capgd": 0.0,
+        "capgb": 4.796033055125e-15
+      },
+      "spiceTsAccepted": {
+        "time": 5.006173196363713e-09,
+        "device": "md2",
+        "integration": {
+          "method": "euler",
+          "dt": 6.17319636371353e-12
+        },
+        "charge": [
+          2.1447540949733783e-16,
+          2.1447540949733783e-16,
+          1.4803426908072913e-15,
+          -1.5774633510036915e-17,
+          -1.5774633510036915e-17
+        ],
+        "current": [
+          3.474300781326817e-05,
+          3.474300781326817e-05,
+          0.00023980165275623612,
+          -2.5553429018978384e-06,
+          -2.5553429018978384e-06
+        ],
+        "voltage": [
+          0.14842588892549333,
+          0.14842588892549333,
+          0.15432990909282931,
+          -0.005904020167335976,
+          -0.005904020167335975
+        ],
+        "capacitance": [
+          1.4449999999999998e-15,
+          1.4449999999999998e-15,
+          9.59206611025e-15,
+          2.6647268417784565e-15,
+          2.6647268417784565e-15
+        ]
+      }
+    },
+    {
+      "index": 33,
+      "native": {
+        "time": 5.0185195890911405e-09,
+        "dt": 1.2346392727427083e-11,
+        "order": 1,
+        "iterations": 3,
+        "converged": true
+      },
+      "spiceTs": {
+        "time": 5.0185195890911405e-09,
+        "dt": 1.234639272742718e-11,
+        "iterations": 3
+      },
+      "nativeLastLoad": {
+        "time": 5.0185195890911405e-09,
+        "device": "md2",
+        "mode": 257,
+        "qgs": 6.484809483601638e-16,
+        "qgd": 6.484809483601617e-16,
+        "qgb": 4.33866837650366e-15,
+        "qbs": -3.783610883470676e-17,
+        "qbd": -3.78361088347099e-17,
+        "cqgs": 3.515241645429735e-05,
+        "cqgd": 3.515241645429735e-05,
+        "cqgb": 0.00023151099667732887,
+        "cqbs": -1.7868762003386527e-06,
+        "cqbd": -1.7868762003385523e-06,
+        "vgs": 0.448775742809802,
+        "vds": 1.4988010832439613e-15,
+        "vbs": -0.01421398446870659,
+        "capgs": 0.0,
+        "capgd": 0.0,
+        "capgb": 4.46440681196809e-15
+      },
+      "spiceTsAccepted": {
+        "time": 5.0185195890911405e-09,
+        "device": "md2",
+        "integration": {
+          "method": "euler",
+          "dt": 1.234639272742706e-11
+        },
+        "charge": [
+          6.484799609773111e-16,
+          6.484799609773111e-16,
+          4.3386728941889116e-15,
+          -3.783791617775776e-17,
+          -3.783791617775776e-17
+        ],
+        "current": [
+          3.515233648090977e-05,
+          3.515233648090977e-05,
+          0.00023151136258868103,
+          -1.787022586662748e-06,
+          -1.787022586662748e-06
+        ],
+        "voltage": [
+          0.4487750594998694,
+          0.4487750594998694,
+          0.46298972727850857,
+          -0.014214667778639141,
+          -0.01421466777863914
+        ],
+        "capacitance": [
+          1.4449999999999998e-15,
+          1.4449999999999998e-15,
+          8.928842896844318e-15,
+          2.6449820449530875e-15,
+          2.6449820449530875e-15
+        ]
+      }
+    },
+    {
+      "index": 34,
+      "native": {
+        "time": 5.02027103656939e-09,
+        "dt": 1.751447478249503e-12,
+        "order": 1,
+        "iterations": 3,
+        "converged": true
+      },
+      "spiceTs": {
+        "time": 5.02027103656939e-09,
+        "dt": 1.751447478249705e-12,
+        "iterations": 6
+      },
+      "nativeLastLoad": {
+        "time": 5.02027103656939e-09,
+        "device": "md2",
+        "mode": 257,
+        "qgs": 7.100596367612685e-16,
+        "qgd": 7.100596367612663e-16,
+        "qgb": 4.701063571911078e-15,
+        "qbs": -4.093224318216251e-17,
+        "qbd": -4.093224318216756e-17,
+        "cqgs": 3.51587410789217e-05,
+        "cqgd": 3.5158741078921703e-05,
+        "cqgb": 0.00020691182573719907,
+        "cqbs": -1.7677574611316353e-06,
+        "cqbd": -1.7677574611327282e-06,
+        "vgs": 0.4913907520839228,
+        "vds": 1.4432899320127035e-15,
+        "vbs": -0.015385162150828439,
+        "capgs": 0.0,
+        "capgd": 0.0,
+        "capgb": 3.812066217518927e-15
+      },
+      "spiceTsAccepted": {
+        "time": 5.02027103656939e-09,
+        "device": "md2",
+        "integration": {
+          "method": "euler",
+          "dt": 1.7514474782494996e-12
+        },
+        "charge": [
+          7.100586331946261e-16,
+          7.100586331946261e-16,
+          4.701069381445286e-15,
+          -4.0934078238318525e-17,
+          -4.0934078238318525e-17
+        ],
+        "current": [
+          3.5158731838684866e-05,
+          3.5158731838684866e-05,
+          0.00020691256332652067,
+          -1.7677732841039882e-06,
+          -1.7677732841039882e-06
+        ],
+        "voltage": [
+          0.49139005757413584,
+          0.49139005757413584,
+          0.5067759142347512,
+          -0.015385856660615375,
+          -0.015385856660615371
+        ],
+        "capacitance": [
+          1.4449999999999998e-15,
+          1.4449999999999998e-15,
+          7.624162169275387e-15,
+          2.64223143555458e-15,
+          2.64223143555458e-15
+        ]
+      }
+    }
+  ],
+  "nearestLteAtFirstGridDifference": {
+    "native": {
+      "time": 5.0237739315258896e-09,
+      "order": 1,
+      "bound": 4.292024542386742e-12
+    },
+    "spiceTs": {
+      "time": 5.0237739315258896e-09,
+      "dt": 3.502894956498999e-12,
+      "integration": {
+        "method": "euler",
+        "dt": 3.502894956498999e-12
+      },
+      "bound": 4.292025075052835e-12
+    }
+  },
+  "caveats": [
+    "Native state0 Meyer caps are half-capacitances without overlap; TS accepted caps are full including overlap.",
+    "TS iterations per advance include rejected trial work; native STEPTRACE iterations count one NIiter trial.",
+    "First grid difference uses a 1 as diagnostic resolution, not a scoring tolerance.",
+    "Tiny t=0/first-step floating-point state differences precede the first-edge divergence.",
+    "No causal root fix established. Native bypass/limiting/convergence and loaded history require a separate controlled investigation."
+  ]
+}

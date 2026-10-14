@@ -1006,6 +1006,12 @@ directives differ. Selection never uses spice-ts results. Every native warning
 and execution/export/parse failure is retained; export failure is not evidence
 of nonconvergence. Runs require `spice-heavy`; no model-equivalence claim is made.
 
+## MOS2 pump residual investigation (#1019)
+
+- Original k-13 pump input is the unmodified corpus-k Xyce_Regression GPL-3.0-or-later fixture. Its manifest source, licence and SHA-256 remain authoritative; no derived netlist is added.
+- Observation-only native tracing uses [ngspice ngspice-47](https://github.com/ngspice/ngspice/tree/a80f6e3e95d51534905b1f23410a951802666656), commit `a80f6e3e95d51534905b1f23410a951802666656`, under its upstream mixed BSD-style licences. Source/build/executable are not redistributed. `evidence/1019/instrument-native.py` records the instrumentation; its output waveform is verified identical to the installed ngspice-47 reference on all 868 points and four common signals.
+- `evidence/1019/` contains project-authored MIT scripts and measured diagnostics. The regenerated maxord-983 report retains the unresolved current loss (0.063 normalized, formerly 0.0585); no tolerance, deck, scoring or production change is claimed as a fix.
+
 ## Known ngspice bugs corpus (issue #803)
 
 - Source: the open ngspice bug tickets (status `open` or `open-accepted`, 134 tickets on 2026-10-12) at https://sourceforge.net/p/ngspice/bugs/, harvested read-only through the SourceForge REST API (`https://sourceforge.net/rest/p/ngspice/bugs/search?q=status:open+OR+status:open-accepted`). Every deck records its ticket URL, attachment URL and SHA-256 in `benchmarks/corpus/ngspice-bugs/manifest.json`.
