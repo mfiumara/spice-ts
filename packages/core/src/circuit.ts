@@ -177,6 +177,8 @@ interface DeviceDescriptor {
   type: string;
   name: string;
   nodes: string[];
+  /** Original C/B/E terminals retained through BJT series-resistance expansion. */
+  bjtICTerminals?: string[];
   value?: number;
   waveform?: Partial<SourceWaveform> & { dc?: number };
   modelName?: string;
@@ -2361,7 +2363,8 @@ export class Circuit {
             }
             devices.push(new VBIC(desc.name, nodeIndices, modelParams, polarity, bjtInstanceScale(desc.params)));
           } else {
-            devices.push(new BJT(desc.name, nodeIndices, { ...modelParams, polarity }, desc.params));
+            devices.push(new BJT(desc.name, nodeIndices, { ...modelParams, polarity }, desc.params,
+              desc.bjtICTerminals?.map(resolveNode)));
           }
           break;
         }
@@ -2979,6 +2982,7 @@ export class Circuit {
             nodes: variableBaseResistance && base !== externalBase
               ? [collector, base, emitter, terminals[3] ?? GROUND_NODE, externalBase]
               : [collector, base, emitter, ...terminals.slice(3)],
+            bjtICTerminals: terminals.slice(0, 3),
           });
         } else {
           result.push({ ...desc, nodes: terminals });

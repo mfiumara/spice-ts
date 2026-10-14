@@ -75,6 +75,8 @@ X1 c b 0 stage`);
       const implicit = await simulate(withResistance(ic));
       const explicit = await simulate(withResistance(`IC=${sign * 0.1},${sign * 0.9}`));
       expect(implicit.transient!.time).toEqual(explicit.transient!.time);
+      // Identical RC/RB/RE decks on ngspice-47 give +/-1.469341V at 2ps.
+      expect(implicit.transient!.voltage('c')[0]).toBeCloseTo(sign * 1.469341, 6);
       for (const node of ['c', 'b', 'e']) {
         expect(implicit.transient!.voltage(node)).toEqual(explicit.transient!.voltage(node));
       }

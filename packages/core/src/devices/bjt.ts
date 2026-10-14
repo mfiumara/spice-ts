@@ -634,6 +634,8 @@ export class BJT implements DeviceModel {
     readonly nodes: number[],
     params: Partial<BJTParams> & Record<string, number>,
     private readonly instance?: BJTInstanceScaling,
+    /** External C/B/E for BJTgetic; stamping nodes may be internal primes. */
+    private readonly icTerminals?: readonly number[],
   ) {
     this.suppliedParams = { ...params };
     const resolved = resolveBJTParams(params);
@@ -822,9 +824,14 @@ export class BJT implements DeviceModel {
     }
     this.nodeJunctions(this.acceptedJunctions, node => ctx.getVoltage(node));
     if (ctx.initialUIC) {
-      const [nC, , nE] = this.nodes;
+      // bjtgetic.c reads external terminal differences, not the prime
+      // nodes used for junction stamping after series-resistance expansion.
+      // The mapping is optional for directly constructed devices.
+      const nC = this.icTerminals?.[0] ?? this.nodes[0];
+      const nB = this.icTerminals?.[1] ?? this.externalBaseNode;
+      const nE = this.icTerminals?.[2] ?? this.nodes[2];
       const voltage = (node: number): number => node >= 0 ? ctx.getVoltage(node) : 0;
-      const vBE = this.instance?.ICVBE ?? this.params.polarity * this.acceptedJunctions[BASE_EMITTER];
+      const vBE = this.instance?.ICVBE ?? (voltage(nB) - voltage(nE));
       const vCE = this.instance?.ICVCE ?? (voltage(nC) - voltage(nE));
       this.acceptedJunctions[BASE_EMITTER] = this.params.polarity * vBE;
       this.acceptedJunctions[BASE_COLLECTOR] = this.params.polarity * (vBE - vCE);
