@@ -21,6 +21,7 @@ import {
   type SampleSeries,
 } from '../../comparison-harness.js';
 import { pairPlots } from '../../plot-pairing.js';
+import { declaredSecondaryGrid } from '../../sweep-coordinates.js';
 
 export const CLASSIC_REPORT_SCHEMA = 'spice-ts-classic-comparison/v1' as const;
 export type ClassicAnalysisType = ComparisonAnalysisType | 'pz' | 'noise' | 'disto';
@@ -350,7 +351,8 @@ export async function runNativeNgspice(input: Buffer, circuit: ClassicCircuit): 
     const analyses = parseNgspiceRaw(raw)
       .map(plot => {
         const type = analysisType(plot.plotName);
-        return type ? { type, plotName: plot.plotName, series: { grid: plot.grid, signals: plot.signals } } : null;
+        const secondaryGrid = type === 'dc' ? declaredSecondaryGrid(input.toString('utf8'), plot.plotName, plot.grid) : undefined;
+        return type ? { type, plotName: plot.plotName, series: { grid: plot.grid, signals: plot.signals, ...(secondaryGrid ? { secondaryGrid } : {}) } } : null;
       })
       .filter((analysis): analysis is EngineAnalysis => analysis !== null);
     if (analyses.length === 0) {
