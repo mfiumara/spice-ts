@@ -1,0 +1,9 @@
+* SPDX-License-Identifier: MIT
+* Self-written fixed-bias PMOS saturation-edge reduction for #1079.
+Vsource s 0 5
+Vgate g 0 4.296028128126105 AC 1
+Vdrain d 0 4.296028175107854
+Medge d g s s p w=2u l=1u
+.model p pmos level=9 version=3.2.2
+.ac lin 1 100 100
+.end

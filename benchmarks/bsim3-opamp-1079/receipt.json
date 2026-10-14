@@ -1,0 +1,30 @@
+{
+  "disposition": "evidence-only; issue remains open; no simulator fix",
+  "baselineHead": "5e6bd263",
+  "ngspiceSourceCommit": "a80f6e3e95d51534905b1f23410a951802666656",
+  "commands": [
+    { "command": "pnpm install --frozen-lockfile", "exitCode": 0, "log": "install.log.gz" },
+    { "command": "pnpm build", "exitCode": 0, "log": "build.log.gz" },
+    { "command": "pnpm lint", "exitCode": 0, "log": "lint.log.gz" },
+    { "command": "pnpm exec tsx benchmarks/bsim3-opamp-1079/probe.ts", "exitCode": 0, "log": "probe.log.gz" },
+    { "command": "pnpm -C packages/core exec vitest run src/devices/mos9-opamp-1079.test.ts src/devices/bsim3v32-ngspice-parity.test.ts", "exitCode": 0, "testsPassed": 109, "filesPassed": 2, "newTests": 5, "log": "targeted.log.gz" },
+    { "command": "spice-heavy pnpm exec tsx benchmarks/corpus/corpus-m/parity.ts", "phase": "before", "exitCode": 0, "log": "corpus-before.log.gz", "outcomes": "corpus-before.json.gz" },
+    { "command": "spice-heavy pnpm exec tsx benchmarks/corpus/corpus-m/parity.ts", "phase": "after", "exitCode": 0, "log": "corpus-after.log.gz", "outcomes": "corpus-after.json.gz" },
+    { "command": "pnpm exec tsx --test benchmarks/corpus/corpus-m/corpus-m.test.ts", "exitCode": 0, "log": "corpus-offline.log.gz" },
+    { "command": "spice-heavy pnpm test", "exitCode": null, "result": "terminal tool timed out at 420 seconds during root benchmark tests; core suite passed 4301 tests, 1 expected failure, 5 skipped; overall green not claimed", "log": "full-test.log.gz" }
+  ],
+  "publicParity": {
+    "before": { "fixtures": 24, "matched": 15, "mismatch": 6, "engineLosses": 3, "m3NormalizedError": 0.637 },
+    "after": { "fixtures": 24, "matched": 15, "mismatch": 6, "engineLosses": 3, "m3NormalizedError": 0.637 }
+  },
+  "diagnosticOnly": {
+    "originalNormalizedError": 0.6369491175377238,
+    "sameBiasNormalizedError": 3.298606910883643e-8,
+    "bias2OnlyNormalizedError": 2.489715873080301e-7,
+    "nativeAcPoints": 61,
+    "bsim3Instances": 0,
+    "mos9Instances": 8
+  },
+  "hotspots": ["benchmarks/SOURCES.md: additive provenance entry only"],
+  "remainingScope": "separately scope MOS9 OP-sensitive near-saturation AC parity; do not change BSIM3 or fixture LEVEL"
+}
