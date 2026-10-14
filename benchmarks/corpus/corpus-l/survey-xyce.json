@@ -1,0 +1,267 @@
+{
+  "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+  "scope": "Selected source families only, not a fresh repository-wide survey; all other families batch-deferred without engine probing.",
+  "candidates": [
+    {
+      "path": "Netlists/ACtests/SANDLER16/sandler16.cir",
+      "sha256": "4559c5a5df102c1f471dab8b5b77d6d0856cc78c632586b1c4b46305f223344a",
+      "bytes": 2773,
+      "reason": null,
+      "verdict": {
+        "reason": null,
+        "analyses": [
+          "ac"
+        ],
+        "unmappedAnalyses": []
+      }
+    },
+    {
+      "path": "Netlists/ACtests/SANDLER7/sandler7.cir",
+      "sha256": "9ca67ca3b7eef3c1322936b9e4c6794f200237f781b714ec161dab1c35ab42f6",
+      "bytes": 2076,
+      "reason": null,
+      "verdict": {
+        "reason": null,
+        "analyses": [
+          "ac"
+        ],
+        "unmappedAnalyses": []
+      }
+    },
+    {
+      "path": "Netlists/ACtests/SANDLER8/sandler8.cir",
+      "sha256": "4bb0a1cea94ce0b097771edb78c5bd47234606ffad529b1aef2254cc0f864a7e",
+      "bytes": 1795,
+      "reason": null,
+      "verdict": {
+        "reason": null,
+        "analyses": [
+          "ac"
+        ],
+        "unmappedAnalyses": []
+      }
+    },
+    {
+      "path": "Netlists/ACtests/SANDLER9/sandler9.cir",
+      "sha256": "149ddd0a2d8b17106f791647236db84732d45bda01145284b8d0c85974171817",
+      "bytes": 1687,
+      "reason": null,
+      "verdict": {
+        "reason": null,
+        "analyses": [
+          "ac"
+        ],
+        "unmappedAnalyses": []
+      }
+    },
+    {
+      "path": "Netlists/ACtests/diffpair_spiceMan.cir",
+      "sha256": "0780e3374389beeb6754c3423f43fa609c46f3d35537b7206e7e2014301038c1",
+      "bytes": 506,
+      "reason": null,
+      "verdict": {
+        "reason": null,
+        "analyses": [
+          "ac"
+        ],
+        "unmappedAnalyses": []
+      }
+    },
+    {
+      "path": "Netlists/ACtests/diffpair_spiceManLIN.cir",
+      "sha256": "70af53508eda159fac01125533814f6dab74ceacb885be6a9d42ed0b776c045f",
+      "bytes": 526,
+      "reason": null,
+      "verdict": {
+        "reason": null,
+        "analyses": [
+          "ac"
+        ],
+        "unmappedAnalyses": []
+      }
+    },
+    {
+      "path": "Netlists/ACtests/mos/gain-stage1.cir",
+      "sha256": "e184d407df6a9fb6bb8992fb050aa7e7f28ce0d5717c4ee6cd36db59105a5203",
+      "bytes": 255,
+      "reason": null,
+      "verdict": {
+        "reason": null,
+        "analyses": [
+          "ac"
+        ],
+        "unmappedAnalyses": []
+      }
+    },
+    {
+      "path": "Netlists/ACtests/mos/gain-stage2.cir",
+      "sha256": "5a5f3da6d8f18bb865059acbc34b1fc464c52deda5f5e0d5eb039da8973b4deb",
+      "bytes": 246,
+      "reason": null,
+      "verdict": {
+        "reason": null,
+        "analyses": [
+          "ac"
+        ],
+        "unmappedAnalyses": []
+      }
+    },
+    {
+      "path": "Netlists/ACtests/mos/gain-stage3.cir",
+      "sha256": "9294b82b1e587d14937b75e89067454f57c056a1a54ebaed666117a884b7f0ae",
+      "bytes": 246,
+      "reason": null,
+      "verdict": {
+        "reason": null,
+        "analyses": [
+          "ac"
+        ],
+        "unmappedAnalyses": []
+      }
+    },
+    {
+      "path": "Netlists/ACtests/mos/gain-stage6.cir",
+      "sha256": "1a8f881f5687036ab790a47ea24e56a8a1afc6dd42c1966eab92a4a36d657b3d",
+      "bytes": 255,
+      "reason": null,
+      "verdict": {
+        "reason": null,
+        "analyses": [
+          "ac"
+        ],
+        "unmappedAnalyses": []
+      }
+    },
+    {
+      "path": "Netlists/CircuitSim90/MOS3/arom.cir",
+      "sha256": "4db593d3133a5929e7efdcb26921d3fce15e6c6c17e8bcef2fa2a08c4f7d062c",
+      "bytes": 8162,
+      "reason": null,
+      "verdict": {
+        "reason": null,
+        "analyses": [
+          "tran"
+        ],
+        "unmappedAnalyses": []
+      }
+    },
+    {
+      "path": "Netlists/CircuitSim90/MOS3/gm1.cir",
+      "sha256": "417d4fe8629398295bb317ad236781f36b34eebb58e74c7b63757263f55c338c",
+      "bytes": 2933,
+      "reason": null,
+      "verdict": {
+        "reason": null,
+        "analyses": [
+          "tran"
+        ],
+        "unmappedAnalyses": []
+      }
+    },
+    {
+      "path": "Netlists/CircuitSim90/MOS3/gm17.cir",
+      "sha256": "43fc842bd3c7bfbbe285a5d83b4eb08fa6acc1a3c8a5da9ae62c605bd32324a9",
+      "bytes": 3360,
+      "reason": null,
+      "verdict": {
+        "reason": null,
+        "analyses": [
+          "tran"
+        ],
+        "unmappedAnalyses": []
+      }
+    },
+    {
+      "path": "Netlists/CircuitSim90/MOS3/gm19.cir",
+      "sha256": "0b94a01a96dd0ae19e93fe78b5fc7397411815d350ee13ee118c49548bb62c08",
+      "bytes": 7040,
+      "reason": null,
+      "verdict": {
+        "reason": null,
+        "analyses": [
+          "tran"
+        ],
+        "unmappedAnalyses": []
+      }
+    },
+    {
+      "path": "Netlists/CircuitSim90/MOS3/gm2.cir",
+      "sha256": "ad4261e8c85a1f0376b24c0bad6f42fa4046a0fa669b84853236ef558fa417fc",
+      "bytes": 1561,
+      "reason": null,
+      "verdict": {
+        "reason": null,
+        "analyses": [
+          "tran"
+        ],
+        "unmappedAnalyses": []
+      }
+    },
+    {
+      "path": "Netlists/CircuitSim90/MOS3/gm3.cir",
+      "sha256": "90ee65bd24818d09d008de93e92f5a398f3422ae2a4a663e5889834e2c1fe071",
+      "bytes": 2255,
+      "reason": null,
+      "verdict": {
+        "reason": null,
+        "analyses": [
+          "op",
+          "tran"
+        ],
+        "unmappedAnalyses": []
+      }
+    },
+    {
+      "path": "Netlists/CircuitSim90/MOS3/jge.cir",
+      "sha256": "c0da4a46792a27496530ea1a57b1253dd980d17380db58ffd6e6434f0156babf",
+      "bytes": 91710,
+      "reason": null,
+      "verdict": {
+        "reason": null,
+        "analyses": [
+          "tran"
+        ],
+        "unmappedAnalyses": []
+      }
+    },
+    {
+      "path": "Netlists/CircuitSim90/MOS3/mike2.cir",
+      "sha256": "99cf3671f37b401548a991f679ceaeb6ab502c97ac7c98de81b5adbddb4df013",
+      "bytes": 2361,
+      "reason": null,
+      "verdict": {
+        "reason": null,
+        "analyses": [
+          "tran"
+        ],
+        "unmappedAnalyses": []
+      }
+    },
+    {
+      "path": "Netlists/CircuitSim90/MOS3/rich3.cir",
+      "sha256": "5cf5ebcafb990907419d4844249ed6c8a53e47be8faf06f8e16fd08a5ef353ae",
+      "bytes": 7286,
+      "reason": null,
+      "verdict": {
+        "reason": null,
+        "analyses": [
+          "tran"
+        ],
+        "unmappedAnalyses": []
+      }
+    },
+    {
+      "path": "Netlists/CircuitSim90/MOS3/todd3.cir",
+      "sha256": "adecd1aec7ea465065ee828bea3db6a4f675a9e8abf0e8931137593bb338b57f",
+      "bytes": 2187,
+      "reason": null,
+      "verdict": {
+        "reason": null,
+        "analyses": [
+          "tran"
+        ],
+        "unmappedAnalyses": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+CHEBYSHEV LOW-PASS FILTER
+********************************************************************************
+* Tier No.: 3
+* Directory/Circuit Name:SANDLER8/sandler8.cir
+* Description:  Chebyshev low-pass filter circuit netlist developed by Steve
+*       Sandler to compare the validity of simulations using three different
+*       circuit simulation tools. The results were compared to measured data.
+* Input: V4
+* Output: VDB(1)
+********************************************************************************
+*
+* MAIN CIRCUIT DEFINITION
+*
+X1 5 2 8 3 2 UA741T
+X2 7 11 8 3 11 UA741T
+X3 12 1 8 3 1 UA741T
+R1 4 5 1.469K
+R2 2 6 1.467K
+R3 6 7 1.478K
+R4 11 10 1.467K
+R5 10 12 1.467K
+C1 5 0 95N
+C2 6 11 .104U
+C3 7 0 21N
+C4 10 1 .3U
+C5 12 0 4.4N
+V1 4 0 AC 1
+V2 8 0 15
+V3 0 3 15
+*
+* ANALYSIS AND OPTIONS
+*
+.AC DEC 51 1KHZ 20KHZ
+*.PRINT AC  VDB(1)
+.PRINT AC  V(1)
+*.OPTION ACCT
+*
+* SUBCIRCUIT DEFINITION
+*
+.SUBCKT UA741T    1 2 3 4 5
+*
+C1   11 12 4.664E-12
+C2    6  7 20.00E-12
+DC    5 53 DX
+DE   54  5 DX
+DLP  90 91 DX
+DLN  92 90 DX
+DP    4  3 DX
+*BEGND 99  0 V={POLY(2) V(3) V(4) 0 .5 .5}
+BEGND 99  0 V=.5*V(3)+.5*V(4)
+*BFB    7 99 I={POLY(5) I(VB) I(VC) I(VE) I(VLP) I(VLN) 0 10.61E6 -10E6 10E6 10E6 -10E6}
+BFB    7 99 I=10.61e6*I(VB)-10e6*I(VC)+10e6*I(VE)+10e6*I(VLP)-10e6*I(VLN)
+GA 6  0 11 12 137.7E-6
+GCM 0  6 10 99 2.574E-9
+IEE  10  4 DC 10.16E-6
+HLIM 90  0 VLIM 1K
+Q1   11  2 13 QX
+Q2   12  1 14 QX
+R2    6  9 100.0E3
+RC1   3 11 7.957E3
+RC2   3 12 7.957E3
+RE1  13 10 2.740E3
+RE2  14 10 2.740E3
+REE  10 99 19.69E6
+RO1   8  5 150
+RO2   7 99 150
+RP    3  4 18.11E3
+VB    9  0 DC 0
+VC 3 53 DC 2.600
+VE   54  4 DC 2.600
+VLIM  7  8 DC 0
+VLP  91  0 DC 25
+VLN   0 92 DC 25
+.MODEL DX D(IS=800.0E-18)
+.MODEL QX NPN(IS=800.0E-18 BF=62.50)
+.ENDS
+*.AC DEC 51 1KHZ 20KHZ
+*.PRINT AC  VDB(1) 
+*.OPTION ACCT
+.END
+
