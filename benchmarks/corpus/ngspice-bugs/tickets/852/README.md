@@ -29,7 +29,7 @@ A passive RC lowpass has H(jw)=1/(1+jw*159 us); both identical AC sweeps must gi
 |---|---|---|
 | ngspice-47 | error | Corrected KLU deck SIGSEGV exit139; Sparse emits identical13-row AC sweeps (1Hz .999999-j.000999025, 1kHz .500487-j.5) but warns no transient data saved with the posted AC-only print. |
 | ngspice master | error | Identical to 47: KLU deck aborts with SIGTRAP (exit 133); Sparse deck runs. [ngspice pre-master-48 HEAD 3ef069fb (2026-10-09), built in scratch] |
-| spice-ts | unsupported | Unsupported .options field: 'klu' and 'sparse'. |
+| spice-ts | unsupported | #812 refresh d8ab9d33: both pinned solver variants first fail at ParseError line 2, Unsupported .options field klu/sparse. Native ngspice-47 completes both OP variants with -r (unlike historical non-raw crash invocation). No spice-ts metrics. Existing #812. |
 
 Reproduces on ngspice-47: yes. Check: Corrected klu.cir crashes exit139; both Sparse AC sweeps match H(s)=1/(1+159us*s).
 

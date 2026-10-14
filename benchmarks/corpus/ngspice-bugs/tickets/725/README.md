@@ -39,7 +39,7 @@ The switch connects ground to ground, so its branch voltage/current are zero irr
 |---|---|---|
 | ngspice-47 | error | Control original KLU op exits0; equivalent dot .op KLU reports internal error -- bus error (exit1). Sparse dot .op exits0 with controls0 and V(1)=1. |
 | ngspice master | right | Fixed on master: the KLU switch_original deck exits 0 with an OP result; ngspice-47 segfaults (exit 139) on the same command. [ngspice pre-master-48 HEAD 3ef069fb (2026-10-09), built in scratch] |
-| spice-ts | unsupported | All run decks explicitly select klu/sparse; Unsupported .options field errors. |
+| spice-ts | unsupported | #812 refresh d8ab9d33: both pinned solver variants first fail at ParseError line 2, Unsupported .options field klu/sparse. Native ngspice-47 completes both OP variants. Execution loss; no spice-ts metrics. Existing #812 solver-selection bucket. |
 
 Reproduces on ngspice-47: partially. Check: The dot-card klu.cir reports internal error -- bus error; command-based switch_original.cir does not on this build.
 
