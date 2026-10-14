@@ -1,0 +1,28 @@
+MOS CHARGE PUMP
+
+.model nenh nmos
++    Level=2            Ld=0.0u         Tox=225.000e-10
++    Nsub=1.066e+16     Vto=0.622490    Kp=6.326640E-05
++    Gamma=.639243      Phi=.31         Uo=1215.74
++    Uexp=4.612355e-2   Ucrit=174667    Delta=0.0
++    Vmax=177269        Xj=.9u          Lambda=0.0
++    Nfs=4.55168e+12    Neff=4.68830    Nss=3.000000E+10
++    Tpg=1              Rsh=60          Cgso=2.89e-10
++    Cgdo=2.89e-10      Cj=3.27e-04     Mj=1.067
++    Cjsw=1.74e-10      Mjsw=.195
+
+md2 5 2 6 0 nenh l=1.25u w=5u ad=5p pd=6u as=5p ps=6u
+cn1 5 0 50f
+cn2 6 0 50f
+
+VNIN 2 0 pwl(    0.0ns 0.0 5.0ns  0.0 5.2ns  5.0 10.0ns 5.0
++               10.2ns 0.0 15.0ns 0.0 15.2ns 5.0 20.0ns 5.0
++               20.2ns 0.0 25.0ns 0.0 25.2ns 5.0 30.0ns 5.0
++               30.2ns 0.0 35.0ns 0.0 35.2ns 5.0 40.0ns 5.0
++               40.2ns 0.0 45.0ns 0.0 45.2ns 5.0 50.0ns 5.0)
+
+
+.tran .2ns 50ns
+.options timeint maxord=1
+
+.end

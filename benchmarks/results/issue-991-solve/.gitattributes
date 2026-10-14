@@ -1,0 +1,2 @@
+# Unified diffs require a context prefix on empty source lines.
+candidate.patch -whitespace

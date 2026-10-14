@@ -1,0 +1,1202 @@
+{
+  "baseSha": "d39157cd467ddd63ce501334b330609e7ee0a644",
+  "samples": 180,
+  "budget": {
+    "planned": 180,
+    "started": 180,
+    "completed": 180,
+    "nativeAttempted": 60,
+    "stopReason": null,
+    "actualRunSeconds": 126.85299270832911,
+    "deadlineAndBudgetCertified": true,
+    "start": {
+      "continuous": 157362.078009,
+      "monotonic": 98666.577711833,
+      "realtime": 1791981647.521611
+    },
+    "end": {
+      "continuous": 157488.93100170832,
+      "monotonic": 98793.430696333,
+      "realtime": 1791981774.375684
+    }
+  },
+  "walls": {
+    "rc-ladder-tran-1000": {
+      "before": {
+        "n": 10,
+        "min": 143.86487498995848,
+        "q1": 168.32852084189653,
+        "median": 181.16964583168738,
+        "q3": 230.4916874927585,
+        "iqr": 62.16316665086197,
+        "max": 295.9242500073742
+      },
+      "candidate": {
+        "n": 10,
+        "min": 138.00741668092087,
+        "q1": 168.78561458725017,
+        "median": 180.64791666984092,
+        "q3": 204.84623958327575,
+        "iqr": 36.06062499602558,
+        "max": 276.74237499013543
+      },
+      "native": {
+        "n": 10,
+        "min": 33.314583,
+        "q1": 41.620572499999994,
+        "median": 43.456125,
+        "q3": 51.60683325,
+        "iqr": 9.986260750000007,
+        "max": 94.854958
+      },
+      "reductionPercent": 0.2879782424099697,
+      "beforeNativeLoss": 4.16902440868088,
+      "candidateNativeLoss": 4.157018525463117
+    },
+    "resistor-mesh-op-1000": {
+      "before": {
+        "n": 10,
+        "min": 112.19849999179132,
+        "q1": 128.16767708864063,
+        "median": 136.6638125036843,
+        "q3": 150.5779062572401,
+        "iqr": 22.41022916859947,
+        "max": 237.37483331933618
+      },
+      "candidate": {
+        "n": 10,
+        "min": 106.03116665151902,
+        "q1": 120.186968742928,
+        "median": 131.70912499481346,
+        "q3": 142.1672499855049,
+        "iqr": 21.980281242576893,
+        "max": 258.3626666746568
+      },
+      "native": {
+        "n": 10,
+        "min": 20.145083,
+        "q1": 24.85077025,
+        "median": 26.1482085,
+        "q3": 27.2362605,
+        "iqr": 2.38549025,
+        "max": 39.02725
+      },
+      "reductionPercent": 3.6254568185248526,
+      "beforeNativeLoss": 5.226507678477641,
+      "candidateNativeLoss": 5.037022899477548
+    },
+    "rc-ladder-tran-10000": {
+      "before": {
+        "n": 10,
+        "min": 434.2812083486933,
+        "q1": 501.5711562446086,
+        "median": 529.7410416678758,
+        "q3": 611.5282187529374,
+        "iqr": 109.95706250832882,
+        "max": 821.1260833195411
+      },
+      "candidate": {
+        "n": 10,
+        "min": 432.84479167778045,
+        "q1": 526.44518748275,
+        "median": 578.0687500082422,
+        "q3": 614.6839166685822,
+        "iqr": 88.2387291858322,
+        "max": 829.0177083108574
+      },
+      "native": {
+        "n": 10,
+        "min": 190.48075,
+        "q1": 235.74970775,
+        "median": 253.0036455,
+        "q3": 279.2721565,
+        "iqr": 43.522448749999995,
+        "max": 472.435542
+      },
+      "reductionPercent": -9.122892987148568,
+      "beforeNativeLoss": 2.093807939490247,
+      "candidateNativeLoss": 2.284823797166362
+    },
+    "resistor-mesh-op-10000": {
+      "before": {
+        "n": 10,
+        "min": 308.3113333268557,
+        "q1": 346.89344791695476,
+        "median": 383.4599583206,
+        "q3": 464.4642812490929,
+        "iqr": 117.57083333213814,
+        "max": 521.1583749915008
+      },
+      "candidate": {
+        "n": 10,
+        "min": 350.0850416603498,
+        "q1": 376.93334374489496,
+        "median": 389.5642291754484,
+        "q3": 414.6164479170693,
+        "iqr": 37.68310417217435,
+        "max": 520.6188750162255
+      },
+      "native": {
+        "n": 10,
+        "min": 100.744833,
+        "q1": 114.93367725,
+        "median": 127.1150415,
+        "q3": 149.938052,
+        "iqr": 35.00437475,
+        "max": 180.8915
+      },
+      "reductionPercent": -1.5918926402596734,
+      "beforeNativeLoss": 3.0166371642226144,
+      "candidateNativeLoss": 3.0646587892232127
+    },
+    "rc-ladder-tran-50000": {
+      "before": {
+        "n": 10,
+        "min": 1663.677041651681,
+        "q1": 1865.9130833257223,
+        "median": 1922.7396249916637,
+        "q3": 1979.24276041158,
+        "iqr": 113.32967708585784,
+        "max": 2272.2077916550916
+      },
+      "candidate": {
+        "n": 10,
+        "min": 1537.4975833110511,
+        "q1": 1764.0446041696123,
+        "median": 1832.7226041583344,
+        "q3": 1907.2014687480987,
+        "iqr": 143.15686457848642,
+        "max": 2907.075958326459
+      },
+      "native": {
+        "n": 10,
+        "min": 968.547875,
+        "q1": 1360.056177,
+        "median": 1536.9479999999999,
+        "q3": 1570.494177,
+        "iqr": 210.4380000000001,
+        "max": 1711.208583
+      },
+      "reductionPercent": 4.6817062312178415,
+      "beforeNativeLoss": 1.251011501359619,
+      "candidateNativeLoss": 1.192442817947214
+    },
+    "resistor-mesh-op-50000": {
+      "before": {
+        "n": 10,
+        "min": 926.5833333483897,
+        "q1": 1170.2941875118995,
+        "median": 1217.8927499917336,
+        "q3": 1295.8303958366741,
+        "iqr": 125.53620832477463,
+        "max": 2737.8599166695494
+      },
+      "candidate": {
+        "n": 10,
+        "min": 1003.2632916700095,
+        "q1": 1159.9188958352897,
+        "median": 1235.0920000026235,
+        "q3": 1459.1014687466668,
+        "iqr": 299.18257291137706,
+        "max": 2273.0062500049826
+      },
+      "native": {
+        "n": 10,
+        "min": 601.75325,
+        "q1": 739.4892912500001,
+        "median": 779.0206045,
+        "q3": 893.6139479999999,
+        "iqr": 154.12465674999987,
+        "max": 1014.26875
+      },
+      "reductionPercent": -1.4122138432145714,
+      "beforeNativeLoss": 1.5633639764553027,
+      "candidateNativeLoss": 1.5854420189506342
+    }
+  },
+  "thresholdMet": false,
+  "errors": [
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 1000,
+      "signals": 1001,
+      "unchanged": true,
+      "worstMaxAbsolute": {
+        "name": "tran-v:n6",
+        "count": 120,
+        "maxAbs": 1.1102230246251565e-15,
+        "rmsAbs": 4.313041321297125e-16,
+        "scale": 0.5559122533231975,
+        "maxNormalized": 1.9971191820081947e-15,
+        "rmsNormalized": 7.758492991500225e-16
+      },
+      "worstRmsAbsolute": {
+        "name": "tran-v:n5",
+        "count": 120,
+        "maxAbs": 1.1102230246251565e-15,
+        "rmsAbs": 4.3298157940849415e-16,
+        "scale": 0.621712112483887,
+        "maxNormalized": 1.785750996855366e-15,
+        "rmsNormalized": 6.96434202767307e-16
+      },
+      "worstMaxNormalized": {
+        "name": "tran-v:n20",
+        "count": 120,
+        "maxAbs": 3.191891195797325e-16,
+        "rmsAbs": 1.128719487929473e-16,
+        "scale": 0.11380586548790088,
+        "maxNormalized": 2.804680744804552e-15,
+        "rmsNormalized": 9.917937736253773e-16
+      },
+      "worstRmsNormalized": {
+        "name": "tran-v:n15",
+        "count": 120,
+        "maxAbs": 4.996003610813204e-16,
+        "rmsAbs": 2.421677215719819e-16,
+        "scale": 0.19022998781735115,
+        "maxNormalized": 2.626296551945377e-15,
+        "rmsNormalized": 1.2730260057867353e-15
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 1000,
+      "signals": 1025,
+      "unchanged": true,
+      "worstMaxAbsolute": {
+        "name": "dc-v:n3_30",
+        "count": 1,
+        "maxAbs": 1.779687508474126e-13,
+        "rmsAbs": 1.779687508474126e-13,
+        "scale": 0.5891214055816365,
+        "maxNormalized": 3.0209180851560636e-13,
+        "rmsNormalized": 3.0209180851560636e-13
+      },
+      "worstRmsAbsolute": {
+        "name": "dc-v:n3_30",
+        "count": 1,
+        "maxAbs": 1.779687508474126e-13,
+        "rmsAbs": 1.779687508474126e-13,
+        "scale": 0.5891214055816365,
+        "maxNormalized": 3.0209180851560636e-13,
+        "rmsNormalized": 3.0209180851560636e-13
+      },
+      "worstMaxNormalized": {
+        "name": "dc-i:V1",
+        "count": 1,
+        "maxAbs": 8.754932542820448e-17,
+        "rmsAbs": 8.754932542820448e-17,
+        "scale": 0.00018213973387406585,
+        "maxNormalized": 4.806712053765127e-13,
+        "rmsNormalized": 4.806712053765127e-13
+      },
+      "worstRmsNormalized": {
+        "name": "dc-i:V1",
+        "count": 1,
+        "maxAbs": 8.754932542820448e-17,
+        "rmsAbs": 8.754932542820448e-17,
+        "scale": 0.00018213973387406585,
+        "maxNormalized": 4.806712053765127e-13,
+        "rmsNormalized": 4.806712053765127e-13
+      }
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 10000,
+      "signals": 10001,
+      "unchanged": true,
+      "worstMaxAbsolute": {
+        "name": "tran-v:n6",
+        "count": 120,
+        "maxAbs": 1.1102230246251565e-15,
+        "rmsAbs": 4.313041321297125e-16,
+        "scale": 0.5559122533231975,
+        "maxNormalized": 1.9971191820081947e-15,
+        "rmsNormalized": 7.758492991500225e-16
+      },
+      "worstRmsAbsolute": {
+        "name": "tran-v:n5",
+        "count": 120,
+        "maxAbs": 1.1102230246251565e-15,
+        "rmsAbs": 4.3298157940849415e-16,
+        "scale": 0.621712112483887,
+        "maxNormalized": 1.785750996855366e-15,
+        "rmsNormalized": 6.96434202767307e-16
+      },
+      "worstMaxNormalized": {
+        "name": "tran-v:n20",
+        "count": 120,
+        "maxAbs": 3.191891195797325e-16,
+        "rmsAbs": 1.128719487929473e-16,
+        "scale": 0.11380586548790088,
+        "maxNormalized": 2.804680744804552e-15,
+        "rmsNormalized": 9.917937736253773e-16
+      },
+      "worstRmsNormalized": {
+        "name": "tran-v:n15",
+        "count": 120,
+        "maxAbs": 4.996003610813204e-16,
+        "rmsAbs": 2.421677215719819e-16,
+        "scale": 0.19022998781735115,
+        "maxNormalized": 2.626296551945377e-15,
+        "rmsNormalized": 1.2730260057867353e-15
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "signals": 10001,
+      "unchanged": true,
+      "worstMaxAbsolute": {
+        "name": "dc-v:n1_97",
+        "count": 1,
+        "maxAbs": 1.7545964681175974e-12,
+        "rmsAbs": 1.7545964681175974e-12,
+        "scale": 0.5721005588399085,
+        "maxNormalized": 3.0669371686605676e-12,
+        "rmsNormalized": 3.0669371686605676e-12
+      },
+      "worstRmsAbsolute": {
+        "name": "dc-v:n1_97",
+        "count": 1,
+        "maxAbs": 1.7545964681175974e-12,
+        "rmsAbs": 1.7545964681175974e-12,
+        "scale": 0.5721005588399085,
+        "maxNormalized": 3.0669371686605676e-12,
+        "rmsNormalized": 3.0669371686605676e-12
+      },
+      "worstMaxNormalized": {
+        "name": "dc-i:V1",
+        "count": 1,
+        "maxAbs": 6.375379824757887e-16,
+        "rmsAbs": 6.375379824757887e-16,
+        "scale": 0.0001440749821996334,
+        "maxNormalized": 4.4250429376586866e-12,
+        "rmsNormalized": 4.4250429376586866e-12
+      },
+      "worstRmsNormalized": {
+        "name": "dc-i:V1",
+        "count": 1,
+        "maxAbs": 6.375379824757887e-16,
+        "rmsAbs": 6.375379824757887e-16,
+        "scale": 0.0001440749821996334,
+        "maxNormalized": 4.4250429376586866e-12,
+        "rmsNormalized": 4.4250429376586866e-12
+      }
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 50000,
+      "signals": 50001,
+      "unchanged": true,
+      "worstMaxAbsolute": {
+        "name": "tran-v:n6",
+        "count": 120,
+        "maxAbs": 1.1102230246251565e-15,
+        "rmsAbs": 4.313041321297125e-16,
+        "scale": 0.5559122533231975,
+        "maxNormalized": 1.9971191820081947e-15,
+        "rmsNormalized": 7.758492991500225e-16
+      },
+      "worstRmsAbsolute": {
+        "name": "tran-v:n5",
+        "count": 120,
+        "maxAbs": 1.1102230246251565e-15,
+        "rmsAbs": 4.3298157940849415e-16,
+        "scale": 0.621712112483887,
+        "maxNormalized": 1.785750996855366e-15,
+        "rmsNormalized": 6.96434202767307e-16
+      },
+      "worstMaxNormalized": {
+        "name": "tran-v:n20",
+        "count": 120,
+        "maxAbs": 3.191891195797325e-16,
+        "rmsAbs": 1.128719487929473e-16,
+        "scale": 0.11380586548790088,
+        "maxNormalized": 2.804680744804552e-15,
+        "rmsNormalized": 9.917937736253773e-16
+      },
+      "worstRmsNormalized": {
+        "name": "tran-v:n15",
+        "count": 120,
+        "maxAbs": 4.996003610813204e-16,
+        "rmsAbs": 2.421677215719819e-16,
+        "scale": 0.19022998781735115,
+        "maxNormalized": 2.626296551945377e-15,
+        "rmsNormalized": 1.2730260057867353e-15
+      }
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 50000,
+      "signals": 50177,
+      "unchanged": true,
+      "worstMaxAbsolute": {
+        "name": "dc-v:n1_223",
+        "count": 1,
+        "maxAbs": 8.075540236518464e-12,
+        "rmsAbs": 8.075540236518464e-12,
+        "scale": 0.5627483182235519,
+        "maxNormalized": 1.4350181022327736e-11,
+        "rmsNormalized": 1.4350181022327736e-11
+      },
+      "worstRmsAbsolute": {
+        "name": "dc-v:n1_223",
+        "count": 1,
+        "maxAbs": 8.075540236518464e-12,
+        "rmsAbs": 8.075540236518464e-12,
+        "scale": 0.5627483182235519,
+        "maxNormalized": 1.4350181022327736e-11,
+        "rmsNormalized": 1.4350181022327736e-11
+      },
+      "worstMaxNormalized": {
+        "name": "dc-i:V1",
+        "count": 1,
+        "maxAbs": 2.4965381324737468e-15,
+        "rmsAbs": 2.4965381324737468e-15,
+        "scale": 0.00012550758480528885,
+        "maxNormalized": 1.9891531944837038e-11,
+        "rmsNormalized": 1.9891531944837038e-11
+      },
+      "worstRmsNormalized": {
+        "name": "dc-i:V1",
+        "count": 1,
+        "maxAbs": 2.4965381324737468e-15,
+        "rmsAbs": 2.4965381324737468e-15,
+        "scale": 0.00012550758480528885,
+        "maxNormalized": 1.9891531944837038e-11,
+        "rmsNormalized": 1.9891531944837038e-11
+      }
+    }
+  ],
+  "profiles": [
+    {
+      "name": "rc-ladder-tran-1000.cpuprofile.gz",
+      "sampledMicroseconds": 215083,
+      "top": [
+        {
+          "frame": "compileSourceTextModule @ utils:344",
+          "selfPercent": 13.948103755294468
+        },
+        {
+          "frame": "attemptStep @ chunk-J4OURGTK.js:42389",
+          "selfPercent": 13.657983197184343
+        },
+        {
+          "frame": "(garbage collector) @ :0",
+          "selfPercent": 10.190019666826295
+        },
+        {
+          "frame": "(program) @ :0",
+          "selfPercent": 4.707485017411883
+        },
+        {
+          "frame": "compile @ chunk-J4OURGTK.js:34714",
+          "selfPercent": 3.0411515554460373
+        },
+        {
+          "frame": "extractControlBlocks @ chunk-J4OURGTK.js:36565",
+          "selfPercent": 2.363273712938726
+        },
+        {
+          "frame": "newtonRaphson @ chunk-J4OURGTK.js:41625",
+          "selfPercent": 2.344211304473157
+        },
+        {
+          "frame": "isIterationInvariant @ chunk-J4OURGTK.js:42542",
+          "selfPercent": 2.3437463676813137
+        },
+        {
+          "frame": "Duplex @ duplex:64",
+          "selfPercent": 2.3437463676813137
+        },
+        {
+          "frame": " @ rc1k-attribution-data.mjs:11",
+          "selfPercent": 2.3246839592157444
+        },
+        {
+          "frame": "compileFunction @ :0",
+          "selfPercent": 2.2856292687009203
+        },
+        {
+          "frame": "open @ :0",
+          "selfPercent": 2.266566860235351
+        },
+        {
+          "frame": "braceBareParameters @ chunk-J4OURGTK.js:1694",
+          "selfPercent": 2.266566860235351
+        },
+        {
+          "frame": "solveDCOperatingPoint @ chunk-J4OURGTK.js:41899",
+          "selfPercent": 2.266566860235351
+        },
+        {
+          "frame": "predictingDevices @ chunk-J4OURGTK.js:42519",
+          "selfPercent": 2.2275121697205265
+        },
+        {
+          "frame": "parseSourceWaveform @ chunk-J4OURGTK.js:4024",
+          "selfPercent": 2.188922415997545
+        },
+        {
+          "frame": "_NgspiceRandom @ chunk-J4OURGTK.js:5357",
+          "selfPercent": 2.188922415997545
+        },
+        {
+          "frame": "recordSlot @ chunk-J4OURGTK.js:41274",
+          "selfPercent": 2.073153154828601
+        },
+        {
+          "frame": "amdOrdering @ chunk-J4OURGTK.js:39704",
+          "selfPercent": 1.898336921095577
+        },
+        {
+          "frame": "behavioralResistorAsBSource @ chunk-J4OURGTK.js:3435",
+          "selfPercent": 1.8016300683922022
+        },
+        {
+          "frame": "#cachedDefaultResolve @ loader:739",
+          "selfPercent": 1.6468061167084336
+        },
+        {
+          "frame": "assertNoControlledTable @ chunk-J4OURGTK.js:493",
+          "selfPercent": 1.58868901772804
+        },
+        {
+          "frame": "read @ :0",
+          "selfPercent": 1.5305719187476463
+        },
+        {
+          "frame": " @ keys:1",
+          "selfPercent": 1.511044573490234
+        },
+        {
+          "frame": "stampG @ chunk-J4OURGTK.js:41216",
+          "selfPercent": 1.4529274745098404
+        },
+        {
+          "frame": "getVoltageAtTime @ chunk-J4OURGTK.js:6039",
+          "selfPercent": 1.2976385860342285
+        },
+        {
+          "frame": "solveTransient @ chunk-J4OURGTK.js:43880",
+          "selfPercent": 1.2590488323112472
+        },
+        {
+          "frame": "programFor @ chunk-J4OURGTK.js:41490",
+          "selfPercent": 1.027045373181516
+        },
+        {
+          "frame": "solveLinearized @ chunk-J4OURGTK.js:42494",
+          "selfPercent": 1.027045373181516
+        },
+        {
+          "frame": "flush @ chunk-J4OURGTK.js:43861",
+          "selfPercent": 0.9684633374092793
+        }
+      ]
+    },
+    {
+      "name": "rc-ladder-tran-10000.cpuprofile.gz",
+      "sampledMicroseconds": 998083,
+      "top": [
+        {
+          "frame": "attemptStep @ chunk-J4OURGTK.js:42389",
+          "selfPercent": 9.309346016313272
+        },
+        {
+          "frame": "buildCompanionSystem @ chunk-J4OURGTK.js:42192",
+          "selfPercent": 9.217570081846901
+        },
+        {
+          "frame": "(garbage collector) @ :0",
+          "selfPercent": 7.234668860205013
+        },
+        {
+          "frame": "compileSourceTextModule @ utils:344",
+          "selfPercent": 4.057778761886537
+        },
+        {
+          "frame": "acceptAll @ chunk-J4OURGTK.js:6692",
+          "selfPercent": 3.2731746758536113
+        },
+        {
+          "frame": "stampStaticDevices @ chunk-J4OURGTK.js:41521",
+          "selfPercent": 3.0473417541426917
+        },
+        {
+          "frame": "evaluate @ chunk-J4OURGTK.js:42862",
+          "selfPercent": 2.738549799966536
+        },
+        {
+          "frame": "compile @ chunk-J4OURGTK.js:34714",
+          "selfPercent": 2.588161505606247
+        },
+        {
+          "frame": "lockTopology @ chunk-J4OURGTK.js:41024",
+          "selfPercent": 2.4256499709943964
+        },
+        {
+          "frame": "amdOrdering @ chunk-J4OURGTK.js:39704",
+          "selfPercent": 2.1917014917597033
+        },
+        {
+          "frame": "stampPrevB @ chunk-J4OURGTK.js:43377",
+          "selfPercent": 2.1123493737494776
+        },
+        {
+          "frame": "newtonRaphson @ chunk-J4OURGTK.js:41625",
+          "selfPercent": 1.924589437952555
+        },
+        {
+          "frame": "refactorWithPivots @ chunk-J4OURGTK.js:40636",
+          "selfPercent": 1.8327133114179883
+        },
+        {
+          "frame": "braceBareParameters @ chunk-J4OURGTK.js:1694",
+          "selfPercent": 1.6530689331448387
+        },
+        {
+          "frame": " @ rc1k-attribution-data.mjs:11",
+          "selfPercent": 1.5946569573873115
+        },
+        {
+          "frame": "stampG @ chunk-J4OURGTK.js:41216",
+          "selfPercent": 1.5781252661351812
+        },
+        {
+          "frame": "stampDynamicDevices @ chunk-J4OURGTK.js:41563",
+          "selfPercent": 1.5446611153581415
+        },
+        {
+          "frame": "collectStatements @ chunk-J4OURGTK.js:3468",
+          "selfPercent": 1.5362449816297843
+        },
+        {
+          "frame": "flush @ chunk-J4OURGTK.js:43861",
+          "selfPercent": 1.519713290377654
+        },
+        {
+          "frame": "hashVectors @ rc1k-attribution-data.mjs:5",
+          "selfPercent": 1.3735330628815439
+        },
+        {
+          "frame": "solveLinearized @ chunk-J4OURGTK.js:42494",
+          "selfPercent": 1.3524927285606507
+        },
+        {
+          "frame": "advanceSolution @ chunk-J4OURGTK.js:43076",
+          "selfPercent": 1.3399687200363095
+        },
+        {
+          "frame": "analyzePattern @ chunk-J4OURGTK.js:40005",
+          "selfPercent": 1.1480007173752083
+        },
+        {
+          "frame": "truncationTimestepAll @ chunk-J4OURGTK.js:6714",
+          "selfPercent": 1.1397849677832406
+        },
+        {
+          "frame": "(program) @ :0",
+          "selfPercent": 1.0687487914331775
+        },
+        {
+          "frame": "update @ hash:132",
+          "selfPercent": 1.0687487914331775
+        },
+        {
+          "frame": "set @ chunk-J4OURGTK.js:33207",
+          "selfPercent": 1.02706889106417
+        },
+        {
+          "frame": "add @ chunk-J4OURGTK.js:39643",
+          "selfPercent": 1.0102366236074556
+        },
+        {
+          "frame": "TransientSimImpl @ chunk-J4OURGTK.js:43025",
+          "selfPercent": 1.0102366236074556
+        },
+        {
+          "frame": "parseDevice @ chunk-J4OURGTK.js:39137",
+          "selfPercent": 0.9435087061897658
+        }
+      ]
+    },
+    {
+      "name": "rc-ladder-tran-50000.cpuprofile.gz",
+      "sampledMicroseconds": 2164250,
+      "top": [
+        {
+          "frame": "(garbage collector) @ :0",
+          "selfPercent": 11.36074852720342
+        },
+        {
+          "frame": "evaluate @ chunk-J4OURGTK.js:42862",
+          "selfPercent": 8.353378768626545
+        },
+        {
+          "frame": "buildCompanionSystem @ chunk-J4OURGTK.js:42192",
+          "selfPercent": 5.646806052905164
+        },
+        {
+          "frame": "solve @ chunk-J4OURGTK.js:40731",
+          "selfPercent": 3.401917523391475
+        },
+        {
+          "frame": "acceptAll @ chunk-J4OURGTK.js:6692",
+          "selfPercent": 3.24398752454661
+        },
+        {
+          "frame": "stampStaticDevices @ chunk-J4OURGTK.js:41521",
+          "selfPercent": 3.165068730507104
+        },
+        {
+          "frame": "flush @ chunk-J4OURGTK.js:43861",
+          "selfPercent": 2.7818874898925725
+        },
+        {
+          "frame": "lockTopology @ chunk-J4OURGTK.js:41024",
+          "selfPercent": 2.025412960609911
+        },
+        {
+          "frame": "hashVectors @ rc1k-attribution-data.mjs:5",
+          "selfPercent": 1.957953101536329
+        },
+        {
+          "frame": "set @ chunk-J4OURGTK.js:33207",
+          "selfPercent": 1.9079126718262678
+        },
+        {
+          "frame": "update @ hash:132",
+          "selfPercent": 1.905925840360402
+        },
+        {
+          "frame": "amdOrdering @ chunk-J4OURGTK.js:39704",
+          "selfPercent": 1.8136536906549614
+        },
+        {
+          "frame": "attemptStep @ chunk-J4OURGTK.js:42389",
+          "selfPercent": 1.7884717569596857
+        },
+        {
+          "frame": "truncationTimestepAll @ chunk-J4OURGTK.js:6714",
+          "selfPercent": 1.6576181125101075
+        },
+        {
+          "frame": "newtonRaphson @ chunk-J4OURGTK.js:41625",
+          "selfPercent": 1.6422317199953795
+        },
+        {
+          "frame": "compile @ chunk-J4OURGTK.js:34714",
+          "selfPercent": 1.6364560471294907
+        },
+        {
+          "frame": "analyzePattern @ chunk-J4OURGTK.js:40005",
+          "selfPercent": 1.5421046551923299
+        },
+        {
+          "frame": "add @ chunk-J4OURGTK.js:39643",
+          "selfPercent": 1.4939586461822802
+        },
+        {
+          "frame": "collectStatements @ chunk-J4OURGTK.js:3468",
+          "selfPercent": 1.4073697585768743
+        },
+        {
+          "frame": "compileSourceTextModule @ utils:344",
+          "selfPercent": 1.3822802356474528
+        },
+        {
+          "frame": " @ rc1k-attribution-data.mjs:11",
+          "selfPercent": 1.351553656000924
+        },
+        {
+          "frame": "braceBareParameters @ chunk-J4OURGTK.js:1694",
+          "selfPercent": 1.3264179276885757
+        },
+        {
+          "frame": "extractControlBlocks @ chunk-J4OURGTK.js:36565",
+          "selfPercent": 1.259050479380848
+        },
+        {
+          "frame": "factorize @ chunk-J4OURGTK.js:40127",
+          "selfPercent": 1.1532401524777636
+        },
+        {
+          "frame": "stampDynamicDevices @ chunk-J4OURGTK.js:41563",
+          "selfPercent": 1.0819914520041585
+        },
+        {
+          "frame": "solveTransient @ chunk-J4OURGTK.js:43880",
+          "selfPercent": 1.043502368025875
+        },
+        {
+          "frame": "stampPrevB @ chunk-J4OURGTK.js:43377",
+          "selfPercent": 1.0319048169111702
+        },
+        {
+          "frame": "RegExp: (?:^|[\\s,])\\$ @ :0",
+          "selfPercent": 1.0203534711793925
+        },
+        {
+          "frame": "buildProgram @ chunk-J4OURGTK.js:41429",
+          "selfPercent": 0.9894882753840822
+        },
+        {
+          "frame": "record @ chunk-J4OURGTK.js:43851",
+          "selfPercent": 0.9742404990181356
+        }
+      ]
+    },
+    {
+      "name": "resistor-mesh-op-1000.cpuprofile.gz",
+      "sampledMicroseconds": 168500,
+      "top": [
+        {
+          "frame": "(garbage collector) @ :0",
+          "selfPercent": 20.202373887240356
+        },
+        {
+          "frame": "compileSourceTextModule @ utils:344",
+          "selfPercent": 18.941246290801185
+        },
+        {
+          "frame": "newtonRaphson @ chunk-J4OURGTK.js:41625",
+          "selfPercent": 8.456973293768545
+        },
+        {
+          "frame": "simulate @ chunk-J4OURGTK.js:49837",
+          "selfPercent": 7.220771513353116
+        },
+        {
+          "frame": "(program) @ :0",
+          "selfPercent": 6.15727002967359
+        },
+        {
+          "frame": "solve @ chunk-J4OURGTK.js:40731",
+          "selfPercent": 5.886053412462908
+        },
+        {
+          "frame": " @ dir:1",
+          "selfPercent": 2.9673590504451037
+        },
+        {
+          "frame": "getDeprecationWarningEmitter @ util:111",
+          "selfPercent": 2.8682492581602372
+        },
+        {
+          "frame": "recordSlot @ chunk-J4OURGTK.js:41274",
+          "selfPercent": 2.8433234421364983
+        },
+        {
+          "frame": "amdOrdering @ chunk-J4OURGTK.js:39704",
+          "selfPercent": 2.5964391691394657
+        },
+        {
+          "frame": "Socket @ node:net:363",
+          "selfPercent": 2.546587537091988
+        },
+        {
+          "frame": "sortInt32Range @ chunk-J4OURGTK.js:39906",
+          "selfPercent": 2.249851632047478
+        },
+        {
+          "frame": "braceTokens @ chunk-J4OURGTK.js:1765",
+          "selfPercent": 2.0528189910979227
+        },
+        {
+          "frame": "endOfLineCommentStart @ chunk-J4OURGTK.js:352",
+          "selfPercent": 2.0528189910979227
+        },
+        {
+          "frame": " @ chunk-J4OURGTK.js:1",
+          "selfPercent": 2.0278931750741838
+        },
+        {
+          "frame": "compile @ chunk-J4OURGTK.js:34714",
+          "selfPercent": 2.0029673590504453
+        },
+        {
+          "frame": "getOrInitializeCascadedLoader @ loader:1029",
+          "selfPercent": 1.7554896142433234
+        },
+        {
+          "frame": "compileForInternalLoader @ realm:385",
+          "selfPercent": 1.6818991097922849
+        },
+        {
+          "frame": "factorize @ chunk-J4OURGTK.js:40127",
+          "selfPercent": 1.3845697329376854
+        },
+        {
+          "frame": "collectStatements @ chunk-J4OURGTK.js:3468",
+          "selfPercent": 1.3103857566765578
+        },
+        {
+          "frame": "readFileUtf8 @ :0",
+          "selfPercent": 1.1376854599406527
+        },
+        {
+          "frame": "parseNetlist @ chunk-J4OURGTK.js:38238",
+          "selfPercent": 0.8652818991097923
+        },
+        {
+          "frame": "analyzePattern @ chunk-J4OURGTK.js:40005",
+          "selfPercent": 0.7916913946587537
+        }
+      ]
+    },
+    {
+      "name": "resistor-mesh-op-10000.cpuprofile.gz",
+      "sampledMicroseconds": 611292,
+      "top": [
+        {
+          "frame": "(garbage collector) @ :0",
+          "selfPercent": 17.871491856592268
+        },
+        {
+          "frame": "analyzePattern @ chunk-J4OURGTK.js:40005",
+          "selfPercent": 6.870693547437232
+        },
+        {
+          "frame": "compileSourceTextModule @ utils:344",
+          "selfPercent": 6.700234912284146
+        },
+        {
+          "frame": "factorize @ chunk-J4OURGTK.js:40127",
+          "selfPercent": 5.425721259234539
+        },
+        {
+          "frame": "applySupernode @ chunk-J4OURGTK.js:40489",
+          "selfPercent": 5.030492792315293
+        },
+        {
+          "frame": "newtonRaphson @ chunk-J4OURGTK.js:41625",
+          "selfPercent": 5.016424229337207
+        },
+        {
+          "frame": "amdOrdering @ chunk-J4OURGTK.js:39704",
+          "selfPercent": 3.8168338535429878
+        },
+        {
+          "frame": "preprocessSteps @ chunk-J4OURGTK.js:3030",
+          "selfPercent": 3.558037729922852
+        },
+        {
+          "frame": "braceBareParameters @ chunk-J4OURGTK.js:1694",
+          "selfPercent": 2.747132303383653
+        },
+        {
+          "frame": "parseDevice @ chunk-J4OURGTK.js:39137",
+          "selfPercent": 2.4742676167854314
+        },
+        {
+          "frame": "braceTokens @ chunk-J4OURGTK.js:1765",
+          "selfPercent": 1.9290290074138055
+        },
+        {
+          "frame": "compile @ chunk-J4OURGTK.js:34714",
+          "selfPercent": 1.833493649516107
+        },
+        {
+          "frame": "lockTopology @ chunk-J4OURGTK.js:41024",
+          "selfPercent": 1.5881117371076343
+        },
+        {
+          "frame": "heapPush @ chunk-J4OURGTK.js:40863",
+          "selfPercent": 1.5881117371076343
+        },
+        {
+          "frame": "stamp @ chunk-J4OURGTK.js:5302",
+          "selfPercent": 1.5472147517062222
+        },
+        {
+          "frame": "tokenizeNetlist @ chunk-J4OURGTK.js:635",
+          "selfPercent": 1.4451358761442976
+        },
+        {
+          "frame": " @ linear-10k-worker.mjs:1",
+          "selfPercent": 1.4451358761442976
+        },
+        {
+          "frame": "extractControlBlocks @ chunk-J4OURGTK.js:36565",
+          "selfPercent": 1.41798027783776
+        },
+        {
+          "frame": "endOfLineCommentStart @ chunk-J4OURGTK.js:352",
+          "selfPercent": 1.4109459963487172
+        },
+        {
+          "frame": "(program) @ :0",
+          "selfPercent": 1.4042388907428855
+        },
+        {
+          "frame": "solve @ chunk-J4OURGTK.js:40731",
+          "selfPercent": 1.3497641061882046
+        },
+        {
+          "frame": "set @ chunk-J4OURGTK.js:33207",
+          "selfPercent": 1.2404873611956315
+        },
+        {
+          "frame": "RegExp: \\s @ :0",
+          "selfPercent": 1.2200388684949255
+        },
+        {
+          "frame": "collectStatements @ chunk-J4OURGTK.js:3468",
+          "selfPercent": 1.1928832701883878
+        },
+        {
+          "frame": "simulate @ chunk-J4OURGTK.js:49837",
+          "selfPercent": 1.0428731277360084
+        },
+        {
+          "frame": "parseNetlist @ chunk-J4OURGTK.js:38238",
+          "selfPercent": 1.0019761423345963
+        },
+        {
+          "frame": "collectParamFrames @ chunk-J4OURGTK.js:1724",
+          "selfPercent": 0.9542084633857469
+        },
+        {
+          "frame": "addResistor @ chunk-J4OURGTK.js:33948",
+          "selfPercent": 0.8248104015756791
+        },
+        {
+          "frame": "resolveResistor @ chunk-J4OURGTK.js:4829",
+          "selfPercent": 0.8248104015756791
+        },
+        {
+          "frame": "heapPopMin @ chunk-J4OURGTK.js:40875",
+          "selfPercent": 0.8248104015756791
+        }
+      ]
+    },
+    {
+      "name": "resistor-mesh-op-50000.cpuprofile.gz",
+      "sampledMicroseconds": 1320959,
+      "top": [
+        {
+          "frame": "applySupernode @ chunk-J4OURGTK.js:40489",
+          "selfPercent": 15.717747484971145
+        },
+        {
+          "frame": "(garbage collector) @ :0",
+          "selfPercent": 13.676957422599793
+        },
+        {
+          "frame": "factorize @ chunk-J4OURGTK.js:40127",
+          "selfPercent": 8.891873252689901
+        },
+        {
+          "frame": "amdOrdering @ chunk-J4OURGTK.js:39704",
+          "selfPercent": 6.617616443810898
+        },
+        {
+          "frame": "compile @ chunk-J4OURGTK.js:34714",
+          "selfPercent": 2.9714018376043465
+        },
+        {
+          "frame": "lockTopology @ chunk-J4OURGTK.js:41024",
+          "selfPercent": 2.8515646587062884
+        },
+        {
+          "frame": "set @ chunk-J4OURGTK.js:33207",
+          "selfPercent": 2.7000081001757055
+        },
+        {
+          "frame": "RegExp: \\s @ :0",
+          "selfPercent": 2.583350429498569
+        },
+        {
+          "frame": "newtonRaphson @ chunk-J4OURGTK.js:41625",
+          "selfPercent": 2.567679996124028
+        },
+        {
+          "frame": "compileSourceTextModule @ utils:344",
+          "selfPercent": 2.0755375450714215
+        },
+        {
+          "frame": "extractControlBlocks @ chunk-J4OURGTK.js:36565",
+          "selfPercent": 1.8924887146383802
+        },
+        {
+          "frame": "collectStatements @ chunk-J4OURGTK.js:3468",
+          "selfPercent": 1.873638773042918
+        },
+        {
+          "frame": "parseNetlist @ chunk-J4OURGTK.js:38238",
+          "selfPercent": 1.835711782121928
+        },
+        {
+          "frame": "endOfLineCommentStart @ chunk-J4OURGTK.js:352",
+          "selfPercent": 1.7474425777030174
+        },
+        {
+          "frame": "resolveNode @ chunk-J4OURGTK.js:34812",
+          "selfPercent": 1.709591289358716
+        },
+        {
+          "frame": "parseDevice @ chunk-J4OURGTK.js:39137",
+          "selfPercent": 1.4857387700905176
+        },
+        {
+          "frame": "braceTokens @ chunk-J4OURGTK.js:1765",
+          "selfPercent": 1.4730207372068322
+        },
+        {
+          "frame": "analyzePattern @ chunk-J4OURGTK.js:40005",
+          "selfPercent": 1.3911862518064528
+        },
+        {
+          "frame": "update @ hash:132",
+          "selfPercent": 1.3595425747506167
+        },
+        {
+          "frame": "heapPush @ chunk-J4OURGTK.js:40863",
+          "selfPercent": 1.3594668721739283
+        },
+        {
+          "frame": "tokenizeLine @ chunk-J4OURGTK.js:667",
+          "selfPercent": 1.3436450336460102
+        },
+        {
+          "frame": "solve @ chunk-J4OURGTK.js:40731",
+          "selfPercent": 1.2081374213734113
+        },
+        {
+          "frame": "(program) @ :0",
+          "selfPercent": 1.1702104304524212
+        },
+        {
+          "frame": "addCanonical @ chunk-J4OURGTK.js:33171",
+          "selfPercent": 1.1324348446848085
+        },
+        {
+          "frame": "isTemperatureSweep @ chunk-J4OURGTK.js:3242",
+          "selfPercent": 1.1229720225987332
+        },
+        {
+          "frame": "stampStaticDevices @ chunk-J4OURGTK.js:41521",
+          "selfPercent": 1.0313719048055239
+        },
+        {
+          "frame": "braceBareParameters @ chunk-J4OURGTK.js:1694",
+          "selfPercent": 0.7980565634512502
+        },
+        {
+          "frame": "substituteExpressions @ chunk-J4OURGTK.js:3696",
+          "selfPercent": 0.7602052751069488
+        },
+        {
+          "frame": "sortInt32Range @ chunk-J4OURGTK.js:39906",
+          "selfPercent": 0.7570257668860275
+        },
+        {
+          "frame": "commentedOutCard @ chunk-J4OURGTK.js:3098",
+          "selfPercent": 0.7444591391557195
+        }
+      ]
+    }
+  ]
+}

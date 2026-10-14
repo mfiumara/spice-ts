@@ -1,0 +1,320 @@
+[
+  {
+    "status": "ok",
+    "firstNs": "157171052199333",
+    "doneNs": "157171250305166",
+    "lifetime": {
+      "performanceMs": 198.105833,
+      "realtimeMs": 199
+    },
+    "boundaries": {
+      "import": 52.879209,
+      "deckRead": 0.78525,
+      "parse": 29.339167,
+      "simulate": 107.775542,
+      "outputHash": 7.2895,
+      "compile": null,
+      "matrixBuild": null,
+      "ordering": null,
+      "loadStamp": null,
+      "factor": null,
+      "solve": null,
+      "outputMaterialization": null
+    },
+    "evidence": {
+      "deckSha256": "0944ed6b76f64f56c8e04b48919f1e12b9de19df4e5a08708c4be314fa7a91b7",
+      "output": {
+        "outputSha256": "6a650522805562c8018777ab78a344668d2fb12038fd6e4fcfd7cc3302c4e8a7",
+        "vectors": 1002,
+        "count": 120240
+      },
+      "convergence": {
+        "dc": {
+          "newtonIterations": 1,
+          "acceptedSolves": 1,
+          "rejectedSolves": 0,
+          "sourceStepAttempts": 0,
+          "sourceStepFailures": 0,
+          "gminStepAttempts": 0,
+          "gminStepFailures": 0,
+          "failure": null
+        },
+        "transient": {
+          "acceptedSteps": 119,
+          "rejectedSteps": 0,
+          "newtonIterations": 238,
+          "nrRetries": 0,
+          "lteRetries": 0,
+          "minimumAcceptedTimestep": 1.0000000000000001e-11,
+          "failure": null
+        }
+      },
+      "calls": {}
+    }
+  },
+  {
+    "status": "ok",
+    "firstNs": "157171316740000",
+    "doneNs": "157171458792250",
+    "lifetime": {
+      "performanceMs": 142.05225,
+      "realtimeMs": 145
+    },
+    "boundaries": {
+      "import": 46.227,
+      "deckRead": 0.60375,
+      "parse": 25.424291,
+      "simulate": 67.99425,
+      "outputHash": 1.780292,
+      "compile": null,
+      "matrixBuild": null,
+      "ordering": null,
+      "loadStamp": null,
+      "factor": null,
+      "solve": null,
+      "outputMaterialization": null
+    },
+    "evidence": {
+      "deckSha256": "6c6d5adb109cdde9ac844c3346135f4e7ffc352626b2f3c430598c0ebd9d8d40",
+      "output": {
+        "outputSha256": "07c7b7f8d8e21c2a963959d6e080707a4e465f349ad3d4757598b4d70ab23999",
+        "vectors": 1025,
+        "count": 1025
+      },
+      "convergence": {
+        "dc": {
+          "newtonIterations": 2,
+          "acceptedSolves": 1,
+          "rejectedSolves": 0,
+          "sourceStepAttempts": 0,
+          "sourceStepFailures": 0,
+          "gminStepAttempts": 0,
+          "gminStepFailures": 0,
+          "failure": null
+        },
+        "transient": {
+          "acceptedSteps": 0,
+          "rejectedSteps": 0,
+          "newtonIterations": 0,
+          "nrRetries": 0,
+          "lteRetries": 0,
+          "minimumAcceptedTimestep": null,
+          "failure": null
+        }
+      },
+      "calls": {}
+    }
+  },
+  {
+    "status": "ok",
+    "firstNs": "157171543061625",
+    "doneNs": "157172521602958",
+    "lifetime": {
+      "performanceMs": 978.541333,
+      "realtimeMs": 979
+    },
+    "boundaries": {
+      "import": 63.07675,
+      "deckRead": 1.647709,
+      "parse": 167.529167,
+      "simulate": 699.871541,
+      "outputHash": 46.377542,
+      "compile": null,
+      "matrixBuild": null,
+      "ordering": null,
+      "loadStamp": null,
+      "factor": null,
+      "solve": null,
+      "outputMaterialization": null
+    },
+    "evidence": {
+      "deckSha256": "eb21933fd99fcbc32276816a4f389ba216dcdddc29683551a67f606f352dfca7",
+      "output": {
+        "outputSha256": "cfed768fddaa3d8f6f44396c0b98d1e1101231083774afcf4f993b888a787ede",
+        "vectors": 10002,
+        "count": 1200240
+      },
+      "convergence": {
+        "dc": {
+          "newtonIterations": 1,
+          "acceptedSolves": 1,
+          "rejectedSolves": 0,
+          "sourceStepAttempts": 0,
+          "sourceStepFailures": 0,
+          "gminStepAttempts": 0,
+          "gminStepFailures": 0,
+          "failure": null
+        },
+        "transient": {
+          "acceptedSteps": 119,
+          "rejectedSteps": 0,
+          "newtonIterations": 238,
+          "nrRetries": 0,
+          "lteRetries": 0,
+          "minimumAcceptedTimestep": 1.0000000000000001e-11,
+          "failure": null
+        }
+      },
+      "calls": {}
+    }
+  },
+  {
+    "status": "ok",
+    "firstNs": "157172587770083",
+    "doneNs": "157173182053166",
+    "lifetime": {
+      "performanceMs": 594.283083,
+      "realtimeMs": 595
+    },
+    "boundaries": {
+      "import": 59.938958,
+      "deckRead": 1.291625,
+      "parse": 224.699042,
+      "simulate": 296.435417,
+      "outputHash": 11.885708,
+      "compile": null,
+      "matrixBuild": null,
+      "ordering": null,
+      "loadStamp": null,
+      "factor": null,
+      "solve": null,
+      "outputMaterialization": null
+    },
+    "evidence": {
+      "deckSha256": "c88e6076daf2523437e3da014d7a3c329f679a7405f789530c5c805f447ed0dc",
+      "output": {
+        "outputSha256": "7fe66c8319033d70158a6b010fa0f98b7d9374c27dbd0a855515f8087f43628f",
+        "vectors": 10001,
+        "count": 10001
+      },
+      "convergence": {
+        "dc": {
+          "newtonIterations": 2,
+          "acceptedSolves": 1,
+          "rejectedSolves": 0,
+          "sourceStepAttempts": 0,
+          "sourceStepFailures": 0,
+          "gminStepAttempts": 0,
+          "gminStepFailures": 0,
+          "failure": null
+        },
+        "transient": {
+          "acceptedSteps": 0,
+          "rejectedSteps": 0,
+          "newtonIterations": 0,
+          "nrRetries": 0,
+          "lteRetries": 0,
+          "minimumAcceptedTimestep": null,
+          "failure": null
+        }
+      },
+      "calls": {}
+    }
+  },
+  {
+    "status": "ok",
+    "firstNs": "157173245641916",
+    "doneNs": "157175393510375",
+    "lifetime": {
+      "performanceMs": 2147.868459,
+      "realtimeMs": 2149
+    },
+    "boundaries": {
+      "import": 46.30975,
+      "deckRead": 3.574875,
+      "parse": 456.491916,
+      "simulate": 1504.697834,
+      "outputHash": 136.761666,
+      "compile": null,
+      "matrixBuild": null,
+      "ordering": null,
+      "loadStamp": null,
+      "factor": null,
+      "solve": null,
+      "outputMaterialization": null
+    },
+    "evidence": {
+      "deckSha256": "2fd0c2090d17dddf80980eb3391440a3e4f99e1a77d1158360ffedc4246a7ada",
+      "output": {
+        "outputSha256": "52ebad35966097da6334d001ceece5c3d325cbc6a9e00df2b1365c9ff9e2df02",
+        "vectors": 50002,
+        "count": 6000240
+      },
+      "convergence": {
+        "dc": {
+          "newtonIterations": 1,
+          "acceptedSolves": 1,
+          "rejectedSolves": 0,
+          "sourceStepAttempts": 0,
+          "sourceStepFailures": 0,
+          "gminStepAttempts": 0,
+          "gminStepFailures": 0,
+          "failure": null
+        },
+        "transient": {
+          "acceptedSteps": 119,
+          "rejectedSteps": 0,
+          "newtonIterations": 238,
+          "nrRetries": 0,
+          "lteRetries": 0,
+          "minimumAcceptedTimestep": 1.0000000000000001e-11,
+          "failure": null
+        }
+      },
+      "calls": {}
+    }
+  },
+  {
+    "status": "ok",
+    "firstNs": "157175452893541",
+    "doneNs": "157176762366375",
+    "lifetime": {
+      "performanceMs": 1309.472834,
+      "realtimeMs": 1311
+    },
+    "boundaries": {
+      "import": 35.56,
+      "deckRead": 3.591916,
+      "parse": 395.285709,
+      "simulate": 835.035916,
+      "outputHash": 39.972667,
+      "compile": null,
+      "matrixBuild": null,
+      "ordering": null,
+      "loadStamp": null,
+      "factor": null,
+      "solve": null,
+      "outputMaterialization": null
+    },
+    "evidence": {
+      "deckSha256": "f81ed198f7ba67068138846b12fe93b9ec957e6bb3a89300d2c7c50e30d47329",
+      "output": {
+        "outputSha256": "1abd9b0b4e5c2234b3d04dfafa07100f89b2c44661211a64ed1398b2b4c70427",
+        "vectors": 50177,
+        "count": 50177
+      },
+      "convergence": {
+        "dc": {
+          "newtonIterations": 2,
+          "acceptedSolves": 1,
+          "rejectedSolves": 0,
+          "sourceStepAttempts": 0,
+          "sourceStepFailures": 0,
+          "gminStepAttempts": 0,
+          "gminStepFailures": 0,
+          "failure": null
+        },
+        "transient": {
+          "acceptedSteps": 0,
+          "rejectedSteps": 0,
+          "newtonIterations": 0,
+          "nrRetries": 0,
+          "lteRetries": 0,
+          "minimumAcceptedTimestep": null,
+          "failure": null
+        }
+      },
+      "calls": {}
+    }
+  }
+]

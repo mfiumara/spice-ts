@@ -1,0 +1,15 @@
+diff --git a/packages/core/src/analysis/transient-step.ts b/packages/core/src/analysis/transient-step.ts
+index 77feb11a..13439ae4 100644
+--- a/packages/core/src/analysis/transient-step.ts
++++ b/packages/core/src/analysis/transient-step.ts
+@@ -146,8 +146,8 @@ export function attemptStep(ctx: StepContext, attempt: StepAttempt): StepResult
+     prev.set(assembler.solution);
+ 
+     // Compute raw deltas before damping so oscillation detection sees the actual iterate
+-    const rawDelta = deltaBuffers[iter & 1] ??= new Float64Array(nodeCount);
+-    for (let i = 0; i < nodeCount; i++) rawDelta[i] = x[i] - prev[i];
++    const rawDelta = deltaBuffers[iter & 1] ??= new Float64Array(limitedNodes.length === 0 ? 0 : nodeCount);
++    for (const i of limitedNodes) rawDelta[i] = x[i] - prev[i];
+ 
+     if (prevDelta) {
+       for (const i of limitedNodes) {

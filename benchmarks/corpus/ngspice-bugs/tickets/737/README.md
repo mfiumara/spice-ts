@@ -24,7 +24,7 @@ Edits relative to the ticket: Absolute Windows .include/.lib paths (D:/spice_lib
 
 ## Expected answer
 
-undetermined: a KiCad op-amp test bench built from vendor PSpice macromodels; no independent waveform. The developers state PSpice models require compatibility mode LTPS. (basis: undetermined)
+undetermined: a KiCad op-amp test bench built from vendor PSpice macromodels; no independent waveform. The developers state PSpice models require compatibility mode LTPS. NEW OP diagnostic: large OP difference attributed to native rshunt narrowing; loss retained. See [ROOTCAUSE.md](https://github.com/mfiumara/spice-ts/blob/main/benchmarks/results/issue-1049/ROOTCAUSE.md). (basis: undetermined)
 
 ## Results
 
