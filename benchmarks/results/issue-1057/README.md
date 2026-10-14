@@ -22,6 +22,7 @@ pnpm -C packages/core exec vitest run src/devices/mos3-temperature-1057.test.ts 
 pnpm build
 pnpm lint
 spice-heavy pnpm exec tsx benchmarks/results/issue-1057/jge.ts
+spice-heavy pnpm exec tsx benchmarks/results/issue-1057/rich3.ts
 ```
 
 The reference generator runs `ngspice -b -r probe.raw probe.cir` with an isolated
@@ -58,11 +59,11 @@ including the existing quantity floors. No adapted/fine-step reference is used.
   succeeds, spice-ts fails with `UnsupportedTemperatureError` for m0 at 100 C.
   No comparable waveform, so worst error is null, not zero.
 - After merging main and rerunning on committed core tree
-  `fbc345b319d0189637f4431e27bac33ea5337dc5`:
+  `7a189dd51b7dc41559272741791ccd90a6839aa4`:
   both engines succeed with 5410 transient points; outcome `matched`.
 - Worst peak-normalized error is 0.000367 on `tran i(vshiftlsp2)`, below 0.01.
   Full matched-point max/RMS absolute/relative metrics are in `jge.json`.
-- Measured cold engine/adapter wall: ngspice 5842.928917 ms, spice-ts 17473.532416 ms.
+- Measured cold engine/adapter wall: ngspice 2012.298833 ms, spice-ts 10777.347041 ms.
   spice-ts is slower in this run. These include startup, adapter and export and
   are not solver-only timings or a performance-improvement claim.
 
@@ -71,6 +72,41 @@ The fixture is unchanged Xyce_Regression
 `7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2`, GPL-3.0-or-later. Source URL,
 redistribution notice and per-file hash are retained in the pinned corpus-l
 `SOURCES.md`, `licenses/xyce/` and `manifest.json`; this PR does not copy it.
+
+## Identical-byte rich3 result (residual loss)
+
+The same pinned corpus-l commit supplies l-19, unchanged
+`Netlists/CircuitSim90/MOS3/rich3.cir` at TEMP=125 C. SHA-256 is
+`5cf5ebcafb990907419d4844249ed6c8a53e47be8faf06f8e16fd08a5ef353ae`.
+The upstream revision and GPL-3.0-or-later provenance are the same as jge above.
+`rich3.ts` uses the unchanged corpus-f runners and corpus-j reducer with the
+unchanged 0.01 threshold. There is no per-circuit tuning or fine-step reference.
+
+- Before, freshly measured on main `d39157cd467ddd63ce501334b330609e7ee0a644`:
+  ngspice succeeds with tran:1314. spice-ts fails with the temperature-model
+  rejection for m$600 at 125 C. Error and signal are null, not zero.
+  Cold wall is ngspice 268.501000 ms, spice-ts 598.842542 ms (failed run).
+- After, on merged revision `8da46c02aaa19dccf26e5b76535d588378b1a820`:
+  ngspice succeeds with tran:1314, spice-ts succeeds with tran:1341.
+  The outcome is `mismatch`, across 56 compared signals. Worst normalized error
+  is 0.284 on `tran i(v$d7)`, above 0.01. For that signal, max absolute error is
+  0.00038097756419687353 A and RMS is 0.000014831501890016032 A.
+  Cold wall is ngspice 354.445417 ms, spice-ts 2770.781167 ms.
+- Full metrics, machine/tool details, revision and clean-core-diff hashes are in
+  `rich3-before.json` and `rich3-after.json`. Timings include startup and export;
+  these are not solver-only measurements or a speed-improvement claim.
+
+This admission fix removes the guard failure but does not establish rich3 parity.
+The PR therefore references #1057 rather than closing it. The waveform residual
+has not been attributed to the temperature law versus transient/grid behavior.
+No new production changes or residual diagnosis are included in this slice.
+
+For a fresh before/after rerun, retain the untracked `rich3.ts` in this path,
+check out the recorded main revision, run `pnpm build`, then run
+`spice-heavy pnpm exec tsx benchmarks/results/issue-1057/rich3.ts --before`.
+Return to the PR revision, rebuild, and run without `--before`.
+`remediation-*.log.gz` retain the fresh build, lint, 123 targeted-test and jge
+receipts. Required exact-head CI is the full-suite gate.
 
 ## Source audit
 

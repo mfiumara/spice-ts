@@ -1,0 +1,54 @@
+{
+  "command": "spice-heavy pnpm exec tsx benchmarks/results/issue-1057/rich3.ts --before",
+  "phase": "before",
+  "revision": "d39157cd467ddd63ce501334b330609e7ee0a644",
+  "fixtureRevision": "66d67caff2f10e4d6a36d2e59898cc52d661b98d",
+  "fixture": "benchmarks/corpus/corpus-l/fixtures/xyce/Netlists/CircuitSim90/MOS3/rich3.cir",
+  "sha256": "5cf5ebcafb990907419d4844249ed6c8a53e47be8faf06f8e16fd08a5ef353ae",
+  "source": "Xyce/Xyce_Regression Netlists/CircuitSim90/MOS3/rich3.cir, GPL-3.0-or-later; provenance in pinned corpus-l/SOURCES.md",
+  "coreTree": "bf5b06211a9dbc887319a4def7c0c98cbeb020cc",
+  "workingCoreDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "tools": {
+    "ngspice": "ngspice-47",
+    "node": "v22.23.1"
+  },
+  "environment": {
+    "platform": "darwin",
+    "release": "27.0.0",
+    "arch": "arm64",
+    "cpu": "Apple M5 Pro"
+  },
+  "policy": "Unchanged corpus-f runners and corpus-j reduceRow. Identical fixture bytes at TEMP=125 C. Unchanged 0.01 threshold. No tuning. Cold wall includes adapter/process startup; not a speed claim.",
+  "result": {
+    "id": "l-19",
+    "sourcePath": "xyce/Netlists/CircuitSim90/MOS3/rich3.cir",
+    "sha256": "5cf5ebcafb990907419d4844249ed6c8a53e47be8faf06f8e16fd08a5ef353ae",
+    "analyses": [
+      "tran"
+    ],
+    "unmappedAnalyses": [],
+    "sameNameAs": [],
+    "ngspice": {
+      "status": "success",
+      "analyses": [
+        "tran:1314"
+      ]
+    },
+    "spiceTs": {
+      "status": "failed",
+      "analyses": [],
+      "firstErrorLine": "Device 'm$600' has no ngspice temperature model in spice-ts and cannot be simulated at TEMP=125 C"
+    },
+    "comparedAnalyses": 0,
+    "comparedSignals": 0,
+    "worstNormalizedError": null,
+    "worstSignal": null,
+    "outcome": "spice-ts-loss",
+    "gapBucket": "execution: other failure",
+    "comparisons": []
+  },
+  "runtime": {
+    "ngspiceWallMs": 268.50100000000003,
+    "spiceTsWallMs": 598.842542
+  }
+}

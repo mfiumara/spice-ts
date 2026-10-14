@@ -4,7 +4,7 @@
   "fixture": "benchmarks/corpus/corpus-l/fixtures/xyce/Netlists/CircuitSim90/MOS3/jge.cir",
   "sha256": "c0da4a46792a27496530ea1a57b1253dd980d17380db58ffd6e6434f0156babf",
   "source": "Xyce/Xyce_Regression Netlists/CircuitSim90/MOS3/jge.cir, GPL-3.0-or-later; provenance in pinned corpus-l/SOURCES.md",
-  "coreTree": "fbc345b319d0189637f4431e27bac33ea5337dc5",
+  "coreTree": "7a189dd51b7dc41559272741791ccd90a6839aa4",
   "workingCoreDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "tools": {
     "ngspice": "ngspice-47",
@@ -7153,7 +7153,7 @@
     ]
   },
   "runtime": {
-    "ngspiceWallMs": 5842.928917,
-    "spiceTsWallMs": 17473.532416
+    "ngspiceWallMs": 2012.298833,
+    "spiceTsWallMs": 10777.347041
   }
 }
