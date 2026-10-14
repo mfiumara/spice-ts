@@ -1,0 +1,527 @@
+{
+  "fixtures": {
+    "ngspice": {
+      "before-spice-ts": {
+        "medianMs": 4667.3458329896675,
+        "samplesMs": [
+          4667.3458329896675,
+          4330.368541995995,
+          3500.6828749901615,
+          4918.059749994427,
+          6473.6280829965835
+        ]
+      },
+      "before-ngspice": {
+        "medianMs": 424.1035000013653,
+        "samplesMs": [
+          432.6693330076523,
+          424.1035000013653,
+          400.7102089963155,
+          419.5119590003742,
+          426.4553750108462
+        ]
+      },
+      "before-waveformSha256": "ad51749fb28e86d6890e18d6bd65f71781c311de3a8724ef90d4c176cc37168f",
+      "before-telemetry": {
+        "dc": {
+          "newtonIterations": 143,
+          "acceptedSolves": 12,
+          "rejectedSolves": 1,
+          "sourceStepAttempts": 0,
+          "sourceStepFailures": 0,
+          "gminStepAttempts": 12,
+          "gminStepFailures": 0,
+          "failure": null
+        },
+        "transient": {
+          "acceptedSteps": 2428,
+          "rejectedSteps": 766,
+          "newtonIterations": 82710,
+          "nrRetries": 756,
+          "lteRetries": 10,
+          "minimumAcceptedTimestep": 7.569444300496845e-12,
+          "failure": null
+        }
+      },
+      "after-spice-ts": {
+        "medianMs": 3674.3067920033354,
+        "samplesMs": [
+          3735.32733299362,
+          3880.325666992576,
+          3287.3427080048714,
+          3612.815500004217,
+          3674.3067920033354
+        ]
+      },
+      "after-ngspice": {
+        "medianMs": 436.21004099259153,
+        "samplesMs": [
+          428.5922080016462,
+          436.21004099259153,
+          405.57479100243654,
+          520.0341250019846,
+          459.7647920018062
+        ]
+      },
+      "after-waveformSha256": "ad51749fb28e86d6890e18d6bd65f71781c311de3a8724ef90d4c176cc37168f",
+      "after-telemetry": {
+        "dc": {
+          "newtonIterations": 143,
+          "acceptedSolves": 12,
+          "rejectedSolves": 1,
+          "sourceStepAttempts": 0,
+          "sourceStepFailures": 0,
+          "gminStepAttempts": 12,
+          "gminStepFailures": 0,
+          "failure": null
+        },
+        "transient": {
+          "acceptedSteps": 2428,
+          "rejectedSteps": 766,
+          "newtonIterations": 82710,
+          "nrRetries": 756,
+          "lteRetries": 10,
+          "minimumAcceptedTimestep": 7.569444300496845e-12,
+          "failure": null
+        }
+      },
+      "reductionPercent": 21.27631155950236,
+      "remainingNativeRatio": 8.423251293442231
+    },
+    "classic": {
+      "before-spice-ts": {
+        "medianMs": 4081.945874990197,
+        "samplesMs": [
+          4081.945874990197,
+          3466.904374989099,
+          3695.218124994426,
+          4183.99700000009,
+          4348.772666999139
+        ]
+      },
+      "before-ngspice": {
+        "medianMs": 425.14258400478866,
+        "samplesMs": [
+          412.67550000338815,
+          395.09387499128934,
+          425.14258400478866,
+          439.860749989748,
+          433.139625005424
+        ]
+      },
+      "before-waveformSha256": "ad51749fb28e86d6890e18d6bd65f71781c311de3a8724ef90d4c176cc37168f",
+      "before-telemetry": {
+        "dc": {
+          "newtonIterations": 143,
+          "acceptedSolves": 12,
+          "rejectedSolves": 1,
+          "sourceStepAttempts": 0,
+          "sourceStepFailures": 0,
+          "gminStepAttempts": 12,
+          "gminStepFailures": 0,
+          "failure": null
+        },
+        "transient": {
+          "acceptedSteps": 2428,
+          "rejectedSteps": 766,
+          "newtonIterations": 82710,
+          "nrRetries": 756,
+          "lteRetries": 10,
+          "minimumAcceptedTimestep": 7.569444300496845e-12,
+          "failure": null
+        }
+      },
+      "after-spice-ts": {
+        "medianMs": 3591.207666991977,
+        "samplesMs": [
+          3581.006749998778,
+          3465.8855840098113,
+          3970.9499579912517,
+          4366.810624997015,
+          3591.207666991977
+        ]
+      },
+      "after-ngspice": {
+        "medianMs": 475.17479199450463,
+        "samplesMs": [
+          434.93520899210125,
+          493.3641249954235,
+          475.17479199450463,
+          1076.678625002387,
+          396.0823750094278
+        ]
+      },
+      "after-waveformSha256": "ad51749fb28e86d6890e18d6bd65f71781c311de3a8724ef90d4c176cc37168f",
+      "after-telemetry": {
+        "dc": {
+          "newtonIterations": 143,
+          "acceptedSolves": 12,
+          "rejectedSolves": 1,
+          "sourceStepAttempts": 0,
+          "sourceStepFailures": 0,
+          "gminStepAttempts": 12,
+          "gminStepFailures": 0,
+          "failure": null
+        },
+        "transient": {
+          "acceptedSteps": 2428,
+          "rejectedSteps": 766,
+          "newtonIterations": 82710,
+          "nrRetries": 756,
+          "lteRetries": 10,
+          "minimumAcceptedTimestep": 7.569444300496845e-12,
+          "failure": null
+        }
+      },
+      "reductionPercent": 12.022163522670382,
+      "remainingNativeRatio": 7.557656103595472
+    }
+  },
+  "profiles": {
+    "before-ngspice": [
+      {
+        "function": "stampG",
+        "url": "file:///private/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/t_3aca3607-before-dist/chunk-JLBPI3GR.js",
+        "line": 41313,
+        "column": 19,
+        "selfPercent": 14.643156620484941
+      },
+      {
+        "function": "stampTransientCharge",
+        "url": "file:///private/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/t_3aca3607-before-dist/chunk-JLBPI3GR.js",
+        "line": 12788,
+        "column": 23,
+        "selfPercent": 13.372984584913787
+      },
+      {
+        "function": "getVoltage",
+        "url": "file:///private/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/t_3aca3607-before-dist/chunk-JLBPI3GR.js",
+        "line": 41322,
+        "column": 23,
+        "selfPercent": 9.141385778794765
+      },
+      {
+        "function": "stamp",
+        "url": "file:///private/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/t_3aca3607-before-dist/chunk-JLBPI3GR.js",
+        "line": 12601,
+        "column": 8,
+        "selfPercent": 9.050122663554387
+      },
+      {
+        "function": "evaluateChannel",
+        "url": "file:///private/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/t_3aca3607-before-dist/chunk-JLBPI3GR.js",
+        "line": 12184,
+        "column": 18,
+        "selfPercent": 8.820993991248756
+      },
+      {
+        "function": "(garbage collector)",
+        "url": "",
+        "line": 0,
+        "column": 0,
+        "selfPercent": 6.742024314006436
+      },
+      {
+        "function": "buildCompanionSystem",
+        "url": "file:///private/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/t_3aca3607-before-dist/chunk-JLBPI3GR.js",
+        "line": 42290,
+        "column": 30,
+        "selfPercent": 4.291282635122809
+      },
+      {
+        "function": "evaluateCharges",
+        "url": "file:///private/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/t_3aca3607-before-dist/chunk-JLBPI3GR.js",
+        "line": 12890,
+        "column": 18,
+        "selfPercent": 4.260316538910229
+      },
+      {
+        "function": "stampStaticDevices",
+        "url": "file:///private/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/t_3aca3607-before-dist/chunk-JLBPI3GR.js",
+        "line": 41618,
+        "column": 28,
+        "selfPercent": 3.7153183554856746
+      },
+      {
+        "function": "stampB",
+        "url": "file:///private/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/t_3aca3607-before-dist/chunk-JLBPI3GR.js",
+        "line": 41316,
+        "column": 19,
+        "selfPercent": 3.563119481609154
+      },
+      {
+        "function": "gradingFactors",
+        "url": "file:///private/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/t_3aca3607-before-dist/chunk-JLBPI3GR.js",
+        "line": 12907,
+        "column": 17,
+        "selfPercent": 3.118122371267142
+      },
+      {
+        "function": "refactorWithPivots",
+        "url": "file:///private/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/t_3aca3607-before-dist/chunk-JLBPI3GR.js",
+        "line": 40732,
+        "column": 21,
+        "selfPercent": 2.624095608588544
+      }
+    ],
+    "before-classic": [
+      {
+        "function": "stampTransientCharge",
+        "url": "file:///private/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/t_3aca3607-before-dist/chunk-JLBPI3GR.js",
+        "line": 12788,
+        "column": 23,
+        "selfPercent": 15.250163551401869
+      },
+      {
+        "function": "stampG",
+        "url": "file:///private/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/t_3aca3607-before-dist/chunk-JLBPI3GR.js",
+        "line": 41313,
+        "column": 19,
+        "selfPercent": 13.192873831775701
+      },
+      {
+        "function": "stamp",
+        "url": "file:///private/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/t_3aca3607-before-dist/chunk-JLBPI3GR.js",
+        "line": 12601,
+        "column": 8,
+        "selfPercent": 9.428691588785046
+      },
+      {
+        "function": "getVoltage",
+        "url": "file:///private/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/t_3aca3607-before-dist/chunk-JLBPI3GR.js",
+        "line": 41322,
+        "column": 23,
+        "selfPercent": 8.728644859813084
+      },
+      {
+        "function": "(garbage collector)",
+        "url": "",
+        "line": 0,
+        "column": 0,
+        "selfPercent": 6.432079439252337
+      },
+      {
+        "function": "evaluateChannel",
+        "url": "file:///private/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/t_3aca3607-before-dist/chunk-JLBPI3GR.js",
+        "line": 12184,
+        "column": 18,
+        "selfPercent": 6.353200934579439
+      },
+      {
+        "function": "buildCompanionSystem",
+        "url": "file:///private/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/t_3aca3607-before-dist/chunk-JLBPI3GR.js",
+        "line": 42290,
+        "column": 30,
+        "selfPercent": 5.899532710280374
+      },
+      {
+        "function": "stampB",
+        "url": "file:///private/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/t_3aca3607-before-dist/chunk-JLBPI3GR.js",
+        "line": 41316,
+        "column": 19,
+        "selfPercent": 4.293247663551402
+      },
+      {
+        "function": "evaluateCharges",
+        "url": "file:///private/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/t_3aca3607-before-dist/chunk-JLBPI3GR.js",
+        "line": 12890,
+        "column": 18,
+        "selfPercent": 4.108294392523365
+      },
+      {
+        "function": "gradingFactors",
+        "url": "file:///private/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/t_3aca3607-before-dist/chunk-JLBPI3GR.js",
+        "line": 12907,
+        "column": 17,
+        "selfPercent": 2.954532710280374
+      },
+      {
+        "function": "stampStaticDevices",
+        "url": "file:///private/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/t_3aca3607-before-dist/chunk-JLBPI3GR.js",
+        "line": 41618,
+        "column": 28,
+        "selfPercent": 2.7930140186915886
+      },
+      {
+        "function": "refactorWithPivots",
+        "url": "file:///private/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/t_3aca3607-before-dist/chunk-JLBPI3GR.js",
+        "line": 40732,
+        "column": 21,
+        "selfPercent": 2.6420794392523366
+      }
+    ],
+    "after-ngspice": [
+      {
+        "function": "stampTransientCharge",
+        "url": "file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/packages/core/dist/chunk-4DZJKMOA.js",
+        "line": 12825,
+        "column": 23,
+        "selfPercent": 14.280068770075344
+      },
+      {
+        "function": "stampConductance",
+        "url": "file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/packages/core/dist/chunk-4DZJKMOA.js",
+        "line": 12077,
+        "column": 19,
+        "selfPercent": 9.844118597600522
+      },
+      {
+        "function": "stamp",
+        "url": "file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/packages/core/dist/chunk-4DZJKMOA.js",
+        "line": 12638,
+        "column": 8,
+        "selfPercent": 8.880034912685309
+      },
+      {
+        "function": "getVoltage",
+        "url": "file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/packages/core/dist/chunk-4DZJKMOA.js",
+        "line": 41360,
+        "column": 23,
+        "selfPercent": 8.828644231382283
+      },
+      {
+        "function": "(garbage collector)",
+        "url": "",
+        "line": 0,
+        "column": 0,
+        "selfPercent": 7.990261603301315
+      },
+      {
+        "function": "evaluateChannel",
+        "url": "file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/packages/core/dist/chunk-4DZJKMOA.js",
+        "line": 12221,
+        "column": 18,
+        "selfPercent": 7.587133312373997
+      },
+      {
+        "function": "evaluateCharges",
+        "url": "file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/packages/core/dist/chunk-4DZJKMOA.js",
+        "line": 12927,
+        "column": 18,
+        "selfPercent": 5.591306125769211
+      },
+      {
+        "function": "gradingFactors",
+        "url": "file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/packages/core/dist/chunk-4DZJKMOA.js",
+        "line": 12944,
+        "column": 17,
+        "selfPercent": 3.7649857425211444
+      },
+      {
+        "function": "stampChargeCompanion",
+        "url": "file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/packages/core/dist/chunk-4DZJKMOA.js",
+        "line": 12098,
+        "column": 23,
+        "selfPercent": 3.408906032551462
+      },
+      {
+        "function": "terminalVoltages",
+        "url": "file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/packages/core/dist/chunk-4DZJKMOA.js",
+        "line": 12598,
+        "column": 19,
+        "selfPercent": 2.9049750576564968
+      },
+      {
+        "function": "buildCompanionSystem",
+        "url": "file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/packages/core/dist/chunk-4DZJKMOA.js",
+        "line": 42328,
+        "column": 30,
+        "selfPercent": 2.5615643873021594
+      },
+      {
+        "function": "stampB",
+        "url": "file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/packages/core/dist/chunk-4DZJKMOA.js",
+        "line": 41354,
+        "column": 19,
+        "selfPercent": 2.440205430813303
+      }
+    ],
+    "after-classic": [
+      {
+        "function": "stampTransientCharge",
+        "url": "file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/packages/core/dist/chunk-4DZJKMOA.js",
+        "line": 12825,
+        "column": 23,
+        "selfPercent": 15.057328536871687
+      },
+      {
+        "function": "(garbage collector)",
+        "url": "",
+        "line": 0,
+        "column": 0,
+        "selfPercent": 10.559784203692505
+      },
+      {
+        "function": "stampConductance",
+        "url": "file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/packages/core/dist/chunk-4DZJKMOA.js",
+        "line": 12077,
+        "column": 19,
+        "selfPercent": 10.053559994308278
+      },
+      {
+        "function": "getVoltage",
+        "url": "file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/packages/core/dist/chunk-4DZJKMOA.js",
+        "line": 41360,
+        "column": 23,
+        "selfPercent": 8.836509729287467
+      },
+      {
+        "function": "stamp",
+        "url": "file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/packages/core/dist/chunk-4DZJKMOA.js",
+        "line": 12638,
+        "column": 8,
+        "selfPercent": 8.550506252000996
+      },
+      {
+        "function": "evaluateChannel",
+        "url": "file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/packages/core/dist/chunk-4DZJKMOA.js",
+        "line": 12221,
+        "column": 18,
+        "selfPercent": 8.186936386112198
+      },
+      {
+        "function": "evaluateCharges",
+        "url": "file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/packages/core/dist/chunk-4DZJKMOA.js",
+        "line": 12927,
+        "column": 18,
+        "selfPercent": 5.1079870869054815
+      },
+      {
+        "function": "gradingFactors",
+        "url": "file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/packages/core/dist/chunk-4DZJKMOA.js",
+        "line": 12944,
+        "column": 17,
+        "selfPercent": 3.3025328163352423
+      },
+      {
+        "function": "stampChargeCompanion",
+        "url": "file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/packages/core/dist/chunk-4DZJKMOA.js",
+        "line": 12098,
+        "column": 23,
+        "selfPercent": 3.127723577958806
+      },
+      {
+        "function": "buildCompanionSystem",
+        "url": "file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/packages/core/dist/chunk-4DZJKMOA.js",
+        "line": 42328,
+        "column": 30,
+        "selfPercent": 2.872930080751307
+      },
+      {
+        "function": "incrementalCharge",
+        "url": "file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/packages/core/dist/chunk-4DZJKMOA.js",
+        "line": 6602,
+        "column": 20,
+        "selfPercent": 2.039209517626552
+      },
+      {
+        "function": "terminalVoltages",
+        "url": "file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_3aca3607/packages/core/dist/chunk-4DZJKMOA.js",
+        "line": 12598,
+        "column": 19,
+        "selfPercent": 2.019560848066593
+      }
+    ]
+  },
+  "passes15PercentGate": false
+}
