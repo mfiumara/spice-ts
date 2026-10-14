@@ -1,0 +1,63 @@
+{
+  "coreRevision": "48827496115c8fac6e0b0a5198630bbb1965e6a6",
+  "node": "v22.23.1",
+  "regressionDeckCount": 8,
+  "exactRepeatedScores": true,
+  "fullTests": {
+    "command": "spice-heavy pnpm test",
+    "exitCode": 0,
+    "summaries": [
+      " Test Files  322 passed | 1 skipped (323)",
+      "      Tests  4326 passed | 3 expected fail | 6 skipped (4335)",
+      " Test Files  1 passed (1)",
+      "      Tests  17 passed (17)",
+      " Test Files  2 passed (2)",
+      "      Tests  11 passed (11)",
+      " Test Files  4 passed (4)",
+      "      Tests  76 passed (76)",
+      " Test Files  17 passed (17)",
+      "      Tests  209 passed (209)",
+      " Test Files  6 passed (6)",
+      "      Tests  64 passed (64)",
+      "# tests 4",
+      "# pass 4",
+      "# fail 0",
+      "# skipped 0",
+      "# tests 1",
+      "# pass 1",
+      "# fail 0",
+      "# skipped 0",
+      "# tests 1",
+      "# pass 1",
+      "# fail 0",
+      "# skipped 0",
+      "# tests 3",
+      "# pass 3",
+      "# fail 0",
+      "# skipped 0",
+      "# tests 3",
+      "# pass 3",
+      "# fail 0",
+      "# skipped 0",
+      " Test Files  2 passed (2)",
+      "      Tests  20 passed (20)",
+      "# tests 202",
+      "# pass 198",
+      "# fail 0",
+      "# skipped 4"
+    ]
+  },
+  "build": {
+    "command": "pnpm build",
+    "lastLines": [
+      "examples/showcase build: dist/assets/eecircuit-engine-CAaQWCsJ.js         20,262.84 kB \u2502 gzip: 5,825.73 kB",
+      "examples/showcase build: \u2713 built in 1.41s",
+      "examples/showcase build: [plugin builtin:vite-reporter] ",
+      "examples/showcase build: (!) Some chunks are larger than 500 kB after minification. Consider:",
+      "examples/showcase build: - Using dynamic import() to code-split the application",
+      "examples/showcase build: - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting",
+      "examples/showcase build: - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.",
+      "examples/showcase build: Done"
+    ]
+  }
+}

@@ -1,0 +1,96 @@
+gm17 [
+  {
+    signal: 'i(vdi)',
+    normalized: 0.07367900254433166,
+    absoluteMax: 7.367900254433165e-12
+  },
+  {
+    signal: 'i(vdi)',
+    normalized: 0.07367900254433166,
+    absoluteMax: 7.367900254433165e-12
+  }
+]
+gm19 [
+  {
+    signal: 'i(vin)',
+    normalized: 0.17164594259599314,
+    absoluteMax: 0.000008610973818829524
+  },
+  {
+    signal: 'i(vin)',
+    normalized: 0.17164594259599314,
+    absoluteMax: 0.000008610973818829524
+  }
+]
+gm2 [
+  {
+    signal: 'i(vdd)',
+    normalized: 0.12871411342972366,
+    absoluteMax: 0.001265176532030601
+  },
+  {
+    signal: 'i(vdd)',
+    normalized: 0.12871411342972366,
+    absoluteMax: 0.001265176532030601
+  }
+]
+mike2 [
+  {
+    signal: 'i(vtest1)',
+    normalized: 0.02045417691011936,
+    absoluteMax: 0.00018783038826868277
+  },
+  {
+    signal: 'i(vtest1)',
+    normalized: 0.02045417691011936,
+    absoluteMax: 0.00018783038826868277
+  }
+]
+gm1 [
+  {
+    signal: 'i(vrd1)',
+    normalized: 0.008989035073399815,
+    absoluteMax: 0.000009581426954704706
+  },
+  {
+    signal: 'i(vrd1)',
+    normalized: 0.008989035073399815,
+    absoluteMax: 0.000009581426954704706
+  }
+]
+gm3 [
+  {
+    signal: 'i(vin)',
+    normalized: 0.0002788527236952159,
+    absoluteMax: 0.0000012721901738029992
+  },
+  {
+    signal: 'i(vin)',
+    normalized: 0.0002788527236952159,
+    absoluteMax: 0.0000012721901738029992
+  }
+]
+todd3 [
+  {
+    signal: 'i(vnd)',
+    normalized: 0.002379194450977695,
+    absoluteMax: 2.3791944509776953e-13
+  },
+  {
+    signal: 'i(vnd)',
+    normalized: 0.002379194450977695,
+    absoluteMax: 2.3791944509776953e-13
+  }
+]
+arom [
+  {
+    signal: 'v(31)',
+    normalized: 0.1752556113740046,
+    absoluteMax: 0.8091891209803213
+  },
+  {
+    signal: 'v(31)',
+    normalized: 0.1752556113740046,
+    absoluteMax: 0.8091891209803213
+  }
+]

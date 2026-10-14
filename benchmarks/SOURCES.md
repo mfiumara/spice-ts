@@ -71,6 +71,15 @@ original project work. Every paired run uses identical input bytes. Separate
 OP/fine-step/control variants are labelled, not used to change corpus scores.
 No fixture, harness, tolerance or aggregate is changed; losses remain losses.
 
+The [gm17 startup receipt](results/issue-1059-gm17/report.md) adds the unchanged
+gm17 original and four labelled reductions from the same GPL-3.0-or-later
+source and model cards. The licence notices above apply to these reductions.
+It also reruns unchanged gm19/gm2/mike2/gm1/gm3/todd3/arom. Scripts are original
+project work. The diagnostic ngspice patch uses ngspice-47 source revision
+`a80f6e3e95d51534905b1f23410a951802666656`; its BSD-3-Clause notice is retained
+in `results/issue-1059-gm17/ngspice-COPYING`. A native-only diagonal-shunt
+control is explicitly not the corpus oracle and changes no production score.
+
 [Follow-up state trace and rejected candidate](results/issue-1059-fix/report.md)
 reuse these same GPL-3.0-or-later decks and additionally classify unchanged
 corpus-l `arom.cir` from the same pinned source. Fine variants alter only

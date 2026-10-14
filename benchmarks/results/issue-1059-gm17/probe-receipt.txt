@@ -1,0 +1,87 @@
+spice-heavy: all 2 heavy slots busy, waiting...
+spice-heavy: got slot 0
+original [
+  {
+    signal: 'i(vdi)',
+    normalized: 0.07367900254433166,
+    absoluteMax: 7.367900254433165e-12
+  },
+  {
+    signal: 'i(vwr)',
+    normalized: 0.055980963167251284,
+    absoluteMax: 5.598096316725128e-12
+  },
+  {
+    signal: 'i(vad)',
+    normalized: 0.0001054211671383927,
+    absoluteMax: 8.742579257249323e-8
+  }
+] first [ 0, 1.6000000000000003e-12, 3.2000000000000005e-12 ] [ 0, 1.6e-12, 3.200000000000001e-12 ]
+storage-write [
+  {
+    signal: 'i(vdd)',
+    normalized: 0.7128885922207182,
+    absoluteMax: 1.8293603241749473e-10
+  },
+  {
+    signal: 'i(vdi)',
+    normalized: 0.0736878939461622,
+    absoluteMax: 7.36878939461622e-12
+  },
+  {
+    signal: 'i(vwr)',
+    normalized: 0.05597473176137878,
+    absoluteMax: 5.597473176137878e-12
+  }
+] first [ 0, 1.6000000000000003e-12, 3.2000000000000005e-12 ] [ 0, 1.6e-12, 3.200000000000001e-12 ]
+write-cell [
+  {
+    signal: 'i(vdd)',
+    normalized: 0.0001474251425341674,
+    absoluteMax: 1.4742514253416742e-14
+  },
+  {
+    signal: 'i(vwr)',
+    normalized: 0.00002544966495363656,
+    absoluteMax: 2.544966495363656e-15
+  },
+  {
+    signal: 'i(vdi)',
+    normalized: 0.000010279520461436563,
+    absoluteMax: 1.0279520461436563e-15
+  }
+] first [ 0, 1.6000000000000003e-12, 3.2000000000000005e-12 ] [ 0, 1.6e-12, 3.200000000000001e-12 ]
+nand [
+  {
+    signal: 'i(vdd)',
+    normalized: 0.000013423304781669844,
+    absoluteMax: 1.3423304781669844e-15
+  },
+  {
+    signal: 'i(vwr)',
+    normalized: 0.000003279617371746814,
+    absoluteMax: 3.279617371746814e-16
+  },
+  {
+    signal: 'i(vdi)',
+    normalized: 0.0000021693943471216575,
+    absoluteMax: 2.1693943471216574e-16
+  }
+] first [ 0, 1.6000000000000003e-12, 3.2000000000000005e-12 ] [ 0, 1.6e-12, 3.200000000000001e-12 ]
+inverter [
+  {
+    signal: 'i(vdd)',
+    normalized: 0.000005368482272038331,
+    absoluteMax: 5.368482272038332e-16
+  },
+  {
+    signal: 'i(vdi)',
+    normalized: 0.0000012549496940253255,
+    absoluteMax: 1.2549496940253256e-16
+  },
+  {
+    signal: 'v(11)',
+    normalized: 1.0214051840496868e-13,
+    absoluteMax: 5.10702591327572e-13
+  }
+] first [ 0, 1.6000000000000003e-12, 3.2000000000000005e-12 ] [ 0, 1.6e-12, 3.200000000000001e-12 ]

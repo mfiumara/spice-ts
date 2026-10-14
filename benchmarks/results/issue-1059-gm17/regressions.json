@@ -1,0 +1,3170 @@
+[
+  {
+    "name": "gm17",
+    "passes": [
+      {
+        "pass": "before",
+        "sha256": "43fc842bd3c7bfbbe285a5d83b4eb08fa6acc1a3c8a5da9ae62c605bd32324a9",
+        "errors": [
+          {
+            "signal": "i(vdi)",
+            "normalized": 0.07367900254433166,
+            "absoluteMax": 7.367900254433165e-12
+          },
+          {
+            "signal": "i(vwr)",
+            "normalized": 0.055980963167251284,
+            "absoluteMax": 5.598096316725128e-12
+          },
+          {
+            "signal": "i(vad)",
+            "normalized": 0.0001054211671383927,
+            "absoluteMax": 8.742579257249323e-8
+          },
+          {
+            "signal": "i(vdd)",
+            "normalized": 0.00005215855569791662,
+            "absoluteMax": 8.511278371838276e-8
+          },
+          {
+            "signal": "v(73)",
+            "normalized": 0.0000206246154272059,
+            "absoluteMax": 0.0000013704600824865354
+          },
+          {
+            "signal": "v(6)",
+            "normalized": 0.00001688259537813088,
+            "absoluteMax": 0.0000016633245537855945
+          },
+          {
+            "signal": "v(16)",
+            "normalized": 0.000016325747229342343,
+            "absoluteMax": 8.493137763181113e-7
+          },
+          {
+            "signal": "v(47)",
+            "normalized": 0.000014057758976247923,
+            "absoluteMax": 0.00007211443755839042
+          },
+          {
+            "signal": "v(43)",
+            "normalized": 0.00001058444709527623,
+            "absoluteMax": 0.000052916906123190444
+          },
+          {
+            "signal": "v(x23.4)",
+            "normalized": 0.000010253851709532647,
+            "absoluteMax": 0.00002659412575489739
+          },
+          {
+            "signal": "v(8)",
+            "normalized": 0.000009874198417464744,
+            "absoluteMax": 9.874198417464744e-10
+          },
+          {
+            "signal": "i(vclk)",
+            "normalized": 0.000009324204756995433,
+            "absoluteMax": 6.392539545904891e-11
+          },
+          {
+            "signal": "v(2)",
+            "normalized": 0.00000929095671501993,
+            "absoluteMax": 0.00002380215246833295
+          },
+          {
+            "signal": "v(5)",
+            "normalized": 0.000008993411078851142,
+            "absoluteMax": 0.000001501329451120137
+          },
+          {
+            "signal": "v(x25.4)",
+            "normalized": 0.00000783295904002943,
+            "absoluteMax": 0.000020315348217669893
+          },
+          {
+            "signal": "v(42)",
+            "normalized": 0.000005902612289080478,
+            "absoluteMax": 0.000030198798967928653
+          },
+          {
+            "signal": "v(45)",
+            "normalized": 0.000005649121843865116,
+            "absoluteMax": 0.00002684679827735792
+          },
+          {
+            "signal": "v(44)",
+            "normalized": 0.000005102170397428505,
+            "absoluteMax": 0.0000264620723104958
+          },
+          {
+            "signal": "v(77)",
+            "normalized": 0.000005058898705049837,
+            "absoluteMax": 5.058898705049837e-10
+          },
+          {
+            "signal": "v(14)",
+            "normalized": 0.0000033366266412793247,
+            "absoluteMax": 3.336626641279325e-10
+          },
+          {
+            "signal": "v(15)",
+            "normalized": 0.0000026407308673553937,
+            "absoluteMax": 2.640730867355394e-10
+          },
+          {
+            "signal": "v(x15.4)",
+            "normalized": 8.90867395192599e-7,
+            "absoluteMax": 0.000002310524235049627
+          },
+          {
+            "signal": "v(4)",
+            "normalized": 7.378446217218054e-7,
+            "absoluteMax": 0.000003689294092446005
+          },
+          {
+            "signal": "v(7)",
+            "normalized": 3.2342674501019344e-7,
+            "absoluteMax": 0.000001617195393599502
+          },
+          {
+            "signal": "v(17)",
+            "normalized": 1.2476317195418765e-7,
+            "absoluteMax": 6.244401937749444e-7
+          },
+          {
+            "signal": "v(74)",
+            "normalized": 3.011653506640799e-8,
+            "absoluteMax": 3.011653506640799e-12
+          },
+          {
+            "signal": "v(75)",
+            "normalized": 2.342518251986396e-8,
+            "absoluteMax": 1.1726918724974666e-7
+          },
+          {
+            "signal": "v(13)",
+            "normalized": 5.513676996988087e-9,
+            "absoluteMax": 2.7568384908249755e-8
+          },
+          {
+            "signal": "v(11)",
+            "normalized": 4.796941872497669e-9,
+            "absoluteMax": 2.3984709329738507e-8
+          },
+          {
+            "signal": "v(12)",
+            "normalized": 2.7317916836187652e-9,
+            "absoluteMax": 1.365895840876874e-8
+          },
+          {
+            "signal": "v(41)",
+            "normalized": 1.000088900583341e-12,
+            "absoluteMax": 5.000444502911705e-12
+          },
+          {
+            "signal": "v(1)",
+            "normalized": 9.99911264898401e-13,
+            "absoluteMax": 4.999556324492005e-12
+          },
+          {
+            "signal": "v(10)",
+            "normalized": 9.99911264898401e-13,
+            "absoluteMax": 4.999556324492005e-12
+          },
+          {
+            "signal": "v(x14.4)",
+            "normalized": 4.6080602672529936e-226,
+            "absoluteMax": 4.608060267252994e-230
+          },
+          {
+            "signal": "v(3)",
+            "normalized": 0,
+            "absoluteMax": 0
+          },
+          {
+            "signal": "v(9)",
+            "normalized": 0,
+            "absoluteMax": 0
+          }
+        ],
+        "tsPoints": 85,
+        "ngPoints": 85
+      },
+      {
+        "pass": "after",
+        "sha256": "43fc842bd3c7bfbbe285a5d83b4eb08fa6acc1a3c8a5da9ae62c605bd32324a9",
+        "errors": [
+          {
+            "signal": "i(vdi)",
+            "normalized": 0.07367900254433166,
+            "absoluteMax": 7.367900254433165e-12
+          },
+          {
+            "signal": "i(vwr)",
+            "normalized": 0.055980963167251284,
+            "absoluteMax": 5.598096316725128e-12
+          },
+          {
+            "signal": "i(vad)",
+            "normalized": 0.0001054211671383927,
+            "absoluteMax": 8.742579257249323e-8
+          },
+          {
+            "signal": "i(vdd)",
+            "normalized": 0.00005215855569791662,
+            "absoluteMax": 8.511278371838276e-8
+          },
+          {
+            "signal": "v(73)",
+            "normalized": 0.0000206246154272059,
+            "absoluteMax": 0.0000013704600824865354
+          },
+          {
+            "signal": "v(6)",
+            "normalized": 0.00001688259537813088,
+            "absoluteMax": 0.0000016633245537855945
+          },
+          {
+            "signal": "v(16)",
+            "normalized": 0.000016325747229342343,
+            "absoluteMax": 8.493137763181113e-7
+          },
+          {
+            "signal": "v(47)",
+            "normalized": 0.000014057758976247923,
+            "absoluteMax": 0.00007211443755839042
+          },
+          {
+            "signal": "v(43)",
+            "normalized": 0.00001058444709527623,
+            "absoluteMax": 0.000052916906123190444
+          },
+          {
+            "signal": "v(x23.4)",
+            "normalized": 0.000010253851709532647,
+            "absoluteMax": 0.00002659412575489739
+          },
+          {
+            "signal": "v(8)",
+            "normalized": 0.000009874198417464744,
+            "absoluteMax": 9.874198417464744e-10
+          },
+          {
+            "signal": "i(vclk)",
+            "normalized": 0.000009324204756995433,
+            "absoluteMax": 6.392539545904891e-11
+          },
+          {
+            "signal": "v(2)",
+            "normalized": 0.00000929095671501993,
+            "absoluteMax": 0.00002380215246833295
+          },
+          {
+            "signal": "v(5)",
+            "normalized": 0.000008993411078851142,
+            "absoluteMax": 0.000001501329451120137
+          },
+          {
+            "signal": "v(x25.4)",
+            "normalized": 0.00000783295904002943,
+            "absoluteMax": 0.000020315348217669893
+          },
+          {
+            "signal": "v(42)",
+            "normalized": 0.000005902612289080478,
+            "absoluteMax": 0.000030198798967928653
+          },
+          {
+            "signal": "v(45)",
+            "normalized": 0.000005649121843865116,
+            "absoluteMax": 0.00002684679827735792
+          },
+          {
+            "signal": "v(44)",
+            "normalized": 0.000005102170397428505,
+            "absoluteMax": 0.0000264620723104958
+          },
+          {
+            "signal": "v(77)",
+            "normalized": 0.000005058898705049837,
+            "absoluteMax": 5.058898705049837e-10
+          },
+          {
+            "signal": "v(14)",
+            "normalized": 0.0000033366266412793247,
+            "absoluteMax": 3.336626641279325e-10
+          },
+          {
+            "signal": "v(15)",
+            "normalized": 0.0000026407308673553937,
+            "absoluteMax": 2.640730867355394e-10
+          },
+          {
+            "signal": "v(x15.4)",
+            "normalized": 8.90867395192599e-7,
+            "absoluteMax": 0.000002310524235049627
+          },
+          {
+            "signal": "v(4)",
+            "normalized": 7.378446217218054e-7,
+            "absoluteMax": 0.000003689294092446005
+          },
+          {
+            "signal": "v(7)",
+            "normalized": 3.2342674501019344e-7,
+            "absoluteMax": 0.000001617195393599502
+          },
+          {
+            "signal": "v(17)",
+            "normalized": 1.2476317195418765e-7,
+            "absoluteMax": 6.244401937749444e-7
+          },
+          {
+            "signal": "v(74)",
+            "normalized": 3.011653506640799e-8,
+            "absoluteMax": 3.011653506640799e-12
+          },
+          {
+            "signal": "v(75)",
+            "normalized": 2.342518251986396e-8,
+            "absoluteMax": 1.1726918724974666e-7
+          },
+          {
+            "signal": "v(13)",
+            "normalized": 5.513676996988087e-9,
+            "absoluteMax": 2.7568384908249755e-8
+          },
+          {
+            "signal": "v(11)",
+            "normalized": 4.796941872497669e-9,
+            "absoluteMax": 2.3984709329738507e-8
+          },
+          {
+            "signal": "v(12)",
+            "normalized": 2.7317916836187652e-9,
+            "absoluteMax": 1.365895840876874e-8
+          },
+          {
+            "signal": "v(41)",
+            "normalized": 1.000088900583341e-12,
+            "absoluteMax": 5.000444502911705e-12
+          },
+          {
+            "signal": "v(1)",
+            "normalized": 9.99911264898401e-13,
+            "absoluteMax": 4.999556324492005e-12
+          },
+          {
+            "signal": "v(10)",
+            "normalized": 9.99911264898401e-13,
+            "absoluteMax": 4.999556324492005e-12
+          },
+          {
+            "signal": "v(x14.4)",
+            "normalized": 4.6080602672529936e-226,
+            "absoluteMax": 4.608060267252994e-230
+          },
+          {
+            "signal": "v(3)",
+            "normalized": 0,
+            "absoluteMax": 0
+          },
+          {
+            "signal": "v(9)",
+            "normalized": 0,
+            "absoluteMax": 0
+          }
+        ],
+        "tsPoints": 85,
+        "ngPoints": 85
+      }
+    ]
+  },
+  {
+    "name": "gm19",
+    "passes": [
+      {
+        "pass": "before",
+        "sha256": "0b94a01a96dd0ae19e93fe78b5fc7397411815d350ee13ee118c49548bb62c08",
+        "errors": [
+          {
+            "signal": "i(vin)",
+            "normalized": 0.17164594259599314,
+            "absoluteMax": 0.000008610973818829524
+          },
+          {
+            "signal": "i(vix3)",
+            "normalized": 0.14641100756537498,
+            "absoluteMax": 0.0009422649430488447
+          },
+          {
+            "signal": "v(x3.10)",
+            "normalized": 0.13617329988944324,
+            "absoluteMax": 1.3646139297579438
+          },
+          {
+            "signal": "v(x14.5)",
+            "normalized": 0.12638241573682968,
+            "absoluteMax": 0.8233123030858833
+          },
+          {
+            "signal": "v(x5.10)",
+            "normalized": 0.11662472659492157,
+            "absoluteMax": 1.1789621087446918
+          },
+          {
+            "signal": "v(x4.7)",
+            "normalized": 0.10772135295263854,
+            "absoluteMax": 0.7211307119035135
+          },
+          {
+            "signal": "v(x10.10)",
+            "normalized": 0.10308399348689024,
+            "absoluteMax": 1.0424594952350241
+          },
+          {
+            "signal": "v(x13.3)",
+            "normalized": 0.09901221490709146,
+            "absoluteMax": 0.6673707463707519
+          },
+          {
+            "signal": "v(x8.4)",
+            "normalized": 0.09235949798718172,
+            "absoluteMax": 0.6045665220844327
+          },
+          {
+            "signal": "v(x6.3)",
+            "normalized": 0.08388918478129231,
+            "absoluteMax": 0.5649684243579939
+          },
+          {
+            "signal": "v(x11.3)",
+            "normalized": 0.08386321626568642,
+            "absoluteMax": 0.5646684393556155
+          },
+          {
+            "signal": "i(vix6)",
+            "normalized": 0.08359433940938983,
+            "absoluteMax": 0.00047676068358444047
+          },
+          {
+            "signal": "i(vix5)",
+            "normalized": 0.07478771337453693,
+            "absoluteMax": 0.0004618677152137523
+          },
+          {
+            "signal": "i(vid4)",
+            "normalized": 0.07181767195308784,
+            "absoluteMax": 0.0009189340581830657
+          },
+          {
+            "signal": "v(x12.3)",
+            "normalized": 0.06993758043980906,
+            "absoluteMax": 0.4677133551228121
+          },
+          {
+            "signal": "v(x7.3)",
+            "normalized": 0.06980452394719665,
+            "absoluteMax": 0.46705270559337647
+          },
+          {
+            "signal": "i(vix11)",
+            "normalized": 0.06805692241663348,
+            "absoluteMax": 0.00043653797032900885
+          },
+          {
+            "signal": "v(x4.5)",
+            "normalized": 0.06290481742807763,
+            "absoluteMax": 0.6300314348020315
+          },
+          {
+            "signal": "i(vix10)",
+            "normalized": 0.060618870418872914,
+            "absoluteMax": 0.00036262137911692496
+          },
+          {
+            "signal": "v(x9.5)",
+            "normalized": 0.05698286303138512,
+            "absoluteMax": 0.38152556614948985
+          },
+          {
+            "signal": "i(vix4)",
+            "normalized": 0.05619743175614035,
+            "absoluteMax": 0.00053551268457693
+          },
+          {
+            "signal": "v(x15.7)",
+            "normalized": 0.05594947332718508,
+            "absoluteMax": 0.37495138751443724
+          },
+          {
+            "signal": "v(17)",
+            "normalized": 0.05563521732387333,
+            "absoluteMax": 0.5640631859817593
+          },
+          {
+            "signal": "v(x3.9)",
+            "normalized": 0.055531199207600676,
+            "absoluteMax": 0.5606533852462423
+          },
+          {
+            "signal": "v(5)",
+            "normalized": 0.05246812905341594,
+            "absoluteMax": 0.5254604239755487
+          },
+          {
+            "signal": "v(x3.11)",
+            "normalized": 0.05117103076941642,
+            "absoluteMax": 0.34231264985869414
+          },
+          {
+            "signal": "i(vid3)",
+            "normalized": 0.05031128215280619,
+            "absoluteMax": 0.00044632469805806416
+          },
+          {
+            "signal": "v(x8.5)",
+            "normalized": 0.05022711345465281,
+            "absoluteMax": 0.33609302496474047
+          },
+          {
+            "signal": "v(x15.5)",
+            "normalized": 0.0455279228545617,
+            "absoluteMax": 0.2971506295795592
+          },
+          {
+            "signal": "v(x9.4)",
+            "normalized": 0.045177721756167355,
+            "absoluteMax": 0.2963119605542044
+          },
+          {
+            "signal": "v(27)",
+            "normalized": 0.04412734273981295,
+            "absoluteMax": 0.4447763946067935
+          },
+          {
+            "signal": "v(21)",
+            "normalized": 0.04410440137663603,
+            "absoluteMax": 0.44453481270048556
+          },
+          {
+            "signal": "v(x15.6)",
+            "normalized": 0.043365018964607385,
+            "absoluteMax": 0.2848225698782092
+          },
+          {
+            "signal": "v(30)",
+            "normalized": 0.042977143875922635,
+            "absoluteMax": 0.43760815512375917
+          },
+          {
+            "signal": "v(x16.13)",
+            "normalized": 0.042000321563246956,
+            "absoluteMax": 0.2816129783576171
+          },
+          {
+            "signal": "i(vix16)",
+            "normalized": 0.04007422181687338,
+            "absoluteMax": 0.00023498080907875373
+          },
+          {
+            "signal": "v(23)",
+            "normalized": 0.038773135506746284,
+            "absoluteMax": 0.39265888248313363
+          },
+          {
+            "signal": "v(x4.4)",
+            "normalized": 0.03826856586780667,
+            "absoluteMax": 0.38845199154271093
+          },
+          {
+            "signal": "v(x3.13)",
+            "normalized": 0.03809082955444403,
+            "absoluteMax": 0.25491239105252905
+          },
+          {
+            "signal": "v(29)",
+            "normalized": 0.03767167493829233,
+            "absoluteMax": 0.3790061054677478
+          },
+          {
+            "signal": "v(x10.13)",
+            "normalized": 0.03234367489787679,
+            "absoluteMax": 0.21681284751990137
+          },
+          {
+            "signal": "v(28)",
+            "normalized": 0.03232856811252881,
+            "absoluteMax": 0.32529614211594593
+          },
+          {
+            "signal": "v(25)",
+            "normalized": 0.031177106323816234,
+            "absoluteMax": 0.31513823582502987
+          },
+          {
+            "signal": "v(x4.6)",
+            "normalized": 0.03105562847496209,
+            "absoluteMax": 0.3127122251578882
+          },
+          {
+            "signal": "v(x3.7)",
+            "normalized": 0.03017394004648547,
+            "absoluteMax": 0.30213238033256107
+          },
+          {
+            "signal": "i(vid2)",
+            "normalized": 0.029860478151881448,
+            "absoluteMax": 0.00010642940688703351
+          },
+          {
+            "signal": "v(x5.13)",
+            "normalized": 0.029009216194361438,
+            "absoluteMax": 0.1943866102745213
+          },
+          {
+            "signal": "i(vdd)",
+            "normalized": 0.02899475337363547,
+            "absoluteMax": 0.001093686755989089
+          },
+          {
+            "signal": "i(vidd)",
+            "normalized": 0.02899475337363547,
+            "absoluteMax": 0.001093686755989089
+          },
+          {
+            "signal": "v(x14.7)",
+            "normalized": 0.028898325696977444,
+            "absoluteMax": 0.1932980553840733
+          },
+          {
+            "signal": "v(x5.7)",
+            "normalized": 0.028439602703828042,
+            "absoluteMax": 0.2847639459567106
+          },
+          {
+            "signal": "v(x10.7)",
+            "normalized": 0.02843569578092872,
+            "absoluteMax": 0.28471955942775784
+          },
+          {
+            "signal": "v(x16.7)",
+            "normalized": 0.028435582884612495,
+            "absoluteMax": 0.2847168358142045
+          },
+          {
+            "signal": "v(26)",
+            "normalized": 0.027808173247834796,
+            "absoluteMax": 0.28044156395768205
+          },
+          {
+            "signal": "v(20)",
+            "normalized": 0.02776230065675953,
+            "absoluteMax": 0.2796597520716011
+          },
+          {
+            "signal": "v(x3.12)",
+            "normalized": 0.026246932007757493,
+            "absoluteMax": 0.2642473870705899
+          },
+          {
+            "signal": "v(11)",
+            "normalized": 0.02561480925639873,
+            "absoluteMax": 0.2583825409137299
+          },
+          {
+            "signal": "v(x4.8)",
+            "normalized": 0.02449865190878159,
+            "absoluteMax": 0.16398350476207257
+          },
+          {
+            "signal": "v(x14.6)",
+            "normalized": 0.024311792734134672,
+            "absoluteMax": 0.15924069683170572
+          },
+          {
+            "signal": "v(22)",
+            "normalized": 0.024199818359006316,
+            "absoluteMax": 0.24325186808455967
+          },
+          {
+            "signal": "v(x5.11)",
+            "normalized": 0.024003156808747084,
+            "absoluteMax": 0.160800796408207
+          },
+          {
+            "signal": "v(x10.9)",
+            "normalized": 0.022488502225196053,
+            "absoluteMax": 0.2272076760776942
+          },
+          {
+            "signal": "v(x16.10)",
+            "normalized": 0.022478833174928735,
+            "absoluteMax": 0.22731581327141281
+          },
+          {
+            "signal": "v(19)",
+            "normalized": 0.0219861597056898,
+            "absoluteMax": 0.2218837305497443
+          },
+          {
+            "signal": "v(16)",
+            "normalized": 0.020090628745058896,
+            "absoluteMax": 0.2027541589573465
+          },
+          {
+            "signal": "v(12)",
+            "normalized": 0.01969415277366682,
+            "absoluteMax": 0.19712084009192488
+          },
+          {
+            "signal": "v(x3.8)",
+            "normalized": 0.019006014696389236,
+            "absoluteMax": 0.19158378807672616
+          },
+          {
+            "signal": "v(x5.9)",
+            "normalized": 0.01804722790288019,
+            "absoluteMax": 0.18233198729357625
+          },
+          {
+            "signal": "v(7)",
+            "normalized": 0.017975093310027526,
+            "absoluteMax": 0.15323385716001603
+          },
+          {
+            "signal": "v(x5.12)",
+            "normalized": 0.017725357240161572,
+            "absoluteMax": 0.1795463294599946
+          },
+          {
+            "signal": "v(x10.12)",
+            "normalized": 0.017683983886846843,
+            "absoluteMax": 0.17911867857475183
+          },
+          {
+            "signal": "v(x16.12)",
+            "normalized": 0.017465496331271764,
+            "absoluteMax": 0.1769908032597467
+          },
+          {
+            "signal": "v(4)",
+            "normalized": 0.015992581397602672,
+            "absoluteMax": 0.16121585931454074
+          },
+          {
+            "signal": "v(18)",
+            "normalized": 0.01577544888924307,
+            "absoluteMax": 0.15917144641376746
+          },
+          {
+            "signal": "v(24)",
+            "normalized": 0.015582287533304678,
+            "absoluteMax": 0.15719520146008126
+          },
+          {
+            "signal": "v(9)",
+            "normalized": 0.015492674102797444,
+            "absoluteMax": 0.15505871986224573
+          },
+          {
+            "signal": "v(x5.8)",
+            "normalized": 0.012838647252783842,
+            "absoluteMax": 0.13071060483136865
+          },
+          {
+            "signal": "v(15)",
+            "normalized": 0.012726956290472333,
+            "absoluteMax": 0.12744187628500203
+          },
+          {
+            "signal": "v(x10.11)",
+            "normalized": 0.012102592290242083,
+            "absoluteMax": 0.08112145368794899
+          },
+          {
+            "signal": "v(x16.11)",
+            "normalized": 0.010580098933731682,
+            "absoluteMax": 0.07093530754293176
+          },
+          {
+            "signal": "v(8)",
+            "normalized": 0.010476850771658186,
+            "absoluteMax": 0.10483719277850767
+          },
+          {
+            "signal": "v(x16.9)",
+            "normalized": 0.009543102610997159,
+            "absoluteMax": 0.09643558647917061
+          },
+          {
+            "signal": "v(x10.8)",
+            "normalized": 0.009371620829551919,
+            "absoluteMax": 0.09500840438931313
+          },
+          {
+            "signal": "v(6)",
+            "normalized": 0.008518203677558052,
+            "absoluteMax": 0.08629449066656214
+          },
+          {
+            "signal": "v(x16.8)",
+            "normalized": 0.005748663717607128,
+            "absoluteMax": 0.05828185232608707
+          },
+          {
+            "signal": "i(vid1)",
+            "normalized": 0.0052030258114877485,
+            "absoluteMax": 0.000012454498725048089
+          },
+          {
+            "signal": "v(3)",
+            "normalized": 0.0038875045259583437,
+            "absoluteMax": 0.032040716147694326
+          },
+          {
+            "signal": "i(vnr)",
+            "normalized": 0.0033083597789433025,
+            "absoluteMax": 0.00011768930835073735
+          },
+          {
+            "signal": "v(1)",
+            "normalized": 0.0032189056843058444,
+            "absoluteMax": 0.006437802172507334
+          },
+          {
+            "signal": "v(2)",
+            "normalized": 0.0011118207869825344,
+            "absoluteMax": 0.006567978766080174
+          },
+          {
+            "signal": "v(14)",
+            "normalized": 3.3750779948604757e-15,
+            "absoluteMax": 3.375077994860476e-14
+          },
+          {
+            "signal": "v(10)",
+            "normalized": 0,
+            "absoluteMax": 0
+          },
+          {
+            "signal": "v(110)",
+            "normalized": 0,
+            "absoluteMax": 0
+          },
+          {
+            "signal": "v(111)",
+            "normalized": 0,
+            "absoluteMax": 0
+          },
+          {
+            "signal": "v(112)",
+            "normalized": 0,
+            "absoluteMax": 0
+          },
+          {
+            "signal": "v(113)",
+            "normalized": 0,
+            "absoluteMax": 0
+          },
+          {
+            "signal": "v(114)",
+            "normalized": 0,
+            "absoluteMax": 0
+          },
+          {
+            "signal": "v(115)",
+            "normalized": 0,
+            "absoluteMax": 0
+          },
+          {
+            "signal": "v(116)",
+            "normalized": 0,
+            "absoluteMax": 0
+          },
+          {
+            "signal": "v(117)",
+            "normalized": 0,
+            "absoluteMax": 0
+          },
+          {
+            "signal": "v(118)",
+            "normalized": 0,
+            "absoluteMax": 0
+          },
+          {
+            "signal": "v(119)",
+            "normalized": 0,
+            "absoluteMax": 0
+          },
+          {
+            "signal": "v(120)",
+            "normalized": 0,
+            "absoluteMax": 0
+          },
+          {
+            "signal": "v(121)",
+            "normalized": 0,
+            "absoluteMax": 0
+          }
+        ],
+        "tsPoints": 1251,
+        "ngPoints": 1233
+      },
+      {
+        "pass": "after",
+        "sha256": "0b94a01a96dd0ae19e93fe78b5fc7397411815d350ee13ee118c49548bb62c08",
+        "errors": [
+          {
+            "signal": "i(vin)",
+            "normalized": 0.17164594259599314,
+            "absoluteMax": 0.000008610973818829524
+          },
+          {
+            "signal": "i(vix3)",
+            "normalized": 0.14641100756537498,
+            "absoluteMax": 0.0009422649430488447
+          },
+          {
+            "signal": "v(x3.10)",
+            "normalized": 0.13617329988944324,
+            "absoluteMax": 1.3646139297579438
+          },
+          {
+            "signal": "v(x14.5)",
+            "normalized": 0.12638241573682968,
+            "absoluteMax": 0.8233123030858833
+          },
+          {
+            "signal": "v(x5.10)",
+            "normalized": 0.11662472659492157,
+            "absoluteMax": 1.1789621087446918
+          },
+          {
+            "signal": "v(x4.7)",
+            "normalized": 0.10772135295263854,
+            "absoluteMax": 0.7211307119035135
+          },
+          {
+            "signal": "v(x10.10)",
+            "normalized": 0.10308399348689024,
+            "absoluteMax": 1.0424594952350241
+          },
+          {
+            "signal": "v(x13.3)",
+            "normalized": 0.09901221490709146,
+            "absoluteMax": 0.6673707463707519
+          },
+          {
+            "signal": "v(x8.4)",
+            "normalized": 0.09235949798718172,
+            "absoluteMax": 0.6045665220844327
+          },
+          {
+            "signal": "v(x6.3)",
+            "normalized": 0.08388918478129231,
+            "absoluteMax": 0.5649684243579939
+          },
+          {
+            "signal": "v(x11.3)",
+            "normalized": 0.08386321626568642,
+            "absoluteMax": 0.5646684393556155
+          },
+          {
+            "signal": "i(vix6)",
+            "normalized": 0.08359433940938983,
+            "absoluteMax": 0.00047676068358444047
+          },
+          {
+            "signal": "i(vix5)",
+            "normalized": 0.07478771337453693,
+            "absoluteMax": 0.0004618677152137523
+          },
+          {
+            "signal": "i(vid4)",
+            "normalized": 0.07181767195308784,
+            "absoluteMax": 0.0009189340581830657
+          },
+          {
+            "signal": "v(x12.3)",
+            "normalized": 0.06993758043980906,
+            "absoluteMax": 0.4677133551228121
+          },
+          {
+            "signal": "v(x7.3)",
+            "normalized": 0.06980452394719665,
+            "absoluteMax": 0.46705270559337647
+          },
+          {
+            "signal": "i(vix11)",
+            "normalized": 0.06805692241663348,
+            "absoluteMax": 0.00043653797032900885
+          },
+          {
+            "signal": "v(x4.5)",
+            "normalized": 0.06290481742807763,
+            "absoluteMax": 0.6300314348020315
+          },
+          {
+            "signal": "i(vix10)",
+            "normalized": 0.060618870418872914,
+            "absoluteMax": 0.00036262137911692496
+          },
+          {
+            "signal": "v(x9.5)",
+            "normalized": 0.05698286303138512,
+            "absoluteMax": 0.38152556614948985
+          },
+          {
+            "signal": "i(vix4)",
+            "normalized": 0.05619743175614035,
+            "absoluteMax": 0.00053551268457693
+          },
+          {
+            "signal": "v(x15.7)",
+            "normalized": 0.05594947332718508,
+            "absoluteMax": 0.37495138751443724
+          },
+          {
+            "signal": "v(17)",
+            "normalized": 0.05563521732387333,
+            "absoluteMax": 0.5640631859817593
+          },
+          {
+            "signal": "v(x3.9)",
+            "normalized": 0.055531199207600676,
+            "absoluteMax": 0.5606533852462423
+          },
+          {
+            "signal": "v(5)",
+            "normalized": 0.05246812905341594,
+            "absoluteMax": 0.5254604239755487
+          },
+          {
+            "signal": "v(x3.11)",
+            "normalized": 0.05117103076941642,
+            "absoluteMax": 0.34231264985869414
+          },
+          {
+            "signal": "i(vid3)",
+            "normalized": 0.05031128215280619,
+            "absoluteMax": 0.00044632469805806416
+          },
+          {
+            "signal": "v(x8.5)",
+            "normalized": 0.05022711345465281,
+            "absoluteMax": 0.33609302496474047
+          },
+          {
+            "signal": "v(x15.5)",
+            "normalized": 0.0455279228545617,
+            "absoluteMax": 0.2971506295795592
+          },
+          {
+            "signal": "v(x9.4)",
+            "normalized": 0.045177721756167355,
+            "absoluteMax": 0.2963119605542044
+          },
+          {
+            "signal": "v(27)",
+            "normalized": 0.04412734273981295,
+            "absoluteMax": 0.4447763946067935
+          },
+          {
+            "signal": "v(21)",
+            "normalized": 0.04410440137663603,
+            "absoluteMax": 0.44453481270048556
+          },
+          {
+            "signal": "v(x15.6)",
+            "normalized": 0.043365018964607385,
+            "absoluteMax": 0.2848225698782092
+          },
+          {
+            "signal": "v(30)",
+            "normalized": 0.042977143875922635,
+            "absoluteMax": 0.43760815512375917
+          },
+          {
+            "signal": "v(x16.13)",
+            "normalized": 0.042000321563246956,
+            "absoluteMax": 0.2816129783576171
+          },
+          {
+            "signal": "i(vix16)",
+            "normalized": 0.04007422181687338,
+            "absoluteMax": 0.00023498080907875373
+          },
+          {
+            "signal": "v(23)",
+            "normalized": 0.038773135506746284,
+            "absoluteMax": 0.39265888248313363
+          },
+          {
+            "signal": "v(x4.4)",
+            "normalized": 0.03826856586780667,
+            "absoluteMax": 0.38845199154271093
+          },
+          {
+            "signal": "v(x3.13)",
+            "normalized": 0.03809082955444403,
+            "absoluteMax": 0.25491239105252905
+          },
+          {
+            "signal": "v(29)",
+            "normalized": 0.03767167493829233,
+            "absoluteMax": 0.3790061054677478
+          },
+          {
+            "signal": "v(x10.13)",
+            "normalized": 0.03234367489787679,
+            "absoluteMax": 0.21681284751990137
+          },
+          {
+            "signal": "v(28)",
+            "normalized": 0.03232856811252881,
+            "absoluteMax": 0.32529614211594593
+          },
+          {
+            "signal": "v(25)",
+            "normalized": 0.031177106323816234,
+            "absoluteMax": 0.31513823582502987
+          },
+          {
+            "signal": "v(x4.6)",
+            "normalized": 0.03105562847496209,
+            "absoluteMax": 0.3127122251578882
+          },
+          {
+            "signal": "v(x3.7)",
+            "normalized": 0.03017394004648547,
+            "absoluteMax": 0.30213238033256107
+          },
+          {
+            "signal": "i(vid2)",
+            "normalized": 0.029860478151881448,
+            "absoluteMax": 0.00010642940688703351
+          },
+          {
+            "signal": "v(x5.13)",
+            "normalized": 0.029009216194361438,
+            "absoluteMax": 0.1943866102745213
+          },
+          {
+            "signal": "i(vdd)",
+            "normalized": 0.02899475337363547,
+            "absoluteMax": 0.001093686755989089
+          },
+          {
+            "signal": "i(vidd)",
+            "normalized": 0.02899475337363547,
+            "absoluteMax": 0.001093686755989089
+          },
+          {
+            "signal": "v(x14.7)",
+            "normalized": 0.028898325696977444,
+            "absoluteMax": 0.1932980553840733
+          },
+          {
+            "signal": "v(x5.7)",
+            "normalized": 0.028439602703828042,
+            "absoluteMax": 0.2847639459567106
+          },
+          {
+            "signal": "v(x10.7)",
+            "normalized": 0.02843569578092872,
+            "absoluteMax": 0.28471955942775784
+          },
+          {
+            "signal": "v(x16.7)",
+            "normalized": 0.028435582884612495,
+            "absoluteMax": 0.2847168358142045
+          },
+          {
+            "signal": "v(26)",
+            "normalized": 0.027808173247834796,
+            "absoluteMax": 0.28044156395768205
+          },
+          {
+            "signal": "v(20)",
+            "normalized": 0.02776230065675953,
+            "absoluteMax": 0.2796597520716011
+          },
+          {
+            "signal": "v(x3.12)",
+            "normalized": 0.026246932007757493,
+            "absoluteMax": 0.2642473870705899
+          },
+          {
+            "signal": "v(11)",
+            "normalized": 0.02561480925639873,
+            "absoluteMax": 0.2583825409137299
+          },
+          {
+            "signal": "v(x4.8)",
+            "normalized": 0.02449865190878159,
+            "absoluteMax": 0.16398350476207257
+          },
+          {
+            "signal": "v(x14.6)",
+            "normalized": 0.024311792734134672,
+            "absoluteMax": 0.15924069683170572
+          },
+          {
+            "signal": "v(22)",
+            "normalized": 0.024199818359006316,
+            "absoluteMax": 0.24325186808455967
+          },
+          {
+            "signal": "v(x5.11)",
+            "normalized": 0.024003156808747084,
+            "absoluteMax": 0.160800796408207
+          },
+          {
+            "signal": "v(x10.9)",
+            "normalized": 0.022488502225196053,
+            "absoluteMax": 0.2272076760776942
+          },
+          {
+            "signal": "v(x16.10)",
+            "normalized": 0.022478833174928735,
+            "absoluteMax": 0.22731581327141281
+          },
+          {
+            "signal": "v(19)",
+            "normalized": 0.0219861597056898,
+            "absoluteMax": 0.2218837305497443
+          },
+          {
+            "signal": "v(16)",
+            "normalized": 0.020090628745058896,
+            "absoluteMax": 0.2027541589573465
+          },
+          {
+            "signal": "v(12)",
+            "normalized": 0.01969415277366682,
+            "absoluteMax": 0.19712084009192488
+          },
+          {
+            "signal": "v(x3.8)",
+            "normalized": 0.019006014696389236,
+            "absoluteMax": 0.19158378807672616
+          },
+          {
+            "signal": "v(x5.9)",
+            "normalized": 0.01804722790288019,
+            "absoluteMax": 0.18233198729357625
+          },
+          {
+            "signal": "v(7)",
+            "normalized": 0.017975093310027526,
+            "absoluteMax": 0.15323385716001603
+          },
+          {
+            "signal": "v(x5.12)",
+            "normalized": 0.017725357240161572,
+            "absoluteMax": 0.1795463294599946
+          },
+          {
+            "signal": "v(x10.12)",
+            "normalized": 0.017683983886846843,
+            "absoluteMax": 0.17911867857475183
+          },
+          {
+            "signal": "v(x16.12)",
+            "normalized": 0.017465496331271764,
+            "absoluteMax": 0.1769908032597467
+          },
+          {
+            "signal": "v(4)",
+            "normalized": 0.015992581397602672,
+            "absoluteMax": 0.16121585931454074
+          },
+          {
+            "signal": "v(18)",
+            "normalized": 0.01577544888924307,
+            "absoluteMax": 0.15917144641376746
+          },
+          {
+            "signal": "v(24)",
+            "normalized": 0.015582287533304678,
+            "absoluteMax": 0.15719520146008126
+          },
+          {
+            "signal": "v(9)",
+            "normalized": 0.015492674102797444,
+            "absoluteMax": 0.15505871986224573
+          },
+          {
+            "signal": "v(x5.8)",
+            "normalized": 0.012838647252783842,
+            "absoluteMax": 0.13071060483136865
+          },
+          {
+            "signal": "v(15)",
+            "normalized": 0.012726956290472333,
+            "absoluteMax": 0.12744187628500203
+          },
+          {
+            "signal": "v(x10.11)",
+            "normalized": 0.012102592290242083,
+            "absoluteMax": 0.08112145368794899
+          },
+          {
+            "signal": "v(x16.11)",
+            "normalized": 0.010580098933731682,
+            "absoluteMax": 0.07093530754293176
+          },
+          {
+            "signal": "v(8)",
+            "normalized": 0.010476850771658186,
+            "absoluteMax": 0.10483719277850767
+          },
+          {
+            "signal": "v(x16.9)",
+            "normalized": 0.009543102610997159,
+            "absoluteMax": 0.09643558647917061
+          },
+          {
+            "signal": "v(x10.8)",
+            "normalized": 0.009371620829551919,
+            "absoluteMax": 0.09500840438931313
+          },
+          {
+            "signal": "v(6)",
+            "normalized": 0.008518203677558052,
+            "absoluteMax": 0.08629449066656214
+          },
+          {
+            "signal": "v(x16.8)",
+            "normalized": 0.005748663717607128,
+            "absoluteMax": 0.05828185232608707
+          },
+          {
+            "signal": "i(vid1)",
+            "normalized": 0.0052030258114877485,
+            "absoluteMax": 0.000012454498725048089
+          },
+          {
+            "signal": "v(3)",
+            "normalized": 0.0038875045259583437,
+            "absoluteMax": 0.032040716147694326
+          },
+          {
+            "signal": "i(vnr)",
+            "normalized": 0.0033083597789433025,
+            "absoluteMax": 0.00011768930835073735
+          },
+          {
+            "signal": "v(1)",
+            "normalized": 0.0032189056843058444,
+            "absoluteMax": 0.006437802172507334
+          },
+          {
+            "signal": "v(2)",
+            "normalized": 0.0011118207869825344,
+            "absoluteMax": 0.006567978766080174
+          },
+          {
+            "signal": "v(14)",
+            "normalized": 3.3750779948604757e-15,
+            "absoluteMax": 3.375077994860476e-14
+          },
+          {
+            "signal": "v(10)",
+            "normalized": 0,
+            "absoluteMax": 0
+          },
+          {
+            "signal": "v(110)",
+            "normalized": 0,
+            "absoluteMax": 0
+          },
+          {
+            "signal": "v(111)",
+            "normalized": 0,
+            "absoluteMax": 0
+          },
+          {
+            "signal": "v(112)",
+            "normalized": 0,
+            "absoluteMax": 0
+          },
+          {
+            "signal": "v(113)",
+            "normalized": 0,
+            "absoluteMax": 0
+          },
+          {
+            "signal": "v(114)",
+            "normalized": 0,
+            "absoluteMax": 0
+          },
+          {
+            "signal": "v(115)",
+            "normalized": 0,
+            "absoluteMax": 0
+          },
+          {
+            "signal": "v(116)",
+            "normalized": 0,
+            "absoluteMax": 0
+          },
+          {
+            "signal": "v(117)",
+            "normalized": 0,
+            "absoluteMax": 0
+          },
+          {
+            "signal": "v(118)",
+            "normalized": 0,
+            "absoluteMax": 0
+          },
+          {
+            "signal": "v(119)",
+            "normalized": 0,
+            "absoluteMax": 0
+          },
+          {
+            "signal": "v(120)",
+            "normalized": 0,
+            "absoluteMax": 0
+          },
+          {
+            "signal": "v(121)",
+            "normalized": 0,
+            "absoluteMax": 0
+          }
+        ],
+        "tsPoints": 1251,
+        "ngPoints": 1233
+      }
+    ]
+  },
+  {
+    "name": "gm2",
+    "passes": [
+      {
+        "pass": "before",
+        "sha256": "ad4261e8c85a1f0376b24c0bad6f42fa4046a0fa669b84853236ef558fa417fc",
+        "errors": [
+          {
+            "signal": "i(vdd)",
+            "normalized": 0.12871411342972366,
+            "absoluteMax": 0.001265176532030601
+          },
+          {
+            "signal": "v(4)",
+            "normalized": 0.06257103009466006,
+            "absoluteMax": 0.6384743236060371
+          },
+          {
+            "signal": "i(vp)",
+            "normalized": 0.05635467325978923,
+            "absoluteMax": 0.0005582711142480892
+          },
+          {
+            "signal": "v(x1.3)",
+            "normalized": 0.030852609550900866,
+            "absoluteMax": 0.06893597132225704
+          },
+          {
+            "signal": "v(3)",
+            "normalized": 0.022481134185363398,
+            "absoluteMax": 0.23266718347581872
+          },
+          {
+            "signal": "v(2)",
+            "normalized": 4.04121180963557e-14,
+            "absoluteMax": 4.04121180963557e-13
+          },
+          {
+            "signal": "v(1)",
+            "normalized": 0,
+            "absoluteMax": 0
+          }
+        ],
+        "tsPoints": 310,
+        "ngPoints": 307
+      },
+      {
+        "pass": "after",
+        "sha256": "ad4261e8c85a1f0376b24c0bad6f42fa4046a0fa669b84853236ef558fa417fc",
+        "errors": [
+          {
+            "signal": "i(vdd)",
+            "normalized": 0.12871411342972366,
+            "absoluteMax": 0.001265176532030601
+          },
+          {
+            "signal": "v(4)",
+            "normalized": 0.06257103009466006,
+            "absoluteMax": 0.6384743236060371
+          },
+          {
+            "signal": "i(vp)",
+            "normalized": 0.05635467325978923,
+            "absoluteMax": 0.0005582711142480892
+          },
+          {
+            "signal": "v(x1.3)",
+            "normalized": 0.030852609550900866,
+            "absoluteMax": 0.06893597132225704
+          },
+          {
+            "signal": "v(3)",
+            "normalized": 0.022481134185363398,
+            "absoluteMax": 0.23266718347581872
+          },
+          {
+            "signal": "v(2)",
+            "normalized": 4.04121180963557e-14,
+            "absoluteMax": 4.04121180963557e-13
+          },
+          {
+            "signal": "v(1)",
+            "normalized": 0,
+            "absoluteMax": 0
+          }
+        ],
+        "tsPoints": 310,
+        "ngPoints": 307
+      }
+    ]
+  },
+  {
+    "name": "mike2",
+    "passes": [
+      {
+        "pass": "before",
+        "sha256": "99cf3671f37b401548a991f679ceaeb6ab502c97ac7c98de81b5adbddb4df013",
+        "errors": [
+          {
+            "signal": "i(vtest1)",
+            "normalized": 0.02045417691011936,
+            "absoluteMax": 0.00018783038826868277
+          },
+          {
+            "signal": "i(vpulse)",
+            "normalized": 0.0121811819466426,
+            "absoluteMax": 0.00002820296416367182
+          },
+          {
+            "signal": "i(vtest2)",
+            "normalized": 0.011401862781549506,
+            "absoluteMax": 0.0002632065967659615
+          },
+          {
+            "signal": "i(vtest3)",
+            "normalized": 0.009452661475494737,
+            "absoluteMax": 0.0007100652954836889
+          },
+          {
+            "signal": "i(vdd)",
+            "normalized": 0.005352276677732957,
+            "absoluteMax": 0.001456475257054335
+          },
+          {
+            "signal": "v(100)",
+            "normalized": 0.0020758078471076677,
+            "absoluteMax": 0.011721398636316716
+          },
+          {
+            "signal": "v(9)",
+            "normalized": 0.0020758078471076677,
+            "absoluteMax": 0.011721398636316716
+          },
+          {
+            "signal": "v(14)",
+            "normalized": 0.0020709749369584524,
+            "absoluteMax": 0.011596214570192664
+          },
+          {
+            "signal": "v(12)",
+            "normalized": 0.0016134103917283876,
+            "absoluteMax": 0.008981521747976728
+          },
+          {
+            "signal": "v(200)",
+            "normalized": 0.0016134103917283876,
+            "absoluteMax": 0.008981521747976728
+          },
+          {
+            "signal": "v(7)",
+            "normalized": 0.0012835848697778792,
+            "absoluteMax": 0.0037115484309424573
+          },
+          {
+            "signal": "v(3)",
+            "normalized": 0.000790878557275295,
+            "absoluteMax": 0.004423942814350212
+          },
+          {
+            "signal": "v(300)",
+            "normalized": 0.0007706409355641433,
+            "absoluteMax": 0.00430170009623787
+          },
+          {
+            "signal": "v(13)",
+            "normalized": 0.0007706409355641233,
+            "absoluteMax": 0.004301700096237759
+          },
+          {
+            "signal": "v(2)",
+            "normalized": 5.021235952281958e-15,
+            "absoluteMax": 2.761679773755077e-14
+          },
+          {
+            "signal": "v(1)",
+            "normalized": 0,
+            "absoluteMax": 0
+          }
+        ],
+        "tsPoints": 456,
+        "ngPoints": 457
+      },
+      {
+        "pass": "after",
+        "sha256": "99cf3671f37b401548a991f679ceaeb6ab502c97ac7c98de81b5adbddb4df013",
+        "errors": [
+          {
+            "signal": "i(vtest1)",
+            "normalized": 0.02045417691011936,
+            "absoluteMax": 0.00018783038826868277
+          },
+          {
+            "signal": "i(vpulse)",
+            "normalized": 0.0121811819466426,
+            "absoluteMax": 0.00002820296416367182
+          },
+          {
+            "signal": "i(vtest2)",
+            "normalized": 0.011401862781549506,
+            "absoluteMax": 0.0002632065967659615
+          },
+          {
+            "signal": "i(vtest3)",
+            "normalized": 0.009452661475494737,
+            "absoluteMax": 0.0007100652954836889
+          },
+          {
+            "signal": "i(vdd)",
+            "normalized": 0.005352276677732957,
+            "absoluteMax": 0.001456475257054335
+          },
+          {
+            "signal": "v(100)",
+            "normalized": 0.0020758078471076677,
+            "absoluteMax": 0.011721398636316716
+          },
+          {
+            "signal": "v(9)",
+            "normalized": 0.0020758078471076677,
+            "absoluteMax": 0.011721398636316716
+          },
+          {
+            "signal": "v(14)",
+            "normalized": 0.0020709749369584524,
+            "absoluteMax": 0.011596214570192664
+          },
+          {
+            "signal": "v(12)",
+            "normalized": 0.0016134103917283876,
+            "absoluteMax": 0.008981521747976728
+          },
+          {
+            "signal": "v(200)",
+            "normalized": 0.0016134103917283876,
+            "absoluteMax": 0.008981521747976728
+          },
+          {
+            "signal": "v(7)",
+            "normalized": 0.0012835848697778792,
+            "absoluteMax": 0.0037115484309424573
+          },
+          {
+            "signal": "v(3)",
+            "normalized": 0.000790878557275295,
+            "absoluteMax": 0.004423942814350212
+          },
+          {
+            "signal": "v(300)",
+            "normalized": 0.0007706409355641433,
+            "absoluteMax": 0.00430170009623787
+          },
+          {
+            "signal": "v(13)",
+            "normalized": 0.0007706409355641233,
+            "absoluteMax": 0.004301700096237759
+          },
+          {
+            "signal": "v(2)",
+            "normalized": 5.021235952281958e-15,
+            "absoluteMax": 2.761679773755077e-14
+          },
+          {
+            "signal": "v(1)",
+            "normalized": 0,
+            "absoluteMax": 0
+          }
+        ],
+        "tsPoints": 456,
+        "ngPoints": 457
+      }
+    ]
+  },
+  {
+    "name": "gm1",
+    "passes": [
+      {
+        "pass": "before",
+        "sha256": "417d4fe8629398295bb317ad236781f36b34eebb58e74c7b63757263f55c338c",
+        "errors": [
+          {
+            "signal": "i(vrd1)",
+            "normalized": 0.008989035073399815,
+            "absoluteMax": 0.000009581426954704706
+          },
+          {
+            "signal": "i(vrd2)",
+            "normalized": 0.008989035073392694,
+            "absoluteMax": 0.000009581426954697117
+          },
+          {
+            "signal": "i(vwr)",
+            "normalized": 0.00767016894871027,
+            "absoluteMax": 0.000008188413124889001
+          },
+          {
+            "signal": "v(x11.75)",
+            "normalized": 0.004203060663823161,
+            "absoluteMax": 0.02116237103262808
+          },
+          {
+            "signal": "v(x10.75)",
+            "normalized": 0.004203060663614655,
+            "absoluteMax": 0.021162371031578253
+          },
+          {
+            "signal": "v(17)",
+            "normalized": 0.004038362622377618,
+            "absoluteMax": 0.021307788398060135
+          },
+          {
+            "signal": "v(x9.2)",
+            "normalized": 0.003239708596595051,
+            "absoluteMax": 0.01639845775987414
+          },
+          {
+            "signal": "v(x8.2)",
+            "normalized": 0.00323970859608928,
+            "absoluteMax": 0.01639845775731441
+          },
+          {
+            "signal": "i(vdd)",
+            "normalized": 0.003167632070491551,
+            "absoluteMax": 0.000019755810347612542
+          },
+          {
+            "signal": "v(13)",
+            "normalized": 0.002814824897347449,
+            "absoluteMax": 0.014327072752320369
+          },
+          {
+            "signal": "v(x11.74)",
+            "normalized": 0.0017641000942078483,
+            "absoluteMax": 0.0021411939275307428
+          },
+          {
+            "signal": "v(x10.74)",
+            "normalized": 0.001764100094171066,
+            "absoluteMax": 0.002141193927486098
+          },
+          {
+            "signal": "v(x11.77)",
+            "normalized": 0.0016106780102071133,
+            "absoluteMax": 0.008087189114877269
+          },
+          {
+            "signal": "v(x10.77)",
+            "normalized": 0.001610678009459228,
+            "absoluteMax": 0.008087189111123827
+          },
+          {
+            "signal": "v(22)",
+            "normalized": 0.0015576727608369017,
+            "absoluteMax": 0.00782258431157512
+          },
+          {
+            "signal": "v(21)",
+            "normalized": 0.001557672760258743,
+            "absoluteMax": 0.007822584308671665
+          },
+          {
+            "signal": "v(24)",
+            "normalized": 0.0015467799752620888,
+            "absoluteMax": 0.008040071280305483
+          },
+          {
+            "signal": "v(25)",
+            "normalized": 0.0015467799752425769,
+            "absoluteMax": 0.00804007128020423
+          },
+          {
+            "signal": "v(23)",
+            "normalized": 0.0014863560877391773,
+            "absoluteMax": 0.007725755758658082
+          },
+          {
+            "signal": "v(16)",
+            "normalized": 0.001208309373191652,
+            "absoluteMax": 0.0062324036984646725
+          },
+          {
+            "signal": "v(x11.73)",
+            "normalized": 0.0007790955946277907,
+            "absoluteMax": 0.003884429896603203
+          },
+          {
+            "signal": "v(x10.73)",
+            "normalized": 0.0007790955945998539,
+            "absoluteMax": 0.003884429896463759
+          },
+          {
+            "signal": "i(vclk)",
+            "normalized": 0.0007358840610308691,
+            "absoluteMax": 9.288472658617147e-7
+          },
+          {
+            "signal": "v(14)",
+            "normalized": 0.0007277966486816413,
+            "absoluteMax": 0.003823214699151034
+          },
+          {
+            "signal": "v(15)",
+            "normalized": 0.0006318150737311314,
+            "absoluteMax": 0.003229704396310762
+          },
+          {
+            "signal": "v(8)",
+            "normalized": 0.0005164437906541041,
+            "absoluteMax": 0.002575136124646882
+          },
+          {
+            "signal": "v(7)",
+            "normalized": 0.0005164437905169825,
+            "absoluteMax": 0.0025751361239629844
+          },
+          {
+            "signal": "i(vdi)",
+            "normalized": 0.0004505742901019654,
+            "absoluteMax": 5.804785562487239e-7
+          },
+          {
+            "signal": "v(20)",
+            "normalized": 0.00040288824639644893,
+            "absoluteMax": 0.002008967497908687
+          },
+          {
+            "signal": "v(19)",
+            "normalized": 0.0004028882462625281,
+            "absoluteMax": 0.0020089674972407767
+          },
+          {
+            "signal": "v(6)",
+            "normalized": 0.00011404525520904054,
+            "absoluteMax": 0.0005804785562490977
+          },
+          {
+            "signal": "v(3)",
+            "normalized": 1.9806378759312793e-14,
+            "absoluteMax": 9.903189379656396e-14
+          },
+          {
+            "signal": "v(4)",
+            "normalized": 1.9806378759312793e-14,
+            "absoluteMax": 9.903189379656396e-14
+          },
+          {
+            "signal": "v(2)",
+            "normalized": 1.922906278650771e-14,
+            "absoluteMax": 9.614531393253856e-14
+          },
+          {
+            "signal": "v(18)",
+            "normalized": 3.3084646133829666e-15,
+            "absoluteMax": 1.6542323066914832e-14
+          },
+          {
+            "signal": "v(10)",
+            "normalized": 1.7763568394002506e-16,
+            "absoluteMax": 8.881784197001252e-16
+          },
+          {
+            "signal": "v(1)",
+            "normalized": 0,
+            "absoluteMax": 0
+          }
+        ],
+        "tsPoints": 285,
+        "ngPoints": 285
+      },
+      {
+        "pass": "after",
+        "sha256": "417d4fe8629398295bb317ad236781f36b34eebb58e74c7b63757263f55c338c",
+        "errors": [
+          {
+            "signal": "i(vrd1)",
+            "normalized": 0.008989035073399815,
+            "absoluteMax": 0.000009581426954704706
+          },
+          {
+            "signal": "i(vrd2)",
+            "normalized": 0.008989035073392694,
+            "absoluteMax": 0.000009581426954697117
+          },
+          {
+            "signal": "i(vwr)",
+            "normalized": 0.00767016894871027,
+            "absoluteMax": 0.000008188413124889001
+          },
+          {
+            "signal": "v(x11.75)",
+            "normalized": 0.004203060663823161,
+            "absoluteMax": 0.02116237103262808
+          },
+          {
+            "signal": "v(x10.75)",
+            "normalized": 0.004203060663614655,
+            "absoluteMax": 0.021162371031578253
+          },
+          {
+            "signal": "v(17)",
+            "normalized": 0.004038362622377618,
+            "absoluteMax": 0.021307788398060135
+          },
+          {
+            "signal": "v(x9.2)",
+            "normalized": 0.003239708596595051,
+            "absoluteMax": 0.01639845775987414
+          },
+          {
+            "signal": "v(x8.2)",
+            "normalized": 0.00323970859608928,
+            "absoluteMax": 0.01639845775731441
+          },
+          {
+            "signal": "i(vdd)",
+            "normalized": 0.003167632070491551,
+            "absoluteMax": 0.000019755810347612542
+          },
+          {
+            "signal": "v(13)",
+            "normalized": 0.002814824897347449,
+            "absoluteMax": 0.014327072752320369
+          },
+          {
+            "signal": "v(x11.74)",
+            "normalized": 0.0017641000942078483,
+            "absoluteMax": 0.0021411939275307428
+          },
+          {
+            "signal": "v(x10.74)",
+            "normalized": 0.001764100094171066,
+            "absoluteMax": 0.002141193927486098
+          },
+          {
+            "signal": "v(x11.77)",
+            "normalized": 0.0016106780102071133,
+            "absoluteMax": 0.008087189114877269
+          },
+          {
+            "signal": "v(x10.77)",
+            "normalized": 0.001610678009459228,
+            "absoluteMax": 0.008087189111123827
+          },
+          {
+            "signal": "v(22)",
+            "normalized": 0.0015576727608369017,
+            "absoluteMax": 0.00782258431157512
+          },
+          {
+            "signal": "v(21)",
+            "normalized": 0.001557672760258743,
+            "absoluteMax": 0.007822584308671665
+          },
+          {
+            "signal": "v(24)",
+            "normalized": 0.0015467799752620888,
+            "absoluteMax": 0.008040071280305483
+          },
+          {
+            "signal": "v(25)",
+            "normalized": 0.0015467799752425769,
+            "absoluteMax": 0.00804007128020423
+          },
+          {
+            "signal": "v(23)",
+            "normalized": 0.0014863560877391773,
+            "absoluteMax": 0.007725755758658082
+          },
+          {
+            "signal": "v(16)",
+            "normalized": 0.001208309373191652,
+            "absoluteMax": 0.0062324036984646725
+          },
+          {
+            "signal": "v(x11.73)",
+            "normalized": 0.0007790955946277907,
+            "absoluteMax": 0.003884429896603203
+          },
+          {
+            "signal": "v(x10.73)",
+            "normalized": 0.0007790955945998539,
+            "absoluteMax": 0.003884429896463759
+          },
+          {
+            "signal": "i(vclk)",
+            "normalized": 0.0007358840610308691,
+            "absoluteMax": 9.288472658617147e-7
+          },
+          {
+            "signal": "v(14)",
+            "normalized": 0.0007277966486816413,
+            "absoluteMax": 0.003823214699151034
+          },
+          {
+            "signal": "v(15)",
+            "normalized": 0.0006318150737311314,
+            "absoluteMax": 0.003229704396310762
+          },
+          {
+            "signal": "v(8)",
+            "normalized": 0.0005164437906541041,
+            "absoluteMax": 0.002575136124646882
+          },
+          {
+            "signal": "v(7)",
+            "normalized": 0.0005164437905169825,
+            "absoluteMax": 0.0025751361239629844
+          },
+          {
+            "signal": "i(vdi)",
+            "normalized": 0.0004505742901019654,
+            "absoluteMax": 5.804785562487239e-7
+          },
+          {
+            "signal": "v(20)",
+            "normalized": 0.00040288824639644893,
+            "absoluteMax": 0.002008967497908687
+          },
+          {
+            "signal": "v(19)",
+            "normalized": 0.0004028882462625281,
+            "absoluteMax": 0.0020089674972407767
+          },
+          {
+            "signal": "v(6)",
+            "normalized": 0.00011404525520904054,
+            "absoluteMax": 0.0005804785562490977
+          },
+          {
+            "signal": "v(3)",
+            "normalized": 1.9806378759312793e-14,
+            "absoluteMax": 9.903189379656396e-14
+          },
+          {
+            "signal": "v(4)",
+            "normalized": 1.9806378759312793e-14,
+            "absoluteMax": 9.903189379656396e-14
+          },
+          {
+            "signal": "v(2)",
+            "normalized": 1.922906278650771e-14,
+            "absoluteMax": 9.614531393253856e-14
+          },
+          {
+            "signal": "v(18)",
+            "normalized": 3.3084646133829666e-15,
+            "absoluteMax": 1.6542323066914832e-14
+          },
+          {
+            "signal": "v(10)",
+            "normalized": 1.7763568394002506e-16,
+            "absoluteMax": 8.881784197001252e-16
+          },
+          {
+            "signal": "v(1)",
+            "normalized": 0,
+            "absoluteMax": 0
+          }
+        ],
+        "tsPoints": 285,
+        "ngPoints": 285
+      }
+    ]
+  },
+  {
+    "name": "gm3",
+    "passes": [
+      {
+        "pass": "before",
+        "sha256": "90ee65bd24818d09d008de93e92f5a398f3422ae2a4a663e5889834e2c1fe071",
+        "errors": [
+          {
+            "signal": "i(vin)",
+            "normalized": 0.0002788527236952159,
+            "absoluteMax": 0.0000012721901738029992
+          },
+          {
+            "signal": "i(vcc)",
+            "normalized": 0.00014784566263547968,
+            "absoluteMax": 7.84433475783464e-7
+          },
+          {
+            "signal": "v(x2.6)",
+            "normalized": 0.00009621110526665213,
+            "absoluteMax": 0.00003490842834174071
+          },
+          {
+            "signal": "v(40)",
+            "normalized": 0.00008280938149845864,
+            "absoluteMax": 0.0004361362228504362
+          },
+          {
+            "signal": "v(60)",
+            "normalized": 0.00006826333139290703,
+            "absoluteMax": 0.0003655704358178635
+          },
+          {
+            "signal": "v(x2.8)",
+            "normalized": 0.00006421601755530212,
+            "absoluteMax": 0.000107097850275642
+          },
+          {
+            "signal": "v(x1.4)",
+            "normalized": 0.00005679838440533525,
+            "absoluteMax": 0.000048469769148185016
+          },
+          {
+            "signal": "v(x4.8)",
+            "normalized": 0.00005233241591768205,
+            "absoluteMax": 0.00007354705739692768
+          },
+          {
+            "signal": "v(x2.7)",
+            "normalized": 0.0000511201184509839,
+            "absoluteMax": 0.00005629136768858789
+          },
+          {
+            "signal": "v(x3.4)",
+            "normalized": 0.000046974789375121584,
+            "absoluteMax": 0.000042870581583642764
+          },
+          {
+            "signal": "v(x4.7)",
+            "normalized": 0.00004549375743489681,
+            "absoluteMax": 0.000029468418690392628
+          },
+          {
+            "signal": "v(2)",
+            "normalized": 0.00004285661569465661,
+            "absoluteMax": 0.00022001312814223795
+          },
+          {
+            "signal": "v(30)",
+            "normalized": 0.00004182858935240986,
+            "absoluteMax": 0.00019041570278566233
+          },
+          {
+            "signal": "v(50)",
+            "normalized": 0.000032304420239341536,
+            "absoluteMax": 0.00017033678928579654
+          },
+          {
+            "signal": "v(x5.8)",
+            "normalized": 0.000023791221079494707,
+            "absoluteMax": 0.00003802080090320459
+          },
+          {
+            "signal": "v(x5.7)",
+            "normalized": 0.00002307127696295748,
+            "absoluteMax": 0.000022084377148678946
+          },
+          {
+            "signal": "v(x5.6)",
+            "normalized": 0.00002294416279608904,
+            "absoluteMax": 0.000009996563770570122
+          },
+          {
+            "signal": "v(1)",
+            "normalized": 3.2862601528904635e-15,
+            "absoluteMax": 1.6431300764452317e-14
+          },
+          {
+            "signal": "v(10)",
+            "normalized": 0,
+            "absoluteMax": 0
+          }
+        ],
+        "tsPoints": 153,
+        "ngPoints": 153
+      },
+      {
+        "pass": "after",
+        "sha256": "90ee65bd24818d09d008de93e92f5a398f3422ae2a4a663e5889834e2c1fe071",
+        "errors": [
+          {
+            "signal": "i(vin)",
+            "normalized": 0.0002788527236952159,
+            "absoluteMax": 0.0000012721901738029992
+          },
+          {
+            "signal": "i(vcc)",
+            "normalized": 0.00014784566263547968,
+            "absoluteMax": 7.84433475783464e-7
+          },
+          {
+            "signal": "v(x2.6)",
+            "normalized": 0.00009621110526665213,
+            "absoluteMax": 0.00003490842834174071
+          },
+          {
+            "signal": "v(40)",
+            "normalized": 0.00008280938149845864,
+            "absoluteMax": 0.0004361362228504362
+          },
+          {
+            "signal": "v(60)",
+            "normalized": 0.00006826333139290703,
+            "absoluteMax": 0.0003655704358178635
+          },
+          {
+            "signal": "v(x2.8)",
+            "normalized": 0.00006421601755530212,
+            "absoluteMax": 0.000107097850275642
+          },
+          {
+            "signal": "v(x1.4)",
+            "normalized": 0.00005679838440533525,
+            "absoluteMax": 0.000048469769148185016
+          },
+          {
+            "signal": "v(x4.8)",
+            "normalized": 0.00005233241591768205,
+            "absoluteMax": 0.00007354705739692768
+          },
+          {
+            "signal": "v(x2.7)",
+            "normalized": 0.0000511201184509839,
+            "absoluteMax": 0.00005629136768858789
+          },
+          {
+            "signal": "v(x3.4)",
+            "normalized": 0.000046974789375121584,
+            "absoluteMax": 0.000042870581583642764
+          },
+          {
+            "signal": "v(x4.7)",
+            "normalized": 0.00004549375743489681,
+            "absoluteMax": 0.000029468418690392628
+          },
+          {
+            "signal": "v(2)",
+            "normalized": 0.00004285661569465661,
+            "absoluteMax": 0.00022001312814223795
+          },
+          {
+            "signal": "v(30)",
+            "normalized": 0.00004182858935240986,
+            "absoluteMax": 0.00019041570278566233
+          },
+          {
+            "signal": "v(50)",
+            "normalized": 0.000032304420239341536,
+            "absoluteMax": 0.00017033678928579654
+          },
+          {
+            "signal": "v(x5.8)",
+            "normalized": 0.000023791221079494707,
+            "absoluteMax": 0.00003802080090320459
+          },
+          {
+            "signal": "v(x5.7)",
+            "normalized": 0.00002307127696295748,
+            "absoluteMax": 0.000022084377148678946
+          },
+          {
+            "signal": "v(x5.6)",
+            "normalized": 0.00002294416279608904,
+            "absoluteMax": 0.000009996563770570122
+          },
+          {
+            "signal": "v(1)",
+            "normalized": 3.2862601528904635e-15,
+            "absoluteMax": 1.6431300764452317e-14
+          },
+          {
+            "signal": "v(10)",
+            "normalized": 0,
+            "absoluteMax": 0
+          }
+        ],
+        "tsPoints": 153,
+        "ngPoints": 153
+      }
+    ]
+  },
+  {
+    "name": "todd3",
+    "passes": [
+      {
+        "pass": "before",
+        "sha256": "adecd1aec7ea465065ee828bea3db6a4f675a9e8abf0e8931137593bb338b57f",
+        "errors": [
+          {
+            "signal": "i(vnd)",
+            "normalized": 0.002379194450977695,
+            "absoluteMax": 2.3791944509776953e-13
+          },
+          {
+            "signal": "i(vc)",
+            "normalized": 0.0004989797766810451,
+            "absoluteMax": 1.947085300151791e-9
+          },
+          {
+            "signal": "i(vamp)",
+            "normalized": 0.00046870231086563097,
+            "absoluteMax": 8.003122396094044e-7
+          },
+          {
+            "signal": "v(7)",
+            "normalized": 0.00010868434467449609,
+            "absoluteMax": 0.000006032559094825557
+          },
+          {
+            "signal": "v(3)",
+            "normalized": 0.00010451431243096426,
+            "absoluteMax": 0.000012441973944413154
+          },
+          {
+            "signal": "i(vseu)",
+            "normalized": 0.00010165802981676978,
+            "absoluteMax": 8.059598733860598e-7
+          },
+          {
+            "signal": "i(vdd)",
+            "normalized": 0.00008559884315663968,
+            "absoluteMax": 8.310845319176724e-7
+          },
+          {
+            "signal": "i(vpulse)",
+            "normalized": 0.000036678709479634395,
+            "absoluteMax": 4.906600024612295e-7
+          },
+          {
+            "signal": "v(4)",
+            "normalized": 0.000034734533200109495,
+            "absoluteMax": 0.00020571306991001848
+          },
+          {
+            "signal": "v(12)",
+            "normalized": 0.0000347345323537225,
+            "absoluteMax": 0.00020571306489713947
+          },
+          {
+            "signal": "v(6)",
+            "normalized": 0.000008986628414004088,
+            "absoluteMax": 0.000008543123102611183
+          },
+          {
+            "signal": "v(5)",
+            "normalized": 8.951242543595299e-7,
+            "absoluteMax": 0.000004497578081519293
+          },
+          {
+            "signal": "v(9)",
+            "normalized": 5.294411490454228e-7,
+            "absoluteMax": 0.0000026531240342464457
+          },
+          {
+            "signal": "v(2)",
+            "normalized": 1.9622800393858785e-7,
+            "absoluteMax": 1.9622800393858785e-11
+          },
+          {
+            "signal": "v(1)",
+            "normalized": 9.99911264898401e-13,
+            "absoluteMax": 4.999556324492005e-12
+          },
+          {
+            "signal": "v(10)",
+            "normalized": 9.99911264898401e-13,
+            "absoluteMax": 4.999556324492005e-12
+          },
+          {
+            "signal": "v(11)",
+            "normalized": 9.99911264898401e-13,
+            "absoluteMax": 4.999556324492005e-12
+          },
+          {
+            "signal": "v(99)",
+            "normalized": 9.99911264898401e-13,
+            "absoluteMax": 4.999556324492005e-12
+          },
+          {
+            "signal": "v(8)",
+            "normalized": 0,
+            "absoluteMax": 0
+          }
+        ],
+        "tsPoints": 128,
+        "ngPoints": 128
+      },
+      {
+        "pass": "after",
+        "sha256": "adecd1aec7ea465065ee828bea3db6a4f675a9e8abf0e8931137593bb338b57f",
+        "errors": [
+          {
+            "signal": "i(vnd)",
+            "normalized": 0.002379194450977695,
+            "absoluteMax": 2.3791944509776953e-13
+          },
+          {
+            "signal": "i(vc)",
+            "normalized": 0.0004989797766810451,
+            "absoluteMax": 1.947085300151791e-9
+          },
+          {
+            "signal": "i(vamp)",
+            "normalized": 0.00046870231086563097,
+            "absoluteMax": 8.003122396094044e-7
+          },
+          {
+            "signal": "v(7)",
+            "normalized": 0.00010868434467449609,
+            "absoluteMax": 0.000006032559094825557
+          },
+          {
+            "signal": "v(3)",
+            "normalized": 0.00010451431243096426,
+            "absoluteMax": 0.000012441973944413154
+          },
+          {
+            "signal": "i(vseu)",
+            "normalized": 0.00010165802981676978,
+            "absoluteMax": 8.059598733860598e-7
+          },
+          {
+            "signal": "i(vdd)",
+            "normalized": 0.00008559884315663968,
+            "absoluteMax": 8.310845319176724e-7
+          },
+          {
+            "signal": "i(vpulse)",
+            "normalized": 0.000036678709479634395,
+            "absoluteMax": 4.906600024612295e-7
+          },
+          {
+            "signal": "v(4)",
+            "normalized": 0.000034734533200109495,
+            "absoluteMax": 0.00020571306991001848
+          },
+          {
+            "signal": "v(12)",
+            "normalized": 0.0000347345323537225,
+            "absoluteMax": 0.00020571306489713947
+          },
+          {
+            "signal": "v(6)",
+            "normalized": 0.000008986628414004088,
+            "absoluteMax": 0.000008543123102611183
+          },
+          {
+            "signal": "v(5)",
+            "normalized": 8.951242543595299e-7,
+            "absoluteMax": 0.000004497578081519293
+          },
+          {
+            "signal": "v(9)",
+            "normalized": 5.294411490454228e-7,
+            "absoluteMax": 0.0000026531240342464457
+          },
+          {
+            "signal": "v(2)",
+            "normalized": 1.9622800393858785e-7,
+            "absoluteMax": 1.9622800393858785e-11
+          },
+          {
+            "signal": "v(1)",
+            "normalized": 9.99911264898401e-13,
+            "absoluteMax": 4.999556324492005e-12
+          },
+          {
+            "signal": "v(10)",
+            "normalized": 9.99911264898401e-13,
+            "absoluteMax": 4.999556324492005e-12
+          },
+          {
+            "signal": "v(11)",
+            "normalized": 9.99911264898401e-13,
+            "absoluteMax": 4.999556324492005e-12
+          },
+          {
+            "signal": "v(99)",
+            "normalized": 9.99911264898401e-13,
+            "absoluteMax": 4.999556324492005e-12
+          },
+          {
+            "signal": "v(8)",
+            "normalized": 0,
+            "absoluteMax": 0
+          }
+        ],
+        "tsPoints": 128,
+        "ngPoints": 128
+      }
+    ]
+  },
+  {
+    "name": "arom",
+    "passes": [
+      {
+        "pass": "before",
+        "sha256": "4db593d3133a5929e7efdcb26921d3fce15e6c6c17e8bcef2fa2a08c4f7d062c",
+        "errors": [
+          {
+            "signal": "v(31)",
+            "normalized": 0.1752556113740046,
+            "absoluteMax": 0.8091891209803213
+          },
+          {
+            "signal": "v(33)",
+            "normalized": 0.14353510186945123,
+            "absoluteMax": 0.6586261495447316
+          },
+          {
+            "signal": "v(40)",
+            "normalized": 0.1390199655615444,
+            "absoluteMax": 0.6335071629854205
+          },
+          {
+            "signal": "v(30)",
+            "normalized": 0.11167930560530559,
+            "absoluteMax": 0.5148030979520419
+          },
+          {
+            "signal": "v(43)",
+            "normalized": 0.1031609173289291,
+            "absoluteMax": 0.4773340770511818
+          },
+          {
+            "signal": "v(27)",
+            "normalized": 0.10243015927903813,
+            "absoluteMax": 0.46206258328890737
+          },
+          {
+            "signal": "v(3)",
+            "normalized": 0.0972354000023294,
+            "absoluteMax": 0.022034030242685243
+          },
+          {
+            "signal": "v(2)",
+            "normalized": 0.08984490574081479,
+            "absoluteMax": 0.1871603967339982
+          },
+          {
+            "signal": "i(v$d2)",
+            "normalized": 0.08936679453641615,
+            "absoluteMax": 0.00016357841994272371
+          },
+          {
+            "signal": "v(54)",
+            "normalized": 0.08315446931203421,
+            "absoluteMax": 0.38177380447018994
+          },
+          {
+            "signal": "v(47)",
+            "normalized": 0.08301763157094766,
+            "absoluteMax": 0.37588629403798723
+          },
+          {
+            "signal": "v(1)",
+            "normalized": 0.0824788109045929,
+            "absoluteMax": 0.16351291728083278
+          },
+          {
+            "signal": "i(v$d1)",
+            "normalized": 0.08227202326521978,
+            "absoluteMax": 0.00007590879060165746
+          },
+          {
+            "signal": "v(51)",
+            "normalized": 0.08127955034435703,
+            "absoluteMax": 0.3718335446978114
+          },
+          {
+            "signal": "v(52)",
+            "normalized": 0.07724466584790232,
+            "absoluteMax": 0.35289541887829423
+          },
+          {
+            "signal": "v(32)",
+            "normalized": 0.07429650747404144,
+            "absoluteMax": 0.344449083231678
+          },
+          {
+            "signal": "i(v$d3)",
+            "normalized": 0.07259135276420242,
+            "absoluteMax": 0.00006494377248710451
+          },
+          {
+            "signal": "v(4)",
+            "normalized": 0.06791798515502187,
+            "absoluteMax": 0.1445105879654931
+          },
+          {
+            "signal": "v(36)",
+            "normalized": 0.06559542586580913,
+            "absoluteMax": 0.3046105539321191
+          },
+          {
+            "signal": "v(42)",
+            "normalized": 0.0650178732059487,
+            "absoluteMax": 0.29422657168098576
+          },
+          {
+            "signal": "v(38)",
+            "normalized": 0.05578202786094445,
+            "absoluteMax": 0.2568391174201037
+          },
+          {
+            "signal": "v(11)",
+            "normalized": 0.055443386422712605,
+            "absoluteMax": 0.2560582275350489
+          },
+          {
+            "signal": "v(14)",
+            "normalized": 0.046432287995516186,
+            "absoluteMax": 0.216111800554168
+          },
+          {
+            "signal": "v(12)",
+            "normalized": 0.04231421074481683,
+            "absoluteMax": 0.1919112218698087
+          },
+          {
+            "signal": "v(46)",
+            "normalized": 0.0409493795295587,
+            "absoluteMax": 0.18786031649943513
+          },
+          {
+            "signal": "v(13)",
+            "normalized": 0.03853560361185427,
+            "absoluteMax": 0.17544310150541542
+          },
+          {
+            "signal": "v(44)",
+            "normalized": 0.03776149595806883,
+            "absoluteMax": 0.17208599642728784
+          },
+          {
+            "signal": "v(17)",
+            "normalized": 0.03703416405328098,
+            "absoluteMax": 0.16936399101638333
+          },
+          {
+            "signal": "v(24)",
+            "normalized": 0.035589469855138584,
+            "absoluteMax": 0.16199666994246575
+          },
+          {
+            "signal": "v(6)",
+            "normalized": 0.03302240998945434,
+            "absoluteMax": 0.15516231863732788
+          },
+          {
+            "signal": "v(7)",
+            "normalized": 0.03300542576284876,
+            "absoluteMax": 0.15605519033027093
+          },
+          {
+            "signal": "v(35)",
+            "normalized": 0.03275368093463051,
+            "absoluteMax": 0.15166266995527744
+          },
+          {
+            "signal": "v(45)",
+            "normalized": 0.03097750758407161,
+            "absoluteMax": 0.14297059511930255
+          },
+          {
+            "signal": "v(19)",
+            "normalized": 0.02776218313043024,
+            "absoluteMax": 0.12650875743934975
+          },
+          {
+            "signal": "i(v$d4)",
+            "normalized": 0.025834310529761113,
+            "absoluteMax": 0.000024955494865267804
+          },
+          {
+            "signal": "v(28)",
+            "normalized": 0.025647210678507285,
+            "absoluteMax": 0.11788038340548068
+          },
+          {
+            "signal": "v(25)",
+            "normalized": 0.023942098551315485,
+            "absoluteMax": 0.10909013716588145
+          },
+          {
+            "signal": "v(37)",
+            "normalized": 0.022345743413511383,
+            "absoluteMax": 0.10723614541681625
+          },
+          {
+            "signal": "v(49)",
+            "normalized": 0.02225553440287449,
+            "absoluteMax": 0.10118246739280368
+          },
+          {
+            "signal": "v(55)",
+            "normalized": 0.020274913552712076,
+            "absoluteMax": 0.09115006989611607
+          },
+          {
+            "signal": "v(39)",
+            "normalized": 0.01920136324587415,
+            "absoluteMax": 0.0868264371108114
+          },
+          {
+            "signal": "v(9)",
+            "normalized": 0.018936629498930362,
+            "absoluteMax": 0.08630205751176456
+          },
+          {
+            "signal": "v(29)",
+            "normalized": 0.017447940242825116,
+            "absoluteMax": 0.079290032056198
+          },
+          {
+            "signal": "v(48)",
+            "normalized": 0.01717058442598295,
+            "absoluteMax": 0.07790428916069914
+          },
+          {
+            "signal": "v(53)",
+            "normalized": 0.016835684258304555,
+            "absoluteMax": 0.07787380251614362
+          },
+          {
+            "signal": "v(41)",
+            "normalized": 0.015707077554727705,
+            "absoluteMax": 0.07238449942625869
+          },
+          {
+            "signal": "v(26)",
+            "normalized": 0.015031627881582597,
+            "absoluteMax": 0.06874795256326527
+          },
+          {
+            "signal": "v(56)",
+            "normalized": 0.013434806273699971,
+            "absoluteMax": 0.06133849657661705
+          },
+          {
+            "signal": "v(5)",
+            "normalized": 0.013110870754580842,
+            "absoluteMax": 0.06356658406959115
+          },
+          {
+            "signal": "i(v$d5)",
+            "normalized": 0.013066910543831163,
+            "absoluteMax": 0.0011468353347346
+          },
+          {
+            "signal": "v(34)",
+            "normalized": 0.010697166514200296,
+            "absoluteMax": 0.04851314545399221
+          },
+          {
+            "signal": "v(22)",
+            "normalized": 0.009578078255272815,
+            "absoluteMax": 0.043772371878991745
+          },
+          {
+            "signal": "v(8)",
+            "normalized": 0.00923496015411832,
+            "absoluteMax": 0.04538125632584178
+          },
+          {
+            "signal": "v(16)",
+            "normalized": 0.007533174615064526,
+            "absoluteMax": 0.034542432482762564
+          },
+          {
+            "signal": "v(50)",
+            "normalized": 0.007317763117761202,
+            "absoluteMax": 0.033297759023316775
+          },
+          {
+            "signal": "v(15)",
+            "normalized": 0.00505959316673752,
+            "absoluteMax": 0.02307437605227225
+          },
+          {
+            "signal": "v(20)",
+            "normalized": 0.004067666671227213,
+            "absoluteMax": 0.018628160378189262
+          },
+          {
+            "signal": "v(57)",
+            "normalized": 0.0000018575080714061048,
+            "absoluteMax": 0.000008358786321327472
+          },
+          {
+            "signal": "v(23)",
+            "normalized": 5.289595921769635e-14,
+            "absoluteMax": 2.3803181647963356e-13
+          },
+          {
+            "signal": "v(10)",
+            "normalized": 4.2484534408989326e-14,
+            "absoluteMax": 1.9118040484045196e-13
+          },
+          {
+            "signal": "v(21)",
+            "normalized": 2.6497322854387068e-14,
+            "absoluteMax": 1.192379528447418e-13
+          },
+          {
+            "signal": "v(18)",
+            "normalized": 2.6447979608848174e-14,
+            "absoluteMax": 1.1901590823981678e-13
+          }
+        ],
+        "tsPoints": 1330,
+        "ngPoints": 1337
+      },
+      {
+        "pass": "after",
+        "sha256": "4db593d3133a5929e7efdcb26921d3fce15e6c6c17e8bcef2fa2a08c4f7d062c",
+        "errors": [
+          {
+            "signal": "v(31)",
+            "normalized": 0.1752556113740046,
+            "absoluteMax": 0.8091891209803213
+          },
+          {
+            "signal": "v(33)",
+            "normalized": 0.14353510186945123,
+            "absoluteMax": 0.6586261495447316
+          },
+          {
+            "signal": "v(40)",
+            "normalized": 0.1390199655615444,
+            "absoluteMax": 0.6335071629854205
+          },
+          {
+            "signal": "v(30)",
+            "normalized": 0.11167930560530559,
+            "absoluteMax": 0.5148030979520419
+          },
+          {
+            "signal": "v(43)",
+            "normalized": 0.1031609173289291,
+            "absoluteMax": 0.4773340770511818
+          },
+          {
+            "signal": "v(27)",
+            "normalized": 0.10243015927903813,
+            "absoluteMax": 0.46206258328890737
+          },
+          {
+            "signal": "v(3)",
+            "normalized": 0.0972354000023294,
+            "absoluteMax": 0.022034030242685243
+          },
+          {
+            "signal": "v(2)",
+            "normalized": 0.08984490574081479,
+            "absoluteMax": 0.1871603967339982
+          },
+          {
+            "signal": "i(v$d2)",
+            "normalized": 0.08936679453641615,
+            "absoluteMax": 0.00016357841994272371
+          },
+          {
+            "signal": "v(54)",
+            "normalized": 0.08315446931203421,
+            "absoluteMax": 0.38177380447018994
+          },
+          {
+            "signal": "v(47)",
+            "normalized": 0.08301763157094766,
+            "absoluteMax": 0.37588629403798723
+          },
+          {
+            "signal": "v(1)",
+            "normalized": 0.0824788109045929,
+            "absoluteMax": 0.16351291728083278
+          },
+          {
+            "signal": "i(v$d1)",
+            "normalized": 0.08227202326521978,
+            "absoluteMax": 0.00007590879060165746
+          },
+          {
+            "signal": "v(51)",
+            "normalized": 0.08127955034435703,
+            "absoluteMax": 0.3718335446978114
+          },
+          {
+            "signal": "v(52)",
+            "normalized": 0.07724466584790232,
+            "absoluteMax": 0.35289541887829423
+          },
+          {
+            "signal": "v(32)",
+            "normalized": 0.07429650747404144,
+            "absoluteMax": 0.344449083231678
+          },
+          {
+            "signal": "i(v$d3)",
+            "normalized": 0.07259135276420242,
+            "absoluteMax": 0.00006494377248710451
+          },
+          {
+            "signal": "v(4)",
+            "normalized": 0.06791798515502187,
+            "absoluteMax": 0.1445105879654931
+          },
+          {
+            "signal": "v(36)",
+            "normalized": 0.06559542586580913,
+            "absoluteMax": 0.3046105539321191
+          },
+          {
+            "signal": "v(42)",
+            "normalized": 0.0650178732059487,
+            "absoluteMax": 0.29422657168098576
+          },
+          {
+            "signal": "v(38)",
+            "normalized": 0.05578202786094445,
+            "absoluteMax": 0.2568391174201037
+          },
+          {
+            "signal": "v(11)",
+            "normalized": 0.055443386422712605,
+            "absoluteMax": 0.2560582275350489
+          },
+          {
+            "signal": "v(14)",
+            "normalized": 0.046432287995516186,
+            "absoluteMax": 0.216111800554168
+          },
+          {
+            "signal": "v(12)",
+            "normalized": 0.04231421074481683,
+            "absoluteMax": 0.1919112218698087
+          },
+          {
+            "signal": "v(46)",
+            "normalized": 0.0409493795295587,
+            "absoluteMax": 0.18786031649943513
+          },
+          {
+            "signal": "v(13)",
+            "normalized": 0.03853560361185427,
+            "absoluteMax": 0.17544310150541542
+          },
+          {
+            "signal": "v(44)",
+            "normalized": 0.03776149595806883,
+            "absoluteMax": 0.17208599642728784
+          },
+          {
+            "signal": "v(17)",
+            "normalized": 0.03703416405328098,
+            "absoluteMax": 0.16936399101638333
+          },
+          {
+            "signal": "v(24)",
+            "normalized": 0.035589469855138584,
+            "absoluteMax": 0.16199666994246575
+          },
+          {
+            "signal": "v(6)",
+            "normalized": 0.03302240998945434,
+            "absoluteMax": 0.15516231863732788
+          },
+          {
+            "signal": "v(7)",
+            "normalized": 0.03300542576284876,
+            "absoluteMax": 0.15605519033027093
+          },
+          {
+            "signal": "v(35)",
+            "normalized": 0.03275368093463051,
+            "absoluteMax": 0.15166266995527744
+          },
+          {
+            "signal": "v(45)",
+            "normalized": 0.03097750758407161,
+            "absoluteMax": 0.14297059511930255
+          },
+          {
+            "signal": "v(19)",
+            "normalized": 0.02776218313043024,
+            "absoluteMax": 0.12650875743934975
+          },
+          {
+            "signal": "i(v$d4)",
+            "normalized": 0.025834310529761113,
+            "absoluteMax": 0.000024955494865267804
+          },
+          {
+            "signal": "v(28)",
+            "normalized": 0.025647210678507285,
+            "absoluteMax": 0.11788038340548068
+          },
+          {
+            "signal": "v(25)",
+            "normalized": 0.023942098551315485,
+            "absoluteMax": 0.10909013716588145
+          },
+          {
+            "signal": "v(37)",
+            "normalized": 0.022345743413511383,
+            "absoluteMax": 0.10723614541681625
+          },
+          {
+            "signal": "v(49)",
+            "normalized": 0.02225553440287449,
+            "absoluteMax": 0.10118246739280368
+          },
+          {
+            "signal": "v(55)",
+            "normalized": 0.020274913552712076,
+            "absoluteMax": 0.09115006989611607
+          },
+          {
+            "signal": "v(39)",
+            "normalized": 0.01920136324587415,
+            "absoluteMax": 0.0868264371108114
+          },
+          {
+            "signal": "v(9)",
+            "normalized": 0.018936629498930362,
+            "absoluteMax": 0.08630205751176456
+          },
+          {
+            "signal": "v(29)",
+            "normalized": 0.017447940242825116,
+            "absoluteMax": 0.079290032056198
+          },
+          {
+            "signal": "v(48)",
+            "normalized": 0.01717058442598295,
+            "absoluteMax": 0.07790428916069914
+          },
+          {
+            "signal": "v(53)",
+            "normalized": 0.016835684258304555,
+            "absoluteMax": 0.07787380251614362
+          },
+          {
+            "signal": "v(41)",
+            "normalized": 0.015707077554727705,
+            "absoluteMax": 0.07238449942625869
+          },
+          {
+            "signal": "v(26)",
+            "normalized": 0.015031627881582597,
+            "absoluteMax": 0.06874795256326527
+          },
+          {
+            "signal": "v(56)",
+            "normalized": 0.013434806273699971,
+            "absoluteMax": 0.06133849657661705
+          },
+          {
+            "signal": "v(5)",
+            "normalized": 0.013110870754580842,
+            "absoluteMax": 0.06356658406959115
+          },
+          {
+            "signal": "i(v$d5)",
+            "normalized": 0.013066910543831163,
+            "absoluteMax": 0.0011468353347346
+          },
+          {
+            "signal": "v(34)",
+            "normalized": 0.010697166514200296,
+            "absoluteMax": 0.04851314545399221
+          },
+          {
+            "signal": "v(22)",
+            "normalized": 0.009578078255272815,
+            "absoluteMax": 0.043772371878991745
+          },
+          {
+            "signal": "v(8)",
+            "normalized": 0.00923496015411832,
+            "absoluteMax": 0.04538125632584178
+          },
+          {
+            "signal": "v(16)",
+            "normalized": 0.007533174615064526,
+            "absoluteMax": 0.034542432482762564
+          },
+          {
+            "signal": "v(50)",
+            "normalized": 0.007317763117761202,
+            "absoluteMax": 0.033297759023316775
+          },
+          {
+            "signal": "v(15)",
+            "normalized": 0.00505959316673752,
+            "absoluteMax": 0.02307437605227225
+          },
+          {
+            "signal": "v(20)",
+            "normalized": 0.004067666671227213,
+            "absoluteMax": 0.018628160378189262
+          },
+          {
+            "signal": "v(57)",
+            "normalized": 0.0000018575080714061048,
+            "absoluteMax": 0.000008358786321327472
+          },
+          {
+            "signal": "v(23)",
+            "normalized": 5.289595921769635e-14,
+            "absoluteMax": 2.3803181647963356e-13
+          },
+          {
+            "signal": "v(10)",
+            "normalized": 4.2484534408989326e-14,
+            "absoluteMax": 1.9118040484045196e-13
+          },
+          {
+            "signal": "v(21)",
+            "normalized": 2.6497322854387068e-14,
+            "absoluteMax": 1.192379528447418e-13
+          },
+          {
+            "signal": "v(18)",
+            "normalized": 2.6447979608848174e-14,
+            "absoluteMax": 1.1901590823981678e-13
+          }
+        ],
+        "tsPoints": 1330,
+        "ngPoints": 1337
+      }
+    ]
+  }
+]
