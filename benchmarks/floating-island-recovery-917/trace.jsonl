@@ -1,0 +1,47 @@
+spice-heavy: all 2 heavy slots busy, waiting...
+spice-heavy: got slot 1
+{"experiment":"source","scale":0,"diagonal":0,"error":"SingularMatrixError: Singular matrix: zero pivot at matrix column 10 (nodes: Net-_D183-K_)","success":false}
+{"experiment":"source","scale":0,"diagonal":0.01,"iterations":2,"success":true}
+{"experiment":"source","scale":0,"diagonal":0.001,"iterations":2,"success":true}
+{"experiment":"source","scale":0,"diagonal":0.0001,"iterations":2,"success":true}
+{"experiment":"source","scale":0,"diagonal":0.00001,"iterations":2,"success":true}
+{"experiment":"source","scale":0,"diagonal":0.0000010000000000000002,"iterations":2,"success":true}
+{"experiment":"source","scale":0,"diagonal":1.0000000000000002e-7,"iterations":3,"success":true}
+{"experiment":"source","scale":0,"diagonal":1.0000000000000002e-8,"iterations":15,"success":true}
+{"experiment":"source","scale":0,"diagonal":1.0000000000000003e-9,"iterations":3,"success":true}
+{"experiment":"source","scale":0,"diagonal":1.0000000000000003e-10,"iterations":5,"success":true}
+{"experiment":"source","scale":0,"diagonal":1.0000000000000003e-11,"iterations":3,"success":true}
+{"experiment":"source","scale":0,"diagonal":1.0000000000000002e-12,"iterations":2,"success":true}
+{"experiment":"source","scale":0.001,"diagonal":0,"error":"SingularMatrixError: Singular matrix: zero pivot at matrix column 10 (nodes: Net-_D183-K_)","success":false}
+{"experiment":"source","scale":0,"diagonal":0,"error":"SingularMatrixError: Singular matrix: zero pivot at matrix column 10 (nodes: Net-_D183-K_)","success":false}
+{"experiment":"optran","success":false,"time":0,"error":"TimestepTooSmallError: Timestep too small at t=0: dt=1.4901161193847657e-16","convergence":{"dc":{"newtonIterations":0,"acceptedSolves":0,"rejectedSolves":0,"sourceStepAttempts":0,"sourceStepFailures":0,"gminStepAttempts":0,"gminStepFailures":0,"failure":null},"transient":{"acceptedSteps":0,"rejectedSteps":17,"newtonIterations":1700,"nrRetries":17,"lteRetries":0,"minimumAcceptedTimestep":null,"failure":"dt-floor"}}}
+{"experiment":"source","scale":0,"diagonal":0,"error":"SingularMatrixError: Singular matrix: zero pivot at matrix column 10 (nodes: Net-_D183-K_)","success":false}
+{"experiment":"source","scale":0,"diagonal":0.01,"iterations":2,"success":true}
+{"experiment":"source","scale":0,"diagonal":0.001,"iterations":2,"success":true}
+{"experiment":"source","scale":0,"diagonal":0.0001,"iterations":2,"success":true}
+{"experiment":"source","scale":0,"diagonal":0.00001,"iterations":2,"success":true}
+{"experiment":"source","scale":0,"diagonal":0.0000010000000000000002,"iterations":2,"success":true}
+{"experiment":"source","scale":0,"diagonal":1.0000000000000002e-7,"iterations":3,"success":true}
+{"experiment":"source","scale":0,"diagonal":1.0000000000000002e-8,"iterations":15,"success":true}
+{"experiment":"source","scale":0,"diagonal":1.0000000000000003e-9,"iterations":3,"success":true}
+{"experiment":"source","scale":0,"diagonal":1.0000000000000003e-10,"iterations":5,"success":true}
+{"experiment":"source","scale":0,"diagonal":1.0000000000000003e-11,"iterations":3,"success":true}
+{"experiment":"source","scale":0,"diagonal":1.0000000000000002e-12,"iterations":2,"success":true}
+{"experiment":"source","scale":0.001,"diagonal":0,"error":"SingularMatrixError: Singular matrix: zero pivot at matrix column 10 (nodes: Net-_D183-K_)","success":false}
+{"experiment":"source","scale":0,"diagonal":0,"error":"SingularMatrixError: Singular matrix: zero pivot at matrix column 10 (nodes: Net-_D183-K_)","success":false}
+{"experiment":"optran","success":false,"time":0,"error":"TimestepTooSmallError: Timestep too small at t=0: dt=1.4901161193847657e-16","convergence":{"dc":{"newtonIterations":0,"acceptedSolves":0,"rejectedSolves":0,"sourceStepAttempts":0,"sourceStepFailures":0,"gminStepAttempts":0,"gminStepFailures":0,"failure":null},"transient":{"acceptedSteps":0,"rejectedSteps":17,"newtonIterations":1700,"nrRetries":17,"lteRetries":0,"minimumAcceptedTimestep":null,"failure":"dt-floor"}}}
+{"experiment":"source","scale":0,"diagonal":0,"error":"SingularMatrixError: Singular matrix: zero pivot at matrix column 1 (nodes: k)","success":false}
+{"experiment":"source","scale":0,"diagonal":0.01,"iterations":1,"success":true}
+{"experiment":"source","scale":0,"diagonal":0.001,"iterations":1,"success":true}
+{"experiment":"source","scale":0,"diagonal":0.0001,"iterations":1,"success":true}
+{"experiment":"source","scale":0,"diagonal":0.00001,"iterations":1,"success":true}
+{"experiment":"source","scale":0,"diagonal":0.0000010000000000000002,"iterations":1,"success":true}
+{"experiment":"source","scale":0,"diagonal":1.0000000000000002e-7,"iterations":1,"success":true}
+{"experiment":"source","scale":0,"diagonal":1.0000000000000002e-8,"iterations":1,"success":true}
+{"experiment":"source","scale":0,"diagonal":1.0000000000000003e-9,"iterations":1,"success":true}
+{"experiment":"source","scale":0,"diagonal":1.0000000000000003e-10,"iterations":1,"success":true}
+{"experiment":"source","scale":0,"diagonal":1.0000000000000003e-11,"iterations":1,"success":true}
+{"experiment":"source","scale":0,"diagonal":1.0000000000000002e-12,"iterations":1,"success":true}
+{"experiment":"source","scale":0.001,"diagonal":0,"error":"SingularMatrixError: Singular matrix: zero pivot at matrix column 1 (nodes: k)","success":false}
+{"experiment":"source","scale":0,"diagonal":0,"error":"SingularMatrixError: Singular matrix: zero pivot at matrix column 1 (nodes: k)","success":false}
+{"experiment":"optran","success":true,"time":0.00001,"convergence":{"dc":{"newtonIterations":0,"acceptedSolves":0,"rejectedSolves":0,"sourceStepAttempts":0,"sourceStepFailures":0,"gminStepAttempts":0,"gminStepFailures":0,"failure":null},"transient":{"acceptedSteps":107,"rejectedSteps":0,"newtonIterations":108,"nrRetries":0,"lteRetries":0,"minimumAcceptedTimestep":1e-9,"failure":null}}}

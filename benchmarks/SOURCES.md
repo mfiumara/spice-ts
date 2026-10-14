@@ -1,5 +1,17 @@
 # Benchmark sources
 
+## Floating diode OP recovery experiments (#917)
+
+[floating-island-recovery-917](floating-island-recovery-917/README.md) reuses the
+self-written MIT reduction and unchanged fetch-only vendor decks pinned in
+[ticket795-singular-917](ticket795-singular-917/README.md). Vendor attachment
+https://sourceforge.net/p/ngspice/bugs/795/, `project.7z`, SHA256
+`4f553ecaa57d330c9db7ad9c581988252858451aad0c59a589b3953693fae924`.
+No vendor bytes are redistributed. New test, runner and experimental patches
+are original MIT project work. Ngspice-47 `a80f6e3e95d51534905b1f23410a951802666656`
+is a cited behavioral reference under its modified BSD licence; no C code is copied.
+Candidate losses are retained; no production algorithm or corpus score changes.
+
 ## corpus-m AC, diode and MOS device batch (#1045)
 
 24 unchanged decks from Xyce_Regression at
