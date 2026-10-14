@@ -308,6 +308,7 @@ const CHARGE_BRANCHES: ReadonlyArray<readonly [number, number]> = [
 export class MOS2 implements DeviceModel {
   readonly branches: number[] = [];
   readonly isNonlinear = true;
+  readonly initializesOperatingPoint = true;
   /** {@link truncateTransientStep} is the complete ngspice-47 step bound (MOS2trunc: qgs, qgd, qgb). */
   readonly truncationCoversCharges = true;
   readonly model: MOS2ModelParams;
@@ -332,6 +333,7 @@ export class MOS2 implements DeviceModel {
   /** MOS2gm / MOS2gmbs of the previous load (moseq2 keeps them on one subthreshold path). */
   private lastGm = 0;
   private lastGmbs = 0;
+  private operatingPointLoad = false;
   private readonly lastLoad: MOS2Load = {
     vbs: 0, vbd: 0, vgs: 0, vds: 0, mode: 1, cd: 0, cbs: 0, cbd: 0, gm: 0, gds: 0, gmbs: 0, gbs: 0, gbd: 0,
     limited: false,
@@ -910,6 +912,7 @@ export class MOS2 implements DeviceModel {
   }
 
   limitNewtonStep(previous: Float64Array, candidate: Float64Array): number {
+    if (this.operatingPointLoad) return 1;
     const read = (solution: Float64Array) => (node: number) => (node >= 0 ? solution[node] : 0);
     const [vgsOld, vdsOld] = this.terminalVoltages(read(previous));
     const [vgsNew, vdsNew] = this.terminalVoltages(read(candidate));
@@ -934,13 +937,36 @@ export class MOS2 implements DeviceModel {
     const gmin = ctx.gmin ?? DEVICE_GMIN;
     const [nD, nG, nS, nB] = this.nodes;
     const voltage = (node: number) => (node >= 0 ? ctx.getVoltage(node) : 0);
-    const [vgs, vds, vbsRaw] = this.terminalVoltages(voltage);
+    const initializing = ctx.operatingPointPhase === 'junction';
+    this.operatingPointLoad = ctx.operatingPointPhase !== undefined;
+    // mos2load.c MODEINITJCT for the supported default non-OFF, zero-IC
+    // instance. Model-local Vbs=-1 is not a globally consistent node seed.
+    const bias = initializing
+      ? [type * this.temp.tVto, 0, -1]
+      : this.terminalVoltages(voltage);
+    let [vgs, vds] = bias;
+    const vbsRaw = bias[2];
+    // DC uses ngspice's previous-load fetlim/limvds, not a scaled global
+    // solution. Leave the existing transient step-limiting path unchanged.
+    if (this.operatingPointLoad && !initializing) {
+      const vgdRaw = vgs - vds;
+      if (this.lastLoad.vds >= 0) {
+        vgs = fetlim(vgs, this.lastLoad.vgs, this.lastVon);
+        vds = limvds(vgs - vgdRaw, this.lastLoad.vds);
+      } else {
+        const vgd = fetlim(vgdRaw, this.lastLoad.vgs - this.lastLoad.vds, this.lastVon);
+        vds = -limvds(-(vgs - vgd), -this.lastLoad.vds);
+        vgs = vgd + vds;
+      }
+    }
 
     // mos2load.c junction limiting against the previous load.
     let vbs = vbsRaw;
     let vbd = vbs - vds;
     let limited: boolean;
-    if (vds >= 0) {
+    if (initializing) {
+      limited = false;
+    } else if (vds >= 0) {
       vbs = pnjlim(vbs, this.lastVbs, vt, sourceVcrit);
       limited = vbs !== vbsRaw;
       vbd = vbs - vds;
