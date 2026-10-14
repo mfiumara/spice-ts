@@ -1,0 +1,50 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: bicmos pulldown circuit
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 19  
+TWObiasSolve: No Convergence
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+2                                            0
+3                                            0
+8                                            5
+5                                  7.81634e-25
+11                                           0
+4                                            5
+10                                           5
+7                                  7.81634e-25
+9                                            0
+6                                            0
+vl#branch                                    0
+ve#branch                          1.70453e-17
+vb#branch                          7.81634e-15
+vc#branch                         -1.23745e-14
+vbk#branch                         4.55818e-15
+vd#branch                          1.23745e-14
+vin#branch                        -2.01948e-28
+vss#branch                         4.57522e-15
+
+ Reference value :  0.00000e+00 Reference value :  6.00000e-14 Reference value :  2.40000e-13 Reference value :  9.60000e-13 Reference value :  1.92000e-12 Reference value :  3.84000e-12 Reference value :  7.68000e-12 Reference value :  1.53600e-11 Reference value :  3.07200e-11 Reference value :  5.45080e-11 Reference value :  8.49352e-11 Reference value :  1.23472e-10 Reference value :  1.67717e-10 Reference value :  2.11703e-10 Reference value :  2.51636e-10 Reference value :  2.75818e-10 Reference value :  3.00000e-10
+No. of Data Rows : 20
+
+Total analysis time (seconds) = 10.9318
+
+Total elapsed time (seconds) = 10.938 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 14032.781 MB.
+Maximum ngspice program size =   35.781 MB.
+Current ngspice program size =   35.781 MB.
+
+ngspice-47 done

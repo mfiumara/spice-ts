@@ -1,0 +1,27 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: compare a m=2 resistor with two parallel instances
+
+Doing analysis at TEMP = 25.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 11
+
+No. of Data Rows : 1
+inoise_total = 5.264935e-04
+onoise_total = 2.632468e-02
+Doing analysis at TEMP = 25.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 11
+
+No. of Data Rows : 1
+inoise_total = 5.264935e-04
+onoise_total = 2.632468e-02
+Note: relative relerr = -3.33067E-15
+INFO: success
+ngspice-47 done

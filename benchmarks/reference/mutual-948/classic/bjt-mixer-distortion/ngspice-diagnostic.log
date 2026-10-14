@@ -1,0 +1,20 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: 	simple mixer circuit - diffpair fed by modulated iee
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Total analysis time (seconds) = 2.4E-05
+
+Total elapsed time (seconds) = 0.006 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 14495.938 MB.
+Maximum ngspice program size =    9.891 MB.
+Current ngspice program size =    9.891 MB.
+

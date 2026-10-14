@@ -1,0 +1,24 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: 4049 circuit
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 12  
+
+No. of Data Rows : 7
+.print line ignored since rawfile was produced.
+
+Total analysis time (seconds) = 0.000637
+
+Total elapsed time (seconds) = 0.005 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13178.625 MB.
+Maximum ngspice program size =   10.188 MB.
+Current ngspice program size =   10.188 MB.
+

@@ -1,0 +1,27 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: simple differential pair
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 102  
+
+No. of Data Rows : 167
+No. of Data Columns : 200  
+
+No. of Data Rows : 1
+.print line ignored since rawfile was produced.
+
+Total analysis time (seconds) = 0.006569
+
+Total elapsed time (seconds) = 0.011 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13821.516 MB.
+Maximum ngspice program size =   10.172 MB.
+Current ngspice program size =   10.172 MB.
+

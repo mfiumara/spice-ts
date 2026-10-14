@@ -1,0 +1,56 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: *****************==== 17-stage cmos ro ====*******************
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+Operating point simulation skipped by 'uic',
+  now using transient initial conditions.
+ Reference value :  6.33520e-08 Reference value :  1.33158e-07
+No. of Data Rows : 5103
+tdiff               =  2.19883e-08 targ=  4.20641e-08 trig=  2.00758e-08
+freq = 4.547873e+08
+delay = 1.293429e-09
+
+
+Doing analysis at TEMP = 100.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+Operating point simulation skipped by 'uic',
+  now using transient initial conditions.
+ Reference value :  6.21417e-08 Reference value :  1.44854e-07
+No. of Data Rows : 3949
+tdiff               =  2.74703e-08 targ=  5.25590e-08 trig=  2.50888e-08
+freq = 3.640299e+08
+delay = 1.615898e-09
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 100.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 156  
+Operating point simulation skipped by 'uic',
+  now using transient initial conditions.
+ Reference value :  5.61150e-08 Reference value :  1.12440e-07
+No. of Data Rows : 3949
+
+Total analysis time (seconds) = 1.67093
+
+Total elapsed time (seconds) = 1.676 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13875.891 MB.
+Maximum ngspice program size =   25.578 MB.
+Current ngspice program size =   25.578 MB.
+
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+

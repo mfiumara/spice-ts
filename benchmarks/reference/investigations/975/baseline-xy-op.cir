@@ -1,0 +1,32 @@
+rca3040 ckt - rca 3040 wideband amplifier
+.op
+vin 1 0 sin(0 0.1 50meg 0.5ns) ac 1
+vcc     2       0       15.0
+vee     3       0       -15.0
+rs1     30      1       1k
+rs2     31      0       1k
+r1      5       3       4.8k
+r2      6       3       4.8k
+r3      9       3       811
+r4      8       3       2.17k
+r5      8       0       820
+r6      2       14      1.32k
+r7      2       12      4.5k
+r8      2       15      1.32k
+r9      16      0       5.25k
+r10     17      0       5.25k
+q1      2       30      5       qnl
+q2      2       31      6       qnl
+q3      10      5       7       qnl
+q4      11      6       7       qnl
+q5      14      12      10      qnl
+q6      15      12      11      qnl
+q7      12      12      13      qnl
+q8      13      13      0       qnl
+q9      7       8       9       qnl
+q10     2       15      16      qnl
+q11     2       14      17      qnl
+.model qnl npn bf=80 rb=100 ccs=2pf tf=0.3ns tr=6ns cje=3pf
++ cjc=2pf va 50
+.print DC format=csv file=baseline-xy-op.csv precision=17 N(q1:VBE) N(q1:VBC) IC(q1) N(q2:VBE) N(q2:VBC) IC(q2) N(q3:VBE) N(q3:VBC) IC(q3) N(q4:VBE) N(q4:VBC) IC(q4) N(q5:VBE) N(q5:VBC) IC(q5) N(q6:VBE) N(q6:VBC) IC(q6) N(q7:VBE) N(q7:VBC) IC(q7) N(q8:VBE) N(q8:VBC) IC(q8) N(q9:VBE) N(q9:VBC) IC(q9) N(q10:VBE) N(q10:VBC) IC(q10) N(q11:VBE) N(q11:VBC) IC(q11) {QNL:VAF} {QNL:IS} {QNL:BF} {QNL:BR} {QNL:NF} {QNL:NR} {QNL:VAR} {QNL:IKF} {QNL:IKR} {QNL:ISE} {QNL:ISC} {QNL:NE} {QNL:NC} {QNL:NKF} {QNL:RB} {QNL:RBM} {QNL:IRB} {QNL:RC} {QNL:RE} {QNL:CJE} {QNL:VJE} {QNL:MJE} {QNL:TF} {QNL:XTF} {QNL:VTF} {QNL:ITF} {QNL:PTF} {QNL:CJC} {QNL:VJC} {QNL:MJC} {QNL:XCJC} {QNL:TR} {QNL:CJS} {QNL:VJS} {QNL:MJS} {QNL:FC} {QNL:TNOM} {QNL:EG} {QNL:XTI} {QNL:XTB}
+.end

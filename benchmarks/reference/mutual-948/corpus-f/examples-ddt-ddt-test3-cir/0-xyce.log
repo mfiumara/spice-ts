@@ -1,0 +1,106 @@
+
+*****
+***** Welcome to the Xyce(TM) Parallel Electronic Simulator
+*****
+***** This is version XyceNF Release 7.10.0
+***** Date: Wed Oct 14 01:49:24 CEST 2026
+
+
+***** Executing netlist input.cir
+
+***** Reading and parsing netlist...
+***** Setting up topology...
+
+Netlist warning: Voltage Node (22) connected to only 1 device Terminal
+***** Device Count Summary ...
+       B level 1 (Expression Based Voltage or Current Source) 1
+       C level 1 (Capacitor)                                  1
+       R level 1 (Resistor)                                   1
+       V level 1 (Independent Voltage Source)                 1
+       --------------------------------------------------------
+       Total Devices                                          4
+***** Setting up matrix structure...
+***** Number of Unknowns = 5
+***** Initializing...
+
+***** Beginning DC Operating Point Calculation...
+
+***** Beginning Transient Calculation...
+
+***** Percent complete: 1.00615 %
+***** Current system time: Wed Oct 14 01:49:24 2026
+***** Estimated time to completion:  0 sec.
+
+ *** Transient failure history: 
+Time        Time      Step   EstErr       Non-Linear Solver       node     node
+(sec)       Step     Status  OverTol    Status    Iters  ||F||    index    name
+ 4.365e-05  3.709e-18  pass  2.612e-01  P:normal   2  4.117e-07      0    2
+ 4.365e-05  3.709e-18  pass  4.686e-01  P:normal   2  4.117e-07      0    2
+ 4.365e-05  3.709e-18  pass  1.452e-01  P:normal   1  4.117e-07      0    2
+ 4.365e-05  3.709e-18  pass  1.615e-17  P:normal   1  4.117e-07      0    2
+ 4.365e-05  7.418e-18  pass  2.154e-17  P:normal   1  4.117e-07      0    2
+ 4.365e-05  1.484e-17  pass  6.893e-16  P:normal   1  9.354e-04      4    B2_branch
+ 4.365e-05  2.967e-17  pass  1.858e-01  P:normal   1  9.354e-04      4    B2_branch
+ 4.365e-05  2.967e-17  pass  4.181e-01  P:normal   2  3.429e-08      0    2
+ 4.365e-05  2.967e-17  pass  5.923e-01  P:normal   2  3.429e-08      0    2
+ 4.365e-05  2.671e-17  pass  5.807e-01  P:normal   2  5.197e-04      4    B2_branch
+ 4.365e-05  2.404e-17  pass  6.587e-01  P:normal   2  2.796e-07      0    2
+ 4.365e-05  2.163e-17  pass  7.165e-01  P:normal   2  2.796e-07      0    2
+ 4.365e-05  1.919e-17  pass  6.990e-01  P:normal   2  2.636e-07      0    2
+ 4.365e-05  1.716e-17  pass  6.245e-01  P:normal   2  2.555e-07      0    2
+ 4.365e-05  1.544e-17  pass  5.475e-01  P:normal   2  1.730e-07      0    2
+ 4.365e-05  1.390e-17  pass  5.759e-01  P:normal   2  9.985e-04      4    B2_branch
+ 4.365e-05  1.251e-17  pass  6.324e-01  P:normal   2  1.109e-03      4    B2_branch
+ 4.365e-05  1.126e-17  pass  6.663e-01  P:normal   2  2.247e-07      0    2
+ 4.365e-05  1.013e-17  pass  7.362e-01  P:normal   2  2.247e-07      0    2
+ 4.365e-05  8.906e-18  pass  7.359e-01  P:normal   2  5.823e-07      0    2
+ 4.365e-05  7.829e-18  pass  7.937e-01  P:normal   2  5.524e-07      0    2
+ 4.365e-05  6.711e-18  pass  9.379e-01  P:normal   2  3.810e-07      0    2
+ 4.365e-05  5.441e-18  pass  8.678e-01  P:normal   2  9.501e-08      0    2
+ 4.365e-05  4.528e-18  pass  5.607e-01  P:normal   2  9.929e-07      0    2
+ 4.365e-05  4.075e-18  fail  5.607e-01  P:near     7  3.406e-03      4    B2_branch
+Time step too small near step number: 286  Exiting transient loop.
+
+
+***** Solution Summary *****
+	Number Successful Steps Taken:		287
+	Number Failed Steps Attempted:		18
+	Number Jacobians Evaluated:		570
+	Number Linear Solves:			570
+	Number Failed Linear Solves:		0
+	Number Residual Evaluations:		876
+	Number Nonlinear Convergence Failures:	10
+	Total Residual Load Time:		0.001 seconds
+	Total Jacobian Load Time:		0.000 seconds
+	Total Linear Solution Time:		0.001 seconds
+
+
+***** Total Simulation Solvers Run Time: 0.007 seconds
+***** Total Elapsed Run Time:            0.008 seconds
+*****
+***** End of Xyce(TM) Simulation
+*****
+
+Timing summary of 1 processor
+                 Stats                   Count       CPU Time              Wall Time
+---------------------------------------- ----- --------------------- ---------------------
+Xyce                                         1        0.005 (100.0%)        0.009 (100.0%)
+  Analysis                                   1        0.004 (83.25%)        0.007 (80.35%)
+    Transient                                1        0.004 (83.21%)        0.007 (80.31%)
+      Nonlinear Solve                      305        0.003 (53.63%)        0.004 (47.44%)
+        Residual                           876        0.001 (15.52%)        0.001 (12.31%)
+        Jacobian                           570        0.000 ( 4.15%)        0.000 ( 4.47%)
+        Linear Solve                       570        0.001 (14.43%)        0.001 (10.38%)
+      Successful DCOP Steps                  1        0.000 ( 0.71%)        0.000 ( 1.89%)
+      Successful Step                      286        0.001 (20.44%)        0.002 (20.77%)
+      Failed Steps                          18        0.000 ( 1.04%)        0.000 ( 3.73%)
+        Nonlinear Failure                   10        0.000 ( 0.00%)        0.000 ( 0.02%)
+  Netlist Import                             1        0.000 ( 5.78%)        0.000 ( 5.51%)
+    Parse Context                            1        0.000 ( 0.79%)        0.000 ( 0.83%)
+    Distribute Devices                       1        0.000 ( 1.67%)        0.000 ( 1.29%)
+    Verify Devices                           1        0.000 ( 0.04%)        0.000 ( 0.06%)
+    Instantiate                              1        0.000 ( 0.69%)        0.000 ( 0.47%)
+  Late Initialization                        1        0.000 ( 3.65%)        0.000 ( 3.21%)
+    Global Indices                           1        0.000 ( 0.35%)        0.000 ( 0.29%)
+  Setup Matrix Structure                     1        0.000 ( 0.69%)        0.000 ( 0.89%)
+

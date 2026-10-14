@@ -1,0 +1,6 @@
+﻿ArbitraryBehavioral source
+B1 1 0 v = {10 * 10}
+R1 1 0 10
+.OP
+.print DC format=csv file=output.csv precision=17 I(b1) V(1)
+.END

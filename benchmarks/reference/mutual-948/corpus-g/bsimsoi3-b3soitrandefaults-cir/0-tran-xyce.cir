@@ -1,0 +1,16 @@
+* simple gain stage, testing out default params of the BSIM SOI model, 
+* version 3.2
+
+M1 3 2 0 0 nmos w=4u l=1u 
+Rsource 1 2 100k
+Rload 3 vdd 25k
+
+Vdd1 vdd 0 5 
+Vin 1 0 sin(1.44 0.1 1e+8 0 0)
+
+.tran 1e-9 1e-7
+
+.model nmos nmos level=10
+
+.print TRAN format=csv file=output.csv precision=17 I(vdd1) I(vin) V(1) V(2) V(3) V(m1#body) V(vdd)
+.end

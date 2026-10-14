@@ -1,0 +1,26 @@
+{
+  "counts": {
+    "Circuit.compile": 1,
+    "TransientResult.constructor": 1,
+    "GilbertPeierlsSolver.factorize": 1,
+    "GilbertPeierlsSolver.solve": 1,
+    "stampStaticDevices": 1,
+    "stampDynamicDevices": 1,
+    "buildCompanionSystem": 1,
+    "ColumnRecorder.record": 1,
+    "ColumnRecorder.flush": 1
+  },
+  "hashes": {
+    "control/chunk-ORQ6XEWW.js": "3ce8f8c122cf8570a1778a3ebe9720fdaac13442ed902daa1b0f0af2bdda7dd9",
+    "control/chunk-XJNADJEL.js": "36ae16fb31091a6074baa5ccfb1cd3e4a141af901d3beb19e15b72934e6ca33d",
+    "control/index.js": "488e406cc865b2e709c6ba712b0b36ef44b2657ca85ff4a91a14a8b156f53851",
+    "control/step-worker-browser.js": "b6792431a638f3dee380408a380d631aab16764c75d685f24c355ace48d2fc86",
+    "control/step-worker.js": "90314805116d9a428a6f3098381fc0c8c6bce03edb29df0951f3a793ddcff1f2",
+    "instrumented/chunk-ORQ6XEWW.js": "3ce8f8c122cf8570a1778a3ebe9720fdaac13442ed902daa1b0f0af2bdda7dd9",
+    "instrumented/chunk-XJNADJEL.js": "37948df5511692efa5047adcef84b63dd602a2ce126d950fb4850d5453442eb6",
+    "instrumented/index.js": "488e406cc865b2e709c6ba712b0b36ef44b2657ca85ff4a91a14a8b156f53851",
+    "instrumented/step-worker-browser.js": "b6792431a638f3dee380408a380d631aab16764c75d685f24c355ace48d2fc86",
+    "instrumented/step-worker.js": "90314805116d9a428a6f3098381fc0c8c6bce03edb29df0951f3a793ddcff1f2"
+  },
+  "deckSha256": "0944ed6b76f64f56c8e04b48919f1e12b9de19df4e5a08708c4be314fa7a91b7"
+}

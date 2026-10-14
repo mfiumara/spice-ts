@@ -1,0 +1,22 @@
+{
+  "attempted": 661,
+  "eligibleReferenceFixtures": 124,
+  "initialAccepted": 26,
+  "finalAccepted": 100,
+  "target": 100,
+  "buckets": {
+    "native-failure": 163,
+    "transformed-with-loss": 37,
+    "relative-at-most-1e-3": 14,
+    "absolute-at-most-1e-9": 38,
+    "unsupported": 337,
+    "relative-above-1e-3": 71,
+    "absolute-only-disagreement": 1
+  },
+  "selectedBuckets": {
+    "relative-at-most-1e-3": 12,
+    "absolute-at-most-1e-9": 29,
+    "relative-above-1e-3": 58,
+    "absolute-only-disagreement": 1
+  }
+}

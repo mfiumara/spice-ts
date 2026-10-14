@@ -1,0 +1,40 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: test of gmin stepping
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 10  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+1                                            0
+3                                 -7.51661e-10
+4                                          -15
+6                                          -15
+7                                          -15
+5                                 -0.000389845
+vic#branch                        -1.50337e-11
+vc#branch                          1.50337e-11
+vb#branch                         -1.50332e-11
+
+
+No. of Data Rows : 10008
+.print line ignored since rawfile was produced.
+
+Total analysis time (seconds) = 0.053223
+
+Total elapsed time (seconds) = 0.057 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13784.484 MB.
+Maximum ngspice program size =   10.141 MB.
+Current ngspice program size =   10.141 MB.
+

@@ -1,0 +1,35 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: * /home/fossee/esim-workspace/rlc/rlc.cir
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 6  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+in                                           0
+net-_l1-pad1_                                0
+out                                          0
+l1#branch                                    0
+v1#branch                                    0
+
+
+No. of Data Rows : 138
+
+Total analysis time (seconds) = 0.001257
+
+Total elapsed time (seconds) = 0.005 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13004.984 MB.
+Maximum ngspice program size =   10.078 MB.
+Current ngspice program size =   10.078 MB.
+

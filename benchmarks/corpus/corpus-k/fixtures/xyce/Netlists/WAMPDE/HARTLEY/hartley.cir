@@ -1,0 +1,22 @@
+hartley oscillator
+*
+* 100khz
+*
+.tran 0.1us 500us 0 0.01us
+*.tran 0.01us 60us
+*.options timeint method=1
+.print tran v(1) v(2) v(3) v(4) v(5) v(6) i(vdc1) i(vdc5)
+*I(l1) i(l2)
+
+Vdc1 1 0 DC 0V pulse(0 1 10us 1us 1us 8s 10s)
+Vdc5 5 0 DC 10V
+L1 5 3  1uh
+C1 5 3 1uf
+R1 5 3 15
+Q1 3 6 2 QNPN
+R3 6 4 100
+r2 2 0 1
+L2 1 4 0.1uh
+K L1 L2 -1
+
+.model qnpn npn (IS = 1e-12 bf=500)

@@ -1,0 +1,105 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: demonstrate the ngspice integration methods
+
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+1                                            1
+2                                            0
+3                                            0
+11                                           0
+31                                           0
+in                                           0
+out                                          0
+v4#branch                                    0
+v3#branch                                    0
+v2#branch                                    0
+vm1#branch                                   0
+aint#branch_1_0                              0
+
+
+No. of Data Rows : 136
+Here are the vectors currently active:
+
+Title: demonstrate the ngspice integration methods
+Name: tran1 (Transient Analysis)
+Date: Wed Oct 14 01:51:49  2026
+
+    V(1)                : voltage, real, 136 long
+    V(11)               : voltage, real, 136 long
+    V(2)                : voltage, real, 136 long
+    V(3)                : voltage, real, 136 long
+    V(31)               : voltage, real, 136 long
+    aint#branch_1_0     : current, real, 136 long
+    in                  : voltage, real, 136 long
+    out                 : voltage, real, 136 long
+    time                : time, real, 136 long [default scale]
+    v2#branch           : current, real, 136 long
+    v3#branch           : current, real, 136 long
+    v4#branch           : current, real, 136 long
+    vm1#branch          : current, real, 136 long
+yint                =  2.57845e-02 from=  4.00000e-01 to=  6.00000e-01
+ASCII raw file "output.raw"
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 13  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+1                                            1
+2                                            0
+3                                            0
+11                                           0
+31                                           0
+in                                           0
+out                                          0
+v4#branch                                    0
+v3#branch                                    0
+v2#branch                                    0
+vm1#branch                                   0
+aint#branch_1_0                              0
+
+
+No. of Data Rows : 136
+
+Total analysis time (seconds) = 0.00154
+
+Total elapsed time (seconds) = 0.005 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13485.297 MB.
+Maximum ngspice program size =   10.297 MB.
+Current ngspice program size =   10.297 MB.
+
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+

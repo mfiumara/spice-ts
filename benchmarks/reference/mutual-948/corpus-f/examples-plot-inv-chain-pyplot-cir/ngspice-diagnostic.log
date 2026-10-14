@@ -1,0 +1,53 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: Inverter chain with pyplot
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 227
+ngspice-47 done
+
+
+Checking parameters for BSIM 3.3 model xu33:n2
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+
+Checking parameters for BSIM 3.3 model xu33:n1
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+
+Checking parameters for BSIM 3.3 model xu32:n2
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+
+Checking parameters for BSIM 3.3 model xu32:n1
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+
+Checking parameters for BSIM 3.3 model xu30:n2
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+
+Checking parameters for BSIM 3.3 model xu30:n1
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Traceback (most recent call last):
+Traceback (most recent call last):
+Traceback (most recent call last):
+  File "/private/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/spice-ts-reference-ng-bJI8Ds/pyplot.py", line 3, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+  File "/private/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/spice-ts-reference-ng-bJI8Ds/py1.py", line 3, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+  File "/private/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/spice-ts-reference-ng-bJI8Ds/py2.py", line 3, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/private/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/spice-ts-reference-ng-bJI8Ds/pyplot-2.py", line 3, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'

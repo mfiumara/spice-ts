@@ -1,0 +1,12 @@
+warning, can't find model 'd0a' from line
+    u1 nand(2) dpwr dgnd d0a d0b q0bar dly_xyz io_std mntymxdly={mntymxdly} io_level={io_level}
+warning, model type mismatch in line
+    u1 dff(1) dpwr dgnd d0_eff io_std io_level=0 mntymxdly=2
+warning, model type mismatch in line
+    u2 dff(1) dpwr dgnd d0_eff io_std io_level=0 mntymxdly=2
+warning, model type mismatch in line
+    u3 dff(1) dpwr dgnd d0_eff io_std io_level=0 mntymxdly=2
+Too few parameters for subcircuit type "nand2" (instance: xx2000)
+Too few parameters for subcircuit type "divider8" (instance: xx1000)
+    Simulation interrupted due to error!
+

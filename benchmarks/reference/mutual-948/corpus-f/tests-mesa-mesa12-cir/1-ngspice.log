@@ -1,0 +1,45 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: * mesa1 transient test 
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 6  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+1                                            5
+3                                      3.59422
+2                                           -3
+vdd#branch                        -0.000140578
+vgs#branch                         0.000140827
+
+ Reference value :  0.00000e+00
+No. of Data Rows : 783
+
+Total analysis time (seconds) = 81.0273
+
+Total elapsed time (seconds) = 81.031 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 14950.688 MB.
+Maximum ngspice program size =   10.125 MB.
+Current ngspice program size =   10.125 MB.
+
+
+Note: vgs: dc value used for op instead of transient time=0 value.
+Note: Starting dynamic gmin stepping
+Warning: Dynamic gmin stepping failed
+Note: Starting true gmin stepping
+Warning: True gmin stepping failed
+Note: Starting source stepping
+Warning: source stepping failed
+Note: Transient op started
+Note: Transient op finished successfully

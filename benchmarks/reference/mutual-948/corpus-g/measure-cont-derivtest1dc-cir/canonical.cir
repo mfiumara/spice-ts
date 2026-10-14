@@ -1,0 +1,111 @@
+* Test DC mode support for the DC_CONT version of
+* DERIV-AT and DERIV-WHEN measures.
+*
+* See SON Bugs 1274, 1304 and 1313 for more details
+*****************************************************
+
+* For testing convenience send the output for the DC_CONT
+* measures to the <netlistName>.ms0 file.
+.OPTIONS MEASURE USE_CONT_FILES=0
+
+.DC V1 1 10 1
+.PRINT DC V(1) V(2) V(3) derivCrossTest1 derivCrossContTest2
++ derivCrossContTest3 derivCrossContTest4
++ derivCrossNeg2 derivCrossContNeg2 derivCrossNeg5 derivCrossContNeg5
+
+V1 1 0 1
+R1 1 0 1
+
+B2 2 0 V={(V(1)-2.5)*(V(1)-2.5)*(V(1)-7.5)*(V(1)-7.5)/4}
+R2 2 3 1
+R3 3 0 1
+
+******************************************************
+* test CROSS qualifier and DERIV-WHEN measures.
+* Non-continuous version should return first crossing.
+* Continuous version should return all crossings.
+.MEASURE DC derivCrossTest1 DERIV V(2) WHEN V(2)=5
+.MEASURE DC_CONT derivCrossContTest1 derivative V(2) WHEN V(2)=5
+
+* Non-continuous version should return first crossing.
+* Continuous version should return all crossings, starting
+* with the first one.
+.MEASURE DC derivCrossTest2 DERIV V(2) WHEN V(2)=5 CROSS=1
+.MEASURE DC_CONT derivCrossContTest2 deriv V(2) WHEN V(2)=5 CROSS=1
+
+* Non-continuous version should return second crossing.
+* Continuous version should return all crossings, starting
+* with the second one.
+.MEASURE DC derivCrossTest3 DERIV V(2) WHEN V(2)=5 CROSS=2
+.MEASURE DC_CONT derivCrossContTest3 DERIVATIVE V(2) WHEN V(2)=5 CROSS=2
+
+* These should both return the last crossing
+.MEASURE DC derivCrossTest4 DERIV V(2) WHEN V(2)=5 CROSS=LAST
+.MEASURE DC_CONT derivCrossContTest4 DERIV V(2) WHEN V(2)=5 CROSS=LAST
+
+******************************************************
+* DERIV-AT measures
+* These should give the same answer
+.MEASURE DC atTest DERIV V(2) AT=2
+.MEASURE DC_CONT atContTest DERIV V(2) AT=2
+
+*****************************************************
+* test RISE and FAll qualifiers for DERIV-WHEN
+.MEASURE DC_CONT derivRiseContTest1 DERIV V(2) WHEN V(2)=5 RISE=1
+.MEASURE DC_CONT derivRiseContTest2 DERIV V(2) WHEN V(2)=5 RISE=2
+.MEASURE DC_CONT derivRiseContTest3 DERIV V(2) WHEN V(2)=5 RISE=LAST
+
+.MEASURE DC_CONT derivFallContTest1 DERIV V(2) WHEN V(2)=5 FALL=1
+.MEASURE DC_CONT derivFallContTest2 DERIV V(2) WHEN V(2)=5 FALL=2
+.MEASURE DC_CONT derivFallContTest3 DERIV V(2) WHEN V(2)=5 FALL=LAST
+
+************************************************************************
+* Use of FROM-TO.  Only the rise, fall or cross values within the
+* FROM-TO windows should be returned, starting at the requested value.
+* For CROSS=LAST, only the last one within the FROM-TO window is returned
+.MEASURE DC derivCross1From25 DERIV V(2) WHEN V(2)=5 CROSS=1 FROM=2.5
+.MEASURE DC derivCross2From25 DERIV V(2) WHEN V(2)=5 CROSS=2 FROM=2.5
+.MEASURE DC derivCrossTo75 DERIV V(2) WHEN V(2)=5 CROSS=1 TO=7.5
+.MEASURE DC derivRiseFrom5 DERIV V(2) WHEN V(2)=5 RISE=1 FROM=5
+.MEASURE DC derivFallTo5 DERIV V(2) WHEN V(2)=5 FALL=1 TO=5
+.MEASURE DC derivCrosstToLast DERIV V(2) WHEN V(2)=5 CROSS=LAST TO=7.5
+
+.MEASURE DC_CONT derivCross1ContFrom25 DERIV V(2) WHEN V(2)=5 CROSS=1 FROM=2.5
+.MEASURE DC_CONT derivCross2ContFrom25 DERIV V(2) WHEN V(2)=5 CROSS=2 FROM=2.5
+.MEASURE DC_CONT derivCrossContTo75 DERIV V(2) WHEN V(2)=5 CROSS=1 TO=7.5
+.MEASURE DC_CONT derivRiseContFrom5 DERIV V(2) WHEN V(2)=5 RISE=1 FROM=5
+.MEASURE DC_CONT derivFallContTo5 DERIV V(2) WHEN V(2)=5 FALL=1 TO=5
+.MEASURE DC_CONT derivCrossContToLast DERIV V(2) WHEN V(2)=5 CROSS=LAST TO=7.5
+
+*********************************************************
+* Test negative values
+.MEASURE DC derivCrossNeg2 DERIV V(2) WHEN V(2)=5 CROSS=-2
+.MEASURE DC derivCrossNeg3 DERIV V(2) WHEN V(2)=5 CROSS=-3
+.MEASURE DC derivCrossNeg5 DERIV V(2) WHEN V(2)=5 CROSS=-5
+.MEASURE DC_CONT derivCrossContNeg1 DERIV V(2) WHEN V(2)=5 CROSS=-1
+.MEASURE DC_CONT derivCrossContNeg2 DERIV V(2) WHEN V(2)=5 CROSS=-2
+.MEASURE DC_CONT derivCrossContNeg3 DERIV V(2) WHEN V(2)=5 CROSS=-3
+.MEASURE DC_CONT derivCrossContNeg4 DERIV V(2) WHEN V(2)=5 CROSS=-4
+.MEASURE DC_CONT derivCrossContNeg5 DERIV V(2) WHEN V(2)=5 CROSS=-5
+
+.MEASURE DC derivRiseNeg2 DERIV V(2) WHEN V(2)=5 RISE=-2
+.MEASURE DC derivRiseNeg3 DERIV V(2) WHEN V(2)=5 RISE=-3
+.MEASURE DC_CONT derivRiseContNeg1 DERIV V(2) WHEN V(2)=5 RISE=-1
+.MEASURE DC_CONT derivRiseContNeg2 DERIV V(2) WHEN V(2)=5 RISE=-2
+.MEASURE DC_CONT derivRiseContNeg3 DERIV V(2) WHEN V(2)=5 RISE=-3
+
+.MEASURE DC derivFallNeg2 DERIV V(2) WHEN V(2)=5 FALL=-2
+.MEASURE DC derivFallNeg3 DERIV V(2) WHEN V(2)=5 FALL=-3
+.MEASURE DC_CONT derivFallContNeg1 DERIV V(2) WHEN V(2)=5 FALL=-1
+.MEASURE DC_CONT derivFallContNeg2 DERIV V(2) WHEN V(2)=5 FALL=-2
+.MEASURE DC_CONT derivFallContNeg3 DERIV V(2) WHEN V(2)=5 FALL=-3
+
+*************************************************
+* test failed measures
+.MEASURE DC_CONT derivCrossContFail1 DERIV V(2) WHEN V(2)=100
+.MEASURE DC_CONT atContFail DERIV V(2) at=20
+.MEASURE DC_CONT derivCrossContFail2 DERIV V(2) WHEN V(2)=5 CROSS=5
+.MEASURE DC_CONT derivRiseContFail DERIV V(2) WHEN V(2)=5 RISE=3
+.MEASURE DC_CONT derivFallContFail DERIV V(2) WHEN V(2)=5 FALL=3
+
+.END

@@ -1,0 +1,21 @@
+{
+  "platform": "linux/arm64",
+  "venue": "local Colima Docker, two CPUs/jobs, spice-heavy",
+  "baseImage": "ubuntu@sha256:786a8b558f7be160c6c8c4a54f9a57274f3b4fb1491cf65146521ae77ff1dc54",
+  "arm64Manifest": "sha256:ea0b2b8607a61f981b2461f21edc27c0b37ddd53d23d4d350936480adf5de28c",
+  "gcc": "13.3.0",
+  "cmake": "3.28.3",
+  "trilinos": "14.4.0",
+  "suitesparse": "7.8.3",
+  "xyceVersion": "Xyce Release 7.10.0-opensource",
+  "buildWallSeconds": 1267,
+  "executableSha256": "e17d62dc6020296a12ea7ddf0fc30139c6934625385e4972e5778153ea6d28ed",
+  "sources": [
+    {"name": "suitesparse", "commit": "d3c4926d2c47fd6ae558e898bfc072ade210a2a1", "archiveSha256": "a51065819bba83a16ac3754dcd313deb257fc1ddd94f3a86b110783674c9af81"},
+    {"name": "trilinos", "commit": "975307431d60d0859ebaa27c9169cbb1d4287513", "archiveSha256": "2cafc358b13c744125a4dd35600d1b94e7f28a3d542ce2d5625893771de016e6"},
+    {"name": "xyce", "commit": "a592a42ae7472151d1c8e3bca0ca62d27476f2f3", "archiveSha256": "a450f6fc46d554cb778e3c47ffbb5290b65928b1a3aecb994edfcc65a90adc30"}
+  ],
+  "sourceHashMethod": "git archive HEAD | sha256sum (uncompressed tar from pinned commit)",
+  "macVersion": "XyceNF Release 7.10.0",
+  "macUpstreamZipSha256": "06cd438e0a3d4dc86948c1d0f6684fa125db3dfa1776ff1d9339ebb77865754b"
+}

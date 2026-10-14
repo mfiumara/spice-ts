@@ -1,0 +1,604 @@
+
+*****
+***** Welcome to the Xyce(TM) Parallel Electronic Simulator
+*****
+***** This is version XyceNF Release 7.10.0
+***** Date: Wed Oct 14 02:02:23 CEST 2026
+
+
+***** Executing netlist input.cir
+
+***** Reading and parsing netlist...
+***** Setting up topology...
+
+***** Device Count Summary ...
+       C level 1 (Capacitor)                   2
+       M level 9 (BSIM3)                      17
+       V level 1 (Independent Voltage Source)  3
+       -----------------------------------------
+       Total Devices                          22
+***** Setting up matrix structure...
+***** Number of Unknowns = 16
+***** Initializing...
+
+------------------------------------------------------------
+Operating point information:
+Number of BSIM3 models: 2
+          name            NMOS           PMOS
+          type            NMOS           PMOS
+         level               9              9
+        VERSION          3.2.2          3.2.2
+         NOIMOD              1              1
+         CAPMOD              3              3
+              W          5e-06          5e-06
+              L          5e-06          5e-06
+          DROUT           0.56           0.56
+         LNGATE              0              0
+           WINT              0              0
+        WVOFFCV              0              0
+             LW              0              0
+            WWN              0              0
+            LLN              0              0
+           VSAT          80000          80000
+           ACDE              1              1
+            LLC              0              0
+             LL              0              0
+             EM        4.1e+07        4.1e+07
+           LINT              0              0
+        LINTNOI              0              0
+           LWLC              0              0
+             KF              0              0
+         TCJSWG              0              0
+           NOIC       -1.4e-12        1.4e-12
+            XTI              3              3
+          WVOFF              0              0
+             NJ              1              1
+             CJ         0.0005         0.0005
+           LCLE              0              0
+           MJSW           0.33           0.33
+            RSH              0              0
+       PARAMCHK              0              0
+       LPDIBLCB              0              0
+           NOIA          1e+20        9.9e+18
+            PA2              0              0
+           CGSO    2.07188e-10    2.07188e-10
+            PRT              0              0
+           TNOM             27             27
+          PNOFF              0              0
+           PCLE              0              0
+            WLC              0              0
+          LKT1L              0              0
+           PCLC              0              0
+            LW0              0              0
+          PCGSL              0              0
+        PALPHA0              0              0
+           PDWB              0              0
+           PDWG              0              0
+            PWR              0              0
+           PUB1              0              0
+          CJSWG          5e-10          5e-10
+          PPVAG              0              0
+            VFB              0              0
+        PPSCBE2              0              0
+        PPSCBE1              0              0
+            WUB              0              0
+            DLC              0              0
+           PPRT              0              0
+           WCLE              0              0
+            PUB              0              0
+           PUA1              0              0
+        WGAMMA1              0              0
+         PBETA0              0              0
+          PDSUB              0              0
+            PUC              0              0
+         PDVT1W              0              0
+          PDVT1              0              0
+           PNLX              0              0
+           PK3B              0              0
+         PDVT2W              0              0
+            PK3              0              0
+            PK2              0              0
+        PALPHA1              0              0
+           PKT2              0              0
+          PKT1L              0              0
+            PXT              0              0
+          PDVT2              0              0
+             B1              0              0
+          WRDSW              0              0
+           PVBM              0              0
+           PVBX              0              0
+        PGAMMA2              0              0
+         PDELTA              0              0
+           ETAB          -0.07          -0.07
+        BINUNIT              1              1
+         PNGATE              0              0
+          PNSUB              0              0
+             WW              0              0
+            WK1              0              0
+            PA1              0              0
+            WK2              0              0
+          LACDE              0              0
+        WALPHA1              0              0
+            PA0              0              0
+          PETAB              0              0
+           WPRT              0              0
+            PAT              0              0
+          PVSAT              0              0
+            PXJ              0              0
+       PNFACTOR              0              0
+           NOIB          50000           2400
+          PETA0              0              0
+          WMOIN              0              0
+          WACDE              0              0
+          MJSWG           0.33           0.33
+           PVFB              0              0
+            LUB              0              0
+         PCDSCB              0              0
+           PNCH              0              0
+           PCIT              0              0
+         WBETA0              0              0
+            WK3              0              0
+        WALPHA0              0              0
+       PPDIBLC1              0              0
+            WB1              0              0
+            WB0              0              0
+            JSW              0              0
+           WDWB              0              0
+           WMIN              0              0
+           WDWG              0              0
+            WUA              0              0
+             EF              1              1
+          PBSWG              1              1
+        WPSCBE2              0              0
+        WPSCBE1              0              0
+          WPRWB              0              0
+          WPRWG              0              0
+         MOBMOD              1              1
+          PCGDL              0              0
+           WUTE              0              0
+          PPCLM              0              0
+            WU0              0              0
+           PKT1              0              0
+           WUC1              0              0
+            PCF              0              0
+           LMAX              1              1
+          WDSUB              0              0
+            LA2              0              0
+          LDVT0              0              0
+         WDROUT              0              0
+           LUA1              0              0
+           WNLX              0              0
+          PMOIN              0              0
+             B0              0              0
+          WCGDL              0              0
+           WELM              0              0
+         WDVT2W              0              0
+         WDVT1W              0              0
+         WDVT0W              0              0
+            LA0              0              0
+          LDVT2              0              0
+          WDVT0              0              0
+            WW0              0              0
+            PK1              0              0
+         TPBSWG              0              0
+           LNLX              0              0
+            WA1              0              0
+          WKT1L              0              0
+          WCGSL              0              0
+         WCDSCD              0              0
+           PAGS              0              0
+            TPB              0              0
+            WXT              0              0
+        LPSCBE1              0              0
+            PB1              0              0
+           DVT2         -0.032         -0.032
+            AGS              0              0
+           WVBM              0              0
+           LMIN              0              0
+          WVTH0              0              0
+           IJTH            0.1            0.1
+            CLE            0.6            0.6
+          WKETA              0              0
+         PSCBE2          1e-05          1e-05
+           CJSW          5e-10          5e-10
+          WCDSC              0              0
+           PUC1              0              0
+           NSUB          6e+16          6e+16
+            WA2              0              0
+          XPART              0              0
+           WNCH              0              0
+          TPBSW              0              0
+            WA0              0              0
+          WVSAT              0              0
+            WXJ              0              0
+          LETAB              0              0
+            LCF              0              0
+         WDELTA              0              0
+        LCKAPPA              0              0
+        WCKAPPA              0              0
+          PPRWG              0              0
+          WNSUB              0              0
+           VTH0            0.7           -0.7
+          LCGDL              0              0
+            LB0              0              0
+       WPDIBLCB              0              0
+           LVFB              0              0
+         WCDSCB              0              0
+          WETA0              0              0
+         LDELTA              0              0
+        LALPHA1              0              0
+          LRDSW              0              0
+           ETA0           0.08           0.08
+          LPVAG              0              0
+           PUTE              0              0
+        LPSCBE2              0              0
+           PCLM            1.3            1.3
+           WUB1              0              0
+             AF              1              1
+            UA1       4.31e-09       4.31e-09
+          WNOFF              0              0
+            LK1              0              0
+          LETA0              0              0
+           LPRT              0              0
+            WWR              0              0
+       WPDIBLC1              0              0
+             W0        2.5e-06        2.5e-06
+           NOFF              1              1
+          BETA0             30             30
+            LUC              0              0
+           WCLC              0              0
+           LUB1              0              0
+            LB1              0              0
+          LPCLM              0              0
+           LUC1              0              0
+         PCDSCD              0              0
+          PPRWB              0              0
+            VBX              0              0
+          DELTA           0.01           0.01
+            LUA              0              0
+          LDSUB              0              0
+             MJ            0.5            0.5
+          LPRWG              0              0
+       WNFACTOR              0              0
+         LDVT0W              0              0
+         PDROUT              0              0
+            WCF              0              0
+          LDVT1              0              0
+          PCDSC              0              0
+           WUA1              0              0
+            LWR              0              0
+           RDSW              0              0
+            WWC              0              0
+           LK3B              0              0
+          PRDSW              0              0
+          LMOIN              0              0
+          PACDE              0              0
+           LKT1              0              0
+           CGBO              0              0
+            LXT              0              0
+            PU0              0              0
+          DVT2W         -0.032         -0.032
+       LPDIBLC1              0              0
+           LVBM              0              0
+          WPCLM              0              0
+           DSUB           0.56           0.56
+           LVBX              0              0
+             A2              1              1
+          WDVT2              0              0
+           LELM              0              0
+        LGAMMA2              0              0
+        PGAMMA1              0              0
+        LGAMMA1              0              0
+            WUC              0              0
+            DWG              0              0
+           DVT1           0.53           0.53
+           LDWB              0              0
+           LNCH              0              0
+          LNSUB              0              0
+            WWL              0              0
+             A1              0              0
+          WDVT1              0              0
+            LA1              0              0
+           LAGS              0              0
+             A0              1              1
+             UA       2.25e-09       2.25e-09
+          LVOFF              0              0
+       WPDIBLC2              0              0
+           WK3B              0              0
+          VFBCV             -1             -1
+           LUTE              0              0
+          LVTH0              0              0
+            LAT              0              0
+          LVSAT              0              0
+          LCGSL              0              0
+        LALPHA0              0              0
+           LKT2              0              0
+        WGAMMA2              0              0
+       LNFACTOR              0              0
+            LK2              0              0
+           LCIT              0              0
+         LCDSCB              0              0
+          WPVAG              0              0
+        PVOFFCV              0              0
+           WCIT              0              0
+           PRWG              0              0
+            KT1          -0.11          -0.11
+          NGATE              0              0
+          TCJSW              0              0
+         PSCBE1       4.24e+08       4.24e+08
+             CF    7.29897e-11    7.29897e-11
+            WAT              0              0
+         VOFFCV              0              0
+          PVOFF              0              0
+            LWC              0              0
+           DVT0            2.2            2.2
+           PELM              0              0
+           WAGS              0              0
+             WR              1              1
+            CLC          1e-07          1e-07
+            LWL              0              0
+         CKAPPA            0.6            0.6
+           CGDL              0              0
+       PPDIBLC2              0              0
+           CGSL              0              0
+             PB              1              1
+            PB0              0              0
+        PCKAPPA              0              0
+            DWB              0              0
+            NLX       1.74e-07       1.74e-07
+         WVFBCV              0              0
+           WVBX              0              0
+          DVT0W              0              0
+             UC      -4.65e-11      -4.65e-11
+            DWC              0              0
+         WNGATE              0              0
+            PW0              0              0
+        PDIBLC1           0.39           0.39
+         LDVT1W              0              0
+          LKETA              0              0
+             JS         0.0001         0.0001
+             K1              0              0
+          PVTH0              0              0
+            UB1      -7.61e-18      -7.61e-18
+            WLN              0              0
+         PVFBCV              0              0
+         LBETA0              0              0
+           WKT2              0              0
+           WMAX              1              1
+         ALPHA1              0              0
+           PRWB              0              0
+             WL              0              0
+             U0          0.067          0.025
+           LDWG              0              0
+           PBSW              1              1
+           PVAG              0              0
+            CIT              0              0
+            K3B              0              0
+             UB       5.87e-19       5.87e-19
+            UTE           -1.5           -1.5
+         PDVT0W              0              0
+           LCLC              0              0
+            PUA              0              0
+           WWLC              0              0
+         GAMMA1              0              0
+            KT2          0.022          0.022
+            UC1       -5.6e-11       -5.6e-11
+           MOIN             15             15
+        PDIBLCB              0              0
+          WETAB              0              0
+           TOXM        1.5e-08        1.5e-08
+          LPRWB              0              0
+            LU0              0              0
+          PKETA              0              0
+             K3             80             80
+             K2              0              0
+        LVOFFCV              0              0
+          DVT1W        5.3e+06        5.3e+06
+            NCH        1.7e+17        1.7e+17
+       PPDIBLCB              0              0
+           KETA         -0.047         -0.047
+             XJ        1.5e-07        1.5e-07
+         LDROUT              0              0
+            LXJ              0              0
+         GAMMA2              0              0
+           KT1L              0              0
+           VOFF          -0.08          -0.08
+          LNOFF              0              0
+            LK3              0              0
+            ELM              5              5
+        PDIBLC2         0.0086         0.0086
+           WVFB              0              0
+         LDVT2W              0              0
+         LVFBCV              0              0
+           WKT1              0              0
+          LCDSC              0              0
+          CDSCB              0              0
+           CGDO    2.07188e-10    2.07188e-10
+        NFACTOR              1              1
+          PDVT0              0              0
+         ALPHA0              0              0
+             XT       1.55e-07       1.55e-07
+            TCJ              0              0
+            LWN              0              0
+             AT          33000          33000
+         LCDSCD              0              0
+          CDSCD              0              0
+           CDSC        0.00024        0.00024
+       LPDIBLC2              0              0
+            VBM             -3             -3
+            TOX        1.5e-08        1.5e-08
+
+Number of BSIM3 instances: 17
+          name             M10            M12            M13             M2             M4             M6             M7
+             M9           MLT1           MQL1             M1            M11             M3             M5             M8
+           MLTO           MQLO
+         model            NMOS           NMOS           NMOS           NMOS           NMOS           NMOS           NMOS
+           NMOS           NMOS           NMOS           PMOS           PMOS           PMOS           PMOS           PMOS
+           PMOS           PMOS
+         NQSMOD              0              0              0              0              0              0              0
+              0              0              0              0              0              0              0              0
+              0              0
+            IC3              0              0              0              0              0              0              0
+              0              0              0              0              0              0              0              0
+              0              0
+            IC2              0              0              0              0              0              0              0
+              0              0              0              0              0              0              0              0
+              0              0
+              M              1              1              1              1              1              1              1
+              1              1              1              1              1              1              1              1
+              1              1
+            OFF              0              0              0              0              0              0              0
+              0              0              0              0              0              0              0              0
+              0              0
+             PS              0              0              0              0              0              0              0
+              0              0              0              0              0              0              0              0
+              0              0
+            IC1              0              0              0              0              0              0              0
+              0              0              0              0              0              0              0              0
+              0              0
+            NRS              1              1              1              1              1              1              1
+              1              1              1              1              1              1              1              1
+              1              1
+            NRD              1              1              1              1              1              1              1
+              1              1              1              1              1              1              1              1
+              1              1
+             PD              0              0              0              0              0              0              0
+              0              0              0              0              0              0              0              0
+              0              0
+             AD              0              0              0              0              0              0              0
+              0              0              0              0              0              0              0              0
+              0              0
+             AS              0              0              0              0              0              0              0
+              0              0              0              0              0              0              0              0
+              0              0
+              W        1.8e-06        1.8e-06        1.8e-06        1.8e-06        1.8e-06        1.8e-06        1.8e-06
+        1.8e-06        1.8e-06        1.8e-06        3.6e-06        3.6e-06        3.6e-06        1.8e-06        1.8e-06
+        3.6e-06        3.6e-06
+          DTEMP              0              0              0              0              0              0              0
+              0              0              0              0              0              0              0              0
+              0              0
+              L        1.2e-06        1.2e-06        1.2e-06        1.2e-06        1.2e-06        1.2e-06        1.2e-06
+        1.2e-06        1.2e-06        1.2e-06        1.2e-06        3.6e-06        1.2e-06        3.6e-06        3.6e-06
+        1.2e-06        1.2e-06
+           TEMP             27             27             27             27             27             27             27
+             27             27             27             27             27             27             27             27
+             27             27
+
+
+Number of Capacitor models: 1
+          name C level 1 (Capacitor)
+          type                
+         level               1
+           TNOM             27
+            TC2              0
+            TC1              0
+           CJSW              0
+         NARROW              0
+           DEFW          1e-06
+             CJ              0
+
+              C              1
+
+Number of Capacitor instances: 2
+          name              CL             CQ
+         model C level 1 (Capacitor)C level 1 (Capacitor)
+            TC2              0              0
+             IC              0              0
+            TC1              0              0
+              D         0.0233         0.0233
+            AGE              0              0
+              C          1e-14          3e-14
+              W          1e-06          1e-06
+          DTEMP              0              0
+              L              1              1
+           TEMP             27             27
+              Q              0              0
+              M              1              1
+
+
+Number of Independent Voltage Source models: 1
+          name V level 1 (Independent Voltage Source)
+          type                
+         level               1
+
+Number of Independent Voltage Source instances: 3
+          name              VA             VB            VDD
+         model V level 1 (Independent Voltage Source)V level 1 (Independent Voltage Source)V level 1 (Independent Voltage Source)
+           PORT              0              0              0
+            NUM              0              0              0
+   DCSOURCETYPE              6              6              6
+TRANSIENTSOURCETYPE              2              6              6
+        TSAMPLE        1.5e-08              0              0
+            VLO              5              0              0
+              R              0              0              0
+   ACSOURCETYPE              7              7              7
+          ACMAG              0              0              0
+            VHI              0              0              0
+           TAU1          1e-10              0              0
+        ACPHASE              0              0              0
+             PW        1.5e-08              0              0
+           TAU2        1.5e-08              0              0
+            TD1          1e-08              0              0
+          PHASE        1.5e-08              0              0
+           FREQ          1e-10              0              0
+             Z0             50             50             50
+             V0              0              0              0
+             VA              5              0              0
+             TF          1e-10              0              0
+            PER          3e-08              0              0
+             V2              5              0              0
+            TD2          1e-10              0              0
+             FC          1e-08              0              0
+             RB              1              1              1
+             TR          1e-10              0              0
+          THETA          1e-10              0              0
+           DCV0              0              0              5
+             TD          1e-08              0              0
+           DATA                                             
+            MDI          1e-10              0              0
+              T              0              0              0
+             FS          1e-10              0              0
+              V              0              0              0
+             V1              0              0              0
+
+------------------------------------------------------------
+
+***** Solution Summary *****
+	Number Successful Steps Taken:		1
+	Number Failed Steps Attempted:		0
+	Number Jacobians Evaluated:		20
+	Number Linear Solves:			20
+	Number Failed Linear Solves:		0
+	Number Residual Evaluations:		22
+	Number Nonlinear Convergence Failures:	0
+	Total Residual Load Time:		9.25064e-05 seconds
+	Total Jacobian Load Time:		3.91006e-05 seconds
+	Total Linear Solution Time:		8.46386e-05 seconds
+
+
+***** Total Simulation Solvers Run Time: 0.00158811 seconds
+***** Total Elapsed Run Time:            0.00374699 seconds
+*****
+***** End of Xyce(TM) Simulation
+*****
+
+Timing summary of 1 processor
+                 Stats                   Count       CPU Time              Wall Time
+---------------------------------------- ----- --------------------- ---------------------
+Xyce                                         1        0.003 (100.0%)        0.004 (100.0%)
+  Analysis                                   1        0.001 (32.65%)        0.002 (36.01%)
+    DC Sweep                                 1        0.001 (32.57%)        0.002 (35.96%)
+      Solve                                  1        0.000 (12.69%)        0.000 (11.16%)
+        Residual                            22        0.000 ( 3.80%)        0.000 ( 2.51%)
+        Jacobian                            20        0.000 ( 1.44%)        0.000 ( 1.15%)
+        Linear Solve                        20        0.000 ( 2.95%)        0.000 ( 2.15%)
+      Successful Step                        1        0.000 (19.25%)        0.001 (23.92%)
+  Netlist Import                             1        0.001 (39.40%)        0.001 (30.00%)
+    Parse Context                            1        0.000 ( 2.72%)        0.000 ( 2.54%)
+    Distribute Devices                       1        0.001 (24.81%)        0.001 (16.58%)
+    Verify Devices                           1        0.000 ( 0.08%)        0.000 ( 0.14%)
+    Instantiate                              1        0.000 ( 2.87%)        0.000 ( 1.90%)
+  Late Initialization                        1        0.000 (11.26%)        0.000 ( 9.48%)
+    Global Indices                           1        0.000 ( 1.82%)        0.000 ( 1.14%)
+  Setup Matrix Structure                     1        0.000 ( 2.29%)        0.000 ( 2.59%)
+

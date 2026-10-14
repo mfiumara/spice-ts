@@ -1,0 +1,80 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: rtlinv ckt - cascaded rtl inverters
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 9  
+
+No. of Data Rows : 101
+No. of Data Columns : 9  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+6                                            5
+1                                            0
+2                                  4.62229e-08
+3                                      4.62219
+4                                     0.844057
+5                                     0.266508
+vin#branch                         4.62229e-12
+vcc#branch                         -0.00511131
+
+
+No. of Data Rows : 125
+.print line ignored since rawfile was produced.
+.plot line ignored since rawfile was produced.
+.print line ignored since rawfile was produced.
+.plot line ignored since rawfile was produced.
+Total elapsed time (seconds) = 0.008 
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 14364.203 MB.
+Maximum ngspice program size =   10.141 MB.
+Current ngspice program size =   10.141 MB.
+24 page faults, 0 vol + 10 invol = 10 context switches.
+
+Number of lines in the deck = 15
+Netlist loading time = 0.000183
+Subckt and Param expansion time = 0.000226
+Netlist parsing time = 0.000192
+
+Nominal temperature = 27
+Operating temperature = 27
+Total iterations = 542
+Transient iterations = 301
+Circuit Equations = 13
+Circuit original non-zeroes = 38
+Circuit fill-in non-zeroes = 2
+Circuit total non-zeroes = 0
+Transient timepoints = 128
+Accepted timepoints = 125
+Rejected timepoints = 3
+Total analysis time (seconds) = 0.002416
+Matrix load time = 0.000222
+Matrix synchronize time = 0
+Matrix reorder time = 9.99999E-06
+Matrix factor time = 6.3E-05
+Matrix solve time = 5.2E-05
+Transient analysis time = 0.000916
+Transient load time = 0.000121
+Transient sync time = 0
+Transient factor time = 3.4E-05
+Transient solve time = 3.1E-05
+Transient trunc time = 3.9E-05
+Transient iterations for the last time point = 0
+AC analysis time = 0
+AC load time = 0
+AC sync time = 0
+AC factor time = 0
+AC solve time = 0
+
+
+Warning: option lvlcod is obsolete.
+.options: no listing, rawfile was generated.

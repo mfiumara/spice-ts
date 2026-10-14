@@ -8,6 +8,7 @@ import { loadCorpus, summarize } from './compare.js';
 import { translateForXyce } from './xyce.js';
 import { canonicalize, projectAnalysis } from './canonical.js';
 import { sha256 } from './expanded.js';
+import './subset.test.js';
 
 const hash = (bytes: string | Buffer) => createHash('sha256').update(bytes).digest('hex');
 const report = (name: string) => JSON.parse(readFileSync(new URL(`./${name}-report.json`, import.meta.url), 'utf8'));

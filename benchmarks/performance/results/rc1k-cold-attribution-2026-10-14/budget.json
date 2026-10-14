@@ -1,0 +1,12 @@
+{
+  "topLevelAttempted": 45,
+  "nativeAttempted": 15,
+  "totalEngineWorkloads": 60,
+  "max": 60,
+  "stopped": false,
+  "runEnd": {
+    "continuous": 106871.30573616666,
+    "monotonic": 48175.805432,
+    "realtime": 1791931156.355516
+  }
+}

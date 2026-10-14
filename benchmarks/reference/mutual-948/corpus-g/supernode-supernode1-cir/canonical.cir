@@ -1,0 +1,14 @@
+A simple base test case
+* no devices will be removed
+
+* supernoding is off by default.  activate it
+.options topology supernode=true
+
+* test case when resistance is given a zero
+V1 a 0 5V
+R2 a 0 1K
+
+.DC V1 0 5V 1V
+.PRINT dc V(a) 
+
+.END

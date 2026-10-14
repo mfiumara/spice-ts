@@ -1,0 +1,80 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: 4th order butterworth high-pass filter
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 47  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+2                                          -15
+6                                   -0.0109906
+5                                  -0.00999047
+4                                            0
+1                                           15
+x4.90                                      -15
+3                                  -0.00999047
+x4.10                               -0.0109905
+x4.11                                      -15
+x4.12                                      -15
+x4.13                                      -15
+x4.14                              -0.00999047
+x4.4a                             -8.88178e-16
+x4.2a                             -8.88178e-16
+x4.70                                     12.5
+x4.40                                    -12.5
+9                                   -0.0109906
+10                                 -0.00999047
+x6.90                                      -15
+11                                 -0.00999047
+x6.10                               -0.0109905
+x6.11                                      -15
+x6.12                                      -15
+x6.13                                      -15
+x6.14                              -0.00999047
+x6.4a                             -8.88178e-16
+x6.2a                             -8.88178e-16
+x6.70                                     12.5
+x6.40                                    -12.5
+v.x6.vib#branch                          1e-09
+v.x4.vib#branch                          1e-09
+l.x6.l#branch                     -4.84008e-07
+l.x4.l#branch                      -4.8401e-07
+e.x6.ebal#branch                  -0.000133206
+e.x6.ea#branch                    -3.50248e-16
+e.x4.ebal#branch                  -0.000133206
+e.x4.ea#branch                     6.38284e-16
+v1#branch                             -0.00603
+v3#branch                                    0
+v.x6.vsat2#branch                     1.25e-11
+v.x6.vsat#branch                    -1.252e-11
+v.x6.vofst#branch                  2.19613e-12
+v.x4.vsat2#branch                     1.25e-11
+v.x4.vsat#branch                    -1.252e-11
+v.x4.vofst#branch                  9.89946e-17
+v2#branch                          -0.00603103
+
+ Reference value :  2.86958e-03
+No. of Data Rows : 12525
+.print line ignored since rawfile was produced.
+
+Total analysis time (seconds) = 0.253442
+
+Total elapsed time (seconds) = 0.258 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 12914.922 MB.
+Maximum ngspice program size =   10.297 MB.
+Current ngspice program size =   10.297 MB.
+
+
+Note: v.x6.vib: has no value, DC 0 assumed
+Note: v.x4.vib: has no value, DC 0 assumed

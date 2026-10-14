@@ -1,0 +1,42 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: soa test for generic diode, including self-heating
+
+Doing analysis at TEMP = 100.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+Instance: d2 Model: dmod2 Pd=1.944e-11 W at Vd=0.02 V and Te=125 C has exceeded Pd_max=0 W
+Instance: d2 Model: dmod2 Pd=1.085e-10 W at Vd=0.04 V and Te=125 C has exceeded Pd_max=0 W
+Instance: dth1 Model: dmod1 Id=1.586 A at Vd=0.86 V has exceeded Id_max=1.5 A
+Instance: dth1 Model: dmod1 Id=1.802 A at Vd=0.88 V has exceeded Id_max=1.5 A
+Instance: dth1 Model: dmod1 Te=185.5 C at Vd=0.88 V has exceeded te_max=175 C
+Instance: dth1 Model: dmod1 Te=209.9 C at Vd=0.9 V has exceeded te_max=175 C
+Instance: d2 Model: dmod2 Vd=1.5 V has exceeded Fv_max=1.5 V
+Instance: dth1 Model: dmod1 Vd=1.5 V has exceeded Fv_max=1.5 V
+
+No. of Data Rows : 100
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 100.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Total analysis time (seconds) = 0.000809
+
+Total elapsed time (seconds) = 0.005 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13964.625 MB.
+Maximum ngspice program size =   10.422 MB.
+Current ngspice program size =   10.422 MB.
+
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+

@@ -1,0 +1,108 @@
+
+*****
+***** Welcome to the Xyce(TM) Parallel Electronic Simulator
+*****
+***** This is version XyceNF Release 7.10.0
+***** Date: Wed Oct 14 02:03:26 CEST 2026
+
+
+***** Executing netlist input.cir
+
+***** Reading and parsing netlist...
+***** Setting up topology...
+
+***** Device Count Summary ...
+       B level 1 (Expression Based Voltage or Current Source) 1
+       R level 1 (Resistor)                                   1
+       --------------------------------------------------------
+       Total Devices                                          2
+***** Setting up matrix structure...
+***** Number of Unknowns = 2
+***** Initializing...
+
+------------------------------------------------------------
+Operating point information:
+Number of Expression Based Voltage or Current Source models: 1
+          name B level 1 (Expression Based Voltage or Current Source)
+          type                
+         level               1
+
+Number of Expression Based Voltage or Current Source instances: 1
+          name              B1
+         model B level 1 (Expression Based Voltage or Current Source)
+              M              1
+     SMOOTHBSRC              0
+        RCCONST          1e-09
+           TEMP        -273.15
+              V            100
+              I              0
+
+
+Number of Resistor models: 1
+          name R level 1 (Resistor)
+          type                
+         level               1
+           TNOM             27
+           DEFW          1e-05
+         NARROW              0
+              R              1
+            RSH              0
+            TC2              0
+            TCE              0
+
+            TC1              0
+
+Number of Resistor instances: 1
+          name              R1
+         model R level 1 (Resistor)
+            TCE              0
+            TC2              0
+            TC1              0
+           TEMP             27
+          DTEMP              0
+              L              0
+              W          1e-05
+              M              1
+              R             10
+
+------------------------------------------------------------
+
+***** Solution Summary *****
+	Number Successful Steps Taken:		1
+	Number Failed Steps Attempted:		0
+	Number Jacobians Evaluated:		2
+	Number Linear Solves:			2
+	Number Failed Linear Solves:		0
+	Number Residual Evaluations:		4
+	Number Nonlinear Convergence Failures:	0
+	Total Residual Load Time:		6.91414e-06 seconds
+	Total Jacobian Load Time:		3.09944e-06 seconds
+	Total Linear Solution Time:		2.28882e-05 seconds
+
+
+***** Total Simulation Solvers Run Time: 0.000433922 seconds
+***** Total Elapsed Run Time:            0.0014739 seconds
+*****
+***** End of Xyce(TM) Simulation
+*****
+
+Timing summary of 1 processor
+                 Stats                   Count       CPU Time              Wall Time
+---------------------------------------- ----- --------------------- ---------------------
+Xyce                                         1        0.001 (100.0%)        0.002 (100.0%)
+  Analysis                                   1        0.000 (15.74%)        0.000 (20.39%)
+    DC Sweep                                 1        0.000 (15.51%)        0.000 (20.24%)
+      Solve                                  1        0.000 (10.04%)        0.000 ( 8.96%)
+        Residual                             4        0.000 ( 0.78%)        0.000 ( 0.40%)
+        Jacobian                             2        0.000 ( 0.33%)        0.000 ( 0.20%)
+        Linear Solve                         2        0.000 ( 1.90%)        0.000 ( 1.17%)
+      Successful Step                        1        0.000 ( 4.13%)        0.000 ( 9.31%)
+  Netlist Import                             1        0.000 (25.89%)        0.000 (20.35%)
+    Parse Context                            1        0.000 ( 4.02%)        0.000 ( 3.24%)
+    Distribute Devices                       1        0.000 ( 5.58%)        0.000 ( 3.13%)
+    Verify Devices                           1        0.000 ( 0.33%)        0.000 ( 0.25%)
+    Instantiate                              1        0.000 ( 1.56%)        0.000 ( 0.83%)
+  Late Initialization                        1        0.000 (17.08%)        0.000 (12.50%)
+    Global Indices                           1        0.000 ( 1.12%)        0.000 ( 0.54%)
+  Setup Matrix Structure                     1        0.000 ( 3.68%)        0.000 ( 4.27%)
+

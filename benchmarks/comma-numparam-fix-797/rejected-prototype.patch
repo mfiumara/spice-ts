@@ -1,0 +1,99 @@
+diff --git a/packages/core/src/parser/subcircuit-syntax.ts b/packages/core/src/parser/subcircuit-syntax.ts
+index d53a281b..9963708e 100644
+--- a/packages/core/src/parser/subcircuit-syntax.ts
++++ b/packages/core/src/parser/subcircuit-syntax.ts
+@@ -81,11 +81,53 @@ function defaultValue(value: string): number | string {
+   }
+ }
+ 
++interface CallAssignment {
++  name: string;
++  value: string;
++  start: number;
++}
++
+ /**
+- * `name = value` on an X card whose value is a single bare token: not
+- * braced or quoted, and free of `,` (comma lists are a separate gap, #797).
++ * inpcom.c inp_get_params: the name is the whole non-whitespace span
++ * immediately left of '=', bounded by the end of the previous value.
++ * Braces end a value; otherwise its entire whitespace word is retained.
++ * In particular ',beta' is NOT 'beta', and '2,' is NOT the number '2'.
+  */
+-const CALL_ASSIGNMENT = /([A-Za-z_]\w*)\s*=\s*([^\s{}'",=]+)(?=\s|$)/g;
++function callAssignments(card: string): CallAssignment[] {
++  const assignments: CallAssignment[] = [];
++  // Continuations may start '+name=' without a space after '+'.
++  const continuation = /^\s*\+/.exec(card);
++  let cursor = continuation?.[0].length ?? 0;
++  for (;;) {
++    const equals = card.indexOf('=', cursor);
++    if (equals < 0) break;
++    let endName = equals;
++    while (endName > cursor && /\s/.test(card[endName - 1])) endName--;
++    let start = endName;
++    while (start > cursor && !/\s/.test(card[start - 1])) start--;
++    let valueStart = equals + 1;
++    while (valueStart < card.length && /\s/.test(card[valueStart])) valueStart++;
++    let end = valueStart;
++    if (card[valueStart] === '{') {
++      let depth = 0;
++      do {
++        if (card[end] === '{') depth++;
++        else if (card[end] === '}') depth--;
++        end++;
++      } while (end < card.length && depth > 0);
++      if (depth !== 0) throw new Error('Missing } in subcircuit call');
++    } else if (card[valueStart] === "'") {
++      const close = card.indexOf("'", valueStart + 1);
++      if (close < 0) throw new Error('Missing quote in subcircuit call');
++      end = close + 1;
++    } else {
++      while (end < card.length && !/\s/.test(card[end])) end++;
++    }
++    assignments.push({ name: card.slice(start, endName), value: card.slice(valueStart, end), start });
++    cursor = end;
++  }
++  return assignments;
++}
+ 
+ /**
+  * ngspice-47 inpcom.c (`inp_fix_param_values`) wraps the bare right-hand side
+@@ -93,19 +135,32 @@ const CALL_ASSIGNMENT = /([A-Za-z_]\w*)\s*=\s*([^\s{}'",=]+)(?=\s|$)/g;
+  * numparam evaluates `R=R1` (or `R=RB*2`) as `R={R1}` against the visible
+  * `.param` and subcircuit parameters (#788). Applied to the comment-free part
+  * of an X card or one of its `+` continuation lines; numbers are left as-is.
++ * Scan before expression substitution destroys the brace boundaries (#797).
++ * Comma-prefixed names cannot match a formal identifier and are discarded
++ * without evaluating their values. Retained bare comma words are errors,
++ * like numparam's generated positional assignment ('; sign expected').
+  */
+ export function bracedSubcircuitCallValues(line: string, commentStart: number): string {
+   const card = line.slice(0, commentStart);
+   if (!card.includes('=')) return line;
+-  const braced = card.replace(CALL_ASSIGNMENT, (match, name: string, value: string) => {
++  const assignments = callAssignments(card);
++  if (assignments.length === 0) return line;
++  const values: string[] = [];
++  for (const { name, value } of assignments) {
++    if (!/^[A-Za-z_]\w*$/.test(name)) continue;
++    if (value.startsWith('{') || value.startsWith("'")) {
++      values.push(`${name}=${value}`);
++      continue;
++    }
++    if (value.includes(',')) throw new Error('Subcircuit positional assignment: ; sign expected');
+     try {
+       parseNumber(value);
+-      return match;
++      values.push(`${name}=${value}`);
+     } catch {
+-      return `${name}={${value}}`;
++      values.push(`${name}={${value}}`);
+     }
+-  });
+-  return braced + line.slice(commentStart);
++  }
++  return card.slice(0, assignments[0].start) + values.join(' ') + ' ' + line.slice(commentStart);
+ }
+ 
+ export interface SubcircuitCall {

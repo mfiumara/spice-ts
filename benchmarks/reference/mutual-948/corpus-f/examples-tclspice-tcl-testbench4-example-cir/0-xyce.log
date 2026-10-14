@@ -1,0 +1,214 @@
+
+*****
+***** Welcome to the Xyce(TM) Parallel Electronic Simulator
+*****
+***** This is version XyceNF Release 7.10.0
+***** Date: Wed Oct 14 01:50:46 CEST 2026
+
+
+***** Executing netlist input.cir
+
+***** Reading and parsing netlist...
+Netlist error in file input.cir at or near line 15
+ Model is required for device MNA0 and no valid model card found.
+Netlist error in file input.cir at or near line 18
+ Model is required for device MPA0 and no valid model card found.
+Netlist error in file input.cir at or near line 21
+ Model is required for device MNB0 and no valid model card found.
+Netlist error in file input.cir at or near line 24
+ Model is required for device MPB0 and no valid model card found.
+Netlist error in file input.cir at or near line 32
+ Model is required for device MNA1 and no valid model card found.
+Netlist error in file input.cir at or near line 35
+ Model is required for device MPA1 and no valid model card found.
+Netlist error in file input.cir at or near line 38
+ Model is required for device MNB1 and no valid model card found.
+Netlist error in file input.cir at or near line 41
+ Model is required for device MPB1 and no valid model card found.
+Netlist error in file input.cir at or near line 49
+ Model is required for device MNA2 and no valid model card found.
+Netlist error in file input.cir at or near line 52
+ Model is required for device MPA2 and no valid model card found.
+Netlist error in file input.cir at or near line 55
+ Model is required for device MNB2 and no valid model card found.
+Netlist error in file input.cir at or near line 58
+ Model is required for device MPB2 and no valid model card found.
+Netlist error in file input.cir at or near line 66
+ Model is required for device MNA3 and no valid model card found.
+Netlist error in file input.cir at or near line 69
+ Model is required for device MPA3 and no valid model card found.
+Netlist error in file input.cir at or near line 72
+ Model is required for device MNB3 and no valid model card found.
+Netlist error in file input.cir at or near line 75
+ Model is required for device MPB3 and no valid model card found.
+Netlist error in file input.cir at or near line 83
+ Model is required for device MNA4 and no valid model card found.
+Netlist error in file input.cir at or near line 86
+ Model is required for device MPA4 and no valid model card found.
+Netlist error in file input.cir at or near line 89
+ Model is required for device MNB4 and no valid model card found.
+Netlist error in file input.cir at or near line 92
+ Model is required for device MPB4 and no valid model card found.
+Netlist error in file input.cir at or near line 100
+ Model is required for device MNA5 and no valid model card found.
+Netlist error in file input.cir at or near line 103
+ Model is required for device MPA5 and no valid model card found.
+Netlist error in file input.cir at or near line 106
+ Model is required for device MNB5 and no valid model card found.
+Netlist error in file input.cir at or near line 109
+ Model is required for device MPB5 and no valid model card found.
+Netlist error in file input.cir at or near line 117
+ Model is required for device MNA6 and no valid model card found.
+Netlist error in file input.cir at or near line 120
+ Model is required for device MPA6 and no valid model card found.
+Netlist error in file input.cir at or near line 123
+ Model is required for device MNB6 and no valid model card found.
+Netlist error in file input.cir at or near line 126
+ Model is required for device MPB6 and no valid model card found.
+Netlist error in file input.cir at or near line 134
+ Model is required for device MNA7 and no valid model card found.
+Netlist error in file input.cir at or near line 137
+ Model is required for device MPA7 and no valid model card found.
+Netlist error in file input.cir at or near line 140
+ Model is required for device MNB7 and no valid model card found.
+Netlist error in file input.cir at or near line 143
+ Model is required for device MPB7 and no valid model card found.
+Netlist error in file input.cir at or near line 151
+ Model is required for device MNA8 and no valid model card found.
+Netlist error in file input.cir at or near line 154
+ Model is required for device MPA8 and no valid model card found.
+Netlist error in file input.cir at or near line 157
+ Model is required for device MNB8 and no valid model card found.
+Netlist error in file input.cir at or near line 160
+ Model is required for device MPB8 and no valid model card found.
+Netlist error in file input.cir at or near line 168
+ Model is required for device MNA9 and no valid model card found.
+Netlist error in file input.cir at or near line 171
+ Model is required for device MPA9 and no valid model card found.
+Netlist error in file input.cir at or near line 174
+ Model is required for device MNB9 and no valid model card found.
+Netlist error in file input.cir at or near line 177
+ Model is required for device MPB9 and no valid model card found.
+Netlist error in file input.cir at or near line 185
+ Model is required for device MNA10 and no valid model card found.
+Netlist error in file input.cir at or near line 188
+ Model is required for device MPA10 and no valid model card found.
+Netlist error in file input.cir at or near line 191
+ Model is required for device MNB10 and no valid model card found.
+Netlist error in file input.cir at or near line 194
+ Model is required for device MPB10 and no valid model card found.
+Netlist error in file input.cir at or near line 202
+ Model is required for device MNA11 and no valid model card found.
+Netlist error in file input.cir at or near line 205
+ Model is required for device MPA11 and no valid model card found.
+Netlist error in file input.cir at or near line 208
+ Model is required for device MNB11 and no valid model card found.
+Netlist error in file input.cir at or near line 211
+ Model is required for device MPB11 and no valid model card found.
+Netlist error in file input.cir at or near line 219
+ Model is required for device MNA12 and no valid model card found.
+Netlist error in file input.cir at or near line 222
+ Model is required for device MPA12 and no valid model card found.
+Netlist error in file input.cir at or near line 225
+ Model is required for device MNB12 and no valid model card found.
+Netlist error in file input.cir at or near line 228
+ Model is required for device MPB12 and no valid model card found.
+Netlist error in file input.cir at or near line 236
+ Model is required for device MNA13 and no valid model card found.
+Netlist error in file input.cir at or near line 239
+ Model is required for device MPA13 and no valid model card found.
+Netlist error in file input.cir at or near line 242
+ Model is required for device MNB13 and no valid model card found.
+Netlist error in file input.cir at or near line 245
+ Model is required for device MPB13 and no valid model card found.
+Netlist error in file input.cir at or near line 253
+ Model is required for device MNA14 and no valid model card found.
+Netlist error in file input.cir at or near line 256
+ Model is required for device MPA14 and no valid model card found.
+Netlist error in file input.cir at or near line 259
+ Model is required for device MNB14 and no valid model card found.
+Netlist error in file input.cir at or near line 262
+ Model is required for device MPB14 and no valid model card found.
+Netlist error in file input.cir at or near line 270
+ Model is required for device MNA15 and no valid model card found.
+Netlist error in file input.cir at or near line 273
+ Model is required for device MPA15 and no valid model card found.
+Netlist error in file input.cir at or near line 276
+ Model is required for device MNB15 and no valid model card found.
+Netlist error in file input.cir at or near line 279
+ Model is required for device MPB15 and no valid model card found.
+Netlist error in file input.cir at or near line 287
+ Model is required for device MNA16 and no valid model card found.
+Netlist error in file input.cir at or near line 290
+ Model is required for device MPA16 and no valid model card found.
+Netlist error in file input.cir at or near line 293
+ Model is required for device MNB16 and no valid model card found.
+Netlist error in file input.cir at or near line 296
+ Model is required for device MPB16 and no valid model card found.
+Netlist error in file input.cir at or near line 304
+ Model is required for device MNA17 and no valid model card found.
+Netlist error in file input.cir at or near line 307
+ Model is required for device MPA17 and no valid model card found.
+Netlist error in file input.cir at or near line 310
+ Model is required for device MNB17 and no valid model card found.
+Netlist error in file input.cir at or near line 313
+ Model is required for device MPB17 and no valid model card found.
+Netlist error in file input.cir at or near line 321
+ Model is required for device MNA18 and no valid model card found.
+Netlist error in file input.cir at or near line 324
+ Model is required for device MPA18 and no valid model card found.
+Netlist error in file input.cir at or near line 327
+ Model is required for device MNB18 and no valid model card found.
+Netlist error in file input.cir at or near line 330
+ Model is required for device MPB18 and no valid model card found.
+Netlist error in file input.cir at or near line 338
+ Model is required for device MNA19 and no valid model card found.
+Netlist error in file input.cir at or near line 341
+ Model is required for device MPA19 and no valid model card found.
+Netlist error in file input.cir at or near line 344
+ Model is required for device MNB19 and no valid model card found.
+Netlist error in file input.cir at or near line 347
+ Model is required for device MPB19 and no valid model card found.
+Netlist error in file input.cir at or near line 355
+ Model is required for device MNA20 and no valid model card found.
+Netlist error in file input.cir at or near line 358
+ Model is required for device MPA20 and no valid model card found.
+Netlist error in file input.cir at or near line 361
+ Model is required for device MNB20 and no valid model card found.
+Netlist error in file input.cir at or near line 364
+ Model is required for device MPB20 and no valid model card found.
+Netlist error in file input.cir at or near line 372
+ Model is required for device MNA21 and no valid model card found.
+Netlist error in file input.cir at or near line 375
+ Model is required for device MPA21 and no valid model card found.
+Netlist error in file input.cir at or near line 378
+ Model is required for device MNB21 and no valid model card found.
+Netlist error in file input.cir at or near line 381
+ Model is required for device MPB21 and no valid model card found.
+Netlist error in file input.cir at or near line 389
+ Model is required for device MNA22 and no valid model card found.
+Netlist error in file input.cir at or near line 392
+ Model is required for device MPA22 and no valid model card found.
+Netlist error in file input.cir at or near line 395
+ Model is required for device MNB22 and no valid model card found.
+Netlist error in file input.cir at or near line 398
+ Model is required for device MPB22 and no valid model card found.
+Netlist error in file input.cir at or near line 406
+ Model is required for device MNA23 and no valid model card found.
+Netlist error in file input.cir at or near line 409
+ Model is required for device MPA23 and no valid model card found.
+Netlist error in file input.cir at or near line 412
+ Model is required for device MNB23 and no valid model card found.
+Netlist error in file input.cir at or near line 415
+ Model is required for device MPB23 and no valid model card found.
+Netlist error in file input.cir at or near line 559
+ Invalid DC value "(" for device VSLEW_CONTROL
+Simulation aborted due to error.  There are 0 MSG_FATAL errors and 97
+ MSG_ERROR errors
+*** Xyce Abort ***
+
+Simulation aborted due to error.  There are 0 MSG_FATAL errors and 97
+ MSG_ERROR errors
+
+
+*** Xyce Abort ***

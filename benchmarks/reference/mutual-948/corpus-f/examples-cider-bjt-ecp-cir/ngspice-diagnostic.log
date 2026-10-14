@@ -1,0 +1,123 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: emitter coupled pair
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 12  
+ Reference value :  2.75000e+00 Reference value :  2.76000e+00 Reference value :  2.77000e+00 Reference value :  2.78000e+00 Reference value :  2.79000e+00 Reference value :  2.80000e+00 Reference value :  2.81000e+00 Reference value :  2.82000e+00 Reference value :  2.83000e+00 Reference value :  2.84000e+00 Reference value :  2.85000e+00 Reference value :  2.86000e+00 Reference value :  2.87000e+00 Reference value :  2.88000e+00 Reference value :  2.89000e+00 Reference value :  2.90000e+00 Reference value :  2.91000e+00 Reference value :  2.92000e+00 Reference value :  2.93000e+00 Reference value :  2.94000e+00 Reference value :  2.95000e+00 Reference value :  2.96000e+00 Reference value :  2.97000e+00 Reference value :  2.98000e+00 Reference value :  2.99000e+00 Reference value :  3.00000e+00 Reference value :  3.01000e+00 Reference value :  3.02000e+00 Reference value :  3.03000e+00 Reference value :  3.04000e+00 Reference value :  3.05000e+00 Reference value :  3.06000e+00 Reference value :  3.07000e+00 Reference value :  3.08000e+00 Reference value :  3.09000e+00 Reference value :  3.10000e+00 Reference value :  3.11000e+00 Reference value :  3.12000e+00 Reference value :  3.13000e+00 Reference value :  3.14000e+00 Reference value :  3.15000e+00 Reference value :  3.16000e+00 Reference value :  3.17000e+00 Reference value :  3.18000e+00 Reference value :  3.19000e+00 Reference value :  3.20000e+00 Reference value :  3.21000e+00 Reference value :  3.22000e+00 Reference value :  3.23000e+00 Reference value :  3.24000e+00 Reference value :  3.25000e+00
+No. of Data Rows : 51
+.print line ignored since rawfile was produced.
+Total elapsed time (seconds) = 52.139 
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13470.969 MB.
+Maximum ngspice program size =   39.562 MB.
+Current ngspice program size =   39.562 MB.
+30 page faults, 0 vol + 10281 invol = 10281 context switches.
+
+Number of lines in the deck = 15
+Netlist loading time = 0.000264
+Subckt and Param expansion time = 0.000277
+Netlist parsing time = 0.000246
+
+Nominal temperature = 27
+Operating temperature = 27
+Total iterations = 159
+Transient iterations = 0
+Circuit Equations = 12
+Circuit original non-zeroes = 30
+Circuit fill-in non-zeroes = 0
+Circuit total non-zeroes = 0
+Transient timepoints = 0
+Accepted timepoints = 0
+Rejected timepoints = 0
+Total analysis time (seconds) = 52.1338
+Matrix load time = 52.1287
+Matrix synchronize time = 0
+Matrix reorder time = 5.00001E-06
+Matrix factor time = 0.000131
+Matrix solve time = 5.10001E-05
+Transient analysis time = 0
+Transient load time = 0
+Transient sync time = 0
+Transient factor time = 0
+Transient solve time = 0
+Transient trunc time = 0
+Transient iterations for the last time point = 159
+AC analysis time = 0
+AC load time = 0
+AC sync time = 0
+AC factor time = 0
+AC solve time = 0
+----------------------------------------
+Device q2 Memory Usage:
+Item                     Count     Bytes
+----------------------------------------
+Device                       1       240
+Elements                   864    352512
+Nodes                      931   1065064
+Edges                     1794    358800
+Misc Mesh                  n/a     16456
+Equil Orig NZ             4448    177920
+Equil Fill NZ            14598    583920
+Equil Tot  NZ            19046    761840
+Equil Vectors              919     29408
+Bias Orig NZ             24792    991680
+Bias Fill NZ            252225  10089000
+Bias Tot  NZ            277017  11080680
+Bias Vectors              2659    106360
+State Vector              8243     65944
+----------------------------------------------------------------------
+Device q2 Time Usage:
+Item                     SETUP        DC      TRAN        AC     TOTAL
+----------------------------------------------------------------------
+Setup Time            0.000146  0.000969         0         0  0.001115
+Load Time              0.00077  0.722276         0         0  0.723046
+Order Time            0.007607  0.708015         0         0  0.715622
+Factor Time           0.003254   21.8209         0         0   21.8241
+Solve Time            0.000344   1.03239         0         0   1.03273
+Update Time         2.99999e-06  0.001727         0         0   0.00173
+Check Time            0.000113  0.018613         0         0  0.018726
+Misc Time              1.7e-05  0.009369         0         0  0.001115
+LTE Time                                         0                   0
+Total Time            0.012874   25.3181         0         0    25.331
+Iterations                   7       260         0         0       267
+----------------------------------------
+Device q1 Memory Usage:
+Item                     Count     Bytes
+----------------------------------------
+Device                       1       240
+Elements                   864    352512
+Nodes                      931   1065064
+Edges                     1794    358800
+Misc Mesh                  n/a     16456
+Equil Orig NZ             4448    177920
+Equil Fill NZ            14598    583920
+Equil Tot  NZ            19046    761840
+Equil Vectors              919     29408
+Bias Orig NZ             24792    991680
+Bias Fill NZ            252225  10089000
+Bias Tot  NZ            277017  11080680
+Bias Vectors              2659    106360
+State Vector              8243     65944
+----------------------------------------------------------------------
+Device q1 Time Usage:
+Item                     SETUP        DC      TRAN        AC     TOTAL
+----------------------------------------------------------------------
+Setup Time            0.000271  0.000658         0         0  0.000929
+Load Time             0.000769  0.789831         0         0    0.7906
+Order Time            0.006545    0.7742         0         0  0.780745
+Factor Time           0.002701   23.0642         0         0   23.0669
+Solve Time            0.000302   1.07907         0         0   1.07937
+Update Time         4.99999e-06  0.003855         0         0   0.00386
+Check Time            0.000106  0.019674         0         0   0.01978
+Misc Time              1.6e-05  0.009806         0         0  0.000929
+LTE Time                                         0                   0
+Total Time            0.011131   26.7871         0         0   26.7982
+Iterations                   7       273         0         0       280
+
+ngspice-47 done

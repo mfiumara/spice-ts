@@ -1,0 +1,39 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: * reference circuit for bug4_issue694.  this circuit is equivalent, but the sensitivities are computed via a crude finite difference.
+
+Warning -- Version not specified on line "level=54"
+Setting version to 'default'.
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 25.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 7  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+vi                                           0
+vo                                 9.88267e-32
+vi_w                                         0
+vo_w                               7.99402e-32
+vin1_w#branch                                0
+vin1#branch                                  0
+
+
+No. of Data Rows : 517
+.print line ignored since rawfile was produced.
+
+Total analysis time (seconds) = 0.003703
+
+Total elapsed time (seconds) = 0.008 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 12884.016 MB.
+Maximum ngspice program size =   10.422 MB.
+Current ngspice program size =   10.422 MB.
+

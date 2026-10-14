@@ -1,0 +1,30 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: $ cd4007, version: cd4007n_200402idvg 
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 7  
+ Reference value :  0.00000e+00 Reference value :  2.50000e-01 Reference value :  5.00000e-01 Reference value :  7.50000e-01 Reference value :  1.00000e+00 Reference value :  1.25000e+00 Reference value :  1.50000e+00 Reference value :  1.75000e+00 Reference value :  2.00000e+00 Reference value :  2.25000e+00 Reference value :  2.50000e+00 Reference value :  2.75000e+00 Reference value :  3.00000e+00 Reference value :  3.25000e+00 Reference value :  3.50000e+00 Reference value :  3.75000e+00 Reference value :  4.00000e+00 Reference value :  4.25000e+00 Reference value :  4.50000e+00 Reference value :  4.75000e+00 Reference value :  5.00000e+00
+No. of Data Rows : 21
+
+Total analysis time (seconds) = 60.8935
+
+Total elapsed time (seconds) = 60.899 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13952.391 MB.
+Maximum ngspice program size =   36.281 MB.
+Current ngspice program size =   36.281 MB.
+
+ngspice-47 done
+
+Warning: Unusual leading characters like '$' or others out of '= [] ? () & % $"!:,\f'
+    in netlist or included files, will be replaced with '*'.
+    check line  $ generated using matlab automation script.
+    line no. 2 from file input.cir!
+

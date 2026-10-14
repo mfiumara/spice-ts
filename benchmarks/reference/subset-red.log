@@ -1,0 +1,44 @@
+TAP version 13
+# node:internal/modules/cjs/loader:1430
+#   const err = new Error(message);
+#               ^
+# Error: Cannot find module './subset.js'
+# Require stack:
+# - /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_84a6a757/benchmarks/reference/subset.test.ts
+#     at node:internal/modules/cjs/loader:1430:15
+#     at nextResolveSimple (/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_84a6a757/node_modules/.pnpm/tsx@4.21.0/node_modules/tsx/dist/register-D46fvsV_.cjs:4:1004)
+#     at /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_84a6a757/node_modules/.pnpm/tsx@4.21.0/node_modules/tsx/dist/register-D46fvsV_.cjs:3:2630
+#     at /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_84a6a757/node_modules/.pnpm/tsx@4.21.0/node_modules/tsx/dist/register-D46fvsV_.cjs:3:1542
+#     at resolveTsPaths (/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_84a6a757/node_modules/.pnpm/tsx@4.21.0/node_modules/tsx/dist/register-D46fvsV_.cjs:4:760)
+#     at /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_84a6a757/node_modules/.pnpm/tsx@4.21.0/node_modules/tsx/dist/register-D46fvsV_.cjs:4:1102
+#     at m._resolveFilename (file:///Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_84a6a757/node_modules/.pnpm/tsx@4.21.0/node_modules/tsx/dist/register-B7jrtLTO.mjs:1:789)
+#     at defaultResolveImpl (node:internal/modules/cjs/loader:1040:19)
+#     at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1045:22)
+#     at Function._load (node:internal/modules/cjs/loader:1216:25) {
+#   code: 'MODULE_NOT_FOUND',
+#   requireStack: [
+#     '/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_84a6a757/benchmarks/reference/subset.test.ts'
+#   ]
+# }
+# Node.js v22.23.1
+# Subtest: benchmarks/reference/subset.test.ts
+not ok 1 - benchmarks/reference/subset.test.ts
+  ---
+  duration_ms: 432.875584
+  type: 'test'
+  location: '/Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_84a6a757/benchmarks/reference/subset.test.ts:1:1'
+  failureType: 'testCodeFailure'
+  exitCode: 1
+  signal: ~
+  error: 'test failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 438.175959

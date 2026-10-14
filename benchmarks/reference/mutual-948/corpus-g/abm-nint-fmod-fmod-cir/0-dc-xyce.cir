@@ -1,0 +1,9 @@
+Test of nint
+*
+R1 1 0 1
+V1 1 0 1.0
+
+.DC V1 1.0 10.0 0.5
+
+.print DC format=csv file=output.csv precision=17 {V1} I(v1) V(1)
+.end

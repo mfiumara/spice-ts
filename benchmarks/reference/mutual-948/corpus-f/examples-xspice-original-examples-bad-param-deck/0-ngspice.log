@@ -1,0 +1,41 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: unknown code model parameter
+
+ASCII raw file "output.raw"
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 5  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+1                                            0
+2                                            0
+v1#branch                                    0
+a1#branch_1_0                                0
+
+
+No. of Data Rows : 108
+
+Total analysis time (seconds) = 0.000949
+
+Total elapsed time (seconds) = 0.005 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 12443.359 MB.
+Maximum ngspice program size =   10.172 MB.
+Current ngspice program size =   10.172 MB.
+
+
+Warning: Model issue on line 13 :
+  .model gain_block gain (this_parameter_doesnt_exist=2 gain=10) ...
+MIF: unrecognized parameter (this_parameter_doesnt_exist) - ignored
+MIF: unrecognized parameter (2) - ignored
+

@@ -1,0 +1,13 @@
+* /home/fossee/updatedexamples/series_resonance/series_resonance.cir
+
+r1  in net-_c1-pad2_ 1
+l1  out gnd 100m
+c1  out net-_c1-pad2_ 10u
+v1 in gnd  ac 1 0
+* u1  in plot_v1
+* u2  out plot_v1
+.ac lin 20 1Hz 250Hz
+
+* Control Statements 
+.print AC format=csv file=output.csv precision=17 IR(l1) II(l1) IR(v1) II(v1) VR(in) VI(in) VR(net-_c1-pad2_) VI(net-_c1-pad2_) VR(out) VI(out)
+.end
