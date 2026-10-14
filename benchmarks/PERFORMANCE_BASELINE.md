@@ -1,5 +1,26 @@
 # 10k-node performance baseline
 
+## MOS amplifier non-load accounting receipt (#1077)
+
+Evidence-only at `0c63eac1`; no simulator candidate, tolerances or aggregate
+outcomes change. Five guarded, interleaved fresh-process runs on identical
+original decks give JS/native medians [IQR] of 5038.98 [106.23] / 550.42 [27.67]
+ms for `ngspice/mos-amplifier-transient` (9.15x slower), and 4995.50 [441.78] /
+522.29 [31.56] ms for `classic/mos-amplifier` (9.56x slower). These are shared-host
+experimental Node bundles, not a new npm startup claim. All outliers are retained.
+
+Shared-byte accounting controls report 2429 accepted points and 766 rejected
+attempts in both engines; JS has 82710 transient NR iterations vs native 83599.
+Separate instrumented diagnostics put factor at 4.07% / 4.53% of transient time,
+the largest exclusive non-device-load phase. Uninstrumented sampled GC is
+11.18% / 11.94%, cross-cutting and not additive to the phase clocks. Device load
+and stamping still dominate. No general non-load optimization is justified by
+this evidence, and no >=15% cut or three-fixture regression gate is claimed.
+Before/after is N/A because runtime source is unchanged. Commands, all samples,
+medians/quartiles, native acct counters/clocks, JS load/assembly/factor/solve/
+control/output scopes, profiles, probe hashes and limitations are in
+`benchmarks/results/issue-1077-acct/README.md`. Refs #1077; it remains open.
+
 This report is the measurement-only first slice of [#40](https://github.com/mfiumara/spice-ts/issues/40). It changes no solver or runtime implementation.
 
 ## Reproduce

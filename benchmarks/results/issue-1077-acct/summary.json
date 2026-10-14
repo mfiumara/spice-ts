@@ -1,0 +1,575 @@
+{
+  "decision": "evidence-only; no candidate, no before/after speedup or regression gate claimed",
+  "fixtures": {
+    "ngspice": {
+      "coldWall": {
+        "js": {
+          "n": 5,
+          "medianMs": 5038.9780000114115,
+          "q1Ms": 4965.747750000446,
+          "q3Ms": 5071.9799590006005,
+          "iqrMs": 106.2322090001544,
+          "samplesMs": [
+            4445.320416009054,
+            4965.747750000446,
+            5038.9780000114115,
+            5071.9799590006005,
+            5445.564833993558
+          ]
+        },
+        "native": {
+          "n": 5,
+          "medianMs": 550.4204159951769,
+          "q1Ms": 532.9349169915076,
+          "q3Ms": 560.6055410025874,
+          "iqrMs": 27.67062401107978,
+          "samplesMs": [
+            462.333250005031,
+            532.9349169915076,
+            550.4204159951769,
+            560.6055410025874,
+            712.5863749970449
+          ]
+        }
+      },
+      "warmJsApi": {
+        "n": 5,
+        "medianMs": 3890.5309579999994,
+        "q1Ms": 3881.6606660000007,
+        "q3Ms": 3941.3685410000016,
+        "iqrMs": 59.70787500000097,
+        "samplesMs": [
+          3804.4496249999997,
+          3881.6606660000007,
+          3890.5309579999994,
+          3941.3685410000016,
+          3948.5068329999995
+        ]
+      },
+      "warmNativeMarkerWall": {
+        "n": 5,
+        "medianMs": 367.8767500096001,
+        "q1Ms": 367.01754199748393,
+        "q3Ms": 368.63108299439773,
+        "iqrMs": 1.6135409969137982,
+        "samplesMs": [
+          360.2229160023853,
+          367.01754199748393,
+          367.8767500096001,
+          368.63108299439773,
+          370.10420800652355
+        ]
+      },
+      "coldJsApi": {
+        "n": 5,
+        "medianMs": 4941.2489590000005,
+        "q1Ms": 4852.434375,
+        "q3Ms": 4950.620583,
+        "iqrMs": 98.18620800000008,
+        "samplesMs": [
+          4345.38175,
+          4852.434375,
+          4941.2489590000005,
+          4950.620583,
+          5354.396916
+        ]
+      },
+      "nativeAccounting": {
+        "Accepted timepoints": 2429.0,
+        "Rejected timepoints": 766.0,
+        "Transient timepoints": 3195.0,
+        "Transient iterations": 83599.0,
+        "Total iterations": 83747.0,
+        "Transient analysis time": 0.438347,
+        "Transient load time": 0.348875,
+        "Transient factor time": 0.033538,
+        "Transient solve time": 0.021759,
+        "Transient trunc time": 0.005105
+      },
+      "jsCounters": {
+        "dc": {
+          "newtonIterations": 143,
+          "acceptedSolves": 12,
+          "rejectedSolves": 1,
+          "sourceStepAttempts": 0,
+          "sourceStepFailures": 0,
+          "gminStepAttempts": 12,
+          "gminStepFailures": 0,
+          "failure": null
+        },
+        "transient": {
+          "acceptedSteps": 2428,
+          "rejectedSteps": 766,
+          "newtonIterations": 82710,
+          "nrRetries": 756,
+          "lteRetries": 10,
+          "minimumAcceptedTimestep": 7.569444300496845e-12,
+          "failure": null
+        }
+      },
+      "diagnosticApi": {
+        "n": 5,
+        "medianMs": 5816.808333,
+        "q1Ms": 5213.30825,
+        "q3Ms": 6403.2690410000005,
+        "iqrMs": 1189.9607910000004,
+        "samplesMs": [
+          4773.98625,
+          5213.30825,
+          5816.808333,
+          6403.2690410000005,
+          9420.891875
+        ]
+      },
+      "diagnosticControlApi": {
+        "n": 5,
+        "medianMs": 5219.5067500000005,
+        "q1Ms": 4931.261083,
+        "q3Ms": 5789.119,
+        "iqrMs": 857.8579169999994,
+        "samplesMs": [
+          4915.044917,
+          4931.261083,
+          5219.5067500000005,
+          5789.119,
+          5879.088042
+        ]
+      },
+      "diagnosticRepresentativeRun": 0,
+      "diagnosticRepresentativeFile": "ngspice-diagnostic-instrumented-4.json",
+      "diagnosticApiMs": 5816.808333,
+      "uninstrumentedAccountingApiMs": 4180.573458000001,
+      "diagnosticTransientMs": 5760.910417,
+      "exclusiveDiagnosticMs": {
+        "deviceStaticDynamic": 1710.089933999875,
+        "deviceCharge": 3298.7551200000607,
+        "companionAssembly": 115.7340390000636,
+        "factor": 234.59646499998235,
+        "solve": 100.44824499997867,
+        "newtonControl": 112.7587610000337,
+        "historyRestamp": 66.1539960000091,
+        "output": 2.8561140000310843,
+        "stepControlSetupResidual": 119.51774299996578
+      },
+      "exclusivePercent": {
+        "deviceStaticDynamic": 29.684369487043785,
+        "deviceCharge": 57.26100357793606,
+        "companionAssembly": 2.0089539781514643,
+        "factor": 4.072211647445625,
+        "solve": 1.7436175487742993,
+        "newtonControl": 1.9573080092912283,
+        "historyRestamp": 1.148325372406309,
+        "output": 0.049577476358648336,
+        "stepControlSetupResidual": 2.0746329025925863
+      },
+      "profileTop": [
+        {
+          "function": "stampTransientCharge",
+          "line": 8465,
+          "column": 23,
+          "selfPercent": 15.02668787757573
+        },
+        {
+          "function": "stampG",
+          "line": 43407,
+          "column": 19,
+          "selfPercent": 13.096612776526781
+        },
+        {
+          "function": "(garbage collector)",
+          "line": 0,
+          "column": 0,
+          "selfPercent": 11.180757867782232
+        },
+        {
+          "function": "stamp",
+          "line": 8278,
+          "column": 8,
+          "selfPercent": 10.85827550674577
+        },
+        {
+          "function": "getVoltage",
+          "line": 43416,
+          "column": 23,
+          "selfPercent": 8.964488229762495
+        },
+        {
+          "function": "evaluateChannel",
+          "line": 7861,
+          "column": 18,
+          "selfPercent": 6.1193437539253654
+        },
+        {
+          "function": "evaluateCharges",
+          "line": 8567,
+          "column": 18,
+          "selfPercent": 5.266632555760929
+        },
+        {
+          "function": "buildCompanionSystem",
+          "line": 44057,
+          "column": 30,
+          "selfPercent": 4.481124933079512
+        },
+        {
+          "function": "stampStaticDevices",
+          "line": 43712,
+          "column": 28,
+          "selfPercent": 3.081067999642915
+        },
+        {
+          "function": "stampB",
+          "line": 43410,
+          "column": 19,
+          "selfPercent": 3.054628975432511
+        },
+        {
+          "function": "gradingFactors",
+          "line": 8584,
+          "column": 17,
+          "selfPercent": 2.544545410735771
+        },
+        {
+          "function": "incrementalCharge",
+          "line": 2279,
+          "column": 20,
+          "selfPercent": 2.382066546813268
+        },
+        {
+          "function": "refactorWithPivots",
+          "line": 42826,
+          "column": 21,
+          "selfPercent": 1.9311284486270537
+        },
+        {
+          "function": "meyerHalf",
+          "line": 8432,
+          "column": 12,
+          "selfPercent": 1.7204852666957566
+        },
+        {
+          "function": "solveLinearized",
+          "line": 44359,
+          "column": 25,
+          "selfPercent": 1.5581117375310638
+        },
+        {
+          "function": "factorize",
+          "line": 42317,
+          "column": 12,
+          "selfPercent": 1.4834557279329608
+        },
+        {
+          "function": "terminalVoltages",
+          "line": 8238,
+          "column": 19,
+          "selfPercent": 0.9557022576135304
+        },
+        {
+          "function": "voltage7",
+          "line": 8568,
+          "column": 22,
+          "selfPercent": 0.9293685681609367
+        },
+        {
+          "function": "select",
+          "line": 2463,
+          "column": 9,
+          "selfPercent": 0.6287168356806745
+        },
+        {
+          "function": "post",
+          "line": 118,
+          "column": 7,
+          "selfPercent": 0.36319424493017227
+        }
+      ],
+      "coldRatio": 9.154780334411807
+    },
+    "classic": {
+      "coldWall": {
+        "js": {
+          "n": 5,
+          "medianMs": 4995.498749995022,
+          "q1Ms": 4681.259707998834,
+          "q3Ms": 5123.043792002136,
+          "iqrMs": 441.78408400330227,
+          "samplesMs": [
+            4153.621417004615,
+            4681.259707998834,
+            4995.498749995022,
+            5123.043792002136,
+            6580.293584003812
+          ]
+        },
+        "native": {
+          "n": 5,
+          "medianMs": 522.290291992249,
+          "q1Ms": 497.37399999867193,
+          "q3Ms": 528.9312079985393,
+          "iqrMs": 31.557207999867387,
+          "samplesMs": [
+            424.53525000019,
+            497.37399999867193,
+            522.290291992249,
+            528.9312079985393,
+            815.0182910030708
+          ]
+        }
+      },
+      "warmJsApi": {
+        "n": 5,
+        "medianMs": 3646.034875000001,
+        "q1Ms": 3603.913790999999,
+        "q3Ms": 3736.0553750000004,
+        "iqrMs": 132.14158400000133,
+        "samplesMs": [
+          3595.595125,
+          3603.913790999999,
+          3646.034875000001,
+          3736.0553750000004,
+          3749.092625
+        ]
+      },
+      "warmNativeMarkerWall": {
+        "n": 5,
+        "medianMs": 367.3095839913003,
+        "q1Ms": 365.51937500189524,
+        "q3Ms": 367.3991669929819,
+        "iqrMs": 1.8797919910866767,
+        "samplesMs": [
+          365.3907920088386,
+          365.51937500189524,
+          367.3095839913003,
+          367.3991669929819,
+          372.0005420036614
+        ]
+      },
+      "coldJsApi": {
+        "n": 5,
+        "medianMs": 4862.871583,
+        "q1Ms": 4597.732917,
+        "q3Ms": 5030.3277499999995,
+        "iqrMs": 432.5948329999992,
+        "samplesMs": [
+          4060.2851249999994,
+          4597.732917,
+          4862.871583,
+          5030.3277499999995,
+          6485.752792
+        ]
+      },
+      "nativeAccounting": {
+        "Accepted timepoints": 2429.0,
+        "Rejected timepoints": 766.0,
+        "Transient timepoints": 3195.0,
+        "Transient iterations": 83599.0,
+        "Total iterations": 83747.0,
+        "Transient analysis time": 0.382878,
+        "Transient load time": 0.295455,
+        "Transient factor time": 0.035226,
+        "Transient solve time": 0.02541,
+        "Transient trunc time": 0.004477
+      },
+      "jsCounters": {
+        "dc": {
+          "newtonIterations": 143,
+          "acceptedSolves": 12,
+          "rejectedSolves": 1,
+          "sourceStepAttempts": 0,
+          "sourceStepFailures": 0,
+          "gminStepAttempts": 12,
+          "gminStepFailures": 0,
+          "failure": null
+        },
+        "transient": {
+          "acceptedSteps": 2428,
+          "rejectedSteps": 766,
+          "newtonIterations": 82710,
+          "nrRetries": 756,
+          "lteRetries": 10,
+          "minimumAcceptedTimestep": 7.569444300496845e-12,
+          "failure": null
+        }
+      },
+      "diagnosticApi": {
+        "n": 5,
+        "medianMs": 4912.172375,
+        "q1Ms": 4874.626875,
+        "q3Ms": 5256.329458,
+        "iqrMs": 381.70258300000023,
+        "samplesMs": [
+          4739.736583,
+          4874.626875,
+          4912.172375,
+          5256.329458,
+          5537.644542
+        ]
+      },
+      "diagnosticControlApi": {
+        "n": 5,
+        "medianMs": 5715.058083,
+        "q1Ms": 5217.519333,
+        "q3Ms": 6129.987875,
+        "iqrMs": 912.4685419999996,
+        "samplesMs": [
+          5036.824834,
+          5217.519333,
+          5715.058083,
+          6129.987875,
+          7271.407125000001
+        ]
+      },
+      "diagnosticRepresentativeRun": 0,
+      "diagnosticRepresentativeFile": "classic-diagnostic-instrumented-3.json",
+      "diagnosticApiMs": 4912.172375,
+      "uninstrumentedAccountingApiMs": 3608.820791,
+      "diagnosticTransientMs": 4837.742625,
+      "exclusiveDiagnosticMs": {
+        "deviceStaticDynamic": 1307.748184999945,
+        "deviceCharge": 2899.2540190000627,
+        "companionAssembly": 98.29148999990139,
+        "factor": 219.01094900006865,
+        "solve": 88.3760079999247,
+        "newtonControl": 85.10019400010697,
+        "historyRestamp": 56.184243000003335,
+        "output": 3.002886000005674,
+        "stepControlSetupResidual": 80.77465099998153
+      },
+      "exclusivePercent": {
+        "deviceStaticDynamic": 27.032198410926107,
+        "deviceCharge": 59.92989383142438,
+        "companionAssembly": 2.0317635231762954,
+        "factor": 4.527131060430662,
+        "solve": 1.8268025988655132,
+        "newtonControl": 1.759088909780664,
+        "historyRestamp": 1.161373131130624,
+        "output": 0.06207204956476315,
+        "stepControlSetupResidual": 1.6696764847009928
+      },
+      "profileTop": [
+        {
+          "function": "stampG",
+          "line": 43407,
+          "column": 19,
+          "selfPercent": 14.267711974868115
+        },
+        {
+          "function": "(garbage collector)",
+          "line": 0,
+          "column": 0,
+          "selfPercent": 11.93974412210873
+        },
+        {
+          "function": "stampTransientCharge",
+          "line": 8465,
+          "column": 23,
+          "selfPercent": 10.51776017526846
+        },
+        {
+          "function": "getVoltage",
+          "line": 43416,
+          "column": 23,
+          "selfPercent": 9.383273582324579
+        },
+        {
+          "function": "stamp",
+          "line": 8278,
+          "column": 8,
+          "selfPercent": 9.161355004408206
+        },
+        {
+          "function": "evaluateChannel",
+          "line": 7861,
+          "column": 18,
+          "selfPercent": 7.643127645939664
+        },
+        {
+          "function": "buildCompanionSystem",
+          "line": 44057,
+          "column": 30,
+          "selfPercent": 6.122854229660546
+        },
+        {
+          "function": "evaluateCharges",
+          "line": 8567,
+          "column": 18,
+          "selfPercent": 4.882392334732959
+        },
+        {
+          "function": "stampStaticDevices",
+          "line": 43712,
+          "column": 28,
+          "selfPercent": 3.344570038001589
+        },
+        {
+          "function": "gradingFactors",
+          "line": 8584,
+          "column": 17,
+          "selfPercent": 3.33137558827441
+        },
+        {
+          "function": "refactorWithPivots",
+          "line": 42826,
+          "column": 21,
+          "selfPercent": 2.8253959843230003
+        },
+        {
+          "function": "factorize",
+          "line": 42317,
+          "column": 12,
+          "selfPercent": 2.35981290637528
+        },
+        {
+          "function": "stampB",
+          "line": 43410,
+          "column": 19,
+          "selfPercent": 2.142222527673588
+        },
+        {
+          "function": "terminalVoltages",
+          "line": 8238,
+          "column": 19,
+          "selfPercent": 1.9684125398161538
+        },
+        {
+          "function": "solveLinearized",
+          "line": 44359,
+          "column": 25,
+          "selfPercent": 1.3497948302414688
+        },
+        {
+          "function": "depletionCapacitance",
+          "line": 8602,
+          "column": 23,
+          "selfPercent": 1.2307037730617603
+        },
+        {
+          "function": "voltage7",
+          "line": 8568,
+          "column": 22,
+          "selfPercent": 1.0732884791993305
+        },
+        {
+          "function": "meyerHalf",
+          "line": 8432,
+          "column": 12,
+          "selfPercent": 0.9880360704253098
+        },
+        {
+          "function": "incrementalCharge",
+          "line": 2279,
+          "column": 20,
+          "selfPercent": 0.7104542274570991
+        },
+        {
+          "function": "select",
+          "line": 2463,
+          "column": 9,
+          "selfPercent": 0.5202757771150532
+        }
+      ],
+      "coldRatio": 9.5646019590752
+    }
+  }
+}
