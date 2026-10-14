@@ -1,0 +1,57 @@
+[
+  {
+    "file": "analysis/transient-driver.ts",
+    "function": "advanceSolution",
+    "bucket": "advance"
+  },
+  {
+    "file": "analysis/transient-driver.ts",
+    "function": "stampPrevB",
+    "bucket": "historyRestamp"
+  },
+  {
+    "file": "analysis/transient.ts",
+    "function": "solveTransient",
+    "bucket": "transient"
+  },
+  {
+    "file": "analysis/transient-step.ts",
+    "function": "attemptStep",
+    "bucket": "attempt"
+  },
+  {
+    "file": "analysis/transient-step.ts",
+    "call": "solver.factorize",
+    "bucket": "factor"
+  },
+  {
+    "file": "analysis/transient-step.ts",
+    "call": "solver.solve",
+    "bucket": "solve"
+  },
+  {
+    "file": "analysis/transient-columns.ts",
+    "function": "record",
+    "bucket": "output"
+  },
+  {
+    "file": "analysis/transient-columns.ts",
+    "function": "flush",
+    "bucket": "output"
+  },
+  {
+    "file": "mna/companion.ts",
+    "function": "buildCompanionSystem",
+    "bucket": "loadStamp"
+  },
+  {
+    "file": "mna/companion.ts",
+    "bucket": "deviceStaticDynamic",
+    "scope": "static and dynamic stamp dispatch block"
+  },
+  {
+    "file": "mna/companion.ts",
+    "bucket": "deviceCharge",
+    "scope": "charge stamp loop"
+  }
+]
