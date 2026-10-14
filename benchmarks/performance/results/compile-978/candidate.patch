@@ -1,0 +1,10 @@
+diff --git a/packages/core/tsup.config.ts b/packages/core/tsup.config.ts
+--- a/packages/core/tsup.config.ts
++++ b/packages/core/tsup.config.ts
+@@ -15,4 +15,6 @@ export default defineConfig({
+   },
+   clean: true,
+   sourcemap: true,
++  minify: true,
++  keepNames: true,
+ });

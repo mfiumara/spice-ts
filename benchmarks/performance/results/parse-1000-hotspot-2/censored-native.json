@@ -1,0 +1,19 @@
+{
+  "status": "censored",
+  "deadlineSeconds": 30,
+  "nativeStarted": {
+    "pid": 25537,
+    "startNs": "132480768895458"
+  },
+  "controllerError": "owned process group survived immediately after SIGKILL; subsequent ps found PID absent",
+  "nativePidAbsentOnLaterCheck": true,
+  "psOutput": "  PID  PPID  PGID STAT COMM\n",
+  "sourceLog": "cmos-run.log",
+  "exactParentWallUnavailable": true,
+  "firstAttempt": {
+    "directory": "aborted-nine-deck",
+    "deadlineSeconds": 30,
+    "controllerError": "PermissionError probing killpg after deadline",
+    "noCompleteReceipt": true
+  }
+}

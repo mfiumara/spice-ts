@@ -33,7 +33,7 @@ This is not a well-posed accuracy benchmark: V1,V4 and L1 impose redundant zero-
 |---|---|---|
 | ngspice-47 | error | KLU singular matrix mn1#source, gmin/source steps fail and final op dump contains NaNs/1e296; exits1. Sparse also reports singular l1#branch but exits0 with61 AC rows of zeros. |
 | ngspice master | error | Output identical to 47 (singular-matrix warnings; KLU vs Sparse disagree the same way). [ngspice pre-master-48 HEAD 3ef069fb (2026-10-09), built in scratch] |
-| spice-ts | unsupported | Unsupported .options field: 'klu' and 'sparse'. |
+| spice-ts | unsupported | #812 refresh d8ab9d33: both hash-verified inline variants first fail at ParseError line 2, Unsupported .options field klu/sparse. Native ngspice-47 KLU fails; Sparse completes AC but historical zero output is not a correctness oracle. No spice-ts metrics. Existing #812. |
 
 Reproduces on ngspice-47: yes. Check: KLU exits1 after singular/convergence failure; Sparse61 zero AC rows do not certify this redundant/floating DC network.
 

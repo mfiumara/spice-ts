@@ -2,6 +2,9 @@
 
 ## Outcome
 
+Historical #974 findings follow. The #994 correction and fresh rerun below
+restore the input waveform but retain the 8.708512476 V IC startup residual.
+
 No spice-ts core defect established. No core change, RED regression, tolerance change,
 benchmark-default change, or fix card is justified by these measurements. #974 remains
 open for independent exact-head review and supervisor disposition.
@@ -39,6 +42,66 @@ was changed.
 | corpus-e/lc-oscillator-transient | 59183b63dbfac31926743af5f11400f8cdad60be4b85878f0bf6e7dd99102ffd | 633b664ef94d6cdf258719b9b345ebd2ddb9b587fda26f0574d6ff50984dd1c3 |
 
 ## Baseline three-way metrics
+
+### #994 adapter correction and fresh Jimi rerun
+
+The current Xyce adapter maps the ngspice `SINE(...)` alias to native `SIN(...)`
+on independent voltage/current sources. DC, AC and sinusoid parameter values
+are preserved. The RED commit `c74ca905` reproduces the ignored waveform with
+both a deck assertion and a live Xyce transient assertion. New tests cover
+nonzero explicit DC, voltage/current sources, continuations and idempotence.
+
+Before and after Xyce deck snippets (only the keyword changes):
+
+    V_V2 10 0 dc 0.0 sine(0.0 0.3 440.0 0 0)
+    V_V2 10 0 dc 0.0 SIN(0.0 0.3 440.0 0 0)
+
+`V_V1 1 0 dc 9.0`, all three capacitor `IC=0` values, models, maxstep,
+solver settings and requested output columns remain unchanged. The rerun
+asserts that the translated deck equals the hash-pinned historical Xyce
+deck with precisely this spelling substitution. The ngspice input remains
+SHA256 `fc23c8e82e791dd0268d8e28086b60f9e470a20b3d774eb4b608a68b4e9d0f99`.
+No spice-ts core, tolerance, ngspice ledger or aggregate changed.
+
+Fresh ngspice-47 and XyceNF 7.10.0 runs, on the ngspice native grid with
+the existing linear alignment (243,504 matched points):
+
+| Jimi v(3), ngspice vs Xyce | Max abs (V) | RMS abs (V) |
+| --- | ---: | ---: |
+| Historical SINE deck, freshly executed | 8.708512476182351 | 0.22061564255273652 |
+| Current adapter SIN deck | 8.708512476182351 | 0.2037913679259536 |
+
+The corrected Xyce v(10) reaches -0.29999999983860437 to
+0.2999999999942702 V, versus identically zero before. The large v(3)
+peak does NOT disappear. It remains the previously isolated capacitor IC
+startup disagreement: ngspice v(3) starts at 0 V, Xyce at 8.708512476182351 V.
+The old receipt had invalid excitation semantics, but attributing its entire
+8.71 V peak to the SINE spelling was incorrect. This fix repairs excitation,
+not capacitor IC semantics or model parity. No score is relabelled as a win.
+
+`sine-994-report.json` records environment, adapter/input hashes, commands,
+native point counts, signal extrema/initial values, both grid directions,
+all requested signal metrics and native diagnostic output. Native full
+waveforms are not retained. Existing `report.json` and mutual-948 receipts
+remain historical and untouched. The #990 historical adapter source hash
+test now checks its recorded provenance rather than freezing today's entire
+adapter; its input/deck hash and current BJT translation checks remain active.
+
+Current reproduction:
+
+    pnpm install --frozen-lockfile
+    pnpm build
+    XYCE_BIN=/path/to/Xyce spice-heavy pnpm exec tsx benchmarks/reference/investigations/974/sine-994.ts
+    XYCE_BIN=/path/to/Xyce pnpm exec tsx --test benchmarks/reference/xyce.test.ts
+    pnpm exec tsx --test benchmarks/reference/compare.test.ts benchmarks/reference/investigations/974/receipt.test.ts
+
+The original `run.ts` below intentionally requires the old adapter to
+reproduce historical export bytes. Run that historical experiment at its
+original commit, not with the corrected adapter. The new runner executes
+the saved before-deck directly and today's adapter on the unchanged shared
+input. Adapter and receipt tests run in the existing offline reference CI gate.
+
+### Historical baseline (unchanged)
 
 Rows are target minus reference, aligned on the **target native grid** by the
 existing harness's linear interpolation. Relative errors use the reference

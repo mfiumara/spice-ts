@@ -21,6 +21,8 @@ import {
   type SampleSeries,
 } from '../../comparison-harness.js';
 import { pairPlots } from '../../plot-pairing.js';
+import { declaredSecondaryGrid } from '../../sweep-coordinates.js';
+import type { DotAnalysisRun } from '../../../packages/core/src/results.js';
 
 export const CLASSIC_REPORT_SCHEMA = 'spice-ts-classic-comparison/v1' as const;
 export type ClassicAnalysisType = ComparisonAnalysisType | 'pz' | 'noise' | 'disto';
@@ -350,7 +352,8 @@ export async function runNativeNgspice(input: Buffer, circuit: ClassicCircuit): 
     const analyses = parseNgspiceRaw(raw)
       .map(plot => {
         const type = analysisType(plot.plotName);
-        return type ? { type, plotName: plot.plotName, series: { grid: plot.grid, signals: plot.signals } } : null;
+        const secondaryGrid = type === 'dc' ? declaredSecondaryGrid(input.toString('utf8'), plot.plotName, plot.grid) : undefined;
+        return type ? { type, plotName: plot.plotName, series: { grid: plot.grid, signals: plot.signals, ...(secondaryGrid ? { secondaryGrid } : {}) } } : null;
       })
       .filter((analysis): analysis is EngineAnalysis => analysis !== null);
     if (analyses.length === 0) {
@@ -565,11 +568,30 @@ export async function runNativeSpiceTsEncoded<S>(
     const simulated = await core.simulate(text);
     const analyses: EncodedAnalysis<S>[] = [];
     const runs = simulated.control?.runs ?? [];
-    const results = runs.length > 0 ? runs : [{ plot: undefined, analysis: undefined, result: simulated }];
+    // The core also retains lowered straight-line .control runs in analyses[].
+    // Their source-order semantics are not the measured dot-card batch rule.
+    const hasControl = /^\s*\.control\b/im.test(text.split(/\r?\n/).slice(1).join('\n'));
+    const dotRuns = (hasControl ? [] : simulated.analyses ?? []) as DotAnalysisRun[];
+    const batchTypes = new Set(['ac', 'dc', 'op', 'tran']);
+    // Native retained runs are source ordered, ngspice-47 batch plots are reversed
+    // within type. See benchmarks/repeated-dot-1009/README.md (including diode DC).
+    const retained = dotRuns.filter(run => batchTypes.has(run.analysis)).sort((a, b) => a.index - b.index);
+    const remaining = new Map([...batchTypes].map(type => [type, retained.filter(run => run.analysis === type).length]));
+    const results = runs.length > 0 ? runs : dotRuns.length > 0 ? [
+      ...retained.map(run => {
+        const occurrence = remaining.get(run.analysis)!;
+        remaining.set(run.analysis, occurrence - 1);
+        return { ...run, plot: `dot:${run.analysis}:${occurrence}` };
+      }),
+      // Unmeasured types (noise/pz/disto) retain the legacy aggregate mapping.
+      { plot: undefined, analysis: undefined, result: simulated },
+    ] : [{ plot: undefined, analysis: undefined, result: simulated }];
     for (const run of results) {
       const result = run.result;
       const first = analyses.length;
-      for (const type of circuit.analyses) {
+      const types = run.plot?.startsWith('dot:') ? circuit.analyses.filter(type => type === run.analysis).slice(0, 1) : circuit.analyses;
+      for (const type of types) {
+        if (runs.length === 0 && dotRuns.length > 0 && run.analysis === undefined && batchTypes.has(type)) continue;
         if (run.analysis !== undefined && run.analysis !== type) continue;
         if (type === 'op' && result.dc) {
           const voltages = new Map([...result.dc.voltages].map(([name, value]: [string, number]) => [name, [value]]));
