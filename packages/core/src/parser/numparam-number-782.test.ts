@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { simulate } from '../simulate.js';
+import { formatNumber } from './preprocessor.js';
 
 /**
  * #782: measured with Homebrew ngspice-47 (Apple arm64):
@@ -35,6 +36,9 @@ Vq out 0 {q}
 .ends
 Xunits unitdefault units
 Xunitactual unitactual units q=0.05nF
+Vpos pos 0 {1000000000000000.5}
+Vneg neg 0 {-1000000000000000.5}
+Vsmall small 0 {0.10001373291015625}
 .op
 .end
 `;
@@ -54,6 +58,9 @@ const NGSPICE_BITS: Record<string, string> = {
   nested: '3dcb7cdfd9d7bdbd',
   unitdefault: '3dcb7cdfd9d7bdbd',
   unitactual: '3dcb7cdfd9d7bdbd',
+  pos: '430c6bf526340000',
+  neg: 'c30c6bf526340000',
+  small: '3fb99a7ffffffffc',
 };
 
 function bits(value: number): string {
@@ -69,4 +76,23 @@ describe('numparam number round-trip matches ngspice-47 bit-for-bit (#782)', () 
       expect(bits(result.dc!.voltage(node))).toBe(expected);
     });
   }
+});
+
+describe('numparam printf rounding across the double range', () => {
+  it.each([
+    [0, '0.000000000000000e+0'],
+    [-0, '-0.000000000000000e+0'],
+    [1, '1.000000000000000e+0'],
+    [1000000000000000.5, '1.000000000000000e+15'],
+    [-1000000000000000.5, '-1.000000000000000e+15'],
+    [1000000000000001.5, '1.000000000000002e+15'],
+    [0.10001373291015625, '1.000137329101562e-1'],
+    [1e20, '1.000000000000000e+20'],
+    [1e-20, '9.999999999999999e-21'],
+    [Number.MIN_VALUE, '4.940656458412465e-324'],
+    [2.2250738585072014e-308, '2.225073858507201e-308'],
+    [Number.MAX_VALUE, '1.797693134862316e+308'],
+  ])('formats %s with round-half-even', (value, expected) => {
+    expect(formatNumber(value)).toBe(expected);
+  });
 });
