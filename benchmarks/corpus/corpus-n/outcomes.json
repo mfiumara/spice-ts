@@ -27,7 +27,7 @@
     }
   ],
   "manifestSha256": "188778e6079cac1dd36c524b6f15fb113714a7941a1db8295499425c19c1a25d",
-  "coreTree": "926efe53f0ee2f2813987a1a66d9fc19bf4a20df",
+  "coreTree": "29064e078f962f00f680e3626b82f9b59a665df9",
   "tools": {
     "ngspice": "ngspice-47",
     "spiceTs": "0.3.0",
@@ -204,8 +204,8 @@
       "gapBucket": "directive: .pss",
       "comparisons": [],
       "runtime": {
-        "ngspiceChildWallMs": 2451.495875,
-        "spiceTsChildWallMs": 2610.232791
+        "ngspiceChildWallMs": 1491.6198329999997,
+        "spiceTsChildWallMs": 2411.4214160000006
       }
     },
     {
@@ -220,7 +220,7 @@
       "ngspice": {
         "status": "success",
         "analyses": [
-          "tran:24923"
+          "tran:24744"
         ]
       },
       "spiceTs": {
@@ -236,8 +236,8 @@
       "gapBucket": "expression: quoted/brace expressions in values (TEMPER, functions)",
       "comparisons": [],
       "runtime": {
-        "ngspiceChildWallMs": 3427.249917,
-        "spiceTsChildWallMs": 2783.63825
+        "ngspiceChildWallMs": 1922.7816249999996,
+        "spiceTsChildWallMs": 1784.03625
       }
     },
     {
@@ -827,8 +827,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 1403.5416669999995,
-        "spiceTsChildWallMs": 3604.5671249999996
+        "ngspiceChildWallMs": 955.8536670000012,
+        "spiceTsChildWallMs": 2049.012541
       }
     },
     {
@@ -1145,8 +1145,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 5830.532916,
-        "spiceTsChildWallMs": 13879.683625000001
+        "ngspiceChildWallMs": 2317.7549580000014,
+        "spiceTsChildWallMs": 8877.305583999998
       }
     },
     {
@@ -1177,8 +1177,8 @@
       "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)",
       "comparisons": [],
       "runtime": {
-        "ngspiceChildWallMs": 3708.2002090000024,
-        "spiceTsChildWallMs": 3064.983207999998
+        "ngspiceChildWallMs": 5496.1314170000005,
+        "spiceTsChildWallMs": 4027.1005000000005
       }
     },
     {
@@ -1209,8 +1209,8 @@
       "gapBucket": "model: VDMOS power MOSFET",
       "comparisons": [],
       "runtime": {
-        "ngspiceChildWallMs": 1222.3242080000055,
-        "spiceTsChildWallMs": 2835.694000000003
+        "ngspiceChildWallMs": 1937.0352909999965,
+        "spiceTsChildWallMs": 3997.7401670000036
       }
     },
     {
@@ -1241,8 +1241,8 @@
       "gapBucket": "model: VDMOS power MOSFET",
       "comparisons": [],
       "runtime": {
-        "ngspiceChildWallMs": 1194.2434169999979,
-        "spiceTsChildWallMs": 2768.222041000001
+        "ngspiceChildWallMs": 1397.6391250000015,
+        "spiceTsChildWallMs": 3854.443790999998
       }
     },
     {
@@ -1273,8 +1273,8 @@
       "gapBucket": "model: VDMOS power MOSFET",
       "comparisons": [],
       "runtime": {
-        "ngspiceChildWallMs": 1244.3142920000028,
-        "spiceTsChildWallMs": 2839.412707999996
+        "ngspiceChildWallMs": 1832.6989579999936,
+        "spiceTsChildWallMs": 4240.841625000001
       }
     },
     {
@@ -1305,8 +1305,8 @@
       "gapBucket": "model: VDMOS power MOSFET",
       "comparisons": [],
       "runtime": {
-        "ngspiceChildWallMs": 1138.415915999998,
-        "spiceTsChildWallMs": 2918.603959
+        "ngspiceChildWallMs": 1990.2189999999973,
+        "spiceTsChildWallMs": 2385.901291000002
       }
     },
     {
@@ -1337,8 +1337,8 @@
       "gapBucket": "model: VDMOS power MOSFET",
       "comparisons": [],
       "runtime": {
-        "ngspiceChildWallMs": 1171.5619589999988,
-        "spiceTsChildWallMs": 2816.577124999996
+        "ngspiceChildWallMs": 606.8021660000013,
+        "spiceTsChildWallMs": 1508.8755419999943
       }
     },
     {
@@ -1369,8 +1369,8 @@
       "gapBucket": "model: VDMOS power MOSFET",
       "comparisons": [],
       "runtime": {
-        "ngspiceChildWallMs": 1257.2144169999956,
-        "spiceTsChildWallMs": 3700.404416000005
+        "ngspiceChildWallMs": 614.3125,
+        "spiceTsChildWallMs": 1536.0577090000006
       }
     },
     {
@@ -1401,8 +1401,8 @@
       "gapBucket": "model: VDMOS power MOSFET",
       "comparisons": [],
       "runtime": {
-        "ngspiceChildWallMs": 1729.5363329999964,
-        "spiceTsChildWallMs": 3238.6557500000054
+        "ngspiceChildWallMs": 666.8010000000068,
+        "spiceTsChildWallMs": 1529.2133749999994
       }
     },
     {
@@ -1433,8 +1433,8 @@
       "gapBucket": "model: VDMOS power MOSFET",
       "comparisons": [],
       "runtime": {
-        "ngspiceChildWallMs": 1270.9706250000017,
-        "spiceTsChildWallMs": 2853.329958999995
+        "ngspiceChildWallMs": 671.3029999999999,
+        "spiceTsChildWallMs": 1668.8704999999973
       }
     },
     {
@@ -2884,8 +2884,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 1216.5734590000066,
-        "spiceTsChildWallMs": 2878.9829579999932
+        "ngspiceChildWallMs": 639.6060829999988,
+        "spiceTsChildWallMs": 1549.5315409999967
       }
     },
     {
@@ -4335,8 +4335,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 1258.2242079999996,
-        "spiceTsChildWallMs": 3167.664625000005
+        "ngspiceChildWallMs": 656.2277089999989,
+        "spiceTsChildWallMs": 1604.5753750000003
       }
     },
     {
@@ -4452,8 +4452,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 1109.5266669999983,
-        "spiceTsChildWallMs": 2592.4380410000012
+        "ngspiceChildWallMs": 662.7715830000088,
+        "spiceTsChildWallMs": 2011.4242499999964
       }
     },
     {
@@ -4484,8 +4484,8 @@
       "gapBucket": "device: BJT instance IC= initial conditions",
       "comparisons": [],
       "runtime": {
-        "ngspiceChildWallMs": 1283.1366249999992,
-        "spiceTsChildWallMs": 2608.691583000007
+        "ngspiceChildWallMs": 662.1527500000084,
+        "spiceTsChildWallMs": 1667.3070420000004
       }
     },
     {
@@ -20870,8 +20870,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 5944.141541999998,
-        "spiceTsChildWallMs": 13326.980624999997
+        "ngspiceChildWallMs": 3404.455375000005,
+        "spiceTsChildWallMs": 9671.536292000004
       }
     },
     {
@@ -20902,8 +20902,8 @@
       "gapBucket": "execution: other failure",
       "comparisons": [],
       "runtime": {
-        "ngspiceChildWallMs": 60457.104084000006,
-        "spiceTsChildWallMs": 119008.46624999997
+        "ngspiceChildWallMs": 50454.727708000006,
+        "spiceTsChildWallMs": 119008.59658400001
       }
     },
     {
@@ -20934,8 +20934,8 @@
       "gapBucket": "convergence",
       "comparisons": [],
       "runtime": {
-        "ngspiceChildWallMs": 7414.764291999978,
-        "spiceTsChildWallMs": 1570.7117089999956
+        "ngspiceChildWallMs": 8827.276167000004,
+        "spiceTsChildWallMs": 1595.7411250000005
       }
     },
     {
@@ -26155,8 +26155,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 1505.8222500000265,
-        "spiceTsChildWallMs": 5905.537417000043
+        "ngspiceChildWallMs": 1670.972208000021,
+        "spiceTsChildWallMs": 6743.656957999978
       }
     },
     {
@@ -38220,8 +38220,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 22645.37950000004,
-        "spiceTsChildWallMs": 61574.577416000015
+        "ngspiceChildWallMs": 28077.211167,
+        "spiceTsChildWallMs": 87120.67966700002
       }
     },
     {
@@ -53475,8 +53475,8 @@
         }
       ],
       "runtime": {
-        "ngspiceChildWallMs": 54561.54470799997,
-        "spiceTsChildWallMs": 108785.92570799997
+        "ngspiceChildWallMs": 39485.800208,
+        "spiceTsChildWallMs": 111226.23658299999
       }
     },
     {
@@ -53507,8 +53507,8 @@
       "gapBucket": "execution: other failure",
       "comparisons": [],
       "runtime": {
-        "ngspiceChildWallMs": 40433.95783299999,
-        "spiceTsChildWallMs": 119009.45170799992
+        "ngspiceChildWallMs": 39128.373040999984,
+        "spiceTsChildWallMs": 119009.27341699996
       }
     }
   ],
@@ -53596,5 +53596,5 @@
       ]
     }
   ],
-  "outcomeSha256": "48c1f28e40bcc5638cda4aaff942ffb7f800b85e68a5df65c4effbc550d1332a"
+  "outcomeSha256": "342b41f2b8d24992e4c8592e392e45dc241b9cb116d7b8676362b92b46c15178"
 }

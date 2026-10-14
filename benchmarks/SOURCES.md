@@ -1243,4 +1243,3 @@ Reproduce parity with `spice-heavy pnpm exec tsx benchmarks/corpus/corpus-n/pari
 offline guards with `pnpm exec tsx --test benchmarks/corpus/corpus-n/corpus-n.test.ts`.
 All 87 non-reference BSD probes, every Xyce probe failure, static exclusions
 and deferred candidates are retained in the batch's survey/probe receipts.
-

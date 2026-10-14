@@ -8,6 +8,7 @@ import { gapBucket, parityGaps } from '../corpus-l/parity.js';
 import { ROOT, REVISION, hash, selectedFamily } from './survey.js';
 import { XYCE_REVISION, selectedXyceFamily } from './survey-xyce.js';
 import { renderMarkdown, report } from './parity.js';
+import { renderIntegration } from './integration.js';
 
 test('24 original standalone BSD/GPL decks have pinned provenance without duplicate padding', async () => {
   const manifest = JSON.parse(await readFile(`${ROOT}/manifest.json`, 'utf8'));
@@ -106,4 +107,18 @@ test('all outcomes and losses retained, hashed, uniformly compared and rendered'
       }
     }
   }
+});
+
+test('pre-rebase evidence remains intact and integrated results use the identical fixtures and policy', async () => {
+  const before = JSON.parse(await readFile(`${ROOT}/outcomes-before-rebase.json`, 'utf8'));
+  const after = JSON.parse(await readFile(`${ROOT}/outcomes.json`, 'utf8'));
+  assert.equal(before.coreTree, '926efe53f0ee2f2813987a1a66d9fc19bf4a20df');
+  assert.equal(after.coreTree, '29064e078f962f00f680e3626b82f9b59a665df9');
+  assert.equal(before.outcomeSha256, '48c1f28e40bcc5638cda4aaff942ffb7f800b85e68a5df65c4effbc550d1332a');
+  assert.equal(before.outcomeSha256, outcomeDigest(before));
+  assert.equal(before.manifestSha256, after.manifestSha256);
+  assert.deepEqual(before.policy, after.policy);
+  assert.deepEqual(before.fixtures.map((r: { sha256: string }) => r.sha256), after.fixtures.map((r: { sha256: string }) => r.sha256));
+  assert.equal(await readFile(`${ROOT}/README-before-rebase.md`, 'utf8'), renderMarkdown(before));
+  assert.equal(await readFile(`${ROOT}/INTEGRATION.md`, 'utf8'), renderIntegration(before, after));
 });
