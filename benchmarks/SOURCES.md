@@ -1,5 +1,17 @@
 # Benchmark sources
 
+## BJT pre-charge residual boundary experiment (#1037)
+
+`benchmarks/bjt-precharge-1037/` reuses the original MIT-licensed rest and
+nanosecond-control strings in `transient-centered-1037.fixtures.ts`, plus an
+original MIT PWL-source control derived only by replacing the voltage source.
+No vendor deck, library or source code is redistributed. Identical deck bytes
+and SHA-256 pins, full native saved-junction rows and all TS charge-stamp terms
+are in its receipt. The instance-local prototype is not a production fix.
+The ngspice-47 load-order comparison uses the read-only upstream reference
+https://github.com/imr/ngspice/blob/ngspice-47/src/spicelib/devices/bjt/bjtload.c
+(source SHA-256 and line references in the experiment README).
+
 ## BJT post-assembly centered Newton diagnosis (#1037)
 
 The rest reduction and nanosecond-grid control in

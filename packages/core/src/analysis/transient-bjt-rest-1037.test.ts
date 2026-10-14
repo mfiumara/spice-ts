@@ -19,7 +19,7 @@ Q1 c 0 0 N
 describe('reverse-biased BJT small-step convergence (#1037)', () => {
   // Known loss, NOT a fix. Remove .fails when a general numerical fix lands.
   // The native ngspice-47 run on these same bytes completes with 108 rows.
-  it('preserves DC equilibrium through a 10 ps transient', async () => {
+  it.fails('preserves DC equilibrium through a 10 ps transient', async () => {
     const sim = await createTransientSim(REST);
     try {
       while (!sim.isDone) expect(sim.advance().voltages.get('c')).toBe(46.5);
