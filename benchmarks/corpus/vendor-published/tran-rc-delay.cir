@@ -1,0 +1,7 @@
+* Reconstructed published case: tran-rc-delay
+V1 1 0 DC 10
+C1 1 2 47u IC=0
+C2 1 2 22u IC=0
+R1 2 0 3.3k
+.tran .05 1 uic
+.end

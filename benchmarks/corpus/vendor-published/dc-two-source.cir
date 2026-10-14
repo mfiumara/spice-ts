@@ -1,0 +1,8 @@
+* Reconstructed published case: dc-two-source
+V1 1 0 DC 28
+V2 3 0 DC 7
+R1 1 2 4
+R2 2 0 2
+R3 2 3 1
+.dc V1 28 28 1
+.end

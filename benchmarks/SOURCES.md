@@ -1,5 +1,28 @@
 # Benchmark sources
 
+## Published numerical reference baseline (#1113)
+
+`benchmarks/corpus/vendor-published/` contains 20 normalized reconstructions and
+270 extracted numerical observations from Tony R. Kuphaldt, *Lessons in Electric
+Circuits*, openly published at https://www.ibiblio.org/kuphaldt/electricCircuits/.
+The seven cited chapter footers link to [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
+via the [licence appendix](https://www.ibiblio.org/kuphaldt/electricCircuits/Ref/REF_A3.html).
+Attribution and normalization changes are retained; the author does not endorse
+this comparison. Per-case URLs, retrieval dates,
+HTML SHA-256, example titles, zero-based PRE locations, assumptions and retained
+printed digits are in `manifest.json`; `fetch-references.py` reproduces numerical
+extraction without storing chapter HTML, PDFs or figures. Original topology and
+component values are retained; legacy output/syntax normalization is documented.
+These are historical SPICE2g6 simulation tables, not vendor measurements. The
+requested directory name is an umbrella for the issue's permitted textbook
+examples. One prose/netlist conflict is excluded from totals but still run and
+reported. Identical reconstructed bytes are passed to both modern engines;
+there is no calibration, restricted model, commercial install or account.
+Published simulated and measured reference fields are separate (measured: none).
+See [VENDOR_PUBLISHED.md](VENDOR_PUBLISHED.md) for all points, uncertainty policy,
+losses and the coverage boundary. Source attribution is retained; newly authored
+runner/tests are MIT project work, not re-licensed source chapters.
+
 ## Floating diode OP recovery experiments (#917)
 
 [floating-island-recovery-917](floating-island-recovery-917/README.md) reuses the

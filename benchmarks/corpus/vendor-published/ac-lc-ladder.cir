@@ -1,0 +1,9 @@
+* Reconstructed published case: ac-lc-ladder
+V1 2 1 AC 24
+V2 1 0 DC 24
+RLOAD 4 0 1k
+L1 2 3 100m
+L2 3 4 250m
+C1 3 0 100u
+.ac lin 30 500 15k
+.end

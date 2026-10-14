@@ -1,0 +1,9 @@
+* Reconstructed published case: ac-multiple-source
+V1 1 0 AC 55 0
+V2 4 0 AC 43 25
+L1 1 2 450m
+C1 2 0 330u
+L2 2 3 150m
+RBOGUS 3 4 1e-12
+.ac lin 1 30 30
+.end

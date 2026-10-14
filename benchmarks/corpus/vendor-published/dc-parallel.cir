@@ -1,0 +1,10 @@
+* Reconstructed published case: dc-parallel
+V1 1 0 DC 9
+R1 2 0 10k
+R2 3 0 2k
+R3 4 0 1k
+VR1 1 2 DC 0
+VR2 1 3 DC 0
+VR3 1 4 DC 0
+.dc V1 9 9 1
+.end

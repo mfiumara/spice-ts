@@ -1,0 +1,11 @@
+* Reconstructed published case: ac-mixed-rlc
+V1 1 0 AC 120
+VIT 1 2 AC 0
+VILC 3 4 AC 0
+VIR 3 6 AC 0
+C1 2 3 4.7u
+L 4 5 650m
+C2 5 0 1.5u
+R 6 0 470
+.ac lin 1 60 60
+.end

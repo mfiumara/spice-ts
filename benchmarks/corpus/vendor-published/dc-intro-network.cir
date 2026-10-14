@@ -1,0 +1,7 @@
+* Reconstructed published case: dc-intro-network
+V1 1 0 DC 15
+R1 1 0 2.2k
+R2 1 2 3.3k
+R3 2 0 150
+.op
+.end

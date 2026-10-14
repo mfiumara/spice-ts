@@ -1,0 +1,6 @@
+* Reconstructed published case: ac-series-rc
+V1 1 0 AC 10
+R1 1 2 5
+C1 2 0 100u
+.ac lin 1 60 60
+.end

@@ -1,0 +1,12 @@
+* Reconstructed published case: ac-parallel-rlc
+V1 1 0 AC 120
+VI 1 2 AC 0
+VIR 2 3 AC 0
+VIL 2 4 AC 0
+RBOGUS 4 5 1e-12
+VIC 2 6 AC 0
+R1 3 0 250
+L1 5 0 650m
+C1 6 0 1.5u
+.ac lin 1 60 60
+.end

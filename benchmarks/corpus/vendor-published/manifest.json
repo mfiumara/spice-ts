@@ -1,0 +1,3368 @@
+{
+  "schemaVersion": 1,
+  "cases": [
+    {
+      "id": "dc-single-resistor",
+      "analysis": "op",
+      "netlist": "dc-single-resistor.cir",
+      "netlistSha256": "af8b109b4f03d61224bd19e1e46eba02b48d64583fcc256983d61d6fa736fd43",
+      "source": {
+        "url": "https://www.ibiblio.org/kuphaldt/electricCircuits/DC/DC_2.html",
+        "retrieved": "2026-10-14",
+        "author": "Tony R. Kuphaldt",
+        "title": "Lessons in Electric Circuits",
+        "example": "my first circuit                                                                ",
+        "circuitPre": 4,
+        "resultPres": [
+          5,
+          6
+        ],
+        "pageSha256": "b7fab27dcdcf1391b553bf23ba64b7adc09afa6f2fa568c059099b989dd85821",
+        "licence": "CC-BY-4.0; chapter footer links to licence appendix. Attribution: Tony R. Kuphaldt, Lessons in Electric Circuits. Adapted component reconstructions; changes in assumptions. No endorsement; no figures/PDFs/HTML redistributed.",
+        "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "licenceAppendix": "https://www.ibiblio.org/kuphaldt/electricCircuits/Ref/REF_A3.html"
+      },
+      "referenceKind": "published-simulation",
+      "measuredReference": null,
+      "extraction": "HTML PRE numeric table transcription; zero-based PRE locations; uncertainty is half of final displayed digit. No plot digitization.",
+      "assumptions": [
+        "Original node numbers, polarity and ideal component values retained; names capitalized.",
+        "Legacy print/plot cards replaced by native raw output; explicit .op added where the publication relies on implicit OP.",
+        "No tolerance overrides; no model calibration. Published AC amplitude convention retained, not converted to RMS or peak."
+      ],
+      "exclusion": null,
+      "points": [
+        {
+          "signal": "v(1)",
+          "coordinate": 0,
+          "publishedToken": "10.0000",
+          "published": 10.0,
+          "roundingHalfWidth": 5e-05,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "i(v)",
+          "coordinate": 0,
+          "publishedToken": "-2.000E+00",
+          "published": -2.0,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "A",
+          "quantity": "real"
+        }
+      ]
+    },
+    {
+      "id": "dc-series",
+      "analysis": "dc",
+      "netlist": "dc-series.cir",
+      "netlistSha256": "1cd6777055a39100e8099aeee4acdd3d0451d0b6d8a98b5a7166c4458d64f38c",
+      "source": {
+        "url": "https://www.ibiblio.org/kuphaldt/electricCircuits/DC/DC_5.html",
+        "retrieved": "2026-10-14",
+        "author": "Tony R. Kuphaldt",
+        "title": "Lessons in Electric Circuits",
+        "example": "series circuit",
+        "circuitPre": 0,
+        "resultPres": [
+          1
+        ],
+        "pageSha256": "97dc858c3f7e218e95dfe691d84bd934fe62836e681d0fe890e715f851462533",
+        "licence": "CC-BY-4.0; chapter footer links to licence appendix. Attribution: Tony R. Kuphaldt, Lessons in Electric Circuits. Adapted component reconstructions; changes in assumptions. No endorsement; no figures/PDFs/HTML redistributed.",
+        "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "licenceAppendix": "https://www.ibiblio.org/kuphaldt/electricCircuits/Ref/REF_A3.html"
+      },
+      "referenceKind": "published-simulation",
+      "measuredReference": null,
+      "extraction": "HTML PRE numeric table transcription; zero-based PRE locations; uncertainty is half of final displayed digit. No plot digitization.",
+      "assumptions": [
+        "Original node numbers, polarity and ideal component values retained; names capitalized.",
+        "Legacy print/plot cards replaced by native raw output; explicit .op added where the publication relies on implicit OP.",
+        "No tolerance overrides; no model calibration. Published AC amplitude convention retained, not converted to RMS or peak.",
+        "Fill omitted initial source DC value with sweep start; published .dc sweep is unchanged."
+      ],
+      "exclusion": null,
+      "points": [
+        {
+          "signal": "v(1,2)",
+          "coordinate": 9.0,
+          "publishedToken": "1.500E+00",
+          "published": 1.5,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 9.0,
+          "publishedToken": "5.000E+00",
+          "published": 5.0,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 9.0,
+          "publishedToken": "2.500E+00",
+          "published": 2.5,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "i(v1)",
+          "coordinate": 9.0,
+          "publishedToken": "-5.000E-04",
+          "published": -0.0005,
+          "roundingHalfWidth": 5e-08,
+          "digitizationUncertainty": 0,
+          "unit": "A",
+          "quantity": "real"
+        }
+      ]
+    },
+    {
+      "id": "dc-parallel",
+      "analysis": "dc",
+      "netlist": "dc-parallel.cir",
+      "netlistSha256": "7ccdd6c88b4ac24699ed6678805c847dbc62a5adc4855e72907b65136a876ece",
+      "source": {
+        "url": "https://www.ibiblio.org/kuphaldt/electricCircuits/DC/DC_5.html",
+        "retrieved": "2026-10-14",
+        "author": "Tony R. Kuphaldt",
+        "title": "Lessons in Electric Circuits",
+        "example": "Parallel circuit",
+        "circuitPre": 2,
+        "resultPres": [
+          3,
+          4
+        ],
+        "pageSha256": "97dc858c3f7e218e95dfe691d84bd934fe62836e681d0fe890e715f851462533",
+        "licence": "CC-BY-4.0; chapter footer links to licence appendix. Attribution: Tony R. Kuphaldt, Lessons in Electric Circuits. Adapted component reconstructions; changes in assumptions. No endorsement; no figures/PDFs/HTML redistributed.",
+        "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "licenceAppendix": "https://www.ibiblio.org/kuphaldt/electricCircuits/Ref/REF_A3.html"
+      },
+      "referenceKind": "published-simulation",
+      "measuredReference": null,
+      "extraction": "HTML PRE numeric table transcription; zero-based PRE locations; uncertainty is half of final displayed digit. No plot digitization.",
+      "assumptions": [
+        "Original node numbers, polarity and ideal component values retained; names capitalized.",
+        "Legacy print/plot cards replaced by native raw output; explicit .op added where the publication relies on implicit OP.",
+        "No tolerance overrides; no model calibration. Published AC amplitude convention retained, not converted to RMS or peak.",
+        "Fill omitted initial source DC value with sweep start; published .dc sweep is unchanged."
+      ],
+      "exclusion": null,
+      "points": [
+        {
+          "signal": "v(2)",
+          "coordinate": 9.0,
+          "publishedToken": "9.000E+00",
+          "published": 9.0,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 9.0,
+          "publishedToken": "9.000E+00",
+          "published": 9.0,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(4)",
+          "coordinate": 9.0,
+          "publishedToken": "9.000E+00",
+          "published": 9.0,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "i(vr1)",
+          "coordinate": 9.0,
+          "publishedToken": "9.000E-04",
+          "published": 0.0009,
+          "roundingHalfWidth": 5e-08,
+          "digitizationUncertainty": 0,
+          "unit": "A",
+          "quantity": "real"
+        },
+        {
+          "signal": "i(vr2)",
+          "coordinate": 9.0,
+          "publishedToken": "4.500E-03",
+          "published": 0.0045,
+          "roundingHalfWidth": 5e-07,
+          "digitizationUncertainty": 0,
+          "unit": "A",
+          "quantity": "real"
+        },
+        {
+          "signal": "i(vr3)",
+          "coordinate": 9.0,
+          "publishedToken": "9.000E-03",
+          "published": 0.009,
+          "roundingHalfWidth": 5e-07,
+          "digitizationUncertainty": 0,
+          "unit": "A",
+          "quantity": "real"
+        }
+      ]
+    },
+    {
+      "id": "dc-two-source",
+      "analysis": "dc",
+      "netlist": "dc-two-source.cir",
+      "netlistSha256": "2637803b81f57e81caf105746ab556ef147acd7ceefb7da76c33a5d5074050f9",
+      "source": {
+        "url": "https://www.ibiblio.org/kuphaldt/electricCircuits/DC/DC_10.html",
+        "retrieved": "2026-10-14",
+        "author": "Tony R. Kuphaldt",
+        "title": "Lessons in Electric Circuits",
+        "example": "network analysis example   ",
+        "circuitPre": 0,
+        "resultPres": [
+          1
+        ],
+        "pageSha256": "08bd89621e43b6396b546c6fdb589f97415d91821a422285ba3d34d0e493180e",
+        "licence": "CC-BY-4.0; chapter footer links to licence appendix. Attribution: Tony R. Kuphaldt, Lessons in Electric Circuits. Adapted component reconstructions; changes in assumptions. No endorsement; no figures/PDFs/HTML redistributed.",
+        "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "licenceAppendix": "https://www.ibiblio.org/kuphaldt/electricCircuits/Ref/REF_A3.html"
+      },
+      "referenceKind": "published-simulation",
+      "measuredReference": null,
+      "extraction": "HTML PRE numeric table transcription; zero-based PRE locations; uncertainty is half of final displayed digit. No plot digitization.",
+      "assumptions": [
+        "Original node numbers, polarity and ideal component values retained; names capitalized.",
+        "Legacy print/plot cards replaced by native raw output; explicit .op added where the publication relies on implicit OP.",
+        "No tolerance overrides; no model calibration. Published AC amplitude convention retained, not converted to RMS or peak.",
+        "Fill omitted initial source DC value with sweep start; published .dc sweep is unchanged."
+      ],
+      "exclusion": null,
+      "points": [
+        {
+          "signal": "v(1,2)",
+          "coordinate": 28.0,
+          "publishedToken": "2.000E+01",
+          "published": 20.0,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2)",
+          "coordinate": 28.0,
+          "publishedToken": "8.000E+00",
+          "published": 8.0,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 28.0,
+          "publishedToken": "1.000E+00",
+          "published": 1.0,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        }
+      ]
+    },
+    {
+      "id": "dc-wheatstone",
+      "analysis": "dc",
+      "netlist": "dc-wheatstone.cir",
+      "netlistSha256": "7c082639e2e08c211e4817732f67641683646a70db45f3c9f9fe5eebefa118ec",
+      "source": {
+        "url": "https://www.ibiblio.org/kuphaldt/electricCircuits/DC/DC_10.html",
+        "retrieved": "2026-10-14",
+        "author": "Tony R. Kuphaldt",
+        "title": "Lessons in Electric Circuits",
+        "example": "unbalanced wheatstone bridge   ",
+        "circuitPre": 3,
+        "resultPres": [
+          4
+        ],
+        "pageSha256": "08bd89621e43b6396b546c6fdb589f97415d91821a422285ba3d34d0e493180e",
+        "licence": "CC-BY-4.0; chapter footer links to licence appendix. Attribution: Tony R. Kuphaldt, Lessons in Electric Circuits. Adapted component reconstructions; changes in assumptions. No endorsement; no figures/PDFs/HTML redistributed.",
+        "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "licenceAppendix": "https://www.ibiblio.org/kuphaldt/electricCircuits/Ref/REF_A3.html"
+      },
+      "referenceKind": "published-simulation",
+      "measuredReference": null,
+      "extraction": "HTML PRE numeric table transcription; zero-based PRE locations; uncertainty is half of final displayed digit. No plot digitization.",
+      "assumptions": [
+        "Original node numbers, polarity and ideal component values retained; names capitalized.",
+        "Legacy print/plot cards replaced by native raw output; explicit .op added where the publication relies on implicit OP.",
+        "No tolerance overrides; no model calibration. Published AC amplitude convention retained, not converted to RMS or peak.",
+        "Fill omitted initial source DC value with sweep start; published .dc sweep is unchanged."
+      ],
+      "exclusion": null,
+      "points": [
+        {
+          "signal": "v(1,2)",
+          "coordinate": 24.0,
+          "publishedToken": "6.345E+00",
+          "published": 6.345,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(1,3)",
+          "coordinate": 24.0,
+          "publishedToken": "4.690E+00",
+          "published": 4.69,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3,2)",
+          "coordinate": 24.0,
+          "publishedToken": "1.655E+00",
+          "published": 1.655,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2)",
+          "coordinate": 24.0,
+          "publishedToken": "1.766E+01",
+          "published": 17.66,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 24.0,
+          "publishedToken": "1.931E+01",
+          "published": 19.31,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        }
+      ]
+    },
+    {
+      "id": "ac-series-rl",
+      "analysis": "ac",
+      "netlist": "ac-series-rl.cir",
+      "netlistSha256": "e6f90571418a25a2b8938149d6a5c1365e1e5df0e031096f4b03bf3b5184b15e",
+      "source": {
+        "url": "https://www.ibiblio.org/kuphaldt/electricCircuits/AC/AC_3.html",
+        "retrieved": "2026-10-14",
+        "author": "Tony R. Kuphaldt",
+        "title": "Lessons in Electric Circuits",
+        "example": "ac r-l circuit   ",
+        "circuitPre": 0,
+        "resultPres": [
+          1
+        ],
+        "pageSha256": "7931b16a203eff9374ba224cdcc31547efc9c62c34751a0cba69c845f3fdac24",
+        "licence": "CC-BY-4.0; chapter footer links to licence appendix. Attribution: Tony R. Kuphaldt, Lessons in Electric Circuits. Adapted component reconstructions; changes in assumptions. No endorsement; no figures/PDFs/HTML redistributed.",
+        "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "licenceAppendix": "https://www.ibiblio.org/kuphaldt/electricCircuits/Ref/REF_A3.html"
+      },
+      "referenceKind": "published-simulation",
+      "measuredReference": null,
+      "extraction": "HTML PRE numeric table transcription; zero-based PRE locations; uncertainty is half of final displayed digit. No plot digitization.",
+      "assumptions": [
+        "Original node numbers, polarity and ideal component values retained; names capitalized.",
+        "Legacy print/plot cards replaced by native raw output; explicit .op added where the publication relies on implicit OP.",
+        "No tolerance overrides; no model calibration. Published AC amplitude convention retained, not converted to RMS or peak.",
+        "Remove incomplete trailing SIN token from AC-only voltage sources; retain AC amplitude and phase."
+      ],
+      "exclusion": null,
+      "points": [
+        {
+          "signal": "v(1,2)",
+          "coordinate": 60.0,
+          "publishedToken": "7.985E+00",
+          "published": 7.985,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "v(2)",
+          "coordinate": 60.0,
+          "publishedToken": "6.020E+00",
+          "published": 6.02,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "i(v1)",
+          "coordinate": 60.0,
+          "publishedToken": "1.597E+00",
+          "published": 1.597,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "A",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "vp(1,2)",
+          "coordinate": 60.0,
+          "publishedToken": "-3.702E+01",
+          "published": -37.02,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "degree",
+          "quantity": "phase"
+        },
+        {
+          "signal": "vp(2)",
+          "coordinate": 60.0,
+          "publishedToken": "5.298E+01",
+          "published": 52.98,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "degree",
+          "quantity": "phase"
+        },
+        {
+          "signal": "ip(v1)",
+          "coordinate": 60.0,
+          "publishedToken": "1.430E+02",
+          "published": 143.0,
+          "roundingHalfWidth": 0.05,
+          "digitizationUncertainty": 0,
+          "unit": "degree",
+          "quantity": "phase"
+        }
+      ]
+    },
+    {
+      "id": "ac-series-rc",
+      "analysis": "ac",
+      "netlist": "ac-series-rc.cir",
+      "netlistSha256": "1cf89fe69dc214403bd918534afc03f33cfbf20e2a76f76023f1f81792fa6ab5",
+      "source": {
+        "url": "https://www.ibiblio.org/kuphaldt/electricCircuits/AC/AC_4.html",
+        "retrieved": "2026-10-14",
+        "author": "Tony R. Kuphaldt",
+        "title": "Lessons in Electric Circuits",
+        "example": "ac r-c circuit   ",
+        "circuitPre": 0,
+        "resultPres": [
+          1
+        ],
+        "pageSha256": "7c4afbae2f6637c7d957ee269cbf5b9de28604266e20d9c886890f0c8c0709f4",
+        "licence": "CC-BY-4.0; chapter footer links to licence appendix. Attribution: Tony R. Kuphaldt, Lessons in Electric Circuits. Adapted component reconstructions; changes in assumptions. No endorsement; no figures/PDFs/HTML redistributed.",
+        "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "licenceAppendix": "https://www.ibiblio.org/kuphaldt/electricCircuits/Ref/REF_A3.html"
+      },
+      "referenceKind": "published-simulation",
+      "measuredReference": null,
+      "extraction": "HTML PRE numeric table transcription; zero-based PRE locations; uncertainty is half of final displayed digit. No plot digitization.",
+      "assumptions": [
+        "Original node numbers, polarity and ideal component values retained; names capitalized.",
+        "Legacy print/plot cards replaced by native raw output; explicit .op added where the publication relies on implicit OP.",
+        "No tolerance overrides; no model calibration. Published AC amplitude convention retained, not converted to RMS or peak.",
+        "Remove incomplete trailing SIN token from AC-only voltage sources; retain AC amplitude and phase."
+      ],
+      "exclusion": null,
+      "points": [
+        {
+          "signal": "v(1,2)",
+          "coordinate": 60.0,
+          "publishedToken": "1.852E+00",
+          "published": 1.852,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "v(2)",
+          "coordinate": 60.0,
+          "publishedToken": "9.827E+00",
+          "published": 9.827,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "i(v1)",
+          "coordinate": 60.0,
+          "publishedToken": "3.705E-01",
+          "published": 0.3705,
+          "roundingHalfWidth": 5e-05,
+          "digitizationUncertainty": 0,
+          "unit": "A",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "vp(1,2)",
+          "coordinate": 60.0,
+          "publishedToken": "7.933E+01",
+          "published": 79.33,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "degree",
+          "quantity": "phase"
+        },
+        {
+          "signal": "vp(2)",
+          "coordinate": 60.0,
+          "publishedToken": "-1.067E+01",
+          "published": -10.67,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "degree",
+          "quantity": "phase"
+        },
+        {
+          "signal": "ip(v1)",
+          "coordinate": 60.0,
+          "publishedToken": "-1.007E+02",
+          "published": -100.7,
+          "roundingHalfWidth": 0.05,
+          "digitizationUncertainty": 0,
+          "unit": "degree",
+          "quantity": "phase"
+        }
+      ]
+    },
+    {
+      "id": "ac-series-rlc",
+      "analysis": "ac",
+      "netlist": "ac-series-rlc.cir",
+      "netlistSha256": "81d5d3649c10015d3b9e35291a3d10d7bad37be95e1620eb1ec9cf420de9b112",
+      "source": {
+        "url": "https://www.ibiblio.org/kuphaldt/electricCircuits/AC/AC_5.html",
+        "retrieved": "2026-10-14",
+        "author": "Tony R. Kuphaldt",
+        "title": "Lessons in Electric Circuits",
+        "example": "ac r-l-c circuit   ",
+        "circuitPre": 0,
+        "resultPres": [
+          1
+        ],
+        "pageSha256": "2c72f538f32d43dda559330683f4a7fe51b55b002607ae10946c135bdccb5584",
+        "licence": "CC-BY-4.0; chapter footer links to licence appendix. Attribution: Tony R. Kuphaldt, Lessons in Electric Circuits. Adapted component reconstructions; changes in assumptions. No endorsement; no figures/PDFs/HTML redistributed.",
+        "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "licenceAppendix": "https://www.ibiblio.org/kuphaldt/electricCircuits/Ref/REF_A3.html"
+      },
+      "referenceKind": "published-simulation",
+      "measuredReference": null,
+      "extraction": "HTML PRE numeric table transcription; zero-based PRE locations; uncertainty is half of final displayed digit. No plot digitization.",
+      "assumptions": [
+        "Original node numbers, polarity and ideal component values retained; names capitalized.",
+        "Legacy print/plot cards replaced by native raw output; explicit .op added where the publication relies on implicit OP.",
+        "No tolerance overrides; no model calibration. Published AC amplitude convention retained, not converted to RMS or peak.",
+        "Remove incomplete trailing SIN token from AC-only voltage sources; retain AC amplitude and phase."
+      ],
+      "exclusion": null,
+      "points": [
+        {
+          "signal": "v(1,2)",
+          "coordinate": 60.0,
+          "publishedToken": "1.943E+01",
+          "published": 19.43,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 60.0,
+          "publishedToken": "1.905E+01",
+          "published": 19.05,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 60.0,
+          "publishedToken": "1.375E+02",
+          "published": 137.5,
+          "roundingHalfWidth": 0.05,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "i(v1)",
+          "coordinate": 60.0,
+          "publishedToken": "7.773E-02",
+          "published": 0.07773,
+          "roundingHalfWidth": 5e-06,
+          "digitizationUncertainty": 0,
+          "unit": "A",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "vp(1,2)",
+          "coordinate": 60.0,
+          "publishedToken": "8.068E+01",
+          "published": 80.68,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "degree",
+          "quantity": "phase"
+        },
+        {
+          "signal": "vp(2,3)",
+          "coordinate": 60.0,
+          "publishedToken": "1.707E+02",
+          "published": 170.7,
+          "roundingHalfWidth": 0.05,
+          "digitizationUncertainty": 0,
+          "unit": "degree",
+          "quantity": "phase"
+        },
+        {
+          "signal": "vp(3)",
+          "coordinate": 60.0,
+          "publishedToken": "-9.320E+00",
+          "published": -9.32,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "degree",
+          "quantity": "phase"
+        },
+        {
+          "signal": "ip(v1)",
+          "coordinate": 60.0,
+          "publishedToken": "-9.932E+01",
+          "published": -99.32,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "degree",
+          "quantity": "phase"
+        }
+      ]
+    },
+    {
+      "id": "ac-parallel-rlc",
+      "analysis": "ac",
+      "netlist": "ac-parallel-rlc.cir",
+      "netlistSha256": "4121c22dce4ba0328fc8e01135150f8ae87690b02a2ba2bf9c9a108c2ded009b",
+      "source": {
+        "url": "https://www.ibiblio.org/kuphaldt/electricCircuits/AC/AC_5.html",
+        "retrieved": "2026-10-14",
+        "author": "Tony R. Kuphaldt",
+        "title": "Lessons in Electric Circuits",
+        "example": "ac r-l-c circuit ",
+        "circuitPre": 2,
+        "resultPres": [
+          3
+        ],
+        "pageSha256": "2c72f538f32d43dda559330683f4a7fe51b55b002607ae10946c135bdccb5584",
+        "licence": "CC-BY-4.0; chapter footer links to licence appendix. Attribution: Tony R. Kuphaldt, Lessons in Electric Circuits. Adapted component reconstructions; changes in assumptions. No endorsement; no figures/PDFs/HTML redistributed.",
+        "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "licenceAppendix": "https://www.ibiblio.org/kuphaldt/electricCircuits/Ref/REF_A3.html"
+      },
+      "referenceKind": "published-simulation",
+      "measuredReference": null,
+      "extraction": "HTML PRE numeric table transcription; zero-based PRE locations; uncertainty is half of final displayed digit. No plot digitization.",
+      "assumptions": [
+        "Original node numbers, polarity and ideal component values retained; names capitalized.",
+        "Legacy print/plot cards replaced by native raw output; explicit .op added where the publication relies on implicit OP.",
+        "No tolerance overrides; no model calibration. Published AC amplitude convention retained, not converted to RMS or peak.",
+        "Remove incomplete trailing SIN token from AC-only voltage sources; retain AC amplitude and phase."
+      ],
+      "exclusion": null,
+      "points": [
+        {
+          "signal": "i(vi)",
+          "coordinate": 60.0,
+          "publishedToken": "6.390E-01",
+          "published": 0.639,
+          "roundingHalfWidth": 5e-05,
+          "digitizationUncertainty": 0,
+          "unit": "A",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "i(vir)",
+          "coordinate": 60.0,
+          "publishedToken": "4.800E-01",
+          "published": 0.48,
+          "roundingHalfWidth": 5e-05,
+          "digitizationUncertainty": 0,
+          "unit": "A",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "i(vil)",
+          "coordinate": 60.0,
+          "publishedToken": "4.897E-01",
+          "published": 0.4897,
+          "roundingHalfWidth": 5e-05,
+          "digitizationUncertainty": 0,
+          "unit": "A",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "i(vic)",
+          "coordinate": 60.0,
+          "publishedToken": "6.786E-02",
+          "published": 0.06786,
+          "roundingHalfWidth": 5e-06,
+          "digitizationUncertainty": 0,
+          "unit": "A",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "ip(vi)",
+          "coordinate": 60.0,
+          "publishedToken": "-4.131E+01",
+          "published": -41.31,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "degree",
+          "quantity": "phase"
+        },
+        {
+          "signal": "ip(vir)",
+          "coordinate": 60.0,
+          "publishedToken": "0.000E+00",
+          "published": 0.0,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "degree",
+          "quantity": "phase"
+        },
+        {
+          "signal": "ip(vil)",
+          "coordinate": 60.0,
+          "publishedToken": "-9.000E+01",
+          "published": -90.0,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "degree",
+          "quantity": "phase"
+        },
+        {
+          "signal": "ip(vic)",
+          "coordinate": 60.0,
+          "publishedToken": "9.000E+01",
+          "published": 90.0,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "degree",
+          "quantity": "phase"
+        }
+      ]
+    },
+    {
+      "id": "ac-mixed-rlc",
+      "analysis": "ac",
+      "netlist": "ac-mixed-rlc.cir",
+      "netlistSha256": "4a1a56569a3382c1008407b43a08bd68d7d951df9c347871dee3349db1a61a3f",
+      "source": {
+        "url": "https://www.ibiblio.org/kuphaldt/electricCircuits/AC/AC_5.html",
+        "retrieved": "2026-10-14",
+        "author": "Tony R. Kuphaldt",
+        "title": "Lessons in Electric Circuits",
+        "example": "ac series-parallel r-l-c circuit  ",
+        "circuitPre": 4,
+        "resultPres": [
+          5,
+          6,
+          7,
+          8
+        ],
+        "pageSha256": "2c72f538f32d43dda559330683f4a7fe51b55b002607ae10946c135bdccb5584",
+        "licence": "CC-BY-4.0; chapter footer links to licence appendix. Attribution: Tony R. Kuphaldt, Lessons in Electric Circuits. Adapted component reconstructions; changes in assumptions. No endorsement; no figures/PDFs/HTML redistributed.",
+        "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "licenceAppendix": "https://www.ibiblio.org/kuphaldt/electricCircuits/Ref/REF_A3.html"
+      },
+      "referenceKind": "published-simulation",
+      "measuredReference": null,
+      "extraction": "HTML PRE numeric table transcription; zero-based PRE locations; uncertainty is half of final displayed digit. No plot digitization.",
+      "assumptions": [
+        "Original node numbers, polarity and ideal component values retained; names capitalized.",
+        "Legacy print/plot cards replaced by native raw output; explicit .op added where the publication relies on implicit OP.",
+        "No tolerance overrides; no model calibration. Published AC amplitude convention retained, not converted to RMS or peak.",
+        "Remove incomplete trailing SIN token from AC-only voltage sources; retain AC amplitude and phase."
+      ],
+      "exclusion": null,
+      "points": [
+        {
+          "signal": "v(2,3)",
+          "coordinate": 60.0,
+          "publishedToken": "8.276E+01",
+          "published": 82.76,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "vp(2,3)",
+          "coordinate": 60.0,
+          "publishedToken": "-3.163E+01",
+          "published": -31.63,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "degree",
+          "quantity": "phase"
+        },
+        {
+          "signal": "i(vit)",
+          "coordinate": 60.0,
+          "publishedToken": "1.466E-01",
+          "published": 0.1466,
+          "roundingHalfWidth": 5e-05,
+          "digitizationUncertainty": 0,
+          "unit": "A",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "ip(vit)",
+          "coordinate": 60.0,
+          "publishedToken": "5.837E+01",
+          "published": 58.37,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "degree",
+          "quantity": "phase"
+        },
+        {
+          "signal": "v(4,5)",
+          "coordinate": 60.0,
+          "publishedToken": "1.059E+01",
+          "published": 10.59,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "vp(4,5)",
+          "coordinate": 60.0,
+          "publishedToken": "-1.388E+02",
+          "published": -138.8,
+          "roundingHalfWidth": 0.05,
+          "digitizationUncertainty": 0,
+          "unit": "degree",
+          "quantity": "phase"
+        },
+        {
+          "signal": "i(vilc)",
+          "coordinate": 60.0,
+          "publishedToken": "4.323E-02",
+          "published": 0.04323,
+          "roundingHalfWidth": 5e-06,
+          "digitizationUncertainty": 0,
+          "unit": "A",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "ip(vilc)",
+          "coordinate": 60.0,
+          "publishedToken": "1.312E+02",
+          "published": 131.2,
+          "roundingHalfWidth": 0.05,
+          "digitizationUncertainty": 0,
+          "unit": "degree",
+          "quantity": "phase"
+        },
+        {
+          "signal": "v(5)",
+          "coordinate": 60.0,
+          "publishedToken": "7.645E+01",
+          "published": 76.45,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "vp(5)",
+          "coordinate": 60.0,
+          "publishedToken": "4.122E+01",
+          "published": 41.22,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "degree",
+          "quantity": "phase"
+        },
+        {
+          "signal": "v(6)",
+          "coordinate": 60.0,
+          "publishedToken": "6.586E+01",
+          "published": 65.86,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "vp(6)",
+          "coordinate": 60.0,
+          "publishedToken": "4.122E+01",
+          "published": 41.22,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "degree",
+          "quantity": "phase"
+        },
+        {
+          "signal": "i(vir)",
+          "coordinate": 60.0,
+          "publishedToken": "1.401E-01",
+          "published": 0.1401,
+          "roundingHalfWidth": 5e-05,
+          "digitizationUncertainty": 0,
+          "unit": "A",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "ip(vir)",
+          "coordinate": 60.0,
+          "publishedToken": "4.122E+01",
+          "published": 41.22,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "degree",
+          "quantity": "phase"
+        }
+      ]
+    },
+    {
+      "id": "ac-lc-ladder",
+      "analysis": "ac",
+      "netlist": "ac-lc-ladder.cir",
+      "netlistSha256": "1ef4309ef2d412dc396401d5e9b52323a4860bc5b3942ca949e545de611a6724",
+      "source": {
+        "url": "https://www.ibiblio.org/kuphaldt/electricCircuits/Ref/REF_7.html",
+        "retrieved": "2026-10-14",
+        "author": "Tony R. Kuphaldt",
+        "title": "Lessons in Electric Circuits",
+        "example": "Lowpass filter",
+        "circuitPre": 73,
+        "resultPres": [
+          74
+        ],
+        "pageSha256": "6ee1ca6470ce7169c47e36b08346fbc576396843e532f1fd35cf5a84e8dc024c",
+        "licence": "CC-BY-4.0; chapter footer links to licence appendix. Attribution: Tony R. Kuphaldt, Lessons in Electric Circuits. Adapted component reconstructions; changes in assumptions. No endorsement; no figures/PDFs/HTML redistributed.",
+        "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "licenceAppendix": "https://www.ibiblio.org/kuphaldt/electricCircuits/Ref/REF_A3.html"
+      },
+      "referenceKind": "published-simulation",
+      "measuredReference": null,
+      "extraction": "HTML PRE numeric table transcription; zero-based PRE locations; uncertainty is half of final displayed digit. No plot digitization.",
+      "assumptions": [
+        "Original node numbers, polarity and ideal component values retained; names capitalized.",
+        "Legacy print/plot cards replaced by native raw output; explicit .op added where the publication relies on implicit OP.",
+        "No tolerance overrides; no model calibration. Published AC amplitude convention retained, not converted to RMS or peak.",
+        "Remove incomplete trailing SIN token from AC-only voltage sources; retain AC amplitude and phase."
+      ],
+      "exclusion": null,
+      "points": [
+        {
+          "signal": "v(4)",
+          "coordinate": 500.0,
+          "publishedToken": "1.935E-01",
+          "published": 0.1935,
+          "roundingHalfWidth": 5e-05,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "v(4)",
+          "coordinate": 1000.0,
+          "publishedToken": "3.275E-02",
+          "published": 0.03275,
+          "roundingHalfWidth": 5e-06,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "v(4)",
+          "coordinate": 1500.0,
+          "publishedToken": "1.057E-02",
+          "published": 0.01057,
+          "roundingHalfWidth": 5e-06,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "v(4)",
+          "coordinate": 2000.0,
+          "publishedToken": "4.614E-03",
+          "published": 0.004614,
+          "roundingHalfWidth": 5e-07,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "v(4)",
+          "coordinate": 2500.0,
+          "publishedToken": "2.402E-03",
+          "published": 0.002402,
+          "roundingHalfWidth": 5e-07,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "v(4)",
+          "coordinate": 3000.0,
+          "publishedToken": "1.403E-03",
+          "published": 0.001403,
+          "roundingHalfWidth": 5e-07,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "v(4)",
+          "coordinate": 3500.0,
+          "publishedToken": "8.884E-04",
+          "published": 0.0008884,
+          "roundingHalfWidth": 5e-08,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "v(4)",
+          "coordinate": 4000.0,
+          "publishedToken": "5.973E-04",
+          "published": 0.0005973,
+          "roundingHalfWidth": 5e-08,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "v(4)",
+          "coordinate": 4500.0,
+          "publishedToken": "4.206E-04",
+          "published": 0.0004206,
+          "roundingHalfWidth": 5e-08,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "v(4)",
+          "coordinate": 5000.0,
+          "publishedToken": "3.072E-04",
+          "published": 0.0003072,
+          "roundingHalfWidth": 5e-08,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "v(4)",
+          "coordinate": 5500.0,
+          "publishedToken": "2.311E-04",
+          "published": 0.0002311,
+          "roundingHalfWidth": 5e-08,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "v(4)",
+          "coordinate": 6000.0,
+          "publishedToken": "1.782E-04",
+          "published": 0.0001782,
+          "roundingHalfWidth": 5e-08,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "v(4)",
+          "coordinate": 6500.0,
+          "publishedToken": "1.403E-04",
+          "published": 0.0001403,
+          "roundingHalfWidth": 5e-08,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "v(4)",
+          "coordinate": 7000.0,
+          "publishedToken": "1.124E-04",
+          "published": 0.0001124,
+          "roundingHalfWidth": 5e-08,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "v(4)",
+          "coordinate": 7500.0,
+          "publishedToken": "9.141E-05",
+          "published": 9.141e-05,
+          "roundingHalfWidth": 5e-09,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "v(4)",
+          "coordinate": 8000.0,
+          "publishedToken": "7.536E-05",
+          "published": 7.536e-05,
+          "roundingHalfWidth": 5e-09,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "v(4)",
+          "coordinate": 8500.0,
+          "publishedToken": "6.285E-05",
+          "published": 6.285e-05,
+          "roundingHalfWidth": 5e-09,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "v(4)",
+          "coordinate": 9000.0,
+          "publishedToken": "5.296E-05",
+          "published": 5.296e-05,
+          "roundingHalfWidth": 5e-09,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "v(4)",
+          "coordinate": 9500.0,
+          "publishedToken": "4.504E-05",
+          "published": 4.504e-05,
+          "roundingHalfWidth": 5e-09,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "v(4)",
+          "coordinate": 10000.0,
+          "publishedToken": "3.863E-05",
+          "published": 3.863e-05,
+          "roundingHalfWidth": 5e-09,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "v(4)",
+          "coordinate": 10500.0,
+          "publishedToken": "3.337E-05",
+          "published": 3.337e-05,
+          "roundingHalfWidth": 5e-09,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "v(4)",
+          "coordinate": 11000.0,
+          "publishedToken": "2.903E-05",
+          "published": 2.903e-05,
+          "roundingHalfWidth": 5e-09,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "v(4)",
+          "coordinate": 11500.0,
+          "publishedToken": "2.541E-05",
+          "published": 2.541e-05,
+          "roundingHalfWidth": 5e-09,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "v(4)",
+          "coordinate": 12000.0,
+          "publishedToken": "2.237E-05",
+          "published": 2.237e-05,
+          "roundingHalfWidth": 5e-09,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "v(4)",
+          "coordinate": 12500.0,
+          "publishedToken": "1.979E-05",
+          "published": 1.979e-05,
+          "roundingHalfWidth": 5e-09,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "v(4)",
+          "coordinate": 13000.0,
+          "publishedToken": "1.760E-05",
+          "published": 1.76e-05,
+          "roundingHalfWidth": 5e-09,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "v(4)",
+          "coordinate": 13500.0,
+          "publishedToken": "1.571E-05",
+          "published": 1.571e-05,
+          "roundingHalfWidth": 5e-09,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "v(4)",
+          "coordinate": 14000.0,
+          "publishedToken": "1.409E-05",
+          "published": 1.409e-05,
+          "roundingHalfWidth": 5e-09,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "v(4)",
+          "coordinate": 14500.0,
+          "publishedToken": "1.268E-05",
+          "published": 1.268e-05,
+          "roundingHalfWidth": 5e-09,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "v(4)",
+          "coordinate": 15000.0,
+          "publishedToken": "1.146E-05",
+          "published": 1.146e-05,
+          "roundingHalfWidth": 5e-09,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        }
+      ]
+    },
+    {
+      "id": "dc-intro-network",
+      "analysis": "op",
+      "netlist": "dc-intro-network.cir",
+      "netlistSha256": "e83073eb995657b87f93ce1f05367e649601e32080acfc78321fa9b4be55c3e7",
+      "source": {
+        "url": "https://www.ibiblio.org/kuphaldt/electricCircuits/Ref/REF_7.html",
+        "retrieved": "2026-10-14",
+        "author": "Tony R. Kuphaldt",
+        "title": "Lessons in Electric Circuits",
+        "example": "Example netlist",
+        "circuitPre": 3,
+        "resultPres": [
+          6
+        ],
+        "pageSha256": "6ee1ca6470ce7169c47e36b08346fbc576396843e532f1fd35cf5a84e8dc024c",
+        "licence": "CC-BY-4.0; chapter footer links to licence appendix. Attribution: Tony R. Kuphaldt, Lessons in Electric Circuits. Adapted component reconstructions; changes in assumptions. No endorsement; no figures/PDFs/HTML redistributed.",
+        "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "licenceAppendix": "https://www.ibiblio.org/kuphaldt/electricCircuits/Ref/REF_A3.html"
+      },
+      "referenceKind": "published-simulation",
+      "measuredReference": null,
+      "extraction": "HTML PRE numeric table transcription; zero-based PRE locations; uncertainty is half of final displayed digit. No plot digitization.",
+      "assumptions": [
+        "Original node numbers, polarity and ideal component values retained; names capitalized.",
+        "Legacy print/plot cards replaced by native raw output; explicit .op added where the publication relies on implicit OP.",
+        "No tolerance overrides; no model calibration. Published AC amplitude convention retained, not converted to RMS or peak."
+      ],
+      "exclusion": "Netlist says R3=150 ohm but explanatory prose says 150 kohm. Use explicit netlist for diagnostic runs only; exclude from totals.",
+      "points": [
+        {
+          "signal": "v(1)",
+          "coordinate": 0,
+          "publishedToken": "15.0000",
+          "published": 15.0,
+          "roundingHalfWidth": 5e-05,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2)",
+          "coordinate": 0,
+          "publishedToken": "0.6522",
+          "published": 0.6522,
+          "roundingHalfWidth": 5e-05,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        }
+      ]
+    },
+    {
+      "id": "tran-rc-delay",
+      "analysis": "tran",
+      "netlist": "tran-rc-delay.cir",
+      "netlistSha256": "4fe60da4fc94e3360c15225d51503fe8f9a54f7065d3f971ac8a68ac56de624d",
+      "source": {
+        "url": "https://www.ibiblio.org/kuphaldt/electricCircuits/Ref/REF_7.html",
+        "retrieved": "2026-10-14",
+        "author": "Tony R. Kuphaldt",
+        "title": "Lessons in Electric Circuits",
+        "example": "RC time delay circuit",
+        "circuitPre": 66,
+        "resultPres": [
+          67
+        ],
+        "pageSha256": "6ee1ca6470ce7169c47e36b08346fbc576396843e532f1fd35cf5a84e8dc024c",
+        "licence": "CC-BY-4.0; chapter footer links to licence appendix. Attribution: Tony R. Kuphaldt, Lessons in Electric Circuits. Adapted component reconstructions; changes in assumptions. No endorsement; no figures/PDFs/HTML redistributed.",
+        "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "licenceAppendix": "https://www.ibiblio.org/kuphaldt/electricCircuits/Ref/REF_A3.html"
+      },
+      "referenceKind": "published-simulation",
+      "measuredReference": null,
+      "extraction": "HTML PRE numeric table transcription; zero-based PRE locations; uncertainty is half of final displayed digit. No plot digitization.",
+      "assumptions": [
+        "Original node numbers, polarity and ideal component values retained; names capitalized.",
+        "Legacy print/plot cards replaced by native raw output; explicit .op added where the publication relies on implicit OP.",
+        "No tolerance overrides; no model calibration. Published AC amplitude convention retained, not converted to RMS or peak.",
+        "Retain UIC and both capacitor IC=0 cards. Linear interpolation at every published time; historical integration error is not covered by printed rounding."
+      ],
+      "exclusion": null,
+      "points": [
+        {
+          "signal": "v(1,2)",
+          "coordinate": 0.0,
+          "publishedToken": "7.701E-06",
+          "published": 7.701e-06,
+          "roundingHalfWidth": 5e-10,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(1,2)",
+          "coordinate": 0.05,
+          "publishedToken": "1.967E+00",
+          "published": 1.967,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(1,2)",
+          "coordinate": 0.1,
+          "publishedToken": "3.551E+00",
+          "published": 3.551,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(1,2)",
+          "coordinate": 0.15,
+          "publishedToken": "4.824E+00",
+          "published": 4.824,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(1,2)",
+          "coordinate": 0.2,
+          "publishedToken": "5.844E+00",
+          "published": 5.844,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(1,2)",
+          "coordinate": 0.25,
+          "publishedToken": "6.664E+00",
+          "published": 6.664,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(1,2)",
+          "coordinate": 0.3,
+          "publishedToken": "7.322E+00",
+          "published": 7.322,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(1,2)",
+          "coordinate": 0.35,
+          "publishedToken": "7.851E+00",
+          "published": 7.851,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(1,2)",
+          "coordinate": 0.4,
+          "publishedToken": "8.274E+00",
+          "published": 8.274,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(1,2)",
+          "coordinate": 0.45,
+          "publishedToken": "8.615E+00",
+          "published": 8.615,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(1,2)",
+          "coordinate": 0.5,
+          "publishedToken": "8.888E+00",
+          "published": 8.888,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(1,2)",
+          "coordinate": 0.55,
+          "publishedToken": "9.107E+00",
+          "published": 9.107,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(1,2)",
+          "coordinate": 0.6,
+          "publishedToken": "9.283E+00",
+          "published": 9.283,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(1,2)",
+          "coordinate": 0.65,
+          "publishedToken": "9.425E+00",
+          "published": 9.425,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(1,2)",
+          "coordinate": 0.7,
+          "publishedToken": "9.538E+00",
+          "published": 9.538,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(1,2)",
+          "coordinate": 0.75,
+          "publishedToken": "9.629E+00",
+          "published": 9.629,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(1,2)",
+          "coordinate": 0.8,
+          "publishedToken": "9.702E+00",
+          "published": 9.702,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(1,2)",
+          "coordinate": 0.85,
+          "publishedToken": "9.761E+00",
+          "published": 9.761,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(1,2)",
+          "coordinate": 0.9,
+          "publishedToken": "9.808E+00",
+          "published": 9.808,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(1,2)",
+          "coordinate": 0.95,
+          "publishedToken": "9.846E+00",
+          "published": 9.846,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(1,2)",
+          "coordinate": 1.0,
+          "publishedToken": "9.877E+00",
+          "published": 9.877,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        }
+      ]
+    },
+    {
+      "id": "ac-multiple-source",
+      "analysis": "ac",
+      "netlist": "ac-multiple-source.cir",
+      "netlistSha256": "82ed9c8c7539bdaefad160f75c972f6162dfddec1d7ba20d11c228f552bf5648",
+      "source": {
+        "url": "https://www.ibiblio.org/kuphaldt/electricCircuits/Ref/REF_7.html",
+        "retrieved": "2026-10-14",
+        "author": "Tony R. Kuphaldt",
+        "title": "Lessons in Electric Circuits",
+        "example": "Multiple ac source",
+        "circuitPre": 76,
+        "resultPres": [
+          77
+        ],
+        "pageSha256": "6ee1ca6470ce7169c47e36b08346fbc576396843e532f1fd35cf5a84e8dc024c",
+        "licence": "CC-BY-4.0; chapter footer links to licence appendix. Attribution: Tony R. Kuphaldt, Lessons in Electric Circuits. Adapted component reconstructions; changes in assumptions. No endorsement; no figures/PDFs/HTML redistributed.",
+        "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "licenceAppendix": "https://www.ibiblio.org/kuphaldt/electricCircuits/Ref/REF_A3.html"
+      },
+      "referenceKind": "published-simulation",
+      "measuredReference": null,
+      "extraction": "HTML PRE numeric table transcription; zero-based PRE locations; uncertainty is half of final displayed digit. No plot digitization.",
+      "assumptions": [
+        "Original node numbers, polarity and ideal component values retained; names capitalized.",
+        "Legacy print/plot cards replaced by native raw output; explicit .op added where the publication relies on implicit OP.",
+        "No tolerance overrides; no model calibration. Published AC amplitude convention retained, not converted to RMS or peak.",
+        "Remove incomplete trailing SIN token from AC-only voltage sources; retain AC amplitude and phase."
+      ],
+      "exclusion": null,
+      "points": [
+        {
+          "signal": "v(2)",
+          "coordinate": 30.0,
+          "publishedToken": "1.413E+02",
+          "published": 141.3,
+          "roundingHalfWidth": 0.05,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        }
+      ]
+    },
+    {
+      "id": "ac-phase-shift",
+      "analysis": "ac",
+      "netlist": "ac-phase-shift.cir",
+      "netlistSha256": "ffda4a6aae8022788b5bb8c86a52e242e7813d479f36fc06f7f81c7159cd1781",
+      "source": {
+        "url": "https://www.ibiblio.org/kuphaldt/electricCircuits/Ref/REF_7.html",
+        "retrieved": "2026-10-14",
+        "author": "Tony R. Kuphaldt",
+        "title": "Lessons in Electric Circuits",
+        "example": "phase shift",
+        "circuitPre": 78,
+        "resultPres": [
+          79
+        ],
+        "pageSha256": "6ee1ca6470ce7169c47e36b08346fbc576396843e532f1fd35cf5a84e8dc024c",
+        "licence": "CC-BY-4.0; chapter footer links to licence appendix. Attribution: Tony R. Kuphaldt, Lessons in Electric Circuits. Adapted component reconstructions; changes in assumptions. No endorsement; no figures/PDFs/HTML redistributed.",
+        "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "licenceAppendix": "https://www.ibiblio.org/kuphaldt/electricCircuits/Ref/REF_A3.html"
+      },
+      "referenceKind": "published-simulation",
+      "measuredReference": null,
+      "extraction": "HTML PRE numeric table transcription; zero-based PRE locations; uncertainty is half of final displayed digit. No plot digitization.",
+      "assumptions": [
+        "Original node numbers, polarity and ideal component values retained; names capitalized.",
+        "Legacy print/plot cards replaced by native raw output; explicit .op added where the publication relies on implicit OP.",
+        "No tolerance overrides; no model calibration. Published AC amplitude convention retained, not converted to RMS or peak.",
+        "Remove incomplete trailing SIN token from AC-only voltage sources; retain AC amplitude and phase."
+      ],
+      "exclusion": null,
+      "points": [
+        {
+          "signal": "v(1,2)",
+          "coordinate": 1000.0,
+          "publishedToken": "6.366E-04",
+          "published": 0.0006366,
+          "roundingHalfWidth": 5e-08,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "v(1,3)",
+          "coordinate": 1000.0,
+          "publishedToken": "6.349E-04",
+          "published": 0.0006349,
+          "roundingHalfWidth": 5e-08,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "vp(1,2)",
+          "coordinate": 1000.0,
+          "publishedToken": "-9.000E+01",
+          "published": -90.0,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "degree",
+          "quantity": "phase"
+        },
+        {
+          "signal": "vp(1,3)",
+          "coordinate": 1000.0,
+          "publishedToken": "0.000E+00",
+          "published": 0.0,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "degree",
+          "quantity": "phase"
+        }
+      ]
+    },
+    {
+      "id": "ac-three-winding-transformer",
+      "analysis": "ac",
+      "netlist": "ac-three-winding-transformer.cir",
+      "netlistSha256": "0b6ba1338d83e503ddd2baff3e635f57673b3c3737f88d8518d369e13e5e3fc9",
+      "source": {
+        "url": "https://www.ibiblio.org/kuphaldt/electricCircuits/Ref/REF_7.html",
+        "retrieved": "2026-10-14",
+        "author": "Tony R. Kuphaldt",
+        "title": "Lessons in Electric Circuits",
+        "example": "transformer                                                                     ",
+        "circuitPre": 80,
+        "resultPres": [
+          81
+        ],
+        "pageSha256": "6ee1ca6470ce7169c47e36b08346fbc576396843e532f1fd35cf5a84e8dc024c",
+        "licence": "CC-BY-4.0; chapter footer links to licence appendix. Attribution: Tony R. Kuphaldt, Lessons in Electric Circuits. Adapted component reconstructions; changes in assumptions. No endorsement; no figures/PDFs/HTML redistributed.",
+        "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "licenceAppendix": "https://www.ibiblio.org/kuphaldt/electricCircuits/Ref/REF_A3.html"
+      },
+      "referenceKind": "published-simulation",
+      "measuredReference": null,
+      "extraction": "HTML PRE numeric table transcription; zero-based PRE locations; uncertainty is half of final displayed digit. No plot digitization.",
+      "assumptions": [
+        "Original node numbers, polarity and ideal component values retained; names capitalized.",
+        "Legacy print/plot cards replaced by native raw output; explicit .op added where the publication relies on implicit OP.",
+        "No tolerance overrides; no model calibration. Published AC amplitude convention retained, not converted to RMS or peak.",
+        "Remove incomplete trailing SIN token from AC-only voltage sources; retain AC amplitude and phase."
+      ],
+      "exclusion": null,
+      "points": [
+        {
+          "signal": "v(1)",
+          "coordinate": 60.0,
+          "publishedToken": "1.200E+02",
+          "published": 120.0,
+          "roundingHalfWidth": 0.05,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "v(2)",
+          "coordinate": 60.0,
+          "publishedToken": "1.199E+01",
+          "published": 11.99,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 60.0,
+          "publishedToken": "5.993E+01",
+          "published": 59.93,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "magnitude"
+        }
+      ]
+    },
+    {
+      "id": "dc-common-base-bjt",
+      "analysis": "dc",
+      "netlist": "dc-common-base-bjt.cir",
+      "netlistSha256": "8e33b7707f90f5adf0390cd5df453ce899be400eccb606ac00696aa58c7b5f28",
+      "source": {
+        "url": "https://www.ibiblio.org/kuphaldt/electricCircuits/Ref/REF_7.html",
+        "retrieved": "2026-10-14",
+        "author": "Tony R. Kuphaldt",
+        "title": "Lessons in Electric Circuits",
+        "example": "Common-base BJT amplifier",
+        "circuitPre": 84,
+        "resultPres": [
+          85
+        ],
+        "pageSha256": "6ee1ca6470ce7169c47e36b08346fbc576396843e532f1fd35cf5a84e8dc024c",
+        "licence": "CC-BY-4.0; chapter footer links to licence appendix. Attribution: Tony R. Kuphaldt, Lessons in Electric Circuits. Adapted component reconstructions; changes in assumptions. No endorsement; no figures/PDFs/HTML redistributed.",
+        "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "licenceAppendix": "https://www.ibiblio.org/kuphaldt/electricCircuits/Ref/REF_A3.html"
+      },
+      "referenceKind": "published-simulation",
+      "measuredReference": null,
+      "extraction": "HTML PRE numeric table transcription; zero-based PRE locations; uncertainty is half of final displayed digit. No plot digitization.",
+      "assumptions": [
+        "Original node numbers, polarity and ideal component values retained; names capitalized.",
+        "Legacy print/plot cards replaced by native raw output; explicit .op added where the publication relies on implicit OP.",
+        "No tolerance overrides; no model calibration. Published AC amplitude convention retained, not converted to RMS or peak.",
+        "Fill omitted initial source DC value with sweep start; published .dc sweep is unchanged.",
+        "BF=50 as published; all unspecified NPN model parameters use engine defaults. Historical SPICE2g6 defaults may differ; comparison is not a measured device validation."
+      ],
+      "exclusion": null,
+      "points": [
+        {
+          "signal": "v(2,3)",
+          "coordinate": 0.0,
+          "publishedToken": "2.400E+01",
+          "published": 24.0,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 0.1,
+          "publishedToken": "2.410E+01",
+          "published": 24.1,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 0.2,
+          "publishedToken": "2.420E+01",
+          "published": 24.2,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 0.3,
+          "publishedToken": "2.430E+01",
+          "published": 24.3,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 0.4,
+          "publishedToken": "2.440E+01",
+          "published": 24.4,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 0.5,
+          "publishedToken": "2.450E+01",
+          "published": 24.5,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 0.6,
+          "publishedToken": "2.460E+01",
+          "published": 24.6,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 0.7,
+          "publishedToken": "2.466E+01",
+          "published": 24.66,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 0.8,
+          "publishedToken": "2.439E+01",
+          "published": 24.39,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 0.9,
+          "publishedToken": "2.383E+01",
+          "published": 23.83,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 1.0,
+          "publishedToken": "2.317E+01",
+          "published": 23.17,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 1.1,
+          "publishedToken": "2.246E+01",
+          "published": 22.46,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 1.2,
+          "publishedToken": "2.174E+01",
+          "published": 21.74,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 1.3,
+          "publishedToken": "2.101E+01",
+          "published": 21.01,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 1.4,
+          "publishedToken": "2.026E+01",
+          "published": 20.26,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 1.5,
+          "publishedToken": "1.951E+01",
+          "published": 19.51,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 1.6,
+          "publishedToken": "1.876E+01",
+          "published": 18.76,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 1.7,
+          "publishedToken": "1.800E+01",
+          "published": 18.0,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 1.8,
+          "publishedToken": "1.724E+01",
+          "published": 17.24,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 1.9,
+          "publishedToken": "1.648E+01",
+          "published": 16.48,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 2.0,
+          "publishedToken": "1.572E+01",
+          "published": 15.72,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 2.1,
+          "publishedToken": "1.495E+01",
+          "published": 14.95,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 2.2,
+          "publishedToken": "1.418E+01",
+          "published": 14.18,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 2.3,
+          "publishedToken": "1.342E+01",
+          "published": 13.42,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 2.4,
+          "publishedToken": "1.265E+01",
+          "published": 12.65,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 2.5,
+          "publishedToken": "1.188E+01",
+          "published": 11.88,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 2.6,
+          "publishedToken": "1.110E+01",
+          "published": 11.1,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 2.7,
+          "publishedToken": "1.033E+01",
+          "published": 10.33,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 2.8,
+          "publishedToken": "9.560E+00",
+          "published": 9.56,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 2.9,
+          "publishedToken": "8.787E+00",
+          "published": 8.787,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 3.0,
+          "publishedToken": "8.014E+00",
+          "published": 8.014,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 3.1,
+          "publishedToken": "7.240E+00",
+          "published": 7.24,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 3.2,
+          "publishedToken": "6.465E+00",
+          "published": 6.465,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 3.3,
+          "publishedToken": "5.691E+00",
+          "published": 5.691,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 3.4,
+          "publishedToken": "4.915E+00",
+          "published": 4.915,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 3.5,
+          "publishedToken": "4.140E+00",
+          "published": 4.14,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 3.6,
+          "publishedToken": "3.364E+00",
+          "published": 3.364,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 3.7,
+          "publishedToken": "2.588E+00",
+          "published": 2.588,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 3.8,
+          "publishedToken": "1.811E+00",
+          "published": 1.811,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 3.9,
+          "publishedToken": "1.034E+00",
+          "published": 1.034,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 4.0,
+          "publishedToken": "2.587E-01",
+          "published": 0.2587,
+          "roundingHalfWidth": 5e-05,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 4.1,
+          "publishedToken": "9.744E-02",
+          "published": 0.09744,
+          "roundingHalfWidth": 5e-06,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 4.2,
+          "publishedToken": "7.815E-02",
+          "published": 0.07815,
+          "roundingHalfWidth": 5e-06,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 4.3,
+          "publishedToken": "6.806E-02",
+          "published": 0.06806,
+          "roundingHalfWidth": 5e-06,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 4.4,
+          "publishedToken": "6.141E-02",
+          "published": 0.06141,
+          "roundingHalfWidth": 5e-06,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 4.5,
+          "publishedToken": "5.657E-02",
+          "published": 0.05657,
+          "roundingHalfWidth": 5e-06,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 4.6,
+          "publishedToken": "5.281E-02",
+          "published": 0.05281,
+          "roundingHalfWidth": 5e-06,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 4.7,
+          "publishedToken": "4.981E-02",
+          "published": 0.04981,
+          "roundingHalfWidth": 5e-06,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 4.8,
+          "publishedToken": "4.734E-02",
+          "published": 0.04734,
+          "roundingHalfWidth": 5e-06,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 4.9,
+          "publishedToken": "4.525E-02",
+          "published": 0.04525,
+          "roundingHalfWidth": 5e-06,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2,3)",
+          "coordinate": 5.0,
+          "publishedToken": "4.346E-02",
+          "published": 0.04346,
+          "roundingHalfWidth": 5e-06,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        }
+      ]
+    },
+    {
+      "id": "dc-inverting-opamp",
+      "analysis": "dc",
+      "netlist": "dc-inverting-opamp.cir",
+      "netlistSha256": "80513d5756357e757cb55c0fb648a20fe0858b5cd99872b27c9c472d066162cd",
+      "source": {
+        "url": "https://www.ibiblio.org/kuphaldt/electricCircuits/Ref/REF_7.html",
+        "retrieved": "2026-10-14",
+        "author": "Tony R. Kuphaldt",
+        "title": "Lessons in Electric Circuits",
+        "example": "Inverting opamp",
+        "circuitPre": 89,
+        "resultPres": [
+          90
+        ],
+        "pageSha256": "6ee1ca6470ce7169c47e36b08346fbc576396843e532f1fd35cf5a84e8dc024c",
+        "licence": "CC-BY-4.0; chapter footer links to licence appendix. Attribution: Tony R. Kuphaldt, Lessons in Electric Circuits. Adapted component reconstructions; changes in assumptions. No endorsement; no figures/PDFs/HTML redistributed.",
+        "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "licenceAppendix": "https://www.ibiblio.org/kuphaldt/electricCircuits/Ref/REF_A3.html"
+      },
+      "referenceKind": "published-simulation",
+      "measuredReference": null,
+      "extraction": "HTML PRE numeric table transcription; zero-based PRE locations; uncertainty is half of final displayed digit. No plot digitization.",
+      "assumptions": [
+        "Original node numbers, polarity and ideal component values retained; names capitalized.",
+        "Legacy print/plot cards replaced by native raw output; explicit .op added where the publication relies on implicit OP.",
+        "No tolerance overrides; no model calibration. Published AC amplitude convention retained, not converted to RMS or peak.",
+        "Fill omitted initial source DC value with sweep start; published .dc sweep is unchanged."
+      ],
+      "exclusion": null,
+      "points": [
+        {
+          "signal": "v(3)",
+          "coordinate": 0.0,
+          "publishedToken": "0.000E+00",
+          "published": 0.0,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 0.05,
+          "publishedToken": "-1.394E-01",
+          "published": -0.1394,
+          "roundingHalfWidth": 5e-05,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 0.1,
+          "publishedToken": "-2.788E-01",
+          "published": -0.2788,
+          "roundingHalfWidth": 5e-05,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 0.15,
+          "publishedToken": "-4.182E-01",
+          "published": -0.4182,
+          "roundingHalfWidth": 5e-05,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 0.2,
+          "publishedToken": "-5.576E-01",
+          "published": -0.5576,
+          "roundingHalfWidth": 5e-05,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 0.25,
+          "publishedToken": "-6.970E-01",
+          "published": -0.697,
+          "roundingHalfWidth": 5e-05,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 0.3,
+          "publishedToken": "-8.364E-01",
+          "published": -0.8364,
+          "roundingHalfWidth": 5e-05,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 0.35,
+          "publishedToken": "-9.758E-01",
+          "published": -0.9758,
+          "roundingHalfWidth": 5e-05,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 0.4,
+          "publishedToken": "-1.115E+00",
+          "published": -1.115,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 0.45,
+          "publishedToken": "-1.255E+00",
+          "published": -1.255,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 0.5,
+          "publishedToken": "-1.394E+00",
+          "published": -1.394,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 0.55,
+          "publishedToken": "-1.533E+00",
+          "published": -1.533,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 0.6,
+          "publishedToken": "-1.673E+00",
+          "published": -1.673,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 0.65,
+          "publishedToken": "-1.812E+00",
+          "published": -1.812,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 0.7,
+          "publishedToken": "-1.952E+00",
+          "published": -1.952,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 0.75,
+          "publishedToken": "-2.091E+00",
+          "published": -2.091,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 0.8,
+          "publishedToken": "-2.231E+00",
+          "published": -2.231,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 0.85,
+          "publishedToken": "-2.370E+00",
+          "published": -2.37,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 0.9,
+          "publishedToken": "-2.509E+00",
+          "published": -2.509,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 0.95,
+          "publishedToken": "-2.649E+00",
+          "published": -2.649,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 1.0,
+          "publishedToken": "-2.788E+00",
+          "published": -2.788,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 1.05,
+          "publishedToken": "-2.928E+00",
+          "published": -2.928,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 1.1,
+          "publishedToken": "-3.067E+00",
+          "published": -3.067,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 1.15,
+          "publishedToken": "-3.206E+00",
+          "published": -3.206,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 1.2,
+          "publishedToken": "-3.346E+00",
+          "published": -3.346,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 1.25,
+          "publishedToken": "-3.485E+00",
+          "published": -3.485,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 1.3,
+          "publishedToken": "-3.625E+00",
+          "published": -3.625,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 1.35,
+          "publishedToken": "-3.764E+00",
+          "published": -3.764,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 1.4,
+          "publishedToken": "-3.903E+00",
+          "published": -3.903,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 1.45,
+          "publishedToken": "-4.043E+00",
+          "published": -4.043,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 1.5,
+          "publishedToken": "-4.182E+00",
+          "published": -4.182,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 1.55,
+          "publishedToken": "-4.322E+00",
+          "published": -4.322,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 1.6,
+          "publishedToken": "-4.461E+00",
+          "published": -4.461,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 1.65,
+          "publishedToken": "-4.600E+00",
+          "published": -4.6,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 1.7,
+          "publishedToken": "-4.740E+00",
+          "published": -4.74,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 1.75,
+          "publishedToken": "-4.879E+00",
+          "published": -4.879,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 1.8,
+          "publishedToken": "-5.019E+00",
+          "published": -5.019,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 1.85,
+          "publishedToken": "-5.158E+00",
+          "published": -5.158,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 1.9,
+          "publishedToken": "-5.297E+00",
+          "published": -5.297,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 1.95,
+          "publishedToken": "-5.437E+00",
+          "published": -5.437,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 2.0,
+          "publishedToken": "-5.576E+00",
+          "published": -5.576,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 2.05,
+          "publishedToken": "-5.716E+00",
+          "published": -5.716,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 2.1,
+          "publishedToken": "-5.855E+00",
+          "published": -5.855,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 2.15,
+          "publishedToken": "-5.994E+00",
+          "published": -5.994,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 2.2,
+          "publishedToken": "-6.134E+00",
+          "published": -6.134,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 2.25,
+          "publishedToken": "-6.273E+00",
+          "published": -6.273,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 2.3,
+          "publishedToken": "-6.413E+00",
+          "published": -6.413,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 2.35,
+          "publishedToken": "-6.552E+00",
+          "published": -6.552,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 2.4,
+          "publishedToken": "-6.692E+00",
+          "published": -6.692,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 2.45,
+          "publishedToken": "-6.831E+00",
+          "published": -6.831,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 2.5,
+          "publishedToken": "-6.970E+00",
+          "published": -6.97,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 2.55,
+          "publishedToken": "-7.110E+00",
+          "published": -7.11,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 2.6,
+          "publishedToken": "-7.249E+00",
+          "published": -7.249,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 2.65,
+          "publishedToken": "-7.389E+00",
+          "published": -7.389,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 2.7,
+          "publishedToken": "-7.528E+00",
+          "published": -7.528,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 2.75,
+          "publishedToken": "-7.667E+00",
+          "published": -7.667,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 2.8,
+          "publishedToken": "-7.807E+00",
+          "published": -7.807,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 2.85,
+          "publishedToken": "-7.946E+00",
+          "published": -7.946,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 2.9,
+          "publishedToken": "-8.086E+00",
+          "published": -8.086,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 2.95,
+          "publishedToken": "-8.225E+00",
+          "published": -8.225,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 3.0,
+          "publishedToken": "-8.364E+00",
+          "published": -8.364,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 3.05,
+          "publishedToken": "-8.504E+00",
+          "published": -8.504,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 3.1,
+          "publishedToken": "-8.643E+00",
+          "published": -8.643,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 3.15,
+          "publishedToken": "-8.783E+00",
+          "published": -8.783,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 3.2,
+          "publishedToken": "-8.922E+00",
+          "published": -8.922,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 3.25,
+          "publishedToken": "-9.061E+00",
+          "published": -9.061,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 3.3,
+          "publishedToken": "-9.201E+00",
+          "published": -9.201,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 3.35,
+          "publishedToken": "-9.340E+00",
+          "published": -9.34,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 3.4,
+          "publishedToken": "-9.480E+00",
+          "published": -9.48,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 3.45,
+          "publishedToken": "-9.619E+00",
+          "published": -9.619,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 3.5,
+          "publishedToken": "-9.758E+00",
+          "published": -9.758,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        }
+      ]
+    },
+    {
+      "id": "dc-noninverting-opamp",
+      "analysis": "op",
+      "netlist": "dc-noninverting-opamp.cir",
+      "netlistSha256": "939e46c34af9a343d1701582c2132ae6aabccc44470f2de889ae41efa279d812",
+      "source": {
+        "url": "https://www.ibiblio.org/kuphaldt/electricCircuits/Ref/REF_7.html",
+        "retrieved": "2026-10-14",
+        "author": "Tony R. Kuphaldt",
+        "title": "Lessons in Electric Circuits",
+        "example": "noninverting opamp",
+        "circuitPre": 91,
+        "resultPres": [
+          92
+        ],
+        "pageSha256": "6ee1ca6470ce7169c47e36b08346fbc576396843e532f1fd35cf5a84e8dc024c",
+        "licence": "CC-BY-4.0; chapter footer links to licence appendix. Attribution: Tony R. Kuphaldt, Lessons in Electric Circuits. Adapted component reconstructions; changes in assumptions. No endorsement; no figures/PDFs/HTML redistributed.",
+        "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "licenceAppendix": "https://www.ibiblio.org/kuphaldt/electricCircuits/Ref/REF_A3.html"
+      },
+      "referenceKind": "published-simulation",
+      "measuredReference": null,
+      "extraction": "HTML PRE numeric table transcription; zero-based PRE locations; uncertainty is half of final displayed digit. No plot digitization.",
+      "assumptions": [
+        "Original node numbers, polarity and ideal component values retained; names capitalized.",
+        "Legacy print/plot cards replaced by native raw output; explicit .op added where the publication relies on implicit OP.",
+        "No tolerance overrides; no model calibration. Published AC amplitude convention retained, not converted to RMS or peak."
+      ],
+      "exclusion": null,
+      "points": [
+        {
+          "signal": "v(1)",
+          "coordinate": 0,
+          "publishedToken": "5.0000",
+          "published": 5.0,
+          "roundingHalfWidth": 5e-05,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(2)",
+          "coordinate": 0,
+          "publishedToken": "5.0000",
+          "published": 5.0,
+          "roundingHalfWidth": 5e-05,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3)",
+          "coordinate": 0,
+          "publishedToken": "15.0000",
+          "published": 15.0,
+          "roundingHalfWidth": 5e-05,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        }
+      ]
+    },
+    {
+      "id": "dc-instrumentation-amplifier",
+      "analysis": "dc",
+      "netlist": "dc-instrumentation-amplifier.cir",
+      "netlistSha256": "26364f3f8960440e5da3c1676a014cc793f27bd63ae482290d559c3609a980b1",
+      "source": {
+        "url": "https://www.ibiblio.org/kuphaldt/electricCircuits/Ref/REF_7.html",
+        "retrieved": "2026-10-14",
+        "author": "Tony R. Kuphaldt",
+        "title": "Lessons in Electric Circuits",
+        "example": "Instrumentation amplifier",
+        "circuitPre": 93,
+        "resultPres": [
+          94
+        ],
+        "pageSha256": "6ee1ca6470ce7169c47e36b08346fbc576396843e532f1fd35cf5a84e8dc024c",
+        "licence": "CC-BY-4.0; chapter footer links to licence appendix. Attribution: Tony R. Kuphaldt, Lessons in Electric Circuits. Adapted component reconstructions; changes in assumptions. No endorsement; no figures/PDFs/HTML redistributed.",
+        "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "licenceAppendix": "https://www.ibiblio.org/kuphaldt/electricCircuits/Ref/REF_A3.html"
+      },
+      "referenceKind": "published-simulation",
+      "measuredReference": null,
+      "extraction": "HTML PRE numeric table transcription; zero-based PRE locations; uncertainty is half of final displayed digit. No plot digitization.",
+      "assumptions": [
+        "Original node numbers, polarity and ideal component values retained; names capitalized.",
+        "Legacy print/plot cards replaced by native raw output; explicit .op added where the publication relies on implicit OP.",
+        "No tolerance overrides; no model calibration. Published AC amplitude convention retained, not converted to RMS or peak.",
+        "Fill omitted initial source DC value with sweep start; published .dc sweep is unchanged."
+      ],
+      "exclusion": null,
+      "points": [
+        {
+          "signal": "v(9)",
+          "coordinate": 0.0,
+          "publishedToken": "1.500E+01",
+          "published": 15.0,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3,6)",
+          "coordinate": 0.0,
+          "publishedToken": "-1.500E+01",
+          "published": -15.0,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(9)",
+          "coordinate": 1.0,
+          "publishedToken": "1.200E+01",
+          "published": 12.0,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3,6)",
+          "coordinate": 1.0,
+          "publishedToken": "-1.200E+01",
+          "published": -12.0,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(9)",
+          "coordinate": 2.0,
+          "publishedToken": "9.000E+00",
+          "published": 9.0,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3,6)",
+          "coordinate": 2.0,
+          "publishedToken": "-9.000E+00",
+          "published": -9.0,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(9)",
+          "coordinate": 3.0,
+          "publishedToken": "6.000E+00",
+          "published": 6.0,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3,6)",
+          "coordinate": 3.0,
+          "publishedToken": "-6.000E+00",
+          "published": -6.0,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(9)",
+          "coordinate": 4.0,
+          "publishedToken": "3.000E+00",
+          "published": 3.0,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3,6)",
+          "coordinate": 4.0,
+          "publishedToken": "-3.000E+00",
+          "published": -3.0,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(9)",
+          "coordinate": 5.0,
+          "publishedToken": "9.955E-11",
+          "published": 9.955e-11,
+          "roundingHalfWidth": 5e-15,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3,6)",
+          "coordinate": 5.0,
+          "publishedToken": "-9.956E-11",
+          "published": -9.956e-11,
+          "roundingHalfWidth": 5e-15,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(9)",
+          "coordinate": 6.0,
+          "publishedToken": "-3.000E+00",
+          "published": -3.0,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3,6)",
+          "coordinate": 6.0,
+          "publishedToken": "3.000E+00",
+          "published": 3.0,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(9)",
+          "coordinate": 7.0,
+          "publishedToken": "-6.000E+00",
+          "published": -6.0,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3,6)",
+          "coordinate": 7.0,
+          "publishedToken": "6.000E+00",
+          "published": 6.0,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(9)",
+          "coordinate": 8.0,
+          "publishedToken": "-9.000E+00",
+          "published": -9.0,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3,6)",
+          "coordinate": 8.0,
+          "publishedToken": "9.000E+00",
+          "published": 9.0,
+          "roundingHalfWidth": 0.0005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(9)",
+          "coordinate": 9.0,
+          "publishedToken": "-1.200E+01",
+          "published": -12.0,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3,6)",
+          "coordinate": 9.0,
+          "publishedToken": "1.200E+01",
+          "published": 12.0,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(9)",
+          "coordinate": 10.0,
+          "publishedToken": "-1.500E+01",
+          "published": -15.0,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        },
+        {
+          "signal": "v(3,6)",
+          "coordinate": 10.0,
+          "publishedToken": "1.500E+01",
+          "published": 15.0,
+          "roundingHalfWidth": 0.005,
+          "digitizationUncertainty": 0,
+          "unit": "V",
+          "quantity": "real"
+        }
+      ]
+    }
+  ]
+}
