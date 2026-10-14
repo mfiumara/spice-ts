@@ -29,6 +29,21 @@ describe('BJT instance IC (#1096)', () => {
       .toMatchObject({ params: { ICVBE: 0.2 } });
   });
 
+  it('preserves IC through netlist serialization and subcircuit expansion', async () => {
+    const original = deck('IC=0.2,1', true);
+    const serialized = parse(original).toNetlist();
+    expect(serialized).toContain('IC=0.2,1');
+    const expanded = original.replace('Q1 c b 0 QMOD IC=0.2,1', `.subckt stage c b e
+Q1 c b e QMOD IC=0.2,1
+.ends
+X1 c b 0 stage`);
+    const flat = await simulate(original);
+    for (const netlist of [serialized, expanded]) {
+      const result = await simulate(netlist);
+      expect(result.transient!.voltage('b')[0]).toBeCloseTo(flat.transient!.voltage('b')[0], 12);
+    }
+  });
+
   it.each(['IC=', 'IC=bad', 'IC=0,1,2', 'IC=0 IC=1', 'IC=1e999'])('rejects malformed or duplicate %s', (ic) => {
     expect(() => parse(deck(ic, true))).toThrow();
   });

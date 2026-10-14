@@ -618,8 +618,12 @@ function formatDevice(desc: DeviceDescriptor): string {
     }
     case 'D':
       return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${desc.modelName ?? ''}${tail}`.trim();
-    case 'Q':
-      return `${desc.name} ${desc.nodes.join(' ')} ${desc.modelName ?? ''}${tail}`.trim();
+    case 'Q': {
+      const { ICVBE, ICVCE, ...scaling } = desc.params ?? {};
+      const instance = formatParams(scaling);
+      const ic = ICVBE === undefined ? '' : ` IC=${formatNumber(ICVBE)}${ICVCE === undefined ? '' : `,${formatNumber(ICVCE)}`}`;
+      return `${desc.name} ${desc.nodes.join(' ')} ${desc.modelName ?? ''}${instance ? ` ${instance}` : ''}${ic}`.trim();
+    }
     case 'J':
     case 'Z':
       return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${desc.nodes[2]} ${desc.modelName ?? ''}`.trim();
