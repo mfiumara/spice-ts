@@ -1,4 +1,5 @@
 import { evaluateExpression } from './expression.js';
+import { endOfLineCommentStart } from './end-of-line-comment.js';
 import {
   braceBareParameters, conditionExpression, expandUserFunctions, paramCardAsFunc, parseFuncCard, type FunctionScope,
   type UserFunction,
@@ -665,10 +666,7 @@ function bracedMeasureValues(card: string): string {
 }
 
 /** Start of an end-of-line comment (`;`, `$` or `//`), as the tokenizer strips them. */
-function commentStart(line: string): number {
-  const starts = [line.indexOf(';'), line.indexOf('$'), line.indexOf('//')].filter(index => index >= 0);
-  return starts.length === 0 ? line.length : Math.min(...starts);
-}
+const commentStart = endOfLineCommentStart;
 
 /**
  * ngspice numparam treats a single-quoted value as a brace expression:

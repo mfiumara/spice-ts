@@ -1,4 +1,5 @@
 import { ParseError } from '../errors.js';
+import { endOfLineCommentStart } from './end-of-line-comment.js';
 import { parseNumber } from './tokenizer.js';
 
 /** Lower logical cards while retaining preprocessing scopes and source locations. */
@@ -7,7 +8,7 @@ export function lowerControlledTables<T extends { text: string; line: number; co
   let previous: T | undefined;
   for (const statement of statements) {
     if (previous && !statement.control && /^\s*\+/.test(statement.text) && /^\s*[eg]\S*\s+.*\btable\s*[={']/i.test(previous.text)) {
-      previous.text = previous.text.split(/\$|;|\/\//, 1)[0] + ` ${statement.text.replace(/^\s*\+\s*/, '')}`;
+      previous.text = previous.text.slice(0, endOfLineCommentStart(previous.text)) + ` ${statement.text.replace(/^\s*\+\s*/, '')}`;
       logical.push({ ...statement, text: '' });
     } else {
       const copy = { ...statement };
@@ -20,7 +21,7 @@ export function lowerControlledTables<T extends { text: string; line: number; co
   return logical.flatMap(statement => {
     if (statement.control) return [statement];
     const raw = statement.text;
-    const code = raw.split(/\$|;|\/\//, 1)[0];
+    const code = raw.slice(0, endOfLineCommentStart(raw));
     const head = /^\s*([eg]\S*)\s+\(?\s*([^\s()]+)\s+([^\s()]+)\s*\)?\s+table\s*(?==|\{|')/i.exec(code);
     if (!head) return [statement];
     const fail = (message: string): never => { throw new ParseError(`TABLE source '${head[1]}': ${message}`, statement.line, raw); };
