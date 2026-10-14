@@ -1,0 +1,2753 @@
+{
+  "imports": {
+    "control": {
+      "n": 15,
+      "min": 19.258708999999996,
+      "q1": 19.4880625,
+      "median": 19.807125000000003,
+      "q3": 20.766687500000003,
+      "iqr": 1.2786250000000017,
+      "max": 21.344542000000004
+    },
+    "candidate": {
+      "n": 15,
+      "min": 15.457832999999997,
+      "q1": 15.722729000000001,
+      "median": 16.013875,
+      "q3": 16.824229000000003,
+      "iqr": 1.1015000000000015,
+      "max": 19.751375
+    }
+  },
+  "cold": {
+    "control": {
+      "n": 15,
+      "min": 136.182333342731,
+      "q1": 140.42145833082031,
+      "median": 141.85604167869315,
+      "q3": 143.58481249655597,
+      "iqr": 3.1633541657356545,
+      "max": 156.89858331461437
+    },
+    "candidate": {
+      "n": 15,
+      "min": 136.50354166748002,
+      "q1": 137.98483333084732,
+      "median": 139.36345832189545,
+      "q3": 141.0967708361568,
+      "iqr": 3.11193750530947,
+      "max": 156.25174998422153
+    },
+    "ngspice": {
+      "n": 15,
+      "min": 33.696125,
+      "q1": 35.830104,
+      "median": 36.743084,
+      "q3": 38.274271,
+      "iqr": 2.444167,
+      "max": 41.807292
+    }
+  },
+  "reduction": 0.191509368472204,
+  "iqrsSeparate": true,
+  "parity": {
+    "rc1k": {
+      "equal": false,
+      "outputEqual": true,
+      "apiEqual": false,
+      "receipts": [
+        {
+          "mode": "control",
+          "output": {
+            "outputSha256": "6a650522805562c8018777ab78a344668d2fb12038fd6e4fcfd7cc3302c4e8a7",
+            "vectors": 1002,
+            "count": 120240
+          },
+          "api": {
+            "ACResult": {
+              "type": "function",
+              "name": "ACResult"
+            },
+            "CCCS": {
+              "type": "function",
+              "name": "CCCS"
+            },
+            "CCVS": {
+              "type": "function",
+              "name": "CCVS"
+            },
+            "Circuit": {
+              "type": "function",
+              "name": "Circuit"
+            },
+            "ControlScriptError": {
+              "type": "function",
+              "name": "ControlScriptError"
+            },
+            "ControlScriptExitError": {
+              "type": "function",
+              "name": "ControlScriptExitError"
+            },
+            "ConvergenceError": {
+              "type": "function",
+              "name": "ConvergenceError"
+            },
+            "createSimulator": {
+              "type": "function",
+              "name": "createSimulator"
+            },
+            "createTransientSim": {
+              "type": "function",
+              "name": "createTransientSim"
+            },
+            "CycleError": {
+              "type": "function",
+              "name": "CycleError"
+            },
+            "DCResult": {
+              "type": "function",
+              "name": "DCResult"
+            },
+            "DCSweepResult": {
+              "type": "function",
+              "name": "DCSweepResult"
+            },
+            "DEVICE_MODEL_TYPES": {
+              "type": "object",
+              "name": null
+            },
+            "DistortionResult": {
+              "type": "function",
+              "name": "DistortionResult"
+            },
+            "estimateProtocolResultPointsV1": {
+              "type": "function",
+              "name": "estimateProtocolResultPointsV1"
+            },
+            "executeProtocolV1": {
+              "type": "function",
+              "name": "executeProtocolV1"
+            },
+            "frequencyGrid": {
+              "type": "function",
+              "name": "frequencyGrid"
+            },
+            "frequencyPointCount": {
+              "type": "function",
+              "name": "frequencyPointCount"
+            },
+            "InvalidCircuitError": {
+              "type": "function",
+              "name": "InvalidCircuitError"
+            },
+            "mapProtocolErrorV1": {
+              "type": "function",
+              "name": "mapProtocolErrorV1"
+            },
+            "ModelTypeMismatchError": {
+              "type": "function",
+              "name": "ModelTypeMismatchError"
+            },
+            "NoiseResult": {
+              "type": "function",
+              "name": "NoiseResult"
+            },
+            "parse": {
+              "type": "function",
+              "name": "parse"
+            },
+            "parseAsync": {
+              "type": "function",
+              "name": "parseAsync"
+            },
+            "ParseError": {
+              "type": "function",
+              "name": "ParseError"
+            },
+            "parseTitleless": {
+              "type": "function",
+              "name": "parseTitleless"
+            },
+            "parseTitlelessAsync": {
+              "type": "function",
+              "name": "parseTitlelessAsync"
+            },
+            "PoleZeroResult": {
+              "type": "function",
+              "name": "PoleZeroResult"
+            },
+            "preflightTopology": {
+              "type": "function",
+              "name": "preflightTopology"
+            },
+            "preprocess": {
+              "type": "function",
+              "name": "preprocess"
+            },
+            "protocolCapabilitiesV1": {
+              "type": "function",
+              "name": "protocolCapabilitiesV1"
+            },
+            "SensitivityResult": {
+              "type": "function",
+              "name": "SensitivityResult"
+            },
+            "simulate": {
+              "type": "function",
+              "name": "simulate"
+            },
+            "simulateProtocolV1": {
+              "type": "function",
+              "name": "simulateProtocolV1"
+            },
+            "simulateStepStream": {
+              "type": "function",
+              "name": "simulateStepStream"
+            },
+            "simulateStream": {
+              "type": "function",
+              "name": "simulateStream"
+            },
+            "SingularMatrixError": {
+              "type": "function",
+              "name": "_SingularMatrixError"
+            },
+            "SParameterResult": {
+              "type": "function",
+              "name": "SParameterResult"
+            },
+            "SpiceError": {
+              "type": "function",
+              "name": "SpiceError"
+            },
+            "SUPPORTED_MODEL_TYPES": {
+              "type": "object",
+              "name": null
+            },
+            "TimestepTooSmallError": {
+              "type": "function",
+              "name": "TimestepTooSmallError"
+            },
+            "TopologyPreflightError": {
+              "type": "function",
+              "name": "TopologyPreflightError"
+            },
+            "TransferFunctionResult": {
+              "type": "function",
+              "name": "TransferFunctionResult"
+            },
+            "TransientResult": {
+              "type": "function",
+              "name": "TransientResult"
+            },
+            "UnsupportedCircuitModelTypeError": {
+              "type": "function",
+              "name": "UnsupportedCircuitModelTypeError"
+            },
+            "UnsupportedCodeModelError": {
+              "type": "function",
+              "name": "UnsupportedCodeModelError"
+            },
+            "UnsupportedControlCommandError": {
+              "type": "function",
+              "name": "UnsupportedControlCommandError"
+            },
+            "UnsupportedMeasureError": {
+              "type": "function",
+              "name": "UnsupportedMeasureError"
+            },
+            "UnsupportedModelFlagError": {
+              "type": "function",
+              "name": "UnsupportedModelFlagError"
+            },
+            "UnsupportedModelLevelError": {
+              "type": "function",
+              "name": "UnsupportedModelLevelError"
+            },
+            "UnsupportedModelParameterError": {
+              "type": "function",
+              "name": "UnsupportedModelParameterError"
+            },
+            "UnsupportedModelTypeError": {
+              "type": "function",
+              "name": "UnsupportedModelTypeError"
+            },
+            "UnsupportedModelVersionError": {
+              "type": "function",
+              "name": "UnsupportedModelVersionError"
+            },
+            "UnsupportedMultiplicityError": {
+              "type": "function",
+              "name": "UnsupportedMultiplicityError"
+            },
+            "UnsupportedResistorParameterError": {
+              "type": "function",
+              "name": "UnsupportedResistorParameterError"
+            },
+            "UnsupportedSourceWaveformError": {
+              "type": "function",
+              "name": "UnsupportedSourceWaveformError"
+            },
+            "UnsupportedTemperatureError": {
+              "type": "function",
+              "name": "UnsupportedTemperatureError"
+            },
+            "validateProtocolV1": {
+              "type": "function",
+              "name": "validateProtocolV1"
+            },
+            "VCCS": {
+              "type": "function",
+              "name": "VCCS"
+            },
+            "VCVS": {
+              "type": "function",
+              "name": "VCVS"
+            },
+            "WasmNgspiceSimulator": {
+              "type": "function",
+              "name": "WasmNgspiceSimulator"
+            }
+          },
+          "convergence": {
+            "dc": {
+              "newtonIterations": 1,
+              "acceptedSolves": 1,
+              "rejectedSolves": 0,
+              "sourceStepAttempts": 0,
+              "sourceStepFailures": 0,
+              "gminStepAttempts": 0,
+              "gminStepFailures": 0,
+              "failure": null
+            },
+            "transient": {
+              "acceptedSteps": 119,
+              "rejectedSteps": 0,
+              "newtonIterations": 238,
+              "nrRetries": 0,
+              "lteRetries": 0,
+              "minimumAcceptedTimestep": 1.0000000000000001e-11,
+              "failure": null
+            }
+          }
+        },
+        {
+          "mode": "candidate",
+          "output": {
+            "outputSha256": "6a650522805562c8018777ab78a344668d2fb12038fd6e4fcfd7cc3302c4e8a7",
+            "vectors": 1002,
+            "count": 120240
+          },
+          "api": {
+            "ACResult": {
+              "type": "function",
+              "name": "ACResult"
+            },
+            "CCCS": {
+              "type": "function",
+              "name": "CCCS"
+            },
+            "CCVS": {
+              "type": "function",
+              "name": "CCVS"
+            },
+            "Circuit": {
+              "type": "function",
+              "name": "Circuit"
+            },
+            "ControlScriptError": {
+              "type": "function",
+              "name": "ControlScriptError"
+            },
+            "ControlScriptExitError": {
+              "type": "function",
+              "name": "ControlScriptExitError"
+            },
+            "ConvergenceError": {
+              "type": "function",
+              "name": "ConvergenceError"
+            },
+            "createSimulator": {
+              "type": "function",
+              "name": "createSimulator"
+            },
+            "createTransientSim": {
+              "type": "function",
+              "name": "createTransientSim"
+            },
+            "CycleError": {
+              "type": "function",
+              "name": "CycleError"
+            },
+            "DCResult": {
+              "type": "function",
+              "name": "DCResult"
+            },
+            "DCSweepResult": {
+              "type": "function",
+              "name": "DCSweepResult"
+            },
+            "DEVICE_MODEL_TYPES": {
+              "type": "object",
+              "name": null
+            },
+            "DistortionResult": {
+              "type": "function",
+              "name": "DistortionResult"
+            },
+            "estimateProtocolResultPointsV1": {
+              "type": "function",
+              "name": "estimateProtocolResultPointsV1"
+            },
+            "executeProtocolV1": {
+              "type": "function",
+              "name": "executeProtocolV1"
+            },
+            "frequencyGrid": {
+              "type": "function",
+              "name": "frequencyGrid"
+            },
+            "frequencyPointCount": {
+              "type": "function",
+              "name": "frequencyPointCount"
+            },
+            "InvalidCircuitError": {
+              "type": "function",
+              "name": "InvalidCircuitError"
+            },
+            "mapProtocolErrorV1": {
+              "type": "function",
+              "name": "mapProtocolErrorV1"
+            },
+            "ModelTypeMismatchError": {
+              "type": "function",
+              "name": "ModelTypeMismatchError"
+            },
+            "NoiseResult": {
+              "type": "function",
+              "name": "NoiseResult"
+            },
+            "parse": {
+              "type": "function",
+              "name": "parse"
+            },
+            "parseAsync": {
+              "type": "function",
+              "name": "parseAsync"
+            },
+            "ParseError": {
+              "type": "function",
+              "name": "ParseError"
+            },
+            "parseTitleless": {
+              "type": "function",
+              "name": "parseTitleless"
+            },
+            "parseTitlelessAsync": {
+              "type": "function",
+              "name": "parseTitlelessAsync"
+            },
+            "PoleZeroResult": {
+              "type": "function",
+              "name": "PoleZeroResult"
+            },
+            "preflightTopology": {
+              "type": "function",
+              "name": "preflightTopology"
+            },
+            "preprocess": {
+              "type": "function",
+              "name": "preprocess"
+            },
+            "protocolCapabilitiesV1": {
+              "type": "function",
+              "name": "protocolCapabilitiesV1"
+            },
+            "SensitivityResult": {
+              "type": "function",
+              "name": "SensitivityResult"
+            },
+            "simulate": {
+              "type": "function",
+              "name": "simulate"
+            },
+            "simulateProtocolV1": {
+              "type": "function",
+              "name": "simulateProtocolV1"
+            },
+            "simulateStepStream": {
+              "type": "function",
+              "name": "simulateStepStream"
+            },
+            "simulateStream": {
+              "type": "function",
+              "name": "simulateStream"
+            },
+            "SingularMatrixError": {
+              "type": "function",
+              "name": "SingularMatrixError"
+            },
+            "SParameterResult": {
+              "type": "function",
+              "name": "SParameterResult"
+            },
+            "SpiceError": {
+              "type": "function",
+              "name": "SpiceError"
+            },
+            "SUPPORTED_MODEL_TYPES": {
+              "type": "object",
+              "name": null
+            },
+            "TimestepTooSmallError": {
+              "type": "function",
+              "name": "TimestepTooSmallError"
+            },
+            "TopologyPreflightError": {
+              "type": "function",
+              "name": "TopologyPreflightError"
+            },
+            "TransferFunctionResult": {
+              "type": "function",
+              "name": "TransferFunctionResult"
+            },
+            "TransientResult": {
+              "type": "function",
+              "name": "TransientResult"
+            },
+            "UnsupportedCircuitModelTypeError": {
+              "type": "function",
+              "name": "UnsupportedCircuitModelTypeError"
+            },
+            "UnsupportedCodeModelError": {
+              "type": "function",
+              "name": "UnsupportedCodeModelError"
+            },
+            "UnsupportedControlCommandError": {
+              "type": "function",
+              "name": "UnsupportedControlCommandError"
+            },
+            "UnsupportedMeasureError": {
+              "type": "function",
+              "name": "UnsupportedMeasureError"
+            },
+            "UnsupportedModelFlagError": {
+              "type": "function",
+              "name": "UnsupportedModelFlagError"
+            },
+            "UnsupportedModelLevelError": {
+              "type": "function",
+              "name": "UnsupportedModelLevelError"
+            },
+            "UnsupportedModelParameterError": {
+              "type": "function",
+              "name": "UnsupportedModelParameterError"
+            },
+            "UnsupportedModelTypeError": {
+              "type": "function",
+              "name": "UnsupportedModelTypeError"
+            },
+            "UnsupportedModelVersionError": {
+              "type": "function",
+              "name": "UnsupportedModelVersionError"
+            },
+            "UnsupportedMultiplicityError": {
+              "type": "function",
+              "name": "UnsupportedMultiplicityError"
+            },
+            "UnsupportedResistorParameterError": {
+              "type": "function",
+              "name": "UnsupportedResistorParameterError"
+            },
+            "UnsupportedSourceWaveformError": {
+              "type": "function",
+              "name": "UnsupportedSourceWaveformError"
+            },
+            "UnsupportedTemperatureError": {
+              "type": "function",
+              "name": "UnsupportedTemperatureError"
+            },
+            "validateProtocolV1": {
+              "type": "function",
+              "name": "validateProtocolV1"
+            },
+            "VCCS": {
+              "type": "function",
+              "name": "VCCS"
+            },
+            "VCVS": {
+              "type": "function",
+              "name": "VCVS"
+            },
+            "WasmNgspiceSimulator": {
+              "type": "function",
+              "name": "WasmNgspiceSimulator"
+            }
+          },
+          "convergence": {
+            "dc": {
+              "newtonIterations": 1,
+              "acceptedSolves": 1,
+              "rejectedSolves": 0,
+              "sourceStepAttempts": 0,
+              "sourceStepFailures": 0,
+              "gminStepAttempts": 0,
+              "gminStepFailures": 0,
+              "failure": null
+            },
+            "transient": {
+              "acceptedSteps": 119,
+              "rejectedSteps": 0,
+              "newtonIterations": 238,
+              "nrRetries": 0,
+              "lteRetries": 0,
+              "minimumAcceptedTimestep": 1.0000000000000001e-11,
+              "failure": null
+            }
+          }
+        }
+      ]
+    },
+    "mesh10k": {
+      "equal": false,
+      "outputEqual": true,
+      "apiEqual": false,
+      "receipts": [
+        {
+          "mode": "control",
+          "output": {
+            "outputSha256": "7fe66c8319033d70158a6b010fa0f98b7d9374c27dbd0a855515f8087f43628f",
+            "vectors": 10001,
+            "count": 10001
+          },
+          "api": {
+            "ACResult": {
+              "type": "function",
+              "name": "ACResult"
+            },
+            "CCCS": {
+              "type": "function",
+              "name": "CCCS"
+            },
+            "CCVS": {
+              "type": "function",
+              "name": "CCVS"
+            },
+            "Circuit": {
+              "type": "function",
+              "name": "Circuit"
+            },
+            "ControlScriptError": {
+              "type": "function",
+              "name": "ControlScriptError"
+            },
+            "ControlScriptExitError": {
+              "type": "function",
+              "name": "ControlScriptExitError"
+            },
+            "ConvergenceError": {
+              "type": "function",
+              "name": "ConvergenceError"
+            },
+            "createSimulator": {
+              "type": "function",
+              "name": "createSimulator"
+            },
+            "createTransientSim": {
+              "type": "function",
+              "name": "createTransientSim"
+            },
+            "CycleError": {
+              "type": "function",
+              "name": "CycleError"
+            },
+            "DCResult": {
+              "type": "function",
+              "name": "DCResult"
+            },
+            "DCSweepResult": {
+              "type": "function",
+              "name": "DCSweepResult"
+            },
+            "DEVICE_MODEL_TYPES": {
+              "type": "object",
+              "name": null
+            },
+            "DistortionResult": {
+              "type": "function",
+              "name": "DistortionResult"
+            },
+            "estimateProtocolResultPointsV1": {
+              "type": "function",
+              "name": "estimateProtocolResultPointsV1"
+            },
+            "executeProtocolV1": {
+              "type": "function",
+              "name": "executeProtocolV1"
+            },
+            "frequencyGrid": {
+              "type": "function",
+              "name": "frequencyGrid"
+            },
+            "frequencyPointCount": {
+              "type": "function",
+              "name": "frequencyPointCount"
+            },
+            "InvalidCircuitError": {
+              "type": "function",
+              "name": "InvalidCircuitError"
+            },
+            "mapProtocolErrorV1": {
+              "type": "function",
+              "name": "mapProtocolErrorV1"
+            },
+            "ModelTypeMismatchError": {
+              "type": "function",
+              "name": "ModelTypeMismatchError"
+            },
+            "NoiseResult": {
+              "type": "function",
+              "name": "NoiseResult"
+            },
+            "parse": {
+              "type": "function",
+              "name": "parse"
+            },
+            "parseAsync": {
+              "type": "function",
+              "name": "parseAsync"
+            },
+            "ParseError": {
+              "type": "function",
+              "name": "ParseError"
+            },
+            "parseTitleless": {
+              "type": "function",
+              "name": "parseTitleless"
+            },
+            "parseTitlelessAsync": {
+              "type": "function",
+              "name": "parseTitlelessAsync"
+            },
+            "PoleZeroResult": {
+              "type": "function",
+              "name": "PoleZeroResult"
+            },
+            "preflightTopology": {
+              "type": "function",
+              "name": "preflightTopology"
+            },
+            "preprocess": {
+              "type": "function",
+              "name": "preprocess"
+            },
+            "protocolCapabilitiesV1": {
+              "type": "function",
+              "name": "protocolCapabilitiesV1"
+            },
+            "SensitivityResult": {
+              "type": "function",
+              "name": "SensitivityResult"
+            },
+            "simulate": {
+              "type": "function",
+              "name": "simulate"
+            },
+            "simulateProtocolV1": {
+              "type": "function",
+              "name": "simulateProtocolV1"
+            },
+            "simulateStepStream": {
+              "type": "function",
+              "name": "simulateStepStream"
+            },
+            "simulateStream": {
+              "type": "function",
+              "name": "simulateStream"
+            },
+            "SingularMatrixError": {
+              "type": "function",
+              "name": "_SingularMatrixError"
+            },
+            "SParameterResult": {
+              "type": "function",
+              "name": "SParameterResult"
+            },
+            "SpiceError": {
+              "type": "function",
+              "name": "SpiceError"
+            },
+            "SUPPORTED_MODEL_TYPES": {
+              "type": "object",
+              "name": null
+            },
+            "TimestepTooSmallError": {
+              "type": "function",
+              "name": "TimestepTooSmallError"
+            },
+            "TopologyPreflightError": {
+              "type": "function",
+              "name": "TopologyPreflightError"
+            },
+            "TransferFunctionResult": {
+              "type": "function",
+              "name": "TransferFunctionResult"
+            },
+            "TransientResult": {
+              "type": "function",
+              "name": "TransientResult"
+            },
+            "UnsupportedCircuitModelTypeError": {
+              "type": "function",
+              "name": "UnsupportedCircuitModelTypeError"
+            },
+            "UnsupportedCodeModelError": {
+              "type": "function",
+              "name": "UnsupportedCodeModelError"
+            },
+            "UnsupportedControlCommandError": {
+              "type": "function",
+              "name": "UnsupportedControlCommandError"
+            },
+            "UnsupportedMeasureError": {
+              "type": "function",
+              "name": "UnsupportedMeasureError"
+            },
+            "UnsupportedModelFlagError": {
+              "type": "function",
+              "name": "UnsupportedModelFlagError"
+            },
+            "UnsupportedModelLevelError": {
+              "type": "function",
+              "name": "UnsupportedModelLevelError"
+            },
+            "UnsupportedModelParameterError": {
+              "type": "function",
+              "name": "UnsupportedModelParameterError"
+            },
+            "UnsupportedModelTypeError": {
+              "type": "function",
+              "name": "UnsupportedModelTypeError"
+            },
+            "UnsupportedModelVersionError": {
+              "type": "function",
+              "name": "UnsupportedModelVersionError"
+            },
+            "UnsupportedMultiplicityError": {
+              "type": "function",
+              "name": "UnsupportedMultiplicityError"
+            },
+            "UnsupportedResistorParameterError": {
+              "type": "function",
+              "name": "UnsupportedResistorParameterError"
+            },
+            "UnsupportedSourceWaveformError": {
+              "type": "function",
+              "name": "UnsupportedSourceWaveformError"
+            },
+            "UnsupportedTemperatureError": {
+              "type": "function",
+              "name": "UnsupportedTemperatureError"
+            },
+            "validateProtocolV1": {
+              "type": "function",
+              "name": "validateProtocolV1"
+            },
+            "VCCS": {
+              "type": "function",
+              "name": "VCCS"
+            },
+            "VCVS": {
+              "type": "function",
+              "name": "VCVS"
+            },
+            "WasmNgspiceSimulator": {
+              "type": "function",
+              "name": "WasmNgspiceSimulator"
+            }
+          },
+          "convergence": {
+            "dc": {
+              "newtonIterations": 2,
+              "acceptedSolves": 1,
+              "rejectedSolves": 0,
+              "sourceStepAttempts": 0,
+              "sourceStepFailures": 0,
+              "gminStepAttempts": 0,
+              "gminStepFailures": 0,
+              "failure": null
+            },
+            "transient": {
+              "acceptedSteps": 0,
+              "rejectedSteps": 0,
+              "newtonIterations": 0,
+              "nrRetries": 0,
+              "lteRetries": 0,
+              "minimumAcceptedTimestep": null,
+              "failure": null
+            }
+          }
+        },
+        {
+          "mode": "candidate",
+          "output": {
+            "outputSha256": "7fe66c8319033d70158a6b010fa0f98b7d9374c27dbd0a855515f8087f43628f",
+            "vectors": 10001,
+            "count": 10001
+          },
+          "api": {
+            "ACResult": {
+              "type": "function",
+              "name": "ACResult"
+            },
+            "CCCS": {
+              "type": "function",
+              "name": "CCCS"
+            },
+            "CCVS": {
+              "type": "function",
+              "name": "CCVS"
+            },
+            "Circuit": {
+              "type": "function",
+              "name": "Circuit"
+            },
+            "ControlScriptError": {
+              "type": "function",
+              "name": "ControlScriptError"
+            },
+            "ControlScriptExitError": {
+              "type": "function",
+              "name": "ControlScriptExitError"
+            },
+            "ConvergenceError": {
+              "type": "function",
+              "name": "ConvergenceError"
+            },
+            "createSimulator": {
+              "type": "function",
+              "name": "createSimulator"
+            },
+            "createTransientSim": {
+              "type": "function",
+              "name": "createTransientSim"
+            },
+            "CycleError": {
+              "type": "function",
+              "name": "CycleError"
+            },
+            "DCResult": {
+              "type": "function",
+              "name": "DCResult"
+            },
+            "DCSweepResult": {
+              "type": "function",
+              "name": "DCSweepResult"
+            },
+            "DEVICE_MODEL_TYPES": {
+              "type": "object",
+              "name": null
+            },
+            "DistortionResult": {
+              "type": "function",
+              "name": "DistortionResult"
+            },
+            "estimateProtocolResultPointsV1": {
+              "type": "function",
+              "name": "estimateProtocolResultPointsV1"
+            },
+            "executeProtocolV1": {
+              "type": "function",
+              "name": "executeProtocolV1"
+            },
+            "frequencyGrid": {
+              "type": "function",
+              "name": "frequencyGrid"
+            },
+            "frequencyPointCount": {
+              "type": "function",
+              "name": "frequencyPointCount"
+            },
+            "InvalidCircuitError": {
+              "type": "function",
+              "name": "InvalidCircuitError"
+            },
+            "mapProtocolErrorV1": {
+              "type": "function",
+              "name": "mapProtocolErrorV1"
+            },
+            "ModelTypeMismatchError": {
+              "type": "function",
+              "name": "ModelTypeMismatchError"
+            },
+            "NoiseResult": {
+              "type": "function",
+              "name": "NoiseResult"
+            },
+            "parse": {
+              "type": "function",
+              "name": "parse"
+            },
+            "parseAsync": {
+              "type": "function",
+              "name": "parseAsync"
+            },
+            "ParseError": {
+              "type": "function",
+              "name": "ParseError"
+            },
+            "parseTitleless": {
+              "type": "function",
+              "name": "parseTitleless"
+            },
+            "parseTitlelessAsync": {
+              "type": "function",
+              "name": "parseTitlelessAsync"
+            },
+            "PoleZeroResult": {
+              "type": "function",
+              "name": "PoleZeroResult"
+            },
+            "preflightTopology": {
+              "type": "function",
+              "name": "preflightTopology"
+            },
+            "preprocess": {
+              "type": "function",
+              "name": "preprocess"
+            },
+            "protocolCapabilitiesV1": {
+              "type": "function",
+              "name": "protocolCapabilitiesV1"
+            },
+            "SensitivityResult": {
+              "type": "function",
+              "name": "SensitivityResult"
+            },
+            "simulate": {
+              "type": "function",
+              "name": "simulate"
+            },
+            "simulateProtocolV1": {
+              "type": "function",
+              "name": "simulateProtocolV1"
+            },
+            "simulateStepStream": {
+              "type": "function",
+              "name": "simulateStepStream"
+            },
+            "simulateStream": {
+              "type": "function",
+              "name": "simulateStream"
+            },
+            "SingularMatrixError": {
+              "type": "function",
+              "name": "SingularMatrixError"
+            },
+            "SParameterResult": {
+              "type": "function",
+              "name": "SParameterResult"
+            },
+            "SpiceError": {
+              "type": "function",
+              "name": "SpiceError"
+            },
+            "SUPPORTED_MODEL_TYPES": {
+              "type": "object",
+              "name": null
+            },
+            "TimestepTooSmallError": {
+              "type": "function",
+              "name": "TimestepTooSmallError"
+            },
+            "TopologyPreflightError": {
+              "type": "function",
+              "name": "TopologyPreflightError"
+            },
+            "TransferFunctionResult": {
+              "type": "function",
+              "name": "TransferFunctionResult"
+            },
+            "TransientResult": {
+              "type": "function",
+              "name": "TransientResult"
+            },
+            "UnsupportedCircuitModelTypeError": {
+              "type": "function",
+              "name": "UnsupportedCircuitModelTypeError"
+            },
+            "UnsupportedCodeModelError": {
+              "type": "function",
+              "name": "UnsupportedCodeModelError"
+            },
+            "UnsupportedControlCommandError": {
+              "type": "function",
+              "name": "UnsupportedControlCommandError"
+            },
+            "UnsupportedMeasureError": {
+              "type": "function",
+              "name": "UnsupportedMeasureError"
+            },
+            "UnsupportedModelFlagError": {
+              "type": "function",
+              "name": "UnsupportedModelFlagError"
+            },
+            "UnsupportedModelLevelError": {
+              "type": "function",
+              "name": "UnsupportedModelLevelError"
+            },
+            "UnsupportedModelParameterError": {
+              "type": "function",
+              "name": "UnsupportedModelParameterError"
+            },
+            "UnsupportedModelTypeError": {
+              "type": "function",
+              "name": "UnsupportedModelTypeError"
+            },
+            "UnsupportedModelVersionError": {
+              "type": "function",
+              "name": "UnsupportedModelVersionError"
+            },
+            "UnsupportedMultiplicityError": {
+              "type": "function",
+              "name": "UnsupportedMultiplicityError"
+            },
+            "UnsupportedResistorParameterError": {
+              "type": "function",
+              "name": "UnsupportedResistorParameterError"
+            },
+            "UnsupportedSourceWaveformError": {
+              "type": "function",
+              "name": "UnsupportedSourceWaveformError"
+            },
+            "UnsupportedTemperatureError": {
+              "type": "function",
+              "name": "UnsupportedTemperatureError"
+            },
+            "validateProtocolV1": {
+              "type": "function",
+              "name": "validateProtocolV1"
+            },
+            "VCCS": {
+              "type": "function",
+              "name": "VCCS"
+            },
+            "VCVS": {
+              "type": "function",
+              "name": "VCVS"
+            },
+            "WasmNgspiceSimulator": {
+              "type": "function",
+              "name": "WasmNgspiceSimulator"
+            }
+          },
+          "convergence": {
+            "dc": {
+              "newtonIterations": 2,
+              "acceptedSolves": 1,
+              "rejectedSolves": 0,
+              "sourceStepAttempts": 0,
+              "sourceStepFailures": 0,
+              "gminStepAttempts": 0,
+              "gminStepFailures": 0,
+              "failure": null
+            },
+            "transient": {
+              "acceptedSteps": 0,
+              "rejectedSteps": 0,
+              "newtonIterations": 0,
+              "nrRetries": 0,
+              "lteRetries": 0,
+              "minimumAcceptedTimestep": null,
+              "failure": null
+            }
+          }
+        }
+      ]
+    },
+    "cmos1k": {
+      "equal": false,
+      "outputEqual": true,
+      "apiEqual": false,
+      "receipts": [
+        {
+          "mode": "control",
+          "output": {
+            "outputSha256": "8301f2834fc8157f9c23bc1eb9044e09fdd90e180a32271104a1d1ad600d1f11",
+            "vectors": 1003,
+            "count": 214642
+          },
+          "api": {
+            "ACResult": {
+              "type": "function",
+              "name": "ACResult"
+            },
+            "CCCS": {
+              "type": "function",
+              "name": "CCCS"
+            },
+            "CCVS": {
+              "type": "function",
+              "name": "CCVS"
+            },
+            "Circuit": {
+              "type": "function",
+              "name": "Circuit"
+            },
+            "ControlScriptError": {
+              "type": "function",
+              "name": "ControlScriptError"
+            },
+            "ControlScriptExitError": {
+              "type": "function",
+              "name": "ControlScriptExitError"
+            },
+            "ConvergenceError": {
+              "type": "function",
+              "name": "ConvergenceError"
+            },
+            "createSimulator": {
+              "type": "function",
+              "name": "createSimulator"
+            },
+            "createTransientSim": {
+              "type": "function",
+              "name": "createTransientSim"
+            },
+            "CycleError": {
+              "type": "function",
+              "name": "CycleError"
+            },
+            "DCResult": {
+              "type": "function",
+              "name": "DCResult"
+            },
+            "DCSweepResult": {
+              "type": "function",
+              "name": "DCSweepResult"
+            },
+            "DEVICE_MODEL_TYPES": {
+              "type": "object",
+              "name": null
+            },
+            "DistortionResult": {
+              "type": "function",
+              "name": "DistortionResult"
+            },
+            "estimateProtocolResultPointsV1": {
+              "type": "function",
+              "name": "estimateProtocolResultPointsV1"
+            },
+            "executeProtocolV1": {
+              "type": "function",
+              "name": "executeProtocolV1"
+            },
+            "frequencyGrid": {
+              "type": "function",
+              "name": "frequencyGrid"
+            },
+            "frequencyPointCount": {
+              "type": "function",
+              "name": "frequencyPointCount"
+            },
+            "InvalidCircuitError": {
+              "type": "function",
+              "name": "InvalidCircuitError"
+            },
+            "mapProtocolErrorV1": {
+              "type": "function",
+              "name": "mapProtocolErrorV1"
+            },
+            "ModelTypeMismatchError": {
+              "type": "function",
+              "name": "ModelTypeMismatchError"
+            },
+            "NoiseResult": {
+              "type": "function",
+              "name": "NoiseResult"
+            },
+            "parse": {
+              "type": "function",
+              "name": "parse"
+            },
+            "parseAsync": {
+              "type": "function",
+              "name": "parseAsync"
+            },
+            "ParseError": {
+              "type": "function",
+              "name": "ParseError"
+            },
+            "parseTitleless": {
+              "type": "function",
+              "name": "parseTitleless"
+            },
+            "parseTitlelessAsync": {
+              "type": "function",
+              "name": "parseTitlelessAsync"
+            },
+            "PoleZeroResult": {
+              "type": "function",
+              "name": "PoleZeroResult"
+            },
+            "preflightTopology": {
+              "type": "function",
+              "name": "preflightTopology"
+            },
+            "preprocess": {
+              "type": "function",
+              "name": "preprocess"
+            },
+            "protocolCapabilitiesV1": {
+              "type": "function",
+              "name": "protocolCapabilitiesV1"
+            },
+            "SensitivityResult": {
+              "type": "function",
+              "name": "SensitivityResult"
+            },
+            "simulate": {
+              "type": "function",
+              "name": "simulate"
+            },
+            "simulateProtocolV1": {
+              "type": "function",
+              "name": "simulateProtocolV1"
+            },
+            "simulateStepStream": {
+              "type": "function",
+              "name": "simulateStepStream"
+            },
+            "simulateStream": {
+              "type": "function",
+              "name": "simulateStream"
+            },
+            "SingularMatrixError": {
+              "type": "function",
+              "name": "_SingularMatrixError"
+            },
+            "SParameterResult": {
+              "type": "function",
+              "name": "SParameterResult"
+            },
+            "SpiceError": {
+              "type": "function",
+              "name": "SpiceError"
+            },
+            "SUPPORTED_MODEL_TYPES": {
+              "type": "object",
+              "name": null
+            },
+            "TimestepTooSmallError": {
+              "type": "function",
+              "name": "TimestepTooSmallError"
+            },
+            "TopologyPreflightError": {
+              "type": "function",
+              "name": "TopologyPreflightError"
+            },
+            "TransferFunctionResult": {
+              "type": "function",
+              "name": "TransferFunctionResult"
+            },
+            "TransientResult": {
+              "type": "function",
+              "name": "TransientResult"
+            },
+            "UnsupportedCircuitModelTypeError": {
+              "type": "function",
+              "name": "UnsupportedCircuitModelTypeError"
+            },
+            "UnsupportedCodeModelError": {
+              "type": "function",
+              "name": "UnsupportedCodeModelError"
+            },
+            "UnsupportedControlCommandError": {
+              "type": "function",
+              "name": "UnsupportedControlCommandError"
+            },
+            "UnsupportedMeasureError": {
+              "type": "function",
+              "name": "UnsupportedMeasureError"
+            },
+            "UnsupportedModelFlagError": {
+              "type": "function",
+              "name": "UnsupportedModelFlagError"
+            },
+            "UnsupportedModelLevelError": {
+              "type": "function",
+              "name": "UnsupportedModelLevelError"
+            },
+            "UnsupportedModelParameterError": {
+              "type": "function",
+              "name": "UnsupportedModelParameterError"
+            },
+            "UnsupportedModelTypeError": {
+              "type": "function",
+              "name": "UnsupportedModelTypeError"
+            },
+            "UnsupportedModelVersionError": {
+              "type": "function",
+              "name": "UnsupportedModelVersionError"
+            },
+            "UnsupportedMultiplicityError": {
+              "type": "function",
+              "name": "UnsupportedMultiplicityError"
+            },
+            "UnsupportedResistorParameterError": {
+              "type": "function",
+              "name": "UnsupportedResistorParameterError"
+            },
+            "UnsupportedSourceWaveformError": {
+              "type": "function",
+              "name": "UnsupportedSourceWaveformError"
+            },
+            "UnsupportedTemperatureError": {
+              "type": "function",
+              "name": "UnsupportedTemperatureError"
+            },
+            "validateProtocolV1": {
+              "type": "function",
+              "name": "validateProtocolV1"
+            },
+            "VCCS": {
+              "type": "function",
+              "name": "VCCS"
+            },
+            "VCVS": {
+              "type": "function",
+              "name": "VCVS"
+            },
+            "WasmNgspiceSimulator": {
+              "type": "function",
+              "name": "WasmNgspiceSimulator"
+            }
+          },
+          "convergence": {
+            "dc": {
+              "newtonIterations": 138,
+              "acceptedSolves": 18,
+              "rejectedSolves": 0,
+              "sourceStepAttempts": 0,
+              "sourceStepFailures": 0,
+              "gminStepAttempts": 20,
+              "gminStepFailures": 2,
+              "failure": null
+            },
+            "transient": {
+              "acceptedSteps": 213,
+              "rejectedSteps": 0,
+              "newtonIterations": 466,
+              "nrRetries": 0,
+              "lteRetries": 0,
+              "minimumAcceptedTimestep": 1e-13,
+              "failure": null
+            }
+          }
+        },
+        {
+          "mode": "candidate",
+          "output": {
+            "outputSha256": "8301f2834fc8157f9c23bc1eb9044e09fdd90e180a32271104a1d1ad600d1f11",
+            "vectors": 1003,
+            "count": 214642
+          },
+          "api": {
+            "ACResult": {
+              "type": "function",
+              "name": "ACResult"
+            },
+            "CCCS": {
+              "type": "function",
+              "name": "CCCS"
+            },
+            "CCVS": {
+              "type": "function",
+              "name": "CCVS"
+            },
+            "Circuit": {
+              "type": "function",
+              "name": "Circuit"
+            },
+            "ControlScriptError": {
+              "type": "function",
+              "name": "ControlScriptError"
+            },
+            "ControlScriptExitError": {
+              "type": "function",
+              "name": "ControlScriptExitError"
+            },
+            "ConvergenceError": {
+              "type": "function",
+              "name": "ConvergenceError"
+            },
+            "createSimulator": {
+              "type": "function",
+              "name": "createSimulator"
+            },
+            "createTransientSim": {
+              "type": "function",
+              "name": "createTransientSim"
+            },
+            "CycleError": {
+              "type": "function",
+              "name": "CycleError"
+            },
+            "DCResult": {
+              "type": "function",
+              "name": "DCResult"
+            },
+            "DCSweepResult": {
+              "type": "function",
+              "name": "DCSweepResult"
+            },
+            "DEVICE_MODEL_TYPES": {
+              "type": "object",
+              "name": null
+            },
+            "DistortionResult": {
+              "type": "function",
+              "name": "DistortionResult"
+            },
+            "estimateProtocolResultPointsV1": {
+              "type": "function",
+              "name": "estimateProtocolResultPointsV1"
+            },
+            "executeProtocolV1": {
+              "type": "function",
+              "name": "executeProtocolV1"
+            },
+            "frequencyGrid": {
+              "type": "function",
+              "name": "frequencyGrid"
+            },
+            "frequencyPointCount": {
+              "type": "function",
+              "name": "frequencyPointCount"
+            },
+            "InvalidCircuitError": {
+              "type": "function",
+              "name": "InvalidCircuitError"
+            },
+            "mapProtocolErrorV1": {
+              "type": "function",
+              "name": "mapProtocolErrorV1"
+            },
+            "ModelTypeMismatchError": {
+              "type": "function",
+              "name": "ModelTypeMismatchError"
+            },
+            "NoiseResult": {
+              "type": "function",
+              "name": "NoiseResult"
+            },
+            "parse": {
+              "type": "function",
+              "name": "parse"
+            },
+            "parseAsync": {
+              "type": "function",
+              "name": "parseAsync"
+            },
+            "ParseError": {
+              "type": "function",
+              "name": "ParseError"
+            },
+            "parseTitleless": {
+              "type": "function",
+              "name": "parseTitleless"
+            },
+            "parseTitlelessAsync": {
+              "type": "function",
+              "name": "parseTitlelessAsync"
+            },
+            "PoleZeroResult": {
+              "type": "function",
+              "name": "PoleZeroResult"
+            },
+            "preflightTopology": {
+              "type": "function",
+              "name": "preflightTopology"
+            },
+            "preprocess": {
+              "type": "function",
+              "name": "preprocess"
+            },
+            "protocolCapabilitiesV1": {
+              "type": "function",
+              "name": "protocolCapabilitiesV1"
+            },
+            "SensitivityResult": {
+              "type": "function",
+              "name": "SensitivityResult"
+            },
+            "simulate": {
+              "type": "function",
+              "name": "simulate"
+            },
+            "simulateProtocolV1": {
+              "type": "function",
+              "name": "simulateProtocolV1"
+            },
+            "simulateStepStream": {
+              "type": "function",
+              "name": "simulateStepStream"
+            },
+            "simulateStream": {
+              "type": "function",
+              "name": "simulateStream"
+            },
+            "SingularMatrixError": {
+              "type": "function",
+              "name": "SingularMatrixError"
+            },
+            "SParameterResult": {
+              "type": "function",
+              "name": "SParameterResult"
+            },
+            "SpiceError": {
+              "type": "function",
+              "name": "SpiceError"
+            },
+            "SUPPORTED_MODEL_TYPES": {
+              "type": "object",
+              "name": null
+            },
+            "TimestepTooSmallError": {
+              "type": "function",
+              "name": "TimestepTooSmallError"
+            },
+            "TopologyPreflightError": {
+              "type": "function",
+              "name": "TopologyPreflightError"
+            },
+            "TransferFunctionResult": {
+              "type": "function",
+              "name": "TransferFunctionResult"
+            },
+            "TransientResult": {
+              "type": "function",
+              "name": "TransientResult"
+            },
+            "UnsupportedCircuitModelTypeError": {
+              "type": "function",
+              "name": "UnsupportedCircuitModelTypeError"
+            },
+            "UnsupportedCodeModelError": {
+              "type": "function",
+              "name": "UnsupportedCodeModelError"
+            },
+            "UnsupportedControlCommandError": {
+              "type": "function",
+              "name": "UnsupportedControlCommandError"
+            },
+            "UnsupportedMeasureError": {
+              "type": "function",
+              "name": "UnsupportedMeasureError"
+            },
+            "UnsupportedModelFlagError": {
+              "type": "function",
+              "name": "UnsupportedModelFlagError"
+            },
+            "UnsupportedModelLevelError": {
+              "type": "function",
+              "name": "UnsupportedModelLevelError"
+            },
+            "UnsupportedModelParameterError": {
+              "type": "function",
+              "name": "UnsupportedModelParameterError"
+            },
+            "UnsupportedModelTypeError": {
+              "type": "function",
+              "name": "UnsupportedModelTypeError"
+            },
+            "UnsupportedModelVersionError": {
+              "type": "function",
+              "name": "UnsupportedModelVersionError"
+            },
+            "UnsupportedMultiplicityError": {
+              "type": "function",
+              "name": "UnsupportedMultiplicityError"
+            },
+            "UnsupportedResistorParameterError": {
+              "type": "function",
+              "name": "UnsupportedResistorParameterError"
+            },
+            "UnsupportedSourceWaveformError": {
+              "type": "function",
+              "name": "UnsupportedSourceWaveformError"
+            },
+            "UnsupportedTemperatureError": {
+              "type": "function",
+              "name": "UnsupportedTemperatureError"
+            },
+            "validateProtocolV1": {
+              "type": "function",
+              "name": "validateProtocolV1"
+            },
+            "VCCS": {
+              "type": "function",
+              "name": "VCCS"
+            },
+            "VCVS": {
+              "type": "function",
+              "name": "VCVS"
+            },
+            "WasmNgspiceSimulator": {
+              "type": "function",
+              "name": "WasmNgspiceSimulator"
+            }
+          },
+          "convergence": {
+            "dc": {
+              "newtonIterations": 138,
+              "acceptedSolves": 18,
+              "rejectedSolves": 0,
+              "sourceStepAttempts": 0,
+              "sourceStepFailures": 0,
+              "gminStepAttempts": 20,
+              "gminStepFailures": 2,
+              "failure": null
+            },
+            "transient": {
+              "acceptedSteps": 213,
+              "rejectedSteps": 0,
+              "newtonIterations": 466,
+              "nrRetries": 0,
+              "lteRetries": 0,
+              "minimumAcceptedTimestep": 1e-13,
+              "failure": null
+            }
+          }
+        }
+      ]
+    },
+    "esm": {
+      "equal": false,
+      "outputEqual": null,
+      "apiEqual": false,
+      "receipts": [
+        {
+          "mode": "control",
+          "api": {
+            "ACResult": {
+              "type": "function",
+              "name": "ACResult"
+            },
+            "CCCS": {
+              "type": "function",
+              "name": "CCCS"
+            },
+            "CCVS": {
+              "type": "function",
+              "name": "CCVS"
+            },
+            "Circuit": {
+              "type": "function",
+              "name": "Circuit"
+            },
+            "ControlScriptError": {
+              "type": "function",
+              "name": "ControlScriptError"
+            },
+            "ControlScriptExitError": {
+              "type": "function",
+              "name": "ControlScriptExitError"
+            },
+            "ConvergenceError": {
+              "type": "function",
+              "name": "ConvergenceError"
+            },
+            "createSimulator": {
+              "type": "function",
+              "name": "createSimulator"
+            },
+            "createTransientSim": {
+              "type": "function",
+              "name": "createTransientSim"
+            },
+            "CycleError": {
+              "type": "function",
+              "name": "CycleError"
+            },
+            "DCResult": {
+              "type": "function",
+              "name": "DCResult"
+            },
+            "DCSweepResult": {
+              "type": "function",
+              "name": "DCSweepResult"
+            },
+            "DEVICE_MODEL_TYPES": {
+              "type": "object",
+              "name": null
+            },
+            "DistortionResult": {
+              "type": "function",
+              "name": "DistortionResult"
+            },
+            "estimateProtocolResultPointsV1": {
+              "type": "function",
+              "name": "estimateProtocolResultPointsV1"
+            },
+            "executeProtocolV1": {
+              "type": "function",
+              "name": "executeProtocolV1"
+            },
+            "frequencyGrid": {
+              "type": "function",
+              "name": "frequencyGrid"
+            },
+            "frequencyPointCount": {
+              "type": "function",
+              "name": "frequencyPointCount"
+            },
+            "InvalidCircuitError": {
+              "type": "function",
+              "name": "InvalidCircuitError"
+            },
+            "mapProtocolErrorV1": {
+              "type": "function",
+              "name": "mapProtocolErrorV1"
+            },
+            "ModelTypeMismatchError": {
+              "type": "function",
+              "name": "ModelTypeMismatchError"
+            },
+            "NoiseResult": {
+              "type": "function",
+              "name": "NoiseResult"
+            },
+            "parse": {
+              "type": "function",
+              "name": "parse"
+            },
+            "parseAsync": {
+              "type": "function",
+              "name": "parseAsync"
+            },
+            "ParseError": {
+              "type": "function",
+              "name": "ParseError"
+            },
+            "parseTitleless": {
+              "type": "function",
+              "name": "parseTitleless"
+            },
+            "parseTitlelessAsync": {
+              "type": "function",
+              "name": "parseTitlelessAsync"
+            },
+            "PoleZeroResult": {
+              "type": "function",
+              "name": "PoleZeroResult"
+            },
+            "preflightTopology": {
+              "type": "function",
+              "name": "preflightTopology"
+            },
+            "preprocess": {
+              "type": "function",
+              "name": "preprocess"
+            },
+            "protocolCapabilitiesV1": {
+              "type": "function",
+              "name": "protocolCapabilitiesV1"
+            },
+            "SensitivityResult": {
+              "type": "function",
+              "name": "SensitivityResult"
+            },
+            "simulate": {
+              "type": "function",
+              "name": "simulate"
+            },
+            "simulateProtocolV1": {
+              "type": "function",
+              "name": "simulateProtocolV1"
+            },
+            "simulateStepStream": {
+              "type": "function",
+              "name": "simulateStepStream"
+            },
+            "simulateStream": {
+              "type": "function",
+              "name": "simulateStream"
+            },
+            "SingularMatrixError": {
+              "type": "function",
+              "name": "_SingularMatrixError"
+            },
+            "SParameterResult": {
+              "type": "function",
+              "name": "SParameterResult"
+            },
+            "SpiceError": {
+              "type": "function",
+              "name": "SpiceError"
+            },
+            "SUPPORTED_MODEL_TYPES": {
+              "type": "object",
+              "name": null
+            },
+            "TimestepTooSmallError": {
+              "type": "function",
+              "name": "TimestepTooSmallError"
+            },
+            "TopologyPreflightError": {
+              "type": "function",
+              "name": "TopologyPreflightError"
+            },
+            "TransferFunctionResult": {
+              "type": "function",
+              "name": "TransferFunctionResult"
+            },
+            "TransientResult": {
+              "type": "function",
+              "name": "TransientResult"
+            },
+            "UnsupportedCircuitModelTypeError": {
+              "type": "function",
+              "name": "UnsupportedCircuitModelTypeError"
+            },
+            "UnsupportedCodeModelError": {
+              "type": "function",
+              "name": "UnsupportedCodeModelError"
+            },
+            "UnsupportedControlCommandError": {
+              "type": "function",
+              "name": "UnsupportedControlCommandError"
+            },
+            "UnsupportedMeasureError": {
+              "type": "function",
+              "name": "UnsupportedMeasureError"
+            },
+            "UnsupportedModelFlagError": {
+              "type": "function",
+              "name": "UnsupportedModelFlagError"
+            },
+            "UnsupportedModelLevelError": {
+              "type": "function",
+              "name": "UnsupportedModelLevelError"
+            },
+            "UnsupportedModelParameterError": {
+              "type": "function",
+              "name": "UnsupportedModelParameterError"
+            },
+            "UnsupportedModelTypeError": {
+              "type": "function",
+              "name": "UnsupportedModelTypeError"
+            },
+            "UnsupportedModelVersionError": {
+              "type": "function",
+              "name": "UnsupportedModelVersionError"
+            },
+            "UnsupportedMultiplicityError": {
+              "type": "function",
+              "name": "UnsupportedMultiplicityError"
+            },
+            "UnsupportedResistorParameterError": {
+              "type": "function",
+              "name": "UnsupportedResistorParameterError"
+            },
+            "UnsupportedSourceWaveformError": {
+              "type": "function",
+              "name": "UnsupportedSourceWaveformError"
+            },
+            "UnsupportedTemperatureError": {
+              "type": "function",
+              "name": "UnsupportedTemperatureError"
+            },
+            "validateProtocolV1": {
+              "type": "function",
+              "name": "validateProtocolV1"
+            },
+            "VCCS": {
+              "type": "function",
+              "name": "VCCS"
+            },
+            "VCVS": {
+              "type": "function",
+              "name": "VCVS"
+            },
+            "WasmNgspiceSimulator": {
+              "type": "function",
+              "name": "WasmNgspiceSimulator"
+            }
+          }
+        },
+        {
+          "mode": "candidate",
+          "api": {
+            "ACResult": {
+              "type": "function",
+              "name": "ACResult"
+            },
+            "CCCS": {
+              "type": "function",
+              "name": "CCCS"
+            },
+            "CCVS": {
+              "type": "function",
+              "name": "CCVS"
+            },
+            "Circuit": {
+              "type": "function",
+              "name": "Circuit"
+            },
+            "ControlScriptError": {
+              "type": "function",
+              "name": "ControlScriptError"
+            },
+            "ControlScriptExitError": {
+              "type": "function",
+              "name": "ControlScriptExitError"
+            },
+            "ConvergenceError": {
+              "type": "function",
+              "name": "ConvergenceError"
+            },
+            "createSimulator": {
+              "type": "function",
+              "name": "createSimulator"
+            },
+            "createTransientSim": {
+              "type": "function",
+              "name": "createTransientSim"
+            },
+            "CycleError": {
+              "type": "function",
+              "name": "CycleError"
+            },
+            "DCResult": {
+              "type": "function",
+              "name": "DCResult"
+            },
+            "DCSweepResult": {
+              "type": "function",
+              "name": "DCSweepResult"
+            },
+            "DEVICE_MODEL_TYPES": {
+              "type": "object",
+              "name": null
+            },
+            "DistortionResult": {
+              "type": "function",
+              "name": "DistortionResult"
+            },
+            "estimateProtocolResultPointsV1": {
+              "type": "function",
+              "name": "estimateProtocolResultPointsV1"
+            },
+            "executeProtocolV1": {
+              "type": "function",
+              "name": "executeProtocolV1"
+            },
+            "frequencyGrid": {
+              "type": "function",
+              "name": "frequencyGrid"
+            },
+            "frequencyPointCount": {
+              "type": "function",
+              "name": "frequencyPointCount"
+            },
+            "InvalidCircuitError": {
+              "type": "function",
+              "name": "InvalidCircuitError"
+            },
+            "mapProtocolErrorV1": {
+              "type": "function",
+              "name": "mapProtocolErrorV1"
+            },
+            "ModelTypeMismatchError": {
+              "type": "function",
+              "name": "ModelTypeMismatchError"
+            },
+            "NoiseResult": {
+              "type": "function",
+              "name": "NoiseResult"
+            },
+            "parse": {
+              "type": "function",
+              "name": "parse"
+            },
+            "parseAsync": {
+              "type": "function",
+              "name": "parseAsync"
+            },
+            "ParseError": {
+              "type": "function",
+              "name": "ParseError"
+            },
+            "parseTitleless": {
+              "type": "function",
+              "name": "parseTitleless"
+            },
+            "parseTitlelessAsync": {
+              "type": "function",
+              "name": "parseTitlelessAsync"
+            },
+            "PoleZeroResult": {
+              "type": "function",
+              "name": "PoleZeroResult"
+            },
+            "preflightTopology": {
+              "type": "function",
+              "name": "preflightTopology"
+            },
+            "preprocess": {
+              "type": "function",
+              "name": "preprocess"
+            },
+            "protocolCapabilitiesV1": {
+              "type": "function",
+              "name": "protocolCapabilitiesV1"
+            },
+            "SensitivityResult": {
+              "type": "function",
+              "name": "SensitivityResult"
+            },
+            "simulate": {
+              "type": "function",
+              "name": "simulate"
+            },
+            "simulateProtocolV1": {
+              "type": "function",
+              "name": "simulateProtocolV1"
+            },
+            "simulateStepStream": {
+              "type": "function",
+              "name": "simulateStepStream"
+            },
+            "simulateStream": {
+              "type": "function",
+              "name": "simulateStream"
+            },
+            "SingularMatrixError": {
+              "type": "function",
+              "name": "SingularMatrixError"
+            },
+            "SParameterResult": {
+              "type": "function",
+              "name": "SParameterResult"
+            },
+            "SpiceError": {
+              "type": "function",
+              "name": "SpiceError"
+            },
+            "SUPPORTED_MODEL_TYPES": {
+              "type": "object",
+              "name": null
+            },
+            "TimestepTooSmallError": {
+              "type": "function",
+              "name": "TimestepTooSmallError"
+            },
+            "TopologyPreflightError": {
+              "type": "function",
+              "name": "TopologyPreflightError"
+            },
+            "TransferFunctionResult": {
+              "type": "function",
+              "name": "TransferFunctionResult"
+            },
+            "TransientResult": {
+              "type": "function",
+              "name": "TransientResult"
+            },
+            "UnsupportedCircuitModelTypeError": {
+              "type": "function",
+              "name": "UnsupportedCircuitModelTypeError"
+            },
+            "UnsupportedCodeModelError": {
+              "type": "function",
+              "name": "UnsupportedCodeModelError"
+            },
+            "UnsupportedControlCommandError": {
+              "type": "function",
+              "name": "UnsupportedControlCommandError"
+            },
+            "UnsupportedMeasureError": {
+              "type": "function",
+              "name": "UnsupportedMeasureError"
+            },
+            "UnsupportedModelFlagError": {
+              "type": "function",
+              "name": "UnsupportedModelFlagError"
+            },
+            "UnsupportedModelLevelError": {
+              "type": "function",
+              "name": "UnsupportedModelLevelError"
+            },
+            "UnsupportedModelParameterError": {
+              "type": "function",
+              "name": "UnsupportedModelParameterError"
+            },
+            "UnsupportedModelTypeError": {
+              "type": "function",
+              "name": "UnsupportedModelTypeError"
+            },
+            "UnsupportedModelVersionError": {
+              "type": "function",
+              "name": "UnsupportedModelVersionError"
+            },
+            "UnsupportedMultiplicityError": {
+              "type": "function",
+              "name": "UnsupportedMultiplicityError"
+            },
+            "UnsupportedResistorParameterError": {
+              "type": "function",
+              "name": "UnsupportedResistorParameterError"
+            },
+            "UnsupportedSourceWaveformError": {
+              "type": "function",
+              "name": "UnsupportedSourceWaveformError"
+            },
+            "UnsupportedTemperatureError": {
+              "type": "function",
+              "name": "UnsupportedTemperatureError"
+            },
+            "validateProtocolV1": {
+              "type": "function",
+              "name": "validateProtocolV1"
+            },
+            "VCCS": {
+              "type": "function",
+              "name": "VCCS"
+            },
+            "VCVS": {
+              "type": "function",
+              "name": "VCVS"
+            },
+            "WasmNgspiceSimulator": {
+              "type": "function",
+              "name": "WasmNgspiceSimulator"
+            }
+          }
+        }
+      ]
+    },
+    "cjs": {
+      "equal": false,
+      "outputEqual": null,
+      "apiEqual": false,
+      "receipts": [
+        {
+          "mode": "control",
+          "api": {
+            "ACResult": {
+              "type": "function",
+              "name": "ACResult"
+            },
+            "CCCS": {
+              "type": "function",
+              "name": "CCCS"
+            },
+            "CCVS": {
+              "type": "function",
+              "name": "CCVS"
+            },
+            "Circuit": {
+              "type": "function",
+              "name": "Circuit"
+            },
+            "ControlScriptError": {
+              "type": "function",
+              "name": "ControlScriptError"
+            },
+            "ControlScriptExitError": {
+              "type": "function",
+              "name": "ControlScriptExitError"
+            },
+            "ConvergenceError": {
+              "type": "function",
+              "name": "ConvergenceError"
+            },
+            "createSimulator": {
+              "type": "function",
+              "name": "createSimulator"
+            },
+            "createTransientSim": {
+              "type": "function",
+              "name": "createTransientSim"
+            },
+            "CycleError": {
+              "type": "function",
+              "name": "CycleError"
+            },
+            "DCResult": {
+              "type": "function",
+              "name": "DCResult"
+            },
+            "DCSweepResult": {
+              "type": "function",
+              "name": "DCSweepResult"
+            },
+            "DEVICE_MODEL_TYPES": {
+              "type": "object",
+              "name": null
+            },
+            "DistortionResult": {
+              "type": "function",
+              "name": "DistortionResult"
+            },
+            "estimateProtocolResultPointsV1": {
+              "type": "function",
+              "name": "estimateProtocolResultPointsV1"
+            },
+            "executeProtocolV1": {
+              "type": "function",
+              "name": "executeProtocolV1"
+            },
+            "frequencyGrid": {
+              "type": "function",
+              "name": "frequencyGrid"
+            },
+            "frequencyPointCount": {
+              "type": "function",
+              "name": "frequencyPointCount"
+            },
+            "InvalidCircuitError": {
+              "type": "function",
+              "name": "InvalidCircuitError"
+            },
+            "mapProtocolErrorV1": {
+              "type": "function",
+              "name": "mapProtocolErrorV1"
+            },
+            "ModelTypeMismatchError": {
+              "type": "function",
+              "name": "ModelTypeMismatchError"
+            },
+            "NoiseResult": {
+              "type": "function",
+              "name": "NoiseResult"
+            },
+            "parse": {
+              "type": "function",
+              "name": "parse"
+            },
+            "parseAsync": {
+              "type": "function",
+              "name": "parseAsync"
+            },
+            "ParseError": {
+              "type": "function",
+              "name": "ParseError"
+            },
+            "parseTitleless": {
+              "type": "function",
+              "name": "parseTitleless"
+            },
+            "parseTitlelessAsync": {
+              "type": "function",
+              "name": "parseTitlelessAsync"
+            },
+            "PoleZeroResult": {
+              "type": "function",
+              "name": "PoleZeroResult"
+            },
+            "preflightTopology": {
+              "type": "function",
+              "name": "preflightTopology"
+            },
+            "preprocess": {
+              "type": "function",
+              "name": "preprocess"
+            },
+            "protocolCapabilitiesV1": {
+              "type": "function",
+              "name": "protocolCapabilitiesV1"
+            },
+            "SensitivityResult": {
+              "type": "function",
+              "name": "SensitivityResult"
+            },
+            "simulate": {
+              "type": "function",
+              "name": "simulate"
+            },
+            "simulateProtocolV1": {
+              "type": "function",
+              "name": "simulateProtocolV1"
+            },
+            "simulateStepStream": {
+              "type": "function",
+              "name": "simulateStepStream"
+            },
+            "simulateStream": {
+              "type": "function",
+              "name": "simulateStream"
+            },
+            "SingularMatrixError": {
+              "type": "function",
+              "name": "_SingularMatrixError"
+            },
+            "SParameterResult": {
+              "type": "function",
+              "name": "SParameterResult"
+            },
+            "SpiceError": {
+              "type": "function",
+              "name": "SpiceError"
+            },
+            "SUPPORTED_MODEL_TYPES": {
+              "type": "object",
+              "name": null
+            },
+            "TimestepTooSmallError": {
+              "type": "function",
+              "name": "TimestepTooSmallError"
+            },
+            "TopologyPreflightError": {
+              "type": "function",
+              "name": "TopologyPreflightError"
+            },
+            "TransferFunctionResult": {
+              "type": "function",
+              "name": "TransferFunctionResult"
+            },
+            "TransientResult": {
+              "type": "function",
+              "name": "TransientResult"
+            },
+            "UnsupportedCircuitModelTypeError": {
+              "type": "function",
+              "name": "UnsupportedCircuitModelTypeError"
+            },
+            "UnsupportedCodeModelError": {
+              "type": "function",
+              "name": "UnsupportedCodeModelError"
+            },
+            "UnsupportedControlCommandError": {
+              "type": "function",
+              "name": "UnsupportedControlCommandError"
+            },
+            "UnsupportedMeasureError": {
+              "type": "function",
+              "name": "UnsupportedMeasureError"
+            },
+            "UnsupportedModelFlagError": {
+              "type": "function",
+              "name": "UnsupportedModelFlagError"
+            },
+            "UnsupportedModelLevelError": {
+              "type": "function",
+              "name": "UnsupportedModelLevelError"
+            },
+            "UnsupportedModelParameterError": {
+              "type": "function",
+              "name": "UnsupportedModelParameterError"
+            },
+            "UnsupportedModelTypeError": {
+              "type": "function",
+              "name": "UnsupportedModelTypeError"
+            },
+            "UnsupportedModelVersionError": {
+              "type": "function",
+              "name": "UnsupportedModelVersionError"
+            },
+            "UnsupportedMultiplicityError": {
+              "type": "function",
+              "name": "UnsupportedMultiplicityError"
+            },
+            "UnsupportedResistorParameterError": {
+              "type": "function",
+              "name": "UnsupportedResistorParameterError"
+            },
+            "UnsupportedSourceWaveformError": {
+              "type": "function",
+              "name": "UnsupportedSourceWaveformError"
+            },
+            "UnsupportedTemperatureError": {
+              "type": "function",
+              "name": "UnsupportedTemperatureError"
+            },
+            "validateProtocolV1": {
+              "type": "function",
+              "name": "validateProtocolV1"
+            },
+            "VCCS": {
+              "type": "function",
+              "name": "VCCS"
+            },
+            "VCVS": {
+              "type": "function",
+              "name": "VCVS"
+            },
+            "WasmNgspiceSimulator": {
+              "type": "function",
+              "name": "WasmNgspiceSimulator"
+            }
+          }
+        },
+        {
+          "mode": "candidate",
+          "api": {
+            "ACResult": {
+              "type": "function",
+              "name": "ACResult"
+            },
+            "CCCS": {
+              "type": "function",
+              "name": "CCCS"
+            },
+            "CCVS": {
+              "type": "function",
+              "name": "CCVS"
+            },
+            "Circuit": {
+              "type": "function",
+              "name": "Circuit"
+            },
+            "ControlScriptError": {
+              "type": "function",
+              "name": "ControlScriptError"
+            },
+            "ControlScriptExitError": {
+              "type": "function",
+              "name": "ControlScriptExitError"
+            },
+            "ConvergenceError": {
+              "type": "function",
+              "name": "ConvergenceError"
+            },
+            "createSimulator": {
+              "type": "function",
+              "name": "createSimulator"
+            },
+            "createTransientSim": {
+              "type": "function",
+              "name": "createTransientSim"
+            },
+            "CycleError": {
+              "type": "function",
+              "name": "CycleError"
+            },
+            "DCResult": {
+              "type": "function",
+              "name": "DCResult"
+            },
+            "DCSweepResult": {
+              "type": "function",
+              "name": "DCSweepResult"
+            },
+            "DEVICE_MODEL_TYPES": {
+              "type": "object",
+              "name": null
+            },
+            "DistortionResult": {
+              "type": "function",
+              "name": "DistortionResult"
+            },
+            "estimateProtocolResultPointsV1": {
+              "type": "function",
+              "name": "estimateProtocolResultPointsV1"
+            },
+            "executeProtocolV1": {
+              "type": "function",
+              "name": "executeProtocolV1"
+            },
+            "frequencyGrid": {
+              "type": "function",
+              "name": "frequencyGrid"
+            },
+            "frequencyPointCount": {
+              "type": "function",
+              "name": "frequencyPointCount"
+            },
+            "InvalidCircuitError": {
+              "type": "function",
+              "name": "InvalidCircuitError"
+            },
+            "mapProtocolErrorV1": {
+              "type": "function",
+              "name": "mapProtocolErrorV1"
+            },
+            "ModelTypeMismatchError": {
+              "type": "function",
+              "name": "ModelTypeMismatchError"
+            },
+            "NoiseResult": {
+              "type": "function",
+              "name": "NoiseResult"
+            },
+            "parse": {
+              "type": "function",
+              "name": "parse"
+            },
+            "parseAsync": {
+              "type": "function",
+              "name": "parseAsync"
+            },
+            "ParseError": {
+              "type": "function",
+              "name": "ParseError"
+            },
+            "parseTitleless": {
+              "type": "function",
+              "name": "parseTitleless"
+            },
+            "parseTitlelessAsync": {
+              "type": "function",
+              "name": "parseTitlelessAsync"
+            },
+            "PoleZeroResult": {
+              "type": "function",
+              "name": "PoleZeroResult"
+            },
+            "preflightTopology": {
+              "type": "function",
+              "name": "preflightTopology"
+            },
+            "preprocess": {
+              "type": "function",
+              "name": "preprocess"
+            },
+            "protocolCapabilitiesV1": {
+              "type": "function",
+              "name": "protocolCapabilitiesV1"
+            },
+            "SensitivityResult": {
+              "type": "function",
+              "name": "SensitivityResult"
+            },
+            "simulate": {
+              "type": "function",
+              "name": "simulate"
+            },
+            "simulateProtocolV1": {
+              "type": "function",
+              "name": "simulateProtocolV1"
+            },
+            "simulateStepStream": {
+              "type": "function",
+              "name": "simulateStepStream"
+            },
+            "simulateStream": {
+              "type": "function",
+              "name": "simulateStream"
+            },
+            "SingularMatrixError": {
+              "type": "function",
+              "name": "SingularMatrixError"
+            },
+            "SParameterResult": {
+              "type": "function",
+              "name": "SParameterResult"
+            },
+            "SpiceError": {
+              "type": "function",
+              "name": "SpiceError"
+            },
+            "SUPPORTED_MODEL_TYPES": {
+              "type": "object",
+              "name": null
+            },
+            "TimestepTooSmallError": {
+              "type": "function",
+              "name": "TimestepTooSmallError"
+            },
+            "TopologyPreflightError": {
+              "type": "function",
+              "name": "TopologyPreflightError"
+            },
+            "TransferFunctionResult": {
+              "type": "function",
+              "name": "TransferFunctionResult"
+            },
+            "TransientResult": {
+              "type": "function",
+              "name": "TransientResult"
+            },
+            "UnsupportedCircuitModelTypeError": {
+              "type": "function",
+              "name": "UnsupportedCircuitModelTypeError"
+            },
+            "UnsupportedCodeModelError": {
+              "type": "function",
+              "name": "UnsupportedCodeModelError"
+            },
+            "UnsupportedControlCommandError": {
+              "type": "function",
+              "name": "UnsupportedControlCommandError"
+            },
+            "UnsupportedMeasureError": {
+              "type": "function",
+              "name": "UnsupportedMeasureError"
+            },
+            "UnsupportedModelFlagError": {
+              "type": "function",
+              "name": "UnsupportedModelFlagError"
+            },
+            "UnsupportedModelLevelError": {
+              "type": "function",
+              "name": "UnsupportedModelLevelError"
+            },
+            "UnsupportedModelParameterError": {
+              "type": "function",
+              "name": "UnsupportedModelParameterError"
+            },
+            "UnsupportedModelTypeError": {
+              "type": "function",
+              "name": "UnsupportedModelTypeError"
+            },
+            "UnsupportedModelVersionError": {
+              "type": "function",
+              "name": "UnsupportedModelVersionError"
+            },
+            "UnsupportedMultiplicityError": {
+              "type": "function",
+              "name": "UnsupportedMultiplicityError"
+            },
+            "UnsupportedResistorParameterError": {
+              "type": "function",
+              "name": "UnsupportedResistorParameterError"
+            },
+            "UnsupportedSourceWaveformError": {
+              "type": "function",
+              "name": "UnsupportedSourceWaveformError"
+            },
+            "UnsupportedTemperatureError": {
+              "type": "function",
+              "name": "UnsupportedTemperatureError"
+            },
+            "validateProtocolV1": {
+              "type": "function",
+              "name": "validateProtocolV1"
+            },
+            "VCCS": {
+              "type": "function",
+              "name": "VCCS"
+            },
+            "VCVS": {
+              "type": "function",
+              "name": "VCVS"
+            },
+            "WasmNgspiceSimulator": {
+              "type": "function",
+              "name": "WasmNgspiceSimulator"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "nativeVerified": true,
+  "loads": {
+    "n": 170,
+    "min": 7.22216796875,
+    "q1": 7.377685546875,
+    "median": 7.40185546875,
+    "q3": 7.5244140625,
+    "iqr": 0.146728515625,
+    "max": 7.5244140625
+  },
+  "failures": [],
+  "gatePassed": false,
+  "counts": {
+    "import": 30,
+    "rc1k": 45,
+    "parity": 10
+  }
+}

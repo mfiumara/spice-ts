@@ -33,7 +33,38 @@ function signalParts(signal: string): { kind: string; args: string } {
   return { kind: match[1].toUpperCase(), args: match[2] };
 }
 
-/** Output cards and bare BJT scalar assignments are rewritten; values are not tuned. */
+// Offset-bearing top-level tokens keep expression functions opaque and let us
+// replace just the waveform name, without reserializing any numeric values.
+function sourceTokens(text: string): { text: string; start: number; end: number }[] {
+  const tokens: { text: string; start: number; end: number }[] = [];
+  let index = 0;
+  while (index < text.length) {
+    if (/\s/.test(text[index])) { index++; continue; }
+    const start = index;
+    const stack: string[] = [];
+    let quote = '';
+    do {
+      const char = text[index];
+      if (quote) {
+        if (char === quote) quote = '';
+      } else if (char === "'" || char === '"') quote = char;
+      else if (char === '{' || char === '(') stack.push(char === '{' ? '}' : ')');
+      else if (char === '}' || char === ')') {
+        if (stack.pop() !== char) limited('Unbalanced source expression cannot be translated');
+      }
+      index++;
+      if (!quote && stack.length === 0) {
+        // Separate a function/waveform name from its parenthesized arguments.
+        if (/\s/.test(text[index] ?? ' ') || text[index] === '(') break;
+      }
+    } while (index < text.length);
+    if (quote || stack.length) limited('Unbalanced source expression cannot be translated');
+    tokens.push({ text: text.slice(start, index), start, end: index });
+  }
+  return tokens;
+}
+
+/** Output cards and native syntax aliases are rewritten; values are not tuned. */
 export function translateForXyce(fixture: ComparisonFixture): { netlist: string; changes: string[] } {
   if (!['op', 'dc', 'tran', 'ac'].includes(fixture.analysis)) limited(`Unsupported analysis: ${fixture.analysis}`);
   if (fixture.signals.length === 0) limited('At least one requested signal is required');
@@ -94,6 +125,43 @@ export function translateForXyce(fixture: ComparisonFixture): { netlist: string;
     // TYPE is not a generic ignorable parameter. In particular VSOURCE does not
     // establish a DC waveform. Until a documented mapping exists, fail closed.
     if (/^[vi]\S*\s+\S+\s+\S+.*\btype\s*=/i.test(logical)) limited('Source TYPE markers require a documented Xyce mapping');
+    if (/^[vi]\S*\s+\S+\s+\S+\s/i.test(logical)) {
+      // ngspice accepts SINE as a SIN alias. Xyce 7.10 silently ignores SINE,
+      // leaving only DC (or zero). Change the waveform keyword, never its values.
+      // Match only a waveform after optional DC/AC specifications, shielding
+      // balanced expressions so their function names never become keywords.
+      // Node/device names, comments and expression functions are not keywords.
+      const comments: string[] = [];
+      const code = record.map((line, i) => {
+        const text = i ? line.replace(/^\s*\+/, '') : line;
+        const comment = text.search(/[;$]/);
+        if (comment < 0) return text;
+        comments.push(`* ${text.slice(comment)}`);
+        return text.slice(0, comment);
+      }).join(' ');
+      const header = /^\s*[vi]\S*\s+\S+\s+\S+\s+/i.exec(code)!;
+      const body = code.slice(header[0].length);
+      const tokens = sourceTokens(body);
+      const sine = tokens.findIndex(token => /^SINE$/i.test(token.text));
+      if (sine >= 0) {
+        const value = (text: string | undefined) => text !== undefined &&
+          (/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?[a-z]*$/i.test(text) || /^[{('"]/.test(text));
+        let cursor = 0;
+        if (value(tokens[cursor]?.text)) cursor++;
+        while (cursor < sine) {
+          const spec = tokens[cursor++].text.toUpperCase();
+          if (!['DC', 'AC'].includes(spec) || !value(tokens[cursor]?.text)) limited('Unsupported source prefix before SINE');
+          cursor++;
+          if (spec === 'AC' && cursor < sine && value(tokens[cursor]?.text)) cursor++;
+        }
+        if (cursor !== sine || !tokens[sine + 1]?.text.startsWith('(') ||
+          tokens.slice(sine + 1).some(token => /^SINE$/i.test(token.text))) limited('Unsupported SINE waveform syntax');
+        const token = tokens[sine];
+        changes.push(`Normalised source ${logical.split(/\s+/)[0]} SINE to SIN (values preserved)`);
+        kept.push(header[0] + body.slice(0, token.start) + 'SIN' + body.slice(token.end), ...comments);
+        continue;
+      }
+    }
     if (/^\.step\b/i.test(logical)) limited('.step output is outside this reference slice');
     // Keep the original bootstrap non-OP translation byte-for-byte reproducible.
     // Canonical multi-analysis callers supply a single-analysis projection.

@@ -1,5 +1,15 @@
 # Benchmark sources
 
+## SINE after DC/AC expressions (#994)
+
+The minimal V/I source probes in `reference/xyce.test.ts` and
+[sine-expressions-994.md](reference/investigations/974/sine-expressions-994.md)
+are original spice-ts project work under the repository MIT licence, not
+third-party decks. Source: https://github.com/mfiumara/spice-ts/issues/994.
+ngspice-47 and Xyce 7.10 receive identical source values; only the native
+SINE/SIN alias and output cards differ. Native-grid extrema are reported,
+including the pre-fix flat-output loss. No corpus tolerance is changed.
+
 ## MAXORD order-cap regression (#983)
 
 [maxord-983](reference/maxord-983/README.md) reruns unchanged corpus-k k-13

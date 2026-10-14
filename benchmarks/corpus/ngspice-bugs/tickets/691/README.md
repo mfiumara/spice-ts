@@ -30,7 +30,7 @@ The biased VBIC network must admit a consistent DC operating point before comput
 |---|---|---|
 | ngspice-47 | error | KLU explicitly rejects PZ as not yet supported; Sparse/original complete501 AC rows and PZ roots (including pole -1.86198e4). |
 | ngspice master | wrong | KLU .pz on master aborts with "The input signal is shorted on the way to the output"; Sparse run succeeds (47 refused KLU pole-zero). [ngspice pre-master-48 HEAD 3ef069fb (2026-10-09), built in scratch] |
-| spice-ts | unsupported | The defect is specific to ngspice option KLU; spice-ts rejects .options klu/sparse as unsupported options. On the original deck (no solver option) spice-ts runs the VBIC AC/PZ (v4 \|H\|=685.149 at 100 kHz), as does ngspice with Sparse; those roots were not validated independently. |
+| spice-ts | unsupported | #812 refresh d8ab9d33: pinned solver variants first fail at ParseError line 2, Unsupported .options field klu/sparse. Native ngspice-47 KLU fails; Sparse completes AC. No spice-ts metrics. Unqualified original's historical AC/PZ result does not validate these solver-specific variants. Existing #812. |
 
 Reproduces on ngspice-47: partially. Check: KLU PZ currently reports unsupported rather than historic failed DC convergence; default/Sparse completes.
 
