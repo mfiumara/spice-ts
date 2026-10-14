@@ -1000,6 +1000,9 @@ export class MOS2 implements DeviceModel {
       : this.terminalVoltages(voltage);
     let [vgs, vds] = bias;
     const vbsRaw = bias[2];
+    // mos2load.c computes vbd before gate/drain limiting. In inverse mode
+    // DEVpnjlim must see this raw junction bias, not vbsRaw - limited vds.
+    const vbdRaw = vbsRaw - vds;
     // DC uses ngspice's previous-load fetlim/limvds, not a scaled global
     // solution. Leave the existing transient step-limiting path unchanged.
     if (this.operatingPointLoad && !initializing) {
@@ -1016,7 +1019,7 @@ export class MOS2 implements DeviceModel {
 
     // mos2load.c junction limiting against the previous load.
     let vbs = vbsRaw;
-    let vbd = vbs - vds;
+    let vbd = vbdRaw;
     let limited: boolean;
     if (initializing) {
       limited = false;
@@ -1025,7 +1028,6 @@ export class MOS2 implements DeviceModel {
       limited = vbs !== vbsRaw;
       vbd = vbs - vds;
     } else {
-      const vbdRaw = vbd;
       vbd = pnjlim(vbd, this.lastVbd, vt, drainVcrit);
       limited = vbd !== vbdRaw;
       vbs = vbd + vds;

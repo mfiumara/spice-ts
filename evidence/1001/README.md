@@ -1,125 +1,124 @@
-# MOS2 operating-point startup slice (#1001)
+# MOS2 operating-point continuation (partial #1001)
 
-This is a partial fix, not a resolution of #1001. The reduced unseeded latch now
-selects ngspice-47's asymmetric rails. The original cram transient remains a
-loss, and the cram plain-OP control becomes worse. Both are retained in
-`receipt.json`. No fixture, tolerance, transient integration, transistor equation
-or aggregate report is changed. No speed claim is made.
+This continuation closes the original cram OP and transient branch-selection
+losses without a seed, per-circuit tuning, tolerance changes or aggregate changes.
+The original mosrect/ring controls still lose. No speed claim is made.
 
-## First semantic divergence and corrected path
+## Root cause against ngspice-47
 
-Baseline `43aefef1a1105696cdce74acbfd3144e5cff3b7d` called
-`dc.ts:42`'s optional `beginOperatingPoint`, but MOS2 had no junction-init load.
-`newton-raphson.ts:96-106` stamped ordinary global node voltages immediately;
-`mos2.ts:937` read the all-zero solution as terminal biases.
+PR [#1018](https://github.com/mfiumara/spice-ts/pull/1018), merged at
+`c97498eb5de80ba55ebc75744b2dba5ef31efc28`, added MOS2 model-local INITJCT
+and gate/drain limiting. Its inverse-mode junction path then incorrectly
+recomputed `vbd = vbsRaw - limitedVds` after gate/drain limiting.
 
 ngspice-47 source at tag commit
-[a80f6e3e95d51534905b1f23410a951802666656](https://github.com/imr/ngspice/tree/a80f6e3e95d51534905b1f23410a951802666656):
+[a80f6e3e95d51534905b1f23410a951802666656](https://github.com/imr/ngspice/tree/a80f6e3e95d51534905b1f23410a951802666656),
+`src/spicelib/devices/mos2/mos2load.c`:
 
-- `src/spicelib/devices/mos2/mos2load.c:367-377` uses instance IC biases in
-  MODEINITJCT; for the supported default, non-OFF, zero-IC instances it uses
-  polarity-domain Vbs=-1, Vgs=type*tVto, Vds=0. These biases cannot be expressed
-  as one global solution vector: grounded NMOS bulk/source cannot have Vbs=-1.
-- `src/maths/ni/niiter.c:337-343` advances JCT to FIX after the first load, and
-  FIX to FLOAT only once convergence passes. `:326-330` forbids immediate
-  convergence on the first floating iteration after nodeset release.
-- `src/spicelib/analysis/cktload.c:122-145` holds nodeset rows in JCT/FIX only.
-  `:146-173` independently holds .ic rows for TRANOP without UIC, not plain OP.
-- `mos2load.c:338-361` limits model-local gate/drain/body voltages against the
-  previous load. spice-ts previously scaled the entire global Newton solution
-  from MOS2's gate/drain limit instead. Startup alone still selected the wrong
-  latch solution, V12=1.8426327068691892 V. Adding the model-local DC limits
-  produced the rail solution. This is not evidence that startup alone suffices.
-- CKTop still tries plain Newton, then gmin homotopies, then source stepping.
-  No fallback reordering or per-circuit seed was introduced.
+- Line 236 computes raw `vbd = vbs - vds` before gate/drain limiting.
+- Lines 338-352 limit gate/drain voltages against the previous load.
+- Lines 353-356, in normal mode, limit raw Vbs then recompute Vbd.
+- Lines 358-360, in inverse mode, limit the saved raw Vbd then reconstruct
+  `vbs = vbd + limitedVds`.
 
-The seam is `StampContext.operatingPointPhase` plus a model opt-in,
-`DeviceModel.initializesOperatingPoint`. MOS2 adopts it; other models retain
-existing behavior until their own initial loads are implemented. Nodesets also
-activate the startup phases. The assembler carries separate nodeset and .ic
-holds. Existing .ic priority, TRANOP hold and UIC bypass are preserved. DC phases
-are cleared before returning the assembler for subsequent analyses. MOS2's
-local gate/drain limits are DC-only; transient stamping and charge history are
-unchanged.
+The fix retains raw Vbd across those limits. No transistor equation, bypass,
+solver, homotopy schedule, startup phase or transient charge/history is changed.
+Transient stamps have no local gate/drain limit, so their arithmetic is unchanged.
 
-Scope ceiling: this slice covers existing supported MOS2 default startup, not a
-new MOS instance OFF/IC API, all-model INITJCT parity, first-point DC-sweep mode
-parity, bypass parity or LU/roundoff equivalence. Those must not be inferred from
-the successful reduced latch.
+The two-polarity regression makes the divergence explicit. From a zero previous
+load, raw polarity-domain Vds=-10 V and Vbs=-10 V give Vbd=0. DEVlimvds
+limits Vds to -0.5 V. ngspice reconstructs Vbs=-0.5 V. The old path invented
+Vbd=-9.5 V, limited it to -1 V, and evaluated the channel at Vbs=-1.5 V.
+That changes body effect and the Newton trajectory. Both cases fail before
+this fix and pass after it.
 
-## Measured results
+A full-circuit regression loads the exact retained plain-OP cram deck, checks
+all 16 latch nodes (eight pairs) and its supply current. Before this fix,
+xi40.14 is 1.8426326966768551 V instead of 1.518701644464528e-8 V.
+After it, all eight pairs reach the native rail branches. Fresh cram OP supply
+current differs from ngspice by 2.866581969679659e-16 A. This is evidence of
+ngspice trajectory parity on these decks, not proof of a unique equilibrium.
 
-Before values are the retained #996 baseline runs on the above main commit;
-after values are fresh native ngspice-47 and spice-ts executions of the same
-control decks. This is the #996 offline diagnostic metric: linear interpolation
-onto spice-ts points, no phase alignment, uniform peak floors of 1e-4 V and
-1e-10 A. It is not an aggregate outcome refresh. The same 1% threshold is used.
+## Measured before/after, every control
 
-| Control | Before worst normalized | After worst normalized | Outcome |
+`continuation-before.json` records a fresh run on main c97498eb after PR1018.
+`receipt.json` records the final candidate and preserves the older #996
+historical baseline in each row's `before` field. The table below compares the
+fresh continuation baseline's `after` field to the current receipt's `after`.
+Both engines receive identical retained deck bytes on every run.
+
+The unchanged offline #996 metric interpolates native ngspice values onto
+spice-ts timepoints, without phase alignment. Uniform peak floors remain
+1e-4 V / 1e-10 A, and the match threshold remains 1%. This is not an aggregate
+refresh. Receipts record hashes, statuses, point counts, initial error,
+worst signal and environment. The worst signal can differ between runs.
+
+| Control | After PR1018 | After inverse-bias fix | Outcome |
 | --- | ---: | ---: | --- |
-| reduced latch OP | 1253170.8542004412 (supply current) | 2.9476145517568227e-7 | matches |
-| original cram transient | 3.137159738608177 | 1.1501800384706622 | still mismatched at t=0 |
-| cram plain OP | 49999.99878516641 | 3194111.7530000396 | worsened loss |
-| cram fine step | 3.150747535067848 | 1.1508561960417991 | still mismatched |
-| cram nodeset diagnostic | 3.144052165774383 | 3.119439127883779 | still mismatched |
-| original mosrect transient | 0.015832540193349596 | 0.015832540193349596 | unchanged loss |
-| original ring transient | 0.32446133275386674 | 0.3244613309478497 | still mismatched |
+| k-10-fine | 0.00012918699523078547 | 0.00012918699523078547 | match |
+| k-10-op | 0.000004998456707317607 | 0.000004998456707317607 | match |
+| k-10-original | 0.015832540193349596 | 0.015832540193349596 | loss |
+| k-10-reduced | 0.015832540193349596 | 0.015832540193349596 | loss |
+| k-10-tight | 0.0038518864825453445 | 0.0038518864825453445 | match |
+| k-15-fine | 0.0029551217276694523 | 0.0029551215604537145 | match |
+| k-15-no-ic-op | 4.035483561383288e-9 | 4.035483561383288e-9 | match |
+| k-15-op | 4.035483561383288e-9 | 4.035483561383288e-9 | match |
+| k-15-original | 0.3244613309478497 | 0.32446133098722996 | loss |
+| k-15-reduced | 0.0004113405617928305 | 0.00041134046005567005 | match |
+| k-15-stages-13 | 0.0004728312717601312 | 0.0004728312767379553 | match |
+| k-15-stages-3 | 0.0005539798926476147 | 0.000553979918672651 | match |
+| k-15-stages-5 | 0.023707938128149336 | 0.023707938208262856 | loss |
+| k-15-stages-9 | 0.00039106604917618485 | 0.0003910660644103626 | match |
+| k-15-tight | 0.002202740781938774 | 0.003504324927011608 | match |
+| k-5-fine | 1.1508561960417991 | 0.00013482368972306027 | match |
+| k-5-latch-op | 2.9476145517568227e-7 | 3.6415039421475455e-7 | match |
+| k-5-op | 3194111.7530000396 | 0.0000018266062192895974 | match |
+| k-5-original | 1.1501800384706622 | 0.0010298802750966184 | match |
+| k-5-seeded | 3.119439127883779 | 0.0007491129587609451 | match |
+| k-5-tight | not compared | not compared | both failed |
 
-Reduced latch values before were V12=1.8426336725256554 V,
-V13=1.8426336725257213 V, I(VDD)=-0.0001253170959929356 A. After:
-V12=4.999999946097098 V, V13=1.3677625588866796e-8 V,
-I(VDD)=-1.0572862030322483e-11 A. The retained full-precision native reference
-is V12=4.999999946096958 V, V13=1.367762560720779e-8 V,
-I(VDD)=-1.0572891506468e-11 A.
-
-The original cram's after worst voltage is v(xi20.7), with a 1.842632681489912 V
-initial difference. Its plain OP has I(VVDD)=-0.0005012676476287697 A versus a
-native rail-state current near -1.569348631033638e-10 A. Some internal pairs still
-sit near the symmetric metastable state. The worsened OP current error is not a
-successful branch-selection fix. The tight cram diagnostic still fails in both
-engines. All 21 controls, including small regressions and failures, are recorded.
-
-Remaining investigation belongs to a supervisor-routed continuation: trace
-original cram's other cross-coupled pairs and exact load/bypass/solver
-trajectories against ngspice. Do not force an asymmetric seed, loosen tolerances,
-or infer unique equilibrium correctness from a branch disagreement.
+All successful cram controls now match. Four successful controls remain losses:
+original/reduced mosrect and original/five-stage ring. The tightened ring control
+worsens from 0.002202740781938774 to 0.003504324927011608, still below 1%.
+The reduced latch has a small supply-current rounding regression, also below 1%.
+These regressions are retained. Tight cram still fails in both engines and is
+not scored as a win or a target.
 
 ## Verification and reproduction
 
+    pnpm install --frozen-lockfile
     pnpm build
     pnpm lint
-    pnpm -C packages/core exec vitest run src/analysis/latch-op-selection-1001.test.ts src/initial-state.test.ts
+    pnpm -C packages/core exec vitest run src/devices/mos2-inverse-limiting-1001.test.ts src/analysis/latch-op-selection-1001.test.ts src/devices/mos2.test.ts src/devices/mos2-convergence-799.test.ts src/devices/mos2-temperature-995.test.ts src/devices/mos2-series-resistance-982.test.ts src/initial-state.test.ts
     spice-heavy pnpm exec tsx evidence/1001/run.ts
-    python3 evidence/1001/check.py
-    spice-heavy pnpm test
+    spice-heavy python3 evidence/1001/check.py
 
-RED was reproduced before simulator edits: V12 differed by 3.1573662735713026 V;
-1 test failed. The final focused command passes 16 tests (two latch tests and
-14 existing node-initial-state tests). Default-step mosamp2's unchanged 5 uV
-guard and MOS2 convergence, temperature and series-resistance tests passed.
-Root build and lint exited 0. The guarded root full test exited 0, with core
-3732 passed / 2 skipped and final benchmark tests 144 passed / 4 skipped.
+RED on the continuation baseline exits 1 with three failures (both polarities
+and the full cram OP). GREEN exits 0 with 94 tests passing. Build, lint,
+21-control run and offline verification exit 0. Additional existing mosamp2
+stopping guards are recorded in `continuation-verification.json`.
 
-The first broader candidate added phases to unrelated models and failed nine
-existing diode/B-source stopping guards. That behavior was removed: phase
-initialization is opt-in or nodeset-driven. The final full suite has no failures.
-No tolerances or guard assertions were relaxed. Required exact-head GitHub CI
-and independent exact-head review remain separate gates before merge.
+`check.py` verifies all 21 hashes/counts, unchanged historical summaries, newly
+matched cram controls, retained mosrect/ring losses and both-engine tight cram
+failure. It changes expected outcomes, not tolerances or the metric.
+`run.ts` is unchanged and accepts an optional control name; a full run is
+required before checking. It writes scalar receipts only.
 
-`run.ts` accepts an optional control name, e.g. `k-5-latch-op`. It writes only
-scalar receipts, never raw ngspice logs or waveform corpora, and does not modify
-historical #996 evidence. Full run asserts 21 controls; `check.py` verifies hashes,
-counts, retained failures/losses and the explicitly worsened cram OP result.
-`baseHead` identifies the pre-commit checkout; the working-tree code-patch hash
-binds the measured candidate. The PR head is recorded in the Kanban handoff.
+The final code is bound by `workingTreeCodePatchSha256` relative to the receipt's
+`baseHead` (the test-only commit). Required full GitHub CI and independent review
+must validate the exact PR head before a supervisor can merge. No local full
+suite was run on this continuation, as requested by the card. `verification.json`
+is historical PR1018 evidence, not a claim about this continuation.
 
-## Provenance
+## Remaining scope and provenance
 
-No new external netlist is imported. Exact decks come from retained #996 runs,
-which derive from corpus-k / Xyce_Regression
-`7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2`, GPL-3.0-or-later. Existing source
-URLs, licences and hashes are recorded in `benchmarks/SOURCES.md`, corpus-k's
-manifest/notices, and `evidence/996/README.md`. The reduced latch test reads
-`evidence/996/repro/latch.cir` directly. The opposite-rail nodeset regression was
-also executed natively with ngspice-47 and the same deck plus
-`.nodeset v(12)=0.2 v(13)=4.8` (V12=1.369410e-8, V13=5, I(VDD)=-1.05729e-11).
+Original mosrect convergence/integration (#1002) and ring startup (#1003) remain
+separate investigations. Do not interpret this OP correction as closing those
+transient losses. Tight cram's both-engine failure is retained, not a target.
+
+No new external fixture or source is imported. Decks and model cards come from
+`evidence/996/runs`, derived from corpus-k / Xyce_Regression
+`7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2`, GPL-3.0-or-later, with
+URLs/licences/hashes in `benchmarks/SOURCES.md`, corpus-k notices and
+`evidence/996/README.md`. The reduction reads `evidence/996/repro/latch.cir`.
+The new two-polarity unit test is an original diagnostic.

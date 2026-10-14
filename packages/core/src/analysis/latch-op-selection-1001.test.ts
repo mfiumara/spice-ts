@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs';
+import { gunzipSync } from 'node:zlib';
 import { expect, it } from 'vitest';
 import { parse } from '../parser/index.js';
 import { resolveOptions } from '../types.js';
@@ -25,4 +26,26 @@ it('holds nodesets during startup but releases them before accepting the latch O
   expect(result.voltage('12')).toBeCloseTo(1.369410e-8, 6);
   expect(result.voltage('13')).toBeCloseTo(5, 6);
   expect(result.current('VDD')).toBeCloseTo(-1.05729e-11, 10);
+});
+
+it('selects all eight ngspice-47 cram latch branches without a nodeset (#1001)', () => {
+  // Exact original plain-OP control and full-precision native reference.
+  // Existing GPL-3.0-or-later provenance: evidence/996/README.md.
+  const { deck } = JSON.parse(gunzipSync(readFileSync(
+    new URL('../../../../evidence/996/runs/k-5-op.json.gz', import.meta.url),
+  )).toString()) as { deck: string };
+  const { result } = solveDCOperatingPoint(parse(deck).compile(), resolveOptions());
+  for (const instance of ['xi40', 'xi30']) {
+    expect(result.voltage(`${instance}.12`)).toBeCloseTo(4.999999897550873, 6);
+    expect(result.voltage(`${instance}.13`)).toBeCloseTo(1.367762573151736e-8, 6);
+    expect(result.voltage(`${instance}.14`)).toBeCloseTo(1.518701644464528e-8, 6);
+    expect(result.voltage(`${instance}.15`)).toBeCloseTo(4.999999892193608, 6);
+  }
+  for (const instance of ['xi20', 'xi10']) {
+    expect(result.voltage(`${instance}.7`)).toBeCloseTo(1.518701644464543e-8, 6);
+    expect(result.voltage(`${instance}.8`)).toBeCloseTo(4.999999892193617, 6);
+    expect(result.voltage(`${instance}.9`)).toBeCloseTo(4.999999897550895, 6);
+    expect(result.voltage(`${instance}.10`)).toBeCloseTo(1.367762573151725e-8, 6);
+  }
+  expect(Math.abs(result.current('VVDD') - (-1.569348631033638e-10))).toBeLessThan(1e-13);
 });
