@@ -1,5 +1,17 @@
 # Benchmark sources
 
+## MOS3 temperature admission (#1057)
+
+The twelve probes in [reference.ts](results/issue-1057/reference.ts) are original
+MIT-licensed spice-ts project work. Both engines receive identical bytes at
+TEMP=100/-40 C, TNOM=50 C, both polarities and no/direct/sheet series resistance.
+The jge rerun reads unchanged GPL-3.0-or-later Xyce_Regression bytes and provenance
+from corpus-l commit `66d67caff2f10e4d6a36d2e59898cc52d661b98d`, whose
+`benchmarks/corpus/corpus-l/SOURCES.md` pins upstream revision
+`7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2`. It does not copy or alter fixtures.
+Commands, source links and before/after evidence are in
+[issue-1057](results/issue-1057/README.md). No corpus tolerances or outcomes change.
+
 ## MAXORD order-cap regression (#983)
 
 [maxord-983](reference/maxord-983/README.md) reruns unchanged corpus-k k-13
