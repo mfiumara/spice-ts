@@ -3,7 +3,7 @@
 Run under spice-heavy. No source netlist or committed oracle is overwritten.
 """
 import json
-import gzip
+
 from pathlib import Path
 import subprocess
 import sys
@@ -35,12 +35,13 @@ for i, path in enumerate(paths):
     result = subprocess.run(['ngspice', '-n', '-b', 'input.cir'], cwd=work,
                             capture_output=True, text=True, timeout=60)
     log = result.stdout + result.stderr
-    (work / 'original.log.gz').write_bytes(gzip.compress(log.encode(), mtime=0))
+    # Raw output stays local; publish only scalar receipts and diagnostics.
+    (work / 'original.log').write_text(log)
     diagnostics = [line.strip() for line in log.splitlines()
                    if 'error' in line.lower() or 'fatal' in line.lower()]
     records.append({'path': path, 'sha256': generate.hashlib.sha256(data).hexdigest(),
                     'command': 'ngspice -n -b input.cir', 'exitCode': result.returncode,
-                    'diagnostics': diagnostics, 'log': f'native/{i}/original.log.gz'})
+                    'diagnostics': diagnostics})
 (OUT / 'originals.json').write_text(json.dumps({'oracleRegeneration': 'exact numerical and deck hash match',
                                             'originals': records}, indent=2) + '\n')
 print(json.dumps(records, indent=2))

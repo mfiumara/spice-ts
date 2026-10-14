@@ -187,6 +187,13 @@ def generate(out):
     deck = original.read_text().replace('\nop\n', '\nset filetype=ascii\nset numdgt=17\nop\nwrite op.raw all\n', 1)
     (out / 'binning-op.cir').write_text(deck)
     op = run(deck, out / 'binning-op')
+    assertions = re.search(r'INFO: \d+ of \d+ tests failed', (out / 'binning-op.log').read_text())
+    if not assertions or assertions[0] != 'INFO: 0 of 2 tests failed':
+        raise RuntimeError('Original binning assertions did not pass')
+    (out / 'native-receipt.json').write_text(json.dumps({
+        'engine': 'ngspice-47', 'binningAssertions': assertions[0],
+        'binningSourceSha256': hashlib.sha256(original.read_bytes()).hexdigest(),
+    }, indent=2) + '\n')
     (out / 'reference.json').write_text(json.dumps({
         'schemaVersion': 1, 'engine': 'ngspice-47',
         'ngspiceSourceRevision': 'a80f6e3e95d51534905b1f23410a951802666656',

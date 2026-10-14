@@ -1,5 +1,12 @@
 # BSIM4 standalone junction port. Intermediate work, not transistor support
 
+Historical stage-1 receipt below. The completed registered static subset is
+documented in LOAD.md and benchmarks/bsim4-validation-3/README.md; LEVEL=14/54
+now run supported OP/DC cards. Three unchanged F/G decks remain typed unsupported.
+Newly introduced raw logs referenced by historical receipts were removed under
+the owner’s agent-artifact policy; measured scalar results remain in the docs
+and JSON receipts. No claim of full BSIM4 support or release authorization.
+
 This is a coherent partial implementation for #3, not completion of the static
 BSIM4 device model. `bsim4-junction.ts` is deliberately not registered or exported
 through the public simulator API. LEVEL=14/54 therefore still fail with the

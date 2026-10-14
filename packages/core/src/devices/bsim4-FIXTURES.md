@@ -111,8 +111,11 @@ command values are unchanged. Only plotting is omitted and ASCII writes,
 precision controls and final quit are added. Plot timestamps can change on
 regeneration; the numerical JSON and deck hashes are the comparison surface.
 
-All `.cir`, `.raw`, native `.log`, the full ngspice version banner, and the
+All `.cir`, `.raw`, the full ngspice version banner, and the
 strict generating/validation scripts are committed next to this document.
+Raw `.log` additions were removed under the owner’s later agent-artifact policy.
+Generation recreates logs locally; native-receipt.json retains the original
+binning assertion summary and source hash instead of committing a raw log.
 The installed binary's version banner advertises KLU capability, while actual
 run logs select **SPARSE 1.3**, not KLU. No runtime or superiority claim.
 

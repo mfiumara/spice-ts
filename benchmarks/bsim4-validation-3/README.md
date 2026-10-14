@@ -23,7 +23,7 @@ are published as well. No speed or superiority claim.
 
 The four original files are named in TABLES.md. All were freshly executed in
 both engines from identical bytes and checked against their committed SHA256.
-Native log receipts are native/0..3/original.log.gz. Native exits are all 0;
+Native scalar receipts are native/originals.json. Native exits are all 0;
 G nevertheless logs `Error: no function as { with that arity.` for its original
 .print expression. That is an output failure, not full native success.
 
@@ -46,8 +46,9 @@ waveforms have null errors, never zero. Follow-up scope belongs to the superviso
 ## RED / GREEN and reproduction
 
 The initial new grid checks passed. The bin-family typed-error regression failed
-on the accepted implementation: 26 passed / 1 failed; retained at
-packages/core/src/devices/bsim4/parity-red.log. It is a real InvalidCircuitError
+on the accepted implementation: 26 passed / 1 failed. The observed assertion was
+`expected InvalidCircuitError: MOSFET 'mx2' references unknown model 'nmos_tst' to be an instance of UnsupportedModelParameterError`.
+It is a real InvalidCircuitError
 vs UnsupportedModel assertion, not a fabricated numeric RED. No channel port
 bug was discovered in the six-card grid. After the compile guard and four edge
 checks, the targeted group passes 302 tests (31 new parity tests plus 271 existing).
@@ -67,7 +68,10 @@ Native regeneration/original four-deck executions run serially inside one
 spice-heavy reservation, with 60s individual deadlines. ngspice-47 binary banner
 and actual SPARSE 1.3 selection are retained by the committed oracle; host is
 Darwin arm64 (see oracle environment). No local unguarded monorepo suite was run;
-required GitHub CI is the exact-head full gate.
+required GitHub CI is the exact-head full gate. The owner’s agent-artifact guard
+landed during validation; newly introduced raw logs were removed from the PR,
+including inherited reference/implementation logs. Scalar JSON/README receipts
+and native numerical raw data remain; regeneration retains raw logs locally.
 
 Report sourceHead records the base commit on which the measurement worktree
 ran, not a clean-tree claim. The PR and Kanban handoff bind the resulting final

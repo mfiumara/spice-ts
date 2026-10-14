@@ -52,7 +52,9 @@ class OracleTests(unittest.TestCase):
         self.assertEqual(op['vectors']['v(2)'], op['vectors']['v(1)'])
         self.assertEqual(op['vectors']['v(3)'], 1.071660594471147)
         self.assertEqual(op['vectors']['v(4)'], op['vectors']['v(3)'])
-        self.assertIn('INFO: 0 of 2 tests failed', (self.directory / 'binning-op.log').read_text())
+        receipt = json.loads((self.directory / 'native-receipt.json').read_text())
+        self.assertEqual(receipt['binningAssertions'], 'INFO: 0 of 2 tests failed')
+        self.assertEqual(receipt['binningSourceSha256'], op['sourceSha256'])
 
     def test_all_six_original_dc_sweeps_are_retained(self):
         dc = self.reference['pairDc']

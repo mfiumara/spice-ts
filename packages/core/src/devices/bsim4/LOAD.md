@@ -113,6 +113,8 @@ both temperature sweeps. The validation publishes every native solution signal
 at all 1236 matched points. Binning remains unsupported (now a typed
 UnsupportedModelParameterError), as do the 4.3-family AC and G transient decks.
 Do not use the old four-loss statement below as the current result.
+Historical raw-log references in this document are superseded by scalar
+README/JSON receipts under the owner’s later agent-artifact policy.
 
 The existing `baseline.ts` status probe was run unchanged with `spice-heavy`
 against the four unchanged original corpus-F/G inputs; its new output is
