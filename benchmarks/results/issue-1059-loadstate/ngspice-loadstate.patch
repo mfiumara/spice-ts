@@ -1,0 +1,94 @@
+diff --git a/src/spicelib/analysis/dctran.c b/src/spicelib/analysis/dctran.c
+index cc6e933..468aa42 100644
+--- a/src/spicelib/analysis/dctran.c
++++ b/src/spicelib/analysis/dctran.c
+@@ -372,6 +372,7 @@ DCtran(CKTcircuit *ckt,
+     /* end LTRA code addition */
+ 
+     error = CKTaccept(ckt);
++    if (getenv("ISSUE1059_LOADSTATE") && ckt->CKTtime <= atof(getenv("ISSUE1059_TRACE_END") ? getenv("ISSUE1059_TRACE_END") : "1")) fprintf(stderr, "ACCEPT %.17g %d %.17g %.17g\n", ckt->CKTtime, ckt->CKTorder, ckt->CKTdeltaOld[0], ckt->CKTdelta);
+     /* check if current breakpoint is outdated; if so, clear */
+     if (ckt->CKTtime > ckt->CKTbreaks[0])
+         CKTclrBreak(ckt);
+@@ -707,6 +708,7 @@ resume:
+ #endif
+         /* Central solver step */
+         converged = NIiter(ckt,ckt->CKTtranMaxIter);
++        if (getenv("ISSUE1059_LOADSTATE")) fprintf(stderr, "TRIAL %.17g %d %.17g %d\n", ckt->CKTtime, save_order, ckt->CKTdelta, converged);
+ 
+         ckt->CKTstat->STATtimePts ++;
+         ckt->CKTmode = (ckt->CKTmode&MODEUIC)|MODETRAN | MODEINITPRED;
+@@ -887,6 +889,7 @@ resume:
+                 redostep = 1;
+ #endif
+                 ckt->CKTdelta = newdelta;
++                if (getenv("ISSUE1059_LOADSTATE")) fprintf(stderr, "REJECT %.17g %.17g %.17g\n", ckt->CKTtime+olddelta, olddelta, newdelta);
+ #ifdef STEPDEBUG
+                 (void)printf(
+                     "delta set to truncation error result: point rejected\n");
+diff --git a/src/spicelib/devices/mos3/mos3load.c b/src/spicelib/devices/mos3/mos3load.c
+index cd020b9..ce11b03 100644
+--- a/src/spicelib/devices/mos3/mos3load.c
++++ b/src/spicelib/devices/mos3/mos3load.c
+@@ -12,6 +12,7 @@ Modified: 2000 AlansFixes
+ #include "ngspice/const.h"
+ #include "ngspice/sperror.h"
+ #include "ngspice/suffix.h"
++#define TRACE1059 (getenv("ISSUE1059_LOADSTATE") && ckt->CKTtime >= atof(getenv("ISSUE1059_TRACE_START") ? getenv("ISSUE1059_TRACE_START") : "0") && ckt->CKTtime <= atof(getenv("ISSUE1059_TRACE_END") ? getenv("ISSUE1059_TRACE_END") : "1"))
+ 
+ /* actually load the current value into the sparse matrix previously
+  * provided */
+@@ -19,6 +20,8 @@ int
+ MOS3load(GENmodel *inModel, CKTcircuit *ckt)
+ {
+     MOS3model *model = (MOS3model *)inModel;
++    static int trace_initialized = 0;
++    if (!trace_initialized && getenv("ISSUE1059_LOADSTATE")) { setvbuf(stderr, NULL, _IOFBF, 1048576); trace_initialized = 1; }
+     MOS3instance *here;
+     double Beta;
+     double DrainSatCur;
+@@ -74,6 +77,7 @@ MOS3load(GENmodel *inModel, CKTcircuit *ckt)
+     double capgd = 0.0;   /* total gate-drain capacitance */
+     double capgb = 0.0;   /* total gate-bulk capacitance */
+     int Check;
++    int trace_bypass;
+ #ifndef NOBYPASS      
+     double tempv;
+ #endif /*NOBYPASS*/    
+@@ -110,6 +114,7 @@ MOS3load(GENmodel *inModel, CKTcircuit *ckt)
+ 
+             vt = CONSTKoverQ * here->MOS3temp;
+             Check=1;
++            trace_bypass=0;
+ 
+             if(ckt->CKTsenInfo){
+ #ifdef SENSDEBUG
+@@ -246,6 +251,7 @@ MOS3load(GENmodel *inModel, CKTcircuit *ckt)
+ #endif /*PREDICTOR*/
+ 
+                 /* now some common crunching for some more useful quantities */
++                if (TRACE1059) fprintf(stderr, "INPUT %.17g %s %ld %.17g %.17g %.17g %.17g\n", ckt->CKTtime, here->MOS3name, (long)ckt->CKTmode, ckt->CKTdelta/ckt->CKTdeltaOld[1], vgs, vds, vbs);
+ 
+                 vbd=vbs-vds;
+                 vgd=vgs-vds;
+@@ -308,6 +314,7 @@ MOS3load(GENmodel *inModel, CKTcircuit *ckt)
+ 					     ckt->CKTreltol * MAX(fabs(cdhat),fabs(
+ 						 here->MOS3cd)) + ckt->CKTabstol) ) {
+ 					    /* bypass code */
++                                    trace_bypass=1;
+ 					    /* nothing interesting has changed since last
+ 					     * iteration on this device, so we just
+ 					     * copy all the values computed last iteration out
+@@ -1196,6 +1203,12 @@ innerline1000:;
+ 		 *     store charge storage info for meyer's cap in lx table
+ 		 */
+ 		    
++                if (TRACE1059) {
++                    int h, j;
++                    fprintf(stderr, "LOAD %.17g %s %d %ld %.17g %.17g %d %d %.17g %.17g %.17g", ckt->CKTtime, here->MOS3name, ckt->CKTorder, (long)ckt->CKTmode, ckt->CKTdelta, ckt->CKTdelta/ckt->CKTdeltaOld[1], trace_bypass, Check, capgs, capgd, capgb);
++                    for (h=0; h<3; h++) for (j=0; j<13; j++) fprintf(stderr, " %.17g", ckt->CKTstates[h][here->MOS3states+j]);
++                    fprintf(stderr, "\n");
++                }
+ 		/*
+ 		 *  load current vector
+ 		 */

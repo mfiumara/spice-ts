@@ -1,0 +1,5 @@
+spice-heavy: all 2 heavy slots busy, waiting...
+spice-heavy: got slot 1
+{"name":"pair","observationOnly":{"ts":{"points":312,"signals":14,"maxAbsoluteDifference":0},"native":{"points":312,"signals":6,"maxAbsoluteDifference":0}},"worst":{"signal":"i(vp)","peak":0.002281858882292133,"max":0.0001325215358073304,"rms":0.000008297612372633432,"normalized":0.058076131190992926}}
+{"name":"gm19","observationOnly":{"ts":{"points":1251,"signals":428,"maxAbsoluteDifference":0},"native":{"points":1233,"signals":104,"maxAbsoluteDifference":0}},"worst":{"signal":"i(vin)","peak":0.00005016706884296918,"max":0.000008610973818829524,"rms":0.0000021140037146509102,"normalized":0.17164594259599314}}
+{"name":"arom","observationOnly":{"ts":{"points":1330,"signals":294,"maxAbsoluteDifference":0},"native":{"points":1337,"signals":62,"maxAbsoluteDifference":0}},"worst":{"signal":"v(31)","peak":4.617193792748065,"max":0.8091891209803213,"rms":0.06431319890362992,"normalized":0.1752556113740046}}

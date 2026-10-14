@@ -1295,3 +1295,24 @@ Reproduce parity with `spice-heavy pnpm exec tsx benchmarks/corpus/corpus-n/pari
 offline guards with `pnpm exec tsx --test benchmarks/corpus/corpus-n/corpus-n.test.ts`.
 All 87 non-reference BSD probes, every Xyce probe failure, static exclusions
 and deferred candidates are retained in the batch's survey/probe receipts.
+
+## MOS3 native load-state evidence (Refs #1059)
+
+`benchmarks/results/issue-1059-loadstate/` reuses unchanged corpus-l gm19/arom
+and `benchmarks/results/issue-1059/pair.cir`, the existing gm2-derived pair.
+Canonical inputs are [Xyce_Regression CircuitSim90/MOS3](https://github.com/Xyce/Xyce_Regression/tree/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CircuitSim90/MOS3),
+pin `7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2`, GPL-3.0-or-later under the
+retained corpus-l README grant and full licence. No new circuit adaptation.
+Generated captures include the licensed input bytes and verified SHA-256;
+both engines receive those identical bytes. No tolerances/floors change.
+
+The observation-only native patch targets [ngspice-47](https://github.com/ngspice/ngspice/tree/a80f6e3e95d51534905b1f23410a951802666656),
+pin `a80f6e3e95d51534905b1f23410a951802666656`, under its upstream mixed
+BSD-style licences (mos3load.c and dctran.c retain UC Regents notices).
+Only the diagnostic patch is retained, not the native source tree or binary.
+Project-authored diagnostic scripts/tests are MIT. `report.md` records
+native source references, trace format, material-divergence definition,
+unresolved causal classification and reproduction commands. `verification.json`
+checks observation-only traces against uninstrumented output on every native
+and TypeScript signal/timepoint. This is evidence, not new corpus coverage,
+an aggregate refresh, or a production fix.

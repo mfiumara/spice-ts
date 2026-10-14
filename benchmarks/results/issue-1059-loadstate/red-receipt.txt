@@ -1,0 +1,41 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_244df04d/packages/core
+
+ ❯ src/devices/mos3-loadstate-1059.test.ts (3 tests | 2 failed) 387ms
+     × RED: reduced pair input current stays within 1% of ngspice-47 213ms
+     × RED: MOS3 first charge load uses native MODEINITPRED charge extrapolation 161ms
+     ✓ native pair first-load qgs is charge-history extrapolation, not incremental Meyer integration 12ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/devices/mos3-loadstate-1059.test.ts > MOS3 material load-state divergence #1059 > RED: reduced pair input current stays within 1% of ngspice-47
+AssertionError: first material input-current divergence at 4.2010800772761916e-8 s: TS=0.0005330899254077301 A, ngspice interpolated=0.0005627080129191441 A: expected 0.012979806832604218 to be less than or equal to 0.01
+ ❯ src/devices/mos3-loadstate-1059.test.ts:37:121
+     35|       const expected = reference[cursor - 1] + fraction * (reference[c…
+     36|       expect(Math.abs(current[i] - expected) / peak,
+     37|         `first material input-current divergence at ${time} s: TS=${cu…
+       |                                                                                                                         ^
+     38|     }
+     39|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/devices/mos3-loadstate-1059.test.ts > MOS3 material load-state divergence #1059 > RED: MOS3 first charge load uses native MODEINITPRED charge extrapolation
+AssertionError: {"time":4.2022715821727246e-8,"xfact":0.17130779249153713,"actual":-5.150457250837247e-13,"expected":-4.975179199584889e-13}: expected 1.7527805125235884e-14 to be less than or equal to 1e-25
+ ❯ src/devices/mos3-loadstate-1059.test.ts:74:89
+     72|     expect(records.length).toBeGreaterThan(0);
+     73|     // A policy RED, not a claim that predictor-only changes fix wavef…
+     74|     for (const r of records) expect(Math.abs(r.actual - r.expected), J…
+       |                                                                                         ^
+     75|   });
+     76|   it('native pair first-load qgs is charge-history extrapolation, not …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 1 passed (3)
+   Start at  18:29:34
+   Duration  4.70s (transform 3.62s, setup 0ms, import 4.04s, tests 387ms, environment 0ms)
+
+JUNIT report written to /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_244df04d/packages/core/test-results.xml

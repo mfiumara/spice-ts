@@ -1,0 +1,14 @@
+{
+  "base": "4f4d957c3d0e52827a255861e56069a55135c110",
+  "nativeRevision": "a80f6e3e95d51534905b1f23410a951802666656",
+  "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+  "node": "v22.23.1",
+  "nativeVersion": "******\n** ngspice-47 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2026, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n******\n",
+  "patchSha256": "467a07687cc38ec4733ba55f5b59f926aee56f9379d3f658ec3367db3a332207",
+  "source": {
+    "src/spicelib/devices/mos3/mos3load.c": "2ba1a93babe54821670ff58c1b5b103bfff8bdcc6eb272b6671f675a281e9cc4",
+    "src/spicelib/analysis/dctran.c": "afb1f1a6e8ee25fc48e3ff822dd1f634ec3547d38ad2f1f594ce27ccb18870e8",
+    "src/include/ngspice/config.h": "7e4b646e85ceb491579c5efa24872f43ec8b94c4faa3d9c7f2b567a91e40eb81"
+  },
+  "binarySha256": "f6bc99f1c9c3af753d0e72a4252d973e5dfd5d5c3580156b961660a140b00e40"
+}
