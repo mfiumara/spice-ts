@@ -109,6 +109,31 @@ interface MOS6TemperatureState {
   f4s: number;
 }
 
+/**
+ * mos6set.c creates prime nodes for nonzero RD/RS or RSH*squares.
+ * mos6temp.c gives explicit RD/RS precedence, even zero (an open prime
+ * terminal). mos6load.c multiplies conductance by M. Unlike MOS1/MOS2,
+ * mos6set.c leaves omitted squares at zero, suppressing the prime node;
+ * the later mos6temp.c reset to one square cannot create that missing node.
+ * Return 0 for a short, Infinity for an open, otherwise ohms divided by M.
+ */
+export function mos6SeriesResistances(
+  card: Readonly<Record<string, number | undefined>>,
+  instance: Readonly<Record<string, number | undefined>> | undefined,
+): { drain: number; source: number } {
+  const m = instance?.M ?? 1;
+  const sheet = card.RSH ?? 0;
+  const resistance = (direct: number | undefined, squares: number): number => {
+    if ((direct ?? 0) === 0 && (sheet === 0 || squares === 0)) return 0;
+    if (direct !== undefined) return direct !== 0 ? direct / m : Infinity;
+    return sheet * squares / m;
+  };
+  return {
+    drain: resistance(card.RD, instance?.NRD ?? 0),
+    source: resistance(card.RS, instance?.NRS ?? 0),
+  };
+}
+
 function given(params: Record<string, number | undefined>, ...names: string[]): number | undefined {
   for (const name of names) {
     const value = params[name];
@@ -126,14 +151,6 @@ export function resolveMOS6Model(
   params: Readonly<Record<string, number | undefined>>,
   polarity: number,
 ): MOS6ModelParams {
-  for (const parameter of ['RD', 'RS', 'RSH'] as const) {
-    const value = params[parameter];
-    if (value !== undefined && value !== 0) {
-      throw new InvalidCircuitError(
-        `MOSFET level 6 model '${name}': series resistance parameter ${parameter} is not supported`,
-      );
-    }
-  }
   const tnom = (params.TNOM ?? 27) + CONSTCTOK;
   const vtnom = tnom * CONSTKOVERQ;
   const egfet1 = 1.16 - (7.02e-4 * tnom * tnom) / (tnom + 1108);
