@@ -13,6 +13,9 @@ import {
   type EngineExecution,
 } from './report.js';
 import type { SampleSeries } from '../../comparison-harness.js';
+// Offline #970 checks join the existing CI allowlisted benchmark entrypoint.
+import '../../plot-alignment.test.js';
+import '../../plot-970/receipt.test.js';
 
 const realSeries = (grid: number[], values: number[]): SampleSeries => ({
   grid,

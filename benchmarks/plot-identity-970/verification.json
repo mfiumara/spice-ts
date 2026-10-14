@@ -1,0 +1,30 @@
+{
+  "pr": "https://github.com/mfiumara/spice-ts/pull/993",
+  "implementationHead": "d5aa4c8c064a269e8e32bf74f1be12d9f6fc3d9a",
+  "baseSha": "bd4ac625f15e344043a7431b24f64828966e2d41",
+  "coreSha": "4ade41430660e5de0dc3d56f93ae28540f1366ff",
+  "counts": {"changed-improved": 11, "changed-regressed": 16, "changed-neutral": 9, "unchanged": 377, "not-comparable": 307},
+  "original700": {"changed-improved": 11, "changed-regressed": 16, "changed-neutral": 9, "unchanged": 372, "not-comparable": 292},
+  "supplementalK20": {"unchanged": 5, "not-comparable": 15},
+  "controlCount": 247,
+  "controlCensusCorrection": "248 substring hits include classic/resistor-noise's commented *.control; all entries are inventoried regardless",
+  "ordinalAligned": 17,
+  "executionBlockers": [],
+  "changedFixtureTable": "README.md (every changed fixture); full metrics and per-signal normalization in inventory.json",
+  "commands": [
+    {"command": "pnpm install --frozen-lockfile", "exitCode": 0},
+    {"command": "pnpm build", "exitCode": 0},
+    {"command": "pnpm lint", "exitCode": 0},
+    {"command": "spice-heavy pnpm test", "exitCode": 0, "phase": "before final singleton guard and audit-only helper additions; final policy covered by targeted tests and exact-head CI", "rootTap": {"tests": 164, "passed": 160, "skipped": 4}},
+    {"command": "pnpm exec tsx --test --test-name-pattern='ordinal fallback' benchmarks/plot-alignment.test.ts", "exitCode": 1, "expectedRed": true, "observed": "6 aligned points instead of 0 for different primary grids"},
+    {"command": "pnpm exec tsx --test --test-name-pattern='singleton secondary' benchmarks/plot-alignment.test.ts", "exitCode": 1, "expectedRed": true},
+    {"command": "AUDIT_CORE_SHA=$(git rev-parse HEAD:packages/core) spice-heavy pnpm exec tsx benchmarks/plot-identity-970/audit.ts", "exitCode": 0, "phase": "resumed capture"},
+    {"command": "AUDIT_PACKED=1 AUDIT_CHILD_MS=600000 AUDIT_HEAP_MB=12288 AUDIT_CORE_SHA=$(git rev-parse HEAD:packages/core) spice-heavy pnpm exec tsx benchmarks/plot-identity-970/audit.ts", "exitCode": 0, "phase": "all three large missing receipts recovered"},
+    {"command": "AUDIT_CHILD_MS=600000 AUDIT_HEAP_MB=12288 AUDIT_CORE_SHA=$(git rev-parse HEAD:packages/core) spice-heavy pnpm exec tsx benchmarks/plot-identity-970/audit.ts --replay", "exitCode": 0},
+    {"command": "pnpm exec tsx benchmarks/plot-identity-970/render.ts", "exitCode": 0},
+    {"command": "AUDIT_NATIVE_TEST=1 spice-heavy pnpm exec tsx --test --test-skip-pattern='runs the spice-ts child without per-sample|compares both engines on every signal' benchmarks/comparison-harness.test.ts benchmarks/plot-alignment.test.ts benchmarks/aggregate-report.test.ts benchmarks/plot-identity-970/audit.test.ts benchmarks/plot-identity-970/packed-control.test.ts", "exitCode": 0, "testsPassed": 83}
+  ],
+  "ci": "Exact final-head required CI is recorded in the Kanban handoff, outside this self-referential commit.",
+  "merge": false,
+  "issueClosed": false
+}
