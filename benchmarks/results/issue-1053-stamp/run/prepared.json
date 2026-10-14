@@ -1,0 +1,28 @@
+{
+  "decks": [
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 1000,
+      "file": "cmos-inverter-chain-tran-1000.cir",
+      "deckSha256": "1a9866593c778a9fa26e23c1916c7b00b1bdb1adc2e7a246d9e3f4aa4f1ca1e1"
+    },
+    {
+      "circuit": "cmos-inverter-chain-tran",
+      "size": 10000,
+      "file": "cmos-inverter-chain-tran-10000.cir",
+      "deckSha256": "2ce663326238609299d8628016b1211632f1474e9d40b6c39747fff964999a18"
+    },
+    {
+      "circuit": "rc-ladder-tran",
+      "size": 10000,
+      "file": "rc-ladder-tran-10000.cir",
+      "deckSha256": "eb21933fd99fcbc32276816a4f389ba216dcdddc29683551a67f606f352dfca7"
+    },
+    {
+      "circuit": "resistor-mesh-op",
+      "size": 10000,
+      "file": "resistor-mesh-op-10000.cir",
+      "deckSha256": "c88e6076daf2523437e3da014d7a3c329f679a7405f789530c5c805f447ed0dc"
+    }
+  ]
+}
