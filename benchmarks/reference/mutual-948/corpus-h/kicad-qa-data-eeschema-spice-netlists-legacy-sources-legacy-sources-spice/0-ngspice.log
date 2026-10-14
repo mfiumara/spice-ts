@@ -1,0 +1,57 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: KiCad schematic
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 28  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+/vpulse                                     -1
+/vexp                                       -4
+/idc                                    -23450
+/iam                                         0
+/vtrnoise                                    0
+/vsffm                                       0
+/vsin                                        0
+/vpwl                                       -7
+/ipulse                                  10000
+/iexp                                    40000
+/ipwl                                    70000
+/isin                                        0
+/isffm                                       0
+/vtrrandom                                   0
+/vdc                                     2.345
+/vam                                         0
+/itrrandom                                   0
+/itrnoise                                    0
+v7#branch                                    0
+v6#branch                                    0
+v1#branch                                    0
+v2#branch                           -0.0002345
+v8#branch                                    0
+v9#branch                                    0
+v5#branch                               0.0007
+v4#branch                               0.0001
+v3#branch                               0.0004
+
+
+No. of Data Rows : 19506
+
+Total analysis time (seconds) = 0.212373
+
+Total elapsed time (seconds) = 0.216 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13844.281 MB.
+Maximum ngspice program size =   10.172 MB.
+Current ngspice program size =   10.172 MB.
+

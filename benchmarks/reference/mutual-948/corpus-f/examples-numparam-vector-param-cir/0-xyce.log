@@ -1,0 +1,40 @@
+
+*****
+***** Welcome to the Xyce(TM) Parallel Electronic Simulator
+*****
+***** This is version XyceNF Release 7.10.0
+***** Date: Wed Oct 14 01:50:08 CEST 2026
+
+
+***** Executing netlist input.cir
+
+***** Reading and parsing netlist...
+Netlist error: Unrecognized character: " in expression {"[1e-12 2e-12]"}
+Netlist error: Unrecognized character: [ in expression {"[1e-12 2e-12]"}
+Netlist error: syntax error in expression {"[1e-12 2e-12]"}
+ 
+Netlist error: Unrecognized character: " in expression {"[1.3e-3 2e-3]"}
+Netlist error: Unrecognized character: [ in expression {"[1.3e-3 2e-3]"}
+Netlist error: syntax error in expression {"[1.3e-3 2e-3]"}
+ 
+Netlist error: Unrecognized character: " in expression {"[1e-12 2e-12]"}
+Netlist error: Unrecognized character: [ in expression {"[1e-12 2e-12]"}
+Netlist error: syntax error in expression {"[1e-12 2e-12]"}
+ 
+Netlist error: Unrecognized character: " in expression {"[1.3e-3 2e-3]"}
+Netlist error: Unrecognized character: [ in expression {"[1.3e-3 2e-3]"}
+Netlist error: syntax error in expression {"[1.3e-3 2e-3]"}
+ 
+Netlist error: Unable to resolve parameter ACTUAL_VEC found in .PARAM
+ statement 
+Netlist error: Unable to resolve parameter DEFAULT_VEC found in .PARAM
+ statement 
+Simulation aborted due to error.  There are 0 MSG_FATAL errors and 14
+ MSG_ERROR errors
+*** Xyce Abort ***
+
+Simulation aborted due to error.  There are 0 MSG_FATAL errors and 14
+ MSG_ERROR errors
+
+
+*** Xyce Abort ***

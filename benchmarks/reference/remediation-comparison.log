@@ -1,0 +1,39 @@
+{
+  "rejectedHead": "342d9bd1ddd7bc11f266063d8793a97c78baf6ee",
+  "before": {
+    "attemptedFixtures": 100,
+    "xyce": {
+      "success": 30,
+      "failed": 16,
+      "unsupported": 54
+    },
+    "ngspice": {
+      "success": 63,
+      "failed": 37,
+      "unsupported": 0
+    },
+    "comparedFixtures": 26
+  },
+  "after": {
+    "attemptedFixtures": 100,
+    "xyce": {
+      "success": 30,
+      "failed": 16,
+      "unsupported": 54
+    },
+    "ngspice": {
+      "success": 63,
+      "failed": 37,
+      "unsupported": 0
+    },
+    "comparedFixtures": 26
+  },
+  "semanticStatusAndMetricDifferences": [],
+  "bootstrapSha256": "1615dbc03728fc3a9cb2aaaec6e06c8dfb7f45e0e8aa1b7fbd67b5a4446f916f",
+  "adapterSourceHashes": {
+    "canonical.ts": "25505141da2c04e5571f83a37924f323d553fb0d299dd3352647d6cdc1b5bd14",
+    "xyce.ts": "693517918cf1e5dadf653123e900bbeeb98a4d9a7e7bb23b9e895913166d0023",
+    "expanded.ts": "bf7162285737b63099dfc2fc8f5689e84d7f2f64aaccb41085fcd162e4d85ede",
+    "compare.ts": "53c03f483b01e40521e895b4c40c589eae710d0e1e4a9237a9e5b47b590698ad"
+  }
+}

@@ -36,6 +36,7 @@ import {
   type EngineExecution,
 } from './corpus/classic/report.js';
 import { type FineReference, FINE_REFERENCE_RULE, fineReferenceColumn, fineReferenceSection } from './fine-reference.js';
+import { REFRESH_METRIC_TRANSITIONS, REFRESH_STATUS_TRANSITIONS } from './aggregate-refresh-855/transitions.js';
 
 const SCHEMA = 'spice-ts-aggregate-parity/v1' as const;
 const CORPORA = ['ngspice', 'classic', 'xyce', 'corpus-d', 'corpus-e'] as const;
@@ -43,8 +44,8 @@ const FIXTURES_PER_CORPUS = 20;
 const TOTAL_FIXTURES = CORPORA.length * FIXTURES_PER_CORPUS;
 const JSON_PATH = resolve('benchmarks/aggregate-report.json');
 const MARKDOWN_PATH = resolve('benchmarks/AGGREGATE_PARITY.md');
-const FIXTURE_TREE_SHA256 = 'd53277772db73fd3fb2a193f323b0681db173fa8798b764b97755998a5f36d87';
-const SOURCES_SHA256 = '98991942508358a0fb9bf9ae388837c7bb5d44b73bcba57345a627c3f933ed90';
+const FIXTURE_TREE_SHA256 = '23aaa91cfde358550eec443e8b5aaec134d7a7f930b1810f6e7f7db2532d6307';
+const SOURCES_SHA256 = 'd6bb12d27b99cff81ac14244e2871e9d45b6144aedd39ff5340ba6cce55e27d7';
 
 type CorpusId = typeof CORPORA[number];
 type Status = 'success' | 'failed' | 'unsupported';
@@ -176,7 +177,7 @@ export interface AggregateReport {
   fixtures: FixtureReceipt[];
 }
 
-const PREVIOUS_REPORT: AggregateReport['comparisonToPrevious'] = {
+const HISTORICAL_REPORT: AggregateReport['comparisonToPrevious'] = {
   issueUrl: 'https://github.com/mfiumara/spice-ts/issues/321',
   pullRequestUrl: 'https://github.com/mfiumara/spice-ts/pull/325',
   headSha: 'ad7ba71b65848053afa7bc64ba22fd989ef89ca4',
@@ -384,6 +385,35 @@ async function readManifest(root: string, corpus: CorpusId): Promise<CorpusManif
     await readFile(resolve(root, `benchmarks/corpus/${corpus}/manifest.json`), 'utf8'),
   ) as CorpusManifest;
 }
+
+const PREVIOUS_REPORT: AggregateReport['comparisonToPrevious'] = {
+  issueUrl: 'https://github.com/mfiumara/spice-ts/issues/502',
+  pullRequestUrl: 'https://github.com/mfiumara/spice-ts/pull/603',
+  headSha: 'a91fd90db94c6f5fbfe1f53b420aa5d4298527f1',
+  outcomeSha256: '4cb5cbd09a8045fbd35e337d44fcc7064175bfdd0521a85d477da768d08d063f',
+  totals: {
+    fixtures: 100,
+    corpusFixtures: { ngspice: 20, classic: 20, xyce: 20, 'corpus-d': 20, 'corpus-e': 20 },
+    ngspice: { success: 52, failed: 9, unsupported: 39 },
+    spiceTs: { success: 61, failed: 1, unsupported: 38 },
+    comparedFixtures: 48,
+    comparedAnalyses: 67,
+    runtimeMs: { ngspice: 6554.499, spiceTs: 27822.473 },
+  },
+  matchedPointEnvelope: {
+    comparedSignals: 879,
+    relativeComparedSignals: 847,
+    absoluteSamples: 9388792,
+    relativeSamples: 9364906,
+    excludedZeroReferences: 23886,
+    maximumAbsoluteError: 7853.15771484375,
+    maximumAbsoluteRms: 7853.15771484375,
+    maximumRelativeError: 975815.5539797375,
+    maximumRelativeRms: 203361.3440880642,
+  },
+  statusTransitions: REFRESH_STATUS_TRANSITIONS.map(transition => ({ ...transition, gapIssues: [...transition.gapIssues] })),
+  metricTransitions: [...REFRESH_METRIC_TRANSITIONS, ...HISTORICAL_REPORT.metricTransitions],
+};
 
 const REFRESH_GUIDANCE = 'If the change is intended, refresh with `pnpm exec tsx benchmarks/aggregate-report.ts`, '
   + 'update the pinned hashes in benchmarks/aggregate-report.ts, and commit the regenerated '

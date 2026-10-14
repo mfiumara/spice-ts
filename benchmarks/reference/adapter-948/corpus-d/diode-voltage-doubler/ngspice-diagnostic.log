@@ -1,0 +1,19 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: *spice 03255.eps
+
+
+warning, can't find model 'd' from line
+    d1 1 2 d
+warning, can't find model 'd' from line
+    d2 0 1 d
+Error in netlist line no. 7, new internal line no. 6:
+
+Undefined parameter [vdc]
+Error in netlist line no. 7, new internal line no. 6:
+
+Cannot compute substitute
+
+ERROR: fatal error in ngspice, exit(1)

@@ -1,0 +1,66 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: * effecting a monte carlo calculation in ngspice
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 533
+bw                  =  1.23656e+06 targ=  2.32247e+06 trig=  1.08592e+06
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 533
+bw                  =  1.19631e+06 targ=  2.24006e+06 trig=  1.04375e+06
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 533
+bw                  =  1.18397e+06 targ=  2.22839e+06 trig=  1.04442e+06
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 533
+bw                  =  1.30206e+06 targ=  2.48378e+06 trig=  1.18172e+06
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 533
+bw                  =  1.18938e+06 targ=  2.34697e+06 trig=  1.15759e+06
+
+                                   Anonymous
+                                   unknown  Wed Oct 14 01:49:48  2026
+--------------------------------------------------------------------------------
+Index   unknown1.bwh    
+--------------------------------------------------------------------------------
+0	1.236556e+06	
+1	1.196314e+06	
+2	1.183971e+06	
+3	1.302060e+06	
+4	1.189382e+06	
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Total analysis time (seconds) = 0.002668
+
+Total elapsed time (seconds) = 0.008 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13694.781 MB.
+Maximum ngspice program size =   11.000 MB.
+Current ngspice program size =   11.000 MB.
+
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+

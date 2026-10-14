@@ -1,0 +1,167 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: 100w vdmos power amplifier
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+v(out) = -5.12554e-05
+@r1[i] = 2.412731e-02
+@r2[i] = 2.410835e-02
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 701
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+tamb                                        25
++v                                          50
+n010                                   3.75055
+n012                                0.00790432
+tn                                     27.1869
+tcn                                    26.7049
+x1.1                                   26.5831
+-v                                         -50
+n020                                  -3.47563
+n017                               -0.00801309
+tp                                     27.1885
+tcp                                    26.7061
+x2.1                                   26.5843
+out                               -5.12557e-05
+n016                                         0
+n009                                   3.75055
+n019                                  -3.47563
+n006                                   48.4767
+n005                                   49.1141
+n004                                   49.1438
+n023                                  -47.6416
+n024                                  -48.2342
+n022                                  -37.6091
+n021                                  -47.6228
+n015                                  0.341129
+n008                                  0.915557
+n011                                  0.338905
+n003                                   48.7328
+n001                                   49.3251
+n002                                   49.3665
+n007                                   24.3664
+out1                              -5.12557e-05
+n018                                  0.338905
+n014                                  0.325875
+n013                                         0
+v3#branch                         -1.25539e-05
+vin#branch                                   0
+v2#branch                           -0.0430073
+v1#branch                           -0.0454445
+vtamb#branch                           2.43645
+
+ Reference value :  2.09569e-02 Reference value :  4.60139e-02 Reference value :  7.13399e-02 Reference value :  9.62989e-02 Reference value :  1.21356e-01 Reference value :  1.46333e-01 Reference value :  1.71342e-01 Reference value :  1.96325e-01 Reference value :  2.21222e-01 Reference value :  2.46161e-01 Reference value :  2.71211e-01 Reference value :  2.96261e-01 Reference value :  3.21202e-01 Reference value :  3.46242e-01 Reference value :  3.71348e-01 Reference value :  3.96365e-01 Reference value :  4.21498e-01 Reference value :  4.46576e-01 Reference value :  4.71702e-01 Reference value :  4.96580e-01 Reference value :  5.21487e-01 Reference value :  5.46877e-01 Reference value :  5.71856e-01 Reference value :  5.97236e-01 Reference value :  6.21849e-01 Reference value :  6.46908e-01 Reference value :  6.72051e-01 Reference value :  6.97151e-01 Reference value :  7.22285e-01 Reference value :  7.47699e-01 Reference value :  7.72755e-01 Reference value :  7.97900e-01 Reference value :  8.23600e-01 Reference value :  8.48896e-01 Reference value :  8.73943e-01 Reference value :  8.99429e-01 Reference value :  9.24943e-01 Reference value :  9.50588e-01 Reference value :  9.77041e-01
+No. of Data Rows : 1000012
+Total analysis time (seconds) = 9.95871
+Fourier analysis for v(out):
+  No. Harmonics: 10, THD: 0.0761793 %, Gridsize: 200, Interpolation Degree: 1, No. Periods: 1
+
+Harmonic Frequency   Magnitude   Phase       Norm. Mag   Norm. Phase
+-------- ---------   ---------   -----       ---------   -----------
+ 0       0           0.00640577  0           0           0          
+ 1       1000        40.2183     -0.13191    1           0          
+ 2       2000        0.0287168   -90.064     0.000714025 -89.932    
+ 3       3000        0.0101655   2.941       0.000252759 3.07291    
+ 4       4000        0.00287942  90.2821     7.15948e-05 90.414     
+ 5       5000        0.00146824  -147.59     3.65068e-05 -147.46    
+ 6       6000        0.000356867 -83.804     8.87325e-06 -83.672    
+ 7       7000        0.000135001 -76.788     3.35671e-06 -76.657    
+ 8       8000        2.78671e-05 35.7095     6.92897e-07 35.8414    
+ 9       9000        0.000314397 -96.952     7.81726e-06 -96.82     
+
+FFT: Time span: 1 s, input length: 1000001
+FFT: Frequency resolution: 0.999999 Hz, output length: 500001
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+ Reference value :  1.00000e+01
+No. of Data Rows : 41
+
+No. of Data Rows : 1
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+OP information in rawfile.
+
+Total analysis time (seconds) = 9.96659
+
+Total elapsed time (seconds) = 10.018 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 12302.359 MB.
+Maximum ngspice program size =  169.016 MB.
+Current ngspice program size =  169.016 MB.
+
+
+Note: Starting dynamic gmin stepping
+
+
+The temperature limiting function received NaN.
+Please check your power dissipation and improve your heat sink Rth!
+    This message will be shown only once.
+
+Warning: Dynamic gmin stepping failed
+Note: Starting true gmin stepping
+Warning: True gmin stepping failed
+Note: Starting source stepping
+Note: Source stepping completed
+Note: Starting dynamic gmin stepping
+Warning: Dynamic gmin stepping failed
+Note: Starting true gmin stepping
+Warning: True gmin stepping failed
+Note: Starting source stepping
+Note: Source stepping completed
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+Note: Starting dynamic gmin stepping
+Warning: Dynamic gmin stepping failed
+Note: Starting true gmin stepping
+Warning: True gmin stepping failed
+Note: Starting source stepping
+Note: Source stepping completed
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+Note: Starting dynamic gmin stepping
+Warning: Dynamic gmin stepping failed
+Note: Starting true gmin stepping
+Warning: True gmin stepping failed
+Note: Starting source stepping
+Note: Source stepping completed
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+

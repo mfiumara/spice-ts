@@ -1,0 +1,67 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: * mesfet ring oscillator with ungated load
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 38  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+1                                          1.6
+xinv01.1                               1.59501
+xinv01.2                              0.437523
+3                                     0.432529
+2                                     0.432529
+xinv02.1                               1.59501
+xinv02.2                              0.437523
+4                                     0.432529
+xinv03.1                               1.59501
+xinv03.2                              0.437523
+5                                     0.432529
+xinv04.1                               1.59501
+xinv04.2                              0.437523
+6                                     0.432529
+xinv05.1                               1.59501
+xinv05.2                              0.437523
+7                                     0.432529
+xinv06.1                               1.59501
+xinv06.2                              0.437523
+8                                     0.432529
+xinv07.1                               1.59501
+xinv07.2                              0.437523
+9                                     0.432529
+xinv08.1                               1.59501
+xinv08.2                              0.437523
+10                                    0.432529
+xinv09.1                               1.59501
+xinv09.2                              0.437523
+11                                    0.432529
+xinv10.1                               1.59501
+xinv10.2                              0.437523
+12                                    0.432529
+xinv11.1                               1.59501
+xinv11.2                              0.437523
+2000                                  0.432529
+vnoise#branch                      9.80858e-06
+vdd#branch                         -0.00274651
+
+
+No. of Data Rows : 201
+
+Total analysis time (seconds) = 0.015475
+
+Total elapsed time (seconds) = 0.020 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13682.766 MB.
+Maximum ngspice program size =   10.359 MB.
+Current ngspice program size =   10.359 MB.
+

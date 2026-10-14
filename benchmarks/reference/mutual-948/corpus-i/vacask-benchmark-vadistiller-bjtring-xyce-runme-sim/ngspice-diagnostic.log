@@ -1,0 +1,25 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: 9 stage ring oscillator
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 21  
+Operating point simulation skipped by 'uic',
+  now using transient initial conditions.
+ Reference value :  1.92438e-05 Reference value :  3.84688e-05 Reference value :  5.75358e-05 Reference value :  7.64718e-05 Reference value :  9.61918e-05 Reference value :  1.15901e-04 Reference value :  1.35395e-04 Reference value :  1.54949e-04 Reference value :  1.74648e-04 Reference value :  1.94280e-04 Reference value :  2.13827e-04 Reference value :  2.33602e-04 Reference value :  2.53092e-04 Reference value :  2.72471e-04 Reference value :  2.91988e-04 Reference value :  3.11612e-04 Reference value :  3.31241e-04 Reference value :  3.51003e-04 Reference value :  3.70302e-04 Reference value :  3.90001e-04 Reference value :  4.09753e-04 Reference value :  4.29585e-04 Reference value :  4.49361e-04 Reference value :  4.69340e-04 Reference value :  4.88833e-04 Reference value :  5.08837e-04 Reference value :  5.28694e-04 Reference value :  5.48482e-04 Reference value :  5.68306e-04 Reference value :  5.88168e-04 Reference value :  6.07767e-04 Reference value :  6.27616e-04 Reference value :  6.47641e-04 Reference value :  6.66936e-04 Reference value :  6.86516e-04 Reference value :  7.06440e-04 Reference value :  7.26174e-04 Reference value :  7.46046e-04 Reference value :  7.65709e-04 Reference value :  7.85741e-04 Reference value :  8.05626e-04 Reference value :  8.25533e-04 Reference value :  8.45261e-04 Reference value :  8.65411e-04 Reference value :  8.85141e-04 Reference value :  9.05215e-04 Reference value :  9.24920e-04 Reference value :  9.44886e-04 Reference value :  9.64602e-04 Reference value :  9.84657e-04
+No. of Data Rows : 1000024
+
+Total analysis time (seconds) = 12.7364
+
+Total elapsed time (seconds) = 12.741 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 15733.547 MB.
+Maximum ngspice program size =   10.266 MB.
+Current ngspice program size =   10.266 MB.
+

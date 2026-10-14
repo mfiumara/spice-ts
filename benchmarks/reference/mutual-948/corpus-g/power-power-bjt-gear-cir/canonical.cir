@@ -1,0 +1,25 @@
+power test for BJT Level 1
+*
+*
+vie1 0 1 0
+vic1 0 3 5
+vib1 2 0 pulse(0 1 1ns 1ns 1ns 1us 5us) 
+q1 3 2 1 qjunk1 
+
+.model qjunk1 npn
++bf=130 br=1 is=3e-14
++tf=1e-8 vjs=0.68 ne=1.6 nc=2.0 rb=450
++cje=1uf cjc=1uf cjs=1uf ikf=0.002 ikr=0.002 vaf=50 var=50
++nf=1.0 ise=0 nr=1 isc=0 irb=0 rbm=450 re=0 rc=0 vje=0.75 
++mje=0.33 xtf=0 vtf=100 itf=0 ptf=0 vjc=0.75 mjs=0 xtb=0 
++eg=1.11 xti=3 kf=0 af=1 fc=0.5 tnom=27
+
+.options timeint method=gear
+.options nonlin-tran rhstol=1.0e-8
+.tran 1ns 15us
+
+.PRINT TRAN  v(3) v(2) v(1) i(vic1) i(vib1)
++ {abs(i(vic1)*(v(3)-v(1)))+abs(i(vib1)*(v(2)-v(1)))} p(q1) w(q1) 
++ {-1.0*(P(vic1)+P(vib1))}
+
+.END

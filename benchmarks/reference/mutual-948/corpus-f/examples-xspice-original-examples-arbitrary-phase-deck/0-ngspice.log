@@ -1,0 +1,36 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: arbitrary phase sin and pulse sources
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 5  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+1                                     0.707107
+2                                           -1
+v2#branch                                0.001
+v1#branch                         -0.000707107
+
+
+No. of Data Rows : 136
+
+Total analysis time (seconds) = 0.00095
+
+Total elapsed time (seconds) = 0.005 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 12358.188 MB.
+Maximum ngspice program size =   10.047 MB.
+Current ngspice program size =   10.047 MB.
+
+
+Note: v2: dc value used for op instead of transient time=0 value.

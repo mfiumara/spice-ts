@@ -1,0 +1,98 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: inverter example circuit
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+vdd                                          1
+in                                           1
+out                                 4.1884e-07
+v1#branch                                    0
+v0#branch                         -1.92849e-08
+
+
+No. of Data Rows : 4104
+inv_delay           =  2.92067e-11 targ=  1.29207e-10 trig=  1.00000e-10
+inv_delay2          =  -9.70793e-10 targ=  1.29207e-10 trig=  1.10000e-09
+test_data1          =  1.12921e-09 targ=  2.12921e-09 trig=  1.00000e-09
+out_slew            =  2.78732e-11 targ=  1.14245e-09 trig=  1.11457e-09
+delay_chk = 1
+skew                =  1.33486e-10
+skew2               =  1.29207e-10
+skew3               =  1.44227e-09
+skew4               =  3.44227e-09
+skew5               =  4.18840e-07
+v0_min              =  -9.85219e-03 at=  1.33500e-10
+i_v0_min            =  1.33500e-10 with=  -9.85219e-03
+v0_avg              =  -4.44460e-04 from=  1.00000e-10 to=  1.10050e-09
+v0_integ            =  -4.48870e-13 from=  1.00000e-10 to=  1.10000e-09
+v0_rms              =  1.90133e-03 from=  1.00000e-10 to=  1.10000e-09
+Total elapsed time (seconds) = 0.019 
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 14101.578 MB.
+Maximum ngspice program size =   10.906 MB.
+Current ngspice program size =   10.906 MB.
+24 page faults, 0 vol + 36 invol = 36 context switches.
+
+Number of lines in the deck = 63
+Netlist loading time = 0.000344
+Subckt and Param expansion time = 0.000327
+Netlist parsing time = 0.000236
+
+Nominal temperature = 27
+Operating temperature = 27
+Total iterations = 8230
+Transient iterations = 8222
+Circuit Equations = 6
+Circuit original non-zeroes = 13
+Circuit fill-in non-zeroes = 0
+Circuit total non-zeroes = 0
+Transient timepoints = 4104
+Accepted timepoints = 4104
+Rejected timepoints = 0
+Total analysis time (seconds) = 0.01498
+Matrix load time = 0.007863
+Matrix synchronize time = 0
+Matrix reorder time = 2E-06
+Matrix factor time = 0.000275
+Matrix solve time = 0.00028
+Transient analysis time = 0.014451
+Transient load time = 0.007846
+Transient sync time = 0
+Transient factor time = 0.000274
+Transient solve time = 0.00028
+Transient trunc time = 0.00082
+Transient iterations for the last time point = 0
+AC analysis time = 0
+AC load time = 0
+AC sync time = 0
+AC factor time = 0
+AC solve time = 0
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Total analysis time (seconds) = 0.015004
+
+Total elapsed time (seconds) = 0.019 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 14101.578 MB.
+Maximum ngspice program size =   10.906 MB.
+Current ngspice program size =   10.906 MB.
+
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+

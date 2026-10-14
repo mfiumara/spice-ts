@@ -1,0 +1,28 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: test circuit for n-channel jfet
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 11  
+
+No. of Data Rows : 64
+
+Total analysis time (seconds) = 0.000852
+
+Total elapsed time (seconds) = 0.005 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13576.891 MB.
+Maximum ngspice program size =   10.094 MB.
+Current ngspice program size =   10.094 MB.
+
+
+Warning: Model issue on line 18 :
+  .model sa2109 njf level=2 beta=0.0003790 vto=-3.760 pb=0.650 lambda=0.01 ...
+unrecognized parameter (theta) - ignored
+

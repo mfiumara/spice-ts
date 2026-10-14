@@ -1,0 +1,41 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: * simple resistor circuit
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 41
+
+No. of Data Rows : 1
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 6  
+
+No. of Data Rows : 41
+No. of Data Columns : 8  
+
+No. of Data Rows : 1
+.print line ignored since rawfile was produced.
+
+Total analysis time (seconds) = 0.000749
+
+Total elapsed time (seconds) = 0.004 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13004.984 MB.
+Maximum ngspice program size =   10.172 MB.
+Current ngspice program size =   10.172 MB.
+
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+Warning: `edit' is disabled because 'interactive' has not been set.
+  perhaps you want to 'set interactive'

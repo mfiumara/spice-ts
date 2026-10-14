@@ -1,0 +1,98 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: * random noise test
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+1                                            0
+2                                            0
+3                                            0
+4                                            0
+5                                            0
+6                                            0
+vnoi6#branch                                 0
+vnoi5#branch                                 0
+vnoi4#branch                                 0
+vnoi3#branch                                 0
+vnoi2#branch                                 0
+vnoi1#branch                                 0
+
+250010 1/f noise values in time domain created
+250010 1/f noise values in time domain created
+250010 1/f noise values in time domain created
+250010 1/f noise values in time domain created
+250010 1/f noise values in time domain created
+ Reference value :  1.47157e-05 Reference value :  4.41190e-05 Reference value :  7.28514e-05 Reference value :  1.02306e-04 Reference value :  1.32050e-04 Reference value :  1.61828e-04 Reference value :  1.92063e-04 Reference value :  2.21047e-04 Reference value :  2.49801e-04
+No. of Data Rows : 1250008
+vavg5               =  1.15672e-12 from=  0.00000e+00 to=  2.50000e-04
+vpp5                =  9.14144e-09 from=  0.00000e+00 to=  2.50000e-04
+vrms5               =  9.74842e-10 from=  0.00000e+00 to=  2.50000e-04
+FFT: Time span: 0.000250001 s, input length: 250001
+FFT: Frequency resolution: 3999.98 Hz, output length: 125001
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 13  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+1                                            0
+2                                            0
+3                                            0
+4                                            0
+5                                            0
+6                                            0
+vnoi6#branch                                 0
+vnoi5#branch                                 0
+vnoi4#branch                                 0
+vnoi3#branch                                 0
+vnoi2#branch                                 0
+vnoi1#branch                                 0
+
+250010 1/f noise values in time domain created
+250010 1/f noise values in time domain created
+250010 1/f noise values in time domain created
+250010 1/f noise values in time domain created
+250010 1/f noise values in time domain created
+ Reference value :  5.79800e-06 Reference value :  1.58072e-05 Reference value :  2.51281e-05 Reference value :  3.25460e-05 Reference value :  3.99612e-05 Reference value :  4.74107e-05 Reference value :  5.51174e-05 Reference value :  6.34037e-05 Reference value :  7.17600e-05 Reference value :  7.98040e-05 Reference value :  8.78901e-05 Reference value :  9.62517e-05 Reference value :  1.03830e-04 Reference value :  1.11719e-04 Reference value :  1.19696e-04 Reference value :  1.27371e-04 Reference value :  1.35816e-04 Reference value :  1.44214e-04 Reference value :  1.52717e-04 Reference value :  1.61328e-04 Reference value :  1.69100e-04 Reference value :  1.76524e-04 Reference value :  1.83326e-04 Reference value :  1.89659e-04 Reference value :  1.96272e-04 Reference value :  2.02659e-04 Reference value :  2.09424e-04 Reference value :  2.15974e-04 Reference value :  2.22487e-04 Reference value :  2.29200e-04 Reference value :  2.36800e-04 Reference value :  2.44016e-04
+No. of Data Rows : 1250008
+
+Total analysis time (seconds) = 10.9114
+
+Total elapsed time (seconds) = 11.000 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 12186.500 MB.
+Maximum ngspice program size =  205.062 MB.
+Current ngspice program size =  126.797 MB.
+
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+

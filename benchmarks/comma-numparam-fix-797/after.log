@@ -1,0 +1,21 @@
+issue-1 reference None native Subcircuit positional assignment: ; sign expected metrics None
+issue-2 reference {'v(o)': 211.0} native {'v(o)': 211} metrics {'nodes': ['v(o)'], 'count': 1, 'maxAbsolute': 0.0, 'rmsAbsolute': 0.0, 'maxRelative': 0.0, 'rmsRelative': 0.0}
+issue-3 reference None native Subcircuit positional assignment: ; sign expected metrics None
+issue-4 reference {'v(o)': 231.0} native {'v(o)': 231} metrics {'nodes': ['v(o)'], 'count': 1, 'maxAbsolute': 0.0, 'rmsAbsolute': 0.0, 'maxRelative': 0.0, 'rmsRelative': 0.0}
+issue-5 reference None native Subcircuit positional assignment: ; sign expected metrics None
+issue-6 reference {'v(o)': 211.0} native {'v(o)': 211} metrics {'nodes': ['v(o)'], 'count': 1, 'maxAbsolute': 0.0, 'rmsAbsolute': 0.0, 'maxRelative': 0.0, 'rmsRelative': 0.0}
+issue-7 reference {'v(o)': 211.0} native {'v(o)': 211} metrics {'nodes': ['v(o)'], 'count': 1, 'maxAbsolute': 0.0, 'rmsAbsolute': 0.0, 'maxRelative': 0.0, 'rmsRelative': 0.0}
+defaults reference {'v(o)': 111.0} native {'v(o)': 111} metrics {'nodes': ['v(o)'], 'count': 1, 'maxAbsolute': 0.0, 'rmsAbsolute': 0.0, 'maxRelative': 0.0, 'rmsRelative': 0.0}
+plain-whitespace reference {'v(o)': 234.0} native {'v(o)': 234} metrics {'nodes': ['v(o)'], 'count': 1, 'maxAbsolute': 0.0, 'rmsAbsolute': 0.0, 'maxRelative': 0.0, 'rmsRelative': 0.0}
+braced-whitespace reference {'v(o)': 234.0} native {'v(o)': 234} metrics {'nodes': ['v(o)'], 'count': 1, 'maxAbsolute': 0.0, 'rmsAbsolute': 0.0, 'maxRelative': 0.0, 'rmsRelative': 0.0}
+braced-comma-space reference {'v(o)': 234.0} native {'v(o)': 234} metrics {'nodes': ['v(o)'], 'count': 1, 'maxAbsolute': 0.0, 'rmsAbsolute': 0.0, 'maxRelative': 0.0, 'rmsRelative': 0.0}
+braced-comma-tab reference {'v(o)': 234.0} native {'v(o)': 234} metrics {'nodes': ['v(o)'], 'count': 1, 'maxAbsolute': 0.0, 'rmsAbsolute': 0.0, 'maxRelative': 0.0, 'rmsRelative': 0.0}
+explicit-first reference {'v(o)': 211.0} native {'v(o)': 211} metrics {'nodes': ['v(o)'], 'count': 1, 'maxAbsolute': 0.0, 'rmsAbsolute': 0.0, 'maxRelative': 0.0, 'rmsRelative': 0.0}
+reordered-glued reference {'v(o)': 114.0} native {'v(o)': 114} metrics {'nodes': ['v(o)'], 'count': 1, 'maxAbsolute': 0.0, 'rmsAbsolute': 0.0, 'maxRelative': 0.0, 'rmsRelative': 0.0}
+function-comma reference {'v(o)': 234.0} native {'v(o)': 234} metrics {'nodes': ['v(o)'], 'count': 1, 'maxAbsolute': 0.0, 'rmsAbsolute': 0.0, 'maxRelative': 0.0, 'rmsRelative': 0.0}
+unbraced-trailing reference None native Subcircuit positional assignment: ; sign expected metrics None
+unbraced-missing-value reference {'v(o)': 11.0} native Parse error at line 7: Undefined parameter 'p2'
+  X1 o s params: p1={p2=3} metrics None
+example01 reference {'v(n1)': -7.232339954481557, 'v(n2)': 0.01470588235294118, 'v(n3)': 0.01470588235294118} native Subcircuit 'entry' (instance 'X_entry1') parameter 'RIN=1,': Unexpected character ',' at position 1 in expression: 1, metrics None
+example01_stringwriter reference {'v(n1)': 1.097091951232882, 'v(n2)': 0.01469654594025957, 'v(n3)': 0.01471521876562279} native {'v(n1)': 1.097091928994553, 'v(n2)': 0.01469654578356219, 'v(n3)': 0.014715218922320162, 'v(x_entry1.mss)': 0.012492063916027862, 'v(x_entry1.msx)': 1.097091928994553, 'v(x_entry1.msy)': 1.0970919165024893, 'v(x_entry2.mss)': 0.012507936083972139, 'v(x_entry2.msx)': 1.097091928994553, 'v(x_entry2.msy)': 1.0970919164866169} metrics {'nodes': ['v(n1)', 'v(n2)', 'v(n3)'], 'count': 3, 'maxAbsolute': 2.2238328956092346e-08, 'rmsAbsolute': 1.2839942664655665e-08, 'maxRelative': 2.02702507580167e-08, 'rmsRelative': 1.4582630755065776e-08}
+example01_without_params reference {'v(n1)': 1.097091951232882, 'v(n2)': 0.01469654594025957, 'v(n3)': 0.01471521876562279} native {'v(n1)': 1.097091928994553, 'v(n2)': 0.01469654578356219, 'v(n3)': 0.014715218922320162, 'v(x_entry1.mss)': 0.012492063916027862, 'v(x_entry1.msx)': 1.097091928994553, 'v(x_entry1.msy)': 1.0970919165024893, 'v(x_entry2.mss)': 0.012507936083972139, 'v(x_entry2.msx)': 1.097091928994553, 'v(x_entry2.msy)': 1.0970919164866169} metrics {'nodes': ['v(n1)', 'v(n2)', 'v(n3)'], 'count': 3, 'maxAbsolute': 2.2238328956092346e-08, 'rmsAbsolute': 1.2839942664655665e-08, 'maxRelative': 2.02702507580167e-08, 'rmsRelative': 1.4582630755065776e-08}

@@ -1,0 +1,34 @@
+Test for solution dependent resistor with a multiplier
+
+Vcontrol cntl 0 2.0
+Rcontrol cntl 0 1.0
+
+.param scalar=2.0
+
+V1 1 0 2.0
+R1 1 2 1.0
+R2 2 0 R={1.0+scalar*V(cntl)}  M=10
+
+V12 12 0 2.0
+R12 12 22 1.0
+R22a 22 0 R={1.0+scalar*V(cntl)}  
+R22b 22 0 R={1.0+scalar*V(cntl)}  
+R22c 22 0 R={1.0+scalar*V(cntl)}  
+R22d 22 0 R={1.0+scalar*V(cntl)}  
+R22e 22 0 R={1.0+scalar*V(cntl)}  
+R22f 22 0 R={1.0+scalar*V(cntl)}  
+R22g 22 0 R={1.0+scalar*V(cntl)}  
+R22h 22 0 R={1.0+scalar*V(cntl)}  
+R22i 22 0 R={1.0+scalar*V(cntl)}  
+R22j 22 0 R={1.0+scalar*V(cntl)}  
+
+V13 13 0 2.0
+R13 13 23 1.0
+R23 23 0 R={0.1*(1.0+scalar*V(cntl))}
+
+* I(V1), I(V12) and I(V13) should match.
+.DC V1 2 2 1
+
+
+.print DC format=csv file=output.csv precision=17 {V1} I(v1) I(v12) I(v13) I(vcontrol) V(1) V(12) V(13) V(2) V(22) V(23) V(cntl)
+.end

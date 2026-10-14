@@ -1,0 +1,32 @@
+spice-heavy: all 2 heavy slots busy, waiting...
+spice-heavy: got slot 1
+633/661 corpus-i/vacask-benchmark-vadistiller-bjtring-xyce-runme-sim ngspice=success Xyce=unsupported unsupported
+634/661 corpus-i/vacask-test-spice-cccs-cir ngspice=success Xyce=success comparable
+635/661 corpus-i/vacask-test-spice-diode-cir ngspice=success Xyce=success comparable
+636/661 corpus-i/vacask-test-spice-mos-cir ngspice=success Xyce=success comparable
+637/661 corpus-i/vacask-test-spice-rc-cir ngspice=success Xyce=success comparable
+638/661 corpus-i/vacask-test-spice-regressions-cir ngspice=success Xyce=success comparable
+639/661 corpus-i/vacask-test-spice-subckt-cir ngspice=success Xyce=success comparable
+640/661 corpus-i/vacask-test-spice-vcvs-cir ngspice=success Xyce=success comparable
+641/661 corpus-i/vacask-test-spice-warnonly-cir ngspice=success Xyce=success comparable
+642/661 corpus-j/j-1 ngspice=failed Xyce=failed native-failure
+643/661 corpus-j/j-2 ngspice=failed Xyce=failed native-failure
+644/661 corpus-j/j-3 ngspice=failed Xyce=failed native-failure
+645/661 corpus-j/j-4 ngspice=failed Xyce=unsupported unsupported
+646/661 corpus-j/j-5 ngspice=failed Xyce=failed native-failure
+647/661 corpus-j/j-6 ngspice=failed Xyce=failed native-failure
+648/661 corpus-j/j-7 ngspice=failed Xyce=failed native-failure
+649/661 corpus-j/j-8 ngspice=failed Xyce=failed native-failure
+650/661 corpus-j/j-9 ngspice=failed Xyce=unsupported unsupported
+651/661 corpus-j/j-10 ngspice=failed Xyce=unsupported unsupported
+652/661 corpus-j/j-11 ngspice=failed Xyce=unsupported unsupported
+653/661 corpus-j/j-12 ngspice=failed Xyce=unsupported unsupported
+654/661 corpus-j/j-13 ngspice=success Xyce=unsupported unsupported
+655/661 corpus-j/j-14 ngspice=failed Xyce=unsupported unsupported
+656/661 corpus-j/j-15 ngspice=success Xyce=failed native-failure
+657/661 corpus-j/j-16 ngspice=success Xyce=failed transformed-with-loss
+658/661 corpus-j/j-17 ngspice=failed Xyce=success transformed-with-loss
+659/661 corpus-j/j-18 ngspice=failed Xyce=unsupported unsupported
+660/661 corpus-j/j-19 ngspice=success Xyce=unsupported unsupported
+661/661 corpus-j/j-20 ngspice=failed Xyce=success transformed-with-loss
+{"attempted":661,"eligibleReferenceFixtures":124,"initialAccepted":26,"finalAccepted":100,"target":100,"buckets":{"native-failure":163,"transformed-with-loss":37,"relative-at-most-1e-3":14,"absolute-at-most-1e-9":38,"unsupported":337,"relative-above-1e-3":71,"absolute-only-disagreement":1},"selectedBuckets":{"relative-at-most-1e-3":12,"absolute-at-most-1e-9":29,"relative-above-1e-3":58,"absolute-only-disagreement":1}}

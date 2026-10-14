@@ -1,0 +1,140 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: astable multivibrator
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+BJT: base contact depth is 1.25 um at node 26
+BJT: base contact depth is 1.25 um at node 26
+No. of Data Columns : 9  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+5                                            0
+6                                            5
+1                                       2.4727
+2                                      4.99997
+3                                     0.776083
+4                                  1.53069e-07
+vcc#branch                         -0.00266813
+vin#branch                         5.10229e-12
+
+ Reference value :  4.15063e-06
+No. of Data Rows : 1455
+.print line ignored since rawfile was produced.
+Total elapsed time (seconds) = 0.479 
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 14168.984 MB.
+Maximum ngspice program size =   10.625 MB.
+Current ngspice program size =   10.625 MB.
+28 page faults, 0 vol + 34 invol = 34 context switches.
+
+Number of lines in the deck = 16
+Netlist loading time = 0.0002
+Subckt and Param expansion time = 0.000482
+Netlist parsing time = 0.000454
+
+Nominal temperature = 27
+Operating temperature = 27
+Total iterations = 16286
+Transient iterations = 16278
+Circuit Equations = 9
+Circuit original non-zeroes = 26
+Circuit fill-in non-zeroes = 2
+Circuit total non-zeroes = 0
+Transient timepoints = 1769
+Accepted timepoints = 1455
+Rejected timepoints = 314
+Total analysis time (seconds) = 0.474161
+Matrix load time = 0.453885
+Matrix synchronize time = 0
+Matrix reorder time = 3.99999E-06
+Matrix factor time = 0.001745
+Matrix solve time = 0.000784
+Transient analysis time = 0.472066
+Transient load time = 0.452701
+Transient sync time = 0
+Transient factor time = 0.001745
+Transient solve time = 0.000783
+Transient trunc time = 0.002542
+Transient iterations for the last time point = 0
+AC analysis time = 0
+AC load time = 0
+AC sync time = 0
+AC factor time = 0
+AC solve time = 0
+----------------------------------------
+Device q2 Memory Usage:
+Item                     Count     Bytes
+----------------------------------------
+Device                       1       208
+Elements                    60      9120
+Nodes                       61     37088
+Edges                       60      7200
+Misc Mesh                  n/a      1016
+Equil Orig NZ              175      7000
+Equil Fill NZ                0         0
+Equil Tot  NZ              175      7000
+Equil Vectors               60      1920
+Bias Orig NZ              1111     44440
+Bias Fill NZ               232      9280
+Bias Tot  NZ              1343     53720
+Bias Vectors               178      7120
+State Vector               425      3400
+----------------------------------------------------------------------
+Device q2 Time Usage:
+Item                     SETUP        DC      TRAN        AC     TOTAL
+----------------------------------------------------------------------
+Setup Time             1.1e-05   4.4e-05  0.000328         0  0.000383
+Load Time           7.00001e-06  0.000114   0.05451         0  0.054631
+Order Time          2.99999e-06   2.9e-05         0         0   3.2e-05
+Factor Time         4.99999e-06  0.000141  0.056992         0  0.057138
+Solve Time          2.00002e-06  0.000119  0.044922         0  0.045043
+Update Time         9.99993e-07   3.6e-05  0.000989         0  0.001026
+Check Time          2.99999e-06   3.5e-05  0.002229         0  0.002267
+Misc Time                    0   1.4e-05  0.003233         0  0.000383
+LTE Time                                  0.000978            0.000978
+Total Time            0.000296  0.000611  0.226689         0  0.227596
+Iterations                   7        30     12250         0     12287
+----------------------------------------
+Device q1 Memory Usage:
+Item                     Count     Bytes
+----------------------------------------
+Device                       1       208
+Elements                    60      9120
+Nodes                       61     37088
+Edges                       60      7200
+Misc Mesh                  n/a      1016
+Equil Orig NZ              175      7000
+Equil Fill NZ                0         0
+Equil Tot  NZ              175      7000
+Equil Vectors               60      1920
+Bias Orig NZ              1111     44440
+Bias Fill NZ               232      9280
+Bias Tot  NZ              1343     53720
+Bias Vectors               178      7120
+State Vector               425      3400
+----------------------------------------------------------------------
+Device q1 Time Usage:
+Item                     SETUP        DC      TRAN        AC     TOTAL
+----------------------------------------------------------------------
+Setup Time               6e-06   2.5e-05  0.000355         0  0.000386
+Load Time           5.00001e-06   9.7e-05  0.053598         0    0.0537
+Order Time          1.00001e-06   2.8e-05         0         0   2.9e-05
+Factor Time         4.99997e-06  0.000117  0.055368         0   0.05549
+Solve Time               4e-06   8.2e-05  0.041885         0  0.041971
+Update Time         1.00001e-06   4.5e-05  0.000906         0  0.000952
+Check Time          9.99993e-07   3.1e-05  0.002106         0  0.002138
+Misc Time           9.99993e-07   1.3e-05  0.003646         0  0.000386
+LTE Time                                  0.000879            0.000879
+Total Time             3.9e-05  0.000504  0.223533         0  0.224076
+Iterations                   7        25     11859         0     11891
+
+ngspice-47 done

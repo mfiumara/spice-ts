@@ -1,0 +1,10 @@
+* Waveform generation by PWM in VHDL.
+
+adut null [ out ] pwm_sin
+.model pwm_sin d_cosim simulation="./pwm" sim_args = [ "pwm" ]
+
+r1 out smooth 100k
+c1 smooth 0 1u
+.tran 1m 2
+.print TRAN format=csv file=output.csv precision=17 I(auto_dac2) V(out) V(smooth)
+.end

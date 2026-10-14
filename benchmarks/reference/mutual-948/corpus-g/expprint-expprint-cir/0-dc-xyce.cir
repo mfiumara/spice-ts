@@ -1,0 +1,12 @@
+Test for expressions in .print statement.
+*
+* Eric Keiter, 9233.
+* 8/9/04.
+*
+VT1 4 0 0V
+R1  4 0 10
+
+.DC VT1 -0.2 0.5 0.01
+
+.print DC format=csv file=output.csv precision=17 {VT1} I(vt1) V(4)
+.END

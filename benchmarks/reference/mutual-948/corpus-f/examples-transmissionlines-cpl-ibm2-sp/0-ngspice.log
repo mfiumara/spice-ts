@@ -1,0 +1,40 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: simple coupled transmissionlines
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 11  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+in                                           0
+v1                                           0
+v2                                           0
+v3                                           0
+v4                                           0
+p1#branch1_0                                 0
+p1#branch1_1                                 0
+p1#branch2_0                                 0
+p1#branch2_1                                 0
+ves#branch                                   0
+
+
+No. of Data Rows : 217
+
+Total analysis time (seconds) = 0.00212
+
+Total elapsed time (seconds) = 0.006 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13573.094 MB.
+Maximum ngspice program size =   10.234 MB.
+Current ngspice program size =   10.234 MB.
+

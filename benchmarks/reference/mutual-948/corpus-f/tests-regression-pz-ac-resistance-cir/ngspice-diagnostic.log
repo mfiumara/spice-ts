@@ -1,0 +1,30 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: check for proper use of ac resistance
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+Note: err[op] = 0
+INFO: [op], success
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 3
+Note: err[ac] = 1.10484E-16 2.19466E-17 2.34373E-16
+INFO: [ac], success
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+Using SPARSE 1.3 as Direct Linear Solver
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+Note: err[pz] = 2.22045E-16
+INFO: [pz], success
+ngspice-47 done

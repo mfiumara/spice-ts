@@ -1,0 +1,60 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: DIGITAL RING OSCILLATOR, 9 stages, NAND gates, enable
+
+Override trtol to 7 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 2616
+
+Total analysis time (seconds) = 0.010632
+
+Total elapsed time (seconds) = 0.014 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13254.797 MB.
+Maximum ngspice program size =   10.781 MB.
+Current ngspice program size =   10.781 MB.
+
+List of event nodes in plot tran1
+    node name           : type , number of events
+
+    node1               : d    ,   454
+    node3               : d    ,     6
+    x1.int_di2          : d    ,   454
+    x1.int_di3          : d    ,   454
+    x1.int_di4          : d    ,   454
+    x1.int_di5          : d    ,   454
+    x1.int_di6          : d    ,   454
+    x1.int_di7          : d    ,   454
+    x1.int_di8          : d    ,   454
+    x1.int_di9          : d    ,   454
+tdiff               =  4.00000e-09 targ=  3.64000e-08 trig=  3.24000e-08
+The oscillation frequency is 2.5 GHz the gate delay is 0.0222222 ns
+ASCII raw file "output.raw"
+Override trtol to 7 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+
+
+Warning: Missing .control statement!
+    in file input.cir
+    This may cause subsequent errors.
+
+warning, can't find model 'digitop' from line
+    plot node1 node3 digitop
+Warning: misplaced .endc card
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+
+
+Warning: command 'plot' is not available during batch simulation, ignored!
+    You may use Gnuplot instead.
+

@@ -1,0 +1,55 @@
+Test of pseudo-transient
+* This is not a hard circuit to solve, so it will actually solve OK if 
+* pseudo-transient is not use, and the default solver is used instead.
+* So, it is not a perfect test of pseudo-transient, but it at least
+* makes sure the capability can be invoked.
+*
+.dc Vhi 5 5 1
+.print dc  V(VDD) {V(VOUT)+2.0} {V(1)+2.0} {V(2)+2.0}
+
+Vhi 	VDD	0	5V
+VIN1          1 0  5V PULSE (5V 0V 3us 25ns 250ns 4us 8us)
+VIN2          2 0  0V PULSE (0V 5V 2us 25ns 250ns 4us 8us)
+RB1	VDD	VB1	4K
+QIN1	VB2	VB1	1	NPN
+QIN2	VB2	VB1	2	NPN
+RC2	VDD	VC2	1.6K
+Q3	VC2	VB2	VB3	NPN
+RC3	VDD	VOUT	4K
+Q4	VOUT	VB3	0	NPN
+RB3	VB3	0	1K
+**************************
+.MODEL NPN NPN (           IS     = 3.97589E-14
++ BF     = 195.3412        NF     = 1.0040078       VAF    = 53.081
++ IKF    = 0.976           ISE    = 1.60241E-14     NE     = 1.4791931
++ BR     = 1.1107942       NR     = 0.9928261       VAR    = 11.3571702
++ IKR    = 2.4993953       ISC    = 1.88505E-12     NC     = 1.1838278
++ RB     = 56.5826472      IRB    = 1.50459E-4      RBM    = 5.2592283
++ RE     = 0.0402974       RC     = 0.4208          XTI    = 5.8315
++ EG     = 1.11            XTB    = 1.6486          TF     = 3.3E-10
++ XTF    = 6               ITF    = 0.32            VTF    = 0.574
++ PTF    = 25.832          TR     = 3.75E-7         CJE    = 2.56E-11
++ VJE    = 0.682256        MJE    = 0.3358856       FC     = 0.83
++ CJC    = 1.40625E-11     VJC    = 0.5417393       MJC    = 0.4547893)
+**************************
+
+
+.options device debuglevel=-10 voltlim=1
+.options nonlin nlstrategy=0 continuation=9
+
+.options loca 
++ stepper=natural 
++ predictor=constant 
++ stepcontrol=adaptive
++ initialvalue=0.0
++ minvalue=0.0 
++ maxvalue=1.0e12
++ initialstepsize=1.0e-6 
++ minstepsize=1.0e-6
++ maxstepsize=1.0e6
++ aggressiveness=0.1 
++ maxsteps=200
++ maxnliters=200
++ voltagescalefactor=1.0
+
+.END

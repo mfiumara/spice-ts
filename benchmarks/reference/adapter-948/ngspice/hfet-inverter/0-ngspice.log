@@ -1,0 +1,36 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: dcfl inverter circuit
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 7  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+1                                            2
+2                                            0
+3                                     -0.27545
+4                                    -0.275539
+vin#branch                         -3.5971e-11
+vdd#branch                         1.32008e-09
+
+
+No. of Data Rows : 324
+
+Total analysis time (seconds) = 0.00435
+
+Total elapsed time (seconds) = 0.009 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13895.578 MB.
+Maximum ngspice program size =   10.141 MB.
+Current ngspice program size =   10.141 MB.
+

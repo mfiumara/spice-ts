@@ -1,0 +1,12 @@
+rc_osc test
+.tran 0 2.0e-4
+.print tran {v(2)+0.002}  
+.options timeint reltol=1.0e-4 abstol=1e-4 method=7
+
+*COMP {v(2)+0.002} reltol=1.0e-6 abstol=1.0e-6
+
+v1 1 0 sin 0 1V 1e5 0 0
+r1 1 2 1k
+c1 2 0 2u
+
+.end

@@ -1,0 +1,36 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: io types
+
+ASCII raw file "output.raw"
+Reducing trtol to 1 for xspice 'A' devices
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 6  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+1                                            0
+analog_node                                  0
+i_out                                        0
+v1#branch                                    0
+abridge3#branch_1_0                          0
+
+
+No. of Data Rows : 114
+
+Total analysis time (seconds) = 0.001044
+
+Total elapsed time (seconds) = 0.005 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 12443.359 MB.
+Maximum ngspice program size =   10.250 MB.
+Current ngspice program size =   10.250 MB.
+

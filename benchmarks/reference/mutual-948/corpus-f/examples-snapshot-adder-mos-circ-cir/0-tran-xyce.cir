@@ -1,0 +1,62 @@
+*  ADDER - 4 BIT ALL-NAND-GATE BINARY ADDER
+
+*** SUBCIRCUIT DEFINITIONS
+.SUBCKT NAND in1 in2 out VDD
+*   NODES:  INPUT(2), OUTPUT, VCC
+M1 out in2 Vdd Vdd p1 W=3u L=1u
+M2 net.1 in2 0 0 n1 W=3u L=2u
+M3 out in1 Vdd Vdd p1 W=3u L=1u
+M4 out in1 net.1 0 n1 W=3u L=2u
+.ENDS NAND
+
+.SUBCKT ONEBIT 1 2 3 4 5 6
+*   NODES:  INPUT(2), CARRY-IN, OUTPUT, CARRY-OUT, VCC
+X1   1  2  7  6   NAND
+X2   1  7  8  6   NAND
+X3   2  7  9  6   NAND
+X4   8  9 10  6   NAND
+X5   3 10 11  6   NAND
+X6   3 11 12  6   NAND
+X7  10 11 13  6   NAND
+X8  12 13  4  6   NAND
+X9  11  7  5  6   NAND
+.ENDS ONEBIT
+
+.SUBCKT TWOBIT 1 2 3 4 5 6 7 8 9
+*   NODES:  INPUT - BIT0(2) / BIT1(2), OUTPUT - BIT0 / BIT1,
+*           CARRY-IN, CARRY-OUT, VCC
+X1   1  2  7  5 10  9   ONEBIT
+X2   3  4 10  6  8  9   ONEBIT
+.ENDS TWOBIT
+
+.SUBCKT FOURBIT 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
+*   NODES:  INPUT - BIT0(2) / BIT1(2) / BIT2(2) / BIT3(2),
+*           OUTPUT - BIT0 / BIT1 / BIT2 / BIT3, CARRY-IN, CARRY-OUT, VCC
+X1   1  2  3  4  9 10 13 16 15   TWOBIT
+X2   5  6  7  8 11 12 16 14 15   TWOBIT
+.ENDS FOURBIT
+
+*** DEFINE NOMINAL CIRCUIT
+VCC   99  0   DC 3.3V
+VIN1A  1  0   PULSE(0 3 0 10NS 10NS   10NS   50NS)
+VIN1B  2  0   PULSE(0 3 0 10NS 10NS   20NS  100NS)
+VIN2A  3  0   PULSE(0 3 0 10NS 10NS   40NS  200NS)
+VIN2B  4  0   PULSE(0 3 0 10NS 10NS   80NS  400NS)
+VIN3A  5  0   PULSE(0 3 0 10NS 10NS  160NS  800NS)
+VIN3B  6  0   PULSE(0 3 0 10NS 10NS  320NS 1600NS)
+VIN4A  7  0   PULSE(0 3 0 10NS 10NS  640NS 3200NS)
+VIN4B  8  0   PULSE(0 3 0 10NS 10NS 1280NS 6400NS)
+X1     1  2  3  4  5  6  7  8  9 10 11 12  0 13 99 FOURBIT
+*RBIT0  9  0   100K
+*RBIT1 10  0   100K
+*RBIT2 11  0   100K
+*RBIT3 12  0   100K
+*RCOUT 13  0   100K
+
+.TRAN 1NS 1000NS
+
+.model n1 nmos level=8 version=3.3.0
+.model p1 pmos level=8 version=3.3.0
+
+.print TRAN format=csv file=output.csv precision=17 I(vcc) I(vin1a) I(vin1b) I(vin2a) I(vin2b) I(vin3a) I(vin3b) I(vin4a) I(vin4b) V(1) V(10) V(11) V(12) V(13) V(2) V(3) V(4) V(5) V(6) V(7) V(8) V(9) V(99) V(x1.16) V(x1.x1.10) V(x1.x1.x1.10) V(x1.x1.x1.11) V(x1.x1.x1.12) V(x1.x1.x1.13) V(x1.x1.x1.7) V(x1.x1.x1.8) V(x1.x1.x1.9) V(x1.x1.x1.x1.net.1) V(x1.x1.x1.x2.net.1) V(x1.x1.x1.x3.net.1) V(x1.x1.x1.x4.net.1) V(x1.x1.x1.x5.net.1) V(x1.x1.x1.x6.net.1) V(x1.x1.x1.x7.net.1) V(x1.x1.x1.x8.net.1) V(x1.x1.x1.x9.net.1) V(x1.x1.x2.10) V(x1.x1.x2.11) V(x1.x1.x2.12) V(x1.x1.x2.13) V(x1.x1.x2.7) V(x1.x1.x2.8) V(x1.x1.x2.9) V(x1.x1.x2.x1.net.1) V(x1.x1.x2.x2.net.1) V(x1.x1.x2.x3.net.1) V(x1.x1.x2.x4.net.1) V(x1.x1.x2.x5.net.1) V(x1.x1.x2.x6.net.1) V(x1.x1.x2.x7.net.1) V(x1.x1.x2.x8.net.1) V(x1.x1.x2.x9.net.1) V(x1.x2.10) V(x1.x2.x1.10) V(x1.x2.x1.11) V(x1.x2.x1.12) V(x1.x2.x1.13) V(x1.x2.x1.7) V(x1.x2.x1.8) V(x1.x2.x1.9) V(x1.x2.x1.x1.net.1) V(x1.x2.x1.x2.net.1) V(x1.x2.x1.x3.net.1) V(x1.x2.x1.x4.net.1) V(x1.x2.x1.x5.net.1) V(x1.x2.x1.x6.net.1) V(x1.x2.x1.x7.net.1) V(x1.x2.x1.x8.net.1) V(x1.x2.x1.x9.net.1) V(x1.x2.x2.10) V(x1.x2.x2.11) V(x1.x2.x2.12) V(x1.x2.x2.13) V(x1.x2.x2.7) V(x1.x2.x2.8) V(x1.x2.x2.9) V(x1.x2.x2.x1.net.1) V(x1.x2.x2.x2.net.1) V(x1.x2.x2.x3.net.1) V(x1.x2.x2.x4.net.1) V(x1.x2.x2.x5.net.1) V(x1.x2.x2.x6.net.1) V(x1.x2.x2.x7.net.1) V(x1.x2.x2.x8.net.1) V(x1.x2.x2.x9.net.1)
+.END

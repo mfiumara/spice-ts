@@ -1,0 +1,56 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_8223ca21/benchmarks/reference
+
+ ❯ canonical.test.ts (7 tests | 2 failed) 12ms
+   × OP produces one numeric sample with a synthetic zero grid 4ms
+   × simple control analyses lower to static cards; output commands are recorded 5ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  canonical.test.ts > OP produces one numeric sample with a synthetic zero grid
+Error: OP CSV is unsupported
+ ❯ parseXyceCsv xyce.ts:137:32
+    135| /** DC rows remain flattened in native sweep order, including grid res…
+    136| export function parseXyceCsv(csv: string, analysis: AnalysisType, sign…
+    137|   if (analysis === 'op') throw new Error('OP CSV is unsupported');
+       |                                ^
+    138|   const lines = csv.replace(/^\uFEFF/, '').trim().split(/\r?\n/);
+    139|   if (lines.length < 2) throw new Error('CSV has no sample rows');
+ ❯ canonical.test.ts:9:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  canonical.test.ts > simple control analyses lower to static cards; output commands are recorded
+AssertionError: Expected values to be strictly deep-equal:
++ actual - expected
+
++ [
++   'Control command after terminal cleanup: quit 0'
++ ]
+- []
+
+
+- Expected
++ Received
+
+- []
++ [
++   "Control command after terminal cleanup: quit 0",
++ ]
+
+ ❯ canonical.test.ts:15:10
+     13| test('simple control analyses lower to static cards; output commands a…
+     14|   const plan = canonicalize(deck('.control\nop\ndisplay\nprint v(in)\n…
+     15|   assert.deepEqual(plan.limitations, []);
+       |          ^
+     16|   assert.equal(plan.analyses[0].directive, '.op');
+     17|   assert.doesNotMatch(plan.netlist, /control|remcirc|quit|display/);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 5 passed (7)
+   Start at  00:04:40
+   Duration  183ms (transform 48ms, setup 0ms, import 59ms, tests 12ms, environment 0ms)
+

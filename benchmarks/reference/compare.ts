@@ -8,7 +8,7 @@ import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { alignAndMeasure, runSpiceTs, type ComparisonFixture, type EngineRun, type SampleSeries } from '../comparison-harness.js';
 import { runNativeNgspice, type ClassicCircuit, type EngineExecution } from '../corpus/classic/report.js';
-import { runXyce, translateForXyce } from './xyce.js';
+import { runXyce, translateForXyce, type ReferenceRun } from './xyce.js';
 
 export const CORPORA = ['ngspice', 'classic', 'xyce', 'corpus-d', 'corpus-e'] as const;
 const REVISION = '7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2';
@@ -33,7 +33,7 @@ export function loadCorpus(): Array<{ key: string; circuit: ClassicCircuit; inpu
   return rows;
 }
 
-function receipt(run: EngineRun | EngineExecution): object {
+function receipt(run: EngineRun | EngineExecution | ReferenceRun): object {
   if ('series' in run) {
     const { series, ...rest } = run;
     return { ...rest, points: series.grid.length, signals: Object.keys(series.signals), seriesSha256: hash(JSON.stringify(series)) };

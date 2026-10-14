@@ -1,0 +1,649 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: cmos ring oscillator - 2um devices
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 124  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+1                                            5
+2                                            0
+x1.14                                      2.5
+x1.13                             -7.70979e-25
+x1.15                                        5
+x1.16                                        5
+x1.24                                      2.5
+x1.23                             -7.70979e-25
+x1.25                                        0
+x1.26                                        0
+3                                 -7.70979e-25
+4                                          2.5
+x2.14                                        5
+x2.13                                      2.5
+x2.15                                        5
+x2.16                                        5
+x2.24                                        5
+x2.23                                      2.5
+x2.25                                        0
+x2.26                                        0
+5                                            5
+x3.14                             -7.70979e-25
+x3.13                                        5
+x3.15                                        5
+x3.16                                        5
+x3.24                             -7.70979e-25
+x3.23                                        5
+x3.25                                        0
+x3.26                                        0
+6                                 -7.70979e-25
+x4.14                                        5
+x4.13                             -7.70979e-25
+x4.15                                        5
+x4.16                                        5
+x4.24                                        5
+x4.23                             -7.70979e-25
+x4.25                                        0
+x4.26                                        0
+7                                            5
+x5.14                             -7.70979e-25
+x5.13                                        5
+x5.15                                        5
+x5.16                                        5
+x5.24                             -7.70979e-25
+x5.23                                        5
+x5.25                                        0
+x5.26                                        0
+8                                 -7.70979e-25
+x6.14                                        5
+x6.13                             -7.70979e-25
+x6.15                                        5
+x6.16                                        5
+x6.24                                        5
+x6.23                             -7.70979e-25
+x6.25                                        0
+x6.26                                        0
+9                                            5
+x7.14                             -7.70979e-25
+x7.13                                        5
+x7.15                                        5
+x7.16                                        5
+x7.24                             -7.70979e-25
+x7.23                                        5
+x7.25                                        0
+x7.26                                        0
+v.x7.vbn#branch                   -3.81797e-15
+v.x7.vsn#branch                   -4.23792e-15
+v.x7.vdn#branch                     8.0559e-15
+v.x7.vgn#branch                   -1.25239e-06
+v.x7.vbp#branch                    3.12747e-16
+v.x7.vsp#branch                    3.33538e-17
+v.x7.vdp#branch                   -3.46101e-16
+v.x7.vgp#branch                    -5.2546e-28
+v.x6.vbn#branch                   -8.86553e-17
+v.x6.vsn#branch                   -1.42721e-16
+v.x6.vdn#branch                    2.31376e-16
+v.x6.vgn#branch                      2.758e-27
+v.x6.vbp#branch                   -1.13505e-14
+v.x6.vsp#branch                    2.36972e-14
+v.x6.vdp#branch                   -1.23468e-14
+v.x6.vgp#branch                    -5.2546e-28
+v.x5.vbn#branch                   -3.81797e-15
+v.x5.vsn#branch                   -4.23792e-15
+v.x5.vdn#branch                     8.0559e-15
+v.x5.vgn#branch                   -1.25239e-06
+v.x5.vbp#branch                    3.12747e-16
+v.x5.vsp#branch                    3.33538e-17
+v.x5.vdp#branch                   -3.46101e-16
+v.x5.vgp#branch                    -5.2546e-28
+v.x4.vbn#branch                   -8.86553e-17
+v.x4.vsn#branch                   -1.42721e-16
+v.x4.vdn#branch                    2.31376e-16
+v.x4.vgn#branch                    1.09698e-27
+v.x4.vbp#branch                   -1.13505e-14
+v.x4.vsp#branch                    2.36972e-14
+v.x4.vdp#branch                   -1.23468e-14
+v.x4.vgp#branch                    -5.2546e-28
+v.x3.vbn#branch                   -3.81807e-15
+v.x3.vsn#branch                   -4.23782e-15
+v.x3.vdn#branch                    8.05589e-15
+v.x3.vgn#branch                   -4.08928e-06
+v.x3.vbp#branch                    3.12747e-16
+v.x3.vsp#branch                    3.33538e-17
+v.x3.vdp#branch                   -3.46101e-16
+v.x3.vgp#branch                   -2.80361e-28
+v.x2.vbn#branch                   -2.33042e-15
+v.x2.vsn#branch                   -6.02585e-05
+v.x2.vdn#branch                    6.02585e-05
+v.x2.vgn#branch                    2.32774e-06
+v.x2.vbp#branch                   -1.45488e-15
+v.x2.vsp#branch                     1.4954e-13
+v.x2.vdp#branch                   -1.48085e-13
+v.x2.vgp#branch                    1.58755e-26
+v.x1.vbn#branch                   -8.07491e-17
+v.x1.vsn#branch                   -1.34027e-16
+v.x1.vdn#branch                    2.14776e-16
+v.x1.vgn#branch                   -3.53832e-29
+v.x1.vbp#branch                   -7.75878e-15
+v.x1.vsp#branch                    0.000342659
+v.x1.vdp#branch                   -0.000342659
+v.x1.vgp#branch                     1.5802e-27
+vss#branch                         6.02585e-05
+vdd#branch                        -0.000342659
+
+ Reference value :  0.00000e+00 Reference value :  7.69123e-12 Reference value :  4.27326e-11 Reference value :  9.72919e-11 Reference value :  1.19753e-10 Reference value :  1.32784e-10 Reference value :  1.65240e-10 Reference value :  1.91461e-10 Reference value :  2.21998e-10 Reference value :  2.54049e-10 Reference value :  3.21156e-10 Reference value :  3.85452e-10 Reference value :  3.88100e-10 Reference value :  4.18604e-10 Reference value :  4.42952e-10 Reference value :  4.72428e-10 Reference value :  5.05427e-10 Reference value :  5.39527e-10 Reference value :  5.82516e-10 Reference value :  6.65790e-10 Reference value :  7.26465e-10 Reference value :  7.55903e-10 Reference value :  7.72966e-10 Reference value :  7.92733e-10 Reference value :  8.14080e-10 Reference value :  8.37701e-10 Reference value :  8.62106e-10 Reference value :  8.87565e-10 Reference value :  9.36468e-10 Reference value :  1.02166e-09 Reference value :  1.02904e-09 Reference value :  1.05989e-09 Reference value :  1.08554e-09 Reference value :  1.12069e-09 Reference value :  1.14941e-09 Reference value :  1.18220e-09 Reference value :  1.24627e-09 Reference value :  1.31358e-09 Reference value :  1.36897e-09 Reference value :  1.38681e-09 Reference value :  1.40982e-09 Reference value :  1.43834e-09 Reference value :  1.46884e-09 Reference value :  1.49937e-09 Reference value :  1.53699e-09 Reference value :  1.60962e-09 Reference value :  1.65478e-09 Reference value :  1.68415e-09 Reference value :  1.70966e-09 Reference value :  1.74100e-09 Reference value :  1.77262e-09 Reference value :  1.80614e-09 Reference value :  1.85423e-09 Reference value :  1.94125e-09 Reference value :  1.99568e-09 Reference value :  2.01554e-09 Reference value :  2.03290e-09 Reference value :  2.05925e-09 Reference value :  2.07978e-09 Reference value :  2.10311e-09 Reference value :  2.12753e-09 Reference value :  2.15360e-09 Reference value :  2.20786e-09 Reference value :  2.27801e-09 Reference value :  2.30252e-09 Reference value :  2.32889e-09 Reference value :  2.34788e-09 Reference value :  2.38311e-09 Reference value :  2.41193e-09 Reference value :  2.44475e-09 Reference value :  2.50791e-09 Reference value :  2.57534e-09 Reference value :  2.63116e-09 Reference value :  2.65522e-09 Reference value :  2.68616e-09 Reference value :  2.71394e-09 Reference value :  2.74340e-09 Reference value :  2.77416e-09 Reference value :  2.82827e-09 Reference value :  2.91394e-09 Reference value :  2.92157e-09 Reference value :  2.95198e-09 Reference value :  2.97676e-09 Reference value :  3.01083e-09 Reference value :  3.04034e-09 Reference value :  3.07340e-09 Reference value :  3.12981e-09 Reference value :  3.21894e-09 Reference value :  3.26700e-09 Reference value :  3.28298e-09 Reference value :  3.30579e-09 Reference value :  3.33442e-09 Reference value :  3.36442e-09 Reference value :  3.39493e-09 Reference value :  3.43364e-09 Reference value :  3.50827e-09 Reference value :  3.53432e-09 Reference value :  3.56854e-09 Reference value :  3.59418e-09 Reference value :  3.61283e-09 Reference value :  3.64764e-09 Reference value :  3.68357e-09 Reference value :  3.71680e-09 Reference value :  3.77661e-09 Reference value :  3.84375e-09 Reference value :  3.89589e-09 Reference value :  3.91314e-09 Reference value :  3.93605e-09 Reference value :  3.96461e-09 Reference value :  3.99497e-09 Reference value :  4.02549e-09 Reference value :  4.06336e-09 Reference value :  4.13645e-09 Reference value :  4.18130e-09 Reference value :  4.21057e-09 Reference value :  4.24276e-09 Reference value :  4.27789e-09 Reference value :  4.30663e-09 Reference value :  4.33942e-09 Reference value :  4.40326e-09 Reference value :  4.47060e-09 Reference value :  4.52609e-09 Reference value :  4.54402e-09 Reference value :  4.56704e-09 Reference value :  4.59556e-09 Reference value :  4.62609e-09 Reference value :  4.65662e-09 Reference value :  4.69418e-09 Reference value :  4.76669e-09 Reference value :  4.81193e-09 Reference value :  4.84133e-09 Reference value :  4.86683e-09 Reference value :  4.89804e-09 Reference value :  4.92970e-09 Reference value :  4.96324e-09 Reference value :  5.00000e-09
+No. of Data Rows : 530
+.print line ignored since rawfile was produced.
+Total elapsed time (seconds) = 41.491 
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13597.141 MB.
+Maximum ngspice program size =   50.672 MB.
+Current ngspice program size =   50.672 MB.
+24 page faults, 0 vol + 6779 invol = 6779 context switches.
+
+Number of lines in the deck = 101
+Netlist loading time = 0.000287
+Subckt and Param expansion time = 0.000405
+Netlist parsing time = 0.000331
+
+Nominal temperature = 27
+Operating temperature = 27
+Total iterations = 3099
+Transient iterations = 3087
+Circuit Equations = 124
+Circuit original non-zeroes = 459
+Circuit fill-in non-zeroes = 96
+Circuit total non-zeroes = 0
+Transient timepoints = 624
+Accepted timepoints = 530
+Rejected timepoints = 94
+Total analysis time (seconds) = 41.4869
+Matrix load time = 41.2832
+Matrix synchronize time = 0
+Matrix reorder time = 5.7E-05
+Matrix factor time = 0.011687
+Matrix solve time = 0.005313
+Transient analysis time = 40.6863
+Transient load time = 40.4865
+Transient sync time = 0
+Transient factor time = 0.011659
+Transient solve time = 0.005283
+Transient trunc time = 0.093535
+Transient iterations for the last time point = 0
+AC analysis time = 0
+AC load time = 0
+AC sync time = 0
+AC factor time = 0
+AC solve time = 0
+----------------------------------------
+Device m.x7.m2 Memory Usage:
+Item                     Count     Bytes
+----------------------------------------
+Device                       1       240
+Elements                   508    207264
+Nodes                      557    637208
+Edges                     1064    212800
+Misc Mesh                  n/a     10960
+Equil Orig NZ             2379     95160
+Equil Fill NZ             6438    257520
+Equil Tot  NZ             8817    352680
+Equil Vectors              496     15872
+Bias Orig NZ              6885    275400
+Bias Fill NZ             23606    944240
+Bias Tot  NZ             30491   1219640
+Bias Vectors               922     36880
+State Vector              4913     39304
+----------------------------------------------------------------------
+Device m.x7.m2 Time Usage:
+Item                     SETUP        DC      TRAN        AC     TOTAL
+----------------------------------------------------------------------
+Setup Time             8.4e-05  0.000161     5e-05         0  0.000295
+Load Time             0.000281  0.004362     0.551         0  0.555643
+Order Time            0.002147  0.013032         0         0  0.015179
+Factor Time           0.000865  0.024805   1.77241         0   1.79808
+Solve Time             0.00011  0.002544  0.186896         0   0.18955
+Update Time              4e-06  0.000601  0.000933         0  0.001538
+Check Time             4.7e-05  0.000338  0.004383         0  0.004768
+Misc Time           9.00001e-06  0.000164  0.020073         0  0.000295
+LTE Time                                  0.007965            0.007965
+Total Time            0.003834  0.047729   2.94088         0   2.99244
+Iterations                   7        29      2034         0      2070
+----------------------------------------
+Device m.x6.m2 Memory Usage:
+Item                     Count     Bytes
+----------------------------------------
+Device                       1       240
+Elements                   508    207264
+Nodes                      557    637208
+Edges                     1064    212800
+Misc Mesh                  n/a     10960
+Equil Orig NZ             2379     95160
+Equil Fill NZ             6438    257520
+Equil Tot  NZ             8817    352680
+Equil Vectors              496     15872
+Bias Orig NZ              6885    275400
+Bias Fill NZ             23606    944240
+Bias Tot  NZ             30491   1219640
+Bias Vectors               922     36880
+State Vector              4913     39304
+----------------------------------------------------------------------
+Device m.x6.m2 Time Usage:
+Item                     SETUP        DC      TRAN        AC     TOTAL
+----------------------------------------------------------------------
+Setup Time            0.000136  0.000144   4.4e-05         0  0.000324
+Load Time             0.000258  0.006337  0.558523         0  0.565118
+Order Time            0.002043   0.01267         0         0  0.014713
+Factor Time           0.000795  0.034567    1.7767         0   1.81206
+Solve Time            0.000105  0.003489  0.184958         0  0.188552
+Update Time                  0  0.000678  0.000875         0  0.001553
+Check Time             4.5e-05  0.000696  0.004312         0  0.005053
+Misc Time                8e-06  0.000304  0.021338         0  0.000324
+LTE Time                                   0.00699             0.00699
+Total Time            0.003583  0.062606   2.94874         0   3.01493
+Iterations                   7        39      2061         0      2107
+----------------------------------------
+Device m.x5.m2 Memory Usage:
+Item                     Count     Bytes
+----------------------------------------
+Device                       1       240
+Elements                   508    207264
+Nodes                      557    637208
+Edges                     1064    212800
+Misc Mesh                  n/a     10960
+Equil Orig NZ             2379     95160
+Equil Fill NZ             6438    257520
+Equil Tot  NZ             8817    352680
+Equil Vectors              496     15872
+Bias Orig NZ              6885    275400
+Bias Fill NZ             23606    944240
+Bias Tot  NZ             30491   1219640
+Bias Vectors               922     36880
+State Vector              4913     39304
+----------------------------------------------------------------------
+Device m.x5.m2 Time Usage:
+Item                     SETUP        DC      TRAN        AC     TOTAL
+----------------------------------------------------------------------
+Setup Time            0.000121  0.000157   3.5e-05         0  0.000313
+Load Time             0.000273  0.004725  0.570208         0  0.575206
+Order Time            0.002114  0.012619         0         0  0.014733
+Factor Time           0.000818  0.025771   1.77852         0   1.80511
+Solve Time            0.000109  0.002666  0.187201         0  0.189976
+Update Time                  0  0.000702  0.000913         0  0.001615
+Check Time             4.7e-05  0.000336  0.004241         0  0.004624
+Misc Time                8e-06  0.000151  0.021643         0  0.000313
+LTE Time                                   0.00714             0.00714
+Total Time            0.003684  0.048881   2.97097         0   3.02353
+Iterations                   7        29      2057         0      2093
+----------------------------------------
+Device m.x4.m2 Memory Usage:
+Item                     Count     Bytes
+----------------------------------------
+Device                       1       240
+Elements                   508    207264
+Nodes                      557    637208
+Edges                     1064    212800
+Misc Mesh                  n/a     10960
+Equil Orig NZ             2379     95160
+Equil Fill NZ             6438    257520
+Equil Tot  NZ             8817    352680
+Equil Vectors              496     15872
+Bias Orig NZ              6885    275400
+Bias Fill NZ             23606    944240
+Bias Tot  NZ             30491   1219640
+Bias Vectors               922     36880
+State Vector              4913     39304
+----------------------------------------------------------------------
+Device m.x4.m2 Time Usage:
+Item                     SETUP        DC      TRAN        AC     TOTAL
+----------------------------------------------------------------------
+Setup Time            0.000109  0.000149   4.5e-05         0  0.000303
+Load Time             0.000265  0.006557   0.58135         0  0.588172
+Order Time            0.002033  0.012606         0         0  0.014639
+Factor Time           0.000808  0.034747   1.76637         0   1.80192
+Solve Time            0.000105  0.003589  0.185933         0  0.189627
+Update Time                  0  0.000697  0.000873         0   0.00157
+Check Time             4.7e-05   0.00071  0.004386         0  0.005143
+Misc Time                9e-06  0.000295  0.022343         0  0.000303
+LTE Time                                  0.006714            0.006714
+Total Time            0.003602  0.063331   2.96676         0   3.03369
+Iterations                   7        39      2055         0      2101
+----------------------------------------
+Device m.x3.m2 Memory Usage:
+Item                     Count     Bytes
+----------------------------------------
+Device                       1       240
+Elements                   508    207264
+Nodes                      557    637208
+Edges                     1064    212800
+Misc Mesh                  n/a     10960
+Equil Orig NZ             2379     95160
+Equil Fill NZ             6438    257520
+Equil Tot  NZ             8817    352680
+Equil Vectors              496     15872
+Bias Orig NZ              6885    275400
+Bias Fill NZ             23606    944240
+Bias Tot  NZ             30491   1219640
+Bias Vectors               922     36880
+State Vector              4913     39304
+----------------------------------------------------------------------
+Device m.x3.m2 Time Usage:
+Item                     SETUP        DC      TRAN        AC     TOTAL
+----------------------------------------------------------------------
+Setup Time            0.000145  0.0001556.09999e-05         0  0.000361
+Load Time             0.000277  0.004795  0.589263         0  0.594335
+Order Time            0.002066  0.012593         0         0  0.014659
+Factor Time           0.000815  0.025665   1.85938         0   1.88586
+Solve Time            0.000107  0.002619  0.196093         0  0.198819
+Update Time         9.99993e-07  0.000649  0.000888         0  0.001538
+Check Time             4.7e-05  0.000373  0.004254         0  0.004674
+Misc Time                8e-06  0.000166  0.022681         0  0.000361
+LTE Time                                  0.006612            0.006612
+Total Time             0.00365  0.048858   3.09528         0   3.14779
+Iterations                   7        29      2165         0      2201
+----------------------------------------
+Device m.x2.m2 Memory Usage:
+Item                     Count     Bytes
+----------------------------------------
+Device                       1       240
+Elements                   508    207264
+Nodes                      557    637208
+Edges                     1064    212800
+Misc Mesh                  n/a     10960
+Equil Orig NZ             2379     95160
+Equil Fill NZ             6438    257520
+Equil Tot  NZ             8817    352680
+Equil Vectors              496     15872
+Bias Orig NZ              6885    275400
+Bias Fill NZ             23606    944240
+Bias Tot  NZ             30491   1219640
+Bias Vectors               922     36880
+State Vector              4913     39304
+----------------------------------------------------------------------
+Device m.x2.m2 Time Usage:
+Item                     SETUP        DC      TRAN        AC     TOTAL
+----------------------------------------------------------------------
+Setup Time            0.000138  0.000148   4.1e-05         0  0.000327
+Load Time             0.000265  0.006854  0.567808         0  0.574927
+Order Time            0.002052  0.012828         0         0   0.01488
+Factor Time           0.000817  0.037011   1.76069         0   1.79851
+Solve Time            0.000108  0.003763  0.184259         0   0.18813
+Update Time                  0  0.000873   0.00088         0  0.001753
+Check Time             4.8e-05  0.000587  0.003909         0  0.004544
+Misc Time                8e-06  0.000293  0.021895         0  0.000327
+LTE Time                                   0.00664             0.00664
+Total Time            0.003617  0.065958   2.94166         0   3.01123
+Iterations                   7        42      2040         0      2089
+----------------------------------------
+Device m.x1.m2 Memory Usage:
+Item                     Count     Bytes
+----------------------------------------
+Device                       1       240
+Elements                   508    207264
+Nodes                      557    637208
+Edges                     1064    212800
+Misc Mesh                  n/a     10960
+Equil Orig NZ             2379     95160
+Equil Fill NZ             6438    257520
+Equil Tot  NZ             8817    352680
+Equil Vectors              496     15872
+Bias Orig NZ              6885    275400
+Bias Fill NZ             23606    944240
+Bias Tot  NZ             30491   1219640
+Bias Vectors               922     36880
+State Vector              4913     39304
+----------------------------------------------------------------------
+Device m.x1.m2 Time Usage:
+Item                     SETUP        DC      TRAN        AC     TOTAL
+----------------------------------------------------------------------
+Setup Time            0.000154   0.000154.79999e-05         0  0.000352
+Load Time             0.000263  0.004285  0.569079         0  0.573627
+Order Time            0.002062  0.011946         0         0  0.014008
+Factor Time            0.00076  0.024096   1.78412         0   1.80898
+Solve Time            0.000101  0.002482  0.185369         0  0.187952
+Update Time         9.99993e-07  0.000511  0.000855         0  0.001367
+Check Time             4.6e-05  0.000382  0.004029         0  0.004457
+Misc Time                8e-06  0.000184  0.022295         0  0.000352
+LTE Time                                   0.00695             0.00695
+Total Time             0.00359  0.046494   2.97107         0   3.02116
+Iterations                   7        27      2046         0      2080
+----------------------------------------
+Device m.x7.m1 Memory Usage:
+Item                     Count     Bytes
+----------------------------------------
+Device                       1       240
+Elements                   508    207264
+Nodes                      557    637208
+Edges                     1064    212800
+Misc Mesh                  n/a     10960
+Equil Orig NZ             2379     95160
+Equil Fill NZ             6438    257520
+Equil Tot  NZ             8817    352680
+Equil Vectors              496     15872
+Bias Orig NZ              6885    275400
+Bias Fill NZ             23606    944240
+Bias Tot  NZ             30491   1219640
+Bias Vectors               922     36880
+State Vector              4913     39304
+----------------------------------------------------------------------
+Device m.x7.m1 Time Usage:
+Item                     SETUP        DC      TRAN        AC     TOTAL
+----------------------------------------------------------------------
+Setup Time            0.000137  0.000155   5.3e-05         0  0.000345
+Load Time             0.000255  0.006422  0.566602         0  0.573279
+Order Time             0.00198  0.012082         0         0  0.014062
+Factor Time           0.000782  0.032591    1.6794         0   1.71277
+Solve Time            0.000109  0.003343  0.176395         0  0.179847
+Update Time         9.99993e-07  0.000705  0.000871         0  0.001577
+Check Time             4.2e-05  0.000697  0.004035         0  0.004774
+Misc Time                8e-06  0.000299  0.021451         0  0.000345
+LTE Time                                  0.006943            0.006943
+Total Time              0.0035  0.060223   2.83219         0   2.89591
+Iterations                   7        37      1937         0      1981
+----------------------------------------
+Device m.x6.m1 Memory Usage:
+Item                     Count     Bytes
+----------------------------------------
+Device                       1       240
+Elements                   508    207264
+Nodes                      557    637208
+Edges                     1064    212800
+Misc Mesh                  n/a     10960
+Equil Orig NZ             2379     95160
+Equil Fill NZ             6438    257520
+Equil Tot  NZ             8817    352680
+Equil Vectors              496     15872
+Bias Orig NZ              6885    275400
+Bias Fill NZ             23606    944240
+Bias Tot  NZ             30491   1219640
+Bias Vectors               922     36880
+State Vector              4913     39304
+----------------------------------------------------------------------
+Device m.x6.m1 Time Usage:
+Item                     SETUP        DC      TRAN        AC     TOTAL
+----------------------------------------------------------------------
+Setup Time            0.000145  0.000166   4.8e-05         0  0.000359
+Load Time             0.000455  0.004612  0.562588         0  0.567655
+Order Time            0.002053    0.0131         0         0  0.015153
+Factor Time           0.001323  0.025538   1.67282         0   1.69968
+Solve Time            0.000123  0.002559  0.175632         0  0.178314
+Update Time         2.99998e-06  0.000578  0.000728         0  0.001309
+Check Time            0.000115  0.000314  0.003948         0  0.004377
+Misc Time                8e-06  0.000162  0.021328         0  0.000359
+LTE Time                                  0.006747            0.006747
+Total Time            0.004407  0.048893   2.82028         0   2.87358
+Iterations                   7        28      1932         0      1967
+----------------------------------------
+Device m.x5.m1 Memory Usage:
+Item                     Count     Bytes
+----------------------------------------
+Device                       1       240
+Elements                   508    207264
+Nodes                      557    637208
+Edges                     1064    212800
+Misc Mesh                  n/a     10960
+Equil Orig NZ             2379     95160
+Equil Fill NZ             6438    257520
+Equil Tot  NZ             8817    352680
+Equil Vectors              496     15872
+Bias Orig NZ              6885    275400
+Bias Fill NZ             23606    944240
+Bias Tot  NZ             30491   1219640
+Bias Vectors               922     36880
+State Vector              4913     39304
+----------------------------------------------------------------------
+Device m.x5.m1 Time Usage:
+Item                     SETUP        DC      TRAN        AC     TOTAL
+----------------------------------------------------------------------
+Setup Time            0.000132  0.0001554.30001e-05         0   0.00033
+Load Time             0.000272  0.006155  0.564948         0  0.571375
+Order Time            0.002047  0.012347         0         0  0.014394
+Factor Time           0.000804  0.031591   1.67202         0   1.70442
+Solve Time            0.000104  0.003197  0.175457         0  0.178758
+Update Time         9.99993e-07  0.000678  0.000852         0  0.001531
+Check Time             4.5e-05   0.00064  0.003803         0  0.004488
+Misc Time                8e-06  0.000274  0.021376         0   0.00033
+LTE Time                                  0.006306            0.006306
+Total Time            0.003613  0.058873   2.81981         0   2.88229
+Iterations                   7        37      1935         0      1979
+----------------------------------------
+Device m.x4.m1 Memory Usage:
+Item                     Count     Bytes
+----------------------------------------
+Device                       1       240
+Elements                   508    207264
+Nodes                      557    637208
+Edges                     1064    212800
+Misc Mesh                  n/a     10960
+Equil Orig NZ             2379     95160
+Equil Fill NZ             6438    257520
+Equil Tot  NZ             8817    352680
+Equil Vectors              496     15872
+Bias Orig NZ              6885    275400
+Bias Fill NZ             23606    944240
+Bias Tot  NZ             30491   1219640
+Bias Vectors               922     36880
+State Vector              4913     39304
+----------------------------------------------------------------------
+Device m.x4.m1 Time Usage:
+Item                     SETUP        DC      TRAN        AC     TOTAL
+----------------------------------------------------------------------
+Setup Time            0.000154  0.0001415.59999e-05         0  0.000351
+Load Time             0.000261  0.004615  0.562393         0  0.567269
+Order Time            0.002045  0.012125         0         0   0.01417
+Factor Time            0.00081  0.025115   1.67479         0   1.70071
+Solve Time            0.000105  0.002609  0.176886         0    0.1796
+Update Time              2e-06  0.000595  0.000876         0  0.001473
+Check Time             4.8e-05  0.000332  0.003804         0  0.004184
+Misc Time                8e-06  0.000256  0.020944         0  0.000351
+LTE Time                                  0.006441            0.006441
+Total Time            0.003621  0.047739   2.82451         0   2.87587
+Iterations                   7        28      1939         0      1974
+----------------------------------------
+Device m.x3.m1 Memory Usage:
+Item                     Count     Bytes
+----------------------------------------
+Device                       1       240
+Elements                   508    207264
+Nodes                      557    637208
+Edges                     1064    212800
+Misc Mesh                  n/a     10960
+Equil Orig NZ             2379     95160
+Equil Fill NZ             6438    257520
+Equil Tot  NZ             8817    352680
+Equil Vectors              496     15872
+Bias Orig NZ              6885    275400
+Bias Fill NZ             23606    944240
+Bias Tot  NZ             30491   1219640
+Bias Vectors               922     36880
+State Vector              4913     39304
+----------------------------------------------------------------------
+Device m.x3.m1 Time Usage:
+Item                     SETUP        DC      TRAN        AC     TOTAL
+----------------------------------------------------------------------
+Setup Time            0.000136  0.0001474.59999e-05         0  0.000329
+Load Time              0.00027  0.006178  0.566823         0  0.573271
+Order Time            0.002069   0.01266         0         0  0.014729
+Factor Time           0.000803   0.03207   1.66836         0   1.70123
+Solve Time            0.000109  0.003344  0.176711         0  0.180164
+Update Time         1.99999e-06  0.000685  0.000795         0  0.001482
+Check Time             4.8e-05  0.000659   0.00395         0  0.004657
+Misc Time           9.00001e-06  0.000278  0.021214         0  0.000329
+LTE Time                                  0.006008            0.006008
+Total Time            0.003627  0.059786   2.82145         0   2.88486
+Iterations                   7        37      1940         0      1984
+----------------------------------------
+Device m.x2.m1 Memory Usage:
+Item                     Count     Bytes
+----------------------------------------
+Device                       1       240
+Elements                   508    207264
+Nodes                      557    637208
+Edges                     1064    212800
+Misc Mesh                  n/a     10960
+Equil Orig NZ             2379     95160
+Equil Fill NZ             6438    257520
+Equil Tot  NZ             8817    352680
+Equil Vectors              496     15872
+Bias Orig NZ              6885    275400
+Bias Fill NZ             23606    944240
+Bias Tot  NZ             30491   1219640
+Bias Vectors               922     36880
+State Vector              4913     39304
+----------------------------------------------------------------------
+Device m.x2.m1 Time Usage:
+Item                     SETUP        DC      TRAN        AC     TOTAL
+----------------------------------------------------------------------
+Setup Time            0.000161  0.000159     6e-05         0   0.00038
+Load Time             0.000268  0.003396  0.564763         0  0.568427
+Order Time            0.002078  0.013018         0         0  0.015096
+Factor Time           0.000815  0.019343   1.67453         0   1.69469
+Solve Time            0.000105  0.001951  0.177213         0  0.179269
+Update Time              2e-06  0.000482  0.000831         0  0.001315
+Check Time             4.8e-05  0.000161  0.003674         0  0.003883
+Misc Time                9e-06  0.000107  0.021233         0   0.00038
+LTE Time                                  0.005494            0.005494
+Total Time            0.003666  0.039779   2.82463         0   2.86808
+Iterations                   7        21      1935         0      1963
+----------------------------------------
+Device m.x1.m1 Memory Usage:
+Item                     Count     Bytes
+----------------------------------------
+Device                       1       240
+Elements                   508    207264
+Nodes                      557    637208
+Edges                     1064    212800
+Misc Mesh                  n/a     10960
+Equil Orig NZ             2379     95160
+Equil Fill NZ             6438    257520
+Equil Tot  NZ             8817    352680
+Equil Vectors              496     15872
+Bias Orig NZ              6885    275400
+Bias Fill NZ             23606    944240
+Bias Tot  NZ             30491   1219640
+Bias Vectors               922     36880
+State Vector              4913     39304
+----------------------------------------------------------------------
+Device m.x1.m1 Time Usage:
+Item                     SETUP        DC      TRAN        AC     TOTAL
+----------------------------------------------------------------------
+Setup Time            0.000109  0.0001544.59999e-05         0  0.000309
+Load Time             0.000274  0.004438  0.552576         0  0.557288
+Order Time            0.002101  0.012818         0         0  0.014919
+Factor Time           0.000813   0.02533   1.65526         0    1.6814
+Solve Time            0.000113  0.002457  0.173408         0  0.175978
+Update Time                  0  0.000597  0.000819         0  0.001416
+Check Time             4.6e-05  0.000385  0.003595         0  0.004026
+Misc Time           7.99999e-06   0.00016  0.021075         0  0.000309
+LTE Time                                  0.005062            0.005062
+Total Time            0.003654  0.048427   2.78155         0   2.83363
+Iterations                   7        26      1902         0      1935
+
+ngspice-47 done

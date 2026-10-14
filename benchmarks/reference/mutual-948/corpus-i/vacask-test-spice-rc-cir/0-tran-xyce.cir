@@ -1,0 +1,7 @@
+* RC low-pass, SPICE dialect
+V1 1 0 DC 0 PULSE(0 5 1m 1u 1u 4m 10m)
+R1 1 2 1k
+C1 2 0 2u
+.tran 1u 10m
+.print TRAN format=csv file=output.csv precision=17 I(v1) V(1) V(2)
+.end

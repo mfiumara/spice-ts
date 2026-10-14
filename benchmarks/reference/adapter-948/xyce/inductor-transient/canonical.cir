@@ -1,0 +1,25 @@
+Netlist to Test the Xyce Inductor Model
+*********************************************************************
+* Tier No.:  1                                               
+* Description:   Inductor circuit netlist to test validity of
+*                the Xyce inductor model. A small resistor 
+*		 is placed in series with the inductor to prevent
+*                the creation of an inductive loop.  However,
+*                the inductor is essentially in parallel with the
+*                input voltage source.   The inductor voltage will
+*                match the input voltage (minus a small drop across
+*                the resistor).  
+* Input:  V1 5V pulse 
+* Output: V(2) inductor voltage
+* Circuit Elements: inductor, resistor
+********************************************************************** 
+*COMP V(1) OFFSET=1
+*COMP V(2) OFFSET=1
+I1 1 0 PULSE(0 5V 0 1MS 1MS 10MS 25MS)
+L1 2 0 10mH
+R1 1 2 0.001
+.options timeint newbpstepping=0 reltol=1.0e-4
+.TRAN 0.1MS 20MS
+.PRINT TRAN V(1) V(2)
+.END
+

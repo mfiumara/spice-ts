@@ -1,0 +1,80 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: *test alterparam
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+v1#branch = -3.33333e-01
+v2#branch = -3.78968e-01
+
+	*test alterparam
+
+     5 : r1 1 0    3.000000000000000e+00   
+     6 : v1 1 0 1
+    11 : r.xr.r0 2 0   7.000000000000000e+00   
+    12 : r.xr.r1 2 0   9.000000000000000e+00   
+    13 : r.xr.r2 2 0   8.000000000000000e+00   
+    16 : v2 2 0 1
+    15 : .end
+Reset re-loads circuit *test alterparam
+
+Circuit: *test alterparam
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+v1#branch = -2.50000e-01
+v2#branch = -3.78968e-01
+
+	*test alterparam
+
+     4 : r1 1 0    4.000000000000000e+00   
+     5 : v1 1 0 1
+     7 : r.xr.r0 2 0   7.000000000000000e+00   
+     8 : r.xr.r1 2 0   9.000000000000000e+00   
+     9 : r.xr.r2 2 0   8.000000000000000e+00   
+    12 : v2 2 0 1
+    12 : .end
+Reset re-loads circuit *test alterparam
+
+Circuit: *test alterparam
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+v1#branch = -2.50000e-01
+v2#branch = -2.02413e-01
+
+	*test alterparam
+
+     4 : r1 1 0    4.000000000000000e+00   
+     5 : v1 1 0 1
+     7 : r.xr.r0 2 0   1.300000000000000e+01   
+     8 : r.xr.r1 2 0   1.500000000000000e+01   
+     9 : r.xr.r2 2 0   1.700000000000000e+01   
+    12 : v2 2 0 1
+    12 : .end
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+OP information in rawfile.
+
+Total analysis time (seconds) = 1.6E-05
+
+Total elapsed time (seconds) = 0.004 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13485.297 MB.
+Maximum ngspice program size =   10.172 MB.
+Current ngspice program size =   10.172 MB.
+

@@ -1,0 +1,124 @@
+
+*****
+***** Welcome to the Xyce(TM) Parallel Electronic Simulator
+*****
+***** This is version XyceNF Release 7.10.0
+***** Date: Wed Oct 14 02:03:28 CEST 2026
+
+
+***** Executing netlist input.cir
+
+***** Reading and parsing netlist...
+***** Setting up topology...
+
+Netlist warning: Voltage Node (GND) does not have a DC path to ground
+Netlist warning: Voltage Node (IN) does not have a DC path to ground
+Netlist warning: Voltage Node (OUT) does not have a DC path to ground
+***** Device Count Summary ...
+       L level 1 (Inductor)                   1
+       R level 1 (Resistor)                   1
+       V level 1 (Independent Voltage Source) 1
+       ----------------------------------------
+       Total Devices                          3
+***** Setting up matrix structure...
+***** Number of Unknowns = 5
+***** Initializing...
+
+***** Beginning DC Operating Point Calculation...
+
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+Netlist warning: Numerically singular matrix found by Amesos, returning zero
+ solution to nonlinear solver!
+DC Operating Point Failed.  Exiting transient loop
+
+***** Solution Summary *****
+	Number Successful Steps Taken:		0
+	Number Failed Steps Attempted:		1
+	Number Jacobians Evaluated:		51
+	Number Linear Solves:			51
+	Number Failed Linear Solves:		25
+	Number Residual Evaluations:		156
+	Number Nonlinear Convergence Failures:	1
+	Total Residual Load Time:		7.36713e-05 seconds
+	Total Jacobian Load Time:		1.66893e-05 seconds
+	Total Linear Solution Time:		0.0002141 seconds
+
+
+***** Total Simulation Solvers Run Time: 0.00332904 seconds
+***** Total Elapsed Run Time:            0.00458598 seconds
+*****
+***** End of Xyce(TM) Simulation
+*****
+
+Timing summary of 1 processor
+                 Stats                   Count       CPU Time              Wall Time
+---------------------------------------- ----- --------------------- ---------------------
+Xyce                                         1        0.003 (100.0%)        0.005 (100.0%)
+  Analysis                                   1        0.002 (71.90%)        0.003 (62.61%)
+    Transient                                1        0.002 (71.83%)        0.003 (62.55%)
+      Nonlinear Solve                        1        0.002 (71.27%)        0.003 (62.01%)
+        Residual                           156        0.000 ( 2.96%)        0.000 ( 3.03%)
+        Jacobian                            51        0.000 ( 0.57%)        0.000 ( 0.84%)
+        Linear Solve                        51        0.000 ( 4.90%)        0.000 ( 4.61%)
+      Failed DCOP Steps                      1        0.000 ( 0.03%)        0.000 ( 0.08%)
+  Netlist Import                             1        0.000 ( 8.99%)        0.001 (10.61%)
+    Parse Context                            1        0.000 ( 1.48%)        0.000 ( 2.71%)
+    Distribute Devices                       1        0.000 ( 2.26%)        0.000 ( 1.67%)
+    Verify Devices                           1        0.000 ( 0.06%)        0.000 ( 0.11%)
+    Instantiate                              1        0.000 ( 0.91%)        0.000 ( 0.62%)
+  Late Initialization                        1        0.000 ( 6.16%)        0.000 ( 5.67%)
+    Global Indices                           1        0.000 ( 0.57%)        0.000 ( 0.44%)
+  Setup Matrix Structure                     1        0.000 ( 1.38%)        0.000 ( 1.76%)
+
+
+
+	Step size reached minimum step size bound
+
+	Step size reached minimum step size bound

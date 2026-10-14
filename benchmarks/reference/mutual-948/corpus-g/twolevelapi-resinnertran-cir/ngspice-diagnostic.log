@@ -1,0 +1,38 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: resistor circuit netlist - lower level.
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 8  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+1                                            2
+a                                          1.9
+b                                          1.7
+c                                          1.4
+2                                            1
+vconnect0001#branch                       -0.1
+vconnect0000#branch                        0.1
+
+
+No. of Data Rows : 1008
+.print line ignored since rawfile was produced.
+
+Total analysis time (seconds) = 0.004231
+
+Total elapsed time (seconds) = 0.008 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13596.516 MB.
+Maximum ngspice program size =   10.078 MB.
+Current ngspice program size =   10.078 MB.
+

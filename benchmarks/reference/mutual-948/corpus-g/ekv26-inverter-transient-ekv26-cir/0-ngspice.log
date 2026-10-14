@@ -1,0 +1,41 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: *sample netlist for bsim-mg 
+
+ASCII raw file "output.raw"
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 6  
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+supply                                       3
+vi                                           0
+1                                      2.95042
+vsig#branch                                  0
+vdd#branch                        -2.95042e-06
+
+
+No. of Data Rows : 508
+
+Total analysis time (seconds) = 0.002572
+
+Total elapsed time (seconds) = 0.006 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 13300.609 MB.
+Maximum ngspice program size =   10.141 MB.
+Current ngspice program size =   10.141 MB.
+
+
+Illegal value for level.
+Level must be < 99 (Setting Level to 1)
+Illegal value for level.
+Level must be < 99 (Setting Level to 1)
+Note: vsig: dc value used for op instead of transient time=0 value.

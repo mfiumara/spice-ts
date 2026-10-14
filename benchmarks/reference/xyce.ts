@@ -3,7 +3,13 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { performance } from 'node:perf_hooks';
-import type { AnalysisType, ComparisonFixture, EngineRun, SampleSeries } from '../comparison-harness.js';
+import type { AnalysisType, ComparisonFixture, EngineRun, FailedEngineRun, SampleSeries } from '../comparison-harness.js';
+
+export type ReferenceRun = (Extract<EngineRun, { status: 'success' }> |
+  (Omit<FailedEngineRun, 'convergence'> & { convergence: 'unsupported' | 'not-run' | 'unknown' })) & {
+    output?: string;
+    failureKind?: 'translation' | 'execution' | 'netlist' | 'export' | 'parse';
+  };
 
 class TranslationLimitation extends Error {}
 const limited = (message: string): never => { throw new TranslationLimitation(message); };
@@ -21,8 +27,7 @@ function signalParts(signal: string): { kind: string; args: string } {
 
 /** Only output cards are rewritten; no circuit/model parameters are downgraded. */
 export function translateForXyce(fixture: ComparisonFixture): { netlist: string; changes: string[] } {
-  if (fixture.analysis === 'op') limited('OP is unsupported by this Xyce reference slice');
-  if (!['dc', 'tran', 'ac'].includes(fixture.analysis)) limited(`Unsupported analysis: ${fixture.analysis}`);
+  if (!['op', 'dc', 'tran', 'ac'].includes(fixture.analysis)) limited(`Unsupported analysis: ${fixture.analysis}`);
   if (fixture.signals.length === 0) limited('At least one requested signal is required');
   const parts = fixture.signals.map(signalParts);
   if (new Set(fixture.signals.map(s => s.toUpperCase())).size !== fixture.signals.length) limited('Duplicate requested signals');
@@ -53,7 +58,9 @@ export function translateForXyce(fixture: ComparisonFixture): { netlist: string;
     // establish a DC waveform. Until a documented mapping exists, fail closed.
     if (/^[vi]\S*\s+\S+\s+\S+.*\btype\s*=/i.test(logical)) limited('Source TYPE markers require a documented Xyce mapping');
     if (/^\.step\b/i.test(logical)) limited('.step output is outside this reference slice');
-    const analysis = /^\.(dc|tran|ac)\b/i.exec(logical);
+    // Keep the original bootstrap non-OP translation byte-for-byte reproducible.
+    // Canonical multi-analysis callers supply a single-analysis projection.
+    const analysis = (fixture.analysis === 'op' ? /^\.(op|dc|tran|ac)\b/i : /^\.(dc|tran|ac)\b/i).exec(logical);
     if (analysis) {
       if (analysis[1].toLowerCase() !== fixture.analysis) limited('Multiple or mismatched analyses');
       analysisCount++;
@@ -82,7 +89,8 @@ export function translateForXyce(fixture: ComparisonFixture): { netlist: string;
   if (analysisCount !== 1 || endCount !== 1) limited('Exactly one matching analysis and one .end are required');
   const printed = parts.flatMap(({ kind, args }) => fixture.analysis === 'ac'
     ? [`${kind}R(${args})`, `${kind}I(${args})`] : [`${kind}(${args})`]);
-  const print = `.print ${fixture.analysis.toUpperCase()} format=csv file=output.csv precision=17 ${[dcGrid, ...printed].filter(Boolean).join(' ')}`;
+  // Xyce exports the standalone operating point through its DC output manager.
+  const print = `.print ${fixture.analysis === 'op' ? 'DC' : fixture.analysis.toUpperCase()} format=csv file=output.csv precision=17 ${[dcGrid, ...printed].filter(Boolean).join(' ')}`;
   changes.push(`Added ${print}`);
   kept.splice(printIndex, 0, print);
   return { netlist: kept.join('\n'), changes };
@@ -134,9 +142,9 @@ function csvHeaders(line: string): string[] {
 
 /** DC rows remain flattened in native sweep order, including grid restarts. */
 export function parseXyceCsv(csv: string, analysis: AnalysisType, signals: string[]): SampleSeries {
-  if (analysis === 'op') throw new Error('OP CSV is unsupported');
   const lines = csv.replace(/^\uFEFF/, '').trim().split(/\r?\n/);
   if (lines.length < 2) throw new Error('CSV has no sample rows');
+  if (analysis === 'op' && lines.length !== 2) throw new Error('OP CSV must have exactly one sample');
   const headers = csvHeaders(lines[0]).map(s => s.toUpperCase());
   if (headers.some(s => !s) || new Set(headers).size !== headers.length) throw new Error('Empty or duplicate CSV headers');
   const gridHeader = analysis === 'tran' ? 'TIME' : analysis === 'ac' ? 'FREQ' : headers[0];
@@ -146,7 +154,7 @@ export function parseXyceCsv(csv: string, analysis: AnalysisType, signals: strin
     if (index < 0) throw new Error(`Missing CSV field: ${name}`);
     return index;
   };
-  const gridIndex = column(gridHeader);
+  const gridIndex = analysis === 'op' ? -1 : column(gridHeader);
   const columns = signals.map(signal => {
     const { kind, args } = signalParts(signal);
     return analysis === 'ac' ? [column(`${kind}R(${args})`), column(`${kind}I(${args})`)] : [column(`${kind}(${args})`)];
@@ -162,16 +170,18 @@ export function parseXyceCsv(csv: string, analysis: AnalysisType, signals: strin
       }
       return Number(field);
     });
-    series.grid.push(values[gridIndex]);
+    series.grid.push(analysis === 'op' ? 0 : values[gridIndex]);
     signals.forEach((signal, i) => series.signals[signal.toLowerCase()].push({ re: values[columns[i][0]], im: columns[i].length === 2 ? values[columns[i][1]] : 0 }));
   }
   return series;
 }
 
-export async function runXyce(fixture: ComparisonFixture, options: { executable?: string; timeoutMs?: number } = {}): Promise<EngineRun & { output?: string }> {
+export async function runXyce(fixture: ComparisonFixture, options: { executable?: string; timeoutMs?: number } = {}): Promise<ReferenceRun> {
   const start = performance.now();
   let command: string[] = [];
   let directory: string | undefined;
+  let output = '';
+  let failureKind: ReferenceRun['failureKind'] = 'translation';
   try {
     const translated = translateForXyce(fixture);
     const timeout = options.timeoutMs ?? 60_000;
@@ -179,17 +189,26 @@ export async function runXyce(fixture: ComparisonFixture, options: { executable?
     directory = mkdtempSync(join(tmpdir(), 'spice-ts-xyce-'));
     writeFileSync(join(directory, 'input.cir'), translated.netlist);
     command = [options.executable ?? process.env.XYCE_BIN ?? 'Xyce', 'input.cir'];
+    failureKind = 'execution';
     const result = spawnSync(command[0], command.slice(1), { cwd: directory, encoding: 'utf8', timeout, maxBuffer: 16 * 1024 * 1024, shell: false });
+    output = [result.stdout, result.stderr].filter(Boolean).join('\n');
     if (result.error) throw result.error;
+    if (result.status !== 0 && /undefined symbols in \.PRINT|print type .* inconsistent/i.test(output)) failureKind = 'export';
+    else if (result.status !== 0 && /Netlist error/i.test(output)) failureKind = 'netlist';
     if (result.status !== 0) throw new Error(`Xyce exited ${result.status} (signal ${result.signal}): ${result.stderr}\n${result.stdout}`);
-    const series = parseXyceCsv(readFileSync(join(directory, 'output.csv'), 'utf8'), fixture.analysis, fixture.signals);
+    failureKind = 'export';
+    const csv = readFileSync(join(directory, 'output.csv'), 'utf8');
+    failureKind = 'parse';
+    const series = parseXyceCsv(csv, fixture.analysis, fixture.signals);
     // Preserve warnings even on successful execution. An ignored upstream card
     // must remain visible in the reference receipt, not become a silent win.
     return { status: 'success', convergence: 'converged', runtimeMs: performance.now() - start, command, series,
-      output: [result.stdout, result.stderr].filter(Boolean).join('\n') };
+      output };
   } catch (error) {
     const status = error instanceof TranslationLimitation ? 'unsupported' : 'failed';
-    return { status, convergence: status, runtimeMs: performance.now() - start, command, error: error instanceof Error ? error.message : String(error) };
+    return { status, convergence: status === 'unsupported' ? 'unsupported' : failureKind === 'execution' ? 'unknown' : 'not-run',
+      failureKind: status === 'unsupported' ? 'translation' : failureKind, output,
+      runtimeMs: performance.now() - start, command, error: error instanceof Error ? error.message : String(error) };
   } finally {
     if (directory !== undefined) rmSync(directory, { recursive: true, force: true });
   }
