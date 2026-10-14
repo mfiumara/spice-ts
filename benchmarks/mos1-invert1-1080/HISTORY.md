@@ -110,7 +110,12 @@ Commands exercised:
 - `spice-heavy pnpm exec tsx benchmarks/corpus/corpus-m/parity.ts`: exit 0,
   all 24 rows published, including unchanged losses.
 - `pnpm exec tsx --test benchmarks/mos1-invert1-1080/history-receipt.test.ts`:
-  guards for inventories, predictor discrepancy and full corpus deltas.
+  3 passing guards for inventories, predictor discrepancy and full corpus deltas.
+- `spice-heavy pnpm test`: exit 0. Core: 4,342 passed, 6 expected fail,
+  8 skipped; all workspace test commands completed, and root benchmark guards
+  finished with 198 passed, 4 skipped, 0 failed. Full raw output is compressed
+  in `history-full-tests.txt.gz`; other command receipts are `history-*.txt`
+  (trailing whitespace normalized for git hygiene).
 
 Exact-head required GitHub CI, not these receipt guards, is the full gate.
 
