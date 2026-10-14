@@ -231,6 +231,8 @@ export interface SimulationOptions {
   maxTimestep?: number;
   /** Integration method. Default: 'trapezoidal' */
   integrationMethod?: IntegrationMethod;
+  /** ngspice MAXORD cap (1..6). Order 1 uses backward Euler for trap and gear. Default: 2. */
+  maxOrder?: number;
   /** Trapezoidal truncation error factor. Default: 7 */
   trtol?: number;
   /** Charge tolerance (C) of the device-charge truncation error (ngspice CHGTOL). Default: 1e-14 */
@@ -342,6 +344,12 @@ export function withNetlistOptions<T extends SimulationOptions>(netlist: Simulat
 }
 
 export function resolveOptions(opts?: SimulationOptions, stopTime?: number): ResolvedOptions {
+  if (opts?.maxOrder !== undefined && (!Number.isInteger(opts.maxOrder) || opts.maxOrder < 1 || opts.maxOrder > 6)) {
+    throw new InvalidCircuitError('SimulationOptions.maxOrder must be an integer from 1 to 6');
+  }
+  if (opts?.integrationMethod === 'gear2' && (opts.maxOrder ?? 2) > 2) {
+    throw new InvalidCircuitError('spice-ts implements Gear orders 1 and 2 only');
+  }
   if (opts?.rampTime !== undefined && (!Number.isFinite(opts.rampTime) || opts.rampTime < 0)) {
     throw new InvalidCircuitError('SimulationOptions.rampTime must be a non-negative finite number');
   }
@@ -356,7 +364,10 @@ export function resolveOptions(opts?: SimulationOptions, stopTime?: number): Res
     maxIterations: opts?.maxIterations ?? DEFAULT_OPTIONS.maxIterations,
     maxTransientIterations: opts?.maxTransientIterations ?? DEFAULT_OPTIONS.maxTransientIterations,
     maxTimestep: opts?.maxTimestep ?? (stopTime ? stopTime / 50 : DEFAULT_OPTIONS.maxTimestep),
-    integrationMethod: opts?.integrationMethod ?? DEFAULT_OPTIONS.integrationMethod,
+    // ngspice nicomcof.c: trap and gear order 1 both have coefficients 1/dt, -1/dt.
+    // Resolve the cap here so companion stamping, nonlinear charge history and
+    // truncation all use the same first-order rule (including streaming runs).
+    integrationMethod: opts?.maxOrder === 1 ? 'euler' : opts?.integrationMethod ?? DEFAULT_OPTIONS.integrationMethod,
     trtol: opts?.trtol ?? DEFAULT_OPTIONS.trtol,
     chgtol: opts?.chgtol ?? DEFAULT_OPTIONS.chgtol,
     gmin: opts?.gmin ?? DEFAULT_OPTIONS.gmin,
