@@ -1,7 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { parse } from '../parser/index.js';
-import { simulate } from '../simulate.js';
+import { simulate, simulateStream } from '../simulate.js';
+import { resolveOptions } from '../types.js';
 
 const RC = `MAXORD regression
 V1 in 0 PULSE(0 1 0 1n 1n 1m 2m)
@@ -15,6 +16,20 @@ const pump = readFileSync(new URL('../../../../benchmarks/corpus/corpus-k/fixtur
 describe('ngspice MAXORD order cap (#983)', () => {
   it('admits the original corpus-k MOS charge pump', () => {
     expect(() => parse(pump)).not.toThrow();
+  });
+
+  it('runs the original MOS charge pump to its stop time with finite results', async () => {
+    const result = (await simulate(pump)).transient!;
+    expect(result.time[result.time.length - 1]).toBeCloseTo(100e-9, 15);
+    expect(result.voltage('5').every(Number.isFinite)).toBe(true);
+  });
+
+  it.each([0, 7, 1.5, Infinity, NaN])('rejects invalid API order caps: %s', maxOrder => {
+    expect(() => resolveOptions({ maxOrder })).toThrow('maxOrder must be an integer from 1 to 6');
+  });
+
+  it('rejects unimplemented higher Gear orders at the API boundary', () => {
+    expect(() => resolveOptions({ integrationMethod: 'gear2', maxOrder: 3 })).toThrow('Gear orders 1 and 2 only');
   });
 
   it.each(['', 'timeint '])('uses backward Euler for %sMAXORD=1 with either METHOD', async prefix => {
@@ -49,5 +64,26 @@ describe('ngspice MAXORD order cap (#983)', () => {
     const expected = (await simulate(RC)).transient!;
     const result = (await simulate(`${RC}.options maxord=1\n.options maxord=2\n.end`)).transient!;
     expect(result.voltage('out')).toEqual(expected.voltage('out'));
+  });
+
+  it('applies the cap to streaming and parsed Circuit inputs', async () => {
+    const expected = (await simulate(RC, { integrationMethod: 'euler' })).transient!;
+    const circuit = parse(`${RC}.options method=gear maxord=1\n.end`);
+    const times: number[] = [];
+    const values: number[] = [];
+    for await (const step of simulateStream(circuit)) {
+      if ('time' in step) {
+        times.push(step.time);
+        values.push(step.voltages.get('out')!);
+      }
+    }
+    expect(times).toEqual(Array.from(expected.time));
+    expect(values).toEqual(expected.voltage('out'));
+  });
+
+  it('allows an explicit caller order cap to override the netlist', async () => {
+    const expected = (await simulate(RC)).transient!;
+    const actual = (await simulate(`${RC}.options maxord=1\n.end`, { maxOrder: 2 })).transient!;
+    expect(actual.voltage('out')).toEqual(expected.voltage('out'));
   });
 });
