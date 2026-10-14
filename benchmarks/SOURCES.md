@@ -12,6 +12,18 @@ are original MIT project work. Ngspice-47 `a80f6e3e95d51534905b1f23410a951802666
 is a cited behavioral reference under its modified BSD licence; no C code is copied.
 Candidate losses are retained; no production algorithm or corpus score changes.
 
+## BJT post-assembly centered Newton diagnosis (#1037)
+
+The rest reduction and nanosecond-grid control in
+`packages/core/src/analysis/transient-centered-1037.fixtures.ts` are original
+MIT-licensed spice-ts work, rounded-parameter extensions of the self-written
+`transient-bjt-rest-1037.test.ts` reduction. No vendor material is copied.
+Both engines receive identical bytes, including observational `.save` cards.
+The runner, hashes, first accepted native points, full TypeScript iteration
+trace and rejected-candidate receipt are in `benchmarks/bjt-centered-1037/`.
+This is not a fix or a complete vendor-deck waveform oracle.
+
+
 ## corpus-m AC, diode and MOS device batch (#1045)
 
 24 unchanged decks from Xyce_Regression at
@@ -51,6 +63,17 @@ from those model cards and retain GPL-3.0-or-later. Diagnostic scripts are
 original project work. Every paired run uses identical input bytes. Separate
 OP/fine-step/control variants are labelled, not used to change corpus scores.
 No fixture, harness, tolerance or aggregate is changed; losses remain losses.
+
+[Follow-up state trace and rejected candidate](results/issue-1059-fix/report.md)
+reuse these same GPL-3.0-or-later decks and additionally classify unchanged
+corpus-l `arom.cir` from the same pinned source. Fine variants alter only
+TMAX identically for both engines. The ngspice-47 trace is from revision
+`a80f6e3e95d51534905b1f23410a951802666656`,
+[CKTterr](https://sourceforge.net/p/ngspice/ngspice/ci/a80f6e3e95d51534905b1f23410a951802666656/tree/src/spicelib/analysis/cktterr.c)
+and MOS3trunc/MOS3load under ngspice's Berkeley/BSD grant. The retained
+instrumentation diff adds project-authored logging only; no whole ngspice
+source is copied. Traces, numerical receipts and opt-in experiments are
+diagnostic evidence, not a shipped device change or an accuracy claim.
 
 ## #812 ngbehavior option and #828 negative sqrt
 

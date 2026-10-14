@@ -1,0 +1,34 @@
+[
+  {
+    "inputSha256": "a6d0f4220bde7a548209e0e845e3c9bb731b2819f7f7e256d284e5a85e10fa7c",
+    "mode": "profile",
+    "run": 0,
+    "wallMs": 3937.256,
+    "parseMs": 9.077208999999996,
+    "compileDcTransientRecordMs": 3928.178791,
+    "points": 2429,
+    "telemetry": {
+      "dc": {
+        "newtonIterations": 143,
+        "acceptedSolves": 12,
+        "rejectedSolves": 1,
+        "sourceStepAttempts": 0,
+        "sourceStepFailures": 0,
+        "gminStepAttempts": 12,
+        "gminStepFailures": 0,
+        "failure": null
+      },
+      "transient": {
+        "acceptedSteps": 2428,
+        "rejectedSteps": 766,
+        "newtonIterations": 82710,
+        "nrRetries": 756,
+        "lteRetries": 10,
+        "minimumAcceptedTimestep": 7.569444300496845e-12,
+        "failure": null
+      }
+    },
+    "final20": 0.04197415204949512,
+    "final66": 0.041969637992174305
+  }
+]
