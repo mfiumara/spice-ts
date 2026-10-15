@@ -1,5 +1,6 @@
 import { InvalidCircuitError } from '../errors.js';
-import type { DeviceModel, StampContext } from './device.js';
+import type { ChargeIntegration, ChargeTruncation, DeviceModel, StampContext } from './device.js';
+import { TransientChargeState } from './charge-state.js';
 import { DEVICE_GMIN } from './device.js';
 import {
   resolveVBICTemperature, type VBICTemperatureState,
@@ -17,8 +18,8 @@ const ACTIVE_PARAMETERS = [
 ] as const;
 /**
  * Charge-storage and excess-phase parameters: inert at DC, active in the
- * small-signal (.ac/.pz) linearization. RTH stays electrically inert: a
- * four-terminal instance has no thermal terminal, so ngspice ties the thermal
+ * small-signal (.ac/.pz) linearization and transient integration. RTH stays
+ * electrically inert: a four-terminal instance has no thermal terminal, so ngspice ties the thermal
  * node to ground and self-heating cannot change any node voltage.
  */
 const DC_INERT_PARAMETERS = [
@@ -408,10 +409,14 @@ export function vbicNodeCount(params: Pick<VBICParams, 'TD'>): number {
   return params.TD > 0 ? 9 : 7;
 }
 
-/** A bounded four-terminal VBIC device (DC, AC, PZ) with ngspice temperature mapping. */
+/** A bounded four-terminal VBIC device with ngspice temperature mapping. */
 export class VBIC implements DeviceModel {
   readonly branches: number[] = [];
   readonly isNonlinear = true;
+  readonly integratesTransientCharge = true;
+  readonly limitsOwnJunctions = true;
+  private readonly charges: TransientChargeState;
+  private loadVoltages: number[] | undefined;
   readonly params: VBICParams;
   /** Local (positive, negative) node pair of each evaluation branch voltage. */
   private readonly branchTerminals: readonly (readonly [number, number])[];
@@ -433,6 +438,7 @@ export class VBIC implements DeviceModel {
     private readonly instanceScale = 1,
   ) {
     this.params = resolveVBICParams(supplied, polarity);
+    this.charges = new TransientChargeState(nodes.length);
     const expected = vbicNodeCount(this.params);
     if (nodes.length !== expected) {
       throw new InvalidCircuitError(`Bounded VBIC device requires ${expected} internal nodes`);
@@ -517,6 +523,7 @@ export class VBIC implements DeviceModel {
   stamp(ctx: StampContext): void {
     const voltages = this.branchVoltages(ctx);
     this.limitJunctions(voltages);
+    this.loadVoltages = voltages;
     const { residual } = evaluate(voltages, this.params, this.thermal, this.instanceScale, ctx.gmin ?? DEVICE_GMIN);
     for (let row = 0; row < this.nodes.length; row += 1) {
       const matrixRow = this.nodes[row];
@@ -542,7 +549,7 @@ export class VBIC implements DeviceModel {
   /**
    * Small-signal charge Jacobian dQ/dV at the operating point, the real-valued
    * counterpart of ngspice VBICacLoad/VBICpzLoad capacitive stamps. Only the
-   * linearized AC and pole-zero analyses reach this: transient stays rejected.
+   * linearized AC and pole-zero analyses reach this; transient integrates Q.
    */
   stampDynamic(ctx: StampContext): void {
     const { charge } = evaluate(this.branchVoltages(ctx), this.params, this.thermal, this.instanceScale, ctx.gmin ?? DEVICE_GMIN);
@@ -556,5 +563,48 @@ export class VBIC implements DeviceModel {
         if (matrixColumn >= 0 && capacitance !== 0) ctx.stampC(matrixRow, matrixColumn, capacitance);
       }
     }
+  }
+
+  /** Integrate conservative terminal charges and both excess-phase state rows. */
+  stampTransientCharge(ctx: StampContext, integration: ChargeIntegration): void {
+    const voltages = this.loadVoltages ?? this.branchVoltages(ctx);
+    const { charge } = evaluate(voltages, this.params, this.thermal, this.instanceScale, ctx.gmin ?? DEVICE_GMIN);
+    this.charges.begin(integration);
+    for (let row = 0; row < this.nodes.length; row++) {
+      const node = this.nodes[row];
+      if (node < 0) continue;
+      const quantity = charge[row];
+      let rhs = -this.charges.current(row, quantity.value);
+      for (let index = 0; index < voltages.length; index++) {
+        rhs += this.charges.factor * quantity.derivative[index] * voltages[index];
+      }
+      const jacobian = this.nodeJacobian(quantity);
+      for (let column = 0; column < this.nodes.length; column++) {
+        if (this.nodes[column] >= 0) ctx.stampG(node, this.nodes[column], this.charges.factor * jacobian[column]);
+      }
+      ctx.stampB(node, this.params.polarity * rhs);
+    }
+  }
+
+  stampAcceptedChargeCurrent(ctx: StampContext): void {
+    this.nodes.forEach((node, row) => {
+      if (node >= 0) ctx.stampB(node, -this.params.polarity * this.charges.acceptedChargeCurrent(row));
+    });
+  }
+
+  acceptTransientStep(ctx: StampContext): void {
+    const { charge } = evaluate(this.branchVoltages(ctx), this.params, this.thermal, this.instanceScale, ctx.gmin ?? DEVICE_GMIN);
+    charge.forEach((quantity, row) => this.charges.accept(row, quantity.value));
+    this.charges.commit();
+  }
+
+  truncateTransientStep(ctx: StampContext, truncation: ChargeTruncation): number {
+    return this.charges.truncationTimestep(truncation, () => this.acceptTransientStep(ctx));
+  }
+
+  resetTransient(): void {
+    this.charges.reset();
+    this.junctions = undefined;
+    this.loadVoltages = undefined;
   }
 }
