@@ -79,7 +79,10 @@ export async function validateProtocolV1(
   guard.maximum('maxAnalyses', circuit.analyses.length, 'validation');
   const compiled = circuit.compile(guard);
   enforcePointLimit(circuit.analyses, guard, requestReltol(request, circuit), compiled.steps[0]);
-  if (compiled.nodeCount === 0) throw new InvalidCircuitError('Circuit has no nodes');
+  if (compiled.nodeCount === 0
+    && !(compiled.analyses.length > 0 && compiled.analyses.every(analysis => analysis.type === 'tran'))) {
+    throw new InvalidCircuitError('Circuit has no nodes');
+  }
   if (compiled.analyses.length === 0) throw new InvalidCircuitError('No analysis command specified');
   preflightTopology(compiled, protocolSourcePath(request));
   return {
