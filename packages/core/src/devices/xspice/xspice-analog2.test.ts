@@ -193,9 +193,9 @@ describe('XSPICE slice 2 parsing and typed rejections', () => {
     expect(dc.voltage('30')).toBeCloseTo(1 * 1000 / 1001, 9);
   });
 
-  it('keeps triangle and square typed-unsupported', () => {
+  it('keeps square typed-unsupported', () => {
     for (const card of [
-      '.model t1 triangle (duty_cycle=0.5)', '.model s1 square (duty_cycle=0.5)',
+      '.model s1 square (duty_cycle=0.5)',
     ]) {
       expect(() => parse(['x', 'v1 1 0 1', card, '.op'].join('\n'))).toThrow(UnsupportedCodeModelError);
     }

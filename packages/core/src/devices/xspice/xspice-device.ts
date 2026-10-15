@@ -1,5 +1,5 @@
 import type {
-  ChargeIntegration, ChargeTruncation, DeviceModel, StampContext,
+  ChargeIntegration, ChargeTruncation, DeviceModel, StampContext, TransientBreakpointSink,
 } from '../device.js';
 import type { CodeModelBehavior, CodeModelCall } from './models.js';
 
@@ -131,7 +131,7 @@ export class XspiceDevice implements DeviceModel {
     return this.limited;
   }
 
-  acceptTransientStep(ctx: StampContext): void {
+  acceptTransientStep(ctx: StampContext, breakpoints?: TransientBreakpointSink): void {
     const transient = this.acceptedTime !== undefined && ctx.dt > 0 && ctx.time > this.acceptedTime;
     // The operating point that starts a transient run: drop any earlier run's history.
     if (!transient) {
@@ -141,6 +141,7 @@ export class XspiceDevice implements DeviceModel {
     const call = this.call(ctx, transient ? 'tran' : 'dc', transient ? this.lastIntegration : undefined, false);
     this.behavior.load(call);
     this.behavior.accept?.(call);
+    for (const time of this.behavior.breakpoints?.() ?? []) breakpoints?.schedule(time);
     this.acceptedInputs.set(this.inputs);
     this.acceptedOutputs.set(this.outputs);
     this.acceptedPartials.set(this.partials);
