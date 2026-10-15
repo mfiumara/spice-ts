@@ -16,7 +16,8 @@
     ],
     "inputFormats": [
       "spice",
-      "spice-ts"
+      "spice-ts",
+      "circuit-json"
     ],
     "limits": {
       "maxDocumentBytes": 262144,

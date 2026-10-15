@@ -49,6 +49,7 @@ try {
       overrides: {
         '@spice-ts/core': `file:${coreTarball}`,
         '@spice-ts/protocol': `file:${protocolTarball}`,
+        '@spice-ts/circuit-json': `file:${circuitJsonTarball}`,
       },
     },
   }, null, 2)}\n`);

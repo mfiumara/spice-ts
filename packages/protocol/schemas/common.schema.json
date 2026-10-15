@@ -891,6 +891,7 @@
             "PARSE_ERROR",
             "INVALID_CIRCUIT",
             "UNSUPPORTED_FEATURE",
+            "UNSUPPORTED_ELEMENT",
             "SINGULAR_MATRIX",
             "CONVERGENCE_FAILED",
             "TIMESTEP_TOO_SMALL",

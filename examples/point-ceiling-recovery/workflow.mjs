@@ -14,7 +14,7 @@ assert.equal(callOrder[0], 'spice_capabilities', 'capabilities must be called fi
 assert.deepEqual(capabilities, {
   protocolVersion: '1',
   analyses: ['op', 'dc', 'tran', 'ac'],
-  inputFormats: ['spice', 'spice-ts'],
+  inputFormats: ['spice', 'spice-ts', 'circuit-json'],
   limits: {
     maxDocumentBytes: 262144,
     maxAnalyses: 8,

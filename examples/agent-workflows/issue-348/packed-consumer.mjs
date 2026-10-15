@@ -34,12 +34,13 @@ function tarballFor(packageName) {
 
 try {
   mkdirSync(packsRoot);
-  for (const packageName of ['core', 'protocol', 'mcp']) {
+  for (const packageName of ['core', 'protocol', 'circuit-json', 'mcp']) {
     run('pnpm', ['pack', '--pack-destination', packsRoot], resolve(workspaceRoot, 'packages', packageName));
   }
 
   const coreTarball = tarballFor('@spice-ts/core');
   const protocolTarball = tarballFor('@spice-ts/protocol');
+  const circuitJsonTarball = tarballFor('@spice-ts/circuit-json');
   const mcpTarball = tarballFor('@spice-ts/mcp');
   writeFileSync(join(consumerRoot, 'package.json'), `${JSON.stringify({
     private: true,
@@ -48,6 +49,7 @@ try {
       overrides: {
         '@spice-ts/core': `file:${coreTarball}`,
         '@spice-ts/protocol': `file:${protocolTarball}`,
+        '@spice-ts/circuit-json': `file:${circuitJsonTarball}`,
       },
     },
   }, null, 2)}\n`);
