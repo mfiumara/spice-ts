@@ -10,7 +10,6 @@ import {
   temperatureJunction,
 } from './junction-temperature.js';
 import { pnjlim } from './devsup.js';
-import { UnsupportedModelParameterError } from '../errors.js';
 
 export interface BJTParams {
   LEVEL: number;
@@ -610,6 +609,14 @@ export class BJT implements DeviceModel {
   private hasAcceptedJunctions = false;
   private hasPriorJunctions = false;
   private acceptedStep: number | undefined;
+  /** bjtload.c cexbc state0/1/2. Only accepted steps rotate the delay history. */
+  private delayCurrent = 0;
+  private acceptedDelayCurrent = 0;
+  private priorDelayCurrent = 0;
+
+  private get excessPhaseDelay(): number {
+    return ((this.suppliedParams.PTF ?? 0) / (180 / Math.PI)) * this.params.TF;
+  }
   /** Between beginTransientNewton and the next accepted point. */
   private inTransientNewton = false;
   /** The next load is the first iterate of a timepoint (MODEINITPRED). */
@@ -805,7 +812,22 @@ export class BJT implements DeviceModel {
   }
 
   acceptTransientStep(ctx: StampContext): void {
-    this.assertNoExcessPhase();
+    if (this.excessPhaseDelay !== 0) {
+      if (this.inTransientNewton && this.hasAcceptedJunctions) {
+        this.priorDelayCurrent = this.acceptedDelayCurrent;
+        this.acceptedDelayCurrent = this.delayCurrent;
+      } else {
+        // MODEINITTRAN: both past cexbc states start at cbe/qb, also with UIC.
+        this.acceptJunctions(ctx);
+        const vbe = this.acceptedJunctions[BASE_EMITTER];
+        const vbc = this.acceptedJunctions[BASE_COLLECTOR];
+        const { qb } = this.evaluateDC(vbe, vbc, ctx.gmin ?? DEVICE_GMIN);
+        const cbe = junctionLaw(this.junction, vbe, this.params.IS, this.params.NF * this.vt).current;
+        this.delayCurrent = this.acceptedDelayCurrent = this.priorDelayCurrent = cbe / qb;
+        this.acceptCharges(ctx);
+        return;
+      }
+    }
     this.acceptJunctions(ctx);
     this.acceptCharges(ctx);
   }
@@ -871,6 +893,7 @@ export class BJT implements DeviceModel {
 
   resetTransient(): void {
     this.charges.reset();
+    this.delayCurrent = this.acceptedDelayCurrent = this.priorDelayCurrent = 0;
     this.hasAcceptedJunctions = false;
     this.hasPriorJunctions = false;
     this.acceptedStep = undefined;
@@ -1005,7 +1028,7 @@ export class BJT implements DeviceModel {
    * ngspice, not only in the Jacobian (#551), and the base charge qb of
    * {@link baseCharge}. Writes into a reused object.
    */
-  private evaluateDC(vBE: number, vBC: number, gmin: number): BJTDCPoint {
+  private evaluateDC(vBE: number, vBC: number, gmin: number, dt = 0): BJTDCPoint {
     const { BF, BR, IS, NF, NR, ISE, NE, ISC, NC } = this.params;
     const { current: cbe, conductance: gbe } = junctionLaw(this.junction, vBE, IS, NF * this.vt);
     const { current: cbc, conductance: gbc } = junctionLaw(
@@ -1038,6 +1061,26 @@ export class BJT implements DeviceModel {
     point.gmForward = gm + go;
     point.gmReverse = point.gmu + go;
     point.qb = qb;
+    const td = this.excessPhaseDelay;
+    if (dt > 0 && td !== 0) {
+      // ngspice-47 bjtload.c Weil approximation, always backward Euler,
+      // independent of the charge integrator. Rejected/Newton trials never
+      // mutate state1/2; the current state0 is overwritten on every load.
+      const ratio = dt / td;
+      const arg2 = 3 * ratio;
+      const arg1 = arg2 * ratio;
+      const denom = 1 + arg1 + arg2;
+      const factor = arg1 / denom;
+      const stepRatio = dt / (this.acceptedStep ?? dt);
+      const history = (this.acceptedDelayCurrent * (1 + stepRatio + arg2)
+        - this.priorDelayCurrent * stepRatio) / denom;
+      const cex = cbe * factor;
+      this.delayCurrent = history + cex / qb;
+      point.collectorCurrent = history + (cex - cbc) / qb - cbc / BR - cbcn;
+      const delayedGo = (gbc + (cex - cbc) * dqbdvc / qb) / qb;
+      point.gmForward = (gbe * factor - (cex - cbc) * dqbdve / qb) / qb;
+      point.gmReverse = point.gmu + delayedGo;
+    }
     return point;
   }
 
@@ -1100,16 +1143,32 @@ export class BJT implements DeviceModel {
    * substrate capacitance there, even with a forward-biased ISS junction (#767).
    */
   stampSmallSignal(ctx: StampContext): void {
-    this.assertNoExcessPhase();
     this.stampLoad(ctx, false);
   }
 
-  /** PTF is inert in DC; ngspice-47 uses it only for excess-phase dynamics. */
-  private assertNoExcessPhase(): void {
-    if ((this.suppliedParams.PTF ?? 0) !== 0) {
-      throw new UnsupportedModelParameterError(
-        this.name, 'PTF', 'BJT excess phase is not implemented for small-signal or transient analysis',
-      );
+  get frequencyDependent(): boolean {
+    return this.excessPhaseDelay !== 0;
+  }
+
+  /** bjtacld.c rotates gm+go only; go and base currents remain undelayed. */
+  stampFrequencyConductance(ctx: StampContext, omega: number): void {
+    const [c, b, e] = this.nodes;
+    const { polarity } = this.params;
+    const voltage = (node: number): number => node >= 0 ? ctx.getVoltage(node) : 0;
+    const dc = this.evaluateDC(
+      polarity * (voltage(b) - voltage(e)),
+      polarity * (voltage(b) - voltage(c)), ctx.gmin ?? DEVICE_GMIN,
+    );
+    const angle = omega * this.excessPhaseDelay;
+    const real = dc.gmForward * (Math.cos(angle) - 1);
+    const imaginary = omega === 0 ? -dc.gmForward * this.excessPhaseDelay
+      : -dc.gmForward * Math.sin(angle) / omega;
+    for (const [row, rowSign] of [[c, 1], [e, -1]]) {
+      for (const [col, colSign] of [[b, 1], [e, -1]]) {
+        if (row < 0 || col < 0) continue;
+        ctx.stampG(row, col, rowSign * colSign * real);
+        ctx.stampC(row, col, rowSign * colSign * imaginary);
+      }
     }
   }
 
@@ -1137,7 +1196,9 @@ export class BJT implements DeviceModel {
       this.chargesAtLimitedJunctions = true;
     }
 
-    const dc = this.evaluateDC(vBE, vBC, ctx.gmin ?? DEVICE_GMIN);
+    const dc = this.evaluateDC(
+      vBE, vBC, ctx.gmin ?? DEVICE_GMIN, this.inTransientNewton && substrateJunction ? ctx.dt : 0,
+    );
     const IC = dc.collectorCurrent;
     const IB = dc.baseCurrent;
     const gm_f = dc.gmForward;

@@ -397,16 +397,14 @@ describe('BJT Ebers-Moll', () => {
   });
 
   it.each(['.ac dec 1 1k 10k', '.tran 1n 10n', '.tran 1n 10n uic'])(
-    'rejects unimplemented PTF with a structured error for %s', async analysis => {
-      await expect(simulate(`unsupported excess phase
+    'accepts PTF dynamics for %s', async analysis => {
+      await expect(simulate(`supported excess phase
         VBE b 0 DC 0.7 AC 1
         VCE c 0 5
         Q1 c b 0 QGP
         .model QGP NPN(IS=1e-15 BF=100 TF=1n PTF=30)
         ${analysis}
-        .end`)).rejects.toMatchObject({
-        code: 'UNSUPPORTED_MODEL_PARAMETER', deviceName: 'Q1', parameter: 'PTF',
-      });
+        .end`)).resolves.toBeDefined();
     },
   );
 
