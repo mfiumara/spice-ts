@@ -193,7 +193,7 @@ describe('preprocessor', () => {
     });
 
     it('rejects resistor parameters the behavioral rewrite cannot carry', async () => {
-      await expect(preprocess("R20 20 0 '1k*v(200)' m=2\n.op"))
+      await expect(preprocess("R20 20 0 '1k*v(200)' noisy=1\n.op"))
         .rejects.toThrow("behavioral resistor 'R20'");
     });
 
