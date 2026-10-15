@@ -50,7 +50,7 @@ Q1 c b 0 0 QV
     expect(result.transient!.time.at(-1)).toBe(1e-6);
     expect(result.transient!.voltage('e1_p').every(Number.isFinite)).toBe(true);
     expect(result.ac).toBeDefined();
-  });
+  }, 30_000); // Coverage-instrumented CI exceeds Vitest's default 5 s budget.
 
   for (const polarity of [1, -1]) {
     for (const method of ['euler', 'trapezoidal', 'gear2'] as const) {
