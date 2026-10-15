@@ -3570,6 +3570,7 @@ export class Circuit {
       parsedLines.filter(({ tokens }) => tokens[0]?.toUpperCase() === '.PARAM')
         .map(({ tokens, lineNumber, raw }) => ({ content: tokens.slice(1).join(' '), line: lineNumber, raw })),
       localParams,
+      overrides,
     );
 
     // ngspice-47 subckt.c modtranslate: a .model card in the body becomes a
