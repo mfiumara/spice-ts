@@ -13,7 +13,7 @@ A bounded stdio MCP server exposing the existing spice-ts protocol-v1 adapter. I
 
 The validation, one-shot simulation, and stream-start tools accept `{ "request": SimulationRequestV1 }`. Successful results are returned as MCP `structuredContent` and as compact JSON text. Failures set `isError` and return `{ "error": SpiceApiErrorV1 }`; implementation backend names are removed from public errors.
 
-The server supports protocol-v1 `spice` and `spice-ts` inputs and `op`, `dc`, `tran`, and `ac` analyses. `circuit-json` conversion remains owned by `@spice-ts/circuit-json` and is not exposed by this slice.
+The server supports protocol-v1 `spice`, `spice-ts`, and `circuit-json` inputs and `op`, `dc`, `tran`, and `ac` analyses. For Circuit JSON, use `input: { format: 'circuit-json', circuit, analyses }`. Conversion is performed by `@spice-ts/circuit-json` before validation or worker execution; its supported element set applies (currently R/C/M/Q, not independent sources). Fatal conversion diagnostics are returned in `error.details.diagnostics`, with `UNSUPPORTED_ELEMENT` for unsupported elements. Nonfatal conversion diagnostics (including ignored layout elements) are exposed in the MCP result's `_meta.conversionDiagnostics` by all three request tools, without changing the protocol simulation result shape.
 
 ## Run over stdio
 

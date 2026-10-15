@@ -1,0 +1,12 @@
+BJT excess phase common emitter (#1142), self-authored MIT
+VCC supply 0 5
+VB b 0 DC 0.65 AC 1 PULSE(0.65 0.66 2n 0.1n 0.1n 10n 20n)
+RC supply c 1k
+Q1 c b 0 QMOD
+.model QMOD NPN(IS=1e-15 BF=100 TF=1n PTF=60 VAF=50 IKF=10m)
+.options reltol=1e-6 abstol=1e-14
+.ac dec 1 1meg 1gig
+.tran 0.01n 8n 0 0.01n
+.print ac vr(c) vi(c)
+.print tran v(c) i(VB) i(VCC)
+.end

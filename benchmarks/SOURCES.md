@@ -1,5 +1,18 @@
 # Benchmark sources
 
+## TEMPER model/instance sweep regression (#1151)
+
+`packages/core/src/analysis/temper-model-1151.test.ts` contains an original
+MIT-licensed two-diode probe. Its ten current references were measured with
+ngspice-47 on the identical deck, using `SPICE_ASCIIRAWFILE=1 ngspice -n -b -r probe.raw probe.cir`,
+without tolerance changes. The upstream self-check decks are the unchanged
+BSD-3-Clause corpus-f fixtures at ngspice revision
+`3ef069fb1f04177a153f342a32d941fc20ff047e`, with per-file provenance in
+`benchmarks/corpus/corpus-f/SOURCES.md`:
+https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/regression/temper/temper-2.cir.
+The refreshed corpus row is `not-compared`, not a numerical match: its control
+block exits successfully, but ngspice's batch raw export contains no vectors.
+
 ## Behavioral capacitor explicit multiplier compatibility (#1122)
 
 `packages/core/src/parser/behavioral-capacitor-m-1122.test.ts` contains an
@@ -784,6 +797,14 @@ Run `pnpm exec tsx benchmarks/sensitivity/compare.ts` with ngspice-47. The JSON 
 - Adaptation: none between engines. The verifier reads the committed fixture once and supplies those exact bytes to spice-ts and ngspice-47. No engine-specific values, tolerances, or rewrites are used.
 - Reproduce with `pnpm -C packages/core build && pnpm exec tsx benchmarks/results/issue-319/verify.ts --output benchmarks/results/issue-319/report.json`. The receipt records ngspice-47, exact commands, the 17-point `.dc VSWEEP 8 12 0.25` grid, `V(cold)`, `V(nominal)`, `V(hot)`, and `I(VSWEEP)`, convergence, runtimes, and matched-point maximum/RMS absolute and relative errors.
 
+## VBIC emission coefficient parity fixture (#1156)
+
+- Fixture: `benchmarks/vbic-emission/emission.cir`; project-authored for [issue #1156](https://github.com/mfiumara/spice-ts/issues/1156), MIT under the repository licence. No third-party netlist is copied.
+- The exact same deck bytes are used by both engines; the temperature card alone is varied identically to 0, 27 and 75 C. Forward/reverse transport and forward-biased parasitic substrate diodes exercise NF, NR, NEI, NEN, NCI, NCN, NFP, NCIP and NCNP in OP, DC sweep and AC.
+- Equation sources: ngspice-47 `src/spicelib/devices/vbic/{vbicload,vbictemp,vbicsetup}.c`, available in the [pinned ngspice source tree](https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/src/spicelib/devices/vbic/), BSD-3-Clause (see the ngspice corpus provenance above). All temperature exponents outside the bounded subset retain their ngspice defaults, including TNF=0.
+- Reference: `ngspice-47.json`, read by the regression test, contains ngspice-47 ASCII raw plot values (not rounded print tables). Generate raw plots with `SPICE_ASCIIRAWFILE=1 ngspice -b -r <output.raw> <deck>` for each temperature. The test runs with `pnpm -C packages/core exec vitest run src/devices/vbic-emission.test.ts`; it applies the uniform corpus 1%-of-peak rule and quantity floors, without per-circuit tolerance changes.
+- Scope: bounded isothermal NPN LEVEL=4 only; this does not enable VBIC transient/noise or arbitrary model parameters. The three unchanged corpus-f VBIC example decks still reject FC after the emission-coefficient gap is removed.
+
 ## Bounded VBIC non-ground substrate parity fixtures
 
 - Fixtures: `benchmarks/vbic-substrate/dc.cir` (SHA-256 `3229c4f71f6e450c0da6f5b1b371d8f8c3e7fd3ad845ae04859e7c3aacb1a32c`), `benchmarks/vbic-substrate/ac.cir` (SHA-256 `897e30fd367d4ad14ad4fc355bf1cc7f76e0afdae12671e6a6a3e83fcf40ed66`), and `benchmarks/vbic-substrate/dc-latchup.cir` (SHA-256 `53259667c7b0fe7f2e20b5591b9273c4beca5c51e9b5027a74b06d04c964173d`).
@@ -1410,3 +1431,14 @@ unresolved causal classification and reproduction commands. `verification.json`
 checks observation-only traces against uninstrumented output on every native
 and TypeScript signal/timepoint. This is evidence, not new corpus coverage,
 an aggregate refresh, or a production fix.
+
+## BJT excess phase regression (#1142)
+
+`packages/core/src/devices/fixtures/bjt-ptf-1142.cir` is an original,
+self-authored common-emitter AC/transient probe under the repository MIT
+licence. The adjacent test consumes it and pins its SHA-256 and ngspice-47
+reference values. No third-party netlist was added. The unchanged corpus-g
+`GMIN_STEPPING/gstep_cont3a.cir` retains its existing corpus-g provenance.
+The equations follow ngspice BJT `bjttemp.c`, `bjtacld.c` and `bjtload.c`
+(https://github.com/ngspice/ngspice/tree/master/src/spicelib/devices/bjt);
+PTF is degrees, and the transient delay uses Weil's backward-Euler approximation.

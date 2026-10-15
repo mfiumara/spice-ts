@@ -130,6 +130,8 @@ const CELSIUS_TO_KELVIN = 273.15;
  * node/branch mappings, and analysis commands.
  */
 export interface CompiledCircuit {
+  /** Retained parser expressions, recompiled at the circuit temperature in Celsius. */
+  recompileAtTemperature?: (celsius: number) => CompiledCircuit;
   /** Instantiated device models with resolved node indices */
   devices: DeviceModel[];
   /** Number of non-ground nodes */
@@ -842,6 +844,8 @@ export class Circuit {
   private _parameterScope: Record<string, number> | undefined;
   private _simulationOptions: SimulationOptions = {};
   private _temperature: number | undefined;
+  /** @internal Parser-supplied evaluator for TEMPER-dependent parameter expressions. */
+  recompileAtTemperature?: (celsius: number) => CompiledCircuit;
   private _xspiceTrtol: number | undefined;
   private _initialConditions: NodeInitialState[] = [];
   private _nodeSets: NodeInitialState[] = [];
@@ -2655,6 +2659,7 @@ export class Circuit {
 
     return {
       devices, nodeCount, branchCount: branchNames.length,
+      recompileAtTemperature: this.recompileAtTemperature,
       nodeNames, nodeIndexMap, branchNames,
       analyses: this._analyses, poleZeroAnalyses: this._poleZeroAnalyses, models: this._models,
       subcircuits: this._subcircuits,

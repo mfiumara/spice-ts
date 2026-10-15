@@ -16,6 +16,7 @@ import {
 } from '../convergence-telemetry.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 import { accumulatedLinearGrid } from './directed-linear-grid.js';
+import { temperatureExpressionTarget } from './temperature-expressions.js';
 
 interface SweepTarget {
   set(value: number): void;
@@ -41,10 +42,11 @@ export function solveDCSweep(
   // so every outer value reuses the same accumulated inner grid.
   const primaryGrid = sweepGrid(analysis);
   const secondaryGrid = analysis.secondary === undefined ? [undefined] : sweepGrid(analysis.secondary);
-  const source = resolveSweepTarget(devices, analysis, primaryGrid);
+  const sourceNames = [analysis.source, ...(analysis.secondary ? [analysis.secondary.source] : [])];
+  const source = resolveSweepTarget(compiled, analysis, primaryGrid, sourceNames);
   const secondarySource = analysis.secondary === undefined
     ? undefined
-    : resolveSweepTarget(devices, analysis.secondary, secondaryGrid as number[]);
+    : resolveSweepTarget(compiled, analysis.secondary, secondaryGrid as number[], sourceNames);
   const primaryPoints = primaryGrid.length;
   const secondaryPoints = secondaryGrid.length;
   const numPoints = primaryPoints * secondaryPoints;
@@ -83,7 +85,7 @@ export function solveDCSweep(
 
         source.set(sweepValue);
 
-        solveSweepPoint(assembler, devices, options, nodeNames, convergence, guard);
+        solveSweepPoint(assembler, compiled.devices, options, nodeNames, convergence, guard);
 
         // Record solution
         for (let n = 0; n < nodeNames.length; n++) {
@@ -138,10 +140,12 @@ function solveSweepPoint(
 }
 
 function resolveSweepTarget(
-  devices: CompiledCircuit['devices'],
+  compiled: CompiledCircuit,
   sweep: DCSweepDimension,
   grid: readonly number[],
+  sourceNames: string[],
 ): SweepTarget {
+  const { devices } = compiled;
   // SPICE identifiers are case-insensitive, but retain declaration spelling in
   // result maps and diagnostics.
   const normalizedSourceName = sweep.source.toUpperCase();
@@ -149,6 +153,8 @@ function resolveSweepTarget(
     const fixed = devices.find(device => device.isNonlinear && !device.setTemperature);
     const offNominal = grid.find(value => value !== NOMINAL_TEMPERATURE_C);
     if (fixed && offNominal !== undefined) throw new UnsupportedTemperatureError(fixed.name, offNominal);
+    const expressions = temperatureExpressionTarget(compiled, sourceNames);
+    if (expressions) return expressions;
     const thermalDevices = devices.filter(device => device.setTemperature && device.getTemperature);
     // Resistor getTemperature includes instance TEMP/DTEMP. Restore CKTtemp,
     // not the effective instance temperature, to avoid applying DTEMP twice.
@@ -160,8 +166,8 @@ function resolveSweepTarget(
     };
   }
   const matchingSources = devices.filter(
-    (device): device is VoltageSource | CurrentSource =>
-      (device instanceof VoltageSource || device instanceof CurrentSource)
+    (device): device is VoltageSource | CurrentSource | Resistor =>
+      (device instanceof VoltageSource || device instanceof CurrentSource || device instanceof Resistor)
       && device.name.toUpperCase() === normalizedSourceName,
   );
   if (matchingSources.length === 0) {
@@ -174,10 +180,20 @@ function resolveSweepTarget(
     );
   }
   const source = matchingSources[0]!;
+  if (source instanceof Resistor) {
+    // Sweep the nominal instance value, retaining temperature, SCALE and M.
+    const resistance = source.getParameter();
+    return {
+      set: value => source.setParameter(value),
+      restore: () => source.setParameter(resistance),
+    };
+  }
   const waveform = source.waveform;
+  const sourceIndex = devices.indexOf(source);
+  const currentSource = () => compiled.devices[sourceIndex] as VoltageSource | CurrentSource;
   return {
-    set: value => { source.waveform = { type: 'dc', value }; },
-    restore: () => { source.waveform = waveform; },
+    set: value => { currentSource().waveform = { type: 'dc', value }; },
+    restore: () => { currentSource().waveform = waveform; },
   };
 }
 

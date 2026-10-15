@@ -1,0 +1,22 @@
+Project-authored VBIC emission coefficient parity (#1156)
+Vcc supply 0 2
+Vb b 0 DC 0.7 AC 1
+Vs s 0 0.5
+Rc supply c 1k
+Rr r 0 1k
+Qf c b 0 s M
+Qr 0 b r 0 M
+Vcp cp 0 0.1
+Vbp bp 0 0
+Vsp sp 0 0.7
+Qp cp bp 0 sp M
+.model M NPN (LEVEL=4 NF=1.05 NR=1.1 NEI=1.15 NEN=1.8 NCI=1.2 NCN=1.9 NFP=1.12 NCIP=1.25 NCNP=1.85
++ IS=1e-16 IBEI=1e-18 IBEN=1e-15 IBCI=2e-18 IBCN=2e-15 ISP=1e-17 IBCIP=1e-18 IBCNP=1e-15
++ CJE=1p CJC=0.5p CJCP=0.2p TF=10p TR=20p)
+.options reltol=1e-7 abstol=1e-16
+.temp 27
+.op
+.dc Vb 0.5 0.75 0.05
+.ac dec 1 1meg 100meg
+.save v(c) v(r) i(vcc) i(vb) i(vs) i(vcp) i(vbp) i(vsp)
+.end

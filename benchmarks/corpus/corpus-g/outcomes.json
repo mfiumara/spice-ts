@@ -44,15 +44,15 @@
       "unsupported": 0
     },
     "spiceTs": {
-      "success": 110,
+      "success": 111,
       "failed": 6,
-      "unsupported": 12
+      "unsupported": 11
     },
     "outcomes": {
-      "matched": 98,
+      "matched": 99,
       "mismatch": 12,
       "not-compared": 0,
-      "spice-ts-loss": 18,
+      "spice-ts-loss": 17,
       "ngspice-failed": 0,
       "both-failed": 0
     }
@@ -110,15 +110,6 @@
       "ngspiceSuccess": 1,
       "ids": [
         "bjt-ic-bjt-ic-nonzero-cir"
-      ],
-      "issue": null
-    },
-    {
-      "bucket": "device: lossless T-line NL=/F= electrical-length form",
-      "fixtures": 1,
-      "ngspiceSuccess": 1,
-      "ids": [
-        "transline-errormessagetest2-cir"
       ],
       "issue": null
     },
@@ -4325,16 +4316,35 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 19: Unsupported lossless transmission line parameter; only Z0 and TD are supported (F/NL/IC/REL/ABS are unsupported) TLINE1 2 0 3 0 Z0=50 NL=10"
+        "status": "success",
+        "analyses": [
+          "tran:268"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "device: lossless T-line NL=/F= electrical-length form"
+      "comparedAnalyses": 1,
+      "comparedSignals": 4,
+      "worstNormalizedError": 6.63e-14,
+      "worstSignal": "tran v(1)",
+      "outcome": "matched",
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "2.5e-11"
+        ],
+        "headline": {
+          "worst": 6.63e-14,
+          "signal": "v(1)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.381,
+          "signal": "v(3)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.381,
+          "signal": "v(3)"
+        }
+      }
     },
     {
       "id": "twolevelapi-resinnertran-cir",
@@ -4840,5 +4850,5 @@
       "gapBucket": null
     }
   ],
-  "outcomeSha256": "a70c5866cbbf3557a537a42dfb5c81d797bd30d459cb494a15e2a72022c7b239"
+  "outcomeSha256": "c2b4cb3560d83ba558cea1d70c5b622395ff9b924db4e27e221f9b347ba053ec"
 }
