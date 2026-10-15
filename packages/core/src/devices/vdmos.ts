@@ -20,8 +20,8 @@ import { fetlim, limvds, pnjlim, stepScale } from './devsup.js';
  * The drain-source shunt RDS sits between the external D and S, and the body
  * diode between B' and the external drain.
  *
- * Not ported: the self-heating thermal network (instance flag `thermal`,
- * rejected at compile time) and soft reverse recovery (VP with TT, rejected).
+ * Thermal instances append Tj, Tc and ground. Soft reverse recovery (VP
+ * with TT) remains unsupported.
  */
 
 // ngspice const.h
@@ -46,7 +46,7 @@ const GATE_SOURCE = 0;
 const GATE_DRAIN = 1;
 const BODY_DIODE = 2;
 /** [positive, negative] node slots of each charge, in charge-index order. */
-const CHARGE_BRANCHES: ReadonlyArray<readonly [number, number]> = [[GP, SP], [GP, DP], [BP, D]];
+const CHARGE_BRANCHES: ReadonlyArray<readonly [number, number]> = [[GP, SP], [GP, DP], [BP, D], [7, 9]];
 
 export interface VdmosInstanceParams {
   /** Parallel multiplier (ngspice VDMOSm). */
@@ -94,6 +94,7 @@ export class VDMOS implements DeviceModel {
   readonly modelWarnings: readonly string[];
   readonly instance: VdmosInstanceParams;
   private circuitTemperature = 27;
+  private readonly thermal: boolean;
   private temp!: VdmosTemperatureState;
   /** ngspice CKTstate0 VDMOSvgs/VDMOSvds/VDIOvoltage of the previous load. */
   private lastVgs = 0;
@@ -117,7 +118,10 @@ export class VDMOS implements DeviceModel {
     instance: Partial<VdmosInstanceParams>,
     warnings: readonly string[] = [],
   ) {
-    if (nodes.length !== 7) throw new Error(`VDMOS '${name}' needs 7 node slots, got ${nodes.length}`);
+    this.thermal = nodes.length === 9;
+    if (nodes.length !== 7 && !this.thermal) throw new Error(`VDMOS '${name}' needs 7 or 9 node slots, got ${nodes.length}`);
+    if (!this.thermal) nodes.push(-1, -1);
+    nodes.push(-1);
     if (model.diode.vp !== 0 && model.diode.tt !== 0) {
       throw new InvalidCircuitError(
         `VDMOS '${name}': soft reverse recovery (model '${model.name}' VP with TT) is not implemented`,
@@ -138,7 +142,7 @@ export class VDMOS implements DeviceModel {
     if (model.rd > 0) this.drainConductance = m / model.rd;
     this.applyTemperature();
     this.storesCharge = model.cgs !== 0 || model.cgdmin !== 0 || model.cgdmax !== 0
-      || model.diode.cjo !== 0 || model.diode.tt !== 0;
+      || model.diode.cjo !== 0 || model.diode.tt !== 0 || (this.thermal && model.cthj !== 0);
   }
 
   setTemperature(value: number): void {
@@ -150,12 +154,12 @@ export class VDMOS implements DeviceModel {
     return this.circuitTemperature;
   }
 
-  /** vdmostemp.c VDMOStemp + VDMOStempUpdate (without self-heating). */
-  private applyTemperature(): void {
+  /** vdmostemp.c VDMOStemp + VDMOStempUpdate, including absolute Tj in Celsius. */
+  private applyTemperature(junctionTemperature?: number): void {
     const model = this.model;
     const diode = model.diode;
     const m = this.instance.M;
-    const temp = this.instance.TEMP !== undefined
+    const temp = junctionTemperature !== undefined ? junctionTemperature + CONSTCTOK : this.instance.TEMP !== undefined
       ? this.instance.TEMP + CONSTCTOK
       : this.circuitTemperature + CONSTCTOK + this.instance.DTEMP;
     const tnom = model.tnom;
@@ -333,6 +337,7 @@ export class VDMOS implements DeviceModel {
   }
 
   stamp(ctx: StampContext): void {
+    if (this.thermal) this.applyTemperature(Math.max(-200, ctx.getVoltage(this.nodes[7])));
     const model = this.model;
     const type = model.type;
     const t = this.temp;
@@ -418,6 +423,85 @@ export class VDMOS implements DeviceModel {
     g(D, BP, -gd);
     g(BP, S, -gbpr);
     g(BP, D, -gd);
+    if (this.thermal) this.stampThermal(ctx);
+  }
+
+  /** vdmosload.c: channel, RD/RS, diode and RB dissipate into Tj.
+   * Temperature derivatives use symmetric differences of the same electrical
+   * equations, avoiding a second, divergent temperature model.
+   */
+  private stampThermal(ctx: StampContext): void {
+    const nodes = this.nodes;
+    const tj = nodes[7];
+    const tc = nodes[8];
+    let readVoltage = (node: number) => ctx.getVoltage(node);
+    const voltage = (slot: number) => nodes[slot] < 0 ? 0 : readVoltage(nodes[slot]);
+    const temperature = Math.max(-200, voltage(7));
+    const branchSlots = [[DP, SP], [D, DP], [S, SP], [BP, D], [S, BP]];
+    const currents = () => {
+      const t = this.temp;
+      const [vgs, vds] = this.channelVoltages(n => n < 0 ? 0 : readVoltage(n));
+      const ch = this.evaluateChannel(vgs, vds);
+      let rd = t.drainResistance;
+      if (this.model.qsGiven && ch.mode === 1) {
+        const v = this.model.type * (voltage(D) - voltage(S));
+        rd += t.qsResistance * v / (v + Math.abs(this.model.vq));
+      }
+      return [this.model.type * ch.mode * ch.cdrain,
+        rd > 0 ? (voltage(D) - voltage(DP)) / rd : 0,
+        t.sourceConductance * (voltage(S) - voltage(SP)),
+        this.model.type * this.bodyDiodeCurrent(this.model.type * (voltage(BP) - voltage(D))).cd,
+        t.bodyConductance * (voltage(S) - voltage(BP))];
+    };
+    const current = currents();
+    const h = 1e-3;
+    this.applyTemperature(temperature + h);
+    const plus = currents();
+    this.applyTemperature(temperature - h);
+    const minus = currents();
+    this.applyTemperature(temperature);
+    let power = 0;
+    let dpdt = 0;
+    for (let i = 0; i < branchSlots.length; i++) {
+      const [p, n] = branchSlots[i];
+      const v = voltage(p) - voltage(n);
+      const derivative = (plus[i] - minus[i]) / (2 * h);
+      power += current[i] * v;
+      dpdt += derivative * v;
+      for (const [slot, sign] of [[p, 1], [n, -1]]) {
+        if (nodes[slot] < 0) continue;
+        if (tj >= 0) ctx.stampG(nodes[slot], tj, sign * derivative);
+        ctx.stampB(nodes[slot], sign * derivative * temperature);
+      }
+    }
+    // Differentiate power with respect to each distinct electrical node.
+    let rhs = power - dpdt * temperature;
+    for (const node of new Set(nodes.slice(0, 7))) {
+      if (node < 0) continue;
+      const base = ctx.getVoltage(node);
+      const powerAt = (offset: number) => {
+        readVoltage = n => n === node ? base + offset : ctx.getVoltage(n);
+        const values = currents();
+        return branchSlots.reduce((sum, [p, n], i) => sum + values[i] * (voltage(p) - voltage(n)), 0);
+      };
+      let derivative: number;
+      try { derivative = (powerAt(1e-5) - powerAt(-1e-5)) / 2e-5; }
+      finally { readVoltage = n => ctx.getVoltage(n); }
+      if (tj >= 0) ctx.stampG(tj, node, -derivative);
+      rhs -= derivative * base;
+    }
+    const gjc = this.instance.M / this.model.rthjc;
+    const gca = this.instance.M / this.model.rthca;
+    if (tj >= 0) {
+      ctx.stampG(tj, tj, gjc - dpdt);
+      if (tc >= 0) ctx.stampG(tj, tc, -gjc);
+      ctx.stampB(tj, rhs);
+    }
+    if (tc >= 0) {
+      ctx.stampG(tc, tc, gjc + gca);
+      if (tj >= 0) ctx.stampG(tc, tj, -gjc);
+      ctx.stampB(tc, gca * (this.instance.TEMP ?? this.circuitTemperature));
+    }
   }
 
   /** vdmosload.c body diode junction limiting against the previous load. */
@@ -500,6 +584,8 @@ export class VDMOS implements DeviceModel {
     const diode = this.bodyDiodeCharge(vd);
     capacitances[BODY_DIODE] = diode.capacitance;
     charges[BODY_DIODE] = type * diode.charge;
+    capacitances[3] = this.thermal ? this.instance.M * this.model.cthj : 0;
+    charges[3] = capacitances[3] * (this.thermal ? ctx.getVoltage(this.nodes[7]) : 0);
   }
 
   stampDynamic(ctx: StampContext): void {
@@ -528,7 +614,7 @@ export class VDMOS implements DeviceModel {
       if (positive === negative) continue;
       const voltage = branchVoltage(ctx, positive, negative);
       const capacitance = capacitances[index];
-      if (index === BODY_DIODE) {
+      if (index === BODY_DIODE || index === 3) {
         stampChargeBranch(
           ctx, positive, negative, charges.current(index, exact[index]),
           charges.factor * capacitance, voltage,
@@ -558,7 +644,7 @@ export class VDMOS implements DeviceModel {
       const [p, n] = CHARGE_BRANCHES[index];
       const voltage = branchVoltage(ctx, this.nodes[p], this.nodes[n]);
       const capacitance = capacitances[index];
-      const charge = index === BODY_DIODE
+      const charge = index === BODY_DIODE || index === 3
         ? exact[index]
         : charges.incrementalCharge(index, voltage, capacitance, true);
       charges.accept(index, charge, voltage, capacitance);

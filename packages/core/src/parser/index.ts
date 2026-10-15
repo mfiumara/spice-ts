@@ -1326,7 +1326,13 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number, raw
       let modelName: string;
       let instanceParamStart: number;
       let bulkNode: string | undefined;
-      if (tokens[5] && !tokens[5].includes('=')) {
+      let caseNode: string | undefined;
+      if (tokens[6] && !tokens[6].includes('=') && !['THERMAL', 'OFF'].includes(tokens[6].toUpperCase())) {
+        bulkNode = tokens[4];
+        caseNode = tokens[5];
+        modelName = tokens[6];
+        instanceParamStart = 7;
+      } else if (tokens[5] && !tokens[5].includes('=') && tokens[5].toUpperCase() !== 'THERMAL') {
         bulkNode = tokens[4];
         modelName = tokens[5];       // 4-terminal form: D G S B model
         instanceParamStart = 6;
@@ -1338,7 +1344,7 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number, raw
       if (tokens.slice(instanceParamStart).some(token => token.toUpperCase() === 'THERMAL')) {
         mosfetParams.THERMAL = 1;
       }
-      circuit.addMOSFET(name, tokens[1], tokens[2], tokens[3], modelName, mosfetParams, bulkNode);
+      circuit.addMOSFET(name, tokens[1], tokens[2], tokens[3], modelName, mosfetParams, bulkNode, caseNode);
       break;
     }
     case 'X': {

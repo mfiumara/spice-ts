@@ -1593,6 +1593,7 @@ export class Circuit {
    * @param modelName - Name of a `.model NMOS` or `.model PMOS` card
    * @param instanceParams - Per-instance parameters (e.g., `{ W: 1e-6, L: 0.18e-6 }`)
    * @param nodeBulk - Bulk/body node (optional; defaults to source if omitted)
+   * @param nodeCase - VDMOS case thermal node (nodeBulk is Tj for VDMOS)
    */
   addMOSFET(
     name: string,
@@ -1600,14 +1601,16 @@ export class Circuit {
     modelName: string,
     instanceParams?: Record<string, number>,
     nodeBulk?: string,
+    nodeCase?: string,
   ): void {
     this.nodeSet.add(nodeDrain);
     this.nodeSet.add(nodeGate);
     this.nodeSet.add(nodeSource);
     if (nodeBulk) this.nodeSet.add(nodeBulk);
+    if (nodeCase) this.nodeSet.add(nodeCase);
     this.descriptors.push({
       type: 'M', name,
-      nodes: nodeBulk ? [nodeDrain, nodeGate, nodeSource, nodeBulk] : [nodeDrain, nodeGate, nodeSource],
+      nodes: [nodeDrain, nodeGate, nodeSource, ...(nodeBulk ? [nodeBulk] : []), ...(nodeCase ? [nodeCase] : [])],
       modelName, params: instanceParams,
     });
   }
@@ -3154,13 +3157,10 @@ export class Circuit {
    * because quasi saturation makes RD bias dependent.
    */
   private expandVdmosDescriptor(desc: DeviceDescriptor, model: ModelParams): DeviceDescriptor {
-    if (desc.params?.THERMAL && model.params.RTHJC !== undefined) {
-      throw new InvalidCircuitError(`VDMOS '${desc.name}': self-heating is not implemented`);
-    }
-    if (desc.nodes.length !== 3 && desc.nodes.length !== 4) {
+    const thermal = !!desc.params?.THERMAL && model.params.RTHJC !== undefined;
+    if (desc.nodes.length < 3 || desc.nodes.length > 5) {
       throw new InvalidCircuitError(
-        `VDMOS '${desc.name}' has ${desc.nodes.length} terminals; only the 3- or 4-terminal nonthermal form is supported`
-        + ' (the 5-terminal thermal form needs the self-heating network, which is not implemented)',
+        `VDMOS '${desc.name}' has ${desc.nodes.length} terminals; expected D G S [Tj [Tc]]`,
       );
     }
     // ngspice-47 inp2m.c binds terminal 4 as Tj (not MOS bulk).
@@ -3178,6 +3178,8 @@ export class Circuit {
         inner(resolved.rg, gate, 'gate'),
         inner(resolved.rs, source, 'source'),
         inner(resolved.diode.rb, source, 'body_diode'),
+        ...(thermal ? [desc.nodes[3] ?? internalNodeName(desc.name, 'tj'),
+          desc.nodes[4] ?? internalNodeName(desc.name, 'tc')] : []),
       ],
     };
   }
