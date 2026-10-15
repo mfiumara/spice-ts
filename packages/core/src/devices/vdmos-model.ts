@@ -57,7 +57,7 @@ const ALIASES: Readonly<Record<string, string>> = {
 /**
  * Model parameters of ngspice-47 vdmos.c that spice-ts reads. Parameters of
  * the self-heating network (RTHJC, RTHCA, CTHJ) only act on an instance with
- * the `thermal` flag, which spice-ts rejects; the safe-operating-area limits
+ * the `thermal` flag; the safe-operating-area limits
  * only feed ngspice's SOA warnings; KF/AF only feed noise analysis.
  */
 const KNOWN_PARAMETERS = new Set([
@@ -112,6 +112,9 @@ export interface VdmosModel {
   readonly cgdmax: number;
   readonly a: number;
   readonly cgs: number;
+  readonly rthjc: number;
+  readonly rthca: number;
+  readonly cthj: number;
   /** Body diode parameters (ngspice VDIO*). */
   readonly diode: {
     readonly is: number;
@@ -213,6 +216,9 @@ export function resolveVdmosModel(card: ModelParams): { model: VdmosModel; warni
     cgdmax: value('CGDMAX', 2e-9),
     a: value('A', 1),
     cgs: value('CGS', 1.4e-9),
+    rthjc: value('RTHJC', 1),
+    rthca: value('RTHCA', 23),
+    cthj: value('CTHJ', 10e-6),
     diode: {
       is,
       n: value('N', 1),
