@@ -1,4 +1,5 @@
 import { ParseError } from '../errors.js';
+import type { SimulationWarning } from '../types.js';
 import { translatePspiceModelTemperatures } from './pspice-model-temperature.js';
 import { parseNumber } from './tokenizer.js';
 
@@ -90,7 +91,8 @@ export function parseResistorElement(
   tokens: string[],
   lineNumber: number,
   context: string,
-): ParsedResistorElement {
+  onWarning: (warning: SimulationWarning) => void,
+): ParsedResistorElement | undefined {
   const name = tokens[0];
   const rest = tokens.slice(3).filter(token => token !== '(' && token !== ')');
   const expression = rest.find(isExpression);
@@ -152,11 +154,11 @@ export function parseResistorElement(
   // ngspice-47 inp2r.c ignores a bare `Rname n1 n2` line; a card with keyword
   // parameters but no value or model defaults to 1 mOhm (see resolveResistor).
   if (value === undefined && modelName === undefined && Object.keys(params).length === 0) {
-    throw new ParseError(
-      `Resistor '${name}' has no resistance value or model`,
-      lineNumber,
-      context,
-    );
+    onWarning({
+      type: 'parse', code: 'IGNORED_BARE_RESISTOR', line: lineNumber,
+      message: `'${tokens.join(' ')}' is not a valid resistor instance line, ignored! (line ${lineNumber})`,
+    });
+    return undefined;
   }
   return { value, modelName, params };
 }

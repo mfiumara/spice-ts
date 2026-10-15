@@ -44,15 +44,15 @@
       "unsupported": 0
     },
     "spiceTs": {
-      "success": 109,
+      "success": 110,
       "failed": 6,
-      "unsupported": 13
+      "unsupported": 12
     },
     "outcomes": {
-      "matched": 97,
+      "matched": 98,
       "mismatch": 12,
       "not-compared": 0,
-      "spice-ts-loss": 19,
+      "spice-ts-loss": 18,
       "ngspice-failed": 0,
       "both-failed": 0
     }
@@ -60,8 +60,8 @@
   "gapBuckets": [
     {
       "bucket": "parse: other unsupported syntax",
-      "fixtures": 9,
-      "ngspiceSuccess": 9,
+      "fixtures": 8,
+      "ngspiceSuccess": 8,
       "ids": [
         "abm-freq-rc-simple-hertz-cir",
         "bjt-off-bjt-off-cir",
@@ -70,7 +70,6 @@
         "ltra-ltra1-cir",
         "polyg-polyg-cir",
         "pseudo-pseudo-cir",
-        "resistor-defaultvaluewarning-cir",
         "soln-dep-res-multsoldepres-cir"
       ],
       "issue": null
@@ -3659,16 +3658,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 12: Resistor 'R1' has no resistance value or model R1 1a 0"
+        "status": "success",
+        "analyses": [
+          "dc:1"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "comparedAnalyses": 1,
+      "comparedSignals": 9,
+      "worstNormalizedError": 2.17e-16,
+      "worstSignal": "dc v(2a)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "rom-autosize-rc-ladder100-cir",
@@ -4840,5 +4840,5 @@
       "gapBucket": null
     }
   ],
-  "outcomeSha256": "bd8d3e1727aa3609be0b9300100d6c46c94497b3de11733d64da10d2f87146ef"
+  "outcomeSha256": "a70c5866cbbf3557a537a42dfb5c81d797bd30d459cb494a15e2a72022c7b239"
 }
