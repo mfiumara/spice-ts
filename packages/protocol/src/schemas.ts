@@ -67,7 +67,7 @@ const diagnostic = object(['severity', 'code', 'message'], {
   suggestions: array(object(['action'], { action: string, replacement: ref('jsonValue') })),
 });
 const apiError = object(['code', 'message', 'retryable', 'phase', 'details'], {
-  code: { enum: ['INVALID_REQUEST', 'PARSE_ERROR', 'INVALID_CIRCUIT', 'UNSUPPORTED_FEATURE', 'SINGULAR_MATRIX', 'CONVERGENCE_FAILED', 'TIMESTEP_TOO_SMALL', 'RESOURCE_LIMIT', 'CANCELLED', 'BACKEND_UNAVAILABLE', 'INTERNAL_ERROR'] },
+  code: { enum: ['INVALID_REQUEST', 'PARSE_ERROR', 'INVALID_CIRCUIT', 'UNSUPPORTED_FEATURE', 'UNSUPPORTED_ELEMENT', 'SINGULAR_MATRIX', 'CONVERGENCE_FAILED', 'TIMESTEP_TOO_SMALL', 'RESOURCE_LIMIT', 'CANCELLED', 'BACKEND_UNAVAILABLE', 'INTERNAL_ERROR'] },
   message: string, retryable: { type: 'boolean' }, phase: { enum: ['validation', 'parse', 'compile', 'solve', 'serialize', 'transport'] }, details: { type: 'object', additionalProperties: ref('jsonValue') },
 });
 const resolvedOptionsProperties = {

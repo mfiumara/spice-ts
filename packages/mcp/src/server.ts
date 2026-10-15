@@ -1,4 +1,6 @@
 import { mapProtocolErrorV1, simulateProtocolV1, validateProtocolV1 } from '@spice-ts/core';
+import { fromCircuitJSON } from '@spice-ts/circuit-json';
+import type { CircuitJSON, ConversionDiagnosticV1 } from '@spice-ts/circuit-json';
 import { commonSchemaV1, sha256CanonicalJson } from '@spice-ts/protocol';
 import type {
   AnalysisResultV1,
@@ -125,7 +127,7 @@ const capabilitiesOutputSchema = {
   properties: {
     protocolVersion: { const: '1' },
     analyses: { type: 'array', items: { enum: ['op', 'dc', 'tran', 'ac'] } },
-    inputFormats: { type: 'array', items: { enum: ['spice', 'spice-ts'] } },
+    inputFormats: { type: 'array', items: { enum: ['spice', 'spice-ts', 'circuit-json'] } },
     limits: {
       type: 'object',
       required: Object.keys(DEFAULT_MCP_LIMITS),
@@ -259,7 +261,7 @@ export const MCP_TOOLS = Object.freeze([
 const capabilities = Object.freeze({
   protocolVersion: '1',
   analyses: Object.freeze(['op', 'dc', 'tran', 'ac']),
-  inputFormats: Object.freeze(['spice', 'spice-ts']),
+  inputFormats: Object.freeze(['spice', 'spice-ts', 'circuit-json']),
   limits: DEFAULT_MCP_LIMITS,
   streaming: Object.freeze({
     defaultChunkPoints: DEFAULT_STREAM_CHUNK_POINTS,
@@ -303,8 +305,11 @@ async function executeToolWithStore(
       return failure(apiError('INVALID_REQUEST', 'Unknown tool', 'transport', {}));
     }
 
-    const request = toolRequest(args);
-    const effective = effectiveLimits(request, limits);
+    const original = toolRequest(args);
+    const effective = effectiveLimits(original, limits);
+    enforceMaximum('maxDocumentBytes', effective.maxDocumentBytes, Buffer.byteLength(JSON.stringify(original.input)), 'validation');
+    throwIfCancelled(options.signal);
+    const { request, diagnostics } = convertRequest(original);
     const plan = await boundedRequestPlan(request, effective);
     throwIfCancelled(options.signal);
 
@@ -315,12 +320,12 @@ async function executeToolWithStore(
         : await runInWorker<Record<string, unknown>>(
           'validate', bounded, effective.maxWallTimeMs, options,
         );
-      return success(result);
+      return success(result, diagnostics);
     }
 
     const bounded = boundedRequest(request, effective);
     if (name === 'spice_simulation_start') {
-      return success(streamStore.start(bounded, plan, effective, options));
+      return success(streamStore.start(bounded, plan, effective, options), diagnostics);
     }
     const release = streamStore.acquireOneShotSlot();
     try {
@@ -328,7 +333,7 @@ async function executeToolWithStore(
         ? await boundedCall(() => options.simulate!(bounded), effective.maxWallTimeMs, options.signal)
         : await runInWorker<SimulationResultV1>('simulate', bounded, effective.maxWallTimeMs, options);
       enforceResultBounds(result, effective);
-      return success(result);
+      return success(result, diagnostics);
     } finally {
       release();
     }
@@ -881,7 +886,7 @@ function toolRequest(args: unknown): SimulationRequestV1 {
     throw apiError('INVALID_REQUEST', 'Expected a protocol-v1 simulation request', 'validation', {});
   }
   const format = request.input.format;
-  if (format !== 'spice' && format !== 'spice-ts') {
+  if (format !== 'spice' && format !== 'spice-ts' && format !== 'circuit-json') {
     throw apiError('UNSUPPORTED_FEATURE', 'The requested input format is unavailable', 'validation', {});
   }
   if (isRecord(request.options) && request.options.backend !== undefined && request.options.backend !== 'spice-ts-js') {
@@ -893,6 +898,37 @@ function toolRequest(args: unknown): SimulationRequestV1 {
     });
   }
   return request as unknown as SimulationRequestV1;
+}
+
+/** Convert once at the MCP boundary; core and isolated workers consume native documents. */
+function convertRequest(request: SimulationRequestV1): {
+  request: SimulationRequestV1;
+  diagnostics?: ConversionDiagnosticV1[];
+} {
+  if (request.input.format !== 'circuit-json') return { request };
+  if (!Array.isArray(request.input.circuit) || !Array.isArray(request.input.analyses)) {
+    throw apiError('INVALID_REQUEST', 'circuit-json requires circuit and analyses arrays', 'validation', {});
+  }
+  const converted = fromCircuitJSON(request.input.circuit as CircuitJSON);
+  if (!converted.value) {
+    const first = converted.diagnostics.find(diagnostic => diagnostic.severity === 'error')!;
+    throw apiError(first.code === 'UNSUPPORTED_ELEMENT' ? 'UNSUPPORTED_ELEMENT' : 'INVALID_CIRCUIT', first.message, 'validation', {
+      diagnostics: converted.diagnostics.map(diagnostic => ({ ...diagnostic })),
+    });
+  }
+  return {
+    request: {
+      ...request,
+      input: {
+        format: 'spice-ts',
+        document: {
+          format: 'spice-ts', schemaVersion: '1.0', circuit: converted.value,
+          analyses: request.input.analyses, models: [], subcircuits: [],
+        },
+      },
+    },
+    diagnostics: converted.diagnostics,
+  };
 }
 
 /** Core's rule for `maxTimestep`: unset, 0 (unset, as in ngspice), or positive and finite. */
@@ -1275,10 +1311,11 @@ function isApiError(error: unknown): error is SpiceApiErrorV1 {
     && isRecord(error.details);
 }
 
-function success(value: object): CallToolResult {
+function success(value: object, diagnostics?: ConversionDiagnosticV1[]): CallToolResult {
   return {
     content: [{ type: 'text', text: JSON.stringify(value) }],
     structuredContent: value as Record<string, unknown>,
+    ...(diagnostics?.length ? { _meta: { conversionDiagnostics: diagnostics } } : {}),
   };
 }
 

@@ -27,7 +27,7 @@ describe('bounded protocol-v1 tools', () => {
     expect(first.structuredContent).toMatchObject({
       protocolVersion: '1',
       analyses: ['op', 'dc', 'tran', 'ac'],
-      inputFormats: ['spice', 'spice-ts'],
+      inputFormats: ['spice', 'spice-ts', 'circuit-json'],
       limits: DEFAULT_MCP_LIMITS,
       streaming: {
         defaultChunkPoints: 256,

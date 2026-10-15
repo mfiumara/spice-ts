@@ -15,7 +15,8 @@
     ],
     "inputFormats": [
       "spice",
-      "spice-ts"
+      "spice-ts",
+      "circuit-json"
     ],
     "maxResultPoints": 100000
   },
