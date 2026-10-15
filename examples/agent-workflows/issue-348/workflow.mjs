@@ -26,6 +26,7 @@ import { sha256CanonicalJson } from '@spice-ts/protocol';
 const toolNames = [
   'spice_capabilities',
   'spice_validate',
+  'spice_convert',
   'spice_simulate',
   'spice_measure',
   'spice_simulation_start',
@@ -47,7 +48,7 @@ assert.deepEqual(capabilities, {
   protocolVersion: '1',
   analyses: ['op', 'dc', 'tran', 'ac'],
   inputFormats: ['spice', 'spice-ts', 'circuit-json'],
-  tools: ['spice_capabilities', 'spice_validate', 'spice_simulate', 'spice_measure', 'spice_simulation_start', 'spice_simulation_read', 'spice_simulation_cancel'],
+  tools: ['spice_capabilities', 'spice_validate', 'spice_convert', 'spice_simulate', 'spice_measure', 'spice_simulation_start', 'spice_simulation_read', 'spice_simulation_cancel'],
   limits: {
     maxDocumentBytes: 262144,
     maxAnalyses: 8,

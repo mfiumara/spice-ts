@@ -24,6 +24,7 @@ try {
   assert.deepEqual(toolNames, [
     'spice_capabilities',
     'spice_validate',
+    'spice_convert',
     'spice_simulate',
     'spice_measure',
     'spice_simulation_start',
