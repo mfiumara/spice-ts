@@ -53,6 +53,14 @@ export function assertNoiseDevicesSupported(compiled: CompiledCircuit): void {
     analysis.type === 'noise' && analysis.outputReferenceNode !== undefined
   );
   for (const device of compiled.devices) {
+    if (device instanceof Resistor && device.noisy) {
+      const { flickerCoefficient: kf, flickerExponent: af, flickerFrequencyExponent: ef,
+        effectiveNoiseArea: area, multiplier: m } = device;
+      if (!(kf >= 0) || !Number.isFinite(kf)
+        || (kf !== 0 && (![af, ef, area, m].every(Number.isFinite) || !(area > 0) || !(m > 0)))) {
+        throw new InvalidCircuitError(`.noise requires finite resistor KF >= 0, AF, EF and positive noise geometry and M for '${device.name}'`);
+      }
+    }
     if (hasDifferentialOutput && isSemiconductorNoiseDevice(device)) {
       throw new InvalidCircuitError(
         '.noise differential voltage output only supports resistor noise',
@@ -214,19 +222,25 @@ export function solveNoise(
           `.noise requires a positive finite resistance for '${resistor.name}'`,
         );
       }
-      if (resistor.flickerCoefficient !== 0) {
-        throw new InvalidCircuitError(
-          `.noise does not support resistor flicker noise (model KF) for '${resistor.name}'`,
-        );
-      }
       // ngspice resnoise.c: thermal noise uses the DC conductance RESconduct even with ac=,
       // at the instance temperature REStemp + RESdtemp (model TEMP/DTEMP, #846).
       const kelvin = resistor.getTemperature() + CELSIUS_TO_KELVIN;
+      const voltage = (resistor.nodes[0] < 0 ? 0 : dcSolution[resistor.nodes[0]])
+        - (resistor.nodes[1] < 0 ? 0 : dcSolution[resistor.nodes[1]]);
+      // resnoise.c: REScurrent is the total DC current, including temperature, SCALE and M.
+      const current = Math.abs(voltage * resistor.conductance / resistor.multiplier);
+      const flicker = resistor.flickerCoefficient === 0 ? 0
+        : resistor.multiplier * resistor.flickerCoefficient * Math.pow(current, resistor.flickerExponent)
+          / resistor.effectiveNoiseArea;
+      if (!Number.isFinite(flicker)) {
+        throw new InvalidCircuitError(`.noise requires finite resistor flicker density for '${resistor.name}'`);
+      }
       return {
         positive: resistor.nodes[0],
         negative: resistor.nodes[1],
-        currentPowerDensity: (_frequency: number) =>
-          4 * BOLTZMANN_CONSTANT * kelvin * resistor.conductance,
+        currentPowerDensity: (frequency: number) =>
+          4 * BOLTZMANN_CONSTANT * kelvin * resistor.conductance
+          + (flicker === 0 ? 0 : flicker / Math.pow(frequency, resistor.flickerFrequencyExponent)),
       };
     });
   const mosfetSources = devices

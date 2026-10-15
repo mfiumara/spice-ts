@@ -22,8 +22,13 @@ export interface ResistorParameters {
   acResistance?: number;
   /** `noisy=0` makes the resistor noiseless in `.noise` (default true). */
   noisy?: boolean;
-  /** `.model R` flicker-noise coefficient KF (not simulated). */
+  /** `.model R` flicker-noise coefficient KF. */
   flickerCoefficient?: number;
+  /** Current exponent AF and frequency exponent EF (both default 1). */
+  flickerExponent?: number;
+  flickerFrequencyExponent?: number;
+  /** RESsetup effective noise area; 1 unless instance L or W was given. */
+  effectiveNoiseArea?: number;
   /** ngspice-47 warnings from resolving the resistance, surfaced as `'model'` warnings. */
   warnings?: readonly string[];
 }
@@ -86,6 +91,18 @@ export class Resistor implements DeviceModel {
 
   get flickerCoefficient(): number {
     return this.parameters.flickerCoefficient ?? 0;
+  }
+
+  get flickerExponent(): number {
+    return this.parameters.flickerExponent ?? 1;
+  }
+
+  get flickerFrequencyExponent(): number {
+    return this.parameters.flickerFrequencyExponent ?? 1;
+  }
+
+  get effectiveNoiseArea(): number {
+    return this.parameters.effectiveNoiseArea ?? 1;
   }
 
   get hasAcResistance(): boolean {
