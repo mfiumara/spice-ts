@@ -2097,9 +2097,9 @@ export class Circuit {
         throw new InvalidCircuitError("Unsupported bounded VBIC step: 'TEMP'");
       }
       // Bounded VBIC linearizes at the operating point (.ac/.pz) but has no
-      // transient charge integration, noise sources, or distortion terms.
+      // noise sources or distortion terms. Transient integrates its charges.
       const unsupported = this._analyses.find(analysis =>
-        analysis.type !== 'op' && analysis.type !== 'dc' && analysis.type !== 'ac');
+        analysis.type !== 'op' && analysis.type !== 'dc' && analysis.type !== 'ac' && analysis.type !== 'tran');
       if (unsupported) {
         throw new InvalidCircuitError(`Unsupported bounded VBIC analysis: '${unsupported.type}'`);
       }

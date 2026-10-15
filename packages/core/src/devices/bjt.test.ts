@@ -477,13 +477,13 @@ describe('BJT Ebers-Moll', () => {
     `).compile()).not.toThrow();
   });
 
-  it('rejects transient analysis outside the bounded VBIC DC subset', () => {
+  it('accepts transient analysis in the bounded VBIC subset', () => {
     expect(() => parse(`unsupported VBIC transient analysis
       VBE b 0 0.7
       Q1 c b 0 QVBIC
       .model QVBIC NPN(LEVEL=4)
       .tran 1n 10n
-    `).compile()).toThrow("Unsupported bounded VBIC analysis: 'tran'");
+    `).compile()).not.toThrow();
   });
 
   it('accepts pole-zero analysis in the bounded VBIC small-signal subset', () => {
