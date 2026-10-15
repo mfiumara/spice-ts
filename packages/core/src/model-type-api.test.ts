@@ -53,13 +53,13 @@ describe('model types through the Circuit API (#544)', () => {
     const c = new Circuit();
     c.addSubcircuit({
       name: 'cell', ports: ['a'], params: {},
-      body: ['r1 a 0 1k', '.model urc1 urc k=2'],
+      body: ['r1 a 0 1k', '.model p1 phfet vto=-1'],
     });
     c.addVoltageSource('v1', 'in', '0', { type: 'dc', value: 1 });
     c.addSubcircuitInstance('x1', ['in'], 'cell');
     c.addAnalysis('op');
     await expect(simulate(c)).rejects.toMatchObject({
-      code: 'UNSUPPORTED_MODEL_TYPE', modelName: 'urc1', modelType: 'URC',
+      code: 'UNSUPPORTED_MODEL_TYPE', modelName: 'p1', modelType: 'PHFET',
     });
   });
 

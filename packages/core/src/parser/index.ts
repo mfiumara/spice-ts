@@ -1,4 +1,5 @@
 import { Circuit } from '../circuit.js';
+import { parseUrcParams } from '../devices/urc.js';
 import { assertControlledSourceCard, withoutNodePairParentheses } from './controlled-source.js';
 import { ParseError } from '../errors.js';
 import { tokenizeNetlist, tokenizeLine, parseNumber, type ParsedLine } from './tokenizer.js';
@@ -1259,6 +1260,11 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number, raw
         tokens[1], tokens[2], tokens[3], tokens[4],
         impedance, delay,
       );
+      break;
+    }
+    case 'U': {
+      if (tokens.length < 6) throw new ParseError('URC requires three nodes, a model and L', lineNumber, raw);
+      circuit.addUrc(name, tokens.slice(1, 4), tokens[4], parseUrcParams(tokens.slice(5), lineNumber));
       break;
     }
     case 'O': {
