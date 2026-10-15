@@ -13,13 +13,26 @@ describe('lossless transmission-line parser', () => {
   });
 
   it.each([
-    ['frequency-dependent length', 'T1 in 0 out 0 Z0=50 F=10meg NL=.25'],
     ['initial conditions', 'T1 in 0 out 0 Z0=50 TD=5n IC=0,0,0,0'],
     ['unknown parameters', 'T1 in 0 out 0 Z0=50 TD=5n REL=1'],
-    ['missing delay', 'T1 in 0 out 0 Z0=50'],
+    ['non-positive frequency', 'T1 in 0 out 0 Z0=50 F=0'],
+    ['non-positive length', 'T1 in 0 out 0 Z0=50 NL=-1'],
+    ['duplicate frequency', 'T1 in 0 out 0 Z0=50 F=1g F=2g'],
     ['non-positive impedance', 'T1 in 0 out 0 Z0=0 TD=5n'],
   ])('rejects unsupported %s explicitly', (_label, card) => {
     expect(() => parse(`${card}\n.tran 50p 20n`)).toThrow(/unsupported lossless transmission line|positive Z0 and TD/i);
+  });
+
+  it.each([
+    ['F=10meg NL=.25', 25e-9],
+    ['F=50meg', 5e-9],
+    ['NL=10', 10e-9],
+    ['', 0.25e-9],
+    ['TD=5n F=1g NL=10', 5e-9],
+    ['NL=10 F=1g TD=5n', 5e-9],
+  ])('resolves ngspice defaults and TD precedence for %s', (parameters, delay) => {
+    const line = parse(`T1 in 0 out 0 Z0=50 ${parameters}\n.tran 50p 20n`).compile().devices[0];
+    expect(line).toMatchObject({ impedance: 50, delay });
   });
 
   it('parses the benchmark-bounded common-reference O/LTRA form', () => {

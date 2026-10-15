@@ -35,6 +35,23 @@ const NGSPICE_MISMATCHED: ReadonlyArray<{ time: number; node: string; value: num
 ];
 
 describe('bounded lossless transmission line transient execution', () => {
+  it('initializes parallel lossless lines without indeterminate DC branch currents', async () => {
+    const deck = fixture(50, 50)
+      .replace('PULSE(0 1 1n 100p 100p 100n 200n)', '1')
+      .replace('RL output', 'T2 input 0 output 0 Z0=50 F=50meg\nRL output');
+    const transient = (await simulate(deck)).transient!;
+    for (const value of transient.voltage('output')) expect(value).toBeCloseTo(0.5, 9);
+  });
+
+  it.each(['F=50meg NL=.25', 'F=50meg', 'TD=5n F=1g NL=10'])
+    ('produces the TD=5n waveform for %s', async parameters => {
+      const reference = (await simulate(fixture(50, 50))).transient!;
+      const actual = (await simulate(fixture(50, 50).replace('TD=5n', parameters))).transient!;
+      expect(actual.time).toEqual(reference.time);
+      expect(actual.voltage('output')).toEqual(reference.voltage('output'));
+      expect(actual.voltage('input')).toEqual(reference.voltage('input'));
+    });
+
   it.each([
     { acceptedTime: 25e-15, expectedWave: 1, reason: 'close later sample' },
     { acceptedTime: 15e-15, expectedWave: 1, reason: 'older sample' },

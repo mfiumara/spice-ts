@@ -70,14 +70,14 @@ export function parseLtraModelCard(tokens: string[], lineNumber: number): ModelP
   return { name: tokens[1], type: 'LTRA', params };
 }
 
-/** Parse the bounded lossless T-card subset: four nodes plus Z0 and TD. */
+/** Parse lossless T-card delay as TD or electrical length NL/F. */
 export function parseTransmissionLine(
   tokens: string[],
   lineNumber: number,
 ): ParsedTransmissionLine {
-  if (tokens.length !== 7) {
+  if (tokens.length < 6) {
     throw new ParseError(
-      "Unsupported lossless transmission line form; expected 'Tname p1+ p1- p2+ p2- Z0=value TD=value'",
+      "Unsupported lossless transmission line form; expected 'Tname p1+ p1- p2+ p2- Z0=value [TD=value | F=value NL=value]'",
       lineNumber,
       tokens.join(' '),
     );
@@ -87,9 +87,9 @@ export function parseTransmissionLine(
   for (const token of tokens.slice(5)) {
     const separator = token.indexOf('=');
     const key = separator > 0 ? token.slice(0, separator).toUpperCase() : '';
-    if ((key !== 'Z0' && key !== 'TD') || params.has(key)) {
+    if (!['Z0', 'TD', 'F', 'NL'].includes(key) || params.has(key)) {
       throw new ParseError(
-        "Unsupported lossless transmission line parameter; only Z0 and TD are supported (F/NL/IC/REL/ABS are unsupported)",
+        'Unsupported lossless transmission line parameter; only Z0, TD, F and NL are supported (IC/REL/ABS are unsupported)',
         lineNumber,
         tokens.join(' '),
       );
@@ -98,7 +98,9 @@ export function parseTransmissionLine(
   }
 
   const impedance = params.get('Z0');
-  const delay = params.get('TD');
+  // ngspice-47 trasetup.c defaults F=1GHz and NL=.25; tratemp.c
+  // computes NL/F only when TD was not explicitly given, regardless of order.
+  const delay = params.get('TD') ?? (params.get('NL') ?? 0.25) / (params.get('F') ?? 1e9);
   if (
     impedance === undefined
     || delay === undefined

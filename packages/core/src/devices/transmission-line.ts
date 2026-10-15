@@ -61,18 +61,18 @@ export class TransmissionLine implements DeviceModel {
     this.stampPortKcl(ctx, p2, n2, b2);
 
     if (ctx.dt === 0) {
-      // At DC an ideal lossless line is a zero-voltage connection whose two
-      // port currents sum to zero. Use two independent constraints.
+      // ngspice-47 traload.c MODEDC, with its internal port nodes eliminated.
+      // The gmin factor regularizes parallel ideal lines' otherwise
+      // indeterminate circulating branch currents.
+      const coupling = -(1 - (ctx.gmin ?? 1e-12)) * this.impedance;
       this.stampVoltage(ctx, b1, p1, n1, 1);
       this.stampVoltage(ctx, b1, p2, n2, -1);
-      ctx.stampG(b2, b1, 1);
-      ctx.stampG(b2, b2, 1);
-
-      // Register the full transient topology before sparse locking.
-      ctx.stampG(b1, b1, 0);
-      ctx.stampG(b1, b2, 0);
-      this.stampVoltage(ctx, b2, p1, n1, 0);
-      this.stampVoltage(ctx, b2, p2, n2, 0);
+      ctx.stampG(b1, b1, -this.impedance);
+      ctx.stampG(b1, b2, coupling);
+      this.stampVoltage(ctx, b2, p2, n2, 1);
+      this.stampVoltage(ctx, b2, p1, n1, -1);
+      ctx.stampG(b2, b2, -this.impedance);
+      ctx.stampG(b2, b1, coupling);
       return;
     }
 
