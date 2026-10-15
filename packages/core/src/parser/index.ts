@@ -88,7 +88,7 @@ export function parse(netlist: string): Circuit {
   const preprocessed = preprocessDeckSync(control.netlist, undefined, 1);
   return parseNetlist(
     `${title}\n${preprocessed.text}`, true, undefined, control.blocks, preprocessed.parameters,
-    [...control.warnings, ...preprocessed.warnings], preprocessed.controlConstants, preprocessed.atTemperature,
+    [...control.warnings, ...preprocessed.warnings], preprocessed.controlConstants, preprocessed.atTemperature, preprocessed.withParameters,
   );
 }
 
@@ -103,7 +103,7 @@ export function parseTitleless(netlist: string): Circuit {
   const control = extractControlBlocks(translateMicroSign(netlist), false);
   const preprocessed = preprocessDeckSync(control.netlist, undefined, 0);
   return parseNetlist(preprocessed.text, false, undefined, control.blocks, preprocessed.parameters,
-    [...control.warnings, ...preprocessed.warnings], preprocessed.controlConstants, preprocessed.atTemperature);
+    [...control.warnings, ...preprocessed.warnings], preprocessed.controlConstants, preprocessed.atTemperature, preprocessed.withParameters);
 }
 
 /**
@@ -127,6 +127,7 @@ function parseNetlist(
   controlWarnings: ControlSourceWarning[] = [],
   controlConstants: Record<string, number> = {},
   atTemperature?: PreprocessedDeck['atTemperature'],
+  withParameters?: PreprocessedDeck['withParameters'],
 ): Circuit {
   // ngspice control-language lines are not netlist cards; read them from the raw text.
   const extracted = extractControlBlocks(translateMicroSign(netlist, firstLineIsTitle), firstLineIsTitle);
@@ -290,6 +291,12 @@ function parseNetlist(
     return evaluated.compile(guard);
   };
 
+  if (withParameters) circuit.reparseWithParameters = changes => {
+    const deck = withParameters(changes);
+    const title = firstLineIsTitle ? `${netlist.split('\n', 1)[0]}\n` : '';
+    return parseNetlist(`${title}${deck.text}`, firstLineIsTitle, guard, controlBlocks,
+      deck.parameters, controlWarnings, deck.controlConstants, deck.atTemperature, deck.withParameters);
+  };
   return circuit;
 }
 
@@ -415,7 +422,7 @@ export async function parseAsync(
   const preprocessed = await preprocessDeck(control.netlist, resolver, undefined, 1);
   return parseNetlist(
     `${title}\n${preprocessed.text}`, true, undefined, control.blocks, preprocessed.parameters,
-    [...control.warnings, ...preprocessed.warnings], preprocessed.controlConstants, preprocessed.atTemperature,
+    [...control.warnings, ...preprocessed.warnings], preprocessed.controlConstants, preprocessed.atTemperature, preprocessed.withParameters,
   );
 }
 
@@ -428,7 +435,7 @@ export async function parseTitlelessAsync(
   const control = extractControlBlocks(translateMicroSign(netlist), false);
   const preprocessed = await preprocessDeck(control.netlist, resolver, guard, 0);
   return parseNetlist(preprocessed.text, false, guard, control.blocks, preprocessed.parameters,
-    [...control.warnings, ...preprocessed.warnings], preprocessed.controlConstants, preprocessed.atTemperature);
+    [...control.warnings, ...preprocessed.warnings], preprocessed.controlConstants, preprocessed.atTemperature, preprocessed.withParameters);
 }
 
 const OUTPUT_ONLY_OPTION_FLAGS = new Set([

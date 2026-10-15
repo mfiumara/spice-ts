@@ -845,6 +845,14 @@ export class Circuit {
   private _temperature: number | undefined;
   /** @internal Parser-supplied evaluator for TEMPER-dependent parameter expressions. */
   recompileAtTemperature?: (celsius: number) => CompiledCircuit;
+  /** @internal Re-elaborate retained source after control-language parameter edits. */
+  #reparseWithParameters?: (changes: readonly import('./parser/preprocessor.js').ParameterAlteration[]) => Circuit;
+  get reparseWithParameters(): ((changes: readonly import('./parser/preprocessor.js').ParameterAlteration[]) => Circuit) | undefined {
+    return this.#reparseWithParameters;
+  }
+  set reparseWithParameters(value: ((changes: readonly import('./parser/preprocessor.js').ParameterAlteration[]) => Circuit) | undefined) {
+    this.#reparseWithParameters = value;
+  }
   private _xspiceTrtol: number | undefined;
   private _initialConditions: NodeInitialState[] = [];
   private _nodeSets: NodeInitialState[] = [];
@@ -3562,6 +3570,7 @@ export class Circuit {
       parsedLines.filter(({ tokens }) => tokens[0]?.toUpperCase() === '.PARAM')
         .map(({ tokens, lineNumber, raw }) => ({ content: tokens.slice(1).join(' '), line: lineNumber, raw })),
       localParams,
+      overrides,
     );
 
     // ngspice-47 subckt.c modtranslate: a .model card in the body becomes a

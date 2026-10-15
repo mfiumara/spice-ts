@@ -6,6 +6,7 @@ A bounded stdio MCP server exposing the existing spice-ts protocol-v1 adapter. I
 
 - `spice_capabilities`: deterministic discovery of supported analyses, input formats, and server limits.
 - `spice_validate`: bounded parse/compile/topology validation without solving.
+- `spice_convert`: convert `{ netlist: string }` to `{ circuitJson, diagnostics, lossy: false }`, or `{ circuitJson: [...] }` to `{ netlist, diagnostics, lossy: false }`.
 - `spice_simulate`: one bounded protocol-v1 simulation.
 - `spice_measure`: run the same simulation request once and return scalar measurements only.
 - `spice_simulation_start`: start a bounded simulation worker and return its opaque job cursor before solving completes.
@@ -25,6 +26,26 @@ The server supports protocol-v1 `spice`, `spice-ts`, and `circuit-json` inputs a
 - `VOLTAGE_SOURCE_LOOP`: an ideal loop of V/E/H/L elements, including inductors even for transient-only decks. The first loop in element-id order is reported.
 
 Warnings are sorted by code then node ids; node/element lists use code-point order and are capped at 32 ids. DC islands are reported separately. These are advisory graph checks, not a guarantee of numerical convergence. Simulation and strict direct-core validation retain their existing behavior. A dangling terminal can produce both a floating-node and a missing-DC-path warning. Conversion diagnostics remain separate in `_meta.conversionDiagnostics`.
+
+## Circuit conversion
+
+`spice_convert` requires exactly one input field. It uses the core titleless SPICE
+parser and `@spice-ts/circuit-json`, without solving. Circuit JSON represents circuit
+connectivity and component values, not analysis directives, solver options, or model
+cards. Reattach analyses (for example `.op`) when simulating the returned netlist.
+SPICE export currently supports passive resistors and capacitors. M/Q import cannot
+produce a runnable SPICE model from circuit-json alone and is rejected rather than
+inventing model parameters. Independent sources are unsupported in either direction.
+Lossy exports are rejected. Fatal errors use the usual `isError` and
+`error.details.diagnostics` shape, including `UNSUPPORTED_ELEMENT` for unsupported
+components and `UNSUPPORTED_PARAMETER` diagnostics for unrepresentable parameters
+(including resistor instance `M`, `AC`, temperature coefficients, and capacitor `IC`).
+These parameters are rejected, not silently stripped or approximated. For a powered
+passive-network round-trip, attach the same external source and analysis after conversion.
+Successful conversions include nonfatal diagnostics (such as `LAYOUT_ONLY`).
+The compact JSON input and output obey `maxDocumentBytes` and
+`maxSerializedResultBytes`, respectively; oversize calls return `RESOURCE_LIMIT`.
+
 
 ## Scalar measurements
 

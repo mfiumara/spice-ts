@@ -48,6 +48,8 @@ export interface ControlHost {
   alterInstance(device: string, parameter: string | undefined, values: number[], line: ControlSourceLine): void;
   /** `altermod`: set a `.model` parameter. */
   alterModel(model: string, parameter: string, value: number, line: ControlSourceLine): void;
+  alterParameter(subcircuit: string | undefined, name: string, expression: string, line: ControlSourceLine): void;
+  reset(line: ControlSourceLine): Readonly<Record<string, number>>;
   /** `@device[parameter]` / `@model[parameter]` input-parameter readout, or undefined when unavailable. */
   parameterVector(device: string, parameter: string): number[] | undefined;
   /** `option`/`set` of a simulator option: tokens as on a `.options` card. */
@@ -293,6 +295,19 @@ class ControlInterpreter {
         return;
       case 'alter': return this.alter(rest, line);
       case 'altermod': return this.altermod(rest, line);
+      case 'alterparam': {
+        const match = /^(?:(\S+)\s+)?([A-Za-z_]\w*)\s*=\s*(.+)$/.exec(rest);
+        if (!match) throw new ControlScriptError('alterparam needs [subcircuit] name = expression', line.lineNumber, line.text);
+        this.host.alterParameter(match[1], match[2], match[3], line);
+        return;
+      }
+      case 'reset':
+        if (rest !== '') throw new ControlScriptError('reset takes no arguments', line.lineNumber, line.text);
+        for (const [name, value] of Object.entries(this.host.reset(line))) {
+          this.plots[0].vectors.set(name, scalar(value, name));
+        }
+        this.transientTask = undefined;
+        return;
       case 'option':
       case 'options':
         if (rest !== '') this.host.setOptions(splitWords(rest).map(unquote), line);

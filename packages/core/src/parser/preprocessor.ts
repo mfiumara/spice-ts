@@ -5,11 +5,11 @@ import {
   type UserFunction,
 } from './numparam.js';
 import { NODE_DEPENDENT_EXPRESSION, substituteBehavioralParameters } from './behavioral-expression.js';
-import { parseNumber } from './tokenizer.js';
+import { parseNumber, tokenizeLine } from './tokenizer.js';
 import { formatNumber as formatLiteralNumber } from '../netlist-number.js';
 import { tempDirective } from './temp-directive.js';
 import { translateMicroSign } from './micro-sign.js';
-import { bracedSubcircuitCallValues } from './subcircuit-syntax.js';
+import { bracedSubcircuitCallValues, locateSubcircuitCall } from './subcircuit-syntax.js';
 import { lowerControlledTables } from './controlled-table.js';
 import { lowerBehavioralCapacitors } from './behavioral-capacitor.js';
 import { CycleError, ParseError } from '../errors.js';
@@ -55,11 +55,20 @@ export async function preprocessLines(
   return (await preprocessDeck(netlist, resolver, guard, lineOffset)).text;
 }
 
+/** A source-level numparam edit, applied only when the circuit is reset. */
+export interface ParameterAlteration {
+  subcircuit?: string;
+  name: string;
+  expression: string;
+}
+
 export interface PreprocessedDeck {
   /** The netlist with top-level parameters substituted. */
   text: string;
   /** Re-evaluate retained numparam expressions without resolving includes again. */
   atTemperature?: (celsius: number) => PreprocessedDeck;
+  /** Replay numparam from retained source, without rereading include files. */
+  withParameters?: (changes: readonly ParameterAlteration[]) => PreprocessedDeck;
   /**
    * Top-level `.param` values (upper-case names) for subcircuit expansion,
    * which evaluates subcircuit expressions per instance (ngspice numparam
@@ -80,9 +89,14 @@ export async function preprocessDeck(
   lineOffset: number,
 ): Promise<PreprocessedDeck> {
   const steps = preprocessSteps(netlist, resolver !== undefined, guard, lineOffset);
+  const includes: string[] = [];
   let step = steps.next();
-  while (!step.done) step = steps.next(await resolver!(step.value));
-  return step.value;
+  while (!step.done) {
+    const text = await resolver!(step.value);
+    includes.push(text);
+    step = steps.next(text);
+  }
+  return retainParameterSource(step.value, netlist, includes, guard, lineOffset);
 }
 
 /**
@@ -97,7 +111,24 @@ export function preprocessDeckSync(
 ): PreprocessedDeck {
   const step = preprocessSteps(netlist, false, guard, lineOffset).next();
   if (!step.done) throw new Error('preprocessDeckSync: unexpected include request without a resolver');
-  return step.value;
+  return retainParameterSource(step.value, netlist, [], guard, lineOffset);
+}
+
+function retainParameterSource(
+  deck: PreprocessedDeck, netlist: string, includes: string[],
+  guard: ProtocolExecutionGuard | undefined, lineOffset: number,
+): PreprocessedDeck {
+  const withParameters = (changes: readonly ParameterAlteration[]): PreprocessedDeck => {
+    const steps = preprocessSteps(netlist, includes.length > 0, guard, lineOffset, changes);
+    let step = steps.next();
+    let index = 0;
+    while (!step.done) {
+      if (index >= includes.length) throw new Error('reset: include source changed');
+      step = steps.next(includes[index++]);
+    }
+    return { ...step.value, withParameters };
+  };
+  return { ...deck, withParameters };
 }
 
 /** Preprocessing as a generator that yields each include path and resumes with its content. */
@@ -106,11 +137,54 @@ function* preprocessSteps(
   hasResolver: boolean,
   guard: ProtocolExecutionGuard | undefined,
   lineOffset: number,
+  changes: readonly ParameterAlteration[] = [],
 ): Generator<string, PreprocessedDeck, string> {
   const state = newCollectState();
   const { definitions } = state;
   let statements = state.statements;
   yield* collectStatements(netlist, hasResolver, new Set(), [], 0, state, guard, lineOffset);
+  for (const change of changes) {
+    const name = change.name.toUpperCase();
+    if (change.subcircuit === undefined) {
+      const previous = definitions.get(name);
+      if (!previous) throw new ParseError(`alterparam: unknown parameter '${change.name}'`, 0, change.name);
+      definitions.set(name, paramDefinition(change.expression, previous.line, previous.context));
+      continue;
+    }
+    const scopes: string[] = [];
+    let foundSubcircuit = false;
+    let foundParameter = false;
+    for (const statement of statements) {
+      const header = /^\s*\.subckt\s+(\S+)/i.exec(statement.text);
+      if (header) scopes.push(header[1].toLowerCase());
+      if (scopes.at(-1) === change.subcircuit.toLowerCase()) {
+        foundSubcircuit = true;
+        if (header || /^\s*\.param\s/i.test(statement.text)) {
+          statement.text = statement.text.replace(PARAM_ASSIGNMENT, (assignment, key: string) => {
+            if (key.toUpperCase() !== name) return assignment;
+            foundParameter = true;
+            return `${key}={${change.expression.replace(/^\{(.*)\}$|^'(.*)'$/s, '$1$2')}}`;
+          });
+        }
+      }
+      if (/^\s*\.ends\b/i.test(statement.text)) scopes.pop();
+    }
+    if (!foundSubcircuit || !foundParameter) {
+      throw new ParseError(foundSubcircuit
+        ? `alterparam: unknown parameter '${change.name}' in subcircuit '${change.subcircuit}'`
+        : `alterparam: unknown subcircuit '${change.subcircuit}'`, 0, change.name);
+    }
+    // ngspice-47 alterparam also replaces matching actuals on X cards, not
+    // just the formal default (alterparam.sp: rint=7/rint1=9 become 13/15).
+    for (const statement of statements) {
+      if (!/^\s*x/i.test(statement.text)) continue;
+      const tokens = tokenizeLine(statement.text);
+      const call = locateSubcircuitCall(tokens, statement.text);
+      if (tokens[call.nameIndex]?.toLowerCase() !== change.subcircuit.toLowerCase()) continue;
+      statement.text = statement.text.replace(PARAM_ASSIGNMENT, (assignment, key: string) =>
+        key.toUpperCase() === name ? `${key}={${change.expression.replace(/^\{(.*)\}$|^'(.*)'$/s, '$1$2')}}` : assignment);
+    }
+  }
   const unterminated = state.openBlocks[0];
   if (unterminated !== undefined) {
     const block = state.blocks[unterminated];

@@ -72,10 +72,13 @@ function evaluateParam(param: BodyParam, scope: Record<string, number>): number 
 export function evaluateSubcircuitParams(
   cards: readonly SubcircuitParamCard[],
   scope: Record<string, number>,
+  overrides: ReadonlyMap<string, number>,
 ): void {
   const pending = new Map<string, BodyParam>();
   for (const card of cards) {
     for (const param of paramAssignments(card)) {
+      // Body .params are overridable from X cards too (ngspice alterparam.sp).
+      if (overrides.has(param.name)) continue;
       pending.delete(param.name);
       pending.set(param.name, param);
     }

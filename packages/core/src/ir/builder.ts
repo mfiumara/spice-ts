@@ -16,6 +16,8 @@ export interface DeviceDescriptor {
   waveform?: Partial<SourceWaveform> & { dc?: number };
   modelName?: string;
   params?: Record<string, number>;
+  /** Passive device initial condition, separate from instance parameters. */
+  ic?: number;
   controlSource?: string;
   /** I-source `m` multiplier; absent means 1. */
   multiplier?: number;
@@ -276,12 +278,14 @@ function buildParams(
   switch (desc.type) {
     case 'R': {
       if (!desc.modelName) {
-        return { resistance: resolveResistor(desc.name, desc.value, undefined, desc.params).resistance };
+        // Keep instance semantics visible to consumers that cannot represent them.
+        return { resistance: resolveResistor(desc.name, desc.value, undefined, desc.params).resistance, ...desc.params };
       }
       const model = models.get(desc.modelName);
       return {
         resistance: desc.value ?? (model ? resolveResistor(desc.name, undefined, model, desc.params).resistance : 0),
         modelName: desc.modelName,
+        ...desc.params,
       };
     }
     case 'C':
@@ -291,6 +295,7 @@ function buildParams(
         const result: Record<string, number | string | boolean> = {
           capacitance: resolved.capacitance,
         };
+        if (desc.ic !== undefined) result.ic = desc.ic;
         if (desc.modelName) result.modelName = desc.modelName;
         if (resolved.seriesResistance > 0) result.seriesResistance = resolved.seriesResistance;
         if (resolved.seriesInductance > 0) result.seriesInductance = resolved.seriesInductance;

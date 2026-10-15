@@ -38,7 +38,7 @@ export const OUTPUT_ONLY_CONTROL_COMMANDS = new Set([
 
 /** Commands with an effect that the spice-ts interpreter executes. */
 const EXECUTED_CONTROL_COMMANDS = new Set([
-  'run', 'let', 'unlet', 'set', 'unset', 'define', 'undefine', 'alter', 'altermod', 'option', 'options',
+  'run', 'let', 'unlet', 'set', 'unset', 'define', 'undefine', 'alter', 'altermod', 'alterparam', 'reset', 'option', 'options',
   'setplot', 'destroy', 'compose', 'strcmp', 'setscale', 'meas', 'linearize', 'fft', 'psd',
   // Interactive editor: ngspice-47 batch mode warns and continues unless `interactive` is set.
   'edit',
@@ -51,7 +51,6 @@ const UNSUPPORTED_REASONS: Record<string, string> = {
   fourier: 'Fourier analysis of vectors is not implemented',
   cutout: 'vector cut-out is not implemented',
   reshape: 'multi-dimensional vectors are not implemented',
-  reset: 'circuit reset between analyses is not implemented',
   goto: 'goto/label jumps are not implemented',
   label: 'goto/label jumps are not implemented',
   source: 'sourcing further netlists or scripts is not implemented',
@@ -70,7 +69,7 @@ const UNSUPPORTED_REASONS: Record<string, string> = {
 const STRUCTURE_KEYWORDS = new Set(['if', 'else', 'end', 'while', 'dowhile', 'repeat', 'foreach', 'break', 'continue']);
 
 /** The contract text listed in an unsupported-command error. */
-const CONTRACT = 'spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, '
+const CONTRACT = 'spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod/alterparam, reset, '
   + 'option, setplot/destroy, compose, strcmp, setscale, meas, linearize, fft, psd, the sp and sens analyses, if/else/end, while/dowhile/repeat/foreach/break/continue, '
   + 'and treats output-only commands (echo, print, plot, write, wrdata, save, ...) and batch-mode edit as no-ops';
 
