@@ -333,8 +333,10 @@ function simulateControlScript(
   const warnings: SimulationWarning[] = parseWarnings(circuit);
   const convergence = createConvergenceTelemetry();
   const measureValues = new Map<string, number>();
-  const deckAnalyses = [...circuit.analyses];
-  const deckPoleZero = [...circuit.poleZeroAnalyses];
+  const reparse = circuit.reparseWithParameters;
+  const parameterChanges: import('./parser/preprocessor.js').ParameterAlteration[] = [];
+  let deckAnalyses = [...circuit.analyses];
+  let deckPoleZero = [...circuit.poleZeroAnalyses];
 
   // ngspice reads `@device[i]` from the circuit's present state: the last analysis's last solution.
   let operatingState: ControlOperatingState | undefined;
@@ -388,6 +390,26 @@ function simulateControlScript(
     alterModel(model, parameter, value, line) {
       const reason = circuit.alterModel(model, parameter, value);
       if (reason !== undefined) throw unsupported('altermod', reason, line);
+    },
+    alterParameter(subcircuit, name, expression, line) {
+      if (!reparse) throw unsupported('alterparam', 'no retained netlist source', line);
+      const changes = [...parameterChanges, { subcircuit, name, expression }];
+      try {
+        reparse(changes);
+      } catch (error) {
+        throw new ControlScriptError(error instanceof Error ? error.message : String(error), line.lineNumber, line.text);
+      }
+      parameterChanges.push({ subcircuit, name, expression });
+    },
+    reset(line) {
+      if (!reparse) throw unsupported('reset', 'no retained netlist source', line);
+      circuit = reparse(parameterChanges);
+      deckAnalyses = [...circuit.analyses];
+      deckPoleZero = [...circuit.poleZeroAnalyses];
+      measures = measureCards(circuit);
+      operatingState = undefined;
+      measureValues.clear();
+      return circuit.controlScript?.constants ?? {};
     },
     parameterVector: (device, parameter) =>
       deviceOutputVector(operatingState, device, parameter) ?? circuit.parameterVector(device, parameter),

@@ -845,6 +845,14 @@ export class Circuit {
   private _temperature: number | undefined;
   /** @internal Parser-supplied evaluator for TEMPER-dependent parameter expressions. */
   recompileAtTemperature?: (celsius: number) => CompiledCircuit;
+  /** @internal Re-elaborate retained source after control-language parameter edits. */
+  #reparseWithParameters?: (changes: readonly import('./parser/preprocessor.js').ParameterAlteration[]) => Circuit;
+  get reparseWithParameters(): ((changes: readonly import('./parser/preprocessor.js').ParameterAlteration[]) => Circuit) | undefined {
+    return this.#reparseWithParameters;
+  }
+  set reparseWithParameters(value: ((changes: readonly import('./parser/preprocessor.js').ParameterAlteration[]) => Circuit) | undefined) {
+    this.#reparseWithParameters = value;
+  }
   private _xspiceTrtol: number | undefined;
   private _initialConditions: NodeInitialState[] = [];
   private _nodeSets: NodeInitialState[] = [];
