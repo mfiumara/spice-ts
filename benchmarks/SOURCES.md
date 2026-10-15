@@ -1,5 +1,22 @@
 # Benchmark sources
 
+## Behavioral capacitor explicit multiplier compatibility (#1122)
+
+`packages/core/src/parser/behavioral-capacitor-m-1122.test.ts` contains an
+original MIT-licensed PWL ramp reproducer authored in
+https://github.com/mfiumara/spice-ts/issues/1122, not an imported corpus deck.
+Its numerical current references were measured with ngspice-47 on identical
+netlist bytes. The behavioral reference is ngspice revision
+`a80f6e3e95d51534905b1f23410a951802666656`, BSD-3-Clause:
+https://github.com/imr/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/src/frontend/inpcom.c#L6070-L6106
+and lines 6970-6971. No upstream C code is copied.
+Compatibility deliberately includes its double-exponent preprocessing defect:
+explicit numeric `m=2` becomes gain `2.00000000e+00e9`, interpreted as 2,
+whereas absent `m` gives gain 1e9. This is not physically corrected multiplier
+semantics or an accuracy claim. Braced/quoted multiplier expressions remain
+structured errors; ngspice-47 rejects the tested forms too. Ordinary constant
+capacitor multiplicity is unchanged.
+
 ## Published numerical reference baseline (#1113)
 
 `benchmarks/corpus/vendor-published/` contains 20 normalized reconstructions and
