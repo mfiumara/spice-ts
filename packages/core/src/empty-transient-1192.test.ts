@@ -55,5 +55,8 @@ describe('element-free transient decks (#1192)', () => {
 
   it('still rejects an empty operating-point deck', async () => {
     await expect(simulate('empty\n.op\n')).rejects.toThrow('Circuit has no nodes');
+    await expect(validateProtocolV1({
+      apiVersion: '1', input: { format: 'spice', source: '.op' },
+    })).rejects.toThrow('Circuit has no nodes');
   });
 });
