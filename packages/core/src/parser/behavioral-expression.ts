@@ -1140,6 +1140,9 @@ export function compileBehavioralExpression(expression: BehavioralExpression): C
     const leftGradient = new Float64Array(size);
     const literalExponent = isConstantTree(rightNode);
     const literalBase = isConstantTree(leftNode);
+    const denominatorControls = op === '/' ? behavioralControls(rightNode) : undefined;
+    const fixedDenominator = denominatorControls !== undefined
+      && denominatorControls.nodes.length === 0 && denominatorControls.sources.length === 0;
     return (voltages, gradient, environment) => {
       const a = left(voltages, leftGradient, environment);
       const b = right(voltages, gradient, environment);
@@ -1154,6 +1157,14 @@ export function compileBehavioralExpression(expression: BehavioralExpression): C
           for (let i = 0; i < size; i++) gradient[i] = leftGradient[i] * b + a * gradient[i];
           return checked(a * b, op, a, b);
         case '/': {
+          // PTdifferentiate simplifies a control-independent denominator to
+          // da / b. Multiplying by b first would erase the slope at HERTZ=0.
+          if (fixedDenominator) {
+            for (let i = 0; i < size; i++) {
+              gradient[i] = ptDivide(leftGradient[i], b, divideFudge(environment));
+            }
+            return checked(ptDivide(a, b, divideFudge(environment)), op, a, b);
+          }
           // d(a/b) = (da*b - a*db) / b^2, with PTdivide's fudge on b^2.
           const denominator = ptPowerH(b, 2);
           for (let i = 0; i < size; i++) {

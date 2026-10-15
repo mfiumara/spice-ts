@@ -3,6 +3,18 @@ import { simulate } from '../simulate.js';
 
 // ngspice-47: HERTZ is reserved even with .param hertz=42; it is 0 in OP/DC/TRAN.
 describe('hertz expression variable', () => {
+  it('handles zero-frequency resistance in the operating point of an AC current-driven RC', async () => {
+    const result = await simulate(`hertz RC
+I1 n 0 AC 1
+R1 n 0 {hertz}
+C1 n 0 2u
+.ac dec 1 1 1e5
+.end`);
+    result.ac!.frequencies.forEach((frequency, i) => {
+      const magnitude = 1 / Math.hypot(1 / frequency, 2 * Math.PI * frequency * 2e-6);
+      expect(result.ac!.voltage('n')[i].magnitude).toBeCloseTo(magnitude, 7);
+    });
+  });
   it.each(['', '.param hertz=42'])('refreshes resistor conductance at every AC point (%s)', async param => {
     const result = await simulate(`hertz test
 ${param}
