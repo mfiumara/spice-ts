@@ -1,6 +1,7 @@
 import { ParseError } from '../errors.js';
 import { NODE_DEPENDENT_EXPRESSION } from './behavioral-expression.js';
 import { endOfLineCommentStart } from './end-of-line-comment.js';
+import { parseNumber } from './tokenizer.js';
 
 /**
  * ngspice-47 inpcom.c:6952-6988, enabled C= lowering. This is C(expr)*dV/dt,
@@ -57,12 +58,24 @@ export function lowerBehavioralCapacitors<T extends { text: string; line: number
     const params: Record<string, string> = {};
     let rest = value[3].trim();
     while (rest) {
-      // ngspice-47's explicit m= produces an ambiguous double-exponent gain
-      // (e.g. 2.00000000e+00e9). Do not silently substitute the intended gain.
-      const param = /^(tc1|tc2)\s*=\s*(\{[^{}]+\}|'[^']+'|[^\s]+)\s*/i.exec(rest);
-      if (!param) return fail(`unsupported parameter '${rest}' (supported: tc1, tc2)`);
+      const param = /^(m|tc1|tc2)\s*=\s*(\{[^{}]+\}|'[^']+'|[^\s]+)\s*/i.exec(rest);
+      if (!param) return fail(`unsupported parameter '${rest}' (supported: m, tc1, tc2)`);
       params[param[1].toLowerCase()] = param[2];
       rest = rest.slice(param[0].length);
+    }
+    // ngspice-47 inpcom.c:6070-6106 formats explicit numeric m with %15.8e,
+    // then :6970-6971 appends e9. INPevaluate consumes only the first exponent
+    // of e.g. 2.00000000e+00e9, giving gain 2, NOT 2e9. Preserve that defect
+    // for ngspice compatibility; absent m still produces the normal gain 1e9.
+    let gain = '1e9';
+    if (params.m !== undefined) {
+      try {
+        const multiplier = parseNumber(params.m);
+        if (!Number.isFinite(multiplier)) return fail('m must be a finite numeric literal');
+        gain = String(Number(multiplier.toExponential(8)));
+      } catch {
+        return fail('m must be a finite numeric literal (ngspice-47 compatibility)');
+      }
     }
     let names: string[];
     do {
@@ -74,7 +87,7 @@ export function lowerBehavioralCapacitors<T extends { text: string; line: number
 
     const coefficients = ['tc1', 'tc2'].filter(key => params[key] !== undefined).map(key => ` ${key}=${params[key]}`).join('');
     return [
-      `${g} ${probe} 0 ${negative} ${positive} 1e9`,
+      `${g} ${probe} 0 ${negative} ${positive} ${gain}`,
       `${r} ${probe} 0 1e-9`,
       `${c} ${probe} ${measure} 1e-6`,
       `${v} ${measure} 0 0`,

@@ -46,4 +46,22 @@ describe('ngspice-47 behavioral capacitor explicit m= (#1122)', () => {
     expect(lowered).toMatch(/g__behavioral_cap_\d+ \S+ 0 n p 1\.23456789\b/);
     expect(await preprocess(deck(''))).toMatch(/g__behavioral_cap_\d+ \S+ 0 n p 1e9\b/);
   });
+
+  it.each([['0', '0'], ['-2', '-2'], ['2e-3', '0.002']])('lowers numeric m=%s', async (value, gain) => {
+    expect(await preprocess(deck(`m=${value}`))).toContain(` 0 n p ${gain}\n`);
+  });
+
+  it('retains continuation temperature coefficients and constant capacitor multiplicity', async () => {
+    const lowered = await preprocess(deck('\n+ M = 2 tc1=0.01 tc2=0.001')
+      .replace('.tran', 'Cplain p n 1u m=2\n.tran'));
+    expect(lowered).toContain(' 0 n p 2\n');
+    expect(lowered).toContain('tc1=0.01 tc2=0.001 reciproctc=1');
+    expect(lowered).toContain('Cplain p n 1u m=2');
+  });
+
+  it.each(['{2}', '{factor}', "'factor'", 'invalid', '1e999'])('rejects nonliteral/nonfinite m=%s with source context', async value => {
+    await expect(preprocess(deck(`m=${value}`))).rejects.toMatchObject({
+      name: 'ParseError', line: 5, context: `Ctest p n C={1u*(1+V(ctrl))} m=${value}`,
+    });
+  });
 });
