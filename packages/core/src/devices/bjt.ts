@@ -10,6 +10,7 @@ import {
   temperatureJunction,
 } from './junction-temperature.js';
 import { pnjlim } from './devsup.js';
+import { UnsupportedModelParameterError } from '../errors.js';
 
 export interface BJTParams {
   LEVEL: number;
@@ -535,8 +536,8 @@ function validateChargeStorage(params: BJTParams, excessPhase: number): void {
   if (params.SUBS !== 1 && params.SUBS !== -1) {
     throw new Error('Invalid BJT charge-storage parameter: expected BJT SUBS of 1 or -1');
   }
-  if (excessPhase !== 0) {
-    throw new Error("Unsupported BJT model parameter: 'PTF' (excess phase is not implemented)");
+  if (!Number.isFinite(excessPhase)) {
+    throw new Error('Invalid BJT charge-storage parameter: expected finite BJT PTF');
   }
 }
 
@@ -804,6 +805,7 @@ export class BJT implements DeviceModel {
   }
 
   acceptTransientStep(ctx: StampContext): void {
+    this.assertNoExcessPhase();
     this.acceptJunctions(ctx);
     this.acceptCharges(ctx);
   }
@@ -1098,7 +1100,17 @@ export class BJT implements DeviceModel {
    * substrate capacitance there, even with a forward-biased ISS junction (#767).
    */
   stampSmallSignal(ctx: StampContext): void {
+    this.assertNoExcessPhase();
     this.stampLoad(ctx, false);
+  }
+
+  /** PTF is inert in DC; ngspice-47 uses it only for excess-phase dynamics. */
+  private assertNoExcessPhase(): void {
+    if ((this.suppliedParams.PTF ?? 0) !== 0) {
+      throw new UnsupportedModelParameterError(
+        this.name, 'PTF', 'BJT excess phase is not implemented for small-signal or transient analysis',
+      );
+    }
   }
 
   private stampLoad(ctx: StampContext, substrateJunction: boolean): void {
