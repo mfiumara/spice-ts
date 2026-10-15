@@ -99,7 +99,7 @@ const DEFAULTS: VBICParams = {
   TNOM: NOMINAL_TEMPERATURE_C,
 };
 
-/** Resolve the bounded, isothermal VBIC 1.2 DC subset used by NPN LEVEL=4. */
+/** Resolve the bounded, isothermal VBIC 1.2 subset used by NPN/PNP LEVEL=4. */
 export function resolveVBICParams(
   supplied: Record<string, number>,
   polarity: number,
@@ -112,10 +112,10 @@ export function resolveVBICParams(
   if ((supplied.LEVEL ?? 4) !== 4) {
     throw new InvalidCircuitError(`Unsupported bounded VBIC model level: ${supplied.LEVEL}`);
   }
-  if (polarity !== 1) {
-    throw new InvalidCircuitError('Unsupported bounded VBIC polarity: only NPN LEVEL=4 is supported');
+  if (polarity !== 1 && polarity !== -1) {
+    throw new InvalidCircuitError('Invalid bounded VBIC polarity: expected NPN (+1) or PNP (-1)');
   }
-  const resolved = { ...DEFAULTS, ...supplied, LEVEL: 4, polarity: 1 } as VBICParams;
+  const resolved = { ...DEFAULTS, ...supplied, LEVEL: 4, polarity } as VBICParams;
   for (const name of [...ACTIVE_PARAMETERS, ...DC_INERT_PARAMETERS, ...TEMPERATURE_PARAMETERS]) {
     if (!Number.isFinite(resolved[name])) {
       throw new InvalidCircuitError(`Invalid bounded VBIC DC model parameter: '${name}'`);
@@ -465,7 +465,10 @@ export class VBIC implements DeviceModel {
       const node = local === NO_NODE ? -1 : this.nodes[local];
       return node >= 0 ? ctx.getVoltage(node) : 0;
     };
-    return this.branchTerminals.map(([positive, negative]) => voltage(positive) - voltage(negative));
+    // Evaluate both polarities in the forward-positive NPN coordinate system,
+    // including the excess-phase states. Junction limiting uses these coordinates.
+    return this.branchTerminals.map(([positive, negative]) =>
+      this.params.polarity * (voltage(positive) - voltage(negative)));
   }
 
   /** Map branch-voltage derivatives onto the device's local node columns. */
@@ -530,7 +533,9 @@ export class VBIC implements DeviceModel {
         // nonlinear Jacobian pattern used by later Newton iterations.
         if (matrixColumn >= 0) ctx.stampG(matrixRow, matrixColumn, jacobian[column]);
       }
-      ctx.stampB(matrixRow, rhs);
+      // Iphysical(V) = polarity * Imodel(polarity * V): the Jacobian's
+      // two polarity factors cancel, but the equivalent source changes sign.
+      ctx.stampB(matrixRow, this.params.polarity * rhs);
     }
   }
 
