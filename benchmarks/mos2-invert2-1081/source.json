@@ -1,0 +1,13 @@
+{
+  "repository": "https://github.com/imr/ngspice",
+  "tag": "ngspice-47",
+  "commit": "a80f6e3e95d51534905b1f23410a951802666656",
+  "redistribution": "No native source redistributed; read-only references and generated measurements only. Existing ngspice and Xyce licence receipts remain in benchmarks/SOURCES.md and corpus-m/SOURCES.md.",
+  "sourceSha256": {
+    "mos2.c": "e802713f8e7f3e8034c24113c7db3e2529be58adccc87311c09730f8be1a0dd7",
+    "mos2mpar.c": "15d41f4ecb0e8eee6ee02120b0eb6a366aff705b39fab0972029bd4660fac917",
+    "mos2par.c": "7eb07c5b5534ca4183dbc148a2df197c212afce78c3ee1b818bb149be1552472",
+    "mos2temp.c": "741dea4be509a298b3d2cbba1edd145be85afc4c1c0ce9f7a6e6bed46fff3001",
+    "mos2load.c": "4c0a943eb7de5a0a3749f58c365ce3fa3ed5ad717254af0faf7b15539abc0823"
+  }
+}

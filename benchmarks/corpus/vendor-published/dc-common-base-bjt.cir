@@ -1,0 +1,9 @@
+* Reconstructed published case: dc-common-base-bjt
+VSUPPLY 1 0 DC 24
+VIN 0 4 DC 0
+RC 1 2 800
+RE 3 4 100
+Q1 2 0 3 MOD1
+.model MOD1 NPN BF=50
+.dc VIN 0 5 .1
+.end

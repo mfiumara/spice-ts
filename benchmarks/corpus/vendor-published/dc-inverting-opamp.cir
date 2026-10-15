@@ -1,0 +1,7 @@
+* Reconstructed published case: dc-inverting-opamp
+V1 2 0 DC 0
+E 3 0 0 1 999k
+R1 3 1 3.29k
+R2 1 2 1.18k
+.dc V1 0 3.5 .05
+.end

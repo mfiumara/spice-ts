@@ -1,0 +1,606 @@
+{
+  "command": "spice-heavy pnpm exec tsx benchmarks/corpus/corpus-m/parity.ts",
+  "before": {
+    "restoredProductionSource": "984c2c2b",
+    "totals": {
+      "fixtures": 24,
+      "ngspice": {
+        "success": 24,
+        "failed": 0,
+        "unsupported": 0
+      },
+      "spiceTs": {
+        "success": 21,
+        "failed": 2,
+        "unsupported": 1
+      },
+      "outcomes": {
+        "matched": 15,
+        "mismatch": 6,
+        "not-compared": 0,
+        "spice-ts-loss": 3,
+        "ngspice-failed": 0,
+        "both-failed": 0
+      },
+      "bySource": {
+        "xyce": {
+          "matched": 15,
+          "mismatch": 6,
+          "not-compared": 0,
+          "spice-ts-loss": 3,
+          "ngspice-failed": 0,
+          "both-failed": 0
+        }
+      }
+    },
+    "fixtures": [
+      {
+        "id": "m-23",
+        "sourcePath": "xyce/Netlists/MOSFET_ParamAliases/invert6.cir",
+        "sha256": "bacd253a3cb268ff0191a07a0647ec160f396fe4ab8b187cfc1b9ab1d3829d35",
+        "analyses": [
+          "tran"
+        ],
+        "unmappedAnalyses": [],
+        "sameNameAs": [],
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "tran:1885"
+          ]
+        },
+        "spiceTs": {
+          "status": "failed",
+          "analyses": [],
+          "firstErrorLine": "MOSFET level 6 model 'CD4012_NMOS': series resistance parameter RD is not supported"
+        },
+        "comparedAnalyses": 0,
+        "comparedSignals": 0,
+        "worstNormalizedError": null,
+        "worstSignal": null,
+        "outcome": "spice-ts-loss",
+        "gapBucket": "execution: other failure",
+        "comparisons": [],
+        "runtime": {
+          "ngspiceChildWallMs": 5716.863916000002,
+          "spiceTsChildWallMs": 13201.970417000004
+        }
+      },
+      {
+        "id": "m-24",
+        "sourcePath": "xyce/Netlists/MOSFET_ParamAliases/invert6_alt.cir",
+        "sha256": "8edd8d8c6450e7cff7385d126c38b3f23809f47f186e8d3873a44d4b7c753008",
+        "analyses": [
+          "tran"
+        ],
+        "unmappedAnalyses": [],
+        "sameNameAs": [],
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "tran:1885"
+          ]
+        },
+        "spiceTs": {
+          "status": "failed",
+          "analyses": [],
+          "firstErrorLine": "MOSFET level 6 model 'CD4012_NMOS': series resistance parameter RD is not supported"
+        },
+        "comparedAnalyses": 0,
+        "comparedSignals": 0,
+        "worstNormalizedError": null,
+        "worstSignal": null,
+        "outcome": "spice-ts-loss",
+        "gapBucket": "execution: other failure",
+        "comparisons": [],
+        "runtime": {
+          "ngspiceChildWallMs": 5046.218499999959,
+          "spiceTsChildWallMs": 11152.59495900001
+        }
+      }
+    ]
+  },
+  "after": {
+    "sourceHead": "f0022cb2",
+    "coreTree": "445dc70f4efa4c25421b28eb9d76ae8f911c91ba",
+    "totals": {
+      "fixtures": 24,
+      "ngspice": {
+        "success": 24,
+        "failed": 0,
+        "unsupported": 0
+      },
+      "spiceTs": {
+        "success": 23,
+        "failed": 0,
+        "unsupported": 1
+      },
+      "outcomes": {
+        "matched": 15,
+        "mismatch": 8,
+        "not-compared": 0,
+        "spice-ts-loss": 1,
+        "ngspice-failed": 0,
+        "both-failed": 0
+      },
+      "bySource": {
+        "xyce": {
+          "matched": 15,
+          "mismatch": 8,
+          "not-compared": 0,
+          "spice-ts-loss": 1,
+          "ngspice-failed": 0,
+          "both-failed": 0
+        }
+      }
+    },
+    "fixtures": [
+      {
+        "id": "m-23",
+        "sourcePath": "xyce/Netlists/MOSFET_ParamAliases/invert6.cir",
+        "sha256": "bacd253a3cb268ff0191a07a0647ec160f396fe4ab8b187cfc1b9ab1d3829d35",
+        "analyses": [
+          "tran"
+        ],
+        "unmappedAnalyses": [],
+        "sameNameAs": [],
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "tran:1885"
+          ]
+        },
+        "spiceTs": {
+          "status": "success",
+          "analyses": [
+            "tran:1884"
+          ]
+        },
+        "comparedAnalyses": 1,
+        "comparedSignals": 6,
+        "worstNormalizedError": 0.172,
+        "worstSignal": "tran v(vout)",
+        "outcome": "mismatch",
+        "gapBucket": null,
+        "comparisons": [
+          {
+            "analysis": "tran",
+            "signals": [
+              "i(vdddev)",
+              "i(vin1)",
+              "v(1)",
+              "v(in)",
+              "v(vdd)",
+              "v(vout)"
+            ],
+            "metrics": {
+              "grid": {
+                "spiceTsPoints": 1884,
+                "ngspicePoints": 1885,
+                "alignedPoints": 1884,
+                "excludedOutOfRange": 0
+              },
+              "signals": {
+                "i(vdddev)": {
+                  "status": "compared",
+                  "sampleCount": 1884,
+                  "absoluteError": {
+                    "max": 0.00022127048424740593,
+                    "rms": 0.000010861854964277231
+                  },
+                  "relativeError": {
+                    "max": 230.4975655942319,
+                    "rms": 7.583646147311541,
+                    "sampleCount": 1884,
+                    "excludedZeroReferences": 0
+                  }
+                },
+                "i(vin1)": {
+                  "status": "compared",
+                  "sampleCount": 1884,
+                  "absoluteError": {
+                    "max": 0.00010628305789373146,
+                    "rms": 0.000008556126151189058
+                  },
+                  "relativeError": {
+                    "max": 1136.6433204025345,
+                    "rms": 29.72587812204635,
+                    "sampleCount": 1801,
+                    "excludedZeroReferences": 83
+                  }
+                },
+                "v(1)": {
+                  "status": "compared",
+                  "sampleCount": 1884,
+                  "absoluteError": {
+                    "max": 4.844902257161721e-12,
+                    "rms": 4.865875028496517e-13
+                  },
+                  "relativeError": {
+                    "max": 1,
+                    "rms": 0.056254395046286536,
+                    "sampleCount": 1027,
+                    "excludedZeroReferences": 857
+                  }
+                },
+                "v(in)": {
+                  "status": "compared",
+                  "sampleCount": 1884,
+                  "absoluteError": {
+                    "max": 0.10628305789373149,
+                    "rms": 0.008556126151145885
+                  },
+                  "relativeError": {
+                    "max": 1136.6433204024436,
+                    "rms": 26.44308751700466,
+                    "sampleCount": 1884,
+                    "excludedZeroReferences": 0
+                  }
+                },
+                "v(vdd)": {
+                  "status": "compared",
+                  "sampleCount": 1884,
+                  "absoluteError": {
+                    "max": 0,
+                    "rms": 0
+                  },
+                  "relativeError": {
+                    "max": 0,
+                    "rms": 0,
+                    "sampleCount": 1884,
+                    "excludedZeroReferences": 0
+                  }
+                },
+                "v(vout)": {
+                  "status": "compared",
+                  "sampleCount": 1884,
+                  "absoluteError": {
+                    "max": 0.8110172584553081,
+                    "rms": 0.04395228726884042
+                  },
+                  "relativeError": {
+                    "max": 18.13790808703647,
+                    "rms": 2.6605549224218454,
+                    "sampleCount": 1884,
+                    "excludedZeroReferences": 0
+                  }
+                }
+              }
+            },
+            "linearMetrics": {
+              "grid": {
+                "spiceTsPoints": 1884,
+                "ngspicePoints": 1885,
+                "alignedPoints": 1884,
+                "excludedOutOfRange": 0
+              },
+              "signals": {
+                "i(vdddev)": {
+                  "status": "compared",
+                  "sampleCount": 1884,
+                  "absoluteError": {
+                    "max": 0.00022127048424740593,
+                    "rms": 0.000010963960574069866
+                  },
+                  "relativeError": {
+                    "max": 230.4975655942319,
+                    "rms": 7.583648762403142,
+                    "sampleCount": 1884,
+                    "excludedZeroReferences": 0
+                  }
+                },
+                "i(vin1)": {
+                  "status": "compared",
+                  "sampleCount": 1884,
+                  "absoluteError": {
+                    "max": 0.00010628305789373146,
+                    "rms": 0.000008575863764159338
+                  },
+                  "relativeError": {
+                    "max": 1136.6433204025345,
+                    "rms": 29.725878193729162,
+                    "sampleCount": 1801,
+                    "excludedZeroReferences": 83
+                  }
+                },
+                "v(1)": {
+                  "status": "compared",
+                  "sampleCount": 1884,
+                  "absoluteError": {
+                    "max": 4.844902257161721e-12,
+                    "rms": 4.865875107760145e-13
+                  },
+                  "relativeError": {
+                    "max": 1,
+                    "rms": 0.06429806564069045,
+                    "sampleCount": 1028,
+                    "excludedZeroReferences": 856
+                  }
+                },
+                "v(in)": {
+                  "status": "compared",
+                  "sampleCount": 1884,
+                  "absoluteError": {
+                    "max": 0.10628305789373149,
+                    "rms": 0.00857586376411761
+                  },
+                  "relativeError": {
+                    "max": 1136.6433204024436,
+                    "rms": 26.44308769387254,
+                    "sampleCount": 1884,
+                    "excludedZeroReferences": 0
+                  }
+                },
+                "v(vdd)": {
+                  "status": "compared",
+                  "sampleCount": 1884,
+                  "absoluteError": {
+                    "max": 0,
+                    "rms": 0
+                  },
+                  "relativeError": {
+                    "max": 0,
+                    "rms": 0,
+                    "sampleCount": 1884,
+                    "excludedZeroReferences": 0
+                  }
+                },
+                "v(vout)": {
+                  "status": "compared",
+                  "sampleCount": 1884,
+                  "absoluteError": {
+                    "max": 0.8110172584553081,
+                    "rms": 0.0439552307152788
+                  },
+                  "relativeError": {
+                    "max": 18.13790808703647,
+                    "rms": 2.660562316879365,
+                    "sampleCount": 1884,
+                    "excludedZeroReferences": 0
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "runtime": {
+          "ngspiceChildWallMs": 1772.1948330000014,
+          "spiceTsChildWallMs": 4896.7384170000005
+        }
+      },
+      {
+        "id": "m-24",
+        "sourcePath": "xyce/Netlists/MOSFET_ParamAliases/invert6_alt.cir",
+        "sha256": "8edd8d8c6450e7cff7385d126c38b3f23809f47f186e8d3873a44d4b7c753008",
+        "analyses": [
+          "tran"
+        ],
+        "unmappedAnalyses": [],
+        "sameNameAs": [],
+        "ngspice": {
+          "status": "success",
+          "analyses": [
+            "tran:1885"
+          ]
+        },
+        "spiceTs": {
+          "status": "success",
+          "analyses": [
+            "tran:1884"
+          ]
+        },
+        "comparedAnalyses": 1,
+        "comparedSignals": 6,
+        "worstNormalizedError": 0.172,
+        "worstSignal": "tran v(vout)",
+        "outcome": "mismatch",
+        "gapBucket": null,
+        "comparisons": [
+          {
+            "analysis": "tran",
+            "signals": [
+              "i(vdddev)",
+              "i(vin1)",
+              "v(1)",
+              "v(in)",
+              "v(vdd)",
+              "v(vout)"
+            ],
+            "metrics": {
+              "grid": {
+                "spiceTsPoints": 1884,
+                "ngspicePoints": 1885,
+                "alignedPoints": 1884,
+                "excludedOutOfRange": 0
+              },
+              "signals": {
+                "i(vdddev)": {
+                  "status": "compared",
+                  "sampleCount": 1884,
+                  "absoluteError": {
+                    "max": 0.00022127048424740593,
+                    "rms": 0.000010861854964277231
+                  },
+                  "relativeError": {
+                    "max": 230.4975655942319,
+                    "rms": 7.583646147311541,
+                    "sampleCount": 1884,
+                    "excludedZeroReferences": 0
+                  }
+                },
+                "i(vin1)": {
+                  "status": "compared",
+                  "sampleCount": 1884,
+                  "absoluteError": {
+                    "max": 0.00010628305789373146,
+                    "rms": 0.000008556126151189058
+                  },
+                  "relativeError": {
+                    "max": 1136.6433204025345,
+                    "rms": 29.72587812204635,
+                    "sampleCount": 1801,
+                    "excludedZeroReferences": 83
+                  }
+                },
+                "v(1)": {
+                  "status": "compared",
+                  "sampleCount": 1884,
+                  "absoluteError": {
+                    "max": 4.844902257161721e-12,
+                    "rms": 4.865875028496517e-13
+                  },
+                  "relativeError": {
+                    "max": 1,
+                    "rms": 0.056254395046286536,
+                    "sampleCount": 1027,
+                    "excludedZeroReferences": 857
+                  }
+                },
+                "v(in)": {
+                  "status": "compared",
+                  "sampleCount": 1884,
+                  "absoluteError": {
+                    "max": 0.10628305789373149,
+                    "rms": 0.008556126151145885
+                  },
+                  "relativeError": {
+                    "max": 1136.6433204024436,
+                    "rms": 26.44308751700466,
+                    "sampleCount": 1884,
+                    "excludedZeroReferences": 0
+                  }
+                },
+                "v(vdd)": {
+                  "status": "compared",
+                  "sampleCount": 1884,
+                  "absoluteError": {
+                    "max": 0,
+                    "rms": 0
+                  },
+                  "relativeError": {
+                    "max": 0,
+                    "rms": 0,
+                    "sampleCount": 1884,
+                    "excludedZeroReferences": 0
+                  }
+                },
+                "v(vout)": {
+                  "status": "compared",
+                  "sampleCount": 1884,
+                  "absoluteError": {
+                    "max": 0.8110172584553081,
+                    "rms": 0.04395228726884042
+                  },
+                  "relativeError": {
+                    "max": 18.13790808703647,
+                    "rms": 2.6605549224218454,
+                    "sampleCount": 1884,
+                    "excludedZeroReferences": 0
+                  }
+                }
+              }
+            },
+            "linearMetrics": {
+              "grid": {
+                "spiceTsPoints": 1884,
+                "ngspicePoints": 1885,
+                "alignedPoints": 1884,
+                "excludedOutOfRange": 0
+              },
+              "signals": {
+                "i(vdddev)": {
+                  "status": "compared",
+                  "sampleCount": 1884,
+                  "absoluteError": {
+                    "max": 0.00022127048424740593,
+                    "rms": 0.000010963960574069866
+                  },
+                  "relativeError": {
+                    "max": 230.4975655942319,
+                    "rms": 7.583648762403142,
+                    "sampleCount": 1884,
+                    "excludedZeroReferences": 0
+                  }
+                },
+                "i(vin1)": {
+                  "status": "compared",
+                  "sampleCount": 1884,
+                  "absoluteError": {
+                    "max": 0.00010628305789373146,
+                    "rms": 0.000008575863764159338
+                  },
+                  "relativeError": {
+                    "max": 1136.6433204025345,
+                    "rms": 29.725878193729162,
+                    "sampleCount": 1801,
+                    "excludedZeroReferences": 83
+                  }
+                },
+                "v(1)": {
+                  "status": "compared",
+                  "sampleCount": 1884,
+                  "absoluteError": {
+                    "max": 4.844902257161721e-12,
+                    "rms": 4.865875107760145e-13
+                  },
+                  "relativeError": {
+                    "max": 1,
+                    "rms": 0.06429806564069045,
+                    "sampleCount": 1028,
+                    "excludedZeroReferences": 856
+                  }
+                },
+                "v(in)": {
+                  "status": "compared",
+                  "sampleCount": 1884,
+                  "absoluteError": {
+                    "max": 0.10628305789373149,
+                    "rms": 0.00857586376411761
+                  },
+                  "relativeError": {
+                    "max": 1136.6433204024436,
+                    "rms": 26.44308769387254,
+                    "sampleCount": 1884,
+                    "excludedZeroReferences": 0
+                  }
+                },
+                "v(vdd)": {
+                  "status": "compared",
+                  "sampleCount": 1884,
+                  "absoluteError": {
+                    "max": 0,
+                    "rms": 0
+                  },
+                  "relativeError": {
+                    "max": 0,
+                    "rms": 0,
+                    "sampleCount": 1884,
+                    "excludedZeroReferences": 0
+                  }
+                },
+                "v(vout)": {
+                  "status": "compared",
+                  "sampleCount": 1884,
+                  "absoluteError": {
+                    "max": 0.8110172584553081,
+                    "rms": 0.0439552307152788
+                  },
+                  "relativeError": {
+                    "max": 18.13790808703647,
+                    "rms": 2.660562316879365,
+                    "sampleCount": 1884,
+                    "excludedZeroReferences": 0
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "runtime": {
+          "ngspiceChildWallMs": 1824.3738339999982,
+          "spiceTsChildWallMs": 4522.590333999979
+        }
+      }
+    ]
+  }
+}

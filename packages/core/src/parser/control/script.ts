@@ -1,4 +1,5 @@
 import { UnsupportedControlCommandError } from './errors.js';
+import { validatePreSet } from './pre-set.js';
 import type { ControlSourceBlock, ControlSourceLine } from './source.js';
 
 /**
@@ -16,6 +17,8 @@ export type ControlStatement =
 /** A parsed `.control` script (all blocks of the deck, in order). */
 export interface ControlScript {
   statements: ControlStatement[];
+  /** Hoisted pre_set lines, validated before circuit setup, not runtime statements. */
+  preSet?: ControlSourceLine[];
   /** Deck `.csparam` values, installed before executing any control statement. */
   constants?: Readonly<Record<string, number>>;
 }
@@ -88,7 +91,13 @@ function unsupported(name: string, line: ControlSourceLine): UnsupportedControlC
  * script is either fully executable or rejected up front.
  */
 export function parseControlScript(blocks: ControlSourceBlock[]): ControlScript {
-  const lines = blocks.flatMap(block => block.lines);
+  const preSet: ControlSourceLine[] = [];
+  const lines = blocks.flatMap(block => block.lines).filter(line => {
+    if (commandName(line.text) !== 'pre_set') return true;
+    validatePreSet(line);
+    preSet.push(line);
+    return false;
+  });
   let position = 0;
 
   function body(terminators: string[]): { statements: ControlStatement[]; terminator?: string } {
@@ -156,7 +165,7 @@ export function parseControlScript(blocks: ControlSourceBlock[]): ControlScript 
   }
 
   const { statements } = body([]);
-  return { statements };
+  return preSet.length > 0 ? { statements, preSet } : { statements };
 }
 
 function isExecutableCommand(name: string): boolean {

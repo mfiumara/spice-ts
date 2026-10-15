@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile, readdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { test } from 'node:test';
+import { gunzipSync } from 'node:zlib';
 import { outcomeDigest } from '../corpus-f/outcomes.js';
 import { staticVerdict, stripTerminalNewline } from '../corpus-h/lib.js';
 import { gapBucket, parityGaps } from '../corpus-l/parity.js';
@@ -111,14 +112,44 @@ test('all outcomes and losses retained, hashed, uniformly compared and rendered'
 
 test('pre-rebase evidence remains intact and integrated results use the identical fixtures and policy', async () => {
   const before = JSON.parse(await readFile(`${ROOT}/outcomes-before-rebase.json`, 'utf8'));
-  const after = JSON.parse(await readFile(`${ROOT}/outcomes.json`, 'utf8'));
+  const after = JSON.parse(gunzipSync(await readFile(`${ROOT}/outcomes-after-rebase.json.gz`)).toString());
   assert.equal(before.coreTree, '926efe53f0ee2f2813987a1a66d9fc19bf4a20df');
-  assert.match(after.coreTree, /^[a-f0-9]{40}$/);
+  assert.equal(after.coreTree, '29064e078f962f00f680e3626b82f9b59a665df9');
+  assert.equal(after.outcomeSha256, outcomeDigest(after));
   assert.equal(before.outcomeSha256, '48c1f28e40bcc5638cda4aaff942ffb7f800b85e68a5df65c4effbc550d1332a');
   assert.equal(before.outcomeSha256, outcomeDigest(before));
   assert.equal(before.manifestSha256, after.manifestSha256);
   assert.deepEqual(before.policy, after.policy);
   assert.deepEqual(before.fixtures.map((r: { sha256: string }) => r.sha256), after.fixtures.map((r: { sha256: string }) => r.sha256));
-  assert.equal(await readFile(`${ROOT}/README-before-rebase.md`, 'utf8'), renderMarkdown(before, true));
+  assert.equal(await readFile(`${ROOT}/README-before-rebase.md`, 'utf8'), renderMarkdown(before));
   assert.equal(await readFile(`${ROOT}/INTEGRATION.md`, 'utf8'), renderIntegration(before, after));
+});
+
+test('n-5 now pairs on main with #1115 and #1118 without changing fixtures or tolerances', async () => {
+  const before = JSON.parse(gunzipSync(await readFile('benchmarks/control-pre-set-1097/corpus-n-outcomes.json.gz')).toString());
+  const after = JSON.parse(await readFile(`${ROOT}/outcomes.json`, 'utf8'));
+  assert.equal(before.outcomeSha256, outcomeDigest(before));
+  assert.equal(before.manifestSha256, after.manifestSha256);
+  assert.deepEqual(before.policy, after.policy);
+  assert.deepEqual(before.fixtures.map((r: { sha256: string }) => r.sha256), after.fixtures.map((r: { sha256: string }) => r.sha256));
+  const old = before.fixtures.find((r: { id: string }) => r.id === 'n-5');
+  const row = after.fixtures.find((r: { id: string }) => r.id === 'n-5');
+  assert.equal(old.outcome, 'not-compared');
+  assert.equal(old.comparedSignals, 0);
+  assert.equal(row.sha256, '837642247b44a0c70ac952e4d24a6fa52a4132ed50c1f5c6a4cbd35bd1747f7e');
+  assert.equal(row.ngspice.status, 'success');
+  assert.equal(row.spiceTs.status, 'success');
+  assert.equal(row.outcome, 'matched');
+  assert.equal(row.comparedAnalyses, 1);
+  assert.equal(row.comparedSignals, 14);
+  assert(row.worstNormalizedError <= after.policy.matchThreshold);
+  const comparison = row.comparisons[0];
+  assert.deepEqual(comparison.plot, { spiceTs: 'tran1', ngspice: 'Transient Analysis', ngspiceIndex: 0 });
+  assert.equal(comparison.metrics.grid.alignedPoints, 1827);
+  assert.equal(comparison.metrics.grid.excludedOutOfRange, 0);
+  assert.equal(Object.keys(comparison.metrics.signals).length, 14);
+  for (const metric of Object.values(comparison.metrics.signals) as Array<{ status: string; sampleCount: number }>) {
+    assert.equal(metric.status, 'compared');
+    assert.equal(metric.sampleCount, 1827);
+  }
 });

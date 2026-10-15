@@ -1,0 +1,28 @@
+{
+  "origin": "https://git.code.sf.net/p/ngspice/ngspice",
+  "revision": "a80f6e3e95d51534905b1f23410a951802666656",
+  "licence": "modified BSD; native code referenced, not redistributed",
+  "includes": {
+    "spice_lib/MicroCap-LIBRARY-for-ngspice/DiodesInc.lib": "a4cb4e425cdc364291d7be51c9335a9242ae98753c5e6322360b650940641cda",
+    "spice_lib/MicroCap-LIBRARY-for-ngspice/DiodesInc_FET.lib": "956632bc5a1ed7ee02659e697171e34e8db51019468b28123788f7f5a8669cb0",
+    "spice_lib/MicroCap-LIBRARY-for-ngspice/DiodesInc_MOSFET.LIB": "497031f9a538989356600f77a91223135313feb62e7d1aab9824eacbf1f0845c",
+    "spice_lib/basic_models/LED/SnapLED150.mod": "8994db53b11beabf4ab7ba676366c708d9ca0fe09303e63195e3c710d75967f4",
+    "spice_lib/ic_lib/AD620/AD620.mod": "99c3a83c8e4a44fc1c2e5b878a061e03f959e223fa646bb849589e68f603f395",
+    "spice_lib/ic_lib/INA326/INA326.LIB": "2687e8ab0e2de09750fd53b7564108d90f30c1e8bf278b2f26b42bd50436d722",
+    "spice_lib/modelos_subckt/PN2222.mod": "fade93cf84dcd8ef9e539bc6a5f9ffcf40e6e1cf3383a32811aa8080a711af05"
+  },
+  "binarySha256": "e2b2a81dabc056911020e9073640d4a29a8144ece8256e351dac09332ed8e450",
+  "configuration": "set filetype=ascii\ncodemodel <source>/src/xspice/icm/analog/analog.cm\ncodemodel <source>/src/xspice/icm/digital/digital.cm\ncodemodel <source>/src/xspice/icm/spice2poly/spice2poly.cm\ncodemodel <source>/src/xspice/icm/table/table.cm\ncodemodel <source>/src/xspice/icm/tlines/tlines.cm\ncodemodel <source>/src/xspice/icm/xtradev/xtradev.cm\ncodemodel <source>/src/xspice/icm/xtraevt/xtraevt.cm\n",
+  "host": {
+    "system": "Darwin",
+    "release": "27.0.0",
+    "machine": "arm64"
+  },
+  "node": "v22.23.1",
+  "files": {
+    "src/maths/ni/niiter.c": "881851342d3e48a562de704658ce98b58027610f20354703222b11cb3e984c7e",
+    "src/spicelib/analysis/cktop.c": "9f06d3ac7b6a8aa28bdb46f1af3157362c6ca4a2ecc701a388c990ac3a07eb5e",
+    "src/spicelib/analysis/optran.c": "77c8e6ea404a479e6d3e4edf35ba4a2e7e395fee8212112839c7e1991e3c9a94",
+    "src/spicelib/devices/dio/dioload.c": "865bbecef98de2237a1cceccf088fb77e6d868f9f913023827ac910232c35b38"
+  }
+}

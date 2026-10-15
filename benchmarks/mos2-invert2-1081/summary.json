@@ -1,0 +1,254 @@
+{
+  "metric": "linear interpolation at actual-engine timepoints; v(vout) only; peak-normalized",
+  "fixtures": [
+    {
+      "id": "m-19",
+      "before": {
+        "peak": 4.881556866790567,
+        "points": 1956,
+        "max": 1.8560836650731265,
+        "rms": 0.09353225592024875,
+        "firstAboveOnePercent": {
+          "index": 392,
+          "time": 6.009059951892151e-06,
+          "actual": 2.831344420963424,
+          "reference": 2.9295579824051154,
+          "absolute": 0.09821356144169124,
+          "normalized": 0.020119311138182605
+        },
+        "worst": {
+          "index": 1193,
+          "time": 1.80092860626478e-05,
+          "actual": 2.733035761329907,
+          "reference": 0.8769520962567807,
+          "absolute": 1.8560836650731265,
+          "normalized": 0.38022371053385456
+        }
+      },
+      "after": {
+        "peak": 4.881556866790567,
+        "points": 1956,
+        "max": 1.8560836650731265,
+        "rms": 0.09353225592024875,
+        "firstAboveOnePercent": {
+          "index": 392,
+          "time": 6.009059951892151e-06,
+          "actual": 2.831344420963424,
+          "reference": 2.9295579824051154,
+          "absolute": 0.09821356144169124,
+          "normalized": 0.020119311138182605
+        },
+        "worst": {
+          "index": 1193,
+          "time": 1.80092860626478e-05,
+          "actual": 2.733035761329907,
+          "reference": 0.8769520962567807,
+          "absolute": 1.8560836650731265,
+          "normalized": 0.38022371053385456
+        }
+      },
+      "diagnosticFine": {
+        "peak": 4.886722562553502,
+        "points": 300119,
+        "max": 0.0003410522335141053,
+        "rms": 4.921503267147127e-06,
+        "firstAboveOnePercent": null,
+        "worst": {
+          "index": 225132,
+          "time": 2.250415000000001e-05,
+          "actual": 1.84531665440793,
+          "reference": 1.844975602174416,
+          "absolute": 0.0003410522335141053,
+          "normalized": 6.97916096419217e-05
+        }
+      },
+      "diagnosticTight": {
+        "peak": 4.886923516051788,
+        "points": 6514,
+        "max": 0.006397633642367229,
+        "rms": 0.0003421082560674205,
+        "firstAboveOnePercent": null,
+        "worst": {
+          "index": 1881,
+          "time": 9.008892598293634e-06,
+          "actual": 3.865492138540994,
+          "reference": 3.8590945048986267,
+          "absolute": 0.006397633642367229,
+          "normalized": 0.0013091331635032347
+        }
+      },
+      "defaultTsAgainstFineNative": {
+        "peak": 4.886722562553502,
+        "points": 1956,
+        "max": 1.2527885142355348,
+        "rms": 0.09884931158754649,
+        "firstAboveOnePercent": {
+          "index": 88,
+          "time": 1.5043021533966429e-06,
+          "actual": 1.895968391287011,
+          "reference": 2.6982486346515113,
+          "absolute": 0.8022802433645004,
+          "normalized": 0.16417552523081602
+        },
+        "worst": {
+          "index": 1193,
+          "time": 1.80092860626478e-05,
+          "actual": 2.733035761329907,
+          "reference": 1.4802472470943724,
+          "absolute": 1.2527885142355348,
+          "normalized": 0.25636579490629074
+        }
+      },
+      "defaultNativeAgainstFineNative": {
+        "peak": 4.886722562553502,
+        "points": 1961,
+        "max": 1.2843245966250563,
+        "rms": 0.10096534976064743,
+        "firstAboveOnePercent": {
+          "index": 88,
+          "time": 1.504302153951738e-06,
+          "actual": 1.895887657306683,
+          "reference": 2.6982519305922557,
+          "absolute": 0.8023642732855727,
+          "normalized": 0.16419272078877878
+        },
+        "worst": {
+          "index": 993,
+          "time": 1.500927534232111e-05,
+          "actual": 2.827869552520756,
+          "reference": 1.5435449558956997,
+          "absolute": 1.2843245966250563,
+          "normalized": 0.26281921680324466
+        }
+      }
+    },
+    {
+      "id": "m-20",
+      "before": {
+        "peak": 4.881556866790567,
+        "points": 1956,
+        "max": 1.8560836650731265,
+        "rms": 0.09353225592024875,
+        "firstAboveOnePercent": {
+          "index": 392,
+          "time": 6.009059951892151e-06,
+          "actual": 2.831344420963424,
+          "reference": 2.9295579824051154,
+          "absolute": 0.09821356144169124,
+          "normalized": 0.020119311138182605
+        },
+        "worst": {
+          "index": 1193,
+          "time": 1.80092860626478e-05,
+          "actual": 2.733035761329907,
+          "reference": 0.8769520962567807,
+          "absolute": 1.8560836650731265,
+          "normalized": 0.38022371053385456
+        }
+      },
+      "after": {
+        "peak": 4.881556866790567,
+        "points": 1956,
+        "max": 1.8560836650731265,
+        "rms": 0.09353225592024875,
+        "firstAboveOnePercent": {
+          "index": 392,
+          "time": 6.009059951892151e-06,
+          "actual": 2.831344420963424,
+          "reference": 2.9295579824051154,
+          "absolute": 0.09821356144169124,
+          "normalized": 0.020119311138182605
+        },
+        "worst": {
+          "index": 1193,
+          "time": 1.80092860626478e-05,
+          "actual": 2.733035761329907,
+          "reference": 0.8769520962567807,
+          "absolute": 1.8560836650731265,
+          "normalized": 0.38022371053385456
+        }
+      },
+      "diagnosticFine": {
+        "peak": 4.886722562553502,
+        "points": 300119,
+        "max": 0.0003410522335141053,
+        "rms": 4.921503267147127e-06,
+        "firstAboveOnePercent": null,
+        "worst": {
+          "index": 225132,
+          "time": 2.250415000000001e-05,
+          "actual": 1.84531665440793,
+          "reference": 1.844975602174416,
+          "absolute": 0.0003410522335141053,
+          "normalized": 6.97916096419217e-05
+        }
+      },
+      "diagnosticTight": {
+        "peak": 4.886923516051788,
+        "points": 6514,
+        "max": 0.006397633642367229,
+        "rms": 0.0003421082560674205,
+        "firstAboveOnePercent": null,
+        "worst": {
+          "index": 1881,
+          "time": 9.008892598293634e-06,
+          "actual": 3.865492138540994,
+          "reference": 3.8590945048986267,
+          "absolute": 0.006397633642367229,
+          "normalized": 0.0013091331635032347
+        }
+      },
+      "defaultTsAgainstFineNative": {
+        "peak": 4.886722562553502,
+        "points": 1956,
+        "max": 1.2527885142355348,
+        "rms": 0.09884931158754649,
+        "firstAboveOnePercent": {
+          "index": 88,
+          "time": 1.5043021533966429e-06,
+          "actual": 1.895968391287011,
+          "reference": 2.6982486346515113,
+          "absolute": 0.8022802433645004,
+          "normalized": 0.16417552523081602
+        },
+        "worst": {
+          "index": 1193,
+          "time": 1.80092860626478e-05,
+          "actual": 2.733035761329907,
+          "reference": 1.4802472470943724,
+          "absolute": 1.2527885142355348,
+          "normalized": 0.25636579490629074
+        }
+      },
+      "defaultNativeAgainstFineNative": {
+        "peak": 4.886722562553502,
+        "points": 1961,
+        "max": 1.2843245966250563,
+        "rms": 0.10096534976064743,
+        "firstAboveOnePercent": {
+          "index": 88,
+          "time": 1.504302153951738e-06,
+          "actual": 1.895887657306683,
+          "reference": 2.6982519305922557,
+          "absolute": 0.8023642732855727,
+          "normalized": 0.16419272078877878
+        },
+        "worst": {
+          "index": 993,
+          "time": 1.500927534232111e-05,
+          "actual": 2.827869552520756,
+          "reference": 1.5435449558956997,
+          "absolute": 1.2843245966250563,
+          "normalized": 0.26281921680324466
+        }
+      }
+    }
+  ],
+  "aliasExecutionsIdentical": true,
+  "artifactSha256": {
+    "after-waveforms.json.gz": "d9c101232c15b1d92b13dd108b0af3a2f69a97e7709af54369e843c5a781e6ef",
+    "before-waveforms.json.gz": "d9c101232c15b1d92b13dd108b0af3a2f69a97e7709af54369e843c5a781e6ef",
+    "fine-waveforms.json.gz": "d9170333be8073216c65f05d4ff62a71f34342aef5c3f9c61517d6b96b8895b1",
+    "tight-waveforms.json.gz": "6e541c641d3fc392cc2dd0e019bde4cc9a900d82f737adf543b7d3f61e740c53"
+  }
+}

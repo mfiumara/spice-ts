@@ -6,16 +6,16 @@ Every deck below is byte-identical to its pinned upstream revision (ngspice `a80
 
 ## Totals
 
-- Fixtures: 24. Outcome SHA-256: `88d0e085605785dbf7d488e11e7c59cbd85b0321f43f5d4b9d770dc0cb5bd943`.
+- Fixtures: 24. Outcome SHA-256: `341be4a804bd919ff40356936c2a5cf72bc471e477a7b228964721c36a9e3bc5`.
 - ngspice (ngspice-47): 24 success, 0 failed, 0 unsupported.
-- spice-ts (0.3.0): 16 success, 4 failed, 4 unsupported.
-- Outcomes: matched 3, mismatch 5, not-compared 8, spice-ts-loss 8, ngspice-failed 0, both-failed 0.
-- Of the 24 decks ngspice runs successfully, spice-ts matches 3, mismatches 5, produces no comparable result for 8 and fails 8.
+- spice-ts (0.3.0): 18 success, 3 failed, 3 unsupported.
+- Outcomes: matched 10, mismatch 8, not-compared 0, spice-ts-loss 6, ngspice-failed 0, both-failed 0.
+- Of the 24 decks ngspice runs successfully, spice-ts matches 10, mismatches 8, produces no comparable result for 0 and fails 6.
 
 | Source | Fixtures | Matched | Mismatch | Not compared | spice-ts loss | ngspice failed | Both failed |
 |---|---|---|---|---|---|---|---|
-| `ngspice` | 13 | 2 | 0 | 8 | 3 | 0 | 0 |
-| `xyce` | 11 | 1 | 5 | 0 | 5 | 0 | 0 |
+| `ngspice` | 13 | 8 | 3 | 0 | 2 | 0 | 0 |
+| `xyce` | 11 | 2 | 5 | 0 | 4 | 0 | 0 |
 
 ## Method
 
@@ -37,14 +37,13 @@ Grouped from spice-ts's own first error line (unchanged corpus-l/i/h/f rules). "
 
 | Bucket | Fixtures | ngspice ok | Issue |
 |---|---|---|---|
-| execution: other failure | 3 | 3 | none filed |
-| control: ngspice control-language scripting (set/let/save/foreach/meas/...) | 1 | 1 | none filed |
+| execution: other failure | 2 | 2 | none filed |
 | convergence | 1 | 1 | none filed |
+| device: BJT instance IC= initial conditions | 1 | 1 | none filed |
 | directive: .pss | 1 | 1 | none filed |
 | expression: quoted/brace expressions in values (TEMPER, functions) | 1 | 1 | none filed |
-| parse: other unsupported syntax | 1 | 1 | none filed |
 
-## Losses (21)
+## Losses (14)
 
 Every fixture that is not matched: spice-ts failures, mismatches above the threshold, and results that could not be compared.
 
@@ -52,35 +51,35 @@ Every fixture that is not matched: spice-ts failures, mismatches above the thres
 |---|---|---|---|---|---|---|
 | [ngspice/examples/pss/vdp_osc_pss.cir](fixtures/ngspice/examples/pss/vdp_osc_pss.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 22: Unsupported dot command: '.pss' .pss 0.5e6 100e-6 1 50 10 50 5e-3 uic |
 | [ngspice/paranoia_parallel/examples/Monte_Carlo/OpWien_s.sp](fixtures/ngspice/paranoia_parallel/examples/Monte_Carlo/OpWien_s.sp) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 31: Unknown function 'V' C2 6 3 C = 'cn + 0.033 * cn*V(c2)' ; behavioral capacitor |
-| [ngspice/paranoia_parallel/examples/transient-noise/noise_vnoi_test.cir](fixtures/ngspice/paranoia_parallel/examples/transient-noise/noise_vnoi_test.cir) | success | success | not-compared |  |  |  |
-| [ngspice/paranoia_parallel/examples/transient-noise/simple-noise.cir](fixtures/ngspice/paranoia_parallel/examples/transient-noise/simple-noise.cir) | success | success | not-compared |  |  |  |
-| [ngspice/paranoia_parallel/examples/various/adder_mos.cir](fixtures/ngspice/paranoia_parallel/examples/various/adder_mos.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 67: Unsupported .control command 'pre_set': it is not an ngspice control-language command spice-ts executes; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, s |
-| [ngspice/paranoia_parallel/examples/vdmos/VDMOS-DIO-AC.cir](fixtures/ngspice/paranoia_parallel/examples/vdmos/VDMOS-DIO-AC.cir) | success | success | not-compared |  |  |  |
-| [ngspice/paranoia_parallel/examples/vdmos/VDMOS-DIO.cir](fixtures/ngspice/paranoia_parallel/examples/vdmos/VDMOS-DIO.cir) | success | success | not-compared |  |  |  |
-| [ngspice/paranoia_parallel/examples/vdmos/vdmos-out_ir_mtr.cir](fixtures/ngspice/paranoia_parallel/examples/vdmos/vdmos-out_ir_mtr.cir) | success | success | not-compared |  |  |  |
-| [ngspice/paranoia_parallel/examples/vdmos/vdmos-out_ir.cir](fixtures/ngspice/paranoia_parallel/examples/vdmos/vdmos-out_ir.cir) | success | success | not-compared |  |  |  |
-| [ngspice/paranoia_parallel/examples/vdmos/vdmosp-out-mtr.cir](fixtures/ngspice/paranoia_parallel/examples/vdmos/vdmosp-out-mtr.cir) | success | success | not-compared |  |  |  |
-| [ngspice/paranoia_parallel/examples/vdmos/vdmosp-out.cir](fixtures/ngspice/paranoia_parallel/examples/vdmos/vdmosp-out.cir) | success | success | not-compared |  |  |  |
+| [ngspice/paranoia_parallel/examples/transient-noise/noise_vnoi_test.cir](fixtures/ngspice/paranoia_parallel/examples/transient-noise/noise_vnoi_test.cir) | success | success | mismatch | 0.000262 | tran v(1) |  |
+| [ngspice/paranoia_parallel/examples/transient-noise/simple-noise.cir](fixtures/ngspice/paranoia_parallel/examples/transient-noise/simple-noise.cir) | success | success | mismatch | 4.49 | tran v(3) |  |
+| [ngspice/paranoia_parallel/examples/vdmos/vdmosp-out-mtr.cir](fixtures/ngspice/paranoia_parallel/examples/vdmos/vdmosp-out-mtr.cir) | success | success | mismatch | 0.0000316 | dc i(vs2) |  |
 | [xyce/Netlists/ACSENS/bsim3/op-amp_expr_fd.cir](fixtures/xyce/Netlists/ACSENS/bsim3/op-amp_expr_fd.cir) | success | success | mismatch | 0.988 | ac v(out) |  |
 | [xyce/Netlists/ACSENS/bsim3/op-amp_unique_fd.cir](fixtures/xyce/Netlists/ACSENS/bsim3/op-amp_unique_fd.cir) | success | success | mismatch | 0.988 | ac v(out) |  |
-| [xyce/Netlists/BJT_IC/bjt_ic.cir](fixtures/xyce/Netlists/BJT_IC/bjt_ic.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Unsupported BJT model parameter: 'PTF' (excess phase is not implemented) |
+| [xyce/Netlists/BJT_IC/bjt_ic.cir](fixtures/xyce/Netlists/BJT_IC/bjt_ic.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 21: Unsupported BJT instance parameter: 'IC=0' in 'Q1 7 3 5 BFT92 IC=0 0' Q1 7 3 5 BFT92 IC=0 0 |
 | [xyce/Netlists/CircuitSim90/MOS2_LARGE/add20.cir](fixtures/xyce/Netlists/CircuitSim90/MOS2_LARGE/add20.cir) | success | success | mismatch | 0.177 | tran v(61) |  |
 | [xyce/Netlists/CircuitSim90/MOS2_LARGE/add32.cir](fixtures/xyce/Netlists/CircuitSim90/MOS2_LARGE/add32.cir) | success | failed | spice-ts-loss |  |  | spice-ts: owned engine group exceeded uniform 119 s deadline |
 | [xyce/Netlists/CircuitSim90/MOS2_LARGE/dac.cir](fixtures/xyce/Netlists/CircuitSim90/MOS2_LARGE/dac.cir) | success | failed | spice-ts-loss |  |  | spice-ts: Singular matrix: zero pivot at matrix column 208 (nodes: 8) |
 | [xyce/Netlists/CircuitSim90/MOS2_LARGE/fadd32.cir](fixtures/xyce/Netlists/CircuitSim90/MOS2_LARGE/fadd32.cir) | success | success | mismatch | 0.112 | tran v(xful1.xha2.xlt1.6) |  |
 | [xyce/Netlists/CircuitSim90/MOS2_LARGE/pchip.cir](fixtures/xyce/Netlists/CircuitSim90/MOS2_LARGE/pchip.cir) | success | success | mismatch | 50000 | tran v(xo#3.11) |  |
-| [xyce/Netlists/CircuitSim90/MOS2_LARGE/sqrt.cir](fixtures/xyce/Netlists/CircuitSim90/MOS2_LARGE/sqrt.cir) | success | failed | spice-ts-loss |  |  | spice-ts: owned engine group exceeded uniform 119 s deadline |
 | [xyce/Netlists/CircuitSim90/MOS2_LARGE/sram.cir](fixtures/xyce/Netlists/CircuitSim90/MOS2_LARGE/sram.cir) | success | failed | spice-ts-loss |  |  | spice-ts: owned engine group exceeded uniform 119 s deadline |
 
-## Wins (3)
+## Wins (10)
 
 Fixtures where spice-ts matches ngspice-47 within the uniform threshold on every common signal.
 
 | Fixture | ngspice | spice-ts | Outcome | Worst | Worst signal | First error line (ngspice / spice-ts) |
 |---|---|---|---|---|---|---|
+| [ngspice/paranoia_parallel/examples/various/adder_mos.cir](fixtures/ngspice/paranoia_parallel/examples/various/adder_mos.cir) | success | success | matched | 0.00228 | tran v(12) |  |
 | [ngspice/paranoia_parallel/examples/vdmos/inv_vdmos_dc.cir](fixtures/ngspice/paranoia_parallel/examples/vdmos/inv_vdmos_dc.cir) | success | success | matched | 1.52e-8 | dc i(vdd) |  |
 | [ngspice/paranoia_parallel/examples/vdmos/inv_vdmos.cir](fixtures/ngspice/paranoia_parallel/examples/vdmos/inv_vdmos.cir) | success | success | matched | 0.00104 | tran i(vdd) |  |
+| [ngspice/paranoia_parallel/examples/vdmos/VDMOS-DIO-AC.cir](fixtures/ngspice/paranoia_parallel/examples/vdmos/VDMOS-DIO-AC.cir) | success | success | matched | 6.54e-13 | ac i(va) |  |
+| [ngspice/paranoia_parallel/examples/vdmos/VDMOS-DIO.cir](fixtures/ngspice/paranoia_parallel/examples/vdmos/VDMOS-DIO.cir) | success | success | matched | 0.00424 | tran i(vg) |  |
+| [ngspice/paranoia_parallel/examples/vdmos/vdmos-out_ir_mtr.cir](fixtures/ngspice/paranoia_parallel/examples/vdmos/vdmos-out_ir_mtr.cir) | success | success | matched | 0.0000834 | dc i(vs) |  |
+| [ngspice/paranoia_parallel/examples/vdmos/vdmos-out_ir.cir](fixtures/ngspice/paranoia_parallel/examples/vdmos/vdmos-out_ir.cir) | success | success | matched | 0.0000866 | dc i(vd) |  |
+| [ngspice/paranoia_parallel/examples/vdmos/vdmosp-out.cir](fixtures/ngspice/paranoia_parallel/examples/vdmos/vdmosp-out.cir) | success | success | matched | 1.48e-8 | dc i(vs) |  |
 | [xyce/Netlists/Output/TRAN/tran-prn-filter.cir](fixtures/xyce/Netlists/Output/TRAN/tran-prn-filter.cir) | success | success | matched | 3.78e-16 | tran i(v1) |  |
+| [xyce/Netlists/CircuitSim90/MOS2_LARGE/sqrt.cir](fixtures/xyce/Netlists/CircuitSim90/MOS2_LARGE/sqrt.cir) | success | success | matched | 0.0000659 | tran i(vinput1) |  |
 
 
 ## All ngspice-success parity gaps
@@ -89,14 +88,13 @@ Fixtures where spice-ts matches ngspice-47 within the uniform threshold on every
 |---|---|---|
 | directive: .pss | 1 | n-1 |
 | expression: quoted/brace expressions in values (TEMPER, functions) | 1 | n-2 |
-| comparison: no comparable result | 8 | n-3, n-4, n-8, n-9, n-10, n-11, n-12, n-13 |
-| control: ngspice control-language scripting (set/let/save/foreach/meas/...) | 1 | n-5 |
+| waveform: tran mismatch above uniform threshold (root cause not diagnosed) | 5 | n-3, n-4, n-18, n-21, n-22 |
+| waveform: dc mismatch above uniform threshold (root cause not diagnosed) | 1 | n-12 |
 | waveform: ac mismatch above uniform threshold (root cause not diagnosed) | 2 | n-14, n-15 |
-| parse: other unsupported syntax | 1 | n-17 |
-| waveform: tran mismatch above uniform threshold (root cause not diagnosed) | 3 | n-18, n-21, n-22 |
-| execution: other failure | 3 | n-19, n-23, n-24 |
+| device: BJT instance IC= initial conditions | 1 | n-17 |
+| execution: other failure | 2 | n-19, n-24 |
 | convergence | 1 | n-20 |
 
 ## Measurement boundary
 
-Unchanged corpus-j reduceRow and corpus-f metrics/thresholds. Detailed matched-point max/RMS absolute and relative metrics are in outcomes.json. Null means no comparison, not zero error. Identical original bytes for both engines; no fine-step adapted reference. Serial cold engine-group wall includes startup, adapter, parse/solve and export. No solver-only or speed-superiority claim. Core revision is recorded in outcomes.json. Execution success and waveform parity are separate; null error means no comparison, not parity. Aggregate refresh is deferred to nightly.
+Unchanged corpus-j reduceRow and corpus-f metrics/thresholds. Detailed matched-point max/RMS absolute and relative metrics are in outcomes.json. Null means no comparison, not zero error. Identical original bytes for both engines; no fine-step adapted reference. Serial cold engine-group wall includes startup, adapter, parse/solve and export. No solver-only or speed-superiority claim. New baseline, not before/after improvement: production core is unchanged. Aggregate refresh is deferred to nightly.

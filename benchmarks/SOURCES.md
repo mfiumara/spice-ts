@@ -1,5 +1,68 @@
 # Benchmark sources
 
+## Published numerical reference baseline (#1113)
+
+`benchmarks/corpus/vendor-published/` contains 20 normalized reconstructions and
+270 extracted numerical observations from Tony R. Kuphaldt, *Lessons in Electric
+Circuits*, openly published at https://www.ibiblio.org/kuphaldt/electricCircuits/.
+The seven cited chapter footers link to [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
+via the [licence appendix](https://www.ibiblio.org/kuphaldt/electricCircuits/Ref/REF_A3.html).
+Attribution and normalization changes are retained; the author does not endorse
+this comparison. Per-case URLs, retrieval dates,
+HTML SHA-256, example titles, zero-based PRE locations, assumptions and retained
+printed digits are in `manifest.json`; `fetch-references.py` reproduces numerical
+extraction without storing chapter HTML, PDFs or figures. Original topology and
+component values are retained; legacy output/syntax normalization is documented.
+These are historical SPICE2g6 simulation tables, not vendor measurements. The
+requested directory name is an umbrella for the issue's permitted textbook
+examples. One prose/netlist conflict is excluded from totals but still run and
+reported. Identical reconstructed bytes are passed to both modern engines;
+there is no calibration, restricted model, commercial install or account.
+Published simulated and measured reference fields are separate (measured: none).
+See [VENDOR_PUBLISHED.md](VENDOR_PUBLISHED.md) for all points, uncertainty policy,
+losses and the coverage boundary. Source attribution is retained; newly authored
+runner/tests are MIT project work, not re-licensed source chapters.
+
+## VDMOS comparison/export boundary (#1106)
+
+`benchmarks/vdmos-1106/` captures derived engine exports from the eight unchanged
+corpus-n ngspice VDMOS examples (n-6 through n-13). Source revision
+`a80f6e3e95d51534905b1f23410a951802666656`, BSD-3-Clause, upstream directory
+https://github.com/imr/ngspice/tree/a80f6e3e95d51534905b1f23410a951802666656/paranoia_parallel/examples/vdmos.
+The original decks, individual URLs, licenses and input hashes remain in
+`benchmarks/corpus/corpus-n/manifest.json`; no deck is edited or copied here.
+Captured waveforms and full plot/vector inventories are reproducible with the
+guarded runner. Runner, regression tests and report checker are original MIT
+project work. Common-vector metrics, missing-vector inventories and the n-12
+unmatched-plot loss are all published; no aggregate refresh or tolerance change.
+
+## MOS1 per-iteration history trace (#1080)
+
+[mos1-invert1-1080/HISTORY.md](mos1-invert1-1080/HISTORY.md) traces the
+unchanged, already-pinned GPL-3.0-or-later Xyce `invert1.cir` fixture on
+both engines. Original MIT observation/parser scripts and generated numeric
+receipts are provided. `native-history.patch` adds observation statements
+to ngspice-47 (https://github.com/imr/ngspice/tree/ngspice-47); its small
+upstream context remains subject to ngspice's modified BSD/Berkeley notices
+and COPYING. No complete native source or adapted fixture is redistributed.
+The original 0.249 mismatch and all other corpus-m losses remain published.
+
+## Diode hidden state and source-step factorization (#917)
+
+[native-state-917](native-state-917/README.md) contains an original MIT
+series-diode/capacitor reduction and observation/replay scripts. Rounded
+parameters are self-written, not copied vendor model text. The unchanged
+ticket-795 base/variant and seven includes remain fetch-only under the
+existing policy below. Their historical hashes are checked before and after
+execution; no vendor netlist/model expressions or native source are shipped.
+The referenced native source is ngspice-47 revision
+`a80f6e3e95d51534905b1f23410a951802666656`, modified BSD, at
+https://git.code.sf.net/p/ngspice/ngspice. The script adds original numeric
+observation statements to a local ignored checkout. Receipt data retains the
+diode's numeric state and three rows, not complete expanded vendor material.
+Both vendor losses remain; before/after max/RMS are null, not zero.
+
+
 ## Floating diode OP recovery experiments (#917)
 
 [floating-island-recovery-917](floating-island-recovery-917/README.md) reuses the
@@ -23,6 +86,7 @@ are in its receipt. The instance-local prototype is not a production fix.
 The ngspice-47 load-order comparison uses the read-only upstream reference
 https://github.com/imr/ngspice/blob/ngspice-47/src/spicelib/devices/bjt/bjtload.c
 (source SHA-256 and line references in the experiment README).
+
 
 ## BJT post-assembly centered Newton diagnosis (#1037)
 
@@ -54,6 +118,7 @@ BSIM3v32 source and records their hashes. Both engines select MOS9 for
 LEVEL=9, despite the upstream BSIM3 name. Same-bias controls are explicitly
 diagnostic only. Public before/after uses identical original fixture bytes,
 publishes all losses and keeps m-3 at 0.637; no corpus scores or tolerances change.
+
 
 ## corpus-m AC, diode and MOS device batch (#1045)
 

@@ -1,0 +1,419 @@
+{
+  "rows": [
+    {
+      "id": "m-1",
+      "before": "matched",
+      "after": "matched",
+      "beforeScore": 3.7e-16,
+      "afterScore": 3.7e-16,
+      "scoreDelta": 0.0,
+      "comparisonsChanged": false,
+      "beforeEngineStatus": [
+        "success",
+        "success"
+      ],
+      "afterEngineStatus": [
+        "success",
+        "success"
+      ]
+    },
+    {
+      "id": "m-2",
+      "before": "matched",
+      "after": "matched",
+      "beforeScore": 6.64e-16,
+      "afterScore": 6.64e-16,
+      "scoreDelta": 0.0,
+      "comparisonsChanged": false,
+      "beforeEngineStatus": [
+        "success",
+        "success"
+      ],
+      "afterEngineStatus": [
+        "success",
+        "success"
+      ]
+    },
+    {
+      "id": "m-3",
+      "before": "mismatch",
+      "after": "mismatch",
+      "beforeScore": 0.637,
+      "afterScore": 0.637,
+      "scoreDelta": 0.0,
+      "comparisonsChanged": false,
+      "beforeEngineStatus": [
+        "success",
+        "success"
+      ],
+      "afterEngineStatus": [
+        "success",
+        "success"
+      ]
+    },
+    {
+      "id": "m-4",
+      "before": "spice-ts-loss",
+      "after": "spice-ts-loss",
+      "beforeScore": null,
+      "afterScore": null,
+      "scoreDelta": null,
+      "comparisonsChanged": false,
+      "beforeEngineStatus": [
+        "success",
+        "unsupported"
+      ],
+      "afterEngineStatus": [
+        "success",
+        "unsupported"
+      ]
+    },
+    {
+      "id": "m-5",
+      "before": "matched",
+      "after": "matched",
+      "beforeScore": 7.13e-16,
+      "afterScore": 7.13e-16,
+      "scoreDelta": 0.0,
+      "comparisonsChanged": false,
+      "beforeEngineStatus": [
+        "success",
+        "success"
+      ],
+      "afterEngineStatus": [
+        "success",
+        "success"
+      ]
+    },
+    {
+      "id": "m-6",
+      "before": "matched",
+      "after": "matched",
+      "beforeScore": 8.91e-05,
+      "afterScore": 8.91e-05,
+      "scoreDelta": 0.0,
+      "comparisonsChanged": false,
+      "beforeEngineStatus": [
+        "success",
+        "success"
+      ],
+      "afterEngineStatus": [
+        "success",
+        "success"
+      ]
+    },
+    {
+      "id": "m-7",
+      "before": "matched",
+      "after": "matched",
+      "beforeScore": 1.31e-09,
+      "afterScore": 1.31e-09,
+      "scoreDelta": 0.0,
+      "comparisonsChanged": false,
+      "beforeEngineStatus": [
+        "success",
+        "success"
+      ],
+      "afterEngineStatus": [
+        "success",
+        "success"
+      ]
+    },
+    {
+      "id": "m-8",
+      "before": "matched",
+      "after": "matched",
+      "beforeScore": 1.31e-09,
+      "afterScore": 1.31e-09,
+      "scoreDelta": 0.0,
+      "comparisonsChanged": false,
+      "beforeEngineStatus": [
+        "success",
+        "success"
+      ],
+      "afterEngineStatus": [
+        "success",
+        "success"
+      ]
+    },
+    {
+      "id": "m-9",
+      "before": "matched",
+      "after": "matched",
+      "beforeScore": 5.76e-16,
+      "afterScore": 5.76e-16,
+      "scoreDelta": 0.0,
+      "comparisonsChanged": false,
+      "beforeEngineStatus": [
+        "success",
+        "success"
+      ],
+      "afterEngineStatus": [
+        "success",
+        "success"
+      ]
+    },
+    {
+      "id": "m-10",
+      "before": "matched",
+      "after": "matched",
+      "beforeScore": 1.31e-10,
+      "afterScore": 1.31e-10,
+      "scoreDelta": 0.0,
+      "comparisonsChanged": false,
+      "beforeEngineStatus": [
+        "success",
+        "success"
+      ],
+      "afterEngineStatus": [
+        "success",
+        "success"
+      ]
+    },
+    {
+      "id": "m-11",
+      "before": "matched",
+      "after": "matched",
+      "beforeScore": 3.78e-11,
+      "afterScore": 3.78e-11,
+      "scoreDelta": 0.0,
+      "comparisonsChanged": false,
+      "beforeEngineStatus": [
+        "success",
+        "success"
+      ],
+      "afterEngineStatus": [
+        "success",
+        "success"
+      ]
+    },
+    {
+      "id": "m-12",
+      "before": "matched",
+      "after": "matched",
+      "beforeScore": 0.000631,
+      "afterScore": 0.000631,
+      "scoreDelta": 0.0,
+      "comparisonsChanged": false,
+      "beforeEngineStatus": [
+        "success",
+        "success"
+      ],
+      "afterEngineStatus": [
+        "success",
+        "success"
+      ]
+    },
+    {
+      "id": "m-13",
+      "before": "matched",
+      "after": "matched",
+      "beforeScore": 0.00204,
+      "afterScore": 0.00204,
+      "scoreDelta": 0.0,
+      "comparisonsChanged": false,
+      "beforeEngineStatus": [
+        "success",
+        "success"
+      ],
+      "afterEngineStatus": [
+        "success",
+        "success"
+      ]
+    },
+    {
+      "id": "m-14",
+      "before": "matched",
+      "after": "matched",
+      "beforeScore": 0.00015,
+      "afterScore": 0.00015,
+      "scoreDelta": 0.0,
+      "comparisonsChanged": false,
+      "beforeEngineStatus": [
+        "success",
+        "success"
+      ],
+      "afterEngineStatus": [
+        "success",
+        "success"
+      ]
+    },
+    {
+      "id": "m-15",
+      "before": "matched",
+      "after": "matched",
+      "beforeScore": 0.000631,
+      "afterScore": 0.000631,
+      "scoreDelta": 0.0,
+      "comparisonsChanged": false,
+      "beforeEngineStatus": [
+        "success",
+        "success"
+      ],
+      "afterEngineStatus": [
+        "success",
+        "success"
+      ]
+    },
+    {
+      "id": "m-16",
+      "before": "matched",
+      "after": "matched",
+      "beforeScore": 1.34e-11,
+      "afterScore": 1.34e-11,
+      "scoreDelta": 0.0,
+      "comparisonsChanged": false,
+      "beforeEngineStatus": [
+        "success",
+        "success"
+      ],
+      "afterEngineStatus": [
+        "success",
+        "success"
+      ]
+    },
+    {
+      "id": "m-17",
+      "before": "matched",
+      "after": "matched",
+      "beforeScore": 1.22e-06,
+      "afterScore": 1.22e-06,
+      "scoreDelta": 0.0,
+      "comparisonsChanged": false,
+      "beforeEngineStatus": [
+        "success",
+        "success"
+      ],
+      "afterEngineStatus": [
+        "success",
+        "success"
+      ]
+    },
+    {
+      "id": "m-18",
+      "before": "mismatch",
+      "after": "mismatch",
+      "beforeScore": 0.249,
+      "afterScore": 0.249,
+      "scoreDelta": 0.0,
+      "comparisonsChanged": false,
+      "beforeEngineStatus": [
+        "success",
+        "success"
+      ],
+      "afterEngineStatus": [
+        "success",
+        "success"
+      ]
+    },
+    {
+      "id": "m-19",
+      "before": "mismatch",
+      "after": "mismatch",
+      "beforeScore": 0.38,
+      "afterScore": 0.38,
+      "scoreDelta": 0.0,
+      "comparisonsChanged": false,
+      "beforeEngineStatus": [
+        "success",
+        "success"
+      ],
+      "afterEngineStatus": [
+        "success",
+        "success"
+      ]
+    },
+    {
+      "id": "m-20",
+      "before": "mismatch",
+      "after": "mismatch",
+      "beforeScore": 0.38,
+      "afterScore": 0.38,
+      "scoreDelta": 0.0,
+      "comparisonsChanged": false,
+      "beforeEngineStatus": [
+        "success",
+        "success"
+      ],
+      "afterEngineStatus": [
+        "success",
+        "success"
+      ]
+    },
+    {
+      "id": "m-21",
+      "before": "mismatch",
+      "after": "mismatch",
+      "beforeScore": 0.229,
+      "afterScore": 0.229,
+      "scoreDelta": 0.0,
+      "comparisonsChanged": false,
+      "beforeEngineStatus": [
+        "success",
+        "success"
+      ],
+      "afterEngineStatus": [
+        "success",
+        "success"
+      ]
+    },
+    {
+      "id": "m-22",
+      "before": "mismatch",
+      "after": "mismatch",
+      "beforeScore": 0.229,
+      "afterScore": 0.229,
+      "scoreDelta": 0.0,
+      "comparisonsChanged": false,
+      "beforeEngineStatus": [
+        "success",
+        "success"
+      ],
+      "afterEngineStatus": [
+        "success",
+        "success"
+      ]
+    },
+    {
+      "id": "m-23",
+      "before": "spice-ts-loss",
+      "after": "spice-ts-loss",
+      "beforeScore": null,
+      "afterScore": null,
+      "scoreDelta": null,
+      "comparisonsChanged": false,
+      "beforeEngineStatus": [
+        "success",
+        "failed"
+      ],
+      "afterEngineStatus": [
+        "success",
+        "failed"
+      ]
+    },
+    {
+      "id": "m-24",
+      "before": "spice-ts-loss",
+      "after": "spice-ts-loss",
+      "beforeScore": null,
+      "afterScore": null,
+      "scoreDelta": null,
+      "comparisonsChanged": false,
+      "beforeEngineStatus": [
+        "success",
+        "failed"
+      ],
+      "afterEngineStatus": [
+        "success",
+        "failed"
+      ]
+    }
+  ],
+  "counts": {
+    "matched": 15,
+    "mismatch": 6,
+    "spice-ts-loss": 3
+  },
+  "beforeCoreTree": "df2920fd2169f091c0585be0160a7567d0b50fb7",
+  "afterCoreTree": "20c6d35d8f523770fe41f0a5767666cd8e73599a"
+}

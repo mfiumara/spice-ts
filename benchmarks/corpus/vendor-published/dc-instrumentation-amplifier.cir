@@ -1,0 +1,18 @@
+* Reconstructed published case: dc-instrumentation-amplifier
+V1 1 0 DC 0
+RBOGUS1 1 0 9e12
+V2 4 0 DC 5
+RBOGUS2 4 0 9e12
+E1 3 0 1 2 999k
+E2 6 0 4 5 999k
+E3 9 0 8 7 999k
+RLOAD 9 0 10k
+R1 2 3 10k
+RGAIN 2 5 10k
+R2 5 6 10k
+R3 3 7 10k
+R4 7 9 10k
+R5 6 8 10k
+R6 8 0 10k
+.dc V1 0 10 1
+.end

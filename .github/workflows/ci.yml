@@ -43,6 +43,9 @@ jobs:
 
       - run: pnpm -C packages/protocol build && pnpm -C packages/core build
 
+      - name: Offline VDMOS comparison/export regression
+        run: pnpm exec tsx --test benchmarks/vdmos-1106/comparison.test.ts
+
       - run: pnpm lint
 
       # Keep all 1M deterministic #749/#806 patterns in each required test job.
@@ -177,6 +180,7 @@ jobs:
             benchmarks/translate/gnucap-to-spice3.test.ts \
             benchmarks/translate/xyce-to-spice3.test.ts \
             benchmarks/corpus/classic/report.test.ts \
+            benchmarks/corpus/vendor-published/report.test.ts \
             benchmarks/corpus/classic-b-audit/audit.test.ts \
             benchmarks/corpus/corpus-d/validate.test.mjs \
             benchmarks/corpus/corpus-g/corpus-g.test.ts \

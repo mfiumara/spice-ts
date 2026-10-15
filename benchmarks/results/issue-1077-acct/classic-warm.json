@@ -1,0 +1,218 @@
+[
+  {
+    "run": 0,
+    "mode": "warm",
+    "inputSha256": "d8b0e627f7742490ac6e841ffb176c9b02ffe6de1246bb57d1db793f58027469",
+    "apiMs": 3689.71025,
+    "parseMs": 7.675167000000002,
+    "points": 2429,
+    "convergence": {
+      "dc": {
+        "newtonIterations": 143,
+        "acceptedSolves": 12,
+        "rejectedSolves": 1,
+        "sourceStepAttempts": 0,
+        "sourceStepFailures": 0,
+        "gminStepAttempts": 12,
+        "gminStepFailures": 0,
+        "failure": null
+      },
+      "transient": {
+        "acceptedSteps": 2428,
+        "rejectedSteps": 766,
+        "newtonIterations": 82710,
+        "nrRetries": 756,
+        "lteRetries": 10,
+        "minimumAcceptedTimestep": 7.569444300496845e-12,
+        "failure": null
+      }
+    },
+    "waveforms": [
+      "13a3cbd30f2ce933ccc59baad1518ea7513ab535b90873f8a4bbae635adbdb53",
+      "570229750a7fd987ada377f573a8adc8beeff145fc5634a33fdc452b8aa42773",
+      "73415ca049d0c62503fa0cd32cca2cc2175a997a3febd915dfd8f3c91f1adcb0"
+    ],
+    "inclusiveMs": {},
+    "calls": {}
+  },
+  {
+    "run": 1,
+    "mode": "warm",
+    "inputSha256": "d8b0e627f7742490ac6e841ffb176c9b02ffe6de1246bb57d1db793f58027469",
+    "apiMs": 3736.0553750000004,
+    "parseMs": 1.348417000000154,
+    "points": 2429,
+    "convergence": {
+      "dc": {
+        "newtonIterations": 143,
+        "acceptedSolves": 12,
+        "rejectedSolves": 1,
+        "sourceStepAttempts": 0,
+        "sourceStepFailures": 0,
+        "gminStepAttempts": 12,
+        "gminStepFailures": 0,
+        "failure": null
+      },
+      "transient": {
+        "acceptedSteps": 2428,
+        "rejectedSteps": 766,
+        "newtonIterations": 82710,
+        "nrRetries": 756,
+        "lteRetries": 10,
+        "minimumAcceptedTimestep": 7.569444300496845e-12,
+        "failure": null
+      }
+    },
+    "waveforms": [
+      "13a3cbd30f2ce933ccc59baad1518ea7513ab535b90873f8a4bbae635adbdb53",
+      "570229750a7fd987ada377f573a8adc8beeff145fc5634a33fdc452b8aa42773",
+      "73415ca049d0c62503fa0cd32cca2cc2175a997a3febd915dfd8f3c91f1adcb0"
+    ],
+    "inclusiveMs": {},
+    "calls": {}
+  },
+  {
+    "run": 2,
+    "mode": "warm",
+    "inputSha256": "d8b0e627f7742490ac6e841ffb176c9b02ffe6de1246bb57d1db793f58027469",
+    "apiMs": 3749.092625,
+    "parseMs": 1.0120420000002923,
+    "points": 2429,
+    "convergence": {
+      "dc": {
+        "newtonIterations": 143,
+        "acceptedSolves": 12,
+        "rejectedSolves": 1,
+        "sourceStepAttempts": 0,
+        "sourceStepFailures": 0,
+        "gminStepAttempts": 12,
+        "gminStepFailures": 0,
+        "failure": null
+      },
+      "transient": {
+        "acceptedSteps": 2428,
+        "rejectedSteps": 766,
+        "newtonIterations": 82710,
+        "nrRetries": 756,
+        "lteRetries": 10,
+        "minimumAcceptedTimestep": 7.569444300496845e-12,
+        "failure": null
+      }
+    },
+    "waveforms": [
+      "13a3cbd30f2ce933ccc59baad1518ea7513ab535b90873f8a4bbae635adbdb53",
+      "570229750a7fd987ada377f573a8adc8beeff145fc5634a33fdc452b8aa42773",
+      "73415ca049d0c62503fa0cd32cca2cc2175a997a3febd915dfd8f3c91f1adcb0"
+    ],
+    "inclusiveMs": {},
+    "calls": {}
+  },
+  {
+    "run": 3,
+    "mode": "warm",
+    "inputSha256": "d8b0e627f7742490ac6e841ffb176c9b02ffe6de1246bb57d1db793f58027469",
+    "apiMs": 3603.913790999999,
+    "parseMs": 0.7048329999997804,
+    "points": 2429,
+    "convergence": {
+      "dc": {
+        "newtonIterations": 143,
+        "acceptedSolves": 12,
+        "rejectedSolves": 1,
+        "sourceStepAttempts": 0,
+        "sourceStepFailures": 0,
+        "gminStepAttempts": 12,
+        "gminStepFailures": 0,
+        "failure": null
+      },
+      "transient": {
+        "acceptedSteps": 2428,
+        "rejectedSteps": 766,
+        "newtonIterations": 82710,
+        "nrRetries": 756,
+        "lteRetries": 10,
+        "minimumAcceptedTimestep": 7.569444300496845e-12,
+        "failure": null
+      }
+    },
+    "waveforms": [
+      "13a3cbd30f2ce933ccc59baad1518ea7513ab535b90873f8a4bbae635adbdb53",
+      "570229750a7fd987ada377f573a8adc8beeff145fc5634a33fdc452b8aa42773",
+      "73415ca049d0c62503fa0cd32cca2cc2175a997a3febd915dfd8f3c91f1adcb0"
+    ],
+    "inclusiveMs": {},
+    "calls": {}
+  },
+  {
+    "run": 4,
+    "mode": "warm",
+    "inputSha256": "d8b0e627f7742490ac6e841ffb176c9b02ffe6de1246bb57d1db793f58027469",
+    "apiMs": 3595.595125,
+    "parseMs": 0.6580830000002607,
+    "points": 2429,
+    "convergence": {
+      "dc": {
+        "newtonIterations": 143,
+        "acceptedSolves": 12,
+        "rejectedSolves": 1,
+        "sourceStepAttempts": 0,
+        "sourceStepFailures": 0,
+        "gminStepAttempts": 12,
+        "gminStepFailures": 0,
+        "failure": null
+      },
+      "transient": {
+        "acceptedSteps": 2428,
+        "rejectedSteps": 766,
+        "newtonIterations": 82710,
+        "nrRetries": 756,
+        "lteRetries": 10,
+        "minimumAcceptedTimestep": 7.569444300496845e-12,
+        "failure": null
+      }
+    },
+    "waveforms": [
+      "13a3cbd30f2ce933ccc59baad1518ea7513ab535b90873f8a4bbae635adbdb53",
+      "570229750a7fd987ada377f573a8adc8beeff145fc5634a33fdc452b8aa42773",
+      "73415ca049d0c62503fa0cd32cca2cc2175a997a3febd915dfd8f3c91f1adcb0"
+    ],
+    "inclusiveMs": {},
+    "calls": {}
+  },
+  {
+    "run": 5,
+    "mode": "warm",
+    "inputSha256": "d8b0e627f7742490ac6e841ffb176c9b02ffe6de1246bb57d1db793f58027469",
+    "apiMs": 3646.034875000001,
+    "parseMs": 0.5154579999980342,
+    "points": 2429,
+    "convergence": {
+      "dc": {
+        "newtonIterations": 143,
+        "acceptedSolves": 12,
+        "rejectedSolves": 1,
+        "sourceStepAttempts": 0,
+        "sourceStepFailures": 0,
+        "gminStepAttempts": 12,
+        "gminStepFailures": 0,
+        "failure": null
+      },
+      "transient": {
+        "acceptedSteps": 2428,
+        "rejectedSteps": 766,
+        "newtonIterations": 82710,
+        "nrRetries": 756,
+        "lteRetries": 10,
+        "minimumAcceptedTimestep": 7.569444300496845e-12,
+        "failure": null
+      }
+    },
+    "waveforms": [
+      "13a3cbd30f2ce933ccc59baad1518ea7513ab535b90873f8a4bbae635adbdb53",
+      "570229750a7fd987ada377f573a8adc8beeff145fc5634a33fdc452b8aa42773",
+      "73415ca049d0c62503fa0cd32cca2cc2175a997a3febd915dfd8f3c91f1adcb0"
+    ],
+    "inclusiveMs": {},
+    "calls": {}
+  }
+]

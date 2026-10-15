@@ -1,0 +1,7 @@
+* Reconstructed published case: dc-series
+V1 1 0 DC 9
+R1 1 2 3k
+R2 2 3 10k
+R3 3 0 5k
+.dc V1 9 9 1
+.end

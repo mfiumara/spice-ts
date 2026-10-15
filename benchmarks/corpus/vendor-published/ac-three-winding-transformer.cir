@@ -1,0 +1,15 @@
+* Reconstructed published case: ac-three-winding-transformer
+V1 1 0 AC 120
+RBOGUS0 1 6 1e-3
+L1 6 0 100
+L2 2 4 1
+L3 3 5 25
+K1 L1 L2 .999
+K2 L2 L3 .999
+K3 L1 L3 .999
+R1 2 4 1000
+R2 3 5 1000
+RBOGUS1 5 0 1e10
+RBOGUS2 4 0 1e10
+.ac lin 1 60 60
+.end

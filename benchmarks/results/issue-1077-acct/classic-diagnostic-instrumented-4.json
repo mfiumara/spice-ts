@@ -1,0 +1,60 @@
+[
+  {
+    "run": 0,
+    "mode": "instrumented",
+    "inputSha256": "d8b0e627f7742490ac6e841ffb176c9b02ffe6de1246bb57d1db793f58027469",
+    "apiMs": 4739.736583,
+    "parseMs": 6.531416999999998,
+    "points": 2429,
+    "convergence": {
+      "dc": {
+        "newtonIterations": 143,
+        "acceptedSolves": 12,
+        "rejectedSolves": 1,
+        "sourceStepAttempts": 0,
+        "sourceStepFailures": 0,
+        "gminStepAttempts": 12,
+        "gminStepFailures": 0,
+        "failure": null
+      },
+      "transient": {
+        "acceptedSteps": 2428,
+        "rejectedSteps": 766,
+        "newtonIterations": 82710,
+        "nrRetries": 756,
+        "lteRetries": 10,
+        "minimumAcceptedTimestep": 7.569444300496845e-12,
+        "failure": null
+      }
+    },
+    "waveforms": [
+      "13a3cbd30f2ce933ccc59baad1518ea7513ab535b90873f8a4bbae635adbdb53",
+      "570229750a7fd987ada377f573a8adc8beeff145fc5634a33fdc452b8aa42773",
+      "73415ca049d0c62503fa0cd32cca2cc2175a997a3febd915dfd8f3c91f1adcb0"
+    ],
+    "inclusiveMs": {
+      "historyRestamp": 52.63017599999512,
+      "output": 2.0873040000060428,
+      "deviceStaticDynamic": 1299.2465320000201,
+      "deviceCharge": 2771.6288909999084,
+      "loadStamp": 4164.990091000126,
+      "factor": 217.2336910000613,
+      "solve": 92.03173900003185,
+      "attempt": 4555.403073,
+      "advance": 4679.623432,
+      "transient": 4688.122832999999
+    },
+    "calls": {
+      "transient": 1,
+      "historyRestamp": 2429,
+      "output": 2467,
+      "advance": 2428,
+      "attempt": 3194,
+      "loadStamp": 82710,
+      "deviceStaticDynamic": 82710,
+      "deviceCharge": 82710,
+      "factor": 82710,
+      "solve": 82710
+    }
+  }
+]

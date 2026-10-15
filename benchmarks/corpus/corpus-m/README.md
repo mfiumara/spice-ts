@@ -6,15 +6,15 @@ Every deck below is byte-identical to its pinned upstream revision (xyce `7bb7e9
 
 ## Totals
 
-- Fixtures: 24. Outcome SHA-256: `d4f32ef64da4c542f9b4d63241613f53c99d9ce80013b99e0e174ec75a9818e3`.
+- Fixtures: 24. Outcome SHA-256: `1454689659fc383b931ab3cd754bf44cba61a06c58687ad8e650431c6db55cf2`.
 - ngspice (ngspice-47): 24 success, 0 failed, 0 unsupported.
-- spice-ts (0.3.0): 21 success, 2 failed, 1 unsupported.
-- Outcomes: matched 15, mismatch 6, not-compared 0, spice-ts-loss 3, ngspice-failed 0, both-failed 0.
-- Of the 24 decks ngspice runs successfully, spice-ts matches 15, mismatches 6, produces no comparable result for 0 and fails 3.
+- spice-ts (0.3.0): 23 success, 0 failed, 1 unsupported.
+- Outcomes: matched 15, mismatch 8, not-compared 0, spice-ts-loss 1, ngspice-failed 0, both-failed 0.
+- Of the 24 decks ngspice runs successfully, spice-ts matches 15, mismatches 8, produces no comparable result for 0 and fails 1.
 
 | Source | Fixtures | Matched | Mismatch | Not compared | spice-ts loss | ngspice failed | Both failed |
 |---|---|---|---|---|---|---|---|
-| `xyce` | 24 | 15 | 6 | 0 | 3 | 0 | 0 |
+| `xyce` | 24 | 15 | 8 | 0 | 1 | 0 | 0 |
 
 ## Method
 
@@ -36,7 +36,6 @@ Grouped from spice-ts's own first error line (unchanged corpus-l/i/h/f rules). "
 
 | Bucket | Fixtures | ngspice ok | Issue |
 |---|---|---|---|
-| execution: other failure | 2 | 2 | none filed |
 | model: compact MOSFET model B3SOI (LEVEL=10) | 1 | 1 | none filed |
 
 ## Losses (9)
@@ -52,8 +51,8 @@ Every fixture that is not matched: spice-ts failures, mismatches above the thres
 | [xyce/Netlists/MOSFET_ParamAliases/invert2_alt.cir](fixtures/xyce/Netlists/MOSFET_ParamAliases/invert2_alt.cir) | success | success | mismatch | 0.38 | tran v(vout) |  |
 | [xyce/Netlists/MOSFET_ParamAliases/invert3.cir](fixtures/xyce/Netlists/MOSFET_ParamAliases/invert3.cir) | success | success | mismatch | 0.229 | tran i(vdddev) |  |
 | [xyce/Netlists/MOSFET_ParamAliases/invert3_alt.cir](fixtures/xyce/Netlists/MOSFET_ParamAliases/invert3_alt.cir) | success | success | mismatch | 0.229 | tran i(vdddev) |  |
-| [xyce/Netlists/MOSFET_ParamAliases/invert6.cir](fixtures/xyce/Netlists/MOSFET_ParamAliases/invert6.cir) | success | failed | spice-ts-loss |  |  | spice-ts: MOSFET level 6 model 'CD4012_NMOS': series resistance parameter RD is not supported |
-| [xyce/Netlists/MOSFET_ParamAliases/invert6_alt.cir](fixtures/xyce/Netlists/MOSFET_ParamAliases/invert6_alt.cir) | success | failed | spice-ts-loss |  |  | spice-ts: MOSFET level 6 model 'CD4012_NMOS': series resistance parameter RD is not supported |
+| [xyce/Netlists/MOSFET_ParamAliases/invert6.cir](fixtures/xyce/Netlists/MOSFET_ParamAliases/invert6.cir) | success | success | mismatch | 0.172 | tran v(vout) |  |
+| [xyce/Netlists/MOSFET_ParamAliases/invert6_alt.cir](fixtures/xyce/Netlists/MOSFET_ParamAliases/invert6_alt.cir) | success | success | mismatch | 0.172 | tran v(vout) |  |
 
 ## Wins (15)
 
@@ -84,9 +83,8 @@ Fixtures where spice-ts matches ngspice-47 within the uniform threshold on every
 |---|---|---|
 | waveform: ac mismatch above uniform threshold (root cause not diagnosed) | 1 | m-3 |
 | model: compact MOSFET model B3SOI (LEVEL=10) | 1 | m-4 |
-| waveform: tran mismatch above uniform threshold (root cause not diagnosed) | 5 | m-18, m-19, m-20, m-21, m-22 |
-| execution: other failure | 2 | m-23, m-24 |
+| waveform: tran mismatch above uniform threshold (root cause not diagnosed) | 7 | m-18, m-19, m-20, m-21, m-22, m-23, m-24 |
 
 ## Measurement boundary
 
-Unchanged corpus-j reduceRow and corpus-f metrics/thresholds. Detailed matched-point max/RMS absolute and relative metrics are in outcomes.json. Null means no comparison, not zero error. Identical original bytes for both engines; no fine-step adapted reference. Serial cold engine-group wall includes startup, adapter, parse/solve and export. No solver-only or speed-superiority claim. New baseline, not before/after improvement: production core is unchanged. Aggregate refresh is deferred to nightly.
+Unchanged corpus-j reduceRow and corpus-f metrics/thresholds. Detailed matched-point max/RMS absolute and relative metrics are in outcomes.json. Null means no comparison, not zero error. Identical original bytes for both engines; no fine-step adapted reference. Serial cold engine-group wall includes startup, adapter, parse/solve and export. No solver-only or speed-superiority claim. MOS6 series-resistance before/after evidence is in [issue-1083](../../results/issue-1083/README.md); m-23/m-24 now execute but remain mismatches, so #1083 stays open. Aggregate refresh is deferred to nightly.

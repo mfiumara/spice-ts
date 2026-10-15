@@ -1,0 +1,122 @@
+[
+  {
+    "fixture": "ngspice",
+    "engine": "js",
+    "run": 0,
+    "wallMs": 5445.564833993558
+  },
+  {
+    "fixture": "ngspice",
+    "engine": "native",
+    "run": 0,
+    "wallMs": 550.4204159951769
+  },
+  {
+    "fixture": "classic",
+    "engine": "js",
+    "run": 0,
+    "wallMs": 6580.293584003812
+  },
+  {
+    "fixture": "classic",
+    "engine": "native",
+    "run": 0,
+    "wallMs": 815.0182910030708
+  },
+  {
+    "fixture": "ngspice",
+    "engine": "native",
+    "run": 1,
+    "wallMs": 712.5863749970449
+  },
+  {
+    "fixture": "ngspice",
+    "engine": "js",
+    "run": 1,
+    "wallMs": 5071.9799590006005
+  },
+  {
+    "fixture": "classic",
+    "engine": "native",
+    "run": 1,
+    "wallMs": 497.37399999867193
+  },
+  {
+    "fixture": "classic",
+    "engine": "js",
+    "run": 1,
+    "wallMs": 4681.259707998834
+  },
+  {
+    "fixture": "ngspice",
+    "engine": "js",
+    "run": 2,
+    "wallMs": 5038.9780000114115
+  },
+  {
+    "fixture": "ngspice",
+    "engine": "native",
+    "run": 2,
+    "wallMs": 560.6055410025874
+  },
+  {
+    "fixture": "classic",
+    "engine": "js",
+    "run": 2,
+    "wallMs": 4995.498749995022
+  },
+  {
+    "fixture": "classic",
+    "engine": "native",
+    "run": 2,
+    "wallMs": 522.290291992249
+  },
+  {
+    "fixture": "ngspice",
+    "engine": "native",
+    "run": 3,
+    "wallMs": 532.9349169915076
+  },
+  {
+    "fixture": "ngspice",
+    "engine": "js",
+    "run": 3,
+    "wallMs": 4965.747750000446
+  },
+  {
+    "fixture": "classic",
+    "engine": "native",
+    "run": 3,
+    "wallMs": 528.9312079985393
+  },
+  {
+    "fixture": "classic",
+    "engine": "js",
+    "run": 3,
+    "wallMs": 5123.043792002136
+  },
+  {
+    "fixture": "ngspice",
+    "engine": "js",
+    "run": 4,
+    "wallMs": 4445.320416009054
+  },
+  {
+    "fixture": "ngspice",
+    "engine": "native",
+    "run": 4,
+    "wallMs": 462.333250005031
+  },
+  {
+    "fixture": "classic",
+    "engine": "js",
+    "run": 4,
+    "wallMs": 4153.621417004615
+  },
+  {
+    "fixture": "classic",
+    "engine": "native",
+    "run": 4,
+    "wallMs": 424.53525000019
+  }
+]
