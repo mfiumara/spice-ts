@@ -57,7 +57,10 @@ export function buildACRHS(compiled: CompiledCircuit): ComplexACRHS {
  * A device whose small-signal conductances depend on frequency (ngspice
  * MESAacLoad with DELFO != 0: the output conductance moves from LAMBDA to
  * LAMBDAHF). `stampFrequencyConductance` adds the difference to the
- * frequency-independent stamp at angular frequency `omega`.
+ * frequency-independent stamp at angular frequency `omega`. Its C stamp is
+ * the imaginary admittance divided by omega (BJT excess phase).
+ * HERTZ-dependent
+ * behavioral sources omit their baseline stamp and add their full Jacobian.
  */
 interface FrequencyDependentConductance {
   readonly frequencyDependent: boolean;
@@ -104,10 +107,11 @@ export function createLinearizedFrequencySystem(
   const solver = new ComplexSparseSolver();
   solver.analyzePattern(gCsc, cCsc, variables);
   let analyzedG = gCsc;
+  let analyzedC = cCsc;
 
   const dispersive = mode === 'standard' ? devices.filter(isFrequencyDependent) : [];
-  const conductanceAt = (omega: number): CscMatrix => {
-    if (dispersive.length === 0) return gCsc;
+  const matricesAt = (omega: number): { g: CscMatrix; c: CscMatrix } => {
+    if (dispersive.length === 0) return { g: gCsc, c: cCsc };
     const delta = new MNAAssembler(nodeCount, branchCount, { deviceGmin: options.deviceGmin });
     delta.solution.set(dcSolution);
     const deltaCtx = delta.getStampContext();
@@ -116,17 +120,23 @@ export function createLinearizedFrequencySystem(
     merged.addMatrix(assembler.G, 1);
     merged.addMatrix(delta.G, 1);
     const { csc } = toCsc(merged);
-    if (!samePattern(csc, analyzedG)) {
-      solver.analyzePattern(csc, cCsc, variables);
+    const mergedC = new SparseMatrix(nodeCount + branchCount);
+    mergedC.addMatrix(assembler.C, 1);
+    mergedC.addMatrix(delta.C, 1);
+    const { csc: capacitance } = toCsc(mergedC);
+    if (!samePattern(csc, analyzedG) || !samePattern(capacitance, analyzedC)) {
+      solver.analyzePattern(csc, capacitance, variables);
       analyzedG = csc;
+      analyzedC = capacitance;
     }
-    return csc;
+    return { g: csc, c: capacitance };
   };
 
   return {
     size: nodeCount + branchCount,
     solve(omega, rhs) {
-      solver.factorize(conductanceAt(omega), cCsc, omega);
+      const { g, c } = matricesAt(omega);
+      solver.factorize(g, c, omega);
       const [real, imaginary] = solver.solve(rhs.real, rhs.imaginary);
       return { real, imaginary };
     },

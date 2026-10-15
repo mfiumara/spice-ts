@@ -90,9 +90,22 @@ describe('LTRAtrunc step limit (ngspice-47 ltratrun.c)', () => {
     expect(free.truncateTransientStep(trial)).toBe(Infinity);
   });
 
-  it('rejects the unported FULLCONTROL/HALFCONTROL/TRUNCNR truncation-error control', () => {
-    for (const flag of ['FULLCONTROL', 'HALFCONTROL', 'TRUNCNR']) {
+  it('rejects the unported FULLCONTROL/HALFCONTROL truncation-error control', () => {
+    for (const flag of ['FULLCONTROL', 'HALFCONTROL']) {
       expect(() => line({ ...RLC, [flag]: 1 })).toThrow(new RegExp(`${flag} is not supported`));
     }
+  });
+
+  it('accepts TRUNCNR with a warning and retains the default timestep bounds', () => {
+    const device = line({ ...RLC, TRUNCNR: 1 });
+    expect(device.model.warnings).toEqual([
+      'LMOD: TRUNCNR accepted but Newton LTE timestep search is not implemented; NOCONTROL is used (ngspice default).',
+    ]);
+    const defaultDevice = line(RLC);
+    for (const candidate of [device, defaultDevice]) {
+      accept(candidate, [[0, { v1: 0 }], [1e-10, { v1: 0 }]]);
+    }
+    const trial = context(2e-10, { v1: 0 });
+    expect(device.truncateTransientStep(trial)).toBe(defaultDevice.truncateTransientStep(trial));
   });
 });

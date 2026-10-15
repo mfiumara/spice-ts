@@ -50,6 +50,9 @@ export interface ResolvedLtraModel {
   stepLimit: boolean;
   /** ngspice LTRAtruncDontCut (TRUNCDONTCUT): skip the RLC maxSafeStep bound. */
   truncDontCut: boolean;
+  /** ngspice delayed-wave interpolation selector (default QUADINTERP). */
+  interpolation: 'linear' | 'quadratic' | 'mixed';
+  warnings: readonly string[];
 }
 
 export interface LtraTolerances {
@@ -102,7 +105,7 @@ export function resolveLtraModel(
   // ltraset.c:75-77 keeps NOCONTROL unless FULLCONTROL/HALFCONTROL is given.
   // The LTRAlteCalculate truncation-error control and its TRUNCNR Newton
   // search (ltratrun.c:129-186) are not ported.
-  for (const flag of ['FULLCONTROL', 'HALFCONTROL', 'TRUNCNR']) {
+  for (const flag of ['FULLCONTROL', 'HALFCONTROL']) {
     if (model.params[flag]) throw new Error(`Unsupported LTRA model: ${flag} is not supported`);
   }
   // ltraset.c: a zero or omitted straight-line tolerance takes RELTOL/ABSTOL.
@@ -150,6 +153,10 @@ export function resolveLtraModel(
     // ltraset.c:73-74: anything but NOSTEPLIMIT is STEPLIMIT.
     stepLimit: !model.params.NOSTEPLIMIT,
     truncDontCut: Boolean(model.params.TRUNCDONTCUT),
+    interpolation: model.params.LININTERP ? 'linear' : model.params.MIXEDINTERP ? 'mixed' : 'quadratic',
+    warnings: model.params.TRUNCNR
+      ? [`${model.name}: TRUNCNR accepted but Newton LTE timestep search is not implemented; NOCONTROL is used (ngspice default).`]
+      : [],
   };
 }
 

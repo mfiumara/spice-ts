@@ -72,6 +72,11 @@ const FUNCTIONS: Record<string, (...args: number[]) => number> = {
   acosh: Math.acosh,
   atanh: Math.atanh,
   sgn: Math.sign,
+  // B-expression functions (ptfuncs.c), also accepted by the shared scalar
+  // evaluator when preprocessing constant quoted B-source expressions.
+  u: x => x < 0 ? 0 : x > 0 ? 1 : 0.5,
+  u2: x => x <= 0 ? 0 : x <= 1 ? x : 1,
+  uramp: x => x < 0 ? 0 : x,
   int: Math.trunc,
   nint,
   floor: Math.floor,

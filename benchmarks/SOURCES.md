@@ -1423,3 +1423,14 @@ unresolved causal classification and reproduction commands. `verification.json`
 checks observation-only traces against uninstrumented output on every native
 and TypeScript signal/timepoint. This is evidence, not new corpus coverage,
 an aggregate refresh, or a production fix.
+
+## BJT excess phase regression (#1142)
+
+`packages/core/src/devices/fixtures/bjt-ptf-1142.cir` is an original,
+self-authored common-emitter AC/transient probe under the repository MIT
+licence. The adjacent test consumes it and pins its SHA-256 and ngspice-47
+reference values. No third-party netlist was added. The unchanged corpus-g
+`GMIN_STEPPING/gstep_cont3a.cir` retains its existing corpus-g provenance.
+The equations follow ngspice BJT `bjttemp.c`, `bjtacld.c` and `bjtload.c`
+(https://github.com/ngspice/ngspice/tree/master/src/spicelib/devices/bjt);
+PTF is degrees, and the transient delay uses Weil's backward-Euler approximation.
