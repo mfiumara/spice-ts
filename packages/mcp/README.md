@@ -6,6 +6,7 @@ A bounded stdio MCP server exposing the existing spice-ts protocol-v1 adapter. I
 
 - `spice_capabilities`: deterministic discovery of supported analyses, input formats, and server limits.
 - `spice_validate`: bounded parse/compile/topology validation without solving.
+- `spice_convert`: convert `{ netlist: string }` to `{ circuitJson, diagnostics, lossy: false }`, or `{ circuitJson: [...] }` to `{ netlist, diagnostics, lossy: false }`.
 - `spice_simulate`: one bounded protocol-v1 simulation.
 - `spice_measure`: run the same simulation request once and return scalar measurements only.
 - `spice_simulation_start`: start a bounded simulation worker and return its opaque job cursor before solving completes.
@@ -15,6 +16,25 @@ A bounded stdio MCP server exposing the existing spice-ts protocol-v1 adapter. I
 The validation, one-shot simulation, and stream-start tools accept `{ "request": SimulationRequestV1 }`. Successful results are returned as MCP `structuredContent` and as compact JSON text. Failures set `isError` and return `{ "error": SpiceApiErrorV1 }`; implementation backend names are removed from public errors.
 
 The server supports protocol-v1 `spice`, `spice-ts`, and `circuit-json` inputs and `op`, `dc`, `tran`, and `ac` analyses. For Circuit JSON, use `input: { format: 'circuit-json', circuit, analyses }`. Conversion is performed by `@spice-ts/circuit-json` before validation or worker execution; its supported element set applies (currently R/C/M/Q, not independent sources). Fatal conversion diagnostics are returned in `error.details.diagnostics`, with `UNSUPPORTED_ELEMENT` for unsupported elements. Nonfatal conversion diagnostics (including ignored layout elements) are exposed in the MCP result's `_meta.conversionDiagnostics` by all three request tools, without changing the protocol simulation result shape.
+
+## Circuit conversion
+
+`spice_convert` requires exactly one input field. It uses the core titleless SPICE
+parser and `@spice-ts/circuit-json`, without solving. Circuit JSON represents circuit
+connectivity and component values, not analysis directives, solver options, or model
+cards. Reattach analyses (for example `.op`) when simulating the returned netlist.
+SPICE export currently supports passive resistors and capacitors. M/Q import cannot
+produce a runnable SPICE model from circuit-json alone and is rejected rather than
+inventing model parameters. Independent sources are unsupported in either direction.
+Lossy exports are rejected. Fatal errors use the usual `isError` and
+`error.details.diagnostics` shape, including `UNSUPPORTED_ELEMENT` for unsupported
+components and `UNSUPPORTED_PARAMETER` diagnostics for unrepresentable parameters
+(including resistor instance `M`, `AC`, temperature coefficients, and capacitor `IC`).
+These parameters are rejected, not silently stripped or approximated. For a powered
+passive-network round-trip, attach the same external source and analysis after conversion.
+Successful conversions include nonfatal diagnostics (such as `LAYOUT_ONLY`).
+The compact JSON input and output obey `maxDocumentBytes` and
+`maxSerializedResultBytes`, respectively; oversize calls return `RESOURCE_LIMIT`.
 
 ## Scalar measurements
 
