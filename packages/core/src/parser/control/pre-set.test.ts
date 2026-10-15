@@ -44,10 +44,11 @@ describe('ngspice-47 pre_set (#1097)', () => {
   });
 
   it('preserves fail-fast parse errors under strict_errorhandling on every parser entry point', async () => {
-    const body = 'V1 in 0 1\nR1 in 0\n.control\npre_set strict_errorhandling\n.endc';
-    expect(() => parse(`Bad\n${body}`)).toThrow('Resistor');
-    expect(() => parseTitleless(body)).toThrow('Resistor');
-    await expect(parseAsync(`Bad\n${body}`)).rejects.toThrow('Resistor');
+    // Bare resistors are ignored by ngspice-47; use an invalid extra token instead.
+    const body = 'V1 in 0 1\nR1 in 0 1k 2k 3k\n.control\npre_set strict_errorhandling\n.endc';
+    expect(() => parse(`Bad\n${body}`)).toThrow("Unexpected resistor token '3k'");
+    expect(() => parseTitleless(body)).toThrow("Unexpected resistor token '3k'");
+    await expect(parseAsync(`Bad\n${body}`)).rejects.toThrow("Unexpected resistor token '3k'");
   });
 
   it('does not suppress control errors when strict_errorhandling is set', async () => {
