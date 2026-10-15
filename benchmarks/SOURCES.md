@@ -784,6 +784,14 @@ Run `pnpm exec tsx benchmarks/sensitivity/compare.ts` with ngspice-47. The JSON 
 - Adaptation: none between engines. The verifier reads the committed fixture once and supplies those exact bytes to spice-ts and ngspice-47. No engine-specific values, tolerances, or rewrites are used.
 - Reproduce with `pnpm -C packages/core build && pnpm exec tsx benchmarks/results/issue-319/verify.ts --output benchmarks/results/issue-319/report.json`. The receipt records ngspice-47, exact commands, the 17-point `.dc VSWEEP 8 12 0.25` grid, `V(cold)`, `V(nominal)`, `V(hot)`, and `I(VSWEEP)`, convergence, runtimes, and matched-point maximum/RMS absolute and relative errors.
 
+## VBIC emission coefficient parity fixture (#1156)
+
+- Fixture: `benchmarks/vbic-emission/emission.cir`; project-authored for [issue #1156](https://github.com/mfiumara/spice-ts/issues/1156), MIT under the repository licence. No third-party netlist is copied.
+- The exact same deck bytes are used by both engines; the temperature card alone is varied identically to 0, 27 and 75 C. Forward/reverse transport and forward-biased parasitic substrate diodes exercise NF, NR, NEI, NEN, NCI, NCN, NFP, NCIP and NCNP in OP, DC sweep and AC.
+- Equation sources: ngspice-47 `src/spicelib/devices/vbic/{vbicload,vbictemp,vbicsetup}.c`, available in the [pinned ngspice source tree](https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/src/spicelib/devices/vbic/), BSD-3-Clause (see the ngspice corpus provenance above). All temperature exponents outside the bounded subset retain their ngspice defaults, including TNF=0.
+- Reference: `ngspice-47.json`, read by the regression test, contains ngspice-47 ASCII raw plot values (not rounded print tables). Generate raw plots with `SPICE_ASCIIRAWFILE=1 ngspice -b -r <output.raw> <deck>` for each temperature. The test runs with `pnpm -C packages/core exec vitest run src/devices/vbic-emission.test.ts`; it applies the uniform corpus 1%-of-peak rule and quantity floors, without per-circuit tolerance changes.
+- Scope: bounded isothermal NPN LEVEL=4 only; this does not enable VBIC transient/noise or arbitrary model parameters. The three unchanged corpus-f VBIC example decks still reject FC after the emission-coefficient gap is removed.
+
 ## Bounded VBIC non-ground substrate parity fixtures
 
 - Fixtures: `benchmarks/vbic-substrate/dc.cir` (SHA-256 `3229c4f71f6e450c0da6f5b1b371d8f8c3e7fd3ad845ae04859e7c3aacb1a32c`), `benchmarks/vbic-substrate/ac.cir` (SHA-256 `897e30fd367d4ad14ad4fc355bf1cc7f76e0afdae12671e6a6a3e83fcf40ed66`), and `benchmarks/vbic-substrate/dc-latchup.cir` (SHA-256 `53259667c7b0fe7f2e20b5591b9273c4beca5c51e9b5027a74b06d04c964173d`).
