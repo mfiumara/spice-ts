@@ -50,7 +50,7 @@
   "scripts": {
     "build": "tsup",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage",
+    "test:coverage": "vitest run --coverage --exclude src/analysis/step-browser.smoke.test.ts",
     "test:watch": "vitest",
     "lint": "tsc --noEmit",
     "bench": "vitest bench --config vitest.bench.config.ts"
