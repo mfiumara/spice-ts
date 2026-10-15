@@ -1,5 +1,18 @@
 # Benchmark sources
 
+## XSPICE zener and square (#1188)
+
+`packages/core/src/devices/xspice/xspice-zener-square.test.ts` uses original
+project-authored MIT probes and analytic checks. The model equations and
+interface tables follow ngspice `src/xspice/icm/xtradev/zener/{cfunc.mod,ifspec.ifs}`
+and `src/xspice/icm/analog/square/{cfunc.mod,ifspec.ifs}` (Georgia Tech XSPICE,
+ngspice BSD-3-Clause distribution). Upstream source:
+https://github.com/ngspice/ngspice/tree/master/src/xspice/icm.
+The four byte-identical `analog_models4_{ac,dc,swept_dc,transient}.deck` fixtures
+retain their pinned ngspice revision, URLs, hashes and BSD-3-Clause provenance
+in `benchmarks/corpus/corpus-f/SOURCES.md`. Comparisons use ngspice-47 and the
+existing `triage-detail.ts` harness without per-deck tolerance changes.
+
 ## Uniform distributed RC line (#1191)
 
 `packages/core/src/urc.test.ts` contains an original project-authored MIT probe
