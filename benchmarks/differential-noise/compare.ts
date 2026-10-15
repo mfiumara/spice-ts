@@ -83,7 +83,7 @@ async function main(): Promise<void> {
       exclusions: [
         'Current-valued noise outputs remain unsupported; current-source input referral is covered by benchmarks/current-source-noise (#314).',
         'Differential output with diode, BJT, JFET, MOS1, BSIM3, or broader noisy device forms remains unsupported.',
-        'Stepped noise and temperature cards remain unsupported.',
+        'Stepped noise remains unsupported; resistor noise follows circuit temperature.',
       ],
       losses: [
         'Every non-zero residual is retained in errors; no tolerance or circuit value is tuned per engine.',
@@ -117,11 +117,6 @@ async function verifyUnsupportedForms(): Promise<Array<{ form: string; status: s
       form: 'stepped noise',
       deck: 'V1 in 0 AC 1\nR1 in 0 1k\n.noise v(in) V1 dec 3 100 10k\n.step param R1 list 1k 2k',
       expected: /\.step cannot be combined with \.noise/,
-    },
-    {
-      form: 'temperature card',
-      deck: 'V1 in 0 AC 1\nR1 in 0 1k\n.noise v(in) V1 dec 3 100 10k\n.temp 50',
-      expected: /\.options TEMP=50 is unsupported for '\.noise'/,
     },
     ...[
       {

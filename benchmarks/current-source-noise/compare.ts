@@ -105,7 +105,7 @@ async function main(): Promise<void> {
       losses: [
         'Every non-zero residual is retained in the per-fixture errors; no tolerance or circuit value is tuned per engine.',
         'Legacy .noise summary intervals and .print noise output cards require the documented common adaptation.',
-        'Current-valued noise outputs, dependent-source input referral, differential semiconductor noise, stepped noise, and temperature cards remain explicitly unsupported.',
+        'Current-valued noise outputs, dependent-source input referral, differential semiconductor noise and stepped noise remain explicitly unsupported.',
         'Runtime values are not directly comparable because ngspice includes process startup.',
       ],
       redReceipt: "Focused test failed before implementation: InvalidCircuitError: .noise input source 'I1' is not an independent voltage source (1 failed, 48 skipped).",
@@ -155,11 +155,6 @@ async function verifyUnsupportedForms(): Promise<Array<{ form: string; status: s
       form: 'stepped noise',
       deck: 'unsupported stepped noise\nI1 in 0 AC 1\nR1 in 0 1k\n.noise v(in) I1 dec 3 100 10k\n.step param R1 list 1k 2k',
       expected: /\.step cannot be combined with \.noise/,
-    },
-    {
-      form: 'temperature card',
-      deck: 'unsupported noise temperature\nI1 in 0 AC 1\nR1 in 0 1k\n.noise v(in) I1 dec 3 100 10k\n.temp 50',
-      expected: /Unsupported dot command: '\.temp'/,
     },
   ];
   const results = [];

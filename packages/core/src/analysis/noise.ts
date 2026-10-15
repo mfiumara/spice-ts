@@ -34,8 +34,8 @@ const N_MINGAIN = 1e-20;
  * the DC solve and the AC stamp already model (#736). The substrate diode has
  * no bjtnoise.c source and no bjtacld.c conductance, so ISS/NS and the CJS
  * junction only act through the operating point and the substrate capacitance;
- * TNOM, XTI, XTB and EG only move the bjttemp.c parameters those solves use,
- * and Circuit rejects .options TEMP with .noise (27 C sources) (#767).
+ * TNOM, XTI, XTB and EG move the bjttemp.c parameters those solves use,
+ * including the temperature-adjusted currents used by shot/flicker noise.
  * RBM/IRB (bias-dependent gx noise) stay rejected.
  */
 const BJT_NOISE_MODEL_PARAMETERS = new Set([
@@ -92,6 +92,11 @@ export function assertNoiseDevicesSupported(compiled: CompiledCircuit): void {
     else if (device instanceof HFET1) kind = 'HFET';
 
     if (device instanceof MOSFET) {
+      if (device.getTemperature() !== 27) {
+        throw new InvalidCircuitError(
+          `.noise does not support MOSFET noise at TEMP=${device.getTemperature()} C for '${device.name}' (noise sources are evaluated at 27 C)`,
+        );
+      }
       if (device.params.LEVEL !== 1) {
         throw new InvalidCircuitError(
           `.noise only supports MOSFET level 1 for '${device.name}'`,
@@ -138,7 +143,8 @@ export function assertNoiseDevicesSupported(compiled: CompiledCircuit): void {
 }
 
 /**
- * Solve the bounded noise slice at ngspice's default 27 C circuit temperature:
+ * Solve the bounded noise slice at the circuit/device temperature (MOS1 is
+ * restricted to ngspice's default 27 C circuit temperature):
  * resistor and S/W switch thermal noise, diode junction shot/flicker noise, BJT level-1
  * collector/base shot, base-current KF/AF flicker noise, and RB/RC/RE
  * thermal noise, plus MOS1 channel thermal/KF/AF flicker noise.

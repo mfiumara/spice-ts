@@ -2700,9 +2700,6 @@ export class Circuit {
       `.options TEMP=${temperature} is unsupported for ${subject}: `
       + `only resistors, bounded VBIC devices and B sources follow the ngspice temperature model`,
     );
-    const noise = this._analyses.find(analysis => analysis.type === 'noise');
-    if (noise) throw unsupported("'.noise' (noise sources are evaluated at 27 C)");
-
     for (const desc of descriptors) {
       if (desc.type === 'R' && (desc.params?.TEMP !== undefined || desc.params?.DTEMP !== undefined)) {
         throw unsupported(`resistor '${desc.name}' with an instance TEMP/DTEMP`);
