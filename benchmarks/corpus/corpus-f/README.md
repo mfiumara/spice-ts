@@ -6,7 +6,7 @@ Every deck below is byte-identical to ngspice `3ef069fb1f04177a153f342a32d941fc2
 
 ## Totals
 
-- Fixtures: 336. Outcome SHA-256: `bcf75a8aecd3882757409680fd47fe4e7767c35251c76eca5542cf8d01d5ae51`.
+- Fixtures: 336. Outcome SHA-256: `c4c640776d8bbfbd16d68fc85677e6397a562aab6db550f8244474de0c1ed24a`.
 - ngspice (ngspice-47): 306 success, 18 failed, 12 unsupported.
 - spice-ts (0.3.0): 138 success, 14 failed, 184 unsupported.
 - Outcomes: matched 60, mismatch 16, not-compared 62, spice-ts-loss 168, ngspice-failed 0, both-failed 30.
@@ -375,7 +375,7 @@ Grouped from spice-ts's own first error line. "ngspice ok" counts the fixtures i
 | [tests/regression/model/binning-1.cir](fixtures/tests/regression/model/binning-1.cir) | success | unsupported | spice-ts-loss |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare / spice-ts: MOSFET 'mx1' (model 'nmos0v7') uses unsupported model LEVEL=54 (supported MOSFET levels: 1, 2, 3, 4, 5, 6, 8, 9, 49) |
 | [tests/regression/model/instance-defaults.cir](fixtures/tests/regression/model/instance-defaults.cir) | success | success | not-compared |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare |
 | [tests/regression/model/special-names-1.cir](fixtures/tests/regression/model/special-names-1.cir) | success | success | not-compared |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare |
-| [tests/regression/parser/bxpressn-1.cir](fixtures/tests/regression/parser/bxpressn-1.cir) | success | unsupported | spice-ts-loss |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare / spice-ts: Parse error at line 407: Unknown function 'u' b1119_t n1119_t 0 v = 'u(0.01)' |
+| [tests/regression/parser/bxpressn-1.cir](fixtures/tests/regression/parser/bxpressn-1.cir) | success | unsupported | spice-ts-loss |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare / spice-ts: Parse error at line 450: Unknown function 'pwl' b1132_t n1132_t 0 v = 'pwl(-100, -10, -8, 2, 4, 12, 9, 22, 19)' |
 | [tests/regression/parser/minus-minus.cir](fixtures/tests/regression/parser/minus-minus.cir) | success | success | not-compared |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare |
 | [tests/regression/parser/xpressn-1.cir](fixtures/tests/regression/parser/xpressn-1.cir) | success | success | not-compared |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare |
 | [tests/regression/parser/xpressn-2.cir](fixtures/tests/regression/parser/xpressn-2.cir) | success | success | not-compared |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare |
