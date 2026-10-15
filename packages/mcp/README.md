@@ -28,7 +28,10 @@ produce a runnable SPICE model from circuit-json alone and is rejected rather th
 inventing model parameters. Independent sources are unsupported in either direction.
 Lossy exports are rejected. Fatal errors use the usual `isError` and
 `error.details.diagnostics` shape, including `UNSUPPORTED_ELEMENT` for unsupported
-components and `UNSUPPORTED_PARAMETER` diagnostics for unrepresentable parameters.
+components and `UNSUPPORTED_PARAMETER` diagnostics for unrepresentable parameters
+(including resistor instance `M`, `AC`, temperature coefficients, and capacitor `IC`).
+These parameters are rejected, not silently stripped or approximated. For a powered
+passive-network round-trip, attach the same external source and analysis after conversion.
 Successful conversions include nonfatal diagnostics (such as `LAYOUT_ONLY`).
 The compact JSON input and output obey `maxDocumentBytes` and
 `maxSerializedResultBytes`, respectively; oversize calls return `RESOURCE_LIMIT`.

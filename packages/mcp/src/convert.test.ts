@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { executeTool, DEFAULT_MCP_LIMITS, MCP_TOOLS } from './server.js';
 import type { SimulationResultV1 } from '@spice-ts/protocol';
 
-const netlist = 'R1 in out 1k\nR2 in 0 2k\nC1 out 0 1u';
+const netlist = 'R1 in out 1k\nR2 out 0 2k\nC1 out 0 1u';
 
 describe('spice_convert', () => {
   it('advertises the conversion tool', async () => {
@@ -11,7 +11,7 @@ describe('spice_convert', () => {
   });
 
   it('round-trips a passive RC low-pass with OP voltage error below 1e-12', async () => {
-    // Independent sources are outside the adapter subset; this circuit is unpowered.
+    // Convert the passive network, then attach identical external excitation.
     const exported = await executeTool('spice_convert', { netlist });
     expect(exported.isError).not.toBe(true);
     const { circuitJson, diagnostics } = exported.structuredContent as { circuitJson: unknown[]; diagnostics: unknown[] };
@@ -21,7 +21,7 @@ describe('spice_convert', () => {
     expect(imported.isError).not.toBe(true);
     const restored = (imported.structuredContent as { netlist: string }).netlist;
     const solve = async (source: string) => {
-      const result = await executeTool('spice_simulate', { request: { apiVersion: '1', input: { format: 'spice', source: `${source}\n.op` } } });
+      const result = await executeTool('spice_simulate', { request: { apiVersion: '1', input: { format: 'spice', source: `V1 in 0 1\n${source.replace(/^\.end\s*$/gim, '')}\n.op` } } });
       expect(result.isError).not.toBe(true);
       const analysis = (result.structuredContent as unknown as SimulationResultV1).analyses[0];
       if (analysis.type !== 'op') throw new Error('Expected OP');
@@ -29,6 +29,8 @@ describe('spice_convert', () => {
     };
     const before = await solve(netlist);
     const after = await solve(restored);
+    expect(before.in).toBeCloseTo(1, 12);
+    expect(before.out).toBeCloseTo(2 / 3, 12);
     expect(Object.keys(after).sort()).toEqual(Object.keys(before).sort());
     for (const node of Object.keys(before)) expect(Math.abs(before[node] - after[node])).toBeLessThan(1e-12);
   });
@@ -58,6 +60,20 @@ describe('spice_convert', () => {
     expect(await executeTool('spice_convert', { circuitJson: [...circuitJson, { type: 'pcb_component' }] })).toMatchObject({ structuredContent: { diagnostics: [expect.objectContaining({ code: 'LAYOUT_ONLY' })], lossy: false } });
     circuitJson[0].name = 'R1\n.include private';
     expect(await executeTool('spice_convert', { circuitJson })).toMatchObject({ isError: true, structuredContent: { error: { code: 'INVALID_CIRCUIT' } } });
+  });
+
+  it.each([
+    'R1 in out 1k m=2\nR2 out 0 1k',
+    'R1 in 0 1k ac=2k',
+    'R1 in 0 1k tc1=0.01',
+    'C1 in 0 1u ic=2',
+  ])('rejects SPICE parameters before IR conversion can discard them: %s', async source => {
+    expect(await executeTool('spice_convert', { netlist: source })).toMatchObject({
+      isError: true,
+      structuredContent: { error: { code: 'INVALID_CIRCUIT', details: { diagnostics: [expect.objectContaining({
+        code: 'UNSUPPORTED_PARAMETER', severity: 'error', simulationRelevant: true,
+      })] } } },
+    });
   });
 
   it('does not silently discard simulation-relevant parameters', async () => {
