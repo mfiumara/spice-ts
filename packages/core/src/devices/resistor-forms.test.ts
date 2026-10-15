@@ -226,13 +226,15 @@ describe('ngspice-47 resistor card forms (#498)', () => {
       .toBe(1e-3);
   });
 
-  it('rejects .noise for a resistor model with flicker noise', async () => {
-    await expect(simulate(`
+  it('accepts .noise for a resistor model with flicker noise', async () => {
+    const result = await simulate(`
       V1 1 0 dc 0 ac 1
       R1 1 0 rk
       .model rk r r=1k kf=1e-20
       .noise v(1) V1 dec 1 1k 1k
-    `)).rejects.toThrow('resistor flicker noise');
+    `);
+    // An ideal voltage source shorts both the thermal and flicker output noise.
+    expect(result.noise!.outputNoiseDensity[0]).toBe(0);
   });
 
   it('round-trips model and keyword parameters through toNetlist', () => {
