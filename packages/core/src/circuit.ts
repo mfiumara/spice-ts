@@ -6,6 +6,7 @@ import type {
 import type { CircuitIR } from './ir/types.js';
 import { buildIR } from './ir/builder.js';
 import { Resistor } from './devices/resistor.js';
+import { expandUrc, parseUrcParams } from './devices/urc.js';
 import { NodeShunt } from './devices/node-shunt.js';
 import { resolveResistor } from './devices/resistor-model.js';
 import { VoltageSource } from './devices/voltage-source.js';
@@ -314,7 +315,7 @@ const MULTIPLIED_INSTANCE_TYPES = new Set<DeviceDescriptor['type']>(['R', 'C', '
 const MULTIPLICITY_INVARIANT_TYPES = new Set<DeviceDescriptor['type']>(['V', 'E', 'H', 'K']);
 
 /** Cards ngspice-47 leaves unscaled although m parallel copies would differ. */
-const NGSPICE_UNSCALED_TYPES = new Set<DeviceDescriptor['type']>(['S', 'W', 'O', 'Y', 'P']);
+const NGSPICE_UNSCALED_TYPES = new Set<DeviceDescriptor['type']>(['S', 'W', 'O', 'Y', 'P', 'U']);
 
 /**
  * Apply a subcircuit instance multiplicity to one expanded card (#810). The
@@ -607,6 +608,8 @@ function formatDevice(desc: DeviceDescriptor): string {
       return `${desc.name} ${desc.nodes.join(' ')} Z0=${formatNumber(desc.value ?? 0)} TD=${formatNumber(desc.params?.TD ?? 0)}`;
     case 'O':
       return `${desc.name} ${desc.nodes.join(' ')} ${desc.modelName ?? ''}`.trim();
+    case 'U':
+      return `${desc.name} ${desc.nodes.join(' ')} ${desc.modelName ?? ''}${tail.replace(/ LUMPS=/g, ' N=')}`;
     case 'Y':
     case 'P': {
       const lines = desc.nodes.length / 2;
@@ -1213,6 +1216,14 @@ export class Circuit {
       value: impedance,
       params: { TD: delay },
     });
+  }
+
+  /** Add a uniform distributed RC line, expanded into ordinary passive devices at compile time. */
+  addUrc(name: string, nodes: string[], modelName: string, params: Record<string, number>): void {
+    if (nodes.length !== 3) throw new InvalidCircuitError('URC requires three nodes');
+    const normalized = parseUrcParams(Object.entries(params).map(([key, value]) => `${key}=${value}`), 0);
+    for (const node of nodes) this.nodeSet.add(node);
+    this.descriptors.push({ type: 'U', name, nodes: [...nodes], modelName, params: normalized });
   }
 
   /** Add a benchmark-bounded common-reference O-element backed by an LTRA model. */
@@ -2071,7 +2082,15 @@ export class Circuit {
     });
     this.assertDeviceModelTypes(flatDescriptors);
     const expandedDescriptors = withRFPortNodes(this.expandPassiveParasitics(
-      this.expandLossyTransmissionLines(flatDescriptors),
+      this.expandLossyTransmissionLines(flatDescriptors.flatMap(desc => {
+        if (desc.type !== 'U') return [desc];
+        const model = this._models.get(desc.modelName!);
+        if (!model) throw new InvalidCircuitError(`URC '${desc.name}' references unknown model '${desc.modelName}'`);
+        parseUrcParams(Object.entries(model.params).map(([key, value]) => `${key}=${value}`), 0, true);
+        const expanded = expandUrc(desc.name, desc.nodes, desc.params!, model);
+        if (expanded.model) this._models.set(expanded.model.name, expanded.model);
+        return expanded.devices;
+      })),
     ));
     guard?.maximum('maxComponents', expandedDescriptors.length, 'compile');
     if (
@@ -3683,6 +3702,12 @@ export class Circuit {
             waveform,
             ...(multiplier === undefined ? {} : { multiplier }),
           });
+          break;
+        }
+        case 'U': {
+          if (tokens.length < 6) throw new ParseError('URC requires three nodes, a model and L', lineNumber, raw);
+          result.push({ type: 'U', name: devName, nodes: tokens.slice(1, 4).map(mapNode),
+            modelName: tokens[4], params: parseUrcParams(tokens.slice(5).map(token => evalToken(token)), lineNumber) });
           break;
         }
         case 'O': {

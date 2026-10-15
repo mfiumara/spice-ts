@@ -1,4 +1,5 @@
 import { ParseError } from '../errors.js';
+import { parseUrcParams } from '../devices/urc.js';
 import type { ModelParams } from '../types.js';
 import { parseNumber } from './tokenizer.js';
 
@@ -314,6 +315,7 @@ export function formatCplModelCard(model: ModelParams): string {
  */
 export function parseTransmissionLineModelCard(tokens: string[], lineNumber: number): ModelParams | undefined {
   const type = tokens[2]?.toUpperCase();
+  if (type === 'URC') return { name: tokens[1], type, params: parseUrcParams(tokens.slice(3), lineNumber, true) };
   if (type === 'LTRA') return parseLtraModelCard(tokens, lineNumber);
   if (type === 'CPL') return parseCplModelCard(tokens, lineNumber);
   return undefined;

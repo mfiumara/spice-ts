@@ -1,5 +1,18 @@
 # Benchmark sources
 
+## Uniform distributed RC line (#1191)
+
+`packages/core/src/urc.test.ts` contains an original project-authored MIT probe
+with frozen ngspice-47 DC and transient samples. The comment-free test deck is
+passed unchanged to both engines (ngspice additionally needs its title and `.end`).
+References use `SPICE_ASCIIRAWFILE=1 ngspice -n -b -r probe.raw probe.cir` and
+linear interpolation at the listed sample times. Expansion follows ngspice-47
+[`urcsetup.c`](https://github.com/imr/ngspice/blob/3ef069fb1f04177a153f342a32d941fc20ff047e/src/spicelib/devices/urc/urcsetup.c)
+(BSD-3-Clause, existing corpus-f licence). The existing byte-identical corpus-f
+`examples/TransmissionLines/URC-TM-SUB.cir` retains its manifest provenance.
+Its `.control` vectors are compared using the existing `control-vectors.ts`
+wrapper, not the batch `-r` path which exports no vectors for this deck.
+
 ## MCP scalar RC measurements (#1162)
 
 `packages/mcp/src/measure.test.ts` contains two original project-authored MIT
