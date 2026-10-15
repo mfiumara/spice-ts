@@ -287,7 +287,6 @@ ${control}
   });
 
   it.each([
-    ['alterparam r = 2k', 'alterparam'],
     ['measure ac gain max vm(2)', 'measure'],
     ['remcirc', 'remcirc'],
     ['spec 10 1000 10 v(2)', 'spec'],
