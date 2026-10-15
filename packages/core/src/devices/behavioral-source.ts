@@ -54,6 +54,24 @@ export abstract class BehavioralSource implements DeviceModel {
 
   abstract stamp(ctx: StampContext): void;
 
+  get frequencyDependent(): boolean {
+    return this.expression.frequencyDependent ?? false;
+  }
+
+  /** HERTZ-dependent Jacobians are stamped in full at each AC frequency. */
+  stampSmallSignal(ctx: StampContext): void {
+    if (!this.frequencyDependent) this.stamp(ctx);
+  }
+
+  stampFrequencyConductance(ctx: StampContext, omega: number): void {
+    this.environment.frequency = omega / (2 * Math.PI);
+    try {
+      this.stamp(ctx);
+    } finally {
+      this.environment.frequency = 0;
+    }
+  }
+
   /**
    * Bind the `i()` sources (ngspice PT_CURRENT via CKTfndBranch) to their
    * MNA branch indices, in `expression.sources` order.

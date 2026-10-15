@@ -9,14 +9,14 @@ import { parseNumber } from './tokenizer.js';
  * `ptfuncs.c`.
  *
  * Supported: numbers with SPICE scale factors, the constants `pi` and `e`,
- * `time`, `temper`, `v(node)`, `v(node1,node2)`, the branch current
+ * `time`, `temper`, `hertz`, `v(node)`, `v(node1,node2)`, the branch current
  * `i(vsource)` of a branch-carrying source, unary `+ - !`, binary
  * `+ - * / ^ **`, comparisons `== != <> < <= > >=`, `&&`, `||` (also `|`), the ternary
  * `c ? a : b` / `ternary_fcn(c, a, b)`, every function listed in
  * {@link BEHAVIORAL_FUNCTIONS}, and the PSpice `if`, `limit`, `pwrs`, `stp`
  * and `int` (see {@link PSPICE_FUNCTIONS}). `.param` names, `{expr}` and `'expr'` are
  * substituted before parsing, as ngspice's numparam front end does (see
- * {@link substituteBehavioralParameters}). `hertz`, `pwl(...)` and the PSPICE
+ * {@link substituteBehavioralParameters}). `pwl(...)` and the PSPICE
  * logic operators `~ &` are rejected explicitly. Single `|` is the boolean
  * OR alias ngspice translates in included PSpice libraries (#903).
  */
@@ -29,7 +29,7 @@ export type BehavioralFunction =
 
 export type BehavioralBinaryOperator = '+' | '-' | '*' | '/' | '^';
 export type BehavioralComparison = '==' | '!=' | '<' | '<=' | '>' | '>=';
-export type BehavioralVariable = 'time' | 'temper';
+export type BehavioralVariable = 'time' | 'temper' | 'hertz';
 
 export type BehavioralExpression =
   | { kind: 'number'; value: number }
@@ -368,6 +368,7 @@ class Parser {
     switch (name) {
       case 'time':
       case 'temper':
+      case 'hertz':
         return { kind: 'variable', name };
       case 'pi':
         return { kind: 'number', value: Math.PI };
@@ -487,7 +488,7 @@ function substituteBehavioralText(body: string, params: Record<string, number>):
       const close = char === '{' ? matchingBrace(body, i) : body.indexOf("'", i + 1);
       if (close < 0) throw new Error(`Unterminated ${char} expression in B-card`);
       const inner = body.slice(i + 1, close);
-      out += NODE_DEPENDENT_EXPRESSION.test(inner)
+      out += NODE_DEPENDENT_EXPRESSION.test(inner) || /\bhertz\b/i.test(inner)
         ? `(${substituteBehavioralText(inner, params)})`
         : format(evaluateExpression(inner, params));
       i = close + 1;
@@ -510,7 +511,7 @@ function substituteBehavioralText(body: string, params: Record<string, number>):
         continue;
       }
       const key = identifier[0].toUpperCase();
-      out += !/^\s*[(=]/.test(after) && key in params ? format(params[key]) : identifier[0];
+      out += key !== 'HERTZ' && !/^\s*[(=]/.test(after) && key in params ? format(params[key]) : identifier[0];
       i += identifier[0].length;
     } else {
       out += char;
@@ -651,6 +652,8 @@ function behavioralControls(expression: BehavioralExpression): { nodes: string[]
 
 /** Simulator state a B-source expression reads besides node voltages. */
 export interface BehavioralEnvironment {
+  /** Analysis frequency in Hz; zero outside AC. */
+  frequency?: number;
   /** Junction gmin used by ngspice's PTfudge_factor. Default: 1e-12 S. */
   gmin?: number;
   /** Simulation time in seconds (0 outside transient analysis). */
@@ -667,6 +670,7 @@ const DEFAULT_ENVIRONMENT: BehavioralEnvironment = { time: 0, transient: false, 
 export class BehavioralRangeError extends Error {}
 
 export interface CompiledBehavioralExpression {
+  readonly frequencyDependent?: boolean;
   /** Distinct non-ground controlling nodes, in first-reference order. */
   readonly nodes: readonly string[];
   /** Distinct controlling `i()` sources, in first-reference order. */
@@ -883,6 +887,7 @@ function compare(op: BehavioralComparison, difference: number): number {
 export function compileBehavioralExpression(expression: BehavioralExpression): CompiledBehavioralExpression {
   const { nodes, sources } = behavioralControls(expression);
   const size = nodes.length + sources.length;
+  let frequencyDependent = false;
 
   /**
    * d(base^exponent) as ngspice builds it for `^` and `pow()`: a literal
@@ -931,9 +936,11 @@ export function compileBehavioralExpression(expression: BehavioralExpression): C
       }
       case 'variable': {
         const time = node.name === 'time';
+        const hertz = node.name === 'hertz';
+        if (hertz) frequencyDependent = true;
         return (_voltages, gradient, environment) => {
           gradient.fill(0);
-          return time ? environment.time : environment.temperature;
+          return hertz ? environment.frequency ?? 0 : time ? environment.time : environment.temperature;
         };
       }
       case 'voltage': {
@@ -1167,6 +1174,7 @@ export function compileBehavioralExpression(expression: BehavioralExpression): C
   return {
     nodes,
     sources,
+    frequencyDependent,
     evaluate(voltages, gradient, environment = DEFAULT_ENVIRONMENT) {
       return root(voltages, gradient, environment);
     },

@@ -340,7 +340,6 @@ describe('behavioral source expressions', () => {
   it.each([
     ['b1 1 0 i=i(v1,v2)', 'i() takes one source name'],
     ['b1 1 0 i=i()', 'i() takes one source name'],
-    ['b1 1 0 i=hertz*2', "Unsupported behavioral expression token 'hertz'"],
     ['b1 1 0 i=a*2', "Unsupported behavioral expression token 'a'"],
     ['b1 1 0 V=~(~v(9)&v(8)) + 0.5', "Unsupported behavioral expression operator '~'"],
     ['b1 1 0 V=v(9)&v(8)', "Unsupported behavioral expression operator '&'"],

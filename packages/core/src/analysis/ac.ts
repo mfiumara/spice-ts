@@ -57,7 +57,8 @@ export function buildACRHS(compiled: CompiledCircuit): ComplexACRHS {
  * A device whose small-signal conductances depend on frequency (ngspice
  * MESAacLoad with DELFO != 0: the output conductance moves from LAMBDA to
  * LAMBDAHF). `stampFrequencyConductance` adds the difference to the
- * frequency-independent stamp at angular frequency `omega`.
+ * frequency-independent stamp at angular frequency `omega`. HERTZ-dependent
+ * behavioral sources omit their baseline stamp and add their full Jacobian.
  */
 interface FrequencyDependentConductance {
   readonly frequencyDependent: boolean;
