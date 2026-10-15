@@ -726,12 +726,12 @@ function bracedSingleParamValue(line: string): string {
 
 const BEHAVIORAL_RESISTOR = /^\s*(r\S*)\s+(\S+)\s+(\S+)\s+(?:r\s*=\s*)?(?:\{([^{}]*)\}|'([^']*)')\s*(.*)$/i;
 const NODE_DEPENDENCE = /\b[vi]\s*\(/i;
-const BEHAVIORAL_RESISTOR_PARAMETER = /^(tc1|tc2)=(\S+)$/i;
+const BEHAVIORAL_RESISTOR_PARAMETER = /^(m|tc1|tc2)=(\S+)$/i;
 
 /**
  * ngspice (inpcom.c) turns a resistor whose value expression reads node
  * voltages or branch currents into an ASRC:
- * `Rxxx n1 n2 R={expr} tc1=a` -> `bRxxx n1 n2 i = v(n1, n2)/(expr) tc1=a reciproctc=1`.
+ * `Rxxx n1 n2 R={expr} m=4 tc1=a` -> `bRxxx n1 n2 i = 4*v(n1, n2)/(expr) tc1=a reciproctc=1`.
  * Returns the B-card, or undefined when the line is not such a resistor.
  */
 function behavioralResistorAsBSource(line: string): string | undefined {
@@ -739,18 +739,28 @@ function behavioralResistorAsBSource(line: string): string | undefined {
   if (!card) return undefined;
   const [, name, positive, negative, braced, quoted, rest] = card;
   const expression = (braced ?? quoted).trim();
-  if (!NODE_DEPENDENCE.test(expression)) return undefined;
+  if (!NODE_DEPENDENCE.test(expression) && !/\bhertz\b/i.test(expression)) return undefined;
   const parameters = rest.replace(/\s*=\s*/g, '=').trim().split(/\s+/).filter(Boolean);
+  let multiplier = '';
+  const coefficients: string[] = [];
   for (const parameter of parameters) {
-    if (!BEHAVIORAL_RESISTOR_PARAMETER.test(parameter)) {
+    const match = BEHAVIORAL_RESISTOR_PARAMETER.exec(parameter);
+    if (!match) {
       throw new Error(
         `Unsupported parameter '${parameter}' on behavioral resistor '${name}': a resistor whose value `
-        + 'depends on v() or i() is simulated as an ngspice B-source, which carries only tc1= and tc2=',
+        + 'depends on v() or i() supports only m=, tc1= and tc2=',
       );
     }
+    if (match[1].toLowerCase() === 'm') {
+      const value = parseNumber(match[2]);
+      if (!Number.isFinite(value)) throw new Error(`behavioral resistor '${name}': m must be a finite numeric literal`);
+      // ngspice inpcom.c eval_mvalue formats explicit numeric m with %15.8e.
+      multiplier = `(${Number(value.toExponential(8))})*`;
+    } else {
+      coefficients.push(` ${parameter}`);
+    }
   }
-  const coefficients = parameters.map(parameter => ` ${parameter}`).join('');
-  return `b${name} ${positive} ${negative} i = v(${positive}, ${negative})/(${expression})${coefficients} reciproctc=1`;
+  return `b${name} ${positive} ${negative} i = ${multiplier}v(${positive}, ${negative})/(${expression})${coefficients.join('')} reciproctc=1`;
 }
 
 const BEHAVIORAL_CONTROLLED_SOURCE = /^\s*([eg]\S*)\s+(\S+)\s+(\S+)\s+(value|vol|cur)\s*=\s*(\S.*?)\s*$/i;
@@ -1058,7 +1068,7 @@ export function substituteExpressions(
   formatter: (value: number) => string = formatNumber,
 ): string {
   return line.replace(/\{([^}]+)\}/g, (match, expr: string) => {
-    if (keepNodeDependent && NODE_DEPENDENT_EXPRESSION.test(expr)) return match;
+    if (keepNodeDependent && (NODE_DEPENDENT_EXPRESSION.test(expr) || /\bhertz\b/i.test(expr))) return match;
     const value = evaluateExpression(expr, params);
     return formatter(value);
   });

@@ -59,6 +59,8 @@ export function buildACRHS(compiled: CompiledCircuit): ComplexACRHS {
  * LAMBDAHF). `stampFrequencyConductance` adds the difference to the
  * frequency-independent stamp at angular frequency `omega`. Its C stamp is
  * the imaginary admittance divided by omega (BJT excess phase).
+ * HERTZ-dependent
+ * behavioral sources omit their baseline stamp and add their full Jacobian.
  */
 interface FrequencyDependentConductance {
   readonly frequencyDependent: boolean;
