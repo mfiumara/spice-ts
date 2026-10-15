@@ -15,7 +15,8 @@ const LTRA_NUMERIC_PARAMETERS = new Set([
   'R', 'L', 'G', 'C', 'LEN', 'REL', 'COMPACTREL', 'COMPACTABS',
 ]);
 const LTRA_FLAG_PARAMETERS = new Set([
-  'STEPLIMIT', 'NOCONTROL', 'NOPRINT', 'QUADINTERP',
+  'STEPLIMIT', 'NOSTEPLIMIT', 'NOCONTROL', 'NOPRINT', 'QUADINTERP',
+  'LININTERP', 'MIXEDINTERP', 'TRUNCNR', 'TRUNCDONTCUT',
 ]);
 
 /** Parse the bounded O-card: four nodes and one LTRA model name. */
@@ -47,7 +48,14 @@ export function parseLtraModelCard(tokens: string[], lineNumber: number): ModelP
     if (token === '(' || token === ')') continue;
     const separator = token.indexOf('=');
     const key = (separator < 0 ? token : token.slice(0, separator)).toUpperCase();
-    if (LTRA_FLAG_PARAMETERS.has(key) && separator < 0) {
+    if (LTRA_FLAG_PARAMETERS.has(key)) {
+      // ngspice ltrampar.c selectors act on presence, including flag=0.
+      if (separator >= 0) parseNumber(token.slice(separator + 1));
+      const selectors = key === 'STEPLIMIT' || key === 'NOSTEPLIMIT'
+        ? ['STEPLIMIT', 'NOSTEPLIMIT']
+        : ['LININTERP', 'QUADINTERP', 'MIXEDINTERP'].includes(key)
+          ? ['LININTERP', 'QUADINTERP', 'MIXEDINTERP'] : [];
+      for (const selector of selectors) delete params[selector];
       params[key] = 1;
       continue;
     }

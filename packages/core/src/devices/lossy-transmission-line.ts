@@ -89,6 +89,10 @@ export class LossyTransmissionLine implements DeviceModel {
     return this.state.model;
   }
 
+  get modelWarnings(): readonly string[] {
+    return this.model.warnings;
+  }
+
   stamp(ctx: StampContext): void {
     const [p1, n1, p2, n2] = this.nodes;
     const b1 = ctx.numNodes + this.branch1;
@@ -293,10 +297,18 @@ export class LossyTransmissionLine implements DeviceModel {
         i1d = this.i1[last];
         i2d = this.i2[last];
       } else {
-        const quad = i !== 0 ? quadInterp(delayed, t[i - 1], t[i], t[i + 1]) : undefined;
+        const quad = i !== 0 && model.interpolation !== 'linear'
+          ? quadInterp(delayed, t[i - 1], t[i], t[i + 1]) : undefined;
         const lin = linInterp(delayed, t[i], t[i + 1]) ?? [1, 0];
         const sample = (values: Float64Array): number => {
-          if (quad) return values[i - 1] * quad[0] + values[i] * quad[1] + values[i + 1] * quad[2];
+          if (quad) {
+            const value = values[i - 1] * quad[0] + values[i] * quad[1] + values[i + 1] * quad[2];
+            // MIXEDINTERP falls back to linear on quadratic overshoot;
+            // QUADINTERP retains it (ltraload.c).
+            if (model.interpolation !== 'mixed'
+              || (value >= Math.min(values[i - 1], values[i], values[i + 1])
+                && value <= Math.max(values[i - 1], values[i], values[i + 1]))) return value;
+          }
           return values[i] * lin[0] + values[i + 1] * lin[1];
         };
         // QUADINTERP keeps an out-of-range quadratic value (ngspice only
