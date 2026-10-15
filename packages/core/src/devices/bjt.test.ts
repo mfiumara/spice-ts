@@ -460,12 +460,12 @@ describe('BJT Ebers-Moll', () => {
     `).compile()).toThrow("Invalid bounded VBIC DC model parameter: 'CJE'");
   });
 
-  it('rejects PNP polarity outside the bounded VBIC DC subset', () => {
-    expect(() => parse(`unsupported VBIC polarity
+  it('accepts PNP polarity in the bounded VBIC DC subset', () => {
+    expect(() => parse(`bounded VBIC PNP polarity
       Q1 c b 0 QVBIC
       .model QVBIC PNP(LEVEL=4)
       .op
-    `).compile()).toThrow('Unsupported bounded VBIC polarity: only NPN LEVEL=4 is supported');
+    `).compile()).not.toThrow();
   });
 
   it('accepts AC analysis in the bounded VBIC small-signal subset', () => {

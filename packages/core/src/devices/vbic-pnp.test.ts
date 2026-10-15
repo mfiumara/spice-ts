@@ -1,3 +1,6 @@
+import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { simulate } from '../simulate.js';
 
@@ -22,6 +25,22 @@ Q1 c b e s model AREA=2 M=3
 }
 
 describe('VBIC PNP polarity', () => {
+  it('runs the unchanged ngspice PNP forward-Gummel fixture', async () => {
+    const fixture = readFileSync(resolve(
+      process.cwd(), '../../benchmarks/corpus/corpus-f/fixtures/tests/vbic/FG.cir',
+    ));
+    expect(createHash('sha256').update(fixture).digest('hex'))
+      .toBe('014827564faba608d4b3ff6f7a6224a5a11a7b31229ad264a91389f07f33a552');
+    const result = await simulate(fixture.toString('utf8'));
+    expect(result.dcSweep!.sweepValues).toHaveLength(101);
+    for (const source of ['V1', 'VC', 'VB']) {
+      const currents = Array.from(result.dcSweep!.current(source));
+      expect(currents).toHaveLength(101);
+      expect(currents.every(Number.isFinite)).toBe(true);
+    }
+    expect(result.convergence?.dc).toMatchObject({ rejectedSolves: 0, failure: null });
+  });
+
   for (const td of [0, 2e-11]) {
     it(`mirrors NPN OP/DC/AC terminal quantities with TD=${td}`, async () => {
       const npn = await simulate(deck(1, td));
