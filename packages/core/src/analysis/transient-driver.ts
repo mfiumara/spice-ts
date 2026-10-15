@@ -794,7 +794,12 @@ class TransientSimImpl implements TransientSim {
   private acceptTransientStep(time: number, integration?: ChargeIntegration): void {
     const ctx = this.assembler.getStampContext();
     this.acceptingTime = time;
-    for (const device of this.acceptingDevices) device.acceptTransientStep!(ctx, this.breakpointSink);
+    ctx.initialUIC = integration === undefined && this.config.useInitialConditions === true;
+    try {
+      for (const device of this.acceptingDevices) device.acceptTransientStep!(ctx, this.breakpointSink);
+    } finally {
+      ctx.initialUIC = undefined;
+    }
     this.reactiveTruncation.accept(this.assembler.solution, integration);
   }
 

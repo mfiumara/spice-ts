@@ -177,6 +177,8 @@ interface DeviceDescriptor {
   type: string;
   name: string;
   nodes: string[];
+  /** Original C/B/E terminals retained through BJT series-resistance expansion. */
+  bjtICTerminals?: string[];
   value?: number;
   waveform?: Partial<SourceWaveform> & { dc?: number };
   modelName?: string;
@@ -618,8 +620,12 @@ function formatDevice(desc: DeviceDescriptor): string {
     }
     case 'D':
       return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${desc.modelName ?? ''}${tail}`.trim();
-    case 'Q':
-      return `${desc.name} ${desc.nodes.join(' ')} ${desc.modelName ?? ''}${tail}`.trim();
+    case 'Q': {
+      const { ICVBE, ICVCE, ...scaling } = desc.params ?? {};
+      const instance = formatParams(scaling);
+      const ic = ICVBE === undefined ? '' : ` IC=${formatNumber(ICVBE)}${ICVCE === undefined ? '' : `,${formatNumber(ICVCE)}`}`;
+      return `${desc.name} ${desc.nodes.join(' ')} ${desc.modelName ?? ''}${instance ? ` ${instance}` : ''}${ic}`.trim();
+    }
     case 'J':
     case 'Z':
       return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${desc.nodes[2]} ${desc.modelName ?? ''}`.trim();
@@ -696,7 +702,7 @@ function bjtInstanceDescriptorParams(
 ): Record<string, number> | undefined {
   if (!instance) return undefined;
   const params: Record<string, number> = {};
-  for (const name of ['AREA', 'AREAB', 'AREAC', 'M'] as const) {
+  for (const name of ['AREA', 'AREAB', 'AREAC', 'M', 'ICVBE', 'ICVCE'] as const) {
     if (instance[name] !== undefined) params[name] = instance[name];
   }
   return Object.keys(params).length > 0 ? params : undefined;
@@ -2345,6 +2351,9 @@ export class Circuit {
           const modelParams = model.params;
           const polarity = model.type === 'PNP' ? -1 : 1;
           if (modelParams.LEVEL === 4) {
+            if (desc.params?.ICVBE !== undefined || desc.params?.ICVCE !== undefined) {
+              throw new InvalidCircuitError(`VBIC '${desc.name}' does not support instance IC`);
+            }
             // ngspice-47 vbic.c has no areab/areac instance parameters.
             const geometry = ['AREAB', 'AREAC'].filter(name => desc.params?.[name] !== undefined);
             if (geometry.length > 0) {
@@ -2354,7 +2363,8 @@ export class Circuit {
             }
             devices.push(new VBIC(desc.name, nodeIndices, modelParams, polarity, bjtInstanceScale(desc.params)));
           } else {
-            devices.push(new BJT(desc.name, nodeIndices, { ...modelParams, polarity }, desc.params));
+            devices.push(new BJT(desc.name, nodeIndices, { ...modelParams, polarity }, desc.params,
+              desc.bjtICTerminals?.map(resolveNode)));
           }
           break;
         }
@@ -2972,6 +2982,7 @@ export class Circuit {
             nodes: variableBaseResistance && base !== externalBase
               ? [collector, base, emitter, terminals[3] ?? GROUND_NODE, externalBase]
               : [collector, base, emitter, ...terminals.slice(3)],
+            bjtICTerminals: terminals.slice(0, 3),
           });
         } else {
           result.push({ ...desc, nodes: terminals });

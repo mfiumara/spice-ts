@@ -11,6 +11,10 @@ export interface BJTInstanceParams {
   AREAC?: number;
   /** Parallel multiplier (ngspice `m`). */
   M?: number;
+  /** Initial physical base-emitter voltage, used only with transient UIC. */
+  ICVBE?: number;
+  /** Initial physical collector-emitter voltage, used only with transient UIC. */
+  ICVCE?: number;
 }
 
 export interface ParsedBJTInstance {
@@ -54,7 +58,8 @@ const isKeywordOrFlag = (token: string): boolean =>
  * (or OFF=0/1) is consumed as an initial-state hint: the solver already starts
  * nonlinear devices from its zero solution, so it must not disable the
  * transistor at the converged operating point. Every other instance keyword
- * (IC, TEMP, DTEMP, ...) is rejected rather than ignored.
+ * (TEMP, DTEMP, ...) is rejected rather than ignored. IC=vbe[,vce] is
+ * returned separately from scaling and used only with transient UIC.
  *
  * The substrate and thermal terminals are returned to the circuit, which
  * knows the model: bounded VBIC (LEVEL=4) stamps the substrate, the bounded
@@ -90,7 +95,9 @@ export function parseBJTInstance(
   // c b e model | c b e s model | c b e s t model
   if (positional.length < 4 || positional.length > 6) unsupported();
 
-  for (const token of tokens.slice(firstTrailing)) {
+  const trailing = tokens.slice(firstTrailing);
+  for (let index = 0; index < trailing.length; index++) {
+    const token = trailing[index];
     const eqIdx = token.indexOf('=');
     const key = (eqIdx < 0 ? token : token.slice(0, eqIdx)).toUpperCase();
     const value = eqIdx < 0 ? undefined : token.slice(eqIdx + 1);
@@ -100,6 +107,20 @@ export function parseBJTInstance(
     }
     if (value === undefined) {
       fail(`Unsupported BJT instance token after the model: '${token}' in '${line}'`);
+    }
+    if (key === 'IC') {
+      if (params.ICVBE !== undefined) fail(`Duplicate BJT instance parameter: 'IC' in '${line}'`);
+      const values = value!.split(',');
+      // The netlist tokenizer splits commas; direct parser callers may not.
+      if (values.length === 1 && STRICT_NUMBER.test(trailing[index + 1] ?? '')) {
+        values.push(trailing[++index]);
+      }
+      if (values.length > 2 || values.some(v => !STRICT_NUMBER.test(v) || !Number.isFinite(parseNumber(v)))) {
+        fail(`Invalid BJT instance IC: '${line}'`);
+      }
+      params.ICVBE = parseNumber(values[0]);
+      if (values.length === 2) params.ICVCE = parseNumber(values[1]);
+      continue;
     }
     if (!INSTANCE_KEYWORDS.includes(key as keyof BJTInstanceParams)) {
       fail(`Unsupported BJT instance parameter: '${token}' in '${line}'`);

@@ -447,6 +447,8 @@ export interface BJTInstanceScaling {
   AREAB?: number;
   AREAC?: number;
   M?: number;
+  ICVBE?: number;
+  ICVCE?: number;
 }
 
 /**
@@ -631,7 +633,9 @@ export class BJT implements DeviceModel {
     readonly name: string,
     readonly nodes: number[],
     params: Partial<BJTParams> & Record<string, number>,
-    instance?: BJTInstanceScaling,
+    private readonly instance?: BJTInstanceScaling,
+    /** External C/B/E for BJTgetic; stamping nodes may be internal primes. */
+    private readonly icTerminals?: readonly number[],
   ) {
     this.suppliedParams = { ...params };
     const resolved = resolveBJTParams(params);
@@ -819,6 +823,20 @@ export class BJT implements DeviceModel {
       this.acceptedStep = undefined;
     }
     this.nodeJunctions(this.acceptedJunctions, node => ctx.getVoltage(node));
+    if (ctx.initialUIC) {
+      // bjtgetic.c reads external terminal differences, not the prime
+      // nodes used for junction stamping after series-resistance expansion.
+      // The mapping is optional for directly constructed devices.
+      const nC = this.icTerminals?.[0] ?? this.nodes[0];
+      const nB = this.icTerminals?.[1] ?? this.externalBaseNode;
+      const nE = this.icTerminals?.[2] ?? this.nodes[2];
+      const voltage = (node: number): number => node >= 0 ? ctx.getVoltage(node) : 0;
+      const vBE = this.instance?.ICVBE ?? (voltage(nB) - voltage(nE));
+      const vCE = this.instance?.ICVCE ?? (voltage(nC) - voltage(nE));
+      this.acceptedJunctions[BASE_EMITTER] = this.params.polarity * vBE;
+      this.acceptedJunctions[BASE_COLLECTOR] = this.params.polarity * (vBE - vCE);
+      this.acceptedJunctions[SUBSTRATE] = 0;
+    }
     this.hasAcceptedJunctions = true;
     this.inTransientNewton = false;
     this.predictJunctions = false;
@@ -1260,8 +1278,9 @@ export class BJT implements DeviceModel {
     // ngspice evaluates the charges at the junction voltages it linearises at;
     // depletion charge needs the true reverse bias.
     const limited = this.limitedJunctions;
-    const vBE = atLimitedJunctions ? limited[BASE_EMITTER] : polarity * (voltage(nB) - voltage(nE));
-    const vBC = atLimitedJunctions ? limited[BASE_COLLECTOR] : polarity * (voltage(nB) - voltage(nC));
+    const junctions = ctx.initialUIC ? this.acceptedJunctions : atLimitedJunctions ? limited : undefined;
+    const vBE = junctions ? junctions[BASE_EMITTER] : polarity * (voltage(nB) - voltage(nE));
+    const vBC = junctions ? junctions[BASE_COLLECTOR] : polarity * (voltage(nB) - voltage(nC));
 
     // ngspice bjtload.c builds the diffusion charges from cbe/gbe and cbc/gbc
     // (the junction law without gmin, reverse law included).
@@ -1317,13 +1336,13 @@ export class BJT implements DeviceModel {
     const depletionBC = depletionCharge(vBC, internalCJC, VJC, MJC, FC);
     const qBC = TR * reverseCurrent + depletionBC.charge;
     const capBC = TR * reverseConductance + depletionBC.capacitance;
-    const vBX = polarity * (voltage(this.externalBaseNode) - voltage(nC));
+    const vBX = ctx.initialUIC ? vBC : polarity * (voltage(this.externalBaseNode) - voltage(nC));
     const depletionBX = depletionCharge(vBX, CJC - internalCJC, VJC, MJC, FC);
 
     const substrateNode = SUBS === 1 ? nC : nB;
     // ngspice bjtload.c vsub = type*subs*(V(substrate) - V(substrate-connect)).
-    const vSub = atLimitedJunctions
-      ? limited[SUBSTRATE]
+    const vSub = junctions
+      ? junctions[SUBSTRATE]
       : polarity * SUBS * (voltage(this.substrateNode) - voltage(substrateNode));
     let qSub = 0;
     let capSub = 0;
