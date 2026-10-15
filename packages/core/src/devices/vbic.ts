@@ -10,7 +10,8 @@ import { pnjlim } from './devsup.js';
 const NOMINAL_TEMPERATURE_C = 27;
 
 const ACTIVE_PARAMETERS = [
-  'IS', 'IBEI', 'IBEN', 'IBCI', 'IBCN', 'ISP',
+  'IS', 'IBEI', 'IBEN', 'IBCI', 'IBCN', 'ISP', 'IBCIP', 'IBCNP',
+  'NF', 'NR', 'NEI', 'NEN', 'NCI', 'NCN', 'NFP', 'NCIP', 'NCNP',
   'RCX', 'RCI', 'RBX', 'RBI', 'RE', 'RS', 'RBP',
   'VEF', 'VER', 'IKF', 'IKR', 'IKP', 'VO', 'GAMM', 'HRCF', 'AVC1', 'AVC2',
 ] as const;
@@ -56,6 +57,17 @@ const DEFAULTS: VBICParams = {
   IBCI: 1e-16,
   IBCN: 0,
   ISP: 0,
+  IBCIP: 0,
+  IBCNP: 0,
+  NF: 1,
+  NR: 1,
+  NEI: 1,
+  NEN: 2,
+  NCI: 1,
+  NCN: 2,
+  NFP: 1,
+  NCIP: 1,
+  NCNP: 2,
   RCX: 0,
   RCI: 0.1,
   RBX: 0,
@@ -110,13 +122,13 @@ export function resolveVBICParams(
     }
   }
   for (const name of [
-    'IS', 'IBEI', 'IBEN', 'IBCI', 'IBCN', 'ISP',
+    'IS', 'IBEI', 'IBEN', 'IBCI', 'IBCN', 'ISP', 'IBCIP', 'IBCNP',
     'RCX', 'RBX', 'RE', 'RS', 'VEF', 'VER', 'IKF', 'IKR', 'IKP',
     'VO', 'GAMM', 'AVC1', 'AVC2', ...DC_INERT_PARAMETERS,
   ] as const) {
     if (resolved[name] < 0) throw new InvalidCircuitError(`Invalid bounded VBIC DC model parameter: '${name}'`);
   }
-  for (const name of ['RCI', 'RBI', 'RBP', 'HRCF'] as const) {
+  for (const name of ['RCI', 'RBI', 'RBP', 'HRCF', 'NF', 'NR', 'NEI', 'NEN', 'NCI', 'NCN', 'NFP', 'NCIP', 'NCNP'] as const) {
     if (resolved[name] <= 0) throw new InvalidCircuitError(`Invalid bounded VBIC DC model parameter: '${name}'`);
   }
   if (resolved.TNOM <= -273.15) throw new InvalidCircuitError("Invalid bounded VBIC DC model parameter: 'TNOM'");
@@ -283,8 +295,8 @@ function evaluate(
   const xf1 = b[BRANCHES.length];
   const xf2 = b[BRANCHES.length + 1];
 
-  const ifi = diode(vbei, thermal.IS, 1, vt);
-  const iri = diode(vbci, thermal.IS, 1, vt);
+  const ifi = diode(vbei, thermal.IS, params.NF, vt);
+  const iri = diode(vbci, thermal.IS, params.NR, vt);
   const qdbe = depletionCharge(vbei, PE, ME);
   const qdbc = depletionCharge(vbci, PC, MC);
   const q1z = add(c(1, size), add(
@@ -299,9 +311,10 @@ function evaluate(
   const itzr = div(iri, qb);
   const transport = sub(itzf, itzr);
 
-  const ibe = add(diode(vbei, thermal.IBEI, 1, vt), diode(vbei, thermal.IBEN, 2, vt));
-  const ibex = scale(add(diode(vbex, thermal.IBEI, 1, vt), diode(vbex, thermal.IBEN, 2, vt)), 0);
-  const ibcj = add(diode(vbci, thermal.IBCI, 1, vt), diode(vbci, thermal.IBCN, 2, vt));
+  const ibe = add(diode(vbei, thermal.IBEI, params.NEI, vt), diode(vbei, thermal.IBEN, params.NEN, vt));
+  const ibex = scale(add(diode(vbex, thermal.IBEI, params.NEI, vt), diode(vbex, thermal.IBEN, params.NEN, vt)), 0);
+  const ibcj = add(diode(vbci, thermal.IBCI, params.NCI, vt), diode(vbci, thermal.IBCN, params.NCN, vt));
+  const ibcp = add(diode(vbcp, thermal.IBCIP, params.NCIP, vt), diode(vbcp, thermal.IBCNP, params.NCNP, vt));
   const avalancheVoltage = scale(add(
     sqrt(add(mul(sub(c(PC, size), vbci), sub(c(PC, size), vbci)), c(0.01, size))),
     sub(c(PC, size), vbci),
@@ -312,8 +325,8 @@ function evaluate(
   ), params.AVC1);
   const ibc = sub(ibcj, mul(sub(transport, ibcj), avalanche));
 
-  const ifp = diode(vbep, thermal.ISP, 1, vt);
-  const irp = diode(vbcp, thermal.ISP, 1, vt);
+  const ifp = diode(vbep, thermal.ISP, params.NFP, vt);
+  const irp = diode(vbcp, thermal.ISP, params.NFP, vt);
   const qbp = scale(add(c(1, size), sqrt(add(c(1, size), scale(ifp, 4 * reciprocalOrZero(params.IKP))))), 0.5);
   const iccp = div(sub(ifp, irp), qbp);
 
@@ -364,9 +377,8 @@ function evaluate(
   // Iciei = SCALE * (V(xf2) - Itzr) is scaled once at the device branch.
   const s = (quantity: Dual): Dual => (instanceScale === 1 ? quantity : scale(quantity, instanceScale));
   // ngspice vbicload.c then adds an unscaled CKTgmin to Ibe, Ibex, Ibc, Ibep,
-  // Ibcp and to Irci (via Vrci, Vbci and Vbcx). Ibep/Ibcp diode currents are
-  // zero in the bounded subset (IBEIP/IBENP/IBCIP/IBCNP unsupported), leaving
-  // only gmin.
+  // Ibcp and to Irci (via Vrci, Vbci and Vbcx). Ibep diode currents are zero
+  // (IBEIP/IBENP unsupported), leaving only gmin there.
   branch(CX, CI, add(s(irci), scale(add(add(vrci, vbci), vbcx), gmin)));
   branch(BX, BI, s(irbi));
   branch(BP, CX, s(irbp));
@@ -375,7 +387,7 @@ function evaluate(
   branch(CI, EI, s(iciei));
   branch(BI, CI, add(s(ibc), scale(vbci, gmin)));
   branch(BX, BP, scale(vbep, gmin));
-  branch(SI, BP, scale(vbcp, gmin));
+  branch(SI, BP, add(s(ibcp), scale(vbcp, gmin)));
   branch(BX, SI, s(iccp));
   store(BI, EI, s(qbe));
   store(BI, CI, s(qbc));
