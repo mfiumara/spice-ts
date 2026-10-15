@@ -7,6 +7,8 @@ import { tmpdir } from 'node:os';
 import { describe, it } from 'node:test';
 import { resolve } from 'node:path';
 import {
+  aggregateMarkdown,
+  aggregateTransitionArtifact,
   comparisonMethodLines,
   matchedPointEnvelope,
   preflightAggregateInputs,
@@ -82,6 +84,72 @@ async function committedArtifacts(): Promise<{ json: string; markdown: string }>
 }
 
 describe('aggregate report artifact verification', () => {
+  it('renders a compact report with every outcome, short status changes and ten aggregate metric moves', async () => {
+    const { json } = await committedArtifacts();
+    const report = JSON.parse(json);
+    const md = aggregateMarkdown(report);
+    assert.ok(Buffer.byteLength(md) < 25_000, `report is ${Buffer.byteLength(md)} bytes`);
+    for (const fixture of report.fixtures) assert.ok(md.includes(`| ${fixture.key} |`));
+    const transition = md.split('## Transition from the previous accepted report\n')[1].split('## Gap tracking')[0];
+    for (const status of report.comparisonToPrevious.statusTransitions) {
+      assert.ok(transition.includes(`${status.engine} \`${status.fixture}\`: ${status.from} → ${status.to}`));
+      assert.ok(!transition.includes(status.explanation));
+    }
+    assert.equal(transition.split('\n').filter(line => line.startsWith('- Metric ')).length, 10);
+    assert.ok(transition.split('\n').every(line => line.length < 500));
+    const artifact = aggregateTransitionArtifact(report);
+    assert.ok(md.includes(artifact.path.replace('benchmarks/', '')));
+    assert.deepEqual(JSON.parse(artifact.content), report.comparisonToPrevious);
+  });
+
+  it('ranks aggregate metric moves by relative magnitude, including regressions and zero baselines', async () => {
+    const { json } = await committedArtifacts();
+    const report = JSON.parse(json);
+    report.comparisonToPrevious.matchedPointEnvelope.maximumAbsoluteError = 0;
+    report.matchedPointEnvelope.maximumAbsoluteError = 1;
+    report.comparisonToPrevious.matchedPointEnvelope.maximumRelativeError = null;
+    report.matchedPointEnvelope.maximumRelativeError = null;
+    const moves = aggregateMarkdown(report).split('\n').filter(line => line.startsWith('- Metric '));
+    assert.match(moves[0], /maximumAbsoluteError: 0 → 1/);
+    assert.ok(moves.some(line => /maximumRelativeRms:/.test(line)));
+    assert.ok(moves.every(line => !line.includes('maximumRelativeError:')));
+  });
+
+  it('commits the complete transition artifact without changing the outcome hash', async () => {
+    const { json, markdown } = await committedArtifacts();
+    const report = JSON.parse(json);
+    const artifact = aggregateTransitionArtifact(report);
+    assert.equal(await readFile(resolve(artifact.path), 'utf8'), artifact.content);
+    assert.equal(markdown, aggregateMarkdown(report));
+    assert.throws(() => verifyCommittedArtifacts(report, json, markdown, '{}\n'), /transition/);
+  });
+
+  it('omits unchanged metrics and keeps the no-status-transition case short', async () => {
+    const { json } = await committedArtifacts();
+    const report = JSON.parse(json);
+    report.comparisonToPrevious.statusTransitions = [];
+    report.comparisonToPrevious.matchedPointEnvelope = report.matchedPointEnvelope;
+    report.comparisonToPrevious.totals = report.totals;
+    const md = aggregateMarkdown(report);
+    assert.ok(md.includes('- Status transitions: none.'));
+    assert.ok(!md.includes('- Metric '));
+  });
+
+  it('atomically publishes the full ledger into a new nested directory with the report', async () => {
+    const directory = await mkdtemp(resolve(tmpdir(), 'spice-ts-aggregate-ledger-'));
+    try {
+      const paths = { jsonPath: resolve(directory, 'report.json'), markdownPath: resolve(directory, 'report.md') };
+      const transition = { path: resolve(directory, 'results/transitions/outcome.json'), content: '{"full":"ledger"}\n' };
+      await writeAggregateArtifacts(paths, '{}\n', '# Report\n', transition);
+      assert.equal(await readFile(transition.path, 'utf8'), transition.content);
+      assert.equal(await readFile(paths.jsonPath, 'utf8'), '{}\n');
+      assert.equal(await readFile(paths.markdownPath, 'utf8'), '# Report\n');
+      assert.deepEqual(await readdir(resolve(directory, 'results/transitions')), ['outcome.json']);
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
+  });
+
   it('accounts for exactly 20 unique fixtures from each of five corpora', async () => {
     const { json } = await committedArtifacts();
     const report = JSON.parse(json);
