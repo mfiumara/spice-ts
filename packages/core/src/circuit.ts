@@ -43,7 +43,6 @@ import {
 } from './parser/behavioral-expression.js';
 import { BSIM3v3 } from './devices/bsim3v3.js';
 import { BSIM4 } from './devices/bsim4/device.js';
-import { UnsupportedModel as UnsupportedBsim4Model } from './devices/bsim4/setup.js';
 import { bsim3SeriesResistances, isSupportedBsim3Version, SUPPORTED_BSIM3_VERSIONS } from './devices/bsim3v3-params.js';
 import { VCCS } from './devices/vccs.js';
 import { VCVS } from './devices/vcvs.js';
@@ -2444,6 +2443,12 @@ export class Circuit {
             ekv.setTemperature(this._temperature ?? NOMINAL_TEMPERATURE_C);
             devices.push(ekv);
           } else if (level === 14 || level === 54) {
+            // Only the pinned bsim4/ (4.8.x) equations are ported, not bsim4v7/.
+            if (model.version !== undefined && !/^4\.8(?:[0-3]|\.[0-3])?$/.test(model.version)) {
+              throw new UnsupportedModelVersionError(
+                desc.name, model.name, level, model.version, ['4.8', '4.8.0', '4.8.1', '4.8.2', '4.8.3'],
+              );
+            }
             const bulkNode = desc.nodes[3] ?? desc.nodes[2];
             const bsim4 = new BSIM4(desc.name,
               [resolveNode(desc.nodes[0]), resolveNode(desc.nodes[1]), resolveNode(desc.nodes[2]), resolveNode(bulkNode)],
@@ -3309,18 +3314,34 @@ export class Circuit {
   private requireModel(kind: string, desc: DeviceDescriptor): ModelParams {
     const model = this._models.get(desc.modelName ?? '');
     if (!model) {
-      // A declared BSIM4 bin family is not a typo or an implicit default model.
-      // Fail closed until native L/W bin selection is implemented.
       if (desc.type === 'M' && desc.modelName) {
         const prefix = `${desc.modelName.toLowerCase()}.`;
-        for (const candidate of this._models.values()) {
+        let hasBins = false;
+        // ngspice-47 inpmkmod.c prepends models: last declared match wins.
+        // inpgmod.c:238-249 includes BOTH limits within an absolute 1nm
+        // allowance, despite its comment describing a half-open interval.
+        const inRange = (value: number, min: number, max: number): boolean =>
+          Math.abs(value - min) < 1e-9 || Math.abs(value - max) < 1e-9 || (min < value && value < max);
+        for (const candidate of [...this._models.values()].reverse()) {
           const suffix = candidate.name.toLowerCase().slice(prefix.length);
           if (candidate.name.toLowerCase().startsWith(prefix) && /^\d+$/.test(suffix)
             && (candidate.type === 'NMOS' || candidate.type === 'PMOS')
             && (candidate.params.LEVEL === 14 || candidate.params.LEVEL === 54)) {
-            throw new UnsupportedBsim4Model(desc.name, 'model-binning',
-              'BSIM4 L/W model-bin selection is not implemented', { model: desc.modelName });
+            hasBins = true;
+            // inpgmod.c requires explicit L/W and all four model limits.
+            // Descriptor dimensions are SI, with .options scale applied by
+            // the parser. Native default wnflag=0 uses drawn W, not W/NF.
+            const { L, W } = desc.params ?? {};
+            const { LMIN, LMAX, WMIN, WMAX } = candidate.params;
+            if (L !== undefined && W !== undefined
+              && LMIN !== undefined && LMAX !== undefined && WMIN !== undefined && WMAX !== undefined
+              && inRange(L, LMIN, LMAX) && inRange(W, WMIN, WMAX)) return candidate;
           }
+        }
+        if (hasBins) {
+          throw new InvalidCircuitError(
+            `${kind} '${desc.name}' has no matching BSIM4 model bin for '${desc.modelName}' (L=${desc.params?.L}, W=${desc.params?.W})`,
+          );
         }
       }
       throw new InvalidCircuitError(`${kind} '${desc.name}' references unknown model '${desc.modelName}'`);
