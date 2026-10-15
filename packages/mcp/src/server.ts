@@ -347,7 +347,7 @@ async function executeToolWithStore(
     if (name === 'spice_validate') {
       const bounded = boundedRequest(request, effective);
       const result = options.validate
-        ? await boundedCall(() => options.validate!(bounded), effective.maxWallTimeMs, options.signal)
+        ? await boundedCall(() => options.validate!(bounded, { topologyWarnings: true }), effective.maxWallTimeMs, options.signal)
         : await runInWorker<Record<string, unknown>>(
           'validate', bounded, effective.maxWallTimeMs, options,
         );
@@ -1163,7 +1163,7 @@ parentPort.once('message', async ({ operation, request, coreModulePath }) => {
   try {
     if (operation === 'stream') await streamProtocol(core, request);
     const result = operation === 'validate'
-      ? await core.validateProtocolV1(request)
+      ? await core.validateProtocolV1(request, { topologyWarnings: true })
       : await core.simulateProtocolV1(request);
     parentPort.postMessage({ type: 'result', result });
   } catch (error) {
