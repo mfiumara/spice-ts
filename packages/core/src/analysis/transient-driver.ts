@@ -154,7 +154,6 @@ export async function createTransientSim(
   }
   const compiled = circuit.compile();
   const effectiveOptions = withNetlistOptions<TransientSimOptions>(compiled.simulationOptions, options);
-  validateCircuit(compiled);
 
   const found = compiled.analyses.find(a => a.type === 'tran');
   const tranAnalysis = found?.type === 'tran' ? found : undefined;
@@ -927,10 +926,6 @@ class TransientSimImpl implements TransientSim {
     for (let i = 0; i < branchNames.length; i++) currents.set(branchNames[i], solution[nodeCount + i]);
     return { time: this.time, voltages, currents };
   }
-}
-
-function validateCircuit(compiled: CompiledCircuit): void {
-  if (compiled.nodeCount === 0) throw new InvalidCircuitError('Circuit has no nodes');
 }
 
 const ulpFloats = new Float64Array(2);
