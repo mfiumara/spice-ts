@@ -13,6 +13,7 @@ import { InvalidCircuitError, UnsupportedTemperatureError } from '../errors.js';
 import { NOMINAL_TEMPERATURE_C } from '../devices/junction-temperature.js';
 import { computeUICInitialSolution } from './uic.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
+import { temperatureExpressionTarget } from './temperature-expressions.js';
 
 export interface StepTarget {
   readonly paramName: string;
@@ -33,6 +34,8 @@ export function resolveStepTarget(compiled: CompiledCircuit, step: StepAnalysis)
     const fixed = compiled.devices.find(device => device.isNonlinear && !device.setTemperature);
     const offNominal = (step.values ?? []).find(value => value !== NOMINAL_TEMPERATURE_C);
     if (fixed && offNominal !== undefined) throw new UnsupportedTemperatureError(fixed.name, offNominal);
+    const expressions = temperatureExpressionTarget(compiled);
+    if (expressions) return { paramName: 'TEMP', resetsContinuation: true, ...expressions };
     const originalTemperatures = devices.map(device => device.getTemperature!());
     return {
       paramName: 'TEMP',
