@@ -1,0 +1,201 @@
+
+ RUN  v4.1.4 /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5324b149/packages/core
+
+ ❯ src/parser/behavioral-capacitor-1098.test.ts (22 tests | 7 failed) 142ms
+     × parses the complete logical card: Ctest p n C={1u*
++ (1+v(ctrl))} 13ms
+     × parses the complete logical card: Ctest p n
++ C={1u*(1+v(ctrl))} 2ms
+     × simulates the native ramp for logical card: Ctest p n C={1u*
++ (1+v(ctrl))} 4ms
+     × simulates the native ramp for logical card: Ctest p n
++ C={1u*(1+v(ctrl))} 2ms
+     × folds across comments, strips physical-line comments and retains source metadata 3ms
+     × reports structured errors at the logical card origin: Ctest p n C={1u*
++ (1+v(ctrl))} 1ms
+     × reports structured errors at the logical card origin: Ctest p n
++ C={1u*(1+v(ctrl))} 2ms
+     ✓ preserves ordinary physical cards and their source positions 1ms
+     ✓ parses Ctest p n C = 'base*(1+V(ctrl))' 15ms
+     ✓ parses Ctest p n {base*(1+V(ctrl))} 9ms
+     ✓ uses C(control)*dV/dt, not d(C(control)*V)/dt 46ms
+     ✓ rejects unsupported behavioral capacitor parameters as structured errors 1ms
+     ✓ rejects unsupported m=2 rather than changing its meaning 0ms
+     ✓ rejects unsupported scale=2 rather than changing its meaning 0ms
+     ✓ rejects unsupported temp=40 rather than changing its meaning 0ms
+     ✓ rejects unsupported syntax Q={1u} 0ms
+     ✓ rejects unsupported syntax C=1u*v(a) 0ms
+     ✓ keeps derivative and expression nodes/branches local to each subcircuit 17ms
+     ✓ handles continuation parameters and reciprocal ASRC temperature scaling 7ms
+     ✓ avoids generated-name collisions and preserves constant C cards 0ms
+     ✓ keeps time-dependent capacitance live 14ms
+     ✓ linearises the same derivative probe for AC 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/parser/behavioral-capacitor-1098.test.ts > ngspice-47 behavioral C= (#1098) > parses the complete logical card: Ctest p n C={1u*
++ (1+v(ctrl))}
+AssertionError: expected [Function] to not throw an error but 'ParseError: Parse error at line 6: Ca…' was thrown
+
+- Expected:
+undefined
+
++ Received:
+"ParseError: Parse error at line 6: Cannot parse number: '{1u*'
+  Ctest p n C={1u* (1+v(ctrl))}"
+
+ ❯ src/parser/behavioral-capacitor-1098.test.ts:24:51
+     22|
+     23|   it.each(continuedCards)('parses the complete logical card: %s', card…
+     24|     expect(() => parse(deck(card)).compile()).not.toThrow();
+       |                                                   ^
+     25|   });
+     26|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  src/parser/behavioral-capacitor-1098.test.ts > ngspice-47 behavioral C= (#1098) > parses the complete logical card: Ctest p n
++ C={1u*(1+v(ctrl))}
+AssertionError: expected [Function] to not throw an error but 'ParseError: Parse error at line 7: Un…' was thrown
+
+- Expected:
+undefined
+
++ Received:
+"ParseError: Parse error at line 7: Unknown function 'v'
+  + C={1u*(1+v(ctrl))}"
+
+ ❯ src/parser/behavioral-capacitor-1098.test.ts:24:51
+     22|
+     23|   it.each(continuedCards)('parses the complete logical card: %s', card…
+     24|     expect(() => parse(deck(card)).compile()).not.toThrow();
+       |                                                   ^
+     25|   });
+     26|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  src/parser/behavioral-capacitor-1098.test.ts > ngspice-47 behavioral C= (#1098) > simulates the native ramp for logical card: Ctest p n C={1u*
++ (1+v(ctrl))}
+ParseError: Parse error at line 6: Cannot parse number: '{1u*'
+  Ctest p n C={1u* (1+v(ctrl))}
+ ❯ parseNetlist src/parser/index.ts:265:13
+    263|     } catch (e) {
+    264|       if (e instanceof ParseError) throw e;
+    265|       throw new ParseError((e as Error).message, lineNumber, raw);
+       |             ^
+    266|     }
+    267|   }
+ ❯ parseAsync src/parser/index.ts:401:10
+ ❯ simulate src/simulate.ts:124:15
+ ❯ src/parser/behavioral-capacitor-1098.test.ts:28:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  src/parser/behavioral-capacitor-1098.test.ts > ngspice-47 behavioral C= (#1098) > simulates the native ramp for logical card: Ctest p n
++ C={1u*(1+v(ctrl))}
+ParseError: Parse error at line 7: Unknown function 'v'
+  + C={1u*(1+v(ctrl))}
+ ❯ toParseError src/parser/preprocessor.ts:782:10
+    780|   const message = (error as Error).message
+    781|     .replace(/^Undefined variable '([^']*)'$/, "Undefined parameter '$…
+    782|   return new ParseError(message, line, context);
+       |          ^
+    783| }
+    784|
+ ❯ substituteStatement src/parser/preprocessor.ts:574:11
+ ❯ src/parser/preprocessor.ts:154:7
+ ❯ preprocessSteps src/parser/preprocessor.ts:153:27
+ ❯ preprocessDeck src/parser/preprocessor.ts:81:20
+ ❯ parseAsync src/parser/index.ts:400:30
+ ❯ simulate src/simulate.ts:124:21
+ ❯ src/parser/behavioral-capacitor-1098.test.ts:28:25
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+ FAIL  src/parser/behavioral-capacitor-1098.test.ts > ngspice-47 behavioral C= (#1098) > folds across comments, strips physical-line comments and retains source metadata
+AssertionError: expected { text: 'Rnext p n 1k', line: 11 } to match object { line: 6 }
+(1 matching property omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "line": 6,
++   "line": 11,
+  }
+
+ ❯ src/parser/behavioral-capacitor-1098.test.ts:50:24
+     48|     ];
+     49|     const lowered = lowerBehavioralCapacitors(statements);
+     50|     expect(lowered[5]).toMatchObject({ line: 6 });
+       |                        ^
+     51|     expect(lowered[5].text).toContain('(1u* (1+v(ctrl)))');
+     52|     expect(lowered.slice(6)).toEqual([
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯
+
+ FAIL  src/parser/behavioral-capacitor-1098.test.ts > ngspice-47 behavioral C= (#1098) > reports structured errors at the logical card origin: Ctest p n C={1u*
++ (1+v(ctrl))}
+AssertionError: promise resolved "'behavioral capacitor\n\nVdrive p n PW…'" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+"behavioral capacitor
+
+Vdrive p n PWL(0 0 1m 1)
+Voffset n 0 2
+Vcontrol ctrl 0 PWL(0 0 1m 1)
+Ctest p n C={1u*
++ (1+v(ctrl))}
++ ic=1
+.tran 10u 1m
+.end"
+
+ ❯ src/parser/behavioral-capacitor-1098.test.ts:60:54
+     58|
+     59|   it.each(continuedCards)('reports structured errors at the logical ca…
+     60|     await expect(preprocess(deck(`${card}\n+ ic=1`))).rejects.toMatchO…
+       |                                                      ^
+     61|       name: 'ParseError', line: 6,
+     62|       context: 'Ctest p n' + (card.includes('C={1u*\n') ? ' C={1u* (1+…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯
+
+ FAIL  src/parser/behavioral-capacitor-1098.test.ts > ngspice-47 behavioral C= (#1098) > reports structured errors at the logical card origin: Ctest p n
++ C={1u*(1+v(ctrl))}
+AssertionError: expected ParseError: Parse error at line 7: Unknow… { context: '…' } to match object { name: 'ParseError', line: 6, …(1) }
+
+- Expected
++ Received
+
+- {
+-   "context": "Ctest p n C={1u*(1+v(ctrl))} ic=1",
+-   "line": 6,
++ ParseError {
++   "context": "+ C={1u*(1+v(ctrl))}",
++   "line": 7,
+    "name": "ParseError",
+  }
+
+ ❯ src/parser/behavioral-capacitor-1098.test.ts:60:54
+     58|
+     59|   it.each(continuedCards)('reports structured errors at the logical ca…
+     60|     await expect(preprocess(deck(`${card}\n+ ic=1`))).rejects.toMatchO…
+       |                                                      ^
+     61|       name: 'ParseError', line: 6,
+     62|       context: 'Ctest p n' + (card.includes('C={1u*\n') ? ' C={1u* (1+…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  7 failed | 15 passed (22)
+   Start at  22:25:39
+   Duration  3.18s (transform 2.40s, setup 0ms, import 2.79s, tests 142ms, environment 0ms)
+
+JUNIT report written to /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_5324b149/packages/core/test-results.xml
