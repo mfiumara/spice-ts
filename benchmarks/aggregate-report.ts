@@ -15,9 +15,9 @@
  */
 import { spawnSync } from 'node:child_process';
 import { createHash, randomUUID } from 'node:crypto';
-import { mkdtemp, readdir, readFile, rename, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readdir, readFile, rename, rm, writeFile } from 'node:fs/promises';
 import { arch, cpus, platform, release, tmpdir } from 'node:os';
-import { basename, relative, resolve } from 'node:path';
+import { basename, dirname, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { deserialize, serialize } from 'node:v8';
 import {
@@ -462,9 +462,10 @@ export async function writeAggregateArtifacts(
   paths: { jsonPath: string; markdownPath: string },
   json: string,
   md: string,
+  transition?: { path: string; content: string },
 ): Promise<void> {
   const runId = `${process.pid}.${randomUUID()}`;
-  await Promise.all([[paths.jsonPath, json], [paths.markdownPath, md]].map(async ([path, content]) => {
+  const publish = async (path: string, content: string): Promise<void> => {
     const temporary = `${path}.${runId}.tmp`;
     try {
       await writeFile(temporary, content);
@@ -472,7 +473,13 @@ export async function writeAggregateArtifacts(
     } finally {
       await rm(temporary, { force: true });
     }
-  }));
+  };
+  // Publish the linked detail before the Markdown that references it.
+  if (transition) {
+    await mkdir(dirname(transition.path), { recursive: true });
+    await publish(transition.path, transition.content);
+  }
+  await Promise.all([[paths.jsonPath, json], [paths.markdownPath, md]].map(([path, content]) => publish(path, content)));
 }
 
 function commandVersion(command: string, args: string[], pattern?: RegExp): string {
@@ -980,14 +987,47 @@ export function comparisonMethodLines(policy: AggregateReport['policy']): string
   ];
 }
 
-function markdown(report: AggregateReport): string {
+/** Stable, content-addressed name: rendering an accepted report never depends on today's date. */
+export function aggregateTransitionArtifact(report: AggregateReport): { path: string; content: string } {
+  return {
+    path: `benchmarks/results/aggregate-transitions/${report.outcomeSha256}.json`,
+    content: `${JSON.stringify(report.comparisonToPrevious, null, 2)}\n`,
+  };
+}
+
+/** The accepted baseline has aggregate metrics, not a per-fixture metric snapshot. */
+function metricMoveLines(report: AggregateReport): string[] {
+  const previous = report.comparisonToPrevious;
+  const before = {
+    ...previous.matchedPointEnvelope,
+    comparedAnalyses: previous.totals.comparedAnalyses,
+    comparedFixtures: previous.totals.comparedFixtures,
+  };
+  const after = {
+    ...report.matchedPointEnvelope,
+    comparedAnalyses: report.totals.comparedAnalyses,
+    comparedFixtures: report.totals.comparedFixtures,
+  };
+  return (Object.keys(before) as Array<keyof typeof before>).flatMap(metric => {
+    const from = before[metric];
+    const to = after[metric];
+    if (from === null || to === null || from === to) return [];
+    return [{ metric, from, to, magnitude: from === 0 ? Infinity : Math.abs((to - from) / from) }];
+  }).sort((a, b) => b.magnitude - a.magnitude || a.metric.localeCompare(b.metric))
+    .slice(0, 10)
+    .map(move => `- Metric ${move.metric}: ${move.from} → ${move.to}.`);
+}
+
+export function aggregateMarkdown(report: AggregateReport): string {
   const { totals } = report;
   const { matchedPointEnvelope: envelope, comparisonToPrevious: previous } = report;
   const issueNumber = previous.issueUrl.split('/').at(-1);
   const pullRequestNumber = previous.pullRequestUrl.split('/').at(-1);
   const transitionLines = previous.statusTransitions.length === 0
     ? ['- Status transitions: none. Both engines retained every prior success, failure, and unsupported classification.']
-    : previous.statusTransitions.map(transition => `- ${transition.engine} \`${transition.fixture}\`: ${transition.from} → ${transition.to}. ${transition.explanation}`);
+    : previous.statusTransitions.map(transition => `- ${transition.engine} \`${transition.fixture}\`: ${transition.from} → ${transition.to}.`);
+  const detail = aggregateTransitionArtifact(report);
+  const gapUrls = [...new Set([...report.gapIssues.map(issue => issue.url), ...report.fixtures.flatMap(fixture => fixture.gapIssues)])];
   const lines = [
     '# Aggregate 100-circuit parity report',
     '',
@@ -1010,8 +1050,12 @@ function markdown(report: AggregateReport): string {
     '- No fixture adaptation and no per-circuit tolerance tuning.',
     ...comparisonMethodLines(report.policy),
     `- Accounted fixtures: ${totals.fixtures} (${CORPORA.map(corpus => `${corpus}=${totals.corpusFixtures[corpus]}`).join(', ')}).`,
-    `- ngspice: ${totals.ngspice.success} success, ${totals.ngspice.failed} failed, ${totals.ngspice.unsupported} unsupported.`,
-    `- spice-ts: ${totals.spiceTs.success} success, ${totals.spiceTs.failed} failed, ${totals.spiceTs.unsupported} unsupported.`,
+    '',
+    '| Engine | Success | Failed | Unsupported |',
+    '|---|---:|---:|---:|',
+    `| ngspice | ${totals.ngspice.success} | ${totals.ngspice.failed} | ${totals.ngspice.unsupported} |`,
+    `| spice-ts | ${totals.spiceTs.success} | ${totals.spiceTs.failed} | ${totals.spiceTs.unsupported} |`,
+    '',
     `- Matched-point errors: ${totals.comparedAnalyses} analyses across ${totals.comparedFixtures} fixtures. Full per-signal max/RMS absolute and relative errors are in \`benchmarks/aggregate-report.json\`.`,
     `- Matched signals: ${envelope.comparedSignals} absolute (${envelope.absoluteSamples} samples); ${envelope.relativeComparedSignals} relative (${envelope.relativeSamples} samples, ${envelope.excludedZeroReferences} zero references excluded).`,
     `- Matched-point envelope (worst per signal): absolute max ${envelope.maximumAbsoluteError}, absolute RMS ${envelope.maximumAbsoluteRms}, relative max ${envelope.maximumRelativeError}, relative RMS ${envelope.maximumRelativeRms}.`,
@@ -1023,22 +1067,26 @@ function markdown(report: AggregateReport): string {
     `- Previous totals: ngspice ${previous.totals.ngspice.success}/${previous.totals.ngspice.failed}/${previous.totals.ngspice.unsupported} success/failed/unsupported; spice-ts ${previous.totals.spiceTs.success}/${previous.totals.spiceTs.failed}/${previous.totals.spiceTs.unsupported}; ${previous.totals.comparedAnalyses} analyses across ${previous.totals.comparedFixtures} fixtures.`,
     `- Previous matched-point envelope: absolute max ${previous.matchedPointEnvelope.maximumAbsoluteError}, absolute RMS ${previous.matchedPointEnvelope.maximumAbsoluteRms}, relative max ${previous.matchedPointEnvelope.maximumRelativeError}, relative RMS ${previous.matchedPointEnvelope.maximumRelativeRms}.`,
     ...transitionLines,
-    ...previous.metricTransitions.map(transition => `- ${transition}`),
+    '- Top 10 aggregate metric moves by |change / baseline| (zero baselines first; null and unchanged values omitted). Includes coverage counts and both error increases and decreases; not a per-circuit ranking.',
+    ...metricMoveLines(report),
+    `- [Full transition ledger](${detail.path.replace('benchmarks/', '')}) (${previous.statusTransitions.length} status changes, ${previous.metricTransitions.length} historical narratives).`,
     '',
     '## Gap tracking',
     '',
-    ...report.gapIssues.map(issue => `- ${issue.url} — ${issue.scope}`),
+    ...report.gapIssues.map(issue => `- [#${issue.url.split('/').at(-1)}] — ${issue.scope}`),
+    '',
+    ...gapUrls.map(url => `[#${url.split('/').at(-1)}]: ${url}`),
     '',
     '## Per-circuit outcomes',
     '',
     '| Fixture | Analyses | ngspice | spice-ts | Runtime ms (ng/spice-ts) | Compared analyses | Gap issues |',
     '|---|---|---|---|---:|---:|---|',
     ...report.fixtures.map(fixture => {
-      const gaps = fixture.gapIssues.map(url => `[#${url.split('/').at(-1)}](${url})`).join(', ');
-      return `| ${fixture.key} | ${fixture.declaredAnalyses.join(', ') || 'none'} | ${fixture.ngspice.status}/${fixture.ngspice.convergence} | ${fixture.spiceTs.status}/${fixture.spiceTs.convergence} | ${fixture.ngspice.runtimeMs}/${fixture.spiceTs.runtimeMs} | ${fixture.comparisons.length} | ${gaps} |`;
+      const gaps = fixture.gapIssues.map(url => `[#${url.split('/').at(-1)}]`).join(', ');
+      return `| ${fixture.key} | ${fixture.declaredAnalyses.join(', ') || 'none'} | ${fixture.ngspice.status} | ${fixture.spiceTs.status} | ${fixture.ngspice.runtimeMs.toFixed(1)}/${fixture.spiceTs.runtimeMs.toFixed(1)} | ${fixture.comparisons.length} | ${gaps} |`;
     }),
     '',
-    'Every unsupported or failed spice-ts row is a published loss. Engine error strings, input hashes, commands, signal lists, point counts, and matched-point metrics are retained in the JSON report.',
+    'Every unsupported or failed spice-ts row is a published loss. Convergence details, unrounded runtimes, engine error strings, input hashes, commands, signal lists, point counts, and matched-point metrics are retained in [the JSON report](aggregate-report.json).',
     '',
     ...(report.policy.fineReference === undefined ? [] : [
       ...fineReferenceSection(report.fixtures.map(fixture => ({
@@ -1061,6 +1109,7 @@ export function verifyCommittedArtifacts(
   generated: AggregateReport,
   committedJson: string,
   committedMarkdown: string,
+  committedTransitions?: string,
 ): void {
   let committed: AggregateReport;
   try {
@@ -1086,9 +1135,13 @@ export function verifyCommittedArtifacts(
     throw new Error(`aggregate deterministic JSON projection hash mismatch: committed=${committed.outcomeSha256}; regenerated=${generated.outcomeSha256}; calculated=${digest}`);
   }
 
+  if (committedTransitions !== undefined && committedTransitions !== aggregateTransitionArtifact(committed).content) {
+    throw new Error('committed aggregate transition detail differs from the committed JSON projection');
+  }
+
   validateAggregateAccounting(committed);
 
-  if (committedMarkdown !== markdown(committed)) {
+  if (committedMarkdown !== aggregateMarkdown(committed)) {
     throw new Error('committed aggregate Markdown differs from the committed JSON projection');
   }
 }
@@ -1097,7 +1150,7 @@ async function main(): Promise<void> {
   if (process.argv.includes('--fine-reference')) {
     process.stderr.write(`aggregate --fine-reference: pid ${process.pid}; to stop only this run: kill ${process.pid}\n`);
     const report = await addFineReference(JSON.parse(await readFile(JSON_PATH, 'utf8')) as AggregateReport);
-    await writeAggregateArtifacts({ jsonPath: JSON_PATH, markdownPath: MARKDOWN_PATH }, stableReport(report), markdown(report));
+    await writeAggregateArtifacts({ jsonPath: JSON_PATH, markdownPath: MARKDOWN_PATH }, stableReport(report), aggregateMarkdown(report), aggregateTransitionArtifact(report));
     process.stderr.write(`aggregate --fine-reference: outcome ${report.outcomeSha256}\n`);
     return;
   }
@@ -1107,15 +1160,20 @@ async function main(): Promise<void> {
   process.stderr.write(`aggregate${check ? ' --check' : ''}: pid ${process.pid}; to stop only this run: kill ${process.pid}\n`);
   const report = await buildAggregateReport();
   const json = stableReport(report);
-  const md = markdown(report);
+  const md = aggregateMarkdown(report);
   if (check) {
     const [committedJson, committedMarkdown] = await Promise.all([
       readFile(JSON_PATH, 'utf8'),
       readFile(MARKDOWN_PATH, 'utf8'),
     ]);
     verifyCommittedArtifacts(report, committedJson, committedMarkdown);
+    const committed = JSON.parse(committedJson) as AggregateReport;
+    const transition = aggregateTransitionArtifact(committed);
+    if (await readFile(resolve(transition.path), 'utf8') !== transition.content) {
+      throw new Error('committed aggregate transition detail differs from the committed JSON projection');
+    }
   } else {
-    await writeAggregateArtifacts({ jsonPath: JSON_PATH, markdownPath: MARKDOWN_PATH }, json, md);
+    await writeAggregateArtifacts({ jsonPath: JSON_PATH, markdownPath: MARKDOWN_PATH }, json, md, aggregateTransitionArtifact(report));
   }
   process.stderr.write(`aggregate: ${report.totals.fixtures} fixtures; outcome ${report.outcomeSha256}; compared ${report.totals.comparedAnalyses} analyses\n`);
 }
