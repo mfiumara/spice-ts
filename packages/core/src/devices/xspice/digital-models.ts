@@ -14,6 +14,7 @@ import {
 } from './event-network.js';
 import { flag, real, STATIC, type CodeModelBehavior, type CodeModelCall, type ResolvedXspiceParams } from './models.js';
 import type { XspiceConnection } from './connections.js';
+import { flipFlop } from './flipflop-models.js';
 
 /** What a digital model factory sees of its instance besides parameters. */
 export interface DigitalModelContext {
@@ -461,6 +462,8 @@ function splitStep(
 
 /** Implemented digital code models keyed by lower-case ngspice Spice_Model_Name. */
 export const DIGITAL_MODELS: ReadonlyMap<string, DigitalModelFactory> = new Map<string, DigitalModelFactory>([
+  ['d_jkff', flipFlop(true)],
+  ['d_dff', flipFlop(false)],
   ['d_pulldown', pull(ZERO)],
   ['d_pullup', pull(ONE)],
   ['d_buffer', gate(buffer)],

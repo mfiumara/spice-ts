@@ -1454,3 +1454,15 @@ reference values. No third-party netlist was added. The unchanged corpus-g
 The equations follow ngspice BJT `bjttemp.c`, `bjtacld.c` and `bjtload.c`
 (https://github.com/ngspice/ngspice/tree/master/src/spicelib/devices/bjt);
 PTF is degrees, and the transient delay uses Weil's backward-Euler approximation.
+
+## XSPICE flip-flop coverage (#1179)
+
+`benchmarks/xspice-flipflop-1179/compare.ts` reuses the unchanged corpus-i
+eSim `JK_Flipflop` and `4_bit_JK_ff` fixtures (GPL-3.0-only, pinned revision
+`1a25a46ce15e`; see corpus-i/SOURCES.md), and corpus-f's ngspice
+`examples/xspice/original-examples/mixed_mode.deck` (existing licence and
+revision in corpus-f/SOURCES.md). Only GUI control blocks are removed, equally
+for both engines. No circuit cards, transient directives or tolerances change.
+The model semantics follow the Public Domain ngspice-47 source
+https://github.com/imr/ngspice/tree/a80f6e3e95d51534905b1f23410a951802666656/src/xspice/icm/digital
+(`d_jkff` and `d_dff`, `cfunc.mod` and `ifspec.ifs`).
