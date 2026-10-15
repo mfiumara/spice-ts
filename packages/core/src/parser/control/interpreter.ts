@@ -864,6 +864,12 @@ class ControlInterpreter {
       spectrum.vectors.set('onoise_spectrum', realVector('onoise_spectrum', noise.outputNoiseDensity, frequency));
       spectrum.vectors.set('inoise_spectrum', realVector('inoise_spectrum', noise.inputNoiseDensity, frequency));
       this.runs.push({ plot: spectrum.name, analysis: type, result });
+      // ngspice creates an integrated plot only when the sweep has a frequency
+      // interval to integrate. Otherwise the spectrum remains the current plot.
+      if (noise.integratedOutputNoise === undefined && noise.integratedInputNoise === undefined) {
+        this.current = spectrum;
+        return;
+      }
       const integrated = this.newPlot('noise', 'Integrated Noise', undefined, saves);
       if (noise.integratedOutputNoise !== undefined) {
         integrated.vectors.set('onoise_total', scalar(noise.integratedOutputNoise, 'onoise_total'));

@@ -3,7 +3,8 @@ import { simulate } from '../../simulate.js';
 
 const circuit = `noise plot identity
 V1 1 0 dc 1 ac 1
-R1 1 0 1k`;
+R1 1 2 1k
+R2 2 0 1k`;
 
 describe('ngspice-47 noise plot identity (#1170)', () => {
   it('keeps single-frequency spectra current and resolves their let vectors and setplot names', async () => {
@@ -35,9 +36,9 @@ op
 op
 ac lin 1 1 1
 echo $curplot
-noise v(1) V1 lin 1 1 1
+noise v(2) V1 dec 1 1 1
 echo $curplot
-noise v(1) V1 lin 1 1 1
+noise v(2) V1 dec 1 1 1
 echo $curplot
 ac lin 1 1 1
 echo $curplot
@@ -49,7 +50,7 @@ echo $curplot
   it('still makes a multi-frequency integrated noise plot current before a single-frequency run', async () => {
     const result = await simulate(`${circuit}
 .control
-noise v(1) V1 dec 1 1 10
+noise v(2) V1 dec 1 1 10
 echo $curplot
 let total = onoise_total
 noise v(1) V1 dec 1 10 10
