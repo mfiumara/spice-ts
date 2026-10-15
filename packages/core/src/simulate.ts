@@ -620,7 +620,7 @@ function* streamWithSteps(
 }
 
 function parseWarnings(circuit: Circuit): SimulationWarning[] {
-  return circuit.parseWarnings.map(message => ({ type: 'parse', message }));
+  return circuit.parseDiagnostics;
 }
 
 function validateCircuit(compiled: CompiledCircuit, warnings: SimulationWarning[]): void {

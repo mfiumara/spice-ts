@@ -218,8 +218,7 @@ describe('ngspice-47 resistor card forms (#498)', () => {
     await expect(parseTitlelessAsync(deck)).rejects.toThrow((error as ParseError).message);
   });
 
-  it('rejects a resistor with neither value nor model, and an unresolvable model', () => {
-    expect(() => parseTitleless('R1 1 0\nV1 1 0 1\n.op')).toThrow(ParseError);
+  it('rejects an unresolvable resistor model and defaults an empty model', () => {
     expect(() => parseTitleless('R1 1 0 rmissing\nV1 1 0 1\n.op').compile())
       .toThrow(InvalidCircuitError);
     // ngspice-47 restemp.c: a model without R or RSH defaults to 1 mOhm (#574).

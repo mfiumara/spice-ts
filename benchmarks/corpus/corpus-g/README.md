@@ -6,11 +6,11 @@ Every deck below is byte-identical to Xyce_Regression `7bb7e98f0ed3a81a7d1cf1d10
 
 ## Totals
 
-- Fixtures: 128. Outcome SHA-256: `c101e6cf5d9b94a41602d94265013b20640500eca2b04a61c8841d45cf4a57ae`.
+- Fixtures: 128. Outcome SHA-256: `c2b4cb3560d83ba558cea1d70c5b622395ff9b924db4e27e221f9b347ba053ec`.
 - ngspice (ngspice-47): 128 success, 0 failed, 0 unsupported.
-- spice-ts (0.3.0): 110 success, 6 failed, 12 unsupported.
-- Outcomes: matched 98, mismatch 12, not-compared 0, spice-ts-loss 18, ngspice-failed 0, both-failed 0.
-- Of the 128 decks ngspice runs successfully, spice-ts matches 98, mismatches 12, produces no comparable result for 0 and fails 18.
+- spice-ts (0.3.0): 111 success, 6 failed, 11 unsupported.
+- Outcomes: matched 99, mismatch 12, not-compared 0, spice-ts-loss 17, ngspice-failed 0, both-failed 0.
+- Of the 128 decks ngspice runs successfully, spice-ts matches 99, mismatches 12, produces no comparable result for 0 and fails 17.
 
 ## Method
 
@@ -36,7 +36,7 @@ Grouped from spice-ts's own first error line (corpus-g rules, then corpus-f rule
 
 | Bucket | Fixtures | ngspice ok | Issue |
 |---|---|---|---|
-| parse: other unsupported syntax | 9 | 9 | none filed |
+| parse: other unsupported syntax | 8 | 8 | none filed |
 | execution: other failure | 3 | 3 | none filed |
 | deck: element-free deck (ngspice runs an empty analysis) | 2 | 2 | none filed |
 | convergence | 1 | 1 | none filed |
@@ -44,7 +44,7 @@ Grouped from spice-ts's own first error line (corpus-g rules, then corpus-f rule
 | model: BSIM4 (LEVEL=14/54) | 1 | 1 | https://github.com/mfiumara/spice-ts/issues/3 |
 | model: compact MOSFET model B3SOI (LEVEL=10) | 1 | 1 | https://github.com/mfiumara/spice-ts/issues/747 |
 
-## Losses (30)
+## Losses (29)
 
 Every fixture that is not matched: spice-ts failures, mismatches above the threshold, and results that could not be compared.
 
@@ -70,7 +70,6 @@ Every fixture that is not matched: spice-ts failures, mismatches above the thres
 | [POWERNODE/resInner.cir](fixtures/POWERNODE/resInner.cir) | success | failed | spice-ts-loss |  |  | spice-ts: DC sweep source 'R1a' not found |
 | [PSEUDO/pseudo.cir](fixtures/PSEUDO/pseudo.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Unsupported BJT model parameter: 'PTF' (excess phase is not implemented) |
 | [PSP103/invert_psp_testDTA0.cir](fixtures/PSP103/invert_psp_testDTA0.cir) | success | success | mismatch | 0.0123 | tran i(vdddev) |  |
-| [RESISTOR/DefaultValueWarning.cir](fixtures/RESISTOR/DefaultValueWarning.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 12: Resistor 'R1' has no resistance value or model R1 1a 0 |
 | [SANDLER21/sandler21.cir](fixtures/SANDLER21/sandler21.cir) | success | success | mismatch | 0.0724 | tran i(v2) |  |
 | [SANDLER22/sandler22.cir](fixtures/SANDLER22/sandler22.cir) | success | success | mismatch | 0.359 | tran v(x2.29) |  |
 | [SANDLER23/sandler23.cir](fixtures/SANDLER23/sandler23.cir) | success | success | mismatch | 0.0498 | tran v(x1.12) |  |
@@ -81,7 +80,7 @@ Every fixture that is not matched: spice-ts failures, mismatches above the thres
 | [TIA/ERROROPTION/erroroption.cir](fixtures/TIA/ERROROPTION/erroroption.cir) | success | success | mismatch | 0.224 | tran i(vin1) |  |
 | [WAMPDE/BLOCKING/simple_single_channel.cir](fixtures/WAMPDE/BLOCKING/simple_single_channel.cir) | success | success | mismatch | 2.47 | tran i(l2) |  |
 
-## Wins (98)
+## Wins (99)
 
 Fixtures where spice-ts matches ngspice-47 within the uniform threshold on every common signal.
 
@@ -165,6 +164,7 @@ Fixtures where spice-ts matches ngspice-47 within the uniform threshold on every
 | [POWER/power_bjt_gear.cir](fixtures/POWER/power_bjt_gear.cir) | success | success | matched | 6.45e-8 | tran i(vie1) |  |
 | [PSP102/idvg0_Id_T27_pmos.cir](fixtures/PSP102/idvg0_Id_T27_pmos.cir) | success | success | matched | 7.74e-16 | dc i(v_s) |  |
 | [RESISTOR_TD/temp_dep.cir](fixtures/RESISTOR_TD/temp_dep.cir) | success | success | matched | 1.63e-16 | dc i(v1) |  |
+| [RESISTOR/DefaultValueWarning.cir](fixtures/RESISTOR/DefaultValueWarning.cir) | success | success | matched | 2.17e-16 | dc v(2a) |  |
 | [ROM/AUTOSIZE/RC_ladder100.cir](fixtures/ROM/AUTOSIZE/RC_ladder100.cir) | success | success | matched | 3.81e-12 | tran i(vs) |  |
 | [SANDLER1/sandler1.cir](fixtures/SANDLER1/sandler1.cir) | success | success | matched | 0.00000546 | tran v(x5.2a) |  |
 | [SANDLER2/sandler2.cir](fixtures/SANDLER2/sandler2.cir) | success | success | matched | 0.00000819 | tran v(x6.2a) |  |

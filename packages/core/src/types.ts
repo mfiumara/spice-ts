@@ -722,6 +722,10 @@ export interface SimulationWarning {
   type: string;
   /** Human-readable warning message */
   message: string;
+  /** Stable machine-readable diagnostic code, when available. */
+  code?: string;
+  /** One-based source line for parser diagnostics, when available. */
+  line?: number;
   /** Related node name, if applicable */
   node?: string;
 }

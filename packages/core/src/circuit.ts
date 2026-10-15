@@ -1,7 +1,7 @@
 import type { DeviceModel } from './devices/device.js';
 import type {
   AnalysisDirective, DCSweepDimension, PoleZeroAnalysis, SensitivityAnalysis, SourceWaveform, ModelParams, SubcktDefinition, StepAnalysis,
-  SimulationOptions, NodeInitialState, RFPort,
+  SimulationOptions, SimulationWarning, NodeInitialState, RFPort,
 } from './types.js';
 import type { CircuitIR } from './ir/types.js';
 import { buildIR } from './ir/builder.js';
@@ -852,6 +852,7 @@ export class Circuit {
   private nodeSet = new CaseFoldedNameSet();
   private _controlScript?: ControlScript;
   private _parseWarnings: string[] = [];
+  private _parseWarningDetails = new Map<string, Pick<SimulationWarning, 'code' | 'line'>>();
 
   get analyses(): AnalysisDirective[] {
     return this._analyses;
@@ -908,8 +909,14 @@ export class Circuit {
   }
 
   /** @internal Record a non-fatal parse diagnostic; see {@link parseWarnings}. */
-  addParseWarning(message: string): void {
+  addParseWarning(message: string, details?: Pick<SimulationWarning, 'code' | 'line'>): void {
     this._parseWarnings.push(message);
+    if (details) this._parseWarningDetails.set(message, { code: details.code, line: details.line });
+  }
+
+  /** Parser warnings with optional machine-readable source diagnostics. */
+  get parseDiagnostics(): SimulationWarning[] {
+    return this._parseWarnings.map(message => ({ type: 'parse', message, ...this._parseWarningDetails.get(message) }));
   }
 
   /** Set the ngspice `.options XTRTOL=` value; see {@link xspiceTrtol}. */
@@ -3559,7 +3566,9 @@ export class Circuit {
       switch (devType) {
         case 'R': {
           const evaluatedTokens = tokens.map(t => evalToken(t));
-          const parsed = parseResistorElement(evaluatedTokens, lineNumber, raw);
+          const parsed = parseResistorElement(evaluatedTokens, lineNumber, raw,
+            warning => this.addParseWarning(warning.message, warning));
+          if (!parsed) break;
           result.push({
             type: 'R', name: devName,
             nodes: [mapNode(tokens[1]), mapNode(tokens[2])],

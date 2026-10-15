@@ -1214,7 +1214,9 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number, raw
 
   switch (type) {
     case 'R': {
-      const parsed = parseResistorElement(tokens, lineNumber, tokens.join(' '));
+      const parsed = parseResistorElement(tokens, lineNumber, tokens.join(' '),
+        warning => circuit.addParseWarning(warning.message, warning));
+      if (!parsed) break;
       circuit.addResistor(name, tokens[1], tokens[2], parsed.value, parsed.params, parsed.modelName);
       break;
     }
