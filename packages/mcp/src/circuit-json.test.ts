@@ -49,6 +49,7 @@ describe('MCP circuit-json input (#1155)', () => {
     expect(await stream(request)).toEqual(expected.structuredContent);
     const result = actual.structuredContent as unknown as SimulationResultV1;
     expect(result.analyses[0]).toMatchObject({ type: 'op', voltagesV: { in: 0, out: 0 } });
+    expect(await executeTool('spice_measure', { request, measurements: [{ kind: 'max', signal: 'v(out)', analysis: 0 }] })).toMatchObject({ structuredContent: { measurements: [{ value: 0, unit: 'V' }] } });
   });
 
   it.each(['spice_validate', 'spice_simulate', 'spice_simulation_start'])('%s preserves unsupported-element diagnostics', async tool => {

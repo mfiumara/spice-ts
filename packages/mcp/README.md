@@ -7,6 +7,7 @@ A bounded stdio MCP server exposing the existing spice-ts protocol-v1 adapter. I
 - `spice_capabilities`: deterministic discovery of supported analyses, input formats, and server limits.
 - `spice_validate`: bounded parse/compile/topology validation without solving.
 - `spice_simulate`: one bounded protocol-v1 simulation.
+- `spice_measure`: run the same simulation request once and return scalar measurements only.
 - `spice_simulation_start`: start a bounded simulation worker and return its opaque job cursor before solving completes.
 - `spice_simulation_read`: pull a replayable chunk containing at most 256 points by default (caller-selectable from 1 through the hard cap of 1024).
 - `spice_simulation_cancel`: idempotently stop delivery and return the protocol-v1 cancelled terminal with partial analysis counts and `partialEventSha256`.
@@ -14,6 +15,41 @@ A bounded stdio MCP server exposing the existing spice-ts protocol-v1 adapter. I
 The validation, one-shot simulation, and stream-start tools accept `{ "request": SimulationRequestV1 }`. Successful results are returned as MCP `structuredContent` and as compact JSON text. Failures set `isError` and return `{ "error": SpiceApiErrorV1 }`; implementation backend names are removed from public errors.
 
 The server supports protocol-v1 `spice`, `spice-ts`, and `circuit-json` inputs and `op`, `dc`, `tran`, and `ac` analyses. For Circuit JSON, use `input: { format: 'circuit-json', circuit, analyses }`. Conversion is performed by `@spice-ts/circuit-json` before validation or worker execution; its supported element set applies (currently R/C/M/Q, not independent sources). Fatal conversion diagnostics are returned in `error.details.diagnostics`, with `UNSUPPORTED_ELEMENT` for unsupported elements. Nonfatal conversion diagnostics (including ignored layout elements) are exposed in the MCP result's `_meta.conversionDiagnostics` by all three request tools, without changing the protocol simulation result shape.
+
+## Scalar measurements
+
+Call `spice_measure` with `{ request: SimulationRequestV1, measurements: [...] }`.
+Each item has `kind` (`min`, `max`, `avg`, `rms`, `pp`, `at`, `cross`, or `when`),
+`signal`, and a zero-based `analysis` index. Signals are case-insensitive `v(node)`
+or `i(branch)`; AC uses magnitude by default and also supports `mag(v(node))`,
+`db(v(node))` and the corresponding current projections. dB is 20 log10 of the
+magnitude relative to 1 V or 1 A, not a transfer-function ratio.
+
+Optional `from`/`to` delimit an inclusive axis window. `at` needs an `at` coordinate.
+`cross` and `when` are aliases, need a `value`, and return the first crossing
+coordinate, optionally filtered by `edge: rising | falling | either` (default either).
+A crossing requires a segment starting strictly below/above the target and ending
+at or beyond it; an initial point equal to the target alone is not a crossing.
+Interpolation is linear in the published axis and signal, including AC Hz/dB.
+Window boundaries are interpolated. `avg` is axis-weighted; `rms` integrates the
+square of the piecewise-linear signal, not the mean square of unevenly spaced samples.
+Descending DC axes are supported. OP reductions treat the signal as one sample at
+coordinate 0; OP crossings are unavailable. Stepped results with repeated analysis
+indices return `AMBIGUOUS_ANALYSIS`; run steps separately.
+
+The response is `{ measurements: [{ value, unit } | { error: { code, message } }] }`,
+in request order, never vectors. Units are V/A/dB for signal values and s/Hz/the DC
+source unit for crossings. Per-item codes include `INVALID_MEASUREMENT`,
+`UNKNOWN_SIGNAL`, `UNKNOWN_ANALYSIS`, `AMBIGUOUS_ANALYSIS`, `OUT_OF_RANGE`,
+`NO_CROSSING`, and `NON_FINITE_RESULT` (including dB of zero).
+Malformed lists fail the tool with `INVALID_REQUEST`; simulation failures use the
+usual tool error. Lists contain 1 through 128 items, signals at most 256 characters.
+Simulation point/byte/time limits still apply internally. Measurement payload bytes
+and scalar response bytes are bounded too. Measurement calls share the one-shot
+concurrency quota and the same Circuit JSON conversion/diagnostic path.
+
+Example measurement for an AC low-pass with 1 V input:
+`{ kind: 'cross', signal: 'db(v(out))', analysis: 0, value: -3.010299956639812, edge: 'falling' }`.
 
 ## Run over stdio
 
