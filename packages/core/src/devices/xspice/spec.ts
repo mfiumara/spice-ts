@@ -359,12 +359,31 @@ function pull(name: string): XspiceCodeModelSpec {
   return { name, connections: [digital('out', 'out')], params: [real('load', 1e-12)] };
 }
 
+/** digital/{d_jkff,d_dff}/ifspec.ifs */
+function flipFlop(name: string, data: readonly string[], load: string): XspiceCodeModelSpec {
+  return {
+    name,
+    connections: [
+      ...data.map(port => digital(port, 'in')), digital('clk', 'in'),
+      ...['set', 'reset'].map(port => ({ ...digital(port, 'in'), nullAllowed: true })),
+      ...['out', 'nout'].map(port => ({ ...digital(port, 'out'), nullAllowed: true })),
+    ],
+    params: [
+      ...['clk_delay', 'set_delay', 'reset_delay'].map(param => real(param, 1e-9, { limits: [1e-12, undefined] })),
+      { name: 'ic', type: 'int', defaultValue: [0], limits: [0, 2], vector: false, nullAllowed: true },
+      ...DIGITAL_DELAYS,
+      ...[load, 'clk_load', 'set_load', 'reset_load'].map(param => real(param, 1e-12)),
+    ],
+  };
+}
+
 /** Implemented code models keyed by lower-case ngspice Spice_Model_Name. */
 export const XSPICE_CODE_MODEL_SPECS: ReadonlyMap<string, XspiceCodeModelSpec> = new Map(
   [
     GAIN, SUMMER, MULT, DIVIDE, PWL, LIMIT, INT, D_DT, S_XFER,
     CLIMIT, HYST, ILIMIT, SLEW, SINE, CMETER, LMETER, PSWITCH, ASWITCH,
     ADC_BRIDGE, DAC_BRIDGE, pull('d_pulldown'), pull('d_pullup'),
+    flipFlop('d_jkff', ['j', 'k'], 'jk_load'), flipFlop('d_dff', ['data'], 'data_load'),
     unaryGate('d_buffer'), unaryGate('d_inverter'),
     naryGate('d_and'), naryGate('d_nand'), naryGate('d_or'), naryGate('d_nor'), naryGate('d_xor'), naryGate('d_xnor'),
   ].map(spec => [spec.name, spec]),
