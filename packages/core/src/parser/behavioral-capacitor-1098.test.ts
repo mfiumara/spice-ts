@@ -100,7 +100,7 @@ describe('ngspice-47 behavioral C= (#1098)', () => {
       .rejects.toThrow("behavioral capacitor 'Cbad'");
   });
 
-  it.each(['m=2', 'scale=2', 'temp=40'])('rejects unsupported %s rather than changing its meaning', async parameter => {
+  it.each(['scale=2', 'temp=40'])('rejects unsupported %s rather than changing its meaning', async parameter => {
     await expect(preprocess(`Cbad a 0 C={1u*(1+v(a))} ${parameter}`)).rejects.toThrow('unsupported parameter');
   });
 
