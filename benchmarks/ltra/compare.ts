@@ -9,6 +9,13 @@ import {
 
 const fixtures: Array<ComparisonFixture & { path: string }> = [
   {
+    name: 'corpus-g-ltra-ltra1-cir',
+    analysis: 'tran',
+    path: 'benchmarks/corpus/corpus-g/fixtures/LTRA/ltra1.cir',
+    netlist: '',
+    signals: ['v(1)', 'v(2)', 'v(3)'],
+  },
+  {
     name: 'ngspice-ltra-line-transient',
     analysis: 'tran',
     path: 'benchmarks/corpus/ngspice/fixtures/tests/transmission/ltra1_1_line.cir',
