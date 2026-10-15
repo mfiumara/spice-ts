@@ -243,7 +243,7 @@ describe('control-language meas', () => {
 describe('unsupported .meas forms raise UnsupportedMeasureError', () => {
   it.each([
     ['.meas sp', '.sp lin 10 1 1k\n.meas sp x max s_1_1', /S-parameter/],
-    ['a par() operand spice-ts cannot build as a B-source', ".tran 1u 10u\n.meas tran x find par('pwl(v(1),0,0,1,1)') at=1u", /B-source 'bpa_00 pa_00 0 v = pwl\(v\(1\),0,0,1,1\)'/],
+    ['a par() operand spice-ts cannot build as a B-source', ".tran 1u 10u\n.meas tran x find par('unknown_fn(v(1))') at=1u", /B-source 'bpa_00 pa_00 0 v = unknown_fn\(v\(1\)\)'/],
   ])('%s', async (_label, cards, reason) => {
     const error = await simulate(`t\nv1 1 0 1 ac 1\nr1 1 0 1k\n${cards}\n`).catch((caught: unknown) => caught);
     expect(error).toBeInstanceOf(UnsupportedMeasureError);

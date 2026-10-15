@@ -4,7 +4,7 @@ import {
   braceBareParameters, conditionExpression, expandUserFunctions, paramCardAsFunc, parseFuncCard, type FunctionScope,
   type UserFunction,
 } from './numparam.js';
-import { NODE_DEPENDENT_EXPRESSION, substituteBehavioralParameters } from './behavioral-expression.js';
+import { BEHAVIORAL_RUNTIME_EXPRESSION, NODE_DEPENDENT_EXPRESSION, substituteBehavioralParameters } from './behavioral-expression.js';
 import { parseNumber, tokenizeLine } from './tokenizer.js';
 import { formatNumber as formatLiteralNumber } from '../netlist-number.js';
 import { tempDirective } from './temp-directive.js';
@@ -1135,7 +1135,7 @@ export function substituteExpressions(
   formatter: (value: number) => string = formatNumber,
 ): string {
   return line.replace(/\{([^}]+)\}/g, (match, expr: string) => {
-    if (keepNodeDependent && (NODE_DEPENDENT_EXPRESSION.test(expr) || /\bhertz\b/i.test(expr))) return match;
+    if (keepNodeDependent && (NODE_DEPENDENT_EXPRESSION.test(expr) || BEHAVIORAL_RUNTIME_EXPRESSION.test(expr))) return match;
     const value = evaluateExpression(expr, params);
     return formatter(value);
   });
