@@ -27,6 +27,7 @@ const toolNames = [
   'spice_capabilities',
   'spice_validate',
   'spice_simulate',
+  'spice_measure',
   'spice_simulation_start',
   'spice_simulation_read',
   'spice_simulation_cancel',
