@@ -9458,7 +9458,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 407: Unknown function 'u' b1119_t n1119_t 0 v = 'u(0.01)'"
+        "firstErrorLine": "Parse error at line 450: Unknown function 'pwl' b1132_t n1132_t 0 v = 'pwl(-100, -10, -8, 2, 4, 12, 9, 22, 19)'"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -10336,5 +10336,5 @@
       "gapBucket": "parse: other unsupported syntax"
     }
   ],
-  "outcomeSha256": "bcf75a8aecd3882757409680fd47fe4e7767c35251c76eca5542cf8d01d5ae51"
+  "outcomeSha256": "c4c640776d8bbfbd16d68fc85677e6397a562aab6db550f8244474de0c1ed24a"
 }
