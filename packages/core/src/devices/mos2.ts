@@ -1144,8 +1144,8 @@ export class MOS2 implements DeviceModel {
   }
 
   /** Meyer half capacitances [gs, gd, gb] at the given solution. */
-  private meyerHalf(voltage: (node: number) => number, out: Float64Array): void {
-    const [vgs, vds, vbs] = this.terminalVoltages(voltage);
+  private meyerHalf(voltage: (node: number) => number, out: Float64Array, bias?: [number, number, number]): void {
+    const [vgs, vds, vbs] = bias ?? this.terminalVoltages(voltage);
     const channel = this.evaluateChannel(vgs, vds, vbs, this.lastGm, this.lastGmbs);
     const vgd = vgs - vds;
     const { tPhi } = this.temp;
@@ -1242,6 +1242,30 @@ export class MOS2 implements DeviceModel {
     }
   }
 
+  /** OPtran MODEINITTRAN copies terminal state from the last DC load, not rhsOld. */
+  initializeTransientOperatingPoint(ctx: StampContext, transientOperatingPoint: boolean): void {
+    const { vgs, vds, vbs } = this.lastLoad;
+    const type = this.model.polarity;
+    this.resetTransient();
+    const voltages = [type * vgs, type * (vgs - vds), type * (vgs - vbs), type * vbs, type * (vbs - vds)];
+    const capacitances = this.capacitanceScratch;
+    const junctionCharges = this.chargeScratch;
+    capacitances.fill(0);
+    junctionCharges.fill(0);
+    if (transientOperatingPoint) {
+      // DC junction initialization can be model-local (e.g. Vbs=-1 with
+      // bulk tied to source). Do not try to encode it in a global node vector.
+      this.evaluateCharges(ctx, capacitances, junctionCharges, [vgs, vds, vbs]);
+    }
+    // MODEDCOP loads no charges/capacitances; MODETRANOP loads C*V and Qj.
+    for (let index = 0; index < CHARGE_BRANCHES.length; index++) {
+      const charge = index < GATE_CHARGES ? capacitances[index] * voltages[index] : junctionCharges[index];
+      this.charges.accept(index, charge, voltages[index], capacitances[index]);
+    }
+    this.charges.commit();
+    this.acceptedTerminals = [vgs, vds, vbs];
+  }
+
   acceptTransientStep(ctx: StampContext): void {
     this.acceptCharges(ctx);
     this.previousTerminals = this.acceptedTerminals;
@@ -1300,15 +1324,15 @@ export class MOS2 implements DeviceModel {
    * it with the accepted value, which yields mos2load.c's
    * capgs = half(n+1) + half(n) + overlap.
    */
-  private evaluateCharges(ctx: StampContext, capacitances: Float64Array, junctionCharges: Float64Array): void {
+  private evaluateCharges(ctx: StampContext, capacitances: Float64Array, junctionCharges: Float64Array, bias?: [number, number, number]): void {
     const voltage = (node: number) => (node >= 0 ? ctx.getVoltage(node) : 0);
     const half = halfScratch;
-    this.meyerHalf(voltage, half);
+    this.meyerHalf(voltage, half, bias);
     capacitances[GATE_SOURCE] = 2 * half[0] + this.overlapGS;
     capacitances[GATE_DRAIN] = 2 * half[1] + this.overlapGD;
     capacitances[GATE_BULK] = 2 * half[2] + this.overlapGB;
     const type = this.model.polarity;
-    const [, vds, vbs] = this.terminalVoltages(voltage);
+    const [, vds, vbs] = bias ?? this.terminalVoltages(voltage);
     const vbd = vbs - vds;
     const { Cbs, Cbssw, Cbd, Cbdsw, f2s, f3s, f4s, f2d, f3d, f4d } = this.temp;
     capacitances[BULK_SOURCE] = this.depletionCapacitance(vbs, Cbs, Cbssw, f2s, f3s);

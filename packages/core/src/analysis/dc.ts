@@ -11,6 +11,7 @@ import { Capacitor } from '../devices/capacitor.js';
 import { Resistor } from '../devices/resistor.js';
 import { VoltageSource } from '../devices/voltage-source.js';
 import { CurrentSource } from '../devices/current-source.js';
+import { MOS2 } from '../devices/mos2.js';
 import { createDriverFromCompiled } from './transient-driver.js';
 import {
   ProtocolExecutionError,
@@ -79,6 +80,8 @@ export function solveDCOperatingPoint(
         || !(
           gminSteppingHomotopy(assembler, devices, options, nodeNames, convergence, guard)
           || sourceStepping(assembler, devices, options, nodeNames, convergence, initialGuess, guard)
+          || (err instanceof SingularMatrixError && !initialSolution
+            && mos2TransientOperatingPoint(compiled, assembler, options, sourceMode, guard))
         )
       ) {
         if (err instanceof ConvergenceError) {
@@ -227,6 +230,58 @@ function passiveTransientOperatingPoint(
   }
 }
 
+
+/**
+ * Final CKTop OPtran fallback for RC/MOS2 circuits. MOS2's last-load terminal
+ * and charge handoff is explicit; do not opt other nonlinear models in until
+ * their MODEINITTRAN semantics are proved. This is the native finite 10 us
+ * horizon, not an artificial DC shunt or a relaxed convergence tolerance.
+ */
+function mos2TransientOperatingPoint(
+  compiled: CompiledCircuit,
+  assembler: MNAAssembler,
+  options: ResolvedOptions,
+  sourceMode: DCSourceMode,
+  guard?: ProtocolExecutionGuard,
+): boolean {
+  if (options.gmin !== 0 || compiled.initialConditions.length || compiled.nodeSets.length) return false;
+  if (!compiled.devices.some(device => device instanceof MOS2)) return false;
+  if (!compiled.devices.every(device =>
+    Object.getPrototypeOf(device) === MOS2.prototype
+    || (Object.getPrototypeOf(device) === Capacitor.prototype
+      && (device as Capacitor).capacitance > 0 && Number.isFinite((device as Capacitor).capacitance)
+      && (device as Capacitor).ic === undefined)
+    || (Object.getPrototypeOf(device) === Resistor.prototype
+      && (device as Resistor).conductance > 0 && Number.isFinite((device as Resistor).conductance))
+    || (Object.getPrototypeOf(device) === VoltageSource.prototype && !(device as VoltageSource).port)
+    || Object.getPrototypeOf(device) === CurrentSource.prototype,
+  )) return false;
+  let driver: ReturnType<typeof createDriverFromCompiled> | undefined;
+  try {
+    driver = createDriverFromCompiled(compiled, options, {
+      stopTime: 1e-5, timestep: 1e-7, maxTimestep: 1e-7,
+      initialSolution: new Float64Array(assembler.solution),
+      operatingPoint: { useDcSourceValue: sourceMode === 'operating-point' },
+      guard,
+    });
+    for (let steps = 0; steps < 10000 && !driver.isDone; steps++) {
+      guard?.checkpoint('solve:transient-step');
+      driver.advanceSolution();
+    }
+    const solution = driver.currentSolution();
+    if (!driver.isDone || !solution.every(Number.isFinite)) return false;
+    assembler.solution.set(solution);
+    return true;
+  } catch (error) {
+    if (error instanceof ProtocolExecutionError) throw error;
+    return false;
+  } finally {
+    driver?.dispose();
+    // The real transient starts at physical t=0 with an OP seed, not the
+    // artificial integration history of this fallback.
+    for (const device of compiled.devices) device.resetTransient?.();
+  }
+}
 
 /**
  * ngspice-47 CKTop gmin homotopies after a failed plain Newton solve: dynamic

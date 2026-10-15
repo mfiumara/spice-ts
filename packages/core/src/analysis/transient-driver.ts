@@ -17,6 +17,7 @@ import {
 } from '../convergence-telemetry.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 import { Inductor } from '../devices/inductor.js';
+import { MOS2 } from '../devices/mos2.js';
 import { maxTimestepOption, runnableTransient, transientStepCap } from './max-timestep.js';
 import { chargeTruncatedNodes } from './transient-node-truncation.js';
 import { LinearReactiveTruncation } from './transient-reactive-truncation.js';
@@ -202,6 +203,8 @@ interface InternalTransientConfig {
    * currents from their ICs but leaves algebraic nodes at an arbitrary value.
    */
   useInitialConditions?: boolean;
+  /** Local OPtran integration clock; device/source physical time stays zero. */
+  operatingPoint?: { useDcSourceValue: boolean };
   /** Shared aggregate used by one-shot simulations. */
   convergence?: ConvergenceTelemetry;
   /** Cooperative guard used by bounded protocol executions. */
@@ -401,7 +404,7 @@ class TransientSimImpl implements TransientSim {
         },
         {
           dt: actualDt,
-          time: nextTime,
+          time: this.config.operatingPoint ? 0 : nextTime,
           prevSolution: prevSol,
           prevB: this.orderOnePending ? undefined : this.prevB,
           gmin: this.options.gmin,
@@ -697,7 +700,7 @@ class TransientSimImpl implements TransientSim {
     }
     if (stop === undefined) return new BreakpointQueue(times, MIN_BREAK);
     for (const d of this.compiled.devices) {
-      if (d.getBreakpoints) times.push(...d.getBreakpoints(stop));
+      if (!this.config.operatingPoint && d.getBreakpoints) times.push(...d.getBreakpoints(stop));
     }
     const queue = new BreakpointQueue(times, MIN_BREAK);
     this.orderOnePending = true;
@@ -720,6 +723,7 @@ class TransientSimImpl implements TransientSim {
   private createAssembler(): MNAAssembler {
     return new MNAAssembler(this.compiled.nodeCount, this.compiled.branchCount, {
       deviceGmin: this.options.deviceGmin,
+      useDcSourceValue: this.config.operatingPoint?.useDcSourceValue,
       variables: createMatrixVariableIdentities(
         this.compiled.nodeNames,
         this.compiled.branchNames,
@@ -735,7 +739,17 @@ class TransientSimImpl implements TransientSim {
    * so the first step integrates at order 1 without it.
    */
   private acceptInitialPoint(): void {
-    this.acceptTransientStep(this.time);
+    if (this.config.operatingPoint) {
+      // OPtran copies the last DC load's state0 into state1 before INITTRAN.
+      const ctx = this.assembler.getStampContext();
+      for (const device of this.acceptingDevices) {
+        if (device instanceof MOS2) device.initializeTransientOperatingPoint(ctx, !this.config.operatingPoint.useDcSourceValue);
+        else device.acceptTransientStep!(ctx, this.breakpointSink);
+      }
+      this.reactiveTruncation.accept(this.assembler.solution, undefined);
+    } else {
+      this.acceptTransientStep(this.time);
+    }
     if (this.events) {
       if (this.config.useInitialConditions) {
         throw new InvalidCircuitError('XSPICE event-driven instances are not supported with transient UIC');
@@ -941,6 +955,7 @@ export function createDriverFromCompiled(
     maxTimestep: number;
     initialSolution?: Float64Array;
     useInitialConditions?: boolean;
+    operatingPoint?: { useDcSourceValue: boolean };
     convergence?: ConvergenceTelemetry;
     guard?: ProtocolExecutionGuard;
   },
@@ -955,6 +970,7 @@ export function createDriverFromCompiled(
     maxTimestep: config.maxTimestep,
     initialSolution: config.initialSolution,
     useInitialConditions: config.useInitialConditions,
+    operatingPoint: config.operatingPoint,
     convergence: config.convergence,
     guard: config.guard,
   });
