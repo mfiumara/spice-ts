@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { simulate } from '../simulate.js';
+import { resolveVBICParams } from './vbic.js';
 
 // Mirror every independent excitation, including the substrate and AC source.
 // The physical terminal currents/voltages negate; the small-signal Jacobians do not.
@@ -25,6 +26,11 @@ Q1 c b e s model AREA=2 M=3
 }
 
 describe('VBIC PNP polarity', () => {
+  it('rejects invalid polarity at the model boundary', () => {
+    expect(() => resolveVBICParams({}, 0))
+      .toThrow('Invalid bounded VBIC polarity: expected NPN (+1) or PNP (-1)');
+  });
+
   it('runs the unchanged ngspice PNP forward-Gummel fixture', async () => {
     const fixture = readFileSync(resolve(
       process.cwd(), '../../benchmarks/corpus/corpus-f/fixtures/tests/vbic/FG.cir',
