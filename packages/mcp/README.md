@@ -17,6 +17,16 @@ The validation, one-shot simulation, and stream-start tools accept `{ "request":
 
 The server supports protocol-v1 `spice`, `spice-ts`, and `circuit-json` inputs and `op`, `dc`, `tran`, and `ac` analyses. For Circuit JSON, use `input: { format: 'circuit-json', circuit, analyses }`. Conversion is performed by `@spice-ts/circuit-json` before validation or worker execution; its supported element set applies (currently R/C/M/Q, not independent sources). Fatal conversion diagnostics are returned in `error.details.diagnostics`, with `UNSUPPORTED_ELEMENT` for unsupported elements. Nonfatal conversion diagnostics (including ignored layout elements) are exposed in the MCP result's `_meta.conversionDiagnostics` by all three request tools, without changing the protocol simulation result shape.
 
+## Topology preflight warnings
+
+`spice_validate` returns `{ status: 'valid', nodeCount, branchCount, analysisCount, diagnostics? }` after parsing and compiling without a numerical solve. `diagnostics` is omitted for a clean deck. Each entry has `severity: 'warning'`, a `code`, `nodes`, `elements` (compiled element ids, including expanded subcircuit names), and a one-line `hint`.
+
+- `FLOATING_NODE`: a non-ground node connected to fewer than two distinct elements.
+- `NO_DC_PATH_TO_GROUND`: a DC-connected node set without a conductive path to node `0`. Capacitors and current sources do not provide that path. `.options rshunt` suppresses this warning.
+- `VOLTAGE_SOURCE_LOOP`: an ideal loop of V/E/H/L elements, including inductors even for transient-only decks. The first loop in element-id order is reported.
+
+Warnings are sorted by code then node ids; node/element lists use code-point order and are capped at 32 ids. DC islands are reported separately. These are advisory graph checks, not a guarantee of numerical convergence. Simulation and strict direct-core validation retain their existing behavior. A dangling terminal can produce both a floating-node and a missing-DC-path warning. Conversion diagnostics remain separate in `_meta.conversionDiagnostics`.
+
 ## Circuit conversion
 
 `spice_convert` requires exactly one input field. It uses the core titleless SPICE
@@ -35,6 +45,7 @@ passive-network round-trip, attach the same external source and analysis after c
 Successful conversions include nonfatal diagnostics (such as `LAYOUT_ONLY`).
 The compact JSON input and output obey `maxDocumentBytes` and
 `maxSerializedResultBytes`, respectively; oversize calls return `RESOURCE_LIMIT`.
+
 
 ## Scalar measurements
 

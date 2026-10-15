@@ -248,9 +248,9 @@ Core errors map without parsing their message strings: `ParseError` to `PARSE_ER
 
 This is a required core change, not a claim about the current implementation. Today the real and complex sparse solvers throw plain `Error` for singular pivots, so they cannot be mapped by type. #60 owns replacing every such solver throw site with `SingularMatrixError`, preserving source node/branch identity through matrix assembly, and adding exact mapping tests. No adapter may classify errors by matching `Error.message`.
 
-`spice_validate` performs schema validation, parse, compile, and a deterministic topology preflight; it does not numerically solve. The preflight must detect floating connected components/nets, absent DC reference paths, and ideal voltage-source/inductor loops and return `INVALID_CIRCUIT` diagnostics with source paths and involved nodes. A singularity not provable by topology preflight can still occur during `spice_simulate`; it maps to `SINGULAR_MATRIX`. Validation must not promise that all numerical singularities are found before solving.
+`spice_validate` performs schema validation, parse, compile, and a deterministic topology preflight; it does not numerically solve. Its successful result includes a `diagnostics` array of advisory warnings with `severity: 'warning'`, `code`, `nodes`, `elements`, and a one-line `hint`. The codes are `FLOATING_NODE` (fewer than two distinct connected elements), `NO_DC_PATH_TO_GROUND` (DC-connected node set without a conductive path to node 0; capacitors/current sources do not count), and `VOLTAGE_SOURCE_LOOP` (first ideal V/E/H/L loop in element-id order). `.options rshunt` suppresses missing-DC-path warnings. Warnings are sorted by code then node ids; ids use code-point order and lists are capped at 32. Direct core validation remains strict by default; MCP opts into warnings. Simulation behavior is unchanged. Validation must not promise numerical convergence or that all numerical singularities are found before solving.
 
-`retryable` is false for schema, parse, topology, unsupported-feature, and backend-unavailable failures; true for cancellation; and true for convergence/resource failures only when a diagnostic supplies a concrete changed option that stays inside server limits.
+Clean validation results omit the optional `diagnostics` array. `retryable` is false for schema, parse, topology, unsupported-feature, and backend-unavailable failures; true for cancellation; and true for convergence/resource failures only when a diagnostic supplies a concrete changed option that stays inside server limits.
 
 ## 6. Determinism contract
 
@@ -401,7 +401,7 @@ Backend IDs remain explicit: `spice-ts-js`, reserved `spice-ts-wasm`, and existi
 Executable: [`examples/floating-node-repair`](../../examples/floating-node-repair/README.md), run in CI by [`examples/agent-workflows/issue-63`](../../examples/agent-workflows/issue-63/README.md).
 
 1. The agent calls `spice_validate` with a SPICE netlist.
-2. The topology preflight returns `INVALID_CIRCUIT`, `details.involvedNodes: ["sense"]`, a source location, and a suggestion to add a DC path. If a different singularity is only discovered while solving, `spice_simulate` instead returns `SINGULAR_MATRIX`.
+2. The MCP topology preflight returns `status: 'valid'` with a `NO_DC_PATH_TO_GROUND` warning, `nodes: ["sense"]`, incident element ids and a hint to add a DC path. Strict simulation preflight can still reject the topology with `INVALID_CIRCUIT`; a singularity discovered only while solving returns `SINGULAR_MATRIX`.
 3. The agent edits the netlist, validates again, then calls `spice_simulate` for OP.
 4. It asserts the returned `out` voltage and records input/result hashes in its engineering log.
 
