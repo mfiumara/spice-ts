@@ -160,8 +160,8 @@ function resolveSweepTarget(
     };
   }
   const matchingSources = devices.filter(
-    (device): device is VoltageSource | CurrentSource =>
-      (device instanceof VoltageSource || device instanceof CurrentSource)
+    (device): device is VoltageSource | CurrentSource | Resistor =>
+      (device instanceof VoltageSource || device instanceof CurrentSource || device instanceof Resistor)
       && device.name.toUpperCase() === normalizedSourceName,
   );
   if (matchingSources.length === 0) {
@@ -174,6 +174,14 @@ function resolveSweepTarget(
     );
   }
   const source = matchingSources[0]!;
+  if (source instanceof Resistor) {
+    // Sweep the nominal instance value, retaining temperature, SCALE and M.
+    const resistance = source.getParameter();
+    return {
+      set: value => source.setParameter(value),
+      restore: () => source.setParameter(resistance),
+    };
+  }
   const waveform = source.waveform;
   return {
     set: value => { source.waveform = { type: 'dc', value }; },
