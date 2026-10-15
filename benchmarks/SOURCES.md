@@ -1,5 +1,17 @@
 # Benchmark sources
 
+## MCP scalar RC measurements (#1162)
+
+`packages/mcp/src/measure.test.ts` contains two original project-authored MIT
+RC netlists (repository `LICENSE`), not third-party extracts. Both engines receive
+the identical `rcTran`/`rcAc` strings, including the comment title and `.end`.
+References were exported with ngspice-47 using
+`SPICE_ASCIIRAWFILE=1 ngspice -b -r probe.raw probe.cir`.
+The transient scalar is the first linear-axis crossing of `v(out)` at `1-exp(-1)`;
+the AC scalar is the first linear-Hz crossing of `20*log10(abs(v(out)))` at
+`-10*log10(2)`. Native scalars are retained in the runnable test, alongside the
+independent analytic RC checks. No external source or simulator tolerance changed.
+
 ## TEMPER model/instance sweep regression (#1151)
 
 `packages/core/src/analysis/temper-model-1151.test.ts` contains an original

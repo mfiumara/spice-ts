@@ -31,7 +31,7 @@ describe('stdio transport', () => {
 
     const listed = await client.listTools();
     expect(listed.tools.map(tool => tool.name)).toEqual([
-      'spice_capabilities', 'spice_validate', 'spice_simulate',
+      'spice_capabilities', 'spice_validate', 'spice_simulate', 'spice_measure',
       'spice_simulation_start', 'spice_simulation_read', 'spice_simulation_cancel',
     ]);
     expect(listed.tools.every(tool => tool.inputSchema.type === 'object')).toBe(true);
@@ -63,6 +63,12 @@ describe('stdio transport', () => {
       arguments: { request },
     });
     expect(simulation.structuredContent).toEqual(expected);
+    const measured = await client.callTool({
+      name: 'spice_measure',
+      arguments: { request, measurements: [{ kind: 'max', signal: 'v(b)', analysis: 0 }] },
+    });
+    expect(measured.isError).not.toBe(true);
+    expect(measured.structuredContent).toEqual({ measurements: [{ value: 2, unit: 'V' }] });
 
     const started = await client.callTool({
       name: 'spice_simulation_start',

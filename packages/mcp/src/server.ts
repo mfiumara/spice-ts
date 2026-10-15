@@ -21,6 +21,7 @@ import { createRequire } from 'node:module';
 import { Worker } from 'node:worker_threads';
 import { estimatedResultPoints, requestPlan, resolvedOptions } from './request-plan.js';
 import type { RequestPlan } from './request-plan.js';
+import { measurementListSchema, measureResult } from './measure.js';
 
 export interface McpLimits {
   maxDocumentBytes: number;
@@ -128,6 +129,7 @@ const capabilitiesOutputSchema = {
     protocolVersion: { const: '1' },
     analyses: { type: 'array', items: { enum: ['op', 'dc', 'tran', 'ac'] } },
     inputFormats: { type: 'array', items: { enum: ['spice', 'spice-ts', 'circuit-json'] } },
+    tools: { type: 'array', items: { type: 'string' } },
     limits: {
       type: 'object',
       required: Object.keys(DEFAULT_MCP_LIMITS),
@@ -239,6 +241,29 @@ export const MCP_TOOLS = Object.freeze([
     outputSchema: { ...commonSchemaV1.$defs.simulationResult, $defs: commonSchemaV1.$defs },
   },
   {
+    name: 'spice_measure',
+    description: 'Simulate once and return up to 128 scalar measurements. Analysis is a zero-based index; signals are v(node), i(branch), mag(v(node)), or db(v(node)). Cross/when return the first matching axis coordinate.',
+    inputSchema: {
+      ...requestInputSchema,
+      required: ['request', 'measurements'],
+      properties: { ...requestInputSchema.properties, measurements: measurementListSchema },
+    },
+    outputSchema: {
+      type: 'object', required: ['measurements'], additionalProperties: false,
+      properties: {
+        measurements: {
+          type: 'array', minItems: 1, maxItems: 128,
+          items: {
+            oneOf: [
+              { type: 'object', required: ['value', 'unit'], additionalProperties: false, properties: { value: { type: 'number' }, unit: { type: 'string' } } },
+              { type: 'object', required: ['error'], additionalProperties: false, properties: { error: { type: 'object', required: ['code', 'message'], additionalProperties: false, properties: { code: { type: 'string' }, message: { type: 'string' } } } } },
+            ],
+          },
+        },
+      },
+    },
+  },
+  {
     name: 'spice_simulation_start',
     description: 'Start one bounded protocol-v1 simulation job and return its first opaque cursor.',
     inputSchema: requestInputSchema,
@@ -262,6 +287,7 @@ const capabilities = Object.freeze({
   protocolVersion: '1',
   analyses: Object.freeze(['op', 'dc', 'tran', 'ac']),
   inputFormats: Object.freeze(['spice', 'spice-ts', 'circuit-json']),
+  tools: Object.freeze(MCP_TOOLS.map(tool => tool.name)),
   limits: DEFAULT_MCP_LIMITS,
   streaming: Object.freeze({
     defaultChunkPoints: DEFAULT_STREAM_CHUNK_POINTS,
@@ -301,10 +327,15 @@ async function executeToolWithStore(
     if (name === 'spice_capabilities') return success(streamStore.capabilities());
     if (name === 'spice_simulation_read') return success(streamStore.read(streamReadArgs(args)));
     if (name === 'spice_simulation_cancel') return success(streamStore.cancel(streamCancelArgs(args)));
-    if (name !== 'spice_validate' && name !== 'spice_simulate' && name !== 'spice_simulation_start') {
+    if (name !== 'spice_validate' && name !== 'spice_simulate' && name !== 'spice_measure' && name !== 'spice_simulation_start') {
       return failure(apiError('INVALID_REQUEST', 'Unknown tool', 'transport', {}));
     }
 
+    const measurements = name === 'spice_measure' && isRecord(args) ? args.measurements : undefined;
+    if (name === 'spice_measure' && (!Array.isArray(measurements) || measurements.length < 1 || measurements.length > 128)) {
+      throw apiError('INVALID_REQUEST', 'Expected 1 through 128 measurements', 'validation', {});
+    }
+    if (name === 'spice_measure') enforceMaximum('maxDocumentBytes', limits.maxDocumentBytes, Buffer.byteLength(JSON.stringify(measurements)), 'validation');
     const original = toolRequest(args);
     const effective = effectiveLimits(original, limits);
     enforceMaximum('maxDocumentBytes', effective.maxDocumentBytes, Buffer.byteLength(JSON.stringify(original.input)), 'validation');
@@ -333,6 +364,11 @@ async function executeToolWithStore(
         ? await boundedCall(() => options.simulate!(bounded), effective.maxWallTimeMs, options.signal)
         : await runInWorker<SimulationResultV1>('simulate', bounded, effective.maxWallTimeMs, options);
       enforceResultBounds(result, effective);
+      if (name === 'spice_measure') {
+        const measured = measureResult(result, measurements as unknown[]);
+        enforceMaximum('maxSerializedResultBytes', effective.maxSerializedResultBytes, Buffer.byteLength(JSON.stringify(measured)), 'transport');
+        return success(measured, diagnostics);
+      }
       return success(result, diagnostics);
     } finally {
       release();
