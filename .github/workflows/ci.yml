@@ -58,6 +58,11 @@ jobs:
 
       - run: pnpm -r run test:coverage
 
+      # Real Chrome startup must not compete with the parallel coverage workers.
+      # Keep this mandatory on both Node versions, not skipped or retried.
+      - name: Production browser worker smoke
+        run: pnpm -C packages/core exec vitest run src/analysis/step-browser.smoke.test.ts --reporter=default
+
       - name: Upload core coverage
         if: matrix.node-version == 22
         uses: codecov/codecov-action@v5
