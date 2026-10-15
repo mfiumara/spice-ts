@@ -28,6 +28,15 @@ function evaluate(
 }
 
 describe('behavioral source expressions', () => {
+  it.each([[-100, -98, 1], [0.5, 2.5, 1], [2, 4, 0.5], [6, 6, 0.5], [100, 97, 1]])(
+    'interpolates and extrapolates pwl at %s with the ngspice segment derivative', (x, value, slope) => {
+      const result = evaluate('pwl(v(x),-10,-8,2,4,12,9,22,19)', { x });
+      expect(result.value).toBe(value);
+      expect(result.gradient.x).toBe(slope);
+    },
+  );
+
+
   it('uses the configured CKTgmin for PTdivide regularization (#1068)', () => {
     const environment = { time: 0, transient: false, temperature: 27, gmin: 1e-6 };
     expect(evaluate('1e-20/0', {}, environment).value).toBeCloseTo(1e6, 6);
@@ -348,7 +357,9 @@ describe('behavioral source expressions', () => {
     ['b1 1 0 V=~(~v(9)&v(8)) + 0.5', "Unsupported behavioral expression operator '~'"],
     ['b1 1 0 V=v(9)&v(8)', "Unsupported behavioral expression operator '&'"],
     ['b1 1 0 V=v(9)|', 'Unexpected end of behavioral expression'],
-    ['b1 1 0 i=pwl(v(1),0,0,1,1)', "Unsupported behavioral expression function 'pwl'"],
+    ['b1 1 0 i=pwl(v(1),0,0,0,1)', 'ascending'],
+    ['b1 1 0 i=pwl(v(1),0,0,1)', 'pairs'],
+    ['b1 1 0 i=pwl(v(1),0,0,1,v(2))', 'literal'],
     ['b1 1 0 i=min(v(1))', 'min() takes two arguments'],
     ['b1 1 0 i=sqrt(v(1),2)', 'sqrt() takes one argument'],
     ['b1 1 0 i=ternary_fcn(1,2)', 'ternary_fcn() takes three arguments'],
