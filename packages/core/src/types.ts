@@ -213,6 +213,8 @@ export interface Ngbehavior {
  * All fields are optional; SPICE-convention defaults are used when omitted.
  */
 export interface SimulationOptions {
+  /** ngspice instance geometry scale. Explicit MOS/R/C lengths scale by S, MOS areas by S^2. Default: 1. */
+  scale?: number;
   /** Parsed compatibility request; existing expression extensions remain available in all modes. */
   ngbehavior?: Ngbehavior;
   /** Parsed ngspice solver-selection hint. Native analyses always use spice-ts's sparse LU solver. */

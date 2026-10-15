@@ -1961,6 +1961,7 @@ export class Circuit {
     const lines: string[] = ['* spice-ts generated netlist'];
 
     const optionNames: Array<[keyof SimulationOptions, string, (value: unknown) => string]> = [
+      ['scale', 'scale', String],
       ['bypass', 'bypass', String],
       ['rampTime', 'ramptime', String],
       ['abstol', 'abstol', String],
@@ -2046,7 +2047,20 @@ export class Circuit {
   compile(guard?: ProtocolExecutionGuard): CompiledCircuit {
     // Pre-expand subcircuit instances into flat device descriptors
     const globalNodes = this.collectGlobalNodes(guard);
-    const flatDescriptors = this.expandAllSubcircuits(globalNodes, guard);
+    const geometryScale = this._simulationOptions.scale ?? 1;
+    // ngspice-47 mos*param/resparam/capparam: scale explicit instance
+    // geometry only, before model defaults and parasitic expansion. Copy the
+    // descriptors so recompilation and netlist serialization never scale twice.
+    const flatDescriptors = this.expandAllSubcircuits(globalNodes, guard).map(desc => {
+      if (geometryScale === 1 || !desc.params || !['M', 'R', 'C'].includes(desc.type)) return desc;
+      const params = { ...desc.params };
+      const lengths = desc.type === 'M' ? ['L', 'W', 'PD', 'PS'] : ['L', 'W'];
+      for (const key of lengths) if (params[key] !== undefined) params[key] *= geometryScale;
+      if (desc.type === 'M') {
+        for (const key of ['AD', 'AS']) if (params[key] !== undefined) params[key] *= geometryScale * geometryScale;
+      }
+      return { ...desc, params };
+    });
     this.assertDeviceModelTypes(flatDescriptors);
     const expandedDescriptors = withRFPortNodes(this.expandPassiveParasitics(
       this.expandLossyTransmissionLines(flatDescriptors),
