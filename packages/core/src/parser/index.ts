@@ -23,7 +23,7 @@ import {
   parseTransmissionLineModelCard,
   parseTxlLine,
 } from './transmission-line-parser.js';
-import { preprocessDeck, preprocessDeckSync } from './preprocessor.js';
+import { preprocessDeck, preprocessDeckSync, type PreprocessedDeck } from './preprocessor.js';
 import { tempDirective } from './temp-directive.js';
 import { translateMicroSign } from './micro-sign.js';
 import { lowerControlScript } from './control-block.js';
@@ -88,7 +88,7 @@ export function parse(netlist: string): Circuit {
   const preprocessed = preprocessDeckSync(control.netlist, undefined, 1);
   return parseNetlist(
     `${title}\n${preprocessed.text}`, true, undefined, control.blocks, preprocessed.parameters,
-    [...control.warnings, ...preprocessed.warnings], preprocessed.controlConstants,
+    [...control.warnings, ...preprocessed.warnings], preprocessed.controlConstants, preprocessed.atTemperature,
   );
 }
 
@@ -103,7 +103,7 @@ export function parseTitleless(netlist: string): Circuit {
   const control = extractControlBlocks(translateMicroSign(netlist), false);
   const preprocessed = preprocessDeckSync(control.netlist, undefined, 0);
   return parseNetlist(preprocessed.text, false, undefined, control.blocks, preprocessed.parameters,
-    [...control.warnings, ...preprocessed.warnings], preprocessed.controlConstants);
+    [...control.warnings, ...preprocessed.warnings], preprocessed.controlConstants, preprocessed.atTemperature);
 }
 
 /**
@@ -126,6 +126,7 @@ function parseNetlist(
   parameters: Record<string, number> = {},
   controlWarnings: ControlSourceWarning[] = [],
   controlConstants: Record<string, number> = {},
+  atTemperature?: PreprocessedDeck['atTemperature'],
 ): Circuit {
   // ngspice control-language lines are not netlist cards; read them from the raw text.
   const extracted = extractControlBlocks(translateMicroSign(netlist, firstLineIsTitle), firstLineIsTitle);
@@ -280,6 +281,15 @@ function parseNetlist(
   }
   assertMaxOrderIsNoOp(circuit);
 
+  if (atTemperature) circuit.recompileAtTemperature = celsius => {
+    const deck = atTemperature(celsius);
+    const title = firstLineIsTitle ? `${netlist.split('\n', 1)[0]}\n` : '';
+    const evaluated = parseNetlist(`${title}${deck.text}`, firstLineIsTitle, guard,
+      [], deck.parameters, [], deck.controlConstants);
+    evaluated.setTemperature(celsius);
+    return evaluated.compile(guard);
+  };
+
   return circuit;
 }
 
@@ -405,7 +415,7 @@ export async function parseAsync(
   const preprocessed = await preprocessDeck(control.netlist, resolver, undefined, 1);
   return parseNetlist(
     `${title}\n${preprocessed.text}`, true, undefined, control.blocks, preprocessed.parameters,
-    [...control.warnings, ...preprocessed.warnings], preprocessed.controlConstants,
+    [...control.warnings, ...preprocessed.warnings], preprocessed.controlConstants, preprocessed.atTemperature,
   );
 }
 
@@ -418,7 +428,7 @@ export async function parseTitlelessAsync(
   const control = extractControlBlocks(translateMicroSign(netlist), false);
   const preprocessed = await preprocessDeck(control.netlist, resolver, guard, 0);
   return parseNetlist(preprocessed.text, false, guard, control.blocks, preprocessed.parameters,
-    [...control.warnings, ...preprocessed.warnings], preprocessed.controlConstants);
+    [...control.warnings, ...preprocessed.warnings], preprocessed.controlConstants, preprocessed.atTemperature);
 }
 
 const OUTPUT_ONLY_OPTION_FLAGS = new Set([

@@ -1,5 +1,18 @@
 # Benchmark sources
 
+## TEMPER model/instance sweep regression (#1151)
+
+`packages/core/src/analysis/temper-model-1151.test.ts` contains an original
+MIT-licensed two-diode probe. Its ten current references were measured with
+ngspice-47 on the identical deck, using `SPICE_ASCIIRAWFILE=1 ngspice -n -b -r probe.raw probe.cir`,
+without tolerance changes. The upstream self-check decks are the unchanged
+BSD-3-Clause corpus-f fixtures at ngspice revision
+`3ef069fb1f04177a153f342a32d941fc20ff047e`, with per-file provenance in
+`benchmarks/corpus/corpus-f/SOURCES.md`:
+https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/regression/temper/temper-2.cir.
+The refreshed corpus row is `not-compared`, not a numerical match: its control
+block exits successfully, but ngspice's batch raw export contains no vectors.
+
 ## Behavioral capacitor explicit multiplier compatibility (#1122)
 
 `packages/core/src/parser/behavioral-capacitor-m-1122.test.ts` contains an

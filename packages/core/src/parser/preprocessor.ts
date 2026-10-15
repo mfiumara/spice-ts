@@ -58,6 +58,8 @@ export async function preprocessLines(
 export interface PreprocessedDeck {
   /** The netlist with top-level parameters substituted. */
   text: string;
+  /** Re-evaluate retained numparam expressions without resolving includes again. */
+  atTemperature?: (celsius: number) => PreprocessedDeck;
   /**
    * Top-level `.param` values (upper-case names) for subcircuit expansion,
    * which evaluates subcircuit expressions per instance (ngspice numparam
@@ -135,33 +137,37 @@ function* preprocessSteps(
   braceBareParameters(statements, numericParams).forEach((text, index) => { statements[index].text = text; });
   // ngspice collects every top-level `.param` before substituting, so a
   // parameter may be used before its definition and the last definition wins.
-  const temperatureSweep = statements.find(isTemperatureSweep);
-  const scopes = createParamScopes(
-    definitions, temperatureSweep,
-    circuitTemperature(statements, definitions, state.functionScopes[0].functions, state.warnings),
-    state.functionScopes[0].functions,
-  );
-  // Keep the numparam evaluation, including its source diagnostics, for the
-  // control const plot. Circuit parameters remain a separate namespace.
-  const controlConstants: Record<string, number> = Object.create(null);
-  for (const { name, definition, guard } of state.csparams) {
-    if (guardSelected(guard, selected)) {
-      controlConstants[name] = evaluateParamExpression(definition, scopes.numparam, state.functionScopes[0].functions);
+  let usesTemper = false;
+  const temperature = circuitTemperature(statements, definitions, state.functionScopes[0].functions, state.warnings);
+  const render = (celsius: number): PreprocessedDeck => {
+    const scopes = createParamScopes(
+      definitions, celsius, state.functionScopes[0].functions, true, () => { usesTemper = true; },
+    );
+    // Keep numparam diagnostics for the control const plot. Circuit parameters
+    // remain a separate namespace, and each temperature needs a fresh cache.
+    const controlConstants: Record<string, number> = Object.create(null);
+    for (const { name, definition, guard } of state.csparams) {
+      if (guardSelected(guard, selected)) {
+        controlConstants[name] = evaluateParamExpression(definition, scopes.numparam, state.functionScopes[0].functions);
+      }
     }
-  }
-  const measureNames = new Set(statements.flatMap(statement => measureName(statement.text)));
-  const text = statements.map(statement => statement.substitute
-    ? substituteStatement(statement, scopes, measureNames)
-    : statement.text).join('\n');
-  const parameters: Record<string, number> = {};
-  for (const name of definitions.keys()) {
-    try {
-      parameters[name] = scopes.numparam[name];
-    } catch {
-      // Unused by the top level, or reported there; see PreprocessedDeck.
+    const measureNames = new Set(statements.flatMap(statement => measureName(statement.text)));
+    const text = statements.map(statement => statement.substitute
+      ? substituteStatement(statement, scopes, measureNames)
+      : statement.text).join('\n');
+    const parameters: Record<string, number> = {};
+    for (const name of definitions.keys()) {
+      try {
+        parameters[name] = scopes.numparam[name];
+      } catch {
+        // Unused by the top level, or reported there; see PreprocessedDeck.
+      }
     }
-  }
-  return { text, parameters, controlConstants, warnings: state.warnings };
+    return { text, parameters, controlConstants, warnings: state.warnings };
+  };
+  const result = render(temperature);
+  if (usesTemper) result.atTemperature = render;
+  return result;
 }
 
 /** One `.if`/`.elseif`/`.else` branch; `condition` is absent for `.else`. */
@@ -322,7 +328,7 @@ function selectBranches(state: CollectState): number[] {
   const functions = state.functionScopes[0].functions;
   // TEMPER in a condition reads temperature cards outside any `.if`.
   const unconditional = state.statements.filter(statement => statement.guard === undefined);
-  const scopes = createParamScopes(state.definitions, undefined, circuitTemperature(unconditional, state.definitions, functions), functions);
+  const scopes = createParamScopes(state.definitions, circuitTemperature(unconditional, state.definitions, functions), functions);
   return state.blocks.map(block => {
     let selected = -1;
     for (const [index, branch] of block.branches.entries()) {
@@ -442,7 +448,7 @@ function circuitTemperature(
   if (effective !== undefined) {
     const statement = effective;
     try {
-      const scopes = createParamScopes(definitions, undefined, temperature, functions, false);
+      const scopes = createParamScopes(definitions, temperature, functions, false);
       const text = statement.text.slice(0, commentStart(statement.text));
       const expanded = substituteExpressions(quotedExpressionsAsBraces(expandUserFunctions(text, functions)), scopes.params);
       const card = tempDirective(expanded, statement.line)!;
@@ -459,13 +465,6 @@ function circuitTemperature(
   return temperature;
 }
 
-/** `.step [lin|dec|oct] [param] temp ...` or `.dc temp ...`; control blocks sweep with `dc temp ...`. */
-const TEMPERATURE_SWEEP = /^\s*(?:\.step\s+(?:(?:lin|dec|oct)\s+)?(?:param\s+)?temp\b|\.dc\s+temp\b)/i;
-const CONTROL_TEMPERATURE_SWEEP = /^\s*dc\s+temp\b/i;
-
-function isTemperatureSweep(statement: PendingStatement): boolean {
-  return (statement.control ? CONTROL_TEMPERATURE_SWEEP : TEMPERATURE_SWEEP).test(statement.text);
-}
 
 /**
  * Lazily evaluates `.param` definitions on first use, in dependency order.
@@ -473,10 +472,10 @@ function isTemperatureSweep(statement: PendingStatement): boolean {
  */
 function createParamScopes(
   definitions: Map<string, ParamDefinition>,
-  temperatureSweep: PendingStatement | undefined,
   temperature: number,
   functions: FunctionScope = new Map(),
   allowTemper = true,
+  onTemper?: () => void,
 ): ParamScopes {
   const values = new Map<string, number>();
   const resolving: string[] = [];
@@ -496,13 +495,7 @@ function createParamScopes(
 
   function temper(): number {
     if (!allowTemper) throw new Error('.temp expressions depending on TEMPER are not supported');
-    if (temperatureSweep !== undefined) {
-      throw new Error(
-        'TEMPER-dependent expressions are not supported with a temperature sweep '
-        + `(.step TEMP or dc TEMP, line ${temperatureSweep.line}): spice-ts evaluates parameter `
-        + `expressions once, at the ${temperature} C circuit temperature`,
-      );
-    }
+    onTemper?.();
     return temperature;
   }
 
