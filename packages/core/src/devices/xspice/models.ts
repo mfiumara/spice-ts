@@ -58,6 +58,8 @@ export interface CodeModelBehavior {
   load(call: CodeModelCall): void;
   /** Commit the state of a {@link load} made at an accepted timepoint. */
   accept?(call: CodeModelCall): void;
+  /** Future analog corners scheduled after accepting this point. */
+  breakpoints?(): readonly number[];
   /** ngspice MIFtrunc for this instance at the trial point of `call`. */
   truncate?(call: CodeModelCall, truncation: ChargeTruncation): number;
   /** Forget transient history before a restart at t = 0. */

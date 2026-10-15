@@ -282,6 +282,25 @@ const SINE: XspiceCodeModelSpec = {
   params: OSCILLATOR_TABLE,
 };
 
+/** triangle/ifspec.ifs calls the rise proportion duty_cycle. */
+const TRIANGLE: XspiceCodeModelSpec = {
+  ...SINE, name: 'triangle',
+  params: [...OSCILLATOR_TABLE, real('duty_cycle', 0.5, { limits: [1e-6, 0.999999] })],
+};
+
+/** oneshot/ifspec.ifs */
+const ONESHOT: XspiceCodeModelSpec = {
+  name: 'oneshot',
+  connections: [input('clk'), { ...input('cntl_in'), nullAllowed: true }, { ...input('clear'), nullAllowed: true }, output('out')],
+  params: [
+    real('cntl_array', 0, { vector: true, vectorBounds: [2, undefined], nullAllowed: false }),
+    real('pw_array', 1e-6, { vector: true, vectorBounds: [2, undefined], limits: [0, undefined], nullAllowed: false }),
+    real('clk_trig', 0.5), boolean('pos_edge_trig', true),
+    real('out_low', 0), real('out_high', 1), real('rise_time', 1e-9),
+    real('rise_delay', 1e-9), real('fall_delay', 1e-9), real('fall_time', 1e-9), boolean('retrig', false),
+  ],
+};
+
 /** A meter's input: ngspice xtradev cmeter/lmeter allow only `%v` and `%vd`. */
 const METER_IN: XspiceConnectionSpec = {
   name: 'in', direction: 'in', defaultType: 'v', allowedTypes: ['v', 'vd'], vector: false, nullAllowed: false,
@@ -363,7 +382,7 @@ function pull(name: string): XspiceCodeModelSpec {
 export const XSPICE_CODE_MODEL_SPECS: ReadonlyMap<string, XspiceCodeModelSpec> = new Map(
   [
     GAIN, SUMMER, MULT, DIVIDE, PWL, LIMIT, INT, D_DT, S_XFER,
-    CLIMIT, HYST, ILIMIT, SLEW, SINE, CMETER, LMETER, PSWITCH, ASWITCH,
+    CLIMIT, HYST, ILIMIT, SLEW, SINE, TRIANGLE, ONESHOT, CMETER, LMETER, PSWITCH, ASWITCH,
     ADC_BRIDGE, DAC_BRIDGE, pull('d_pulldown'), pull('d_pullup'),
     unaryGate('d_buffer'), unaryGate('d_inverter'),
     naryGate('d_and'), naryGate('d_nand'), naryGate('d_or'), naryGate('d_nor'), naryGate('d_xor'), naryGate('d_xnor'),
