@@ -1052,6 +1052,10 @@ function parseSimulationOptions(
     }
 
     const rawValue = token.slice(separator + 1);
+    if (name === 'scale') {
+      options.scale = parseNumber(rawValue);
+      continue;
+    }
     if (name === 'tnom') {
       // ngspice-47 cktsopt.c: TNOM sets the default nominal temperature of every
       // model. Only its default, 27 C, is implemented circuit-wide.
