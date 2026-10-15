@@ -1,5 +1,5 @@
-import { mapProtocolErrorV1, simulateProtocolV1, validateProtocolV1 } from '@spice-ts/core';
-import { fromCircuitJSON } from '@spice-ts/circuit-json';
+import { Circuit, parseTitleless, mapProtocolErrorV1, simulateProtocolV1, validateProtocolV1 } from '@spice-ts/core';
+import { fromCircuitJSON, toCircuitJSON } from '@spice-ts/circuit-json';
 import type { CircuitJSON, ConversionDiagnosticV1 } from '@spice-ts/circuit-json';
 import { commonSchemaV1, sha256CanonicalJson } from '@spice-ts/protocol';
 import type {
@@ -235,6 +235,26 @@ export const MCP_TOOLS = Object.freeze([
     outputSchema: validationOutputSchema,
   },
   {
+    name: 'spice_convert',
+    description: 'Convert a bounded SPICE circuit to circuit-json or circuit-json to a SPICE netlist. Exactly one input is required. Analyses and simulator directives are not part of circuit-json. Unsupported or lossy conversions fail with diagnostics.',
+    inputSchema: {
+      type: 'object',
+      properties: { netlist: { type: 'string' }, circuitJson: { type: 'array', items: { type: 'object' } } },
+      oneOf: [{ required: ['netlist'] }, { required: ['circuitJson'] }],
+      additionalProperties: false,
+    },
+    outputSchema: {
+      type: 'object',
+      properties: {
+        netlist: { type: 'string' }, circuitJson: { type: 'array', items: { type: 'object' } },
+        diagnostics: { type: 'array', items: { type: 'object' } }, lossy: { const: false },
+      },
+      required: ['diagnostics', 'lossy'],
+      oneOf: [{ required: ['netlist'] }, { required: ['circuitJson'] }],
+      additionalProperties: false,
+    },
+  },
+  {
     name: 'spice_simulate',
     description: 'Execute one bounded protocol-v1 simulation request.',
     inputSchema: requestInputSchema,
@@ -325,6 +345,7 @@ async function executeToolWithStore(
   const limits = options.limits ?? DEFAULT_MCP_LIMITS;
   try {
     if (name === 'spice_capabilities') return success(streamStore.capabilities());
+    if (name === 'spice_convert') return convertTool(args, limits, options.signal);
     if (name === 'spice_simulation_read') return success(streamStore.read(streamReadArgs(args)));
     if (name === 'spice_simulation_cancel') return success(streamStore.cancel(streamCancelArgs(args)));
     if (name !== 'spice_validate' && name !== 'spice_simulate' && name !== 'spice_measure' && name !== 'spice_simulation_start') {
@@ -936,6 +957,59 @@ function toolRequest(args: unknown): SimulationRequestV1 {
   return request as unknown as SimulationRequestV1;
 }
 
+/** Standalone circuit conversion does not solve or infer missing device models. */
+function convertTool(args: unknown, limits: McpLimits, signal?: AbortSignal): CallToolResult {
+  if (!isRecord(args) || Object.keys(args).length !== 1
+    || !(typeof args.netlist === 'string' || Array.isArray(args.circuitJson))) {
+    throw apiError('INVALID_REQUEST', 'Expected exactly one of netlist (string) or circuitJson (array)', 'validation', {});
+  }
+  enforceMaximum('maxDocumentBytes', limits.maxDocumentBytes, Buffer.byteLength(JSON.stringify(args)), 'validation');
+  throwIfCancelled(signal);
+  let output: object;
+  if (typeof args.netlist === 'string') {
+    const converted = toCircuitJSON(parseTitleless(args.netlist).toIR());
+    const diagnostics = converted.diagnostics.map(diagnostic => ({
+      ...diagnostic,
+      severity: 'error' as const,
+      code: diagnostic.path.includes('/params/') ? 'UNSUPPORTED_PARAMETER' as const : 'UNSUPPORTED_ELEMENT' as const,
+    }));
+    requireConversion(converted.value, diagnostics);
+    output = { circuitJson: converted.value, diagnostics, lossy: false };
+  } else {
+    const converted = fromCircuitJSON(args.circuitJson as CircuitJSON);
+    requireConversion(converted.value, converted.diagnostics);
+    const circuit = new Circuit();
+    for (const component of converted.value!.components) {
+      // Circuit JSON has no SPICE model cards. Never invent transistor models.
+      if (component.type !== 'R' && component.type !== 'C') {
+        throw apiError('UNSUPPORTED_ELEMENT', 'SPICE export requires a model unavailable in circuit-json', 'validation', {
+          diagnostics: [{ severity: 'error', code: 'UNSUPPORTED_ELEMENT', message: 'SPICE export requires an explicit model', path: '/', elementId: component.id, simulationRelevant: true }],
+        });
+      }
+      if (!new RegExp(`^${component.type}[^\\s;*$()=,]*$`, 'i').test(component.name)
+        || component.ports.some(port => !/^[^\s;*$()=,]+$/.test(port.net))) {
+        throw apiError('INVALID_CIRCUIT', 'Circuit identifiers cannot be serialized as SPICE tokens', 'validation', {
+          diagnostics: [{ severity: 'error', code: 'UNSUPPORTED_PARAMETER', message: 'Invalid SPICE identifier', path: '/', elementId: component.id, simulationRelevant: true }],
+        });
+      }
+      const port = (name: string) => component.ports.find(port => port.name === name)!.net;
+      if (component.type === 'R') circuit.addResistor(component.name, port('p'), port('n'), component.params.resistance as number);
+      else circuit.addCapacitor(component.name, port('p'), port('n'), component.params.capacitance as number);
+    }
+    output = { netlist: circuit.toNetlist(), diagnostics: converted.diagnostics, lossy: false };
+  }
+  enforceMaximum('maxSerializedResultBytes', limits.maxSerializedResultBytes, Buffer.byteLength(JSON.stringify(output)), 'serialize');
+  return success(output);
+}
+
+function requireConversion(value: unknown, diagnostics: ConversionDiagnosticV1[]): void {
+  if (value !== undefined) return;
+  const first = diagnostics.find(diagnostic => diagnostic.severity === 'error')!;
+  throw apiError(first.code === 'UNSUPPORTED_ELEMENT' ? 'UNSUPPORTED_ELEMENT' : 'INVALID_CIRCUIT', first.message, 'validation', {
+    diagnostics: diagnostics.map(diagnostic => ({ ...diagnostic })),
+  });
+}
+
 /** Convert once at the MCP boundary; core and isolated workers consume native documents. */
 function convertRequest(request: SimulationRequestV1): {
   request: SimulationRequestV1;
@@ -946,19 +1020,14 @@ function convertRequest(request: SimulationRequestV1): {
     throw apiError('INVALID_REQUEST', 'circuit-json requires circuit and analyses arrays', 'validation', {});
   }
   const converted = fromCircuitJSON(request.input.circuit as CircuitJSON);
-  if (!converted.value) {
-    const first = converted.diagnostics.find(diagnostic => diagnostic.severity === 'error')!;
-    throw apiError(first.code === 'UNSUPPORTED_ELEMENT' ? 'UNSUPPORTED_ELEMENT' : 'INVALID_CIRCUIT', first.message, 'validation', {
-      diagnostics: converted.diagnostics.map(diagnostic => ({ ...diagnostic })),
-    });
-  }
+  requireConversion(converted.value, converted.diagnostics);
   return {
     request: {
       ...request,
       input: {
         format: 'spice-ts',
         document: {
-          format: 'spice-ts', schemaVersion: '1.0', circuit: converted.value,
+          format: 'spice-ts', schemaVersion: '1.0', circuit: converted.value!,
           analyses: request.input.analyses, models: [], subcircuits: [],
         },
       },
