@@ -15,7 +15,9 @@ beforeAll(async () => {
 it('executes invert6 and captures the real pulse-corner loss (#1083)', () => {
   const index = Array.from(result.time).findIndex(time => Math.abs(time - 24.01e-6) < 1e-16);
   expect(index).toBeGreaterThanOrEqual(0);
-  expect(result.voltage('vout')[index]).toBeCloseTo(2.6045200148098373, 7);
+  // Accept-time PULSE scheduling (#1185) changes the old spice-ts snapshot
+  // 2.6045200148098373 by ~1 mV. The ngspice assertions below remain RED.
+  expect(result.voltage('vout')[index]).toBeCloseTo(2.605580768814393, 7);
 });
 
 // Diagnosis-only RED: no simulator fix or corpus tolerance change in this PR.

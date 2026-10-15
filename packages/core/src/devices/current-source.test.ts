@@ -8,9 +8,8 @@ describe('CurrentSource.getBreakpoints', () => {
       rise: 100e-9, fall: 100e-9, width: 4.8e-6, period: 10e-6,
     });
     const bps = src.getBreakpoints!(1e-5);
-    expect(bps).toContain(100e-9);
-    expect(bps).toContain(0 + 100e-9 + 4.8e-6);              // ≈4.9e-6
-    expect(bps).toContain(0 + 100e-9 + 4.8e-6 + 100e-9);     // ≈5.0e-6
+    // Later corners are scheduled only when an analog step is accepted.
+    expect(bps).toEqual([0, 100e-9]);
   });
 
   it('returns empty for DC sources', () => {
