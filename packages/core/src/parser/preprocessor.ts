@@ -739,7 +739,7 @@ function behavioralResistorAsBSource(line: string): string | undefined {
   if (!card) return undefined;
   const [, name, positive, negative, braced, quoted, rest] = card;
   const expression = (braced ?? quoted).trim();
-  if (!NODE_DEPENDENCE.test(expression)) return undefined;
+  if (!NODE_DEPENDENCE.test(expression) && !/\bhertz\b/i.test(expression)) return undefined;
   const parameters = rest.replace(/\s*=\s*/g, '=').trim().split(/\s+/).filter(Boolean);
   let multiplier = '';
   const coefficients: string[] = [];
@@ -1068,7 +1068,7 @@ export function substituteExpressions(
   formatter: (value: number) => string = formatNumber,
 ): string {
   return line.replace(/\{([^}]+)\}/g, (match, expr: string) => {
-    if (keepNodeDependent && NODE_DEPENDENT_EXPRESSION.test(expr)) return match;
+    if (keepNodeDependent && (NODE_DEPENDENT_EXPRESSION.test(expr) || /\bhertz\b/i.test(expr))) return match;
     const value = evaluateExpression(expr, params);
     return formatter(value);
   });
