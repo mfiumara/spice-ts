@@ -13,15 +13,16 @@ export class VoltageSource implements DeviceModel {
   private transientStopTime: number | undefined;
   /** TRNOISE/TRRANDOM state (ngspice VSRCtrnoise_state/VSRCtrrandom_state). */
   private readonly noise?: NoiseHandle;
-  /** Present only for TRNOISE/TRRANDOM and PWL with TD=/R=, so other sources stay off the accept pass. */
+  /** Present for noisy sources and accept-time PULSE/PWL breakpoint scheduling. */
   readonly acceptTransientStep?: (ctx: StampContext, breakpoints?: TransientBreakpointSink) => void;
   /**
-   * False for a PWL: its accept hook only schedules breakpoints,
+   * False for PULSE/PWL: their accept hooks only schedule breakpoints,
    * so it must not put its nodes under the node-voltage LTE.
    */
   readonly storesCharge?: boolean;
   /** ngspice accept-time PWL corners (vsrcacct.c). */
   private readonly pwlSchedule?: PwlBreakpointSchedule;
+  private readonly pulseSchedule?: PulseBreakpointSchedule;
 
   /**
    * @param nodes - `[+, -]`, or `[+, -, res]` for an RF port, whose ideal
@@ -43,6 +44,16 @@ export class VoltageSource implements DeviceModel {
       const noise = (noiseContext ?? new TransientNoiseContext()).register('V', name, waveform);
       this.noise = noise;
       this.acceptTransientStep = (ctx, breakpoints) => noise.accept(ctx.time, breakpoints);
+    } else if (waveform.type === 'pulse') {
+      const schedule = new PulseBreakpointSchedule();
+      this.pulseSchedule = schedule;
+      this.storesCharge = false;
+      this.acceptTransientStep = (ctx, breakpoints) => {
+        if (this.waveform.type !== 'pulse') return;
+        const next = schedule.next(effectivePulse(this.waveform, this.transientTimestep), ctx.time,
+          this.transientStopTime ?? Infinity, this.transientTimestep);
+        if (next !== undefined) breakpoints?.schedule(next);
+      };
     } else if (waveform.type === 'pwl') {
       const schedule = new PwlBreakpointSchedule(waveform);
       this.pwlSchedule = schedule;
@@ -170,7 +181,7 @@ export class VoltageSource implements DeviceModel {
 
   getBreakpoints(stopTime: number): number[] {
     if (this.waveform.type === 'pulse') {
-      return pulseBreakpoints(effectivePulse(this.waveform, this.transientTimestep), stopTime);
+      return initialPulseBreakpoints(effectivePulse(this.waveform, this.transientTimestep), stopTime, this.transientTimestep);
     }
     if (this.waveform.type === 'pwl') {
       return pwlBreakpoints(this.waveform, stopTime, this.transientTimestep);
@@ -182,6 +193,7 @@ export class VoltageSource implements DeviceModel {
   resetTransient(): void {
     this.noise?.resetTransient();
     this.pwlSchedule?.reset();
+    this.pulseSchedule?.reset();
   }
 }
 
@@ -227,6 +239,43 @@ export function pulseBreakpoints(p: PulseSource, stopTime: number): number[] {
       if (n * period + offsets[corner] > limit) return result;
     }
   }
+  return result;
+}
+
+/** ngspice-47 vsrcacct.c:99-150 / isrcacct.c: accept-time PULSE schedule.
+ * Keep the exact TIME-TD, period-fold, TIME+wait arithmetic: replacing it
+ * with precomputed TD+n*PER corners changes the ADC sampling grid (#1185).
+ */
+export class PulseBreakpointSchedule {
+  private breakTime = -1;
+
+  reset(): void {
+    this.breakTime = -1;
+  }
+
+  next(p: PulseSource, time: number, stopTime: number, timestep: number): number | undefined {
+    if (time < this.breakTime) return undefined;
+    let local = time - p.delay;
+    if (local > pulseTrainEnd(p)) return undefined;
+    const period = Number.isFinite(p.period) && p.period > 0 ? p.period : stopTime;
+    if (local >= period) local -= period * Math.floor(local / period);
+    const maxStep = Math.min(timestep > 0 ? timestep : Infinity, stopTime / 50);
+    const minBreak = Number.isFinite(maxStep) ? 1e-10 * maxStep : 0;
+    const after = local + minBreak;
+    const corner = after < 0 ? 0 : after < p.rise ? p.rise
+      : after < p.rise + p.width ? p.rise + p.width
+      : after < p.rise + p.width + p.fall ? p.rise + p.width + p.fall : period;
+    const breakpoint = time + (corner - local);
+    this.breakTime = breakpoint - minBreak;
+    return Number.isFinite(breakpoint) ? breakpoint : undefined;
+  }
+}
+
+/** Seed only the next corner; all subsequent corners are requested on accept. */
+export function initialPulseBreakpoints(p: PulseSource, stopTime: number, timestep: number): number[] {
+  const next = new PulseBreakpointSchedule().next(p, 0, stopTime, timestep);
+  const result = p.delay === 0 ? [0] : [];
+  if (next !== undefined && next >= 0 && next <= stopTime) result.push(next);
   return result;
 }
 
