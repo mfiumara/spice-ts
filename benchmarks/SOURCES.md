@@ -1,5 +1,24 @@
 # Benchmark sources
 
+## VBIC flicker and total noise (#1197)
+
+`benchmarks/vbic-noise/compare.ts` runs the byte-identical corpus-f
+`tests/vbic/noise_scale_test.cir` through both engines. Source: ngspice
+[`tests/vbic/noise_scale_test.cir`](https://github.com/imr/ngspice/blob/3ef069fb1f04177a153f342a32d941fc20ff047e/tests/vbic/noise_scale_test.cir),
+revision `3ef069fb1f04177a153f342a32d941fc20ff047e`, BSD-3-Clause;
+SHA-256 `2877ccad8bcb440258e65a8a817edfd8536029ae192b3049cb62f248a8a81286`.
+The licence and original manifest entry remain in `corpus/corpus-f/SOURCES.md`
+and `corpus/corpus-f/LICENSE.txt`. No deck modifications or tolerance changes.
+Equations follow the same revision's `src/spicelib/devices/vbic/vbicnoise.c`
+and `vbicload.c` (BSD-3-Clause), including gmin, M/AREA scaling, and the
+upstream distinction: RS/ICCP contribute to integrated totals, not spectra.
+The regression test freezes ngspice-47 binary-raw samples; its additional
+scaling/exponent probes are project-authored MIT tests. Run the comparison
+with `pnpm exec tsx benchmarks/vbic-noise/compare.ts`. Numerical residuals
+and single-run timings are printed, not committed as generated receipts.
+This does not claim support for VBIC parameters outside the bounded model,
+self-heating, or differential semiconductor-noise outputs.
+
 ## Uniform distributed RC line (#1191)
 
 `packages/core/src/urc.test.ts` contains an original project-authored MIT probe

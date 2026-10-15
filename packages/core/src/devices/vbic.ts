@@ -24,6 +24,7 @@ const ACTIVE_PARAMETERS = [
  */
 const DC_INERT_PARAMETERS = [
   'CJE', 'CJC', 'CJEP', 'CJCP', 'QCO', 'TF', 'TR', 'TD', 'ITF', 'XTF', 'RTH',
+  'KFN', 'AFN', 'BFN',
 ] as const;
 /** Temperature mapping inputs (ngspice vbictemp.c); TNOM defaults to 27 C. */
 const TEMPERATURE_PARAMETERS = ['TNOM'] as const;
@@ -97,6 +98,9 @@ const DEFAULTS: VBICParams = {
   ITF: 0,
   XTF: 0,
   RTH: 0,
+  KFN: 0,
+  AFN: 1,
+  BFN: 1,
   TNOM: NOMINAL_TEMPERATURE_C,
 };
 
@@ -236,6 +240,7 @@ interface Evaluation {
   residual: Dual[];
   /** Stored charge attached to each device node (ngspice vbicload charges). */
   charge: Dual[];
+  noise: { irci: Dual; irbi: Dual; irbp: Dual; itzf: Dual; ibe: Dual; iccp: Dual };
 }
 
 /** Local node order: seven VBIC nodes, then the excess-phase nodes when TD > 0. */
@@ -401,7 +406,7 @@ function evaluate(
     charge[XF1] = scale(xf1, params.TD);
     charge[XF2] = scale(xf2, params.TD / 3);
   }
-  return { residual, charge };
+  return { residual, charge, noise: { irci, irbi, irbp, itzf, ibe, iccp } };
 }
 
 /** Number of device nodes: seven VBIC nodes plus xf1/xf2 when excess phase is on. */
@@ -436,6 +441,7 @@ export class VBIC implements DeviceModel {
     polarity: number,
     /** ngspice instance SCALE = AREA * M; the circuit divides the series resistors by it. */
     private readonly instanceScale = 1,
+    private readonly parallelMultiplier = 1,
   ) {
     this.params = resolveVBICParams(supplied, polarity);
     this.charges = new TransientChargeState(nodes.length);
@@ -463,6 +469,47 @@ export class VBIC implements DeviceModel {
 
   getTemperature(): number {
     return this.temperature;
+  }
+
+  /** ngspice vbicnoise.c: internal resistor derivatives and junction currents.
+   * External RCX/RBX/RE/RS noise is already carried by expanded resistors.
+   */
+  noiseOperatingPoint(solution: Float64Array, gmin = DEVICE_GMIN, emitterNode = this.nodes[EI]): Array<{
+    positive: number;
+    negative: number;
+    conductance: number;
+    shotCurrent: number;
+    flickerCoefficient: number;
+    excludeFromSpectrum?: boolean;
+  }> {
+    const voltage = (local: number): number => {
+      const node = local === NO_NODE ? -1 : this.nodes[local];
+      return node >= 0 ? solution[node] : 0;
+    };
+    const voltages = this.branchTerminals.map(([p, n]) =>
+      this.params.polarity * (voltage(p) - voltage(n)));
+    const { noise } = evaluate(voltages, this.params, this.thermal, this.instanceScale, 0);
+    const source = (p: number, n: number, conductance = 0, shotCurrent = 0, flickerCoefficient = 0) => ({
+      positive: this.nodes[p], negative: this.nodes[n], conductance, shotCurrent, flickerCoefficient,
+    });
+    // vbicload.c stores the post-gmin currents/derivatives in CKTstate0.
+    const baseCurrent = Math.abs(noise.ibe.value * this.instanceScale + gmin * voltages[0]);
+    const peripheralBaseCurrent = Math.abs(gmin * voltages[4]);
+    const flicker = (current: number): number => this.parallelMultiplier * this.params.KFN
+      * Math.pow(Math.max(current / this.parallelMultiplier, 1e-38), this.params.AFN);
+    return [
+      source(CX, CI, noise.irci.derivative[6] * this.instanceScale + gmin),
+      source(BX, BI, noise.irbi.derivative[7] * this.instanceScale),
+      // vbicnoise.c intentionally projects RBP noise across EI/emitter,
+      // not BP/CX. RE=0 makes that branch noiseless at the output.
+      { ...source(EI, EI, noise.irbp.derivative[8] * this.instanceScale), negative: emitterNode },
+      source(CI, EI, 0, Math.abs(noise.itzf.value * this.instanceScale)),
+      source(BI, EI, 0, baseCurrent, flicker(baseCurrent)),
+      // IBEIP/IBENP are outside the bounded model: Ibep has only gmin.
+      source(BX, BP, 0, peripheralBaseCurrent, flicker(peripheralBaseCurrent)),
+      // ngspice includes ICCP/RS in integrated totals only.
+      { ...source(BX, SI, 0, Math.abs(noise.iccp.value * this.instanceScale)), excludeFromSpectrum: true },
+    ];
   }
 
   /** Branch voltages of the evaluation, in {@link BRANCHES} order. */

@@ -2136,10 +2136,10 @@ export class Circuit {
       if (unsupportedStep) {
         throw new InvalidCircuitError("Unsupported bounded VBIC step: 'TEMP'");
       }
-      // Bounded VBIC linearizes at the operating point (.ac/.pz) but has no
-      // noise sources or distortion terms. Transient integrates its charges.
+      // Bounded VBIC supports small-signal noise and transient charges, but
+      // does not implement distortion terms.
       const unsupported = this._analyses.find(analysis =>
-        analysis.type !== 'op' && analysis.type !== 'dc' && analysis.type !== 'ac' && analysis.type !== 'tran');
+        analysis.type !== 'op' && analysis.type !== 'dc' && analysis.type !== 'ac' && analysis.type !== 'tran' && analysis.type !== 'noise');
       if (unsupported) {
         throw new InvalidCircuitError(`Unsupported bounded VBIC analysis: '${unsupported.type}'`);
       }
@@ -2415,7 +2415,7 @@ export class Circuit {
                 `VBIC '${desc.name}' does not accept instance parameters: ${geometry.join(', ')}`,
               );
             }
-            devices.push(new VBIC(desc.name, nodeIndices, modelParams, polarity, bjtInstanceScale(desc.params)));
+            devices.push(new VBIC(desc.name, nodeIndices, modelParams, polarity, bjtInstanceScale(desc.params), desc.params?.M ?? 1));
           } else {
             devices.push(new BJT(desc.name, nodeIndices, { ...modelParams, polarity }, desc.params,
               desc.bjtICTerminals?.map(resolveNode)));
