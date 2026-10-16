@@ -6,6 +6,8 @@
  * MIF_INP2A and MIFgetMod use them.
  */
 
+import { OTA_SPEC } from './ota-model.js';
+
 /** Analog port types spice-ts can stamp (XSPICE `%v`, `%vd`, `%i`, `%id`, `%vnam`, `%g`, `%gd`). */
 export type XspiceAnalogPortType = 'v' | 'vd' | 'i' | 'id' | 'vnam' | 'g' | 'gd' | 'h' | 'hd';
 
@@ -439,7 +441,7 @@ function controlledOscillator(pwm: boolean): XspiceCodeModelSpec {
 /** Implemented code models keyed by lower-case ngspice Spice_Model_Name. */
 export const XSPICE_CODE_MODEL_SPECS: ReadonlyMap<string, XspiceCodeModelSpec> = new Map(
   [
-    GAIN, SUMMER, MULT, DIVIDE, PWL, LIMIT, INT, D_DT, S_XFER,
+    GAIN, SUMMER, MULT, DIVIDE, PWL, LIMIT, INT, D_DT, S_XFER, OTA_SPEC,
     {
       name: 'lcouple',
       connections: ['l', 'mmf_out'].map((name, i) => ({ name, direction: 'inout' as const, defaultType: 'hd', allowedTypes: i === 0 ? ['h', 'hd'] : ['hd'], vector: false, nullAllowed: false })),

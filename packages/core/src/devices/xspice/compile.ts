@@ -12,6 +12,7 @@ import {
   XSPICE_BEHAVIORS, type BehaviorFactory, type CodeModelBehavior, type XspiceNetlistProbe,
 } from './models.js';
 import { OSCILLATOR_BEHAVIORS } from './oscillator-models.js';
+import { OTA_BEHAVIORS, registerOtaNoise } from './ota-model.js';
 import { SWITCH_BEHAVIORS } from './switch-models.js';
 import { MAGNETIC_BEHAVIORS } from './magnetic-models.js';
 import { zener } from './zener.js';
@@ -21,7 +22,7 @@ import { XspiceDevice, type XspiceInputPort, type XspiceOutputPort } from './xsp
 
 /** Every implemented code model behavior keyed by lower-case ngspice Spice_Model_Name. */
 const BEHAVIORS: ReadonlyMap<string, BehaviorFactory> = new Map<string, BehaviorFactory>([
-  ...XSPICE_BEHAVIORS, ...LIMITER_BEHAVIORS, ...OSCILLATOR_BEHAVIORS, ...SWITCH_BEHAVIORS, ...MAGNETIC_BEHAVIORS,
+  ...XSPICE_BEHAVIORS, ...LIMITER_BEHAVIORS, ...OSCILLATOR_BEHAVIORS, ...SWITCH_BEHAVIORS, ...MAGNETIC_BEHAVIORS, ...OTA_BEHAVIORS,
   ['zener', zener],
 ]);
 
@@ -170,6 +171,7 @@ export function createXspiceDevice(
     card.name, model.codeModel, inputs, outputs, behavior, model.warnings, untruncated,
   );
   netlistProbes.set(device, netlist);
+  if (model.codeModel === 'ota') registerOtaNoise(device, params, inputs);
   return device;
 }
 
