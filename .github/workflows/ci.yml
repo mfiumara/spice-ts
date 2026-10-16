@@ -110,6 +110,9 @@ jobs:
       - name: M2 scaling fixture and deck-hash checks (no timing)
         run: pnpm exec tsx --test benchmarks/performance/scaling-m2.test.ts
 
+      - name: Release plan and comparison policy (no timing)
+        run: pnpm exec tsx --test benchmarks/release/then-vs-now.test.ts
+
       - name: Reference adapter and evidence checks (no simulator install)
         run: pnpm exec tsx --test benchmarks/reference/xyce.test.ts benchmarks/reference/compare.test.ts benchmarks/reference/ekv-static/evidence.test.ts
 
