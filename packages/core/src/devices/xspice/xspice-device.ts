@@ -77,7 +77,9 @@ export class XspiceDevice implements DeviceModel {
     warnings: readonly string[] = [],
     untruncated = false,
   ) {
-    if (untruncated) this.storesCharge = false;
+    // cm_square integrates phase arithmetically, not via cm_analog_integrate.
+    // Its finite edges are bounded by model breakpoints, not node-voltage LTE.
+    if (untruncated || codeModel === 'square') this.storesCharge = false;
     const nodes = new Set<number>();
     for (const port of [...inputPorts, ...outputPorts]) {
       nodes.add(port.positive);
