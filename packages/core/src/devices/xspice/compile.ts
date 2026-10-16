@@ -14,6 +14,7 @@ import {
 import { OSCILLATOR_BEHAVIORS } from './oscillator-models.js';
 import { SWITCH_BEHAVIORS } from './switch-models.js';
 import { MAGNETIC_BEHAVIORS } from './magnetic-models.js';
+import { zener } from './zener.js';
 import { resolveSTransfer, STransferDevice } from './s-xfer.js';
 import { XSPICE_CODE_MODEL_SPECS, type XspiceParamValue } from './spec.js';
 import { XspiceDevice, type XspiceInputPort, type XspiceOutputPort } from './xspice-device.js';
@@ -21,6 +22,7 @@ import { XspiceDevice, type XspiceInputPort, type XspiceOutputPort } from './xsp
 /** Every implemented code model behavior keyed by lower-case ngspice Spice_Model_Name. */
 const BEHAVIORS: ReadonlyMap<string, BehaviorFactory> = new Map<string, BehaviorFactory>([
   ...XSPICE_BEHAVIORS, ...LIMITER_BEHAVIORS, ...OSCILLATOR_BEHAVIORS, ...SWITCH_BEHAVIORS, ...MAGNETIC_BEHAVIORS,
+  ['zener', zener],
 ]);
 
 /** An A instance whose connections and parameters were resolved against its code model. */

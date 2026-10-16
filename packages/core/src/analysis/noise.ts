@@ -12,6 +12,7 @@ import { MOSFET } from '../devices/mosfet.js';
 import { Resistor } from '../devices/resistor.js';
 import { SwitchBase } from '../devices/switch.js';
 import { VoltageSource } from '../devices/voltage-source.js';
+import { VBIC } from '../devices/vbic.js';
 import { InvalidCircuitError } from '../errors.js';
 import { createMatrixVariableIdentities, MNAAssembler } from '../mna/assembler.js';
 import { NoiseResult } from '../results.js';
@@ -155,7 +156,7 @@ export function assertNoiseDevicesSupported(compiled: CompiledCircuit): void {
  * restricted to ngspice's default 27 C circuit temperature):
  * resistor and S/W switch thermal noise, diode junction shot/flicker noise, BJT level-1
  * collector/base shot, base-current KF/AF flicker noise, and RB/RC/RE
- * thermal noise, plus MOS1 channel thermal/KF/AF flicker noise.
+ * thermal noise, VBIC thermal/shot/KFN noise, plus MOS1 channel thermal/KF/AF flicker noise.
  * Controlled and independent ideal sources are noiseless.
  */
 export function solveNoise(
@@ -214,6 +215,11 @@ export function solveNoise(
     if (negativeNode >= 0) gainRhs[negativeNode] += 1;
   }
 
+  // vbicnoise.c evaluates RS/ICCP but excludes them from VBICTOTNOIZ.
+  // Both still contribute to integrated totals (the per-source loop).
+  const vbicSubstrateResistors = new Set(devices
+    .filter((device): device is VBIC => device instanceof VBIC)
+    .map(device => `${device.name}.RS`));
   const resistorSources = devices
     .filter((device): device is Resistor => device instanceof Resistor && device.noisy)
     .map(resistor => {
@@ -236,6 +242,7 @@ export function solveNoise(
         throw new InvalidCircuitError(`.noise requires finite resistor flicker density for '${resistor.name}'`);
       }
       return {
+        excludeFromSpectrum: vbicSubstrateResistors.has(resistor.name),
         positive: resistor.nodes[0],
         negative: resistor.nodes[1],
         currentPowerDensity: (frequency: number) =>
@@ -327,7 +334,25 @@ export function solveNoise(
       currentPowerDensity: (_frequency: number) =>
         4 * BOLTZMANN_CONSTANT * DEFAULT_TEMPERATURE_KELVIN * sw.smallSignalConductance,
     }));
-  const noiseSources = [...resistorSources, ...switchSources, ...mosfetSources, ...bjtSources];
+  const vbicSources = devices
+    .filter((device): device is VBIC => device instanceof VBIC)
+    .flatMap(device => device.noiseOperatingPoint(dcSolution, options.deviceGmin,
+      devices.find(part => part instanceof Resistor && part.name === `${device.name}.RE`)?.nodes[0],
+    ).flatMap(source => [{
+      excludeFromSpectrum: source.excludeFromSpectrum,
+      positive: source.positive,
+      negative: source.negative,
+      currentPowerDensity: (_frequency: number) => 4 * BOLTZMANN_CONSTANT
+        * (device.getTemperature() + CELSIUS_TO_KELVIN) * source.conductance
+        + 2 * ELEMENTARY_CHARGE * source.shotCurrent,
+    }, {
+      excludeFromSpectrum: source.excludeFromSpectrum,
+      positive: source.positive,
+      negative: source.negative,
+      currentPowerDensity: (frequency: number) =>
+        source.flickerCoefficient / Math.pow(frequency, device.params.BFN),
+    }]));
+  const noiseSources = [...resistorSources, ...switchSources, ...mosfetSources, ...bjtSources, ...vbicSources];
 
   const frequencies = frequencyGrid(analysis, options.reltol, 'noise');
   const hasIntegratedTotals = analysis.stopFreq > analysis.startFreq;
@@ -369,7 +394,10 @@ export function solveNoise(
         real, imaginary, outputIndex, outputReferenceIndex,
       );
       sourceOutputPowerDensity[index].push(contribution);
-      outputPowerDensity += contribution;
+      const source = noiseSources[index];
+      if (!('excludeFromSpectrum' in source && source.excludeFromSpectrum)) {
+        outputPowerDensity += contribution;
+      }
     }
     for (let index = 0; index < diodeSources.length; index++) {
       const { nodes, powerDensity } = diodeSources[index];
@@ -419,6 +447,7 @@ export function solveNoise(
 
 function isSemiconductorNoiseDevice(device: CompiledCircuit['devices'][number]): boolean {
   return device instanceof Diode
+    || device instanceof VBIC
     || device instanceof BJT
     || device instanceof JFET
     || device instanceof MOSFET

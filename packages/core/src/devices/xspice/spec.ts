@@ -288,6 +288,30 @@ const TRIANGLE: XspiceCodeModelSpec = {
   params: [...OSCILLATOR_TABLE, real('duty_cycle', 0.5, { limits: [1e-6, 0.999999] })],
 };
 
+/** analog/square/ifspec.ifs */
+const SQUARE: XspiceCodeModelSpec = {
+  ...TRIANGLE, name: 'square',
+  params: [
+    ...TRIANGLE.params.map(param => param.name === 'cntl_array' || param.name === 'freq_array'
+      ? { ...param, defaultValue: undefined, nullAllowed: false } : param),
+    real('rise_time', 1e-9), real('fall_time', 1e-9),
+  ],
+};
+
+/** xtradev/zener/ifspec.ifs */
+const ZENER: XspiceCodeModelSpec = {
+  name: 'zener',
+  connections: [{ name: 'z', direction: 'inout', defaultType: 'gd', allowedTypes: ['gd'], vector: false, nullAllowed: false }],
+  params: [
+    { name: 'v_breakdown', type: 'real', vector: false, nullAllowed: false, limits: [1e-6, 1e6] },
+    real('i_breakdown', 2e-2, { limits: [1e-9, undefined] }),
+    real('r_breakdown', 1, { limits: [1e-12, undefined] }),
+    real('i_rev', 1e-6, { limits: [1e-9, undefined] }),
+    real('i_sat', 1e-12, { limits: [1e-15, undefined] }),
+    real('n_forward', 1, { limits: [0.1, 10] }), boolean('limit_switch', false),
+  ],
+};
+
 /** oneshot/ifspec.ifs */
 const ONESHOT: XspiceCodeModelSpec = {
   name: 'oneshot',
@@ -416,7 +440,7 @@ export const XSPICE_CODE_MODEL_SPECS: ReadonlyMap<string, XspiceCodeModelSpec> =
         real('in_low', 0), real('in_high', 1), real('hyst', 0.1), real('out_lower_limit', 0), real('out_upper_limit', 1),
       ],
     },
-    CLIMIT, HYST, ILIMIT, SLEW, SINE, TRIANGLE, ONESHOT, CMETER, LMETER, PSWITCH, ASWITCH,
+    CLIMIT, HYST, ILIMIT, SLEW, SINE, TRIANGLE, SQUARE, ZENER, ONESHOT, CMETER, LMETER, PSWITCH, ASWITCH,
     ADC_BRIDGE, DAC_BRIDGE, pull('d_pulldown'), pull('d_pullup'),
     flipFlop('d_jkff', ['j', 'k'], 'jk_load'), flipFlop('d_dff', ['data'], 'data_load'),
     unaryGate('d_buffer'), unaryGate('d_inverter'),

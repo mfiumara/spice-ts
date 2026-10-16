@@ -76,7 +76,10 @@ export class XspiceDevice implements DeviceModel {
     warnings: readonly string[] = [],
     untruncated = false,
   ) {
-    if (untruncated) this.storesCharge = false;
+    // cm_square computes phase arithmetically; cm_oneshot stores clock/corner
+    // times. Neither uses cm_analog_integrate. Their prescribed finite edges
+    // are bounded by model breakpoints, not node-voltage LTE.
+    if (untruncated || codeModel === 'square' || codeModel === 'oneshot') this.storesCharge = false;
     const nodes = new Set<number>();
     for (const port of [...inputPorts, ...outputPorts]) {
       nodes.add(port.positive);
@@ -140,7 +143,11 @@ export class XspiceDevice implements DeviceModel {
     const call = this.call(ctx, transient ? 'tran' : 'dc', transient ? this.lastIntegration : undefined, false);
     this.behavior.load(call);
     this.behavior.accept?.(call);
-    for (const time of this.behavior.breakpoints?.() ?? []) breakpoints?.schedule(time);
+    if (this.behavior.breakpoints) {
+      const times = this.behavior.breakpoints();
+      if (breakpoints?.replaceTemporary) breakpoints.replaceTemporary(this, times);
+      else for (const time of times) breakpoints?.schedule(time);
+    }
     this.acceptedInputs.set(this.inputs);
     this.acceptedOutputs.set(this.outputs);
     this.acceptedPartials.set(this.partials);
