@@ -12,6 +12,7 @@ import { MOSFET } from '../devices/mosfet.js';
 import { Resistor } from '../devices/resistor.js';
 import { SwitchBase } from '../devices/switch.js';
 import { VoltageSource } from '../devices/voltage-source.js';
+import { otaNoiseSources } from '../devices/xspice/ota-model.js';
 import { InvalidCircuitError } from '../errors.js';
 import { createMatrixVariableIdentities, MNAAssembler } from '../mna/assembler.js';
 import { NoiseResult } from '../results.js';
@@ -327,7 +328,7 @@ export function solveNoise(
       currentPowerDensity: (_frequency: number) =>
         4 * BOLTZMANN_CONSTANT * DEFAULT_TEMPERATURE_KELVIN * sw.smallSignalConductance,
     }));
-  const noiseSources = [...resistorSources, ...switchSources, ...mosfetSources, ...bjtSources];
+  const noiseSources = [...resistorSources, ...switchSources, ...mosfetSources, ...bjtSources, ...devices.flatMap(otaNoiseSources)];
 
   const frequencies = frequencyGrid(analysis, options.reltol, 'noise');
   const hasIntegratedTotals = analysis.stopFreq > analysis.startFreq;
