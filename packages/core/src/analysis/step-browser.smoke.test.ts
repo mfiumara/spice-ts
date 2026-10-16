@@ -43,19 +43,43 @@ function delay(milliseconds: number): Promise<void> {
   return new Promise(resolveDelay => setTimeout(resolveDelay, milliseconds));
 }
 
-async function pageDebuggerUrl(profileDirectory: string): Promise<string> {
-  for (let attempt = 0; attempt < 400; attempt++) {
-    try {
-      const [port] = (await readFile(join(profileDirectory, 'DevToolsActivePort'), 'utf8')).split('\n');
-      const response = await fetch(`http://127.0.0.1:${port}/json/list`);
-      const targets = await response.json() as Array<{ type: string; webSocketDebuggerUrl: string }>;
-      const page = targets.find(target => target.type === 'page');
-      if (page) return page.webSocketDebuggerUrl;
-    } catch {
-      await delay(50);
+async function pageDebuggerUrl(
+  profileDirectory: string,
+  child: ChildProcess,
+  timeoutMs = 30_000,
+): Promise<string> {
+  const deadline = performance.now() + timeoutMs;
+  let stderr = '';
+  let lastError: unknown = 'No page target returned';
+  let spawnError: Error | undefined;
+  const onError = (error: Error) => { spawnError = error; };
+  const onStderr = (data: Buffer) => { stderr = (stderr + data.toString()).slice(-4_096); };
+  child.on('error', onError);
+  child.stderr?.on('data', onStderr);
+  try {
+    while (performance.now() < deadline) {
+      if (spawnError) throw spawnError;
+      if (child.exitCode !== null || child.signalCode !== null) {
+        throw new Error(`Chrome exited before DevTools became ready (code ${child.exitCode ?? child.signalCode})\n${stderr}`);
+      }
+      try {
+        const [port] = (await readFile(join(profileDirectory, 'DevToolsActivePort'), 'utf8')).split('\n');
+        const response = await fetch(`http://127.0.0.1:${port}/json/list`, {
+          signal: AbortSignal.timeout(Math.max(1, Math.ceil(Math.min(1_000, deadline - performance.now())))),
+        });
+        const targets = await response.json() as Array<{ type: string; webSocketDebuggerUrl: string }>;
+        const page = targets.find(target => target.type === 'page');
+        if (page) return page.webSocketDebuggerUrl;
+      } catch (error) {
+        lastError = error;
+      }
+      await delay(Math.max(0, Math.min(50, deadline - performance.now())));
     }
+    throw new Error(`Chrome DevTools endpoint did not become ready within ${timeoutMs}ms: ${String(lastError)}\n${stderr}`);
+  } finally {
+    child.off('error', onError);
+    child.stderr?.off('data', onStderr);
   }
-  throw new Error('Chrome DevTools endpoint did not become ready');
 }
 
 async function terminateProcess(child: ChildProcess): Promise<void> {
@@ -139,6 +163,51 @@ afterAll(async () => {
 });
 
 describe('production browser step worker', () => {
+  it('reports an exited browser instead of waiting for a missing DevTools file', async () => {
+    const profileDirectory = await mkdtemp(join(tmpdir(), 'spice-ts-exited-browser-'));
+    temporaryDirectories.push(profileDirectory);
+    const child = spawn(process.execPath, ['-e', 'process.exit(23)'], { stdio: 'ignore' });
+    try {
+      await expect(pageDebuggerUrl(profileDirectory, child, 500))
+        .rejects.toThrow('Chrome exited before DevTools became ready (code 23)');
+    } finally {
+      await terminateProcess(child);
+    }
+  }, 5_000);
+
+  it.each(['delayed page', 'hung endpoint'] as const)('handles a %s during startup', async mode => {
+    const profileDirectory = await mkdtemp(join(tmpdir(), 'spice-ts-starting-browser-'));
+    temporaryDirectories.push(profileDirectory);
+    let requests = 0;
+    const server = createServer((_request, response) => {
+      requests++;
+      if (mode === 'hung endpoint') return;
+      response.setHeader('content-type', 'application/json');
+      response.end(JSON.stringify(requests === 1 ? [] : [
+        { type: 'page', webSocketDebuggerUrl: 'ws://example.test/page' },
+      ]));
+    });
+    await new Promise<void>(resolveListen => server.listen(0, '127.0.0.1', resolveListen));
+    const child = spawn(process.execPath, ['-e', 'setInterval(() => {}, 1000)'], { stdio: 'ignore' });
+    try {
+      const address = server.address();
+      if (!address || typeof address === 'string') throw new Error('No test server address');
+      await writeFile(join(profileDirectory, 'DevToolsActivePort'), `${address.port}\n`);
+      const result = pageDebuggerUrl(profileDirectory, child, mode === 'delayed page' ? 2_000 : 150);
+      if (mode === 'delayed page') {
+        await expect(result).resolves.toBe('ws://example.test/page');
+        expect(requests).toBe(2);
+      } else {
+        await expect(result).rejects.toThrow('Chrome DevTools endpoint did not become ready within 150ms');
+        expect(requests).toBeGreaterThan(0);
+      }
+    } finally {
+      await terminateProcess(child);
+      server.closeAllConnections();
+      await new Promise<void>(resolveClose => server.close(() => resolveClose()));
+    }
+  });
+
   it('executes a Vite production build in real headless Chrome', async () => {
     const chrome = await findChrome();
     expect(chrome, 'Chrome/Chromium is required for the production worker smoke').not.toBeNull();
@@ -219,12 +288,12 @@ describe('production browser step worker', () => {
       '--remote-debugging-port=0',
       `--user-data-dir=${profileDirectory}`,
       'about:blank',
-    ], { stdio: 'ignore' });
+    ], { stdio: ['ignore', 'ignore', 'pipe'] });
 
     try {
       const address = server.address();
       if (!address || typeof address === 'string') throw new Error('Smoke server has no TCP address');
-      const debuggerUrl = await pageDebuggerUrl(profileDirectory);
+      const debuggerUrl = await pageDebuggerUrl(profileDirectory, chromeProcess);
       const result = await waitForBrowserResult(
         debuggerUrl,
         `http://127.0.0.1:${address.port}/`,

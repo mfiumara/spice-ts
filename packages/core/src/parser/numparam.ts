@@ -110,6 +110,12 @@ function expand(text: string, functions: FunctionScope, depth: number): string {
     const values = args.map(arg => expand(arg.trim(), functions, depth + 1));
     const body = fn.body.replace(IDENTIFIER, (identifier, offset: number, whole: string) => {
       if (offset > 0 && /[\w.@#$]/.test(whole[offset - 1])) return identifier;
+      // inpcom's .func expansion preserves V/I probe names: they are circuit
+      // identifiers, even when a formal parameter has the same spelling.
+      const probes = /\b[vi]\s*\([^()]*\)/gi;
+      for (const probe of whole.matchAll(probes)) {
+        if (offset > probe.index && offset < probe.index + probe[0].length) return identifier;
+      }
       const index = fn.params.indexOf(identifier.toLowerCase());
       return index < 0 ? identifier : `(${values[index]})`;
     });
