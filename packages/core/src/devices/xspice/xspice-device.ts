@@ -141,7 +141,11 @@ export class XspiceDevice implements DeviceModel {
     const call = this.call(ctx, transient ? 'tran' : 'dc', transient ? this.lastIntegration : undefined, false);
     this.behavior.load(call);
     this.behavior.accept?.(call);
-    for (const time of this.behavior.breakpoints?.() ?? []) breakpoints?.schedule(time);
+    if (this.behavior.breakpoints) {
+      const times = this.behavior.breakpoints();
+      if (breakpoints?.replaceTemporary) breakpoints.replaceTemporary(this, times);
+      else for (const time of times) breakpoints?.schedule(time);
+    }
     this.acceptedInputs.set(this.inputs);
     this.acceptedOutputs.set(this.outputs);
     this.acceptedPartials.set(this.partials);

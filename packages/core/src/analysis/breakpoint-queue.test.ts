@@ -78,6 +78,32 @@ describe('BreakpointQueue', () => {
     });
   });
 
+  it('replaces moving predictions without removing another owner or permanent events (#1210)', () => {
+    const q = new BreakpointQueue([3e-6], 1e-14);
+    const oscillator = {};
+    const other = {};
+    q.replaceTemporary(oscillator, [1e-6, 2e-6], 0);
+    q.replaceTemporary(other, [1.5e-6], 0);
+    q.replaceTemporary(oscillator, [2.5e-6, 3e-6], 0);
+    expect(q.peek()).toBe(1.5e-6);
+    q.pop();
+    expect(q.remaining()).toEqual([2.5e-6, 3e-6, 3e-6]);
+    q.replaceTemporary(oscillator, [], 1.5e-6);
+    expect(q.peek()).toBe(3e-6);
+    q.pop();
+    expect(q.peek()).toBeUndefined();
+  });
+
+  it('consumes coincident permanent and temporary corners and filters expired predictions', () => {
+    const q = new BreakpointQueue([2e-6, 4e-6], 1e-14);
+    q.replaceTemporary({}, [NaN, Infinity, 0, 1e-6, 1e-6 + 5e-15, 2e-6 + 5e-15, 3e-6], 1e-6);
+    expect(q.isNear(2e-6)).toBe(true);
+    q.pop();
+    expect(q.peek()).toBe(3e-6);
+    q.pop();
+    expect(q.peek()).toBe(4e-6);
+  });
+
   it('remaining() returns unconsumed entries in order', () => {
     const q = new BreakpointQueue([3e-6, 1e-6, 2e-6], 1e-14);
     expect([...q.remaining()]).toEqual([1e-6, 2e-6, 3e-6]);

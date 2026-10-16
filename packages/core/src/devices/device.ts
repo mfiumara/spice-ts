@@ -50,6 +50,8 @@ export interface StampContext {
 export interface TransientBreakpointSink {
   /** Request a breakpoint at absolute time `time`; times not after the accepted point are ignored. */
   schedule(time: number): void;
+  /** Replace this owner's predicted corners (XSPICE cm_analog_set_temp_bkpt). */
+  replaceTemporary?(owner: object, times: readonly number[]): void;
 }
 
 /**
