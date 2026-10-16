@@ -1,5 +1,5 @@
 import { InvalidCircuitError } from '../../errors.js';
-import type { XspiceInstanceCard, XspiceModelCard } from '../../parser/xspice-parser.js';
+import { parseXspiceInstance, parseXspiceModelCard, type XspiceInstanceCard, type XspiceModelCard } from '../../parser/xspice-parser.js';
 import { Capacitor } from '../capacitor.js';
 import type { DeviceModel } from '../device.js';
 import { Inductor } from '../inductor.js';
@@ -36,6 +36,54 @@ export interface PreparedXspiceInstance {
   readonly nodes: readonly string[];
   /** Digital (`%d`) nodes the instance connects to, in connection order. */
   readonly digitalNodes: readonly string[];
+}
+
+/**
+ * Default unidirectional bridges, ngspice-47 src/xspice/evt/evtcheck_nodes.c
+ * lines 466-473 (direction), 515-519 (3.3 V fallback), 635-644 (ADC/DAC).
+ * Analog and event nodes retain the same name but occupy separate networks.
+ * Family/custom bridges and bidi_bridge are not implemented; reject rather
+ * than silently substituting an ideal DAC for bidirectional electrical I/O.
+ */
+export function implicitXspiceBridges(
+  instances: readonly PreparedXspiceInstance[],
+  analogNodes: ReadonlySet<string>,
+  usedNames: Set<string>,
+  vcc: number,
+  ground: string,
+): PreparedXspiceInstance[] {
+  const nodes = new Map<string, { name: string; input: boolean; output: boolean; family: boolean }>();
+  for (const instance of instances) {
+    for (const connection of instance.connections) {
+      for (const port of connection.ports) {
+        if (port.type !== 'd') continue;
+        const name = port.positive!;
+        const key = name.toUpperCase();
+        if (!analogNodes.has(key) && name !== ground) continue;
+        let node = nodes.get(key);
+        if (!node) nodes.set(key, node = { name, input: false, output: false, family: false });
+        node.input ||= connection.direction !== 'out';
+        node.output ||= connection.direction !== 'in';
+        node.family ||= Boolean(instance.params.get('family')?.[0]);
+      }
+    }
+  }
+  const bridges: PreparedXspiceInstance[] = [];
+  let serial = 0;
+  for (const node of nodes.values()) {
+    if (node.family || (node.input && node.output)) {
+      throw new InvalidCircuitError(`XSPICE mixed node '${node.name}' requires an unsupported ${node.family ? 'family-specific' : 'bidirectional'} automatic bridge`);
+    }
+    let name: string;
+    do { name = `auto_bridge${serial++}`; } while (usedNames.has(name.toUpperCase()));
+    usedNames.add(name.toUpperCase());
+    const model = parseXspiceModelCard(node.output
+      ? `.model ${name} dac_bridge(out_low=0 out_high=${vcc})`
+      : `.model ${name} adc_bridge(in_low=${vcc / 2} in_high=${vcc / 2})`, 0);
+    const card = parseXspiceInstance(`${name} [${node.name}] [${node.name}] ${name}`, 0);
+    bridges.push(prepareXspiceInstance(card, model, false, ground));
+  }
+  return bridges;
 }
 
 /**
