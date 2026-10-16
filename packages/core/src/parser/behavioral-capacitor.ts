@@ -10,6 +10,12 @@ import { parseNumber } from './tokenizer.js';
  * existing transient history, AC linearisation and subcircuit binding apply.
  */
 export function lowerBehavioralCapacitors<T extends { text: string; line: number; control?: boolean }>(statements: readonly T[]): T[] {
+  // No capacitor can be introduced by a continuation: it belongs to the
+  // preceding physical card. Avoid cloning/tokenizing the entire deck (and
+  // building the generated-name collision set) when there is nothing to lower.
+  if (!statements.some(statement => !statement.control && /^\s*c\S*(?:\s|$)/i.test(statement.text))) {
+    return [...statements];
+  }
   const logical = statements.map(statement => ({ ...statement }));
   let origin: number | undefined;
   let text = '';

@@ -63,6 +63,22 @@ describe('ngspice-47 behavioral C= (#1098)', () => {
     });
   });
 
+  it('does not clone statements when the deck has no capacitor cards (#1205)', () => {
+    const statements = Object.freeze([
+      Object.freeze({ text: '* capacitor-free deck', line: 1 }),
+      Object.freeze({ text: 'V1 in 0 1', line: 2 }),
+      Object.freeze({ text: 'R1 in out 1k', line: 3 }),
+      Object.freeze({ text: 'R2 out 0 1k', line: 4 }),
+      Object.freeze({ text: 'capacitor = 1', line: 5, control: true }),
+      Object.freeze({ text: '.op', line: 6 }),
+    ]);
+    const lowered = lowerBehavioralCapacitors(statements);
+    expect(lowered).toEqual(statements);
+    for (let index = 0; index < statements.length; index++) {
+      expect(lowered[index]).toBe(statements[index]);
+    }
+  });
+
   it('preserves ordinary physical cards and their source positions', () => {
     const statements = [
       { text: 'Cplain p n', line: 6 },
