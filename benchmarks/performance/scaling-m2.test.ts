@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { dirname, resolve } from 'node:path';
 import { describe, it } from 'node:test';
 import { fileURLToPath } from 'node:url';
@@ -26,6 +27,20 @@ const PINNED_DECKS: Array<[string, number, number, string]> = [
 ];
 
 describe('issue #426 M2 scaling fixtures', () => {
+  it('preserves identical RC waveforms in the built ESM and CJS packages', async () => {
+    // Exercise emitted code, not source imports: whitespace-only minification
+    // must preserve numeric evaluation in both public package formats (#1204).
+    const entry = resolve(here, '../../packages/core/dist/index.js');
+    const esm = await import(entry);
+    const cjs = createRequire(import.meta.url)(resolve(here, '../../packages/core/dist/index.cjs'));
+    const deck = rcLadderTran(1000).netlist;
+    const snapshot = async (core: typeof esm) => {
+      const { transient } = await core.simulate(deck);
+      return { time: Array.from(transient.time), voltages: [...transient.voltages], currents: [...transient.currents] };
+    };
+    assert.deepEqual(await snapshot(esm), await snapshot(cjs));
+  });
+
   it('is deterministic: every circuit/size yields one byte-identical deck', () => {
     for (const circuit of M2_CIRCUITS) {
       for (const nodes of [1000, 10000, 50000]) {

@@ -45,8 +45,8 @@ export interface XspiceBehaviorContext {
 export type CodeModelACForm =
   /** AC_GAIN equals the operating-point PARTIAL (gain, summer, mult, divide, pwl, limit). */
   | { readonly kind: 'static' }
-  /** AC_GAIN = j * omega * gain (d_dt). */
-  | { readonly kind: 'differentiator'; readonly gain: number }
+  /** AC_GAIN = j * omega * gain (d_dt); optional indices select one pair in a multiport model. */
+  | { readonly kind: 'differentiator'; readonly gain: number; readonly input?: number; readonly output?: number }
   /** AC_GAIN = gain / (j * omega) (int). */
   | { readonly kind: 'integrator'; readonly gain: number };
 

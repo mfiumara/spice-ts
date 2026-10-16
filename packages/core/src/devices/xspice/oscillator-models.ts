@@ -178,4 +178,49 @@ function oneshot(params: ResolvedXspiceParams, context: XspiceBehaviorContext): 
   };
 }
 
-export const OSCILLATOR_BEHAVIORS = new Map([['sine', sine], ['triangle', triangle], ['oneshot', oneshot]] as const);
+/** analog/square/cfunc.mod. Times and phase commit only at accepted steps. */
+function square(params: ResolvedXspiceParams): CodeModelBehavior {
+  const x = reals(params, 'cntl_array');
+  const y = reals(params, 'freq_array');
+  const low = real(params, 'out_low');
+  const high = real(params, 'out_high');
+  const duty = real(params, 'duty_cycle');
+  const rise = real(params, 'rise_time');
+  const fall = real(params, 'fall_time');
+  type State = { phase: number; t1: number; t2: number; t3: number; t4: number };
+  const initial = (): State => ({ phase: 0, t1: -1, t2: -1, t3: -1, t4: -1 });
+  let accepted = initial();
+  let trial = initial();
+  const load = (call: CodeModelCall): void => {
+    if (x.length !== y.length) return;
+    trial = { ...accepted };
+    if (call.analysis === 'dc') { trial = initial(); call.outputs[0] = low; return; }
+    const freq = frequencyOf(x, y, call.inputs[0]);
+    let phase = accepted.phase - Math.trunc(accepted.phase);
+    const previousTime = call.time - call.delta;
+    trial.phase = accepted.phase + freq * call.delta;
+    if (accepted.t1 <= call.time && call.time <= accepted.t2) {
+      trial.t3 = previousTime + (1 - phase) / freq;
+      trial.t4 = trial.t3 + fall;
+      call.outputs[0] = low + (call.time - trial.t1) / (trial.t2 - trial.t1) * (high - low);
+    } else if (accepted.t2 <= call.time && call.time <= accepted.t3) {
+      trial.t3 = previousTime + (1 - phase) / freq;
+      trial.t4 = trial.t3 + fall;
+      call.outputs[0] = high;
+    } else {
+      if (phase > 1 - duty) phase -= 1;
+      trial.t1 = previousTime + (1 - duty - phase) / freq;
+      trial.t2 = trial.t1 + rise;
+      call.outputs[0] = accepted.t3 <= call.time && call.time <= accepted.t4
+        ? high + (call.time - trial.t3) / (trial.t4 - trial.t3) * (low - high) : low;
+    }
+  };
+  return {
+    stateful: false, ac: STATIC, load,
+    accept(call) { load(call); accepted = { ...trial }; },
+    breakpoints: () => [accepted.t1, accepted.t2, accepted.t3, accepted.t4],
+    reset() { accepted = initial(); trial = initial(); },
+  };
+}
+
+export const OSCILLATOR_BEHAVIORS = new Map([['sine', sine], ['triangle', triangle], ['oneshot', oneshot], ['square', square]] as const);
