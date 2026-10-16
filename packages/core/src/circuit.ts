@@ -58,6 +58,7 @@ import {
   bindXspiceSources,
   buildXspiceEventNetwork,
   createXspiceDevice,
+  implicitXspiceBridges,
   prepareXspiceInstance,
   type PreparedXspiceInstance,
 } from './devices/xspice/compile.js';
@@ -2183,6 +2184,21 @@ export class Circuit {
       ],
     );
 
+    if ([...xspiceInstances.values()].some(instance => instance.digitalNodes.length > 0)) {
+      const bridges = implicitXspiceBridges(
+        [...xspiceInstances.values()],
+        new Set(expandedDescriptors.flatMap(desc => desc.nodes.map(name => name.toUpperCase()))),
+        new Set(expandedDescriptors.map(desc => desc.name.toUpperCase())),
+        this._parameters.get('VCC') ?? 3.3,
+        GROUND_NODE,
+      );
+      for (const prepared of bridges) {
+        const desc: DeviceDescriptor = { type: 'A', name: prepared.card.name, nodes: [...prepared.nodes], xspice: prepared.card };
+        expandedDescriptors.push(desc);
+        xspiceInstances.set(desc, prepared);
+      }
+    }
+
     // Only flattened device nodes belong in the matrix. In particular, a
     // .global name can override a formal port and leave its actual node unused.
     // Node names fold case as in ngspice (#728): the first spelling is kept.
@@ -2200,20 +2216,8 @@ export class Circuit {
     }
     const canonicalNode = (name: string): string => this.nodeSet.canonical(globalNode(name));
 
-    // XSPICE digital nodes live in the event-driven network, not the matrix.
-    // ngspice-47 would insert bridges where a digital node also touches an
-    // analog device (evtcheck_nodes.c); that auto-bridging is not supported.
+    // Bridges connect the separate analog matrix and digital event network.
     const eventNetwork = buildXspiceEventNetwork([...xspiceInstances.values()]);
-    if (eventNetwork) {
-      const analogNodes = new Set([...this.nodeSet].map(n => n.toLowerCase()));
-      for (const name of eventNetwork.network.nodeNames) {
-        if (name === GROUND_NODE || analogNodes.has(name.toLowerCase())) {
-          throw new InvalidCircuitError(
-            `XSPICE digital node '${name}' is also an analog node; automatic analog/digital bridging is not supported`,
-          );
-        }
-      }
-    }
 
     const nodeNames = [...this.nodeSet].filter(n => n !== GROUND_NODE).sort();
     const nodeIndexMap = new Map<string, number>();

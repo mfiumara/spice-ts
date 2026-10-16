@@ -259,10 +259,46 @@ describe('XSPICE event-driven digital models against ngspice-47 (#553 slice 3)',
     ].join('\n'))).rejects.toThrow(UnsupportedCodeModelError);
   });
 
-  it('rejects a digital node that is also analog, analyses other than .op/.tran/.ac, and UIC', async () => {
+  it('inserts default bridges for digital outputs and analog-driven digital inputs', async () => {
+    const { transient } = await simulate([
+      'implicit bridges', 'v1 hi 0 2', 'v2 low 0 1', 'v3 mid 0 1.65',
+      'a1 HI dh sense', 'a3 low dl sense', 'a4 mid dm sense', '.model sense d_buffer',
+      'a2 out pull', '.model pull d_pullup', 'r1 OUT 0 1k', '.tran 1n 5n', '.end',
+    ].join('\n'));
+    // ngspice-47 evtcheck_nodes.c defaults: VCC=3.3, ADC threshold=VCC/2.
+    expect(transient!.voltage('OUT')[0]).toBeCloseTo(3.3, 12);
+    expect(transient!.digital('dh')[0].state).toBe('1');
+    expect(transient!.digital('dl')[0].state).toBe('0');
+    expect(transient!.digital('dm')[0].state).toBe('1');
+  });
+
+  it('uses global VCC for thresholds and DAC rails, preserves transition defaults and avoids name collisions', async () => {
+    const { transient } = await simulate([
+      'implicit transient', '.param vcc=5',
+      'v1 in 0 PULSE(0 5 2n 1n 1n 5n 20n)',
+      'a1 in out buf', '.model buf d_buffer', 'r1 out 0 1k',
+      'v2 threshold 0 2', 'a2 threshold below buf',
+      'auto_bridge0 spare pull', '.model pull d_pulldown',
+      '.tran .1n 18n 0 .1n', '.end',
+    ].join('\n'));
+    // ngspice-47: initial low; threshold crossing 2.5 ns + ADC delay 1 ns
+    // + buffer delay 1 ns + default DAC rise 1 ns. Falling settles at 11.5 ns.
+    expect(interpolate(transient!.time, transient!.voltage('out'), 1e-9)).toBeCloseTo(0, 10);
+    expect(interpolate(transient!.time, transient!.voltage('out'), 8e-9)).toBeCloseTo(5, 10);
+    expect(interpolate(transient!.time, transient!.voltage('out'), 16e-9)).toBeCloseTo(0, 10);
+    expect(transient!.digital('out').map(event => event.state)).toEqual(['0', '1', '0']);
+    expect(transient!.digital('below')[0].state).toBe('0');
+  });
+
+  it('rejects bidirectional mixed nodes rather than applying a unidirectional DAC', async () => {
+    await expect(simulate([
+      'bidi', 'a1 shared pull', '.model pull d_pullup',
+      'a2 shared out buf', '.model buf d_buffer', 'r1 shared 0 1k', '.op', '.end',
+    ].join('\n'))).rejects.toThrow(/bidirectional.*bridge/);
+  });
+
+  it('rejects analyses other than .op/.tran/.ac, and UIC', async () => {
     const base = ['v1 1 0 1', 'r1 1 0 1k', 'a1 [1] [d] adc', '.model adc adc_bridge'];
-    await expect(simulate(['mixed node', ...base, 'a2 d 1 inv', '.model inv d_inverter', '.tran 1n 10n', '.end'].join('\n')))
-      .rejects.toThrow(InvalidCircuitError);
     await expect(simulate(['noise', ...base, '.noise v(1) v1 dec 1 1 10', '.end'].join('\n')))
       .rejects.toThrow(/supported in \.op, \.tran and \.ac only, not \.noise/);
     await expect(simulate(['uic', ...base, '.tran 1n 10n uic', '.end'].join('\n')))
