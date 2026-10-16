@@ -250,6 +250,9 @@ class TransientSimImpl implements TransientSim {
       // Absent only while the constructor accepts t=0, where no history exists yet.
       this.breakpoints?.insert(time, this.acceptingTime);
     },
+    replaceTemporary: (owner, times) => {
+      this.breakpoints?.replaceTemporary(owner, times, this.acceptingTime);
+    },
   };
   private justCrossedBreakpoint = false;
   /**
