@@ -48,9 +48,8 @@ export class XspiceDevice implements DeviceModel {
   readonly truncateTransientStep?: (ctx: StampContext, truncation: ChargeTruncation) => number;
   readonly modelWarnings?: readonly string[];
   /**
-   * False for the analog half of a digital node bridge (adc_bridge,
-   * dac_bridge): ngspice MIFtrunc limits the step only through
-   * cm_analog_integrate, which the bridges never call, so their nodes take
+   * False for digital node bridges and magnetic models: ngspice MIFtrunc
+   * limits the step only through cm_analog_integrate, which they never call, so their nodes take
    * no truncation error.
    */
   readonly storesCharge?: boolean;
@@ -283,6 +282,8 @@ export class XspiceDevice implements DeviceModel {
     for (const out of this.outputPorts) {
       for (const input of this.inputPorts) {
         if (ac.kind === 'differentiator') {
+          if (ac.input !== undefined && input !== this.inputPorts[ac.input]) continue;
+          if (ac.output !== undefined && out !== this.outputPorts[ac.output]) continue;
           if (out.kind === 'voltage') {
             const row = n + out.branch!;
             if (input.kind === 'voltage') {
