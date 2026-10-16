@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { simulate } from '../../simulate.js';
+import { parse } from '../../parser/index.js';
+import { chargeTruncatedNodes } from '../../analysis/transient-node-truncation.js';
 import { createTransientSim } from '../../analysis/transient-driver.js';
 import { REACTIVE_IC_BEHAVIORS } from './reactive-ic-models.js';
 import type { CodeModelCall } from './models.js';
@@ -19,9 +21,32 @@ for (const { model, source, parameter } of cases) {
       const value = model === 'capacitoric' ? result.dc!.voltage('out') : -result.dc!.current('v1');
       expect(value).toBeCloseTo(1, 10);
     });
+    it('uses MIF integral truncation without an additional node-voltage LTE check (#1237)', () => {
+      const circuit = parse(`${deck()}.tran .1 1\n.end`).compile();
+      const reactive = circuit.devices.find(device => device.name === 'a1')!;
+      expect(reactive.truncateTransientStep).toBeTypeOf('function');
+      expect(reactive.truncationCoversCharges).toBe(true);
+      const exempt = chargeTruncatedNodes(Math.max(...reactive.nodes) + 1, circuit.devices);
+      for (const node of reactive.nodes) {
+        if (node >= 0) expect(exempt[node]).toBe(1);
+      }
+    });
     it('does not ramp a plain OP even when ramptime is specified', async () => {
       const result = await simulate(`${deck('.option ramptime=0.2')}.op\n.end`);
       expect(model === 'capacitoric' ? result.dc!.voltage('out') : -result.dc!.current('v1')).toBeCloseTo(1, 10);
+    });
+    it('matches the ngspice-47 ramp-release state and decay grid (#1237)', async () => {
+      // Unit-time-constant RC/RL discharge: ngspice-47 takes 67 points and
+      // releases the ramp from the last accepted state, not exactly ic=1.
+      const resistance = model === 'capacitoric' ? '1k' : '1';
+      const result = await simulate(`${deck('.option ramptime=0.2').replace(source, `r1 out 0 ${resistance}`)}.tran .1 5\n.end`);
+      const tran = result.transient!;
+      const release = tran.time.findIndex(time => time === 0.2);
+      expect(release).toBeGreaterThan(0);
+      expect(tran.time).toHaveLength(67);
+      const sign = model === 'capacitoric' ? 1 : -1;
+      expect(sign * tran.voltage('out')[release]).toBeCloseTo(0.9434399588155, 9);
+      expect(sign * tran.voltage('out').at(-1)!).toBeCloseTo(0.009673735460594442, 10);
     });
     it('integrates from ic at every transient point', async () => {
       const result = await simulate(`${deck()}.tran .1 1\n.end`);
