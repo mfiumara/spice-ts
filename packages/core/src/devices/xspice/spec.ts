@@ -82,6 +82,12 @@ function boolean(name: string, defaultValue: boolean): XspiceParamSpec {
   return { name, type: 'boolean', defaultValue: [defaultValue], vector: false, nullAllowed: true };
 }
 
+/** astate/ifspec.ifs: no gain or offset parameters. */
+const ASTATE: XspiceCodeModelSpec = {
+  name: 'astate', connections: [input('in'), output('out')],
+  params: [{ name: 'astate_no', type: 'int', defaultValue: [1], limits: [0, 3], vector: false, nullAllowed: true }],
+};
+
 /** gain/ifspec.ifs */
 const GAIN: XspiceCodeModelSpec = {
   name: 'gain',
@@ -441,7 +447,7 @@ function controlledOscillator(pwm: boolean): XspiceCodeModelSpec {
 /** Implemented code models keyed by lower-case ngspice Spice_Model_Name. */
 export const XSPICE_CODE_MODEL_SPECS: ReadonlyMap<string, XspiceCodeModelSpec> = new Map(
   [
-    GAIN, SUMMER, MULT, DIVIDE, PWL, LIMIT, INT, D_DT, S_XFER, OTA_SPEC,
+    ASTATE, GAIN, SUMMER, MULT, DIVIDE, PWL, LIMIT, INT, D_DT, S_XFER, OTA_SPEC,
     {
       name: 'lcouple',
       connections: ['l', 'mmf_out'].map((name, i) => ({ name, direction: 'inout' as const, defaultType: 'hd', allowedTypes: i === 0 ? ['h', 'hd'] : ['hd'], vector: false, nullAllowed: false })),
@@ -459,6 +465,7 @@ export const XSPICE_CODE_MODEL_SPECS: ReadonlyMap<string, XspiceCodeModelSpec> =
       ],
     },
     CLIMIT, HYST, ILIMIT, SLEW, SINE, TRIANGLE, SQUARE, ZENER, ONESHOT, CMETER, LMETER, PSWITCH, ASWITCH,
+
     ADC_BRIDGE, DAC_BRIDGE, pull('d_pulldown'), pull('d_pullup'),
     controlledOscillator(false), controlledOscillator(true),
     flipFlop('d_jkff', ['j', 'k'], 'jk_load'), flipFlop('d_dff', ['data'], 'data_load'),
