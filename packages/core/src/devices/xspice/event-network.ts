@@ -339,7 +339,7 @@ export class XspiceEventNetwork implements DeviceModel, EventDrivenNetwork {
 
   beginTransient(breakpoint: (time: number) => void, minBreak: number): void {
     if (this.data === undefined) {
-      throw new InvalidCircuitError('XSPICE event-driven instances need the transient operating point (UIC is not supported)');
+      throw new InvalidCircuitError('XSPICE event-driven instances need initialization before transient analysis');
     }
     this.analysis = 'tran';
     this.breakpointSink = breakpoint;
