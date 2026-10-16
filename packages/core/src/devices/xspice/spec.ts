@@ -239,7 +239,7 @@ const ILIMIT: XspiceCodeModelSpec = {
   ],
 };
 
-/** xtradev/pswitch/ifspec.ifs */
+/** ngspice-47 src/xspice/icm/xtradev/pswitch/ifspec.ifs:28-76 (ports and defaults). */
 const PSWITCH: XspiceCodeModelSpec = {
   name: 'pswitch',
   connections: [
