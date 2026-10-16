@@ -13,6 +13,7 @@ import {
 } from './models.js';
 import { OSCILLATOR_BEHAVIORS } from './oscillator-models.js';
 import { SWITCH_BEHAVIORS } from './switch-models.js';
+import { MAGNETIC_BEHAVIORS } from './magnetic-models.js';
 import { zener } from './zener.js';
 import { resolveSTransfer, STransferDevice } from './s-xfer.js';
 import { XSPICE_CODE_MODEL_SPECS, type XspiceParamValue } from './spec.js';
@@ -20,7 +21,7 @@ import { XspiceDevice, type XspiceInputPort, type XspiceOutputPort } from './xsp
 
 /** Every implemented code model behavior keyed by lower-case ngspice Spice_Model_Name. */
 const BEHAVIORS: ReadonlyMap<string, BehaviorFactory> = new Map<string, BehaviorFactory>([
-  ...XSPICE_BEHAVIORS, ...LIMITER_BEHAVIORS, ...OSCILLATOR_BEHAVIORS, ...SWITCH_BEHAVIORS,
+  ...XSPICE_BEHAVIORS, ...LIMITER_BEHAVIORS, ...OSCILLATOR_BEHAVIORS, ...SWITCH_BEHAVIORS, ...MAGNETIC_BEHAVIORS,
   ['zener', zener],
 ]);
 
@@ -129,6 +130,12 @@ export function createXspiceDevice(
       if (port.type === 'd') return;
       const positive = port.positive === undefined ? -1 : resolveNode(port.positive);
       const negative = port.negative === undefined ? -1 : resolveNode(port.negative);
+      if (port.type === 'h' || port.type === 'hd') {
+        const branch = allocateBranch(`${card.name}#branch_${c}_${p}`);
+        inputs.push({ kind: 'current', positive, negative, branch });
+        outputs.push({ kind: 'voltage', positive, negative, branch });
+        return;
+      }
       if (connection.direction !== 'out') {
         if (port.type === 'vnam') {
           inputs.push({ kind: 'current', positive: -1, negative: -1, source: port.source! });
@@ -157,8 +164,10 @@ export function createXspiceDevice(
   const metered = firstPort?.positive === undefined || firstPort.type === 'd' ? -1 : resolveNode(firstPort.positive);
   const netlist = new NetlistProbe(metered);
   const behavior = analogHalf ?? BEHAVIORS.get(model.codeModel)!(params, { connections, netlist });
+  // Neither magnetic model calls cm_analog_integrate (lcouple's fake call is commented out).
+  const untruncated = analogHalf !== undefined || model.codeModel === 'lcouple' || model.codeModel === 'core';
   const device = new XspiceDevice(
-    card.name, model.codeModel, inputs, outputs, behavior, model.warnings, analogHalf !== undefined,
+    card.name, model.codeModel, inputs, outputs, behavior, model.warnings, untruncated,
   );
   netlistProbes.set(device, netlist);
   return device;

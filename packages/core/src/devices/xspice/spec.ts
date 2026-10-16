@@ -7,7 +7,7 @@
  */
 
 /** Analog port types spice-ts can stamp (XSPICE `%v`, `%vd`, `%i`, `%id`, `%vnam`, `%g`, `%gd`). */
-export type XspiceAnalogPortType = 'v' | 'vd' | 'i' | 'id' | 'vnam' | 'g' | 'gd';
+export type XspiceAnalogPortType = 'v' | 'vd' | 'i' | 'id' | 'vnam' | 'g' | 'gd' | 'h' | 'hd';
 
 /** Port types spice-ts resolves: the analog ones plus the event-driven digital `%d`. */
 export type XspicePortType = XspiceAnalogPortType | 'd';
@@ -424,6 +424,22 @@ function flipFlop(name: string, data: readonly string[], load: string): XspiceCo
 export const XSPICE_CODE_MODEL_SPECS: ReadonlyMap<string, XspiceCodeModelSpec> = new Map(
   [
     GAIN, SUMMER, MULT, DIVIDE, PWL, LIMIT, INT, D_DT, S_XFER,
+    {
+      name: 'lcouple',
+      connections: ['l', 'mmf_out'].map((name, i) => ({ name, direction: 'inout' as const, defaultType: 'hd', allowedTypes: i === 0 ? ['h', 'hd'] : ['hd'], vector: false, nullAllowed: false })),
+      params: [real('num_turns', 1)],
+    },
+    {
+      name: 'core',
+      connections: [{ name: 'mc', direction: 'inout' as const, defaultType: 'gd', allowedTypes: ['g', 'gd'], vector: false, nullAllowed: false }],
+      params: [
+        ...['h_array', 'b_array'].map(name => real(name, undefined, { vector: true, vectorBounds: [2, undefined], nullAllowed: false })),
+        ...['area', 'length'].map(name => real(name, undefined, { nullAllowed: false })),
+        real('input_domain', 0.01, { limits: [1e-12, 0.5] }), boolean('fraction', true),
+        { name: 'mode', type: 'int' as const, defaultValue: [1], vector: false, nullAllowed: true },
+        real('in_low', 0), real('in_high', 1), real('hyst', 0.1), real('out_lower_limit', 0), real('out_upper_limit', 1),
+      ],
+    },
     CLIMIT, HYST, ILIMIT, SLEW, SINE, TRIANGLE, SQUARE, ZENER, ONESHOT, CMETER, LMETER, PSWITCH, ASWITCH,
     ADC_BRIDGE, DAC_BRIDGE, pull('d_pulldown'), pull('d_pullup'),
     flipFlop('d_jkff', ['j', 'k'], 'jk_load'), flipFlop('d_dff', ['data'], 'data_load'),

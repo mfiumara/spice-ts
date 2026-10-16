@@ -1511,3 +1511,17 @@ for both engines. No circuit cards, transient directives or tolerances change.
 The model semantics follow the Public Domain ngspice-47 source
 https://github.com/imr/ngspice/tree/a80f6e3e95d51534905b1f23410a951802666656/src/xspice/icm/digital
 (`d_jkff` and `d_dff`, `cfunc.mod` and `ifspec.ifs`).
+
+## XSPICE magnetic models (#1217)
+
+`benchmarks/xspice-magnetic/compare.ts` runs the existing corpus-i eSim
+`Examples/Transformer/Transformer.cir.out` (GPL-3.0-only) and corpus-f
+`examples/xspice/original-examples/analog_models2_{ac,dc,swept_dc,transient}.deck`
+(BSD-3-Clause). Pinned upstream revisions, original licences and SHA-256 receipts
+remain in `corpus-i/SOURCES.md`, `corpus-f/SOURCES.md` and their manifests.
+Both engines read identical original bytes, including control blocks; no fixture
+or tolerance changes. The script compares this selected bucket, not whole corpora.
+Model semantics follow the Public Domain ngspice-47
+[`xtradev` source](https://github.com/imr/ngspice/tree/a80f6e3e95d51534905b1f23410a951802666656/src/xspice/icm/xtradev):
+`lcouple/cfunc.mod:182-249` and `core/cfunc.mod:246-365`, with ports/defaults
+from the respective `ifspec.ifs`. Core hysteresis mode is explicitly rejected.
