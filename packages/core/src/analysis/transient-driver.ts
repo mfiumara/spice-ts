@@ -295,7 +295,10 @@ class TransientSimImpl implements TransientSim {
     this.options = options;
     this.config = config;
     this.convergenceTelemetry = config.convergence ?? createConvergenceTelemetry();
-    for (const device of compiled.devices) device.setTransientTimestep?.(config.timestep, config.stopTime);
+    for (const device of compiled.devices) {
+      device.setTransientTimestep?.(config.timestep, config.stopTime);
+      device.setTransientRampTime?.(options.rampTime);
+    }
     // Voltage-dependent capacitances stamped as C(v) need charge state, which
     // the C-matrix companion does not keep. Preserve their established
     // companion history while using the exact static residual for constant-C
@@ -696,7 +699,7 @@ class TransientSimImpl implements TransientSim {
     const times: number[] = [];
     // ngspice-47 dctran.c inserts RAMPTIME even in non-XSPICE_EXP builds,
     // where independent V/I sources are not ramped. capacitoric/inductoric
-    // code models that use the ramp factor remain explicitly unsupported.
+    // use the ramp factor for their initial conditions.
     if (this.options.rampTime > 0 && (stop === undefined || this.options.rampTime <= stop)) {
       times.push(this.options.rampTime);
     }

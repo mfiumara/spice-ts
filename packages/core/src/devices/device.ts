@@ -254,6 +254,8 @@ export interface DeviceModel {
    * `stopTime` is undefined for an open-ended stepping run.
    */
   setTransientTimestep?(timestep: number, stopTime?: number): void;
+  /** Configure XSPICE RAMPTIME, including the transient operating point; zero for plain DC. */
+  setTransientRampTime?(rampTime: number): void;
   /** Clear device-owned transient history before restarting at t=0. */
   resetTransient?(): void;
   /** Whether this device requires Newton-Raphson iteration (nonlinear). */

@@ -107,6 +107,10 @@ export class XspiceDevice implements DeviceModel {
     }
   }
 
+  setTransientRampTime(rampTime: number): void {
+    this.behavior.setRampTime?.(rampTime);
+  }
+
   stamp(ctx: StampContext): void {
     const transient = this.acceptedTime !== undefined && ctx.dt > 0;
     if (transient && ctx.time === this.acceptedTime) {
