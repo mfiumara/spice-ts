@@ -80,6 +80,12 @@ function boolean(name: string, defaultValue: boolean): XspiceParamSpec {
   return { name, type: 'boolean', defaultValue: [defaultValue], vector: false, nullAllowed: true };
 }
 
+/** astate/ifspec.ifs: no gain or offset parameters. */
+const ASTATE: XspiceCodeModelSpec = {
+  name: 'astate', connections: [input('in'), output('out')],
+  params: [{ name: 'astate_no', type: 'int', defaultValue: [1], limits: [0, 3], vector: false, nullAllowed: true }],
+};
+
 /** gain/ifspec.ifs */
 const GAIN: XspiceCodeModelSpec = {
   name: 'gain',
@@ -399,7 +405,7 @@ function flipFlop(name: string, data: readonly string[], load: string): XspiceCo
 /** Implemented code models keyed by lower-case ngspice Spice_Model_Name. */
 export const XSPICE_CODE_MODEL_SPECS: ReadonlyMap<string, XspiceCodeModelSpec> = new Map(
   [
-    GAIN, SUMMER, MULT, DIVIDE, PWL, LIMIT, INT, D_DT, S_XFER,
+    ASTATE, GAIN, SUMMER, MULT, DIVIDE, PWL, LIMIT, INT, D_DT, S_XFER,
     CLIMIT, HYST, ILIMIT, SLEW, SINE, TRIANGLE, ONESHOT, CMETER, LMETER, PSWITCH, ASWITCH,
     ADC_BRIDGE, DAC_BRIDGE, pull('d_pulldown'), pull('d_pullup'),
     flipFlop('d_jkff', ['j', 'k'], 'jk_load'), flipFlop('d_dff', ['data'], 'data_load'),
