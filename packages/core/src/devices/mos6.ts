@@ -378,6 +378,7 @@ export class MOS6 implements DeviceModel {
   /** Capacitance (gate) or charge/capacitance (junction) evaluation scratch, in charge-index order. */
   private readonly chargeScratch = new Float64Array(CHARGE_BRANCHES.length);
   private readonly capacitanceScratch = new Float64Array(CHARGE_BRANCHES.length);
+  private readonly terminalScratch = { vgs: 0, vds: 0, vbs: 0 };
 
   constructor(
     readonly name: string,
@@ -572,21 +573,38 @@ export class MOS6 implements DeviceModel {
   }
 
   /** Terminal voltages [vgs, vds, vbs] in the polarity domain. */
-  private terminalVoltages(voltage: (node: number) => number): [number, number, number] {
+  private terminalVoltages(ctx: StampContext): { vgs: number; vds: number; vbs: number } {
     const [nD, nG, nS, nB] = this.nodes;
+    return this.terminalBias(
+      nD >= 0 ? ctx.getVoltage(nD) : 0,
+      nG >= 0 ? ctx.getVoltage(nG) : 0,
+      nS >= 0 ? ctx.getVoltage(nS) : 0,
+      nB >= 0 ? ctx.getVoltage(nB) : 0,
+    );
+  }
+
+  private solutionTerminalVoltages(solution: Float64Array): { vgs: number; vds: number; vbs: number } {
+    const [nD, nG, nS, nB] = this.nodes;
+    return this.terminalBias(
+      nD >= 0 ? solution[nD] : 0,
+      nG >= 0 ? solution[nG] : 0,
+      nS >= 0 ? solution[nS] : 0,
+      nB >= 0 ? solution[nB] : 0,
+    );
+  }
+
+  private terminalBias(vD: number, vG: number, vS: number, vB: number): { vgs: number; vds: number; vbs: number } {
     const type = this.model.polarity;
-    const vS = voltage(nS);
-    return [
-      type * (voltage(nG) - vS),
-      type * (voltage(nD) - vS),
-      type * (voltage(nB) - vS),
-    ];
+    const out = this.terminalScratch;
+    out.vgs = type * (vG - vS);
+    out.vds = type * (vD - vS);
+    out.vbs = type * (vB - vS);
+    return out;
   }
 
   limitNewtonStep(previous: Float64Array, candidate: Float64Array): number {
-    const read = (solution: Float64Array) => (node: number) => (node >= 0 ? solution[node] : 0);
-    const [vgsOld, vdsOld] = this.terminalVoltages(read(previous));
-    const [vgsNew, vdsNew] = this.terminalVoltages(read(candidate));
+    const { vgs: vgsOld, vds: vdsOld } = this.solutionTerminalVoltages(previous);
+    const { vgs: vgsNew, vds: vdsNew } = this.solutionTerminalVoltages(candidate);
     const vgdOld = vgsOld - vdsOld;
     const vgdNew = vgsNew - vdsNew;
     const von = this.lastVon;
@@ -611,8 +629,7 @@ export class MOS6 implements DeviceModel {
     const m = this.instance.M;
     const { vt, sourceVcrit, drainVcrit } = this.temp;
     const [nD, nG, nS, nB] = this.nodes;
-    const voltage = (node: number) => (node >= 0 ? ctx.getVoltage(node) : 0);
-    const [vgs, vds, vbsRaw] = this.terminalVoltages(voltage);
+    const { vgs, vds, vbs: vbsRaw } = this.terminalVoltages(ctx);
 
     // mos6load.c junction limiting against the previous load.
     let vbs = vbsRaw;
@@ -676,32 +693,31 @@ export class MOS6 implements DeviceModel {
       ? type * (cdrain - gds * vds - gm * vgs - gmbs * vbs)
       : -type * (cdrain - gds * (-vds) - gm * (vgs - vds) - gmbs * vbd);
 
-    const g = (row: number, col: number, value: number) => {
-      if (row >= 0 && col >= 0) ctx.stampG(row, col, m * value);
-    };
-    const b = (row: number, value: number) => {
-      if (row >= 0) ctx.stampB(row, m * value);
-    };
-    b(nB, -(ceqbs + ceqbd));
-    b(nD, ceqbd - cdreq);
-    b(nS, cdreq + ceqbs);
+    // Avoid allocating and naming per-load stamping closures.
+    stampMOS6B(ctx, m, nB, -(ceqbs + ceqbd));
+    stampMOS6B(ctx, m, nD, ceqbd - cdreq);
+    stampMOS6B(ctx, m, nS, cdreq + ceqbs);
 
-    g(nB, nB, gbd + gbs);
-    g(nD, nD, gds + gbd + xrev * (gm + gmbs));
-    g(nS, nS, gds + gbs + xnrm * (gm + gmbs));
-    g(nB, nD, -gbd);
-    g(nB, nS, -gbs);
-    g(nD, nG, (xnrm - xrev) * gm);
-    g(nD, nB, -gbd + (xnrm - xrev) * gmbs);
-    g(nD, nS, -gds - xnrm * (gm + gmbs));
-    g(nS, nG, -(xnrm - xrev) * gm);
-    g(nS, nB, -gbs - (xnrm - xrev) * gmbs);
-    g(nS, nD, -gds - xrev * (gm + gmbs));
+    stampMOS6G(ctx, m, nB, nB, gbd + gbs);
+    stampMOS6G(ctx, m, nD, nD, gds + gbd + xrev * (gm + gmbs));
+    stampMOS6G(ctx, m, nS, nS, gds + gbs + xnrm * (gm + gmbs));
+    stampMOS6G(ctx, m, nB, nD, -gbd);
+    stampMOS6G(ctx, m, nB, nS, -gbs);
+    stampMOS6G(ctx, m, nD, nG, (xnrm - xrev) * gm);
+    stampMOS6G(ctx, m, nD, nB, -gbd + (xnrm - xrev) * gmbs);
+    stampMOS6G(ctx, m, nD, nS, -gds - xnrm * (gm + gmbs));
+    stampMOS6G(ctx, m, nS, nG, -(xnrm - xrev) * gm);
+    stampMOS6G(ctx, m, nS, nB, -gbs - (xnrm - xrev) * gmbs);
+    stampMOS6G(ctx, m, nS, nD, -gds - xrev * (gm + gmbs));
   }
 
   /** Meyer half capacitances [gs, gd, gb] at the given solution. */
-  private meyerHalf(voltage: (node: number) => number, out: Float64Array): void {
-    const [vgs, vds, vbs] = this.terminalVoltages(voltage);
+  private meyerHalf(ctx: StampContext, out: Float64Array): void {
+    const { vgs, vds, vbs } = this.terminalVoltages(ctx);
+    this.meyerHalfAtBias(vgs, vds, vbs, out);
+  }
+
+  private meyerHalfAtBias(vgs: number, vds: number, vbs: number, out: Float64Array): void {
     const channel = this.evaluateChannel(vgs, vds, vbs);
     const vgd = vgs - vds;
     const { tPhi } = this.temp;
@@ -716,9 +732,8 @@ export class MOS6 implements DeviceModel {
   }
 
   stampDynamic(ctx: StampContext): void {
-    const voltage = (node: number) => (node >= 0 ? ctx.getVoltage(node) : 0);
     const half = halfScratch;
-    this.meyerHalf(voltage, half);
+    this.meyerHalf(ctx, half);
     const m = this.instance.M;
     const [nD, nG, nS, nB] = this.nodes;
     stampCapacitance(ctx, nG, nS, m * (2 * half[0] + this.overlapGS));
@@ -727,7 +742,7 @@ export class MOS6 implements DeviceModel {
 
     const { Cbs, Cbssw, Cbd, Cbdsw } = this.temp;
     if (Cbs !== 0 || Cbssw !== 0 || Cbd !== 0 || Cbdsw !== 0) {
-      const [, vds, vbs] = this.terminalVoltages(voltage);
+      const { vds, vbs } = this.terminalVoltages(ctx);
       const vbd = vbs - vds;
       stampCapacitance(ctx, nB, nS, m * this.depletionCapacitance(vbs, Cbs, Cbssw, this.temp.f2s, this.temp.f3s));
       stampCapacitance(ctx, nB, nD, m * this.depletionCapacitance(vbd, Cbd, Cbdsw, this.temp.f2d, this.temp.f3d));
@@ -792,7 +807,7 @@ export class MOS6 implements DeviceModel {
    */
   convergenceTest(solution: Float64Array, tolerances: ConvergenceTolerances): boolean {
     const load = this.lastLoad;
-    const [vgs, vds, vbs] = this.terminalVoltages(node => (node >= 0 ? solution[node] : 0));
+    const { vgs, vds, vbs } = this.solutionTerminalVoltages(solution);
     const vbd = vbs - vds;
     const vgd = vgs - vds;
     const delvbs = vbs - load.vbs;
@@ -855,15 +870,14 @@ export class MOS6 implements DeviceModel {
    * capgs = half(n+1) + half(n) + overlap.
    */
   private evaluateCharges(ctx: StampContext, capacitances: Float64Array, junctionCharges: Float64Array): void {
-    const voltage = (node: number) => (node >= 0 ? ctx.getVoltage(node) : 0);
     const half = halfScratch;
-    this.meyerHalf(voltage, half);
+    const { vgs, vds, vbs } = this.terminalVoltages(ctx);
+    this.meyerHalfAtBias(vgs, vds, vbs, half);
     const m = this.instance.M;
     capacitances[GATE_SOURCE] = m * (2 * half[0] + this.overlapGS);
     capacitances[GATE_DRAIN] = m * (2 * half[1] + this.overlapGD);
     capacitances[GATE_BULK] = m * (2 * half[2] + this.overlapGB);
     const type = this.model.polarity;
-    const [, vds, vbs] = this.terminalVoltages(voltage);
     const vbd = vbs - vds;
     const { Cbs, Cbssw, Cbd, Cbdsw, f2s, f3s, f4s, f2d, f3d, f4d } = this.temp;
     capacitances[BULK_SOURCE] = m * this.depletionCapacitance(vbs, Cbs, Cbssw, f2s, f3s);
@@ -911,6 +925,14 @@ export class MOS6 implements DeviceModel {
     }
     return f2 + f3 * voltage;
   }
+}
+
+function stampMOS6G(ctx: StampContext, m: number, row: number, col: number, value: number): void {
+  if (row >= 0 && col >= 0) ctx.stampG(row, col, m * value);
+}
+
+function stampMOS6B(ctx: StampContext, m: number, row: number, value: number): void {
+  if (row >= 0) ctx.stampB(row, m * value);
 }
 
 export function branchVoltage(ctx: StampContext, positive: number, negative: number): number {
