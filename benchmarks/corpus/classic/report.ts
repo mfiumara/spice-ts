@@ -540,7 +540,7 @@ function distortionAnalyses(distortion: {
 export async function runNativeSpiceTs(
   input: Buffer,
   circuit: ClassicCircuit,
-  options: { parseFirst?: boolean } = {},
+  options: { parseFirst?: boolean; coreModule?: string } = {},
 ): Promise<EngineExecution> {
   return runNativeSpiceTsEncoded(input, circuit, OBJECT_SAMPLES, options);
 }
@@ -550,7 +550,7 @@ export async function runNativeSpiceTsEncoded<S>(
   input: Buffer,
   circuit: ClassicCircuit,
   encoding: SampleEncoding<S>,
-  options: { parseFirst?: boolean } = {},
+  options: { parseFirst?: boolean; coreModule?: string } = {},
 ): Promise<EncodedExecution<S>> {
   const text = input.toString('utf8');
   if (!Buffer.from(text, 'utf8').equals(input)) {
@@ -563,7 +563,7 @@ export async function runNativeSpiceTsEncoded<S>(
   }
 
   try {
-    const core = await import(pathToFileURL(resolve('packages/core/dist/index.js')).href);
+    const core = await import(options.coreModule ?? pathToFileURL(resolve('packages/core/dist/index.js')).href);
     if (options.parseFirst ?? true) core.parse(text);
     const simulated = await core.simulate(text);
     const analyses: EncodedAnalysis<S>[] = [];
