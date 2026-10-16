@@ -25,7 +25,7 @@ describe('TABLE lowering scoped XSPICE prerequisite (#917)', () => {
   it('still rejects unsupported subcircuit-local code models', () => {
     expect(() => parse([
       'MIT unsupported scoped model', '.subckt lookup in out',
-      '.model transfer d_osc (cntl_array=[0 1] freq_array=[1e6 2e6])', '.ends lookup', '.end',
+      '.model transfer d_process', '.ends lookup', '.end',
     ].join('\n'))).toThrow(UnsupportedCodeModelError);
   });
 

@@ -420,6 +420,22 @@ function flipFlop(name: string, data: readonly string[], load: string): XspiceCo
   };
 }
 
+/** digital/{d_osc,d_pwm}/ifspec.ifs. Legacy delays are accepted but unused. */
+function controlledOscillator(pwm: boolean): XspiceCodeModelSpec {
+  return {
+    name: pwm ? 'd_pwm' : 'd_osc',
+    connections: [{ ...input('cntl_in'), allowedTypes: ['v', 'vd', 'i', 'id'] }, digital('out', 'out')],
+    params: [
+      { ...real('cntl_array', undefined, { vector: true, vectorBounds: [2, undefined] }), defaultValue: pwm ? [-1, 1] : [0, 1] },
+      { ...real(pwm ? 'dc_array' : 'freq_array', undefined, { vector: true, vectorBounds: [2, undefined], limits: [0, pwm ? 1 : undefined] }), defaultValue: pwm ? [0, 1] : [1e6, 2e6] },
+      pwm ? real('frequency', 1e6, { limits: [1e-6, undefined] }) : real('duty_cycle', .5, { limits: [1e-6, .999999] }),
+      real('init_phase', 0, { limits: [-180, 360] }),
+      real('rise_delay', 1e-9, { limits: [0, undefined] }),
+      real('fall_delay', 1e-9, { limits: [0, undefined] }),
+    ],
+  };
+}
+
 /** Implemented code models keyed by lower-case ngspice Spice_Model_Name. */
 export const XSPICE_CODE_MODEL_SPECS: ReadonlyMap<string, XspiceCodeModelSpec> = new Map(
   [
@@ -442,6 +458,7 @@ export const XSPICE_CODE_MODEL_SPECS: ReadonlyMap<string, XspiceCodeModelSpec> =
     },
     CLIMIT, HYST, ILIMIT, SLEW, SINE, TRIANGLE, SQUARE, ZENER, ONESHOT, CMETER, LMETER, PSWITCH, ASWITCH,
     ADC_BRIDGE, DAC_BRIDGE, pull('d_pulldown'), pull('d_pullup'),
+    controlledOscillator(false), controlledOscillator(true),
     flipFlop('d_jkff', ['j', 'k'], 'jk_load'), flipFlop('d_dff', ['data'], 'data_load'),
     unaryGate('d_buffer'), unaryGate('d_inverter'),
     naryGate('d_and'), naryGate('d_nand'), naryGate('d_or'), naryGate('d_nor'), naryGate('d_xor'), naryGate('d_xnor'),
