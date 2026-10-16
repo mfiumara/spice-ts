@@ -181,7 +181,9 @@ describe('nonlinear device charge integration matches ngspice-47 (#456)', () => 
     coarseEdges.forEach((edge, index) => {
       expect(Math.abs(edge - convergedEdges[index])).toBeLessThan(15e-12);
     });
-  });
+    // Coverage CI took 5328 ms (#1213), beyond Vitest's 5 s default. Match
+    // the neighbouring BSIM3 charge-parity test's 30 s budget under load.
+  }, 30_000);
 
   it('replays the identical JFET trajectory after a transient reset', async () => {
     const sim = await createTransientSim(JFET_FORWARD_DECK);
