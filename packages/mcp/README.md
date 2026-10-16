@@ -65,13 +65,17 @@ Interpolation is linear in the published axis and signal, including AC Hz/dB.
 Window boundaries are interpolated. `avg` is axis-weighted; `rms` integrates the
 square of the piecewise-linear signal, not the mean square of unevenly spaced samples.
 Descending DC axes are supported. OP reductions treat the signal as one sample at
-coordinate 0; OP crossings are unavailable. Stepped results with repeated analysis
-indices return `AMBIGUOUS_ANALYSIS`; run steps separately.
+coordinate 0; OP crossings are unavailable. Optional `step` is a nonnegative integer
+matching the zero-based `step.index` metadata in `SimulationResultV1`. Select each
+corner in the same request, for example `{ kind: 'max', signal: 'v(out)', analysis: 0, step: 2 }`.
+Omitting `step` for repeated analysis indices returns `AMBIGUOUS_ANALYSIS` with the
+available step count. An unavailable step returns `UNKNOWN_STEP`. Unstepped analyses
+accept an omitted `step` or `step: 0` and reject other indices with `UNKNOWN_STEP`.
 
 The response is `{ measurements: [{ value, unit } | { error: { code, message } }] }`,
 in request order, never vectors. Units are V/A/dB for signal values and s/Hz/the DC
 source unit for crossings. Per-item codes include `INVALID_MEASUREMENT`,
-`UNKNOWN_SIGNAL`, `UNKNOWN_ANALYSIS`, `AMBIGUOUS_ANALYSIS`, `OUT_OF_RANGE`,
+`UNKNOWN_SIGNAL`, `UNKNOWN_ANALYSIS`, `AMBIGUOUS_ANALYSIS`, `UNKNOWN_STEP`, `OUT_OF_RANGE`,
 `NO_CROSSING`, and `NON_FINITE_RESULT` (including dB of zero).
 Malformed lists fail the tool with `INVALID_REQUEST`; simulation failures use the
 usual tool error. Lists contain 1 through 128 items, signals at most 256 characters.
