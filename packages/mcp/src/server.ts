@@ -22,6 +22,8 @@ import { Worker } from 'node:worker_threads';
 import { estimatedResultPoints, requestPlan, resolvedOptions } from './request-plan.js';
 import type { RequestPlan } from './request-plan.js';
 import { measurementListSchema, measureResult } from './measure.js';
+import { overrideParameters, parameterOverrides, ParameterOverrideError, paramsSchema } from './params.js';
+import type { ParameterOverrideApiError } from './params.js';
 
 export interface McpLimits {
   maxDocumentBytes: number;
@@ -130,6 +132,11 @@ const capabilitiesOutputSchema = {
     analyses: { type: 'array', items: { enum: ['op', 'dc', 'tran', 'ac'] } },
     inputFormats: { type: 'array', items: { enum: ['spice', 'spice-ts', 'circuit-json'] } },
     tools: { type: 'array', items: { type: 'string' } },
+    parameterOverrides: { type: 'object', properties: {
+      tools: { type: 'array', items: { type: 'string' } }, input: { type: 'string' },
+      valueType: { type: 'string' }, scope: { type: 'string' }, caseSensitive: { type: 'boolean' },
+      unknownParameterCode: { const: 'UNKNOWN_PARAMETER' },
+    } },
     limits: {
       type: 'object',
       required: Object.keys(DEFAULT_MCP_LIMITS),
@@ -256,8 +263,8 @@ export const MCP_TOOLS = Object.freeze([
   },
   {
     name: 'spice_simulate',
-    description: 'Execute one bounded protocol-v1 simulation request.',
-    inputSchema: requestInputSchema,
+    description: 'Execute one bounded protocol-v1 simulation request. Optional params: Record<string, number> overrides top-level .param values before elaboration (SPICE text only, case-insensitive, finite numbers). Unknown names return UNKNOWN_PARAMETER with available names.',
+    inputSchema: { ...requestInputSchema, properties: { ...requestInputSchema.properties, params: paramsSchema } },
     outputSchema: { ...commonSchemaV1.$defs.simulationResult, $defs: commonSchemaV1.$defs },
   },
   {
@@ -285,8 +292,8 @@ export const MCP_TOOLS = Object.freeze([
   },
   {
     name: 'spice_simulation_start',
-    description: 'Start one bounded protocol-v1 simulation job and return its first opaque cursor.',
-    inputSchema: requestInputSchema,
+    description: 'Start one bounded protocol-v1 simulation job and return its first opaque cursor. Optional params: Record<string, number> overrides top-level .param values before elaboration (SPICE text only, case-insensitive, finite numbers). Unknown names return UNKNOWN_PARAMETER with available names.',
+    inputSchema: { ...requestInputSchema, properties: { ...requestInputSchema.properties, params: paramsSchema } },
     outputSchema: streamStartToolOutputSchema,
   },
   {
@@ -308,6 +315,7 @@ const capabilities = Object.freeze({
   analyses: Object.freeze(['op', 'dc', 'tran', 'ac']),
   inputFormats: Object.freeze(['spice', 'spice-ts', 'circuit-json']),
   tools: Object.freeze(MCP_TOOLS.map(tool => tool.name)),
+  parameterOverrides,
   limits: DEFAULT_MCP_LIMITS,
   streaming: Object.freeze({
     defaultChunkPoints: DEFAULT_STREAM_CHUNK_POINTS,
@@ -357,9 +365,14 @@ async function executeToolWithStore(
       throw apiError('INVALID_REQUEST', 'Expected 1 through 128 measurements', 'validation', {});
     }
     if (name === 'spice_measure') enforceMaximum('maxDocumentBytes', limits.maxDocumentBytes, Buffer.byteLength(JSON.stringify(measurements)), 'validation');
-    const original = toolRequest(args);
+    let original = toolRequest(args);
     const effective = effectiveLimits(original, limits);
     enforceMaximum('maxDocumentBytes', effective.maxDocumentBytes, Buffer.byteLength(JSON.stringify(original.input)), 'validation');
+    if ((name === 'spice_simulate' || name === 'spice_simulation_start') && isRecord(args) && args.params !== undefined) {
+      enforceMaximum('maxDocumentBytes', effective.maxDocumentBytes, Buffer.byteLength(JSON.stringify(args)), 'validation');
+      original = overrideParameters(original, args.params);
+      enforceMaximum('maxDocumentBytes', effective.maxDocumentBytes, Buffer.byteLength(JSON.stringify(original.input)), 'validation');
+    }
     throwIfCancelled(options.signal);
     const { request, diagnostics } = convertRequest(original);
     const plan = await boundedRequestPlan(request, effective);
@@ -395,6 +408,7 @@ async function executeToolWithStore(
       release();
     }
   } catch (error) {
+    if (error instanceof ParameterOverrideError) return failure(error.apiError);
     return failure(publicError(error));
   }
 }
@@ -1424,7 +1438,7 @@ function success(value: object, diagnostics?: ConversionDiagnosticV1[]): CallToo
   };
 }
 
-function failure(error: SpiceApiErrorV1): CallToolResult {
+function failure(error: SpiceApiErrorV1 | ParameterOverrideApiError): CallToolResult {
   const value = { error };
   return {
     isError: true,

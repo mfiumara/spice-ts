@@ -48,6 +48,14 @@ assert.deepEqual(capabilities, {
   protocolVersion: '1',
   analyses: ['op', 'dc', 'tran', 'ac'],
   inputFormats: ['spice', 'spice-ts', 'circuit-json'],
+  parameterOverrides: {
+    tools: ['spice_simulate', 'spice_simulation_start'],
+    input: 'params',
+    valueType: 'Record<string, number> (finite numbers)',
+    scope: 'top-level .param in spice source only',
+    caseSensitive: false,
+    unknownParameterCode: 'UNKNOWN_PARAMETER',
+  },
   tools: ['spice_capabilities', 'spice_validate', 'spice_convert', 'spice_simulate', 'spice_measure', 'spice_simulation_start', 'spice_simulation_read', 'spice_simulation_cancel'],
   limits: {
     maxDocumentBytes: 262144,
