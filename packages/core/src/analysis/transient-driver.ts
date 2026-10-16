@@ -741,6 +741,17 @@ class TransientSimImpl implements TransientSim {
    * so the first step integrates at order 1 without it.
    */
   private acceptInitialPoint(): void {
+    if (this.events && this.config.useInitialConditions) {
+      // ngspice-47 dctran.c:223-234 still calls EVTop with MODEUIC.
+      // evtop.c:104-157 alternates event initialization and analog loads;
+      // niiter.c:41-46 loads the UIC seed once, without a Newton solve.
+      // Initialize afresh even on reset or after an earlier .op analysis.
+      this.events.operatingPoint(() => {
+        // This is a load of the supplied initial state, not a Newton
+        // iteration: do not limit inputs against a previous run's solution.
+        this.acceptTransientStep(this.time);
+      });
+    }
     if (this.config.operatingPoint) {
       // OPtran copies the last DC load's state0 into state1 before INITTRAN.
       const ctx = this.assembler.getStampContext();
@@ -753,9 +764,6 @@ class TransientSimImpl implements TransientSim {
       this.acceptTransientStep(this.time);
     }
     if (this.events) {
-      if (this.config.useInitialConditions) {
-        throw new InvalidCircuitError('XSPICE event-driven instances are not supported with transient UIC');
-      }
       this.events.beginTransient(time => this.breakpoints?.insert(time, this.time), MIN_BREAK);
     }
     this.startsFromUICSeed = this.config.useInitialConditions === true;

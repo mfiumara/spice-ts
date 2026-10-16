@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { InvalidCircuitError } from '../../errors.js';
 import { UnsupportedCodeModelError } from '../../parser/xspice-parser.js';
 import { simulate } from '../../simulate.js';
+import { createTransientSim } from '../../analysis/transient-driver.js';
 import type { DigitalNodeEvent } from './event-network.js';
 
 /*
@@ -297,11 +298,50 @@ describe('XSPICE event-driven digital models against ngspice-47 (#553 slice 3)',
     ].join('\n'))).rejects.toThrow(/bidirectional.*bridge/);
   });
 
-  it('rejects analyses other than .op/.tran/.ac, and UIC', async () => {
+  it('initializes UIC events from the zero analog seed, not a solved DC operating point', async () => {
+    const { transient } = await simulate([
+      'UIC event seed', 'v1 in 0 2', 'r1 in 0 1k',
+      'a1 [in] [d] adc',
+      '.model adc adc_bridge(in_low=0.3 in_high=0.7 rise_delay=1n fall_delay=1n)',
+      'a2 d q inv', '.model inv d_inverter(rise_delay=2n fall_delay=2n)',
+      'a3 [d q] [out invout] dac',
+      '.model dac dac_bridge(out_low=0 out_high=1 t_rise=1n t_fall=1n)',
+      'r2 out 0 1k', 'r3 invout 0 1k', '.ic v(in)=0',
+      '.tran .1n 8n uic', '.end',
+    ].join('\n'));
+    // ngspice-47 EVTop runs with MODETRANOP|MODEUIC: NIiter loads the
+    // analog seed without solving. eprint: d=0s/q=1s at zero, then d=1s
+    // at 1.0008 ns and q=0s at 3.0008 ns (first analog step + delays).
+    // UIC omits the unsolved analog t=0 row, but retains digital t=0 history.
+    expect(transient!.time[0]).toBeGreaterThan(0);
+    expect(transient!.voltage('in')[0]).toBeCloseTo(2, 12);
+    expectHistory(transient!.digital('d'), [[0, '0s'], [1.0008e-9, '1s']], 'd');
+    expectHistory(transient!.digital('q'), [[0, '1s'], [3.0008e-9, '0s']], 'q');
+    expect(interpolate(transient!.time, transient!.voltage('out'), 6e-9)).toBeCloseTo(1, 10);
+    expect(interpolate(transient!.time, transient!.voltage('invout'), 6e-9)).toBeCloseTo(0, 10);
+  });
+
+  it('reinitializes UIC hybrid event state on a transient driver reset', async () => {
+    const sim = await createTransientSim([
+      'UIC reset', 'v1 in 0 2', '.ic v(in)=0',
+      'a1 [in] [d] adc', '.model adc adc_bridge(in_low=0.3 in_high=0.7)',
+      'a2 [d] [out] dac', '.model dac dac_bridge(out_low=0 out_high=1)',
+      'r1 out 0 1k', '.tran .1n 8n uic', '.end',
+    ].join('\n'));
+    try {
+      const collect = () => sim.advanceUntil(8e-9).map(step => [step.time, step.voltages.get('out')]);
+      const first = collect();
+      expect(first.at(-1)![1]).toBeCloseTo(1, 10);
+      sim.reset();
+      expect(collect()).toEqual(first);
+    } finally {
+      sim.dispose();
+    }
+  });
+
+  it('rejects analyses other than .op/.tran/.ac', async () => {
     const base = ['v1 1 0 1', 'r1 1 0 1k', 'a1 [1] [d] adc', '.model adc adc_bridge'];
     await expect(simulate(['noise', ...base, '.noise v(1) v1 dec 1 1 10', '.end'].join('\n')))
       .rejects.toThrow(/supported in \.op, \.tran and \.ac only, not \.noise/);
-    await expect(simulate(['uic', ...base, '.tran 1n 10n uic', '.end'].join('\n')))
-      .rejects.toThrow(/UIC/);
   });
 });
