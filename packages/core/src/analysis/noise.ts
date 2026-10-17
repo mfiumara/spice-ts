@@ -95,11 +95,6 @@ export function assertNoiseDevicesSupported(compiled: CompiledCircuit): void {
     // rather than add thermal noise from the expanded series resistors.
     else if (device instanceof HFET1) kind = 'HFET';
     else if (device instanceof VDMOS) {
-      // The existing electrothermal small-signal transfer is not yet ngspice-parity.
-      // Keep this sub-case explicit rather than publish incorrect noise gains.
-      if (device.selfHeating) {
-        throw new InvalidCircuitError(`.noise does not support VDMOS self-heating small-signal coupling for '${device.name}'`);
-      }
       if (!Number.isFinite(device.model.kf) || device.model.kf < 0 || !Number.isFinite(device.model.af)) {
         throw new InvalidCircuitError(`.noise requires finite VDMOS KF >= 0 and AF for '${device.name}'`);
       }

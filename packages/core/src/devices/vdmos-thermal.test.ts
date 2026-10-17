@@ -1,8 +1,46 @@
 import { describe, expect, it } from 'vitest';
 import { simulate } from '../simulate.js';
 import { readFileSync } from 'node:fs';
+import { VDMOS } from './vdmos.js';
+import { resolveVdmosModel } from './vdmos-model.js';
+import { MNAAssembler } from '../mna/assembler.js';
 
 describe('VDMOS self heating (#559)', () => {
+  it.each([1, -1])('uses vdmosacld thermal signs for polarity %s in both modes', type => {
+    const { model } = resolveVdmosModel({ name: 'power', type: type === 1 ? 'VDMOSN' : 'VDMOSP', params: { VTO: type, KP: 0.1, MU: -1.5, RTHJC: 2, CTHJ: 0.001 } });
+    for (const mode of [1, -1]) {
+      // Keep intrinsic SP in the matrix: grounding it hides the inverse
+      // thermal source-row sign in vdmosacld.c.
+      const device = new VDMOS('M1', [0, 1, 4, 0, 1, 4, -1, 2, 3], model, {});
+      const assembler = new MNAAssembler(5, 0);
+      assembler.solution.set([type * mode * 2, type * 3, 27, 27, 0]);
+      const ctx = assembler.getStampContext();
+      device.stampSmallSignal(ctx);
+      device.stampDynamic(ctx);
+      const { gm, gds, cdrain } = device.evaluateChannel(3, mode * 2);
+      const gate = mode * type * gm * 2;
+      const drain = mode * type * (gds * 2 + cdrain);
+      const gmT = -1.5 * cdrain / 300.15;
+      expect(assembler.G.get(2, 1)).toBeCloseTo(gate, 12);
+      expect(assembler.G.get(2, 0)).toBeCloseTo(drain, 12);
+      expect(assembler.G.get(2, 4)).toBeCloseTo(-mode * (gate + drain), 12);
+      expect(assembler.G.get(0, 2)).toBeCloseTo(type * mode * gmT, 12);
+      expect(assembler.G.get(4, 2)).toBeCloseTo(-type * mode * gmT, 12);
+      // Assert both complete thermal rows, including gtempT, the case
+      // network, and the inverse CTHJ sign (vdmosacld.c:141-160).
+      const thermalRows = [
+        [drain, gate, mode * gmT * 2 + 1 / model.rthjc, -1 / model.rthjc, -mode * (gate + drain)],
+        [0, 0, -1 / model.rthjc, 1 / model.rthjc + 1 / model.rthca, 0],
+      ];
+      for (const [i, row] of thermalRows.entries()) {
+        for (const [col, expected] of row.entries()) {
+          expect(assembler.G.get(2 + i, col)).toBeCloseTo(expected, 12);
+          expect(assembler.C.get(2 + i, col)).toBeCloseTo(i === 0 && col === 2 ? mode * 0.001 : 0, 12);
+        }
+      }
+      for (const row of [0, 1, 4]) expect(assembler.C.get(row, 2)).toBe(0);
+    }
+  });
   it('integrates CTHJ after a gate step with the expected thermal time constant', async () => {
     const result = await simulate(`thermal transient
 m1 d g 0 tj tc power thermal
