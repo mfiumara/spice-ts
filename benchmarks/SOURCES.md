@@ -1,5 +1,21 @@
 # Benchmark sources
 
+## BSIM4 IGCMOD=1 gate tunneling (#1304)
+
+`benchmarks/bsim4-igc/{n,p}-{forward,reverse}.cir` are self-authored MIT
+fixtures. They sweep VGS at fixed VDS with thin oxide, asymmetric gate
+overlaps, NF/M scaling, both polarities and both drain orientations.
+Reverse cases also cover given PIGCD, poly depletion and nonnominal temperature.
+The unchanged decks run through both engines. `generate.py` requires ngspice-47
+and writes `ngspice-47.json`, which is consumed by `gate-current.test.ts`.
+Regenerate with `spice-heavy python3 benchmarks/bsim4-igc/generate.py`;
+no native raw files or logs are committed. Deck hashes guard oracle identity.
+The test uses the existing BSIM4 bias-grid bound (1e-8, native-zero floor
+1e-18 A), without per-fixture tolerance changes. Source equations are the
+ECL-2.0 BSIM4 4.8 family at pinned ngspice revision
+`a80f6e3e95d51534905b1f23410a951802666656`; see the licence and notices in
+`packages/core/src/devices/bsim4/` and the line mapping in `LOAD.md`.
+
 ## VBIC flicker and total noise (#1197)
 
 `benchmarks/vbic-noise/compare.ts` runs the byte-identical corpus-f
