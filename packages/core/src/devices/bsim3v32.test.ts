@@ -42,11 +42,13 @@ describe('BSIM3 non-quasi-static selectors (#594, #692)', () => {
     });
   });
 
-  it('rejects ACNQSMOD=1 on the 3.3.0 device, which defines it', async () => {
+  it('permits ACNQSMOD=1 DC on the 3.3.0 device, which defines it', async () => {
     const netlist = inverter().replace(/version=3\.2\.2/g, 'version=3.3.0').replace(
       'W=2u L=1u ', 'W=2u L=1u ACNQSMOD=1',
     );
-    await expect(simulate(netlist)).rejects.toMatchObject({ code: 'UNSUPPORTED_MODEL_PARAMETER', parameter: 'ACNQSMOD' });
+    expect((await simulate(netlist)).dc!.voltage('out')).toBe(
+      (await simulate(netlist.replace('ACNQSMOD=1', 'ACNQSMOD=0'))).dc!.voltage('out'),
+    );
   });
 });
 

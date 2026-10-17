@@ -1,5 +1,23 @@
 # Benchmark sources
 
+## BSIM3 AC non-quasi-static common-source amplifier (#1249)
+
+`benchmarks/bsim3-acnqs-1249/common-source.cir` and the reverse, resistive-gate,
+PMOS and temperature/multiplier variants in `decks.ts` are original project-authored
+MIT probes. Each deck is passed byte-identically to ngspice-47 and spice-ts;
+the test-consumed `ngspice-47.json` records SHA-256 hashes and 61 complex
+v(out) samples from 1 MHz to 1 THz for both ACNQSMOD=0 and 1. Regenerate with
+`spice-heavy pnpm exec tsx benchmarks/bsim3-acnqs-1249/reference.ts`.
+`packages/core/src/devices/bsim3-acnqs.test.ts` checks complex and magnitude
+error against the unchanged 1%-of-peak threshold, plus wrapped phase error.
+The port follows ngspice-47
+[`b3acld.c:50-100,367-423`](https://github.com/imr/ngspice/blob/ngspice-47/src/spicelib/devices/bsim3/b3acld.c)
+and [`b3ld.c:2478-2494`](https://github.com/imr/ngspice/blob/ngspice-47/src/spicelib/devices/bsim3/b3ld.c)
+(ngspice BSIM3 distribution, UC Berkeley permissive licence). The AC delay
+reuses the transient NQS relaxation rate. NQSMOD=1 AC (including combined
+selectors) and ACNQSMOD=1 noise remain explicitly unsupported with typed
+errors; ACNQSMOD is defined only on BSIM3 3.3.0.
+
 ## VBIC flicker and total noise (#1197)
 
 `benchmarks/vbic-noise/compare.ts` runs the byte-identical corpus-f
