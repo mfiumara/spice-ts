@@ -961,6 +961,7 @@ export class Circuit {
    * references is a complete snapshot.
    */
   snapshotControlState(): () => void {
+    const subcircuitAlterations = new Map(this._subcircuitAlterations);
     const descriptors = this.descriptors.map(descriptor => ({
       descriptor, value: descriptor.value, waveform: descriptor.waveform, params: descriptor.params,
       multiplier: descriptor.multiplier,
@@ -976,24 +977,38 @@ export class Circuit {
         descriptor.multiplier = multiplier;
       }
       for (const { model, params } of models) model.params = params;
+      this._subcircuitAlterations = subcircuitAlterations;
       this._simulationOptions = simulationOptions;
       this._temperature = temperature;
     };
   }
 
+  /** Instance-local edits survive re-expansion without changing shared definitions. */
+  private _subcircuitAlterations = new Map<string, DeviceDescriptor>();
+
   /**
-   * @internal ngspice `alter`: change an input parameter of a top-level
+   * @internal ngspice `alter`: change an input parameter of a flattened
    * device, with the same effect as editing its card. `parameter` undefined
    * selects the primary value (resistance, capacitance, inductance, source DC).
    *
    * @returns undefined on success, or why the change is not supported
    */
   alterInstance(name: string, parameter: string | undefined, values: number[]): string | undefined {
-    const descriptor = this.descriptors.find(candidate => candidate.name.toUpperCase() === name.toUpperCase());
+    const upper = name.toUpperCase();
+    let descriptor = this.descriptors.find(candidate => candidate.name.toUpperCase() === upper);
+    if (!descriptor && name.includes('.')) {
+      // ngspice-47 src/frontend/subckt.c:1131-1142 (translate_inst_name) maps devices to
+      // <type>.<instance path>.<body name>; internally we omit <type>.
+      descriptor = this.expandAllSubcircuits(this.collectGlobalNodes()).find(candidate =>
+        candidate.name.includes('.') && `${candidate.type}.${candidate.name}`.toUpperCase() === upper);
+      if (descriptor) {
+        // Copy on write so snapshotControlState also restores existing overrides.
+        descriptor = { ...descriptor };
+        this._subcircuitAlterations.set(descriptor.name.toUpperCase(), descriptor);
+      }
+    }
     if (!descriptor) {
-      return name.includes('.')
-        ? `device '${name}' is inside a subcircuit; only top-level devices can be altered`
-        : `no device named '${name}'`;
+      return `no device named '${name}'`;
     }
     const key = parameter?.toUpperCase();
     const single = (): number | string => (values.length === 1 ? values[0] : `parameter needs one value, got ${values.length}`);
@@ -2830,7 +2845,7 @@ export class Circuit {
           this.parameterScope(),
           this._subcircuitCallCards.get(desc),
         );
-        result.push(...expanded);
+        result.push(...expanded.map(device => this._subcircuitAlterations.get(device.name.toUpperCase()) ?? device));
       } else {
         result.push(desc);
       }
