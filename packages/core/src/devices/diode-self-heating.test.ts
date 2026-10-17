@@ -12,6 +12,36 @@ D1 in 0 tj DM thermal
 .end`;
 
 describe('diode self-heating (#1261)', () => {
+  it.each(['{a}', '{a * 1}'])('preserves positional AREA %s inside subcircuits', async area => {
+    const result = await simulate(`Area regression
+V1 in 0 0.6
+X1 in cell a=2
+.subckt cell in params: a=1
+D1 in 0 DM ${area}
+.model DM D
+.ends
+.op
+.end`);
+    const reference = await simulate(`Literal area reference
+V1 in 0 0.6
+D1 in 0 DM 2
+.model DM D
+.op
+.end`);
+    expect(result.dc!.current('V1')).toBeCloseTo(-0.00023743925851741482, 12);
+    expect(result.dc!.current('V1')).toBe(reference.dc!.current('V1'));
+  });
+
+  it('evaluates positional AREA without losing a subcircuit thermal node', async () => {
+    const result = await simulate(deck.replace('D1 in 0 tj DM thermal', `X1 in tj cell a=2
+.subckt cell in t params: a=1
+D1 in 0 t DM {a} thermal
+.ends`));
+    const reference = await simulate(deck.replace('DM thermal', 'DM 2 thermal'));
+    expect(result.dc!.voltage('tj')).toBe(reference.dc!.voltage('tj'));
+    expect(result.dc!.current('V1')).toBe(reference.dc!.current('V1'));
+  });
+
   it.each(['1N4148', '2N_model'])('accepts digit-prefixed thermal model %s at top level and in subcircuits', async model => {
     const namedDeck = deck.replaceAll('DM', model);
     const topLevel = await simulate(namedDeck);

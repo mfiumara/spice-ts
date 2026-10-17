@@ -3758,9 +3758,11 @@ export class Circuit {
           break;
         }
         case 'D': {
-          const modelIndex = diodeModelIndex(tokens);
-          const modelName = tokens[modelIndex];
           const evaluatedTokens = tokens.map(t => evalToken(t));
+          // Positional AREA expressions must be numeric before distinguishing
+          // a two-terminal diode from the optional thermal-node form.
+          const modelIndex = diodeModelIndex(evaluatedTokens);
+          const modelName = tokens[modelIndex];
           result.push({
             type: 'D', name: devName,
             nodes: tokens.slice(1, modelIndex).map(mapNode),
