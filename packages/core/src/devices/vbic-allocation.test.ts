@@ -60,11 +60,11 @@ function exercise(): { hash: string; allocations: number } {
   return { hash: hash.digest('hex'), allocations };
 }
 
-describe('VBIC derivative allocation (#1310 round 4)', () => {
+describe('VBIC derivative allocation (#1310 round 5)', () => {
   it('preserves baseline numeric output and every stamp bit for bit', () => {
     expect(exercise().hash).toBe('3324cdb29c46ea0b0be79f64b9a06a767eba5549d997e193df9221f0634944db');
   });
-  it('avoids temporary derivative arrays in junction diode evaluation', () => {
-    expect(exercise().allocations).toBeLessThan(70000);
+  it('avoids temporary derivative arrays in diode evaluation and local accumulation', () => {
+    expect(exercise().allocations).toBeLessThan(60000);
   });
 });
