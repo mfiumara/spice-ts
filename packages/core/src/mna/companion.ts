@@ -1,5 +1,5 @@
 import { MNAAssembler } from './assembler.js';
-import type { DeviceModel } from '../devices/device.js';
+import type { ChargeIntegration, DeviceModel } from '../devices/device.js';
 import type { IntegrationMethod } from '../types.js';
 import { MOSFET } from '../devices/mosfet.js';
 import { stampDynamicDevices, stampStaticDevices } from './linear-stamp.js';
@@ -25,6 +25,11 @@ interface CompanionWorkspace {
 
 const devicePlans = new WeakMap<readonly DeviceModel[], DevicePlan>();
 const workspaces = new WeakMap<MNAAssembler, CompanionWorkspace>();
+// Like StampContext, this is synchronous stamp-call scratch, not a history snapshot.
+// Separate from vector workspaces so Euler does not allocate unused history arrays.
+const chargeIntegrations = new WeakMap<MNAAssembler, {
+  -readonly [K in keyof ChargeIntegration]: ChargeIntegration[K];
+}>();
 
 /** MOSFET/other split of a device list, computed once per list. */
 function devicePlan(devices: readonly DeviceModel[]): DevicePlan {
@@ -351,11 +356,15 @@ export function buildCompanionSystem(
   // Charge-integrating devices (ngspice NIintegrate) stamp their complete
   // companion into G and b. They are added after the C-matrix history so they
   // neither mark rows dynamic nor enter the G*x(n) history product.
-  const integration = {
-    method: effectiveMethod,
-    xmu,
-    dt,
-    prevDt: useGear2 ? prevDt : undefined,
-  };
+  if (plan.charged.length === 0) return;
+  let integration = chargeIntegrations.get(assembler);
+  if (integration === undefined) {
+    integration = { method: effectiveMethod, xmu, dt, prevDt: undefined };
+    chargeIntegrations.set(assembler, integration);
+  }
+  integration.method = effectiveMethod;
+  integration.xmu = xmu;
+  integration.dt = dt;
+  integration.prevDt = useGear2 ? prevDt : undefined;
   for (const device of plan.charged) device.stampTransientCharge!(ctx, integration);
 }
