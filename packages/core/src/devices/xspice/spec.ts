@@ -411,7 +411,7 @@ function pull(name: string): XspiceCodeModelSpec {
   return { name, connections: [digital('out', 'out')], params: [real('load', 1e-12)] };
 }
 
-/** digital/{d_jkff,d_dff}/ifspec.ifs */
+/** digital/{d_jkff,d_dff,d_tff,d_srff}/ifspec.ifs */
 function flipFlop(name: string, data: readonly string[], load: string): XspiceCodeModelSpec {
   return {
     name,
@@ -470,6 +470,7 @@ export const XSPICE_CODE_MODEL_SPECS: ReadonlyMap<string, XspiceCodeModelSpec> =
     ADC_BRIDGE, DAC_BRIDGE, pull('d_pulldown'), pull('d_pullup'),
     controlledOscillator(false), controlledOscillator(true),
     flipFlop('d_jkff', ['j', 'k'], 'jk_load'), flipFlop('d_dff', ['data'], 'data_load'),
+    flipFlop('d_tff', ['t'], 't_load'), flipFlop('d_srff', ['s', 'r'], 'sr_load'),
     unaryGate('d_buffer'), unaryGate('d_inverter'),
     naryGate('d_and'), naryGate('d_nand'), naryGate('d_or'), naryGate('d_nor'), naryGate('d_xor'), naryGate('d_xnor'),
   ].map(spec => [spec.name, spec]),

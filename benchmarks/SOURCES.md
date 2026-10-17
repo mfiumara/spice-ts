@@ -1520,6 +1520,33 @@ PTF is degrees, and the transient delay uses Weil's backward-Euler approximation
 
 ## XSPICE flip-flop coverage (#1179)
 
+### Toggle and synchronous SR flip-flops (#1254)
+
+`benchmarks/xspice-tff-srff-1254/{d_tff,d_srff}.cir` are original spice-ts
+fixtures, MIT (repository LICENSE). Both engines consume the identical deck.
+The `.ngspice.tsv` files contain ngspice-47 `eprint q nq` output, consumed by
+`packages/core/src/devices/xspice/xspice-tff-srff.test.ts`. The test checks every
+state and every Q/NQ edge within 1 ps, including SR conflict (UNKNOWN).
+No circuit-specific tolerances or solver adjustments are used.
+
+Semantics and interface source (Public Domain, as stated in the source headers):
+https://github.com/imr/ngspice/tree/a80f6e3e95d51534905b1f23410a951802666656/src/xspice/icm/digital
+(`d_tff` and `d_srff`, `cfunc.mod` and `ifspec.ifs`).
+
+Reproduce the reference from the repository root, replacing `d_tff` with
+`d_srff` for the other model. The wrapper only sources the unchanged deck and
+prints digital events; it adds no circuit elements or analysis directives.
+
+```sh
+printf 'reference\n.control\nsource benchmarks/xspice-tff-srff-1254/d_tff.cir\nrun\neprint q nq\nquit\n.endc\n.end\n' | ngspice -b
+pnpm -C packages/core exec vitest run src/devices/xspice/xspice-tff-srff.test.ts
+```
+
+Before implementation both models were rejected as unsupported. Afterward,
+all 18 Q/NQ transitions match ngspice-47 states; maximum absolute timing error
+is 1.324e-23 s on these fixtures (macOS arm64, ngspice-47 KLU). This is a
+coverage/timing comparison, not a speed or general waveform-parity claim.
+
 `benchmarks/xspice-flipflop-1179/compare.ts` reuses the unchanged corpus-i
 eSim `JK_Flipflop` and `4_bit_JK_ff` fixtures (GPL-3.0-only, pinned revision
 `1a25a46ce15e`; see corpus-i/SOURCES.md), and corpus-f's ngspice
