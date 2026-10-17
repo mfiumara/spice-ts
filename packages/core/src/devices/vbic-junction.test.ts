@@ -42,7 +42,7 @@ describe('VBIC junction potentials and grading (#1281)', () => {
     });
   }
 
-  it.each([{}, { WBE: 1 }] as Record<string, number>[])('keeps default DC/AC/transient stamps bit-identical with %j', wbe => {
+  it.each([{}, { WBE: 1 }, { WSP: 1 }, { WBE: 1, WSP: 1 }] as Record<string, number>[])('keeps default DC/AC/transient stamps bit-identical with %j', wbe => {
     // Captured before the fix at 55b6fcf3, not re-generated from new defaults.
     // Both polarities and 0/27/75 C include all four depletion capacitances.
     const all: unknown[] = [];
