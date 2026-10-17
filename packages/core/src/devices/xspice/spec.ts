@@ -7,6 +7,7 @@
  */
 
 import { OTA_SPEC } from './ota-model.js';
+import { SEEGEN_SPEC } from './seegen.js';
 
 /** Analog port types spice-ts can stamp (XSPICE `%v`, `%vd`, `%i`, `%id`, `%vnam`, `%g`, `%gd`). */
 export type XspiceAnalogPortType = 'v' | 'vd' | 'i' | 'id' | 'vnam' | 'g' | 'gd' | 'h' | 'hd';
@@ -464,7 +465,7 @@ export const XSPICE_CODE_MODEL_SPECS: ReadonlyMap<string, XspiceCodeModelSpec> =
         real('in_low', 0), real('in_high', 1), real('hyst', 0.1), real('out_lower_limit', 0), real('out_upper_limit', 1),
       ],
     },
-    CLIMIT, HYST, ILIMIT, SLEW, SINE, TRIANGLE, SQUARE, ZENER, ONESHOT, CMETER, LMETER, PSWITCH, ASWITCH,
+    CLIMIT, HYST, ILIMIT, SLEW, SINE, TRIANGLE, SQUARE, ZENER, ONESHOT, CMETER, LMETER, PSWITCH, ASWITCH, SEEGEN_SPEC,
 
     ADC_BRIDGE, DAC_BRIDGE, pull('d_pulldown'), pull('d_pullup'),
     controlledOscillator(false), controlledOscillator(true),

@@ -7503,16 +7503,22 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 15: XSPICE code model 'seegen' (.model 'seemod1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inve"
+        "status": "success",
+        "analyses": ["tran:1940", "tran:1948", "tran:1952", "tran:1956", "tran:1960", "tran:1964", "tran:1968", "tran:1972", "tran:1972", "tran:1976"]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "comparedAnalyses": 10,
+      "comparedSignals": 5,
+      "worstNormalizedError": 0.917,
+      "worstSignal": "tran v(mon)",
+      "outcome": "mismatch",
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": ["1e-11"],
+        "headline": { "worst": 0.917, "signal": "v(mon)" },
+        "spiceTsVsFine": { "worst": 0.909, "signal": "v(mon)" },
+        "ngspiceDefaultVsFine": { "worst": 0.0376, "signal": "v(mon)" }
+      }
     },
     {
       "id": "examples-xspice-see-seegen-cm1-cir",
@@ -7529,16 +7535,23 @@
         "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 4: XSPICE code model 'seegen' (.model 'seemod1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inver"
+        "status": "success",
+        "analyses": ["tran:3550"]
       },
-      "comparedAnalyses": 0,
+      "comparedAnalyses": 1,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "outcome": "not-compared",
+      "gapBucket": null,
+      "fineReference": {
+        "status": "unavailable",
+        "tmax": [],
+        "reason": "no .tran card outside .control",
+        "headline": null,
+        "spiceTsVsFine": null,
+        "ngspiceDefaultVsFine": null
+      }
     },
     {
       "id": "examples-xspice-see-set1-cir",
