@@ -510,6 +510,9 @@ export class VBIC implements DeviceModel {
   readonly branches: number[] = [];
   readonly isNonlinear = true;
   readonly integratesTransientCharge = true;
+  // acceptTransientStep visits every conservative charge row, including both
+  // TD excess-phase states. CBEO/CBCO/CTH are outside the bounded subset.
+  readonly truncationCoversCharges = true;
   readonly limitsOwnJunctions = true;
   private readonly charges: TransientChargeState;
   private loadVoltages: number[] | undefined;
