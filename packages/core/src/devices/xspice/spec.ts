@@ -475,6 +475,12 @@ export const XSPICE_CODE_MODEL_SPECS: ReadonlyMap<string, XspiceCodeModelSpec> =
     flipFlop('d_jkff', ['j', 'k'], 'jk_load'), flipFlop('d_dff', ['data'], 'data_load'),
     flipFlop('d_tff', ['t'], 't_load'), flipFlop('d_srff', ['s', 'r'], 'sr_load'),
     unaryGate('d_buffer'), unaryGate('d_inverter'),
+    {
+      // ngspice-47 digital/d_tristate/ifspec.ifs:29-62 (default transport-delay mode).
+      name: 'd_tristate',
+      connections: [digital('in', 'in'), digital('enable', 'in'), digital('out', 'out')],
+      params: [real('delay', 1e-9, { limits: [1e-12, undefined] }), real('input_load', 1e-12), real('enable_load', 1e-12)],
+    },
     naryGate('d_and'), naryGate('d_nand'), naryGate('d_or'), naryGate('d_nor'), naryGate('d_xor'), naryGate('d_xnor'),
     {
       name: 'd_lut',
