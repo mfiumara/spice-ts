@@ -27,17 +27,18 @@ describe('opt-in transient rejection telemetry (#1310)', () => {
       const events: TransientRejection[] = [];
       const onReject = (event: TransientRejection) => events.push(event);
       const netlist = SINE.replace('.tran 100n 1u', '.tran 1f 1p');
-      const sim = driver === 'stepping'
-        ? await createTransientSim(netlist, { onReject })
-        : createDriverFromCompiled(parse(netlist).compile(), resolveOptions({}, 1e-12), {
+      const compiledSim = driver === 'compiled'
+        ? createDriverFromCompiled(parse(netlist).compile(), resolveOptions({}, 1e-12), {
           stopTime: 1e-12, timestep: 1e-15, maxTimestep: 1e-15, onReject,
-        });
+        })
+        : undefined;
+      const sim = compiledSim ?? await createTransientSim(netlist, { onReject });
       const attempt = vi.spyOn(stepping, 'attemptStep').mockReturnValueOnce({
         ok: false, reason: 'nr-divergence', iterations: 100, oscillated: true,
         lastSolution: new Float64Array(), prevIterSolution: new Float64Array(),
       });
       try {
-        if (driver === 'compiled' && 'advanceSolution' in sim) sim.advanceSolution();
+        if (compiledSim) compiledSim.advanceSolution();
         else sim.advance();
         expect(events).toHaveLength(1);
         expect(events[0].reason).toBe('newton');

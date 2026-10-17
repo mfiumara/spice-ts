@@ -462,7 +462,6 @@ class TransientSimImpl implements TransientSim {
           continue;
         }
         this.dt = this.dt / DT_CUT_FACTOR;
-        this.config.onReject?.({ reason: 'newton', time: nextTime, timestep: actualDt, nextTimestep: this.dt });
         // ngspice dctran.c: a non-converged step is retried at CKTorder = 1.
         this.orderOnePending = true;
         if (this.dt < MIN_TIMESTEP) {
@@ -478,14 +477,17 @@ class TransientSimImpl implements TransientSim {
             const recoveryCeiling = Math.min(this.config.timestep, this.config.maxTimestep);
             this.dt = Math.max(recoveryCeiling / IMPLICIT_BREAK_DT_CUT, MIN_TIMESTEP);
             discontinuityRecoveryAttempted = true;
+            this.config.onReject?.({ reason: 'newton', time: nextTime, timestep: actualDt, nextTimestep: this.dt });
             continue;
           }
           this.convergenceTelemetry.transient.failure = 'dt-floor';
+          this.config.onReject?.({ reason: 'newton', time: nextTime, timestep: actualDt, nextTimestep: this.dt });
           throw new TimestepTooSmallError(
             this.time, this.dt, snapshotConvergenceTelemetry(this.convergenceTelemetry),
           );
         }
         this.assembler.solution.set(prevSol);
+        this.config.onReject?.({ reason: 'newton', time: nextTime, timestep: actualDt, nextTimestep: this.dt });
         continue;
       }
 
@@ -529,8 +531,8 @@ class TransientSimImpl implements TransientSim {
         this.dt = retry - this.time;
         this.assembler.solution.set(prevSol);
         this.convergenceTelemetry.transient.rejectedSteps++;
-        this.config.onReject?.({ reason: 'breakpoint', time: nextTime, timestep: actualDt, nextTimestep: this.dt });
         this.processEvents();
+        this.config.onReject?.({ reason: 'breakpoint', time: nextTime, timestep: actualDt, nextTimestep: this.dt });
         continue;
       }
       const next = this.orderAfterAcceptedStep(actualDt, integration, chargeBound);
