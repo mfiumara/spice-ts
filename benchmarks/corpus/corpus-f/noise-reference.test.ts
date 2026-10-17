@@ -11,6 +11,15 @@ import { normalizedSignalErrors, pairedReferenceSeries } from './lib.js';
 const HAS_NGSPICE = spawnSync('ngspice', ['--version'], { encoding: 'utf8' }).status === 0;
 
 describe('control-only noise reference export (#1317)', () => {
+  it('recovers noise when .save leaves an AC plot unwritable (#1356)', { skip: !HAS_NGSPICE }, async () => {
+    const input = Buffer.from('empty AC export\nV1 in 0 dc 1 ac 1\nR1 in out 1k\nR2 out 0 1k\n.save @r1[i] v(out) inoise_spectrum\n.control\nop\nac dec 2 1 10\nnoise v(out) V1 dec 2 1 10\n.endc\n.end\n');
+    const before = Buffer.from(input);
+    const reference = await runNgspicePacked(input, { localPath: 'noise.cir', analyses: ['op', 'ac', 'noise'] } as CorpusFCircuit);
+    assert.equal(reference.status, 'success');
+    assert.ok(reference.execution.analyses.some(a => a.plotId === 'noise1'));
+    assert.match(reference.note ?? '', /ac1.*unavailable or zero-length vector/);
+    assert.deepEqual(input, before);
+  });
   for (const stop of ['', 'quit\n']) {
     it(`compares spectra and integrated totals after wrdata${stop ? ' and quit' : ''}`, { skip: !HAS_NGSPICE }, async () => {
       const input = Buffer.from(`control noise\nV1 in 0 AC 1\nR1 in out 1k\nR2 out 0 1k\n.control\nnoise v(out) V1 dec 2 1 100\nsetplot noise1\nwrdata noise.txt sqrt(inoise_spectrum) sqrt(onoise_spectrum)\n${stop}.endc\n.end\n`);
