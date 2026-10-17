@@ -73,7 +73,7 @@ export function acMetrics(result: SimulationResultV1, args: AcMetricsArgs) {
   const crossing = (values: number[], target: number): Crossing | undefined => {
     for (let i = 1; i < f.length; i++) {
       if (!Number.isFinite(values[i - 1]) || !Number.isFinite(values[i])) continue;
-      if (values[i - 1] > target && values[i] <= target) {
+      if (values[i - 1] >= target && values[i] <= target && values[i - 1] > values[i]) {
         const fraction = (target - values[i - 1]) / (values[i] - values[i - 1]);
         return { hz: Math.exp(Math.log(f[i - 1]) + fraction * Math.log(f[i] / f[i - 1])), index: i, fraction };
       }

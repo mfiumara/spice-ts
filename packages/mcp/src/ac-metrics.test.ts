@@ -15,6 +15,33 @@ async function metrics(source = rc) {
 }
 
 describe('spice_ac_metrics', () => {
+  it.each([
+    { magnitudes: [1, 0.1], phases: [-90, -135], unity: 1, margin: 90, gainMargin: null },
+    { magnitudes: [10, 1], phases: [-90, -135], unity: 10, margin: 45, gainMargin: null },
+    { magnitudes: [0.1, 0.01], phases: [-180, -225], unity: null, margin: null, gainMargin: 20 },
+    { magnitudes: [0.1, 0.01], phases: [-135, -180], unity: null, margin: null, gainMargin: 40 },
+  ])('includes descending crossings at sweep endpoints: %j', ({ magnitudes, phases, unity, margin, gainMargin }) => {
+    const result: SimulationResultV1 = { status: 'complete', analyses: [{
+      type: 'ac', analysisIndex: 0, frequencyHz: [1, 10], currentPhasors: {},
+      voltagePhasors: { out: magnitudes.map((magnitude, i) => ({ magnitude, phaseDegrees: phases[i] })) },
+    }] };
+    const m = acMetrics(result, { output: 'out' });
+    if (unity === null) expect(m.unityGainHz).toBeNull();
+    else expect(m.unityGainHz).toBeCloseTo(unity, 10);
+    expect(m.phaseMarginDeg).toBe(margin);
+    expect(m.gainMarginDb).toBe(gainMargin);
+  });
+
+  it.each([[1, 1], [1, 10], [0.1, 1]])('does not treat flat or rising gain as a descending crossing: %j', (...magnitudes) => {
+    const result: SimulationResultV1 = { status: 'complete', analyses: [{
+      type: 'ac', analysisIndex: 0, frequencyHz: [1, 10], currentPhasors: {},
+      voltagePhasors: { out: magnitudes.map(magnitude => ({ magnitude, phaseDegrees: -90 })) },
+    }] };
+    expect(acMetrics(result, { output: 'out' })).toMatchObject({
+      unityGainHz: null, phaseMarginDeg: null, reasons: { unityGainHz: expect.any(String) },
+    });
+  });
+
   it('interpolates in log-frequency, unwraps phase and selects the first descending crossings', () => {
     const result: SimulationResultV1 = { status: 'complete', analyses: [{
       type: 'ac', analysisIndex: 2, frequencyHz: [1, 100, 10000], currentPhasors: {},
