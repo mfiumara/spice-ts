@@ -1,5 +1,21 @@
 # Benchmark sources
 
+## Diode self-heating (#1261)
+
+`benchmarks/diode-self-heating/compare.ts` sources the unchanged corpus-f
+`examples/soa/diode-soa-sh.cir` from ngspice-47 (BSD-3-Clause; provenance and
+licence in `corpus/corpus-f/SOURCES.md` and `corpus/corpus-f/LICENSE.txt`).
+SHA-256: `24c5c8568ebe8c15d8d8b603e84db3d98e8914767e1de1f4f266f242828f066f`.
+It reports the public API outcome separately from an isolated DC solver
+comparison, because saved `@d1[id]` SOA postprocessing remains unsupported.
+Both waveforms use the uniform 1%-of-peak threshold. Timings measure different
+execution boundaries and are diagnostic only, not a speed comparison.
+Thermal semantics follow ngspice-47 `src/spicelib/devices/dio/dioparam.c:47-49`
+(flag), `dioload.c:80,318-322,749-759,790-822` (activation, temperature,
+power/Jacobian), and `diosetup.c:274-278` (thermal defaults). Project-authored
+MIT unit decks freeze ngspice-47 OP values and check thermal RC integration.
+Thermal junction charge and AC/noise remain typed unsupported errors.
+
 ## BSIM3 AC non-quasi-static common-source amplifier (#1249)
 
 `benchmarks/bsim3-acnqs-1249/common-source.cir` and the reverse, resistive-gate,
@@ -17,6 +33,7 @@ and [`b3ld.c:2478-2494`](https://github.com/imr/ngspice/blob/ngspice-47/src/spic
 reuses the transient NQS relaxation rate. NQSMOD=1 AC (including combined
 selectors) and ACNQSMOD=1 noise remain explicitly unsupported with typed
 errors; ACNQSMOD is defined only on BSIM3 3.3.0.
+
 
 ## VBIC flicker and total noise (#1197)
 

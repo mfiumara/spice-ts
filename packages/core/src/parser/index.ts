@@ -12,7 +12,7 @@ import {
   VOLTAGE_SOURCE_MULTIPLIER_ERROR,
 } from './waveform-parser.js';
 import { invalidPassiveInstanceLine, parsePassiveElement } from './passive-parser.js';
-import { parseDiodeInstanceParams } from './diode-parser.js';
+import { diodeModelIndex, parseDiodeInstanceParams } from './diode-parser.js';
 import { parseBJTInstance } from './bjt-parser.js';
 import { parseJFETInstance } from './jfet-parser.js';
 import { parsePoleZero } from './pole-zero-parser.js';
@@ -1303,15 +1303,18 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number, raw
       circuit.addCurrentSource(name, tokens[1], tokens[2], waveform, multiplier);
       break;
     }
-    case 'D':
+    case 'D': {
+      const modelIndex = diodeModelIndex(tokens);
       circuit.addDiode(
         name,
         tokens[1],
         tokens[2],
-        tokens[3],
-        parseDiodeInstanceParams(tokens, 4),
+        tokens[modelIndex],
+        parseDiodeInstanceParams(tokens, modelIndex + 1),
+        modelIndex === 4 ? tokens[3] : undefined,
       );
       break;
+    }
     case 'Q': {
       const instance = parseBJTInstance(tokens, lineNumber);
       circuit.addBJT(

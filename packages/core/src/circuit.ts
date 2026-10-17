@@ -96,6 +96,7 @@ import {
 import { createSwecLine, swecLineBranchNames } from './devices/swec-line-factory.js';
 import {
   parseDiodeInstanceParams,
+  diodeModelIndex,
   type DiodeInstanceParams,
 } from './parser/diode-parser.js';
 import { assertSupportedPoleZero } from './validation/pole-zero.js';
@@ -640,7 +641,7 @@ function formatDevice(desc: DeviceDescriptor): string {
       return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${formatSourceValue(desc)}${formatRFPort(desc.port)}${multiplier}`;
     }
     case 'D':
-      return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${desc.modelName ?? ''}${tail}`.trim();
+      return `${desc.name} ${desc.nodes.join(' ')} ${desc.modelName ?? ''}${tail.replace(/ THERMAL=1/g, ' thermal')}`.trim();
     case 'Q': {
       const { ICVBE, ICVCE, ...scaling } = desc.params ?? {};
       const instance = formatParams(scaling);
@@ -1542,13 +1543,15 @@ export class Circuit {
     nodeCathode: string,
     modelName?: string,
     instanceParams?: DiodeInstanceParams,
+    nodeThermal?: string,
   ): void {
     this.nodeSet.add(nodeAnode);
     this.nodeSet.add(nodeCathode);
+    if (nodeThermal !== undefined) this.nodeSet.add(nodeThermal);
     this.descriptors.push({
       type: 'D',
       name,
-      nodes: [nodeAnode, nodeCathode],
+      nodes: nodeThermal === undefined ? [nodeAnode, nodeCathode] : [nodeAnode, nodeCathode, nodeThermal],
       modelName,
       params: instanceParams ? { ...instanceParams } : undefined,
     });
@@ -2397,6 +2400,13 @@ export class Circuit {
         }
         case 'D': {
           const modelParams = desc.modelName ? this.requireModel('Diode', desc).params : {};
+          if (desc.params?.THERMAL && nodeIndices.length === 3 && modelParams.RTH0 !== undefined) {
+            if (!(modelParams.RTH0 > 0) || (modelParams.CTH0 ?? 1e-5) < 0) {
+              throw new InvalidCircuitError('Diode RTH0 must be positive and CTH0 non-negative');
+            }
+            // ngspice-47 diosetup.c:277-278 defaults CTH0 to 1e-5 J/K.
+            devices.push(new Capacitor(`${desc.name}.CTH`, [nodeIndices[2], -1], modelParams.CTH0 ?? 1e-5));
+          }
           const { RS: seriesResistanceOverride, ...instanceParams } = desc.params ?? {};
           const hasExpandedSeriesResistance = isPositiveFinite(modelParams.RS)
             && seriesResistanceOverride === 0;
@@ -2932,7 +2942,8 @@ export class Circuit {
         // ngspice-47 diosetup.c gives every RS > 0 a prime node; spice-ts folds
         // it into a two-terminal diode unless the junction stores charge or
         // RSHUNT must shunt that node to ground too (#824).
-        const needsPrimeNode = hasJunctionCharge || this._simulationOptions.rshunt !== undefined;
+        const needsPrimeNode = !desc.params?.THERMAL
+          && (hasJunctionCharge || this._simulationOptions.rshunt !== undefined);
         if (isPositiveFinite(seriesResistance) && needsPrimeNode) {
           const [anode, cathode] = desc.nodes;
           const junction = internalNodeName(desc.name, 'rs');
@@ -3770,13 +3781,16 @@ export class Circuit {
           break;
         }
         case 'D': {
-          const modelName = tokens[3];
           const evaluatedTokens = tokens.map(t => evalToken(t));
+          // Positional AREA expressions must be numeric before distinguishing
+          // a two-terminal diode from the optional thermal-node form.
+          const modelIndex = diodeModelIndex(evaluatedTokens);
+          const modelName = tokens[modelIndex];
           result.push({
             type: 'D', name: devName,
-            nodes: [mapNode(tokens[1]), mapNode(tokens[2])],
+            nodes: tokens.slice(1, modelIndex).map(mapNode),
             modelName,
-            params: { ...parseDiodeInstanceParams(evaluatedTokens, 4) },
+            params: { ...parseDiodeInstanceParams(evaluatedTokens, modelIndex + 1) },
           });
           break;
         }
