@@ -1,5 +1,20 @@
 # Benchmark sources
 
+## BJT base-resistance noise (#1347)
+
+`packages/core/src/analysis/bjt-gx-noise-reference.json` contains original
+MIT-licensed spice-ts regression decks and test-consumed ngspice-47 spectra
+and integrated totals. The identical decks cover RBM=RB with IRB, RBM<RB
+with and without IRB, split XCJC with RB>0, and PNP. The JSON records the
+`spice-heavy ngspice -b case.cir` command and control commands to regenerate
+each reference (append the control block to the stored deck).
+Algorithm references: [ngspice-47 bjtnoise.c](https://github.com/imr/ngspice/blob/ngspice-47/src/spicelib/devices/bjt/bjtnoise.c)
+(RB THERMNOISE uses operating-point gx between base/base-prime) and
+[bjtload.c](https://github.com/imr/ngspice/blob/ngspice-47/src/spicelib/devices/bjt/bjtload.c)
+(RBM/IRB gx law), under ngspice's UC Berkeley permissive licence; see its
+COPYING and source headers. No ngspice implementation code is copied here.
+These are bounded device-noise comparisons, not full-amplifier parity claims.
+
 ## Control Fourier command (#1334)
 
 `benchmarks/control-fourier/harmonics.cir` is an original MIT-licensed probe

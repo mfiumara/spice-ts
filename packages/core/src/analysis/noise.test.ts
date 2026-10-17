@@ -3,6 +3,10 @@ import { describe, expect, it } from 'vitest';
 import { InvalidCircuitError, ParseError } from '../errors.js';
 import { parseTitleless as parse } from '../parser/index.js';
 import { simulate } from '../simulate.js';
+const bjtGxReference = JSON.parse(readFileSync(new URL('./bjt-gx-noise-reference.json', import.meta.url), 'utf8')) as {
+  cases: Array<{ name: string; deck: string; frequencies: number[]; output: number[]; input: number[];
+    onoise_total: number; inoise_total: number }>;
+};
 const mos239Reference = JSON.parse(readFileSync(new URL('./mos239-noise-reference.json', import.meta.url), 'utf8')) as {
   cases: Array<{ level: number; name: string; deck: string; frequencies: number[]; output: number[]; input: number[] }>;
 };
@@ -425,13 +429,30 @@ describe('.noise analysis', () => {
     expect((await simulate(`${deck}\n.options temp=50`)).noise).toBeDefined();
   });
 
-  it.each(['RBM', 'IRB'])(
+  it.each(bjtGxReference.cases)('matches ngspice-47 BJT gx noise: $name', async reference => {
+    const noise = (await simulate(reference.deck)).noise!;
+    expect(noise.frequencies).toHaveLength(reference.frequencies.length);
+    for (const [actual, expected] of [
+      [noise.frequencies, reference.frequencies],
+      [noise.outputNoiseDensity, reference.output],
+      [noise.inputNoiseDensity, reference.input],
+      [[noise.integratedOutputNoise!], [reference.onoise_total]],
+      [[noise.integratedInputNoise!], [reference.inoise_total]],
+    ]) {
+      expect(actual).toHaveLength(expected.length);
+      actual.forEach((value, index) => {
+        expect(Math.abs(value - expected[index]) / expected[index]).toBeLessThan(2e-3);
+      });
+    }
+  });
+
+  it.each(['PTF', 'TRB1'])(
     'rejects unsupported BJT noise model parameter %s explicitly',
     async parameter => {
       const deck = bjtFixture.replace('NR=1)', `NR=1 ${parameter}=1)`);
-      await expect(simulate(deck)).rejects.toThrow(
+      await expect(simulate(deck)).rejects.toThrow(new InvalidCircuitError(
         `.noise does not support BJT model parameter '${parameter}' for 'Q1'`,
-      );
+      ));
     },
   );
 
