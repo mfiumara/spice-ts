@@ -1,5 +1,38 @@
 # Benchmark sources
 
+## VBIC open parasitic base resistor RBP=0 (#1302)
+
+`benchmarks/vbic-rbp/rbp.cir` is an original project-authored MIT probe.
+Both engines receive identical bytes for a five-point DC sweep and 2 ns
+transient. Regenerate the test-consumed `ngspice-47.json` with
+`spice-heavy pnpm exec tsx benchmarks/vbic-rbp/reference.ts` from the repo root.
+The test checks the deck SHA-256 and full transient coverage, then linearly
+interpolates spice-ts onto all 217 ngspice timepoints. Normalization is by the
+reference peak of each signal, not instantaneous voltage.
+
+Measured on Darwin arm64 with ngspice-47, collector/base DC max absolute errors
+are 5.3171707703469906e-8 / 1.3212808624984973e-10 V, peak-normalized
+2.6601642625602793e-8 / 1.8876202548223627e-10. Transient max absolute errors
+are 2.513516651709846e-4 / 6.009391854133739e-6 V, peak-normalized
+1.2582220050063982e-4 / 8.837508609840859e-6. Before support the same deck
+rejects RBP=0, so there is no before waveform or speed claim.
+
+Equations follow BSD-3-Clause ngspice revision
+`a80f6e3e95d51534905b1f23410a951802666656`,
+[`vbicload.c`](https://github.com/ngspice/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/src/spicelib/devices/vbic/vbicload.c)
+and `vbicsetup.c`. The p[10]>0 gate enables Irbp; otherwise its current and
+all derivatives are exactly zero, without collapsing baseBP. RBP<0 remains
+outside the bounded domain. RCI/RBI gating is unchanged. The existing VTF
+default DC/AC/transient stamp fingerprint remains exactly
+`bd942ae769ac72c14e81f01dc017fcc2eb2405613f1d1865dbccf12d42c06eea`.
+Both VTF and RBP ngspice references regenerate byte-identically.
+
+The unmodified upstream DFF fixture is covered by the corpus-F source/license
+record below. Run the full 10 ns comparison without rewriting its deck with
+`spice-heavy pnpm exec tsx benchmarks/vbic-rbp/dff.ts`. This reports wall time,
+row counts and V(Q), V(D), V(CLK) max absolute/peak-normalized errors, or the
+next named simulator failure. No deck or tolerance tuning is applied.
+
 ## VBIC VTF forward transit-time Vbc dependence (#1300)
 
 `benchmarks/vbic-vtf/vtf.cir` is an original project-authored MIT probe.
@@ -30,9 +63,9 @@ BE bias, reverse/forward BC bias, NPN/PNP, and scale 3. The shared derivatives
 feed AC and transient stamps. Omitted/zero/negative VTF preserve the pre-change
 DC/AC/transient fingerprint in the committed test exactly.
 
-The byte-identical corpus DFF_Y_ECL.sp now rejects the independent RBP=0
+At the VTF-only implementation, byte-identical corpus DFF_Y_ECL.sp rejected the independent RBP=0
 bounded-domain restriction (`Invalid bounded VBIC DC model parameter: 'RBP'`).
-Compile and simulate regressions pin that next failure; DFF parity is not claimed.
+The RBP slice above removes that restriction; DFF parity is measured separately.
 
 ## VBIC parasitic base-emitter currents IBEIP/IBENP (#1297)
 
