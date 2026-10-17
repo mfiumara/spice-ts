@@ -10,13 +10,13 @@ TypeScript-native circuit simulation with an MCP server, JSON in and out, and st
 It runs in Node, in the browser or inside an agent sandbox, with no ngspice binary to ship.
 Accuracy is checked against ngspice on a public, reproducible benchmark, and every outcome is published, failures included.
 
-[![CI](https://github.com/mfiumara/spice-ts/actions/workflows/ci.yml/badge.svg)](https://github.com/mfiumara/spice-ts/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/mfiumara/spice-ts/graph/badge.svg)](https://codecov.io/gh/mfiumara/spice-ts)
+[![CI](https://github.com/spicets/spice-ts/actions/workflows/ci.yml/badge.svg)](https://github.com/spicets/spice-ts/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/spicets/spice-ts/graph/badge.svg)](https://codecov.io/gh/spicets/spice-ts)
 [![npm @spice-ts/core](https://img.shields.io/npm/v/@spice-ts/core?label=%40spice-ts%2Fcore)](https://www.npmjs.com/package/@spice-ts/core)
 [![npm @spice-ts/ui](https://img.shields.io/npm/v/@spice-ts/ui?label=%40spice-ts%2Fui)](https://www.npmjs.com/package/@spice-ts/ui)
-[![GitHub stars](https://img.shields.io/github/stars/mfiumara/spice-ts?style=social)](https://github.com/mfiumara/spice-ts/stargazers)
+[![GitHub stars](https://img.shields.io/github/stars/spicets/spice-ts?style=social)](https://github.com/spicets/spice-ts/stargazers)
 
-**[Live showcase](https://mfiumara.github.io/spice-ts/)** · **[Parity report](benchmarks/AGGREGATE_PARITY.md)** · **[MCP server](packages/mcp/README.md)**
+**[Live showcase](https://spicets.github.io/spice-ts/)** · **[Parity report](benchmarks/AGGREGATE_PARITY.md)** · **[MCP server](packages/mcp/README.md)**
 
 ---
 
@@ -317,7 +317,7 @@ Run `pnpm bench:accuracy` to see the full accuracy report including SPICE3 Quarl
 ## Development
 
 ```bash
-git clone https://github.com/mfiumara/spice-ts
+git clone https://github.com/spicets/spice-ts
 cd spice-ts
 pnpm install
 pnpm test              # run all tests

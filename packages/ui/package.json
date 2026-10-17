@@ -6,7 +6,7 @@
   "author": "Mattia Fiumara",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mfiumara/spice-ts.git",
+    "url": "https://github.com/spicets/spice-ts.git",
     "directory": "packages/ui"
   },
   "engines": {
