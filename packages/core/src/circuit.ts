@@ -224,6 +224,21 @@ function alterSourceWaveform(
   values: number[],
 ): string | undefined {
   const waveform: SourceDescriptorWaveform = descriptor.waveform ?? { type: 'dc', value: 0 };
+  if (key === 'SIN') {
+    // ngspice-47 frontend/device.c:1421-1486 forwards the real vector;
+    // vsrc/vsrcpar.c:91-97 (also isrc) replaces, rather than patches, coefficients.
+    if (values.length < 2) return 'sin needs at least 2 coefficients';
+    const [offset, amplitude, frequency = 0, delay, damping, phase] = values;
+    const dc = waveform.type === 'dc' ? waveform.value : waveform.dc;
+    const ac = waveform.type === 'ac'
+      ? { magnitude: waveform.magnitude ?? 1, phase: waveform.phase ?? 0 }
+      : waveform.ac;
+    descriptor.waveform = {
+      type: 'sin', offset, amplitude, frequency, delay, damping, phase,
+      ...(dc !== undefined ? { dc } : {}), ...(ac ? { ac } : {}),
+    };
+    return undefined;
+  }
   if (key === 'PULSE') {
     if (waveform.type !== 'pulse' || values.length !== PULSE_FIELDS.length) {
       return `pulse of '${descriptor.name}' can be altered only on a PULSE source with ${PULSE_FIELDS.length} values`;
