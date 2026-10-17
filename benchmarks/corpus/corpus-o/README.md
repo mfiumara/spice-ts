@@ -6,15 +6,15 @@ Every deck below is byte-identical to its pinned upstream revision (xyce `7bb7e9
 
 ## Totals
 
-- Fixtures: 23. Outcome SHA-256: `895fa31a9ee5e361473c09e31612bf2a36439be888dd4558887d0e93c3763131`.
+- Fixtures: 23. Outcome SHA-256: `3410270ae2ed364269d869d817db1edced0f35f75f78d75f7524661a042260e8`.
 - ngspice (ngspice-47): 23 success, 0 failed, 0 unsupported.
-- spice-ts (0.3.0): 20 success, 3 failed, 0 unsupported.
-- Outcomes: matched 16, mismatch 0, not-compared 4, spice-ts-loss 3, ngspice-failed 0, both-failed 0.
-- Of the 23 decks ngspice runs successfully, spice-ts matches 16, mismatches 0, produces no comparable result for 4 and fails 3.
+- spice-ts (0.4.0): 20 success, 3 failed, 0 unsupported.
+- Outcomes: matched 18, mismatch 0, not-compared 2, spice-ts-loss 3, ngspice-failed 0, both-failed 0.
+- Of the 23 decks ngspice runs successfully, spice-ts matches 18, mismatches 0, produces no comparable result for 2 and fails 3.
 
 | Source | Fixtures | Matched | Mismatch | Not compared | spice-ts loss | ngspice failed | Both failed |
 |---|---|---|---|---|---|---|---|
-| `xyce` | 23 | 16 | 0 | 4 | 3 | 0 | 0 |
+| `xyce` | 23 | 18 | 0 | 2 | 3 | 0 | 0 |
 
 ## Method
 
@@ -33,7 +33,7 @@ Every deck below is byte-identical to its pinned upstream revision (xyce `7bb7e9
 - https://github.com/mfiumara/spice-ts/issues/1315: o-6 MOS3 noise (engine status failed).
 - https://github.com/mfiumara/spice-ts/issues/1316: o-3 MOS9 noise (engine status failed).
 - https://github.com/mfiumara/spice-ts/issues/1317: o-1/o-10 control-noise reference export, not-compared.
-- https://github.com/mfiumara/spice-ts/issues/1318: o-19/o-20 uniform comparison deadline, not-compared.
+- https://github.com/mfiumara/spice-ts/issues/1318: o-19/o-20 large-reference metric performance.
 
 ## spice-ts gap buckets
 
@@ -43,7 +43,7 @@ Grouped from spice-ts's own first error line (unchanged corpus-l/i/h/f rules). "
 |---|---|---|---|
 | execution: other failure | 3 | 3 | none filed |
 
-## Losses (7)
+## Losses (5)
 
 Every fixture that is not matched: spice-ts failures, mismatches above the threshold, and results that could not be compared.
 
@@ -54,10 +54,8 @@ Every fixture that is not matched: spice-ts failures, mismatches above the thres
 | [xyce/Netlists/NOISE/gain-stage2.cir](fixtures/xyce/Netlists/NOISE/gain-stage2.cir) | success | failed | spice-ts-loss |  |  | spice-ts: .noise does not support MOSFET level 2 noise for 'M1' |
 | [xyce/Netlists/NOISE/gain-stage3.cir](fixtures/xyce/Netlists/NOISE/gain-stage3.cir) | success | failed | spice-ts-loss |  |  | spice-ts: .noise does not support MOSFET level 3 noise for 'M1' |
 | [xyce/Netlists/NOISE/res_noise_ngspice.cir](fixtures/xyce/Netlists/NOISE/res_noise_ngspice.cir) | success | success | not-compared |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare |
-| [xyce/Netlists/DIODE_ANALYTIC/breakdown_model.cir](fixtures/xyce/Netlists/DIODE_ANALYTIC/breakdown_model.cir) | success | success | not-compared |  |  |  |
-| [xyce/Netlists/DIODE_ANALYTIC/forward_model.cir](fixtures/xyce/Netlists/DIODE_ANALYTIC/forward_model.cir) | success | success | not-compared |  |  |  |
 
-## Wins (16)
+## Wins (18)
 
 Fixtures where spice-ts matches ngspice-47 within the uniform threshold on every common signal.
 
@@ -76,6 +74,8 @@ Fixtures where spice-ts matches ngspice-47 within the uniform threshold on every
 | [xyce/Netlists/BJT_EXTNODE/npn_rc_re_2.cir](fixtures/xyce/Netlists/BJT_EXTNODE/npn_rc_re_2.cir) | success | success | matched | 0.000639 | dc v(1) |  |
 | [xyce/Netlists/BJT_EXTNODE/npn1.cir](fixtures/xyce/Netlists/BJT_EXTNODE/npn1.cir) | success | success | matched | 0.000685 | dc v(1) |  |
 | [xyce/Netlists/BJT_EXTNODE/npn2.cir](fixtures/xyce/Netlists/BJT_EXTNODE/npn2.cir) | success | success | matched | 0.000685 | dc v(1) |  |
+| [xyce/Netlists/DIODE_ANALYTIC/breakdown_model.cir](fixtures/xyce/Netlists/DIODE_ANALYTIC/breakdown_model.cir) | success | success | matched | 1.22e-12 | tran v(1) |  |
+| [xyce/Netlists/DIODE_ANALYTIC/forward_model.cir](fixtures/xyce/Netlists/DIODE_ANALYTIC/forward_model.cir) | success | success | matched | 1.67e-15 | tran v(2) |  |
 | [xyce/Netlists/DIODE_CMC/DiodeClipper_DC.cir](fixtures/xyce/Netlists/DIODE_CMC/DiodeClipper_DC.cir) | success | success | matched | 0.0000446 | dc i(vin) |  |
 | [xyce/Netlists/DIODE_CMC/DiodeClipper_noise.cir](fixtures/xyce/Netlists/DIODE_CMC/DiodeClipper_noise.cir) | success | success | matched | 1.74e-7 | noise onoise_spectrum |  |
 | [xyce/Netlists/DIODE_CMC/DiodeClipper.cir](fixtures/xyce/Netlists/DIODE_CMC/DiodeClipper.cir) | success | success | matched | 2.65e-8 | tran v(4) |  |
@@ -85,7 +85,7 @@ Fixtures where spice-ts matches ngspice-47 within the uniform threshold on every
 
 | Bucket | Count | IDs |
 |---|---|---|
-| comparison: no comparable result | 4 | o-1, o-10, o-19, o-20 |
+| comparison: no comparable result | 2 | o-1, o-10 |
 | execution: other failure | 3 | o-3, o-5, o-6 |
 
 ## Measurement boundary

@@ -31,7 +31,7 @@ if (process.argv.includes('--metric-worker')) {
     const { wallMs } = JSON.parse(child.stdout.trim());
     assert(wallMs < 12_000, `metric took ${wallMs} ms`);
   });
-  test('packed batches exactly equal the legacy metric on small complex, descending and nested inputs', () => {
+  test('packed batches exactly equal the legacy metric on small, descending and nested inputs', () => {
     const golden = createHash('sha256');
     for (const count of [1, 9, 25_003]) {
       const left = execution(count, 0.0125);

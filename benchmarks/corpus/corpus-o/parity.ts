@@ -19,7 +19,7 @@ export const report = parityReport({ name: 'corpus-o', root: ROOT, scriptUrl: im
     { url: 'https://github.com/mfiumara/spice-ts/issues/1315', scope: 'o-6 MOS3 noise (engine status failed)' },
     { url: 'https://github.com/mfiumara/spice-ts/issues/1316', scope: 'o-3 MOS9 noise (engine status failed)' },
     { url: 'https://github.com/mfiumara/spice-ts/issues/1317', scope: 'o-1/o-10 control-noise reference export, not-compared' },
-    { url: 'https://github.com/mfiumara/spice-ts/issues/1318', scope: 'o-19/o-20 uniform comparison deadline, not-compared' },
+    { url: 'https://github.com/mfiumara/spice-ts/issues/1318', scope: 'o-19/o-20 large-reference metric performance' },
   ], gapBucket });
 export function renderMarkdown(result: CorpusHReport) {
   return report.renderMarkdown(result)
@@ -100,9 +100,11 @@ async function main() {
   for (const circuit of manifest.circuits.slice(fixtures.length)) {
     const ng = await bounded(circuit, 'ngspice');
     const spice = await bounded(circuit, 'spiceTs');
+    const metricStart = performance.now();
     const reduced = await reduceBounded(circuit, ng.run, spice.run.execution);
+    const metricProcessWallMs = performance.now() - metricStart;
     const row = { ...reduced, classification: classification(reduced), gapBucket: gapBucket(reduced.spiceTs.firstErrorLine, reduced.spiceTs.status) ?? null,
-      runtime: { ngspiceChildWallMs: ng.wallMs, spiceTsChildWallMs: spice.wallMs } };
+      runtime: { ngspiceChildWallMs: ng.wallMs, spiceTsChildWallMs: spice.wallMs, metricProcessWallMs } };
     fixtures.push(row);
     await writeFile(`${ROOT}/checkpoint.json`, JSON.stringify(fixtures, null, 2) + '\n');
     console.log(`${circuit.id} ${row.classification}: ng=${row.ngspice.status} ts=${row.spiceTs.status} ${row.spiceTs.firstErrorLine ?? ''}`);
