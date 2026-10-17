@@ -1,5 +1,21 @@
 # @spice-ts/mcp
 
+## 0.4.1
+
+### Patch Changes
+
+- 729b2b8: Move the standalone protocol package into `@spice-ts/core/protocol`, preserving protocol v1 types, schemas, conformance checks and canonical JSON utilities. JSON documents are available at `@spice-ts/core/protocol/schemas/*` and `@spice-ts/core/protocol/fixtures/*`. MCP now consumes this subpath instead of `@spice-ts/protocol`. The existing npm protocol package remains available and will be deprecated by the owner after release.
+- Updated dependencies [e0f45ac]
+- Updated dependencies [729b2b8]
+- Updated dependencies [d8b0f1c]
+- Updated dependencies [8396811]
+- Updated dependencies [30a73c3]
+- Updated dependencies [8e14842]
+- Updated dependencies [afefa01]
+- Updated dependencies [931cd22]
+  - @spice-ts/core@0.5.0
+  - @spice-ts/circuit-json@0.3.2
+
 ## 0.4.0
 
 ### Minor Changes

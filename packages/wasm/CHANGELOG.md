@@ -1,5 +1,19 @@
 # @spice-ts/wasm
 
+## 0.3.2
+
+### Patch Changes
+
+- Updated dependencies [e0f45ac]
+- Updated dependencies [729b2b8]
+- Updated dependencies [d8b0f1c]
+- Updated dependencies [8396811]
+- Updated dependencies [30a73c3]
+- Updated dependencies [8e14842]
+- Updated dependencies [afefa01]
+- Updated dependencies [931cd22]
+  - @spice-ts/core@0.5.0
+
 ## 0.3.1
 
 ### Patch Changes
