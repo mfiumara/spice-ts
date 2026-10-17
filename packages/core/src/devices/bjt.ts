@@ -11,6 +11,15 @@ import {
 } from './junction-temperature.js';
 import { pnjlim } from './devsup.js';
 
+// Share readers instead of allocating and naming closures in every Newton iterate.
+function contextVoltage(ctx: StampContext, node: number): number {
+  return node >= 0 ? ctx.getVoltage(node) : 0;
+}
+
+function solutionVoltage(solution: Float64Array, node: number): number {
+  return node >= 0 ? solution[node] : 0;
+}
+
 export interface BJTParams {
   LEVEL: number;
   BF: number;
@@ -535,8 +544,8 @@ function validateChargeStorage(params: BJTParams, excessPhase: number): void {
   if (params.SUBS !== 1 && params.SUBS !== -1) {
     throw new Error('Invalid BJT charge-storage parameter: expected BJT SUBS of 1 or -1');
   }
-  if (excessPhase !== 0) {
-    throw new Error("Unsupported BJT model parameter: 'PTF' (excess phase is not implemented)");
+  if (!Number.isFinite(excessPhase)) {
+    throw new Error('Invalid BJT charge-storage parameter: expected finite BJT PTF');
   }
 }
 
@@ -609,6 +618,14 @@ export class BJT implements DeviceModel {
   private hasAcceptedJunctions = false;
   private hasPriorJunctions = false;
   private acceptedStep: number | undefined;
+  /** bjtload.c cexbc state0/1/2. Only accepted steps rotate the delay history. */
+  private delayCurrent = 0;
+  private acceptedDelayCurrent = 0;
+  private priorDelayCurrent = 0;
+
+  private get excessPhaseDelay(): number {
+    return ((this.suppliedParams.PTF ?? 0) / (180 / Math.PI)) * this.params.TF;
+  }
   /** Between beginTransientNewton and the next accepted point. */
   private inTransientNewton = false;
   /** The next load is the first iterate of a timepoint (MODEINITPRED). */
@@ -804,6 +821,22 @@ export class BJT implements DeviceModel {
   }
 
   acceptTransientStep(ctx: StampContext): void {
+    if (this.excessPhaseDelay !== 0) {
+      if (this.inTransientNewton && this.hasAcceptedJunctions) {
+        this.priorDelayCurrent = this.acceptedDelayCurrent;
+        this.acceptedDelayCurrent = this.delayCurrent;
+      } else {
+        // MODEINITTRAN: both past cexbc states start at cbe/qb, also with UIC.
+        this.acceptJunctions(ctx);
+        const vbe = this.acceptedJunctions[BASE_EMITTER];
+        const vbc = this.acceptedJunctions[BASE_COLLECTOR];
+        const { qb } = this.evaluateDC(vbe, vbc, ctx.gmin ?? DEVICE_GMIN);
+        const cbe = junctionLaw(this.junction, vbe, this.params.IS, this.params.NF * this.vt).current;
+        this.delayCurrent = this.acceptedDelayCurrent = this.priorDelayCurrent = cbe / qb;
+        this.acceptCharges(ctx);
+        return;
+      }
+    }
     this.acceptJunctions(ctx);
     this.acceptCharges(ctx);
   }
@@ -822,7 +855,7 @@ export class BJT implements DeviceModel {
       this.hasPriorJunctions = false;
       this.acceptedStep = undefined;
     }
-    this.nodeJunctions(this.acceptedJunctions, node => ctx.getVoltage(node));
+    this.nodeJunctions(this.acceptedJunctions, ctx, contextVoltage);
     if (ctx.initialUIC) {
       // bjtgetic.c reads external terminal differences, not the prime
       // nodes used for junction stamping after series-resistance expansion.
@@ -846,14 +879,13 @@ export class BJT implements DeviceModel {
   }
 
   /** Polarity-domain vbe, vbc and vsub (bjtload.c) at the node voltages `voltage`. */
-  private nodeJunctions(out: Float64Array, voltage: (node: number) => number): void {
+  private nodeJunctions<T>(out: Float64Array, source: T, voltage: (source: T, node: number) => number): void {
     const { polarity, SUBS } = this.params;
     const [nC, nB, nE] = this.nodes;
-    const at = (node: number): number => node >= 0 ? voltage(node) : 0;
     const substrateConnect = SUBS === 1 ? nC : nB;
-    out[BASE_EMITTER] = polarity * (at(nB) - at(nE));
-    out[BASE_COLLECTOR] = polarity * (at(nB) - at(nC));
-    out[SUBSTRATE] = polarity * SUBS * (at(this.substrateNode) - at(substrateConnect));
+    out[BASE_EMITTER] = polarity * (voltage(source, nB) - voltage(source, nE));
+    out[BASE_COLLECTOR] = polarity * (voltage(source, nB) - voltage(source, nC));
+    out[SUBSTRATE] = polarity * SUBS * (voltage(source, this.substrateNode) - voltage(source, substrateConnect));
   }
 
   private acceptCharges(ctx: StampContext): void {
@@ -869,6 +901,7 @@ export class BJT implements DeviceModel {
 
   resetTransient(): void {
     this.charges.reset();
+    this.delayCurrent = this.acceptedDelayCurrent = this.priorDelayCurrent = 0;
     this.hasAcceptedJunctions = false;
     this.hasPriorJunctions = false;
     this.acceptedStep = undefined;
@@ -897,7 +930,7 @@ export class BJT implements DeviceModel {
    */
   observeTransientNewton(solution: Float64Array): void {
     if (!this.inTransientNewton) return;
-    this.nodeJunctions(this.newtonJunctions, node => solution[node]);
+    this.nodeJunctions(this.newtonJunctions, solution, solutionVoltage);
     this.hasNewtonJunctions = true;
   }
 
@@ -918,7 +951,7 @@ export class BJT implements DeviceModel {
     if (this.predictJunctions) {
       // vbe and vbc are extrapolated; vsub is read from the last solution
       // (CKTrhsOld), here the accepted point, and only limited.
-      this.nodeJunctions(out, node => ctx.getVoltage(node));
+      this.nodeJunctions(out, ctx, contextVoltage);
       const accepted = this.acceptedJunctions;
       const step = this.acceptedStep;
       if (this.hasPriorJunctions && step !== undefined && step > 0 && ctx.dt > 0) {
@@ -933,7 +966,7 @@ export class BJT implements DeviceModel {
     } else if (this.hasNewtonJunctions) {
       out.set(this.newtonJunctions);
     } else {
-      this.nodeJunctions(out, node => ctx.getVoltage(node));
+      this.nodeJunctions(out, ctx, contextVoltage);
     }
     this.predictJunctions = false;
     this.hasNewtonJunctions = false;
@@ -1003,7 +1036,7 @@ export class BJT implements DeviceModel {
    * ngspice, not only in the Jacobian (#551), and the base charge qb of
    * {@link baseCharge}. Writes into a reused object.
    */
-  private evaluateDC(vBE: number, vBC: number, gmin: number): BJTDCPoint {
+  private evaluateDC(vBE: number, vBC: number, gmin: number, dt = 0): BJTDCPoint {
     const { BF, BR, IS, NF, NR, ISE, NE, ISC, NC } = this.params;
     const { current: cbe, conductance: gbe } = junctionLaw(this.junction, vBE, IS, NF * this.vt);
     const { current: cbc, conductance: gbc } = junctionLaw(
@@ -1036,6 +1069,26 @@ export class BJT implements DeviceModel {
     point.gmForward = gm + go;
     point.gmReverse = point.gmu + go;
     point.qb = qb;
+    const td = this.excessPhaseDelay;
+    if (dt > 0 && td !== 0) {
+      // ngspice-47 bjtload.c Weil approximation, always backward Euler,
+      // independent of the charge integrator. Rejected/Newton trials never
+      // mutate state1/2; the current state0 is overwritten on every load.
+      const ratio = dt / td;
+      const arg2 = 3 * ratio;
+      const arg1 = arg2 * ratio;
+      const denom = 1 + arg1 + arg2;
+      const factor = arg1 / denom;
+      const stepRatio = dt / (this.acceptedStep ?? dt);
+      const history = (this.acceptedDelayCurrent * (1 + stepRatio + arg2)
+        - this.priorDelayCurrent * stepRatio) / denom;
+      const cex = cbe * factor;
+      this.delayCurrent = history + cex / qb;
+      point.collectorCurrent = history + (cex - cbc) / qb - cbc / BR - cbcn;
+      const delayedGo = (gbc + (cex - cbc) * dqbdvc / qb) / qb;
+      point.gmForward = (gbe * factor - (cex - cbc) * dqbdve / qb) / qb;
+      point.gmReverse = point.gmu + delayedGo;
+    }
     return point;
   }
 
@@ -1050,9 +1103,8 @@ export class BJT implements DeviceModel {
     const load = this.lastLoad;
     const { polarity } = this.params;
     const [nC, nB, nE] = this.nodes;
-    const voltage = (node: number): number => (node >= 0 ? solution[node] : 0);
-    const deltaVBE = polarity * (voltage(nB) - voltage(nE)) - load.vBE;
-    const deltaVBC = polarity * (voltage(nB) - voltage(nC)) - load.vBC;
+    const deltaVBE = polarity * (solutionVoltage(solution, nB) - solutionVoltage(solution, nE)) - load.vBE;
+    const deltaVBC = polarity * (solutionVoltage(solution, nB) - solutionVoltage(solution, nC)) - load.vBC;
     const cc = load.collectorCurrent;
     const cchat = cc + load.gmForward * deltaVBE - load.gmReverse * deltaVBC;
     if (Math.abs(cchat - cc) > tolerances.reltol * Math.max(Math.abs(cchat), Math.abs(cc)) + tolerances.abstol) {
@@ -1101,6 +1153,32 @@ export class BJT implements DeviceModel {
     this.stampLoad(ctx, false);
   }
 
+  get frequencyDependent(): boolean {
+    return this.excessPhaseDelay !== 0;
+  }
+
+  /** bjtacld.c rotates gm+go only; go and base currents remain undelayed. */
+  stampFrequencyConductance(ctx: StampContext, omega: number): void {
+    const [c, b, e] = this.nodes;
+    const { polarity } = this.params;
+    const voltage = (node: number): number => node >= 0 ? ctx.getVoltage(node) : 0;
+    const dc = this.evaluateDC(
+      polarity * (voltage(b) - voltage(e)),
+      polarity * (voltage(b) - voltage(c)), ctx.gmin ?? DEVICE_GMIN,
+    );
+    const angle = omega * this.excessPhaseDelay;
+    const real = dc.gmForward * (Math.cos(angle) - 1);
+    const imaginary = omega === 0 ? -dc.gmForward * this.excessPhaseDelay
+      : -dc.gmForward * Math.sin(angle) / omega;
+    for (const [row, rowSign] of [[c, 1], [e, -1]]) {
+      for (const [col, colSign] of [[b, 1], [e, -1]]) {
+        if (row < 0 || col < 0) continue;
+        ctx.stampG(row, col, rowSign * colSign * real);
+        ctx.stampC(row, col, rowSign * colSign * imaginary);
+      }
+    }
+  }
+
   private stampLoad(ctx: StampContext, substrateJunction: boolean): void {
     const { polarity } = this.params;
     const [nC, nB, nE] = this.nodes;
@@ -1125,7 +1203,9 @@ export class BJT implements DeviceModel {
       this.chargesAtLimitedJunctions = true;
     }
 
-    const dc = this.evaluateDC(vBE, vBC, ctx.gmin ?? DEVICE_GMIN);
+    const dc = this.evaluateDC(
+      vBE, vBC, ctx.gmin ?? DEVICE_GMIN, this.inTransientNewton && substrateJunction ? ctx.dt : 0,
+    );
     const IC = dc.collectorCurrent;
     const IB = dc.baseCurrent;
     const gm_f = dc.gmForward;
@@ -1222,11 +1302,10 @@ export class BJT implements DeviceModel {
     const { ISS, NS, SUBS, polarity } = this.params;
     const substrate = this.substrateNode;
     const substrateConnect = SUBS === 1 ? this.nodes[0] : this.nodes[1];
-    const voltage = (node: number): number => node >= 0 ? ctx.getVoltage(node) : 0;
     const sign = polarity * SUBS;
     const terminalVoltage = this.chargesAtLimitedJunctions
       ? sign * this.limitedJunctions[SUBSTRATE]
-      : voltage(substrate) - voltage(substrateConnect);
+      : contextVoltage(ctx, substrate) - contextVoltage(ctx, substrateConnect);
     const { current, conductance } = substrateJunction(sign * terminalVoltage, ISS, NS * this.vt, ctx.gmin ?? DEVICE_GMIN);
     // Physical current from the substrate into the substrate-connect node.
     stampChargeBranch(ctx, substrate, substrateConnect, sign * current, conductance, terminalVoltage);

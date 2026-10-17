@@ -41,7 +41,7 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - run: pnpm -C packages/protocol build && pnpm -C packages/core build
+      - run: pnpm -C packages/protocol build && pnpm -C packages/core build && pnpm -C packages/circuit-json build
 
       - name: Offline VDMOS comparison/export regression
         run: pnpm exec tsx --test benchmarks/vdmos-1106/comparison.test.ts
@@ -57,6 +57,11 @@ jobs:
         run: pnpm -C packages/core exec vitest run src/parser/inpevaluate-749.test.ts
 
       - run: pnpm -r run test:coverage
+
+      # Real Chrome startup must not compete with the parallel coverage workers.
+      # Keep this mandatory on both Node versions, not skipped or retried.
+      - name: Production browser worker smoke
+        run: pnpm -C packages/core exec vitest run src/analysis/step-browser.smoke.test.ts --reporter=default
 
       - name: Upload core coverage
         if: matrix.node-version == 22
@@ -86,6 +91,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Changesets status needs main and its common history with the PR.
+          fetch-depth: 0
 
       - uses: pnpm/action-setup@v4
         with:
@@ -109,6 +117,11 @@ jobs:
 
       - name: M2 scaling fixture and deck-hash checks (no timing)
         run: pnpm exec tsx --test benchmarks/performance/scaling-m2.test.ts
+
+      - name: Release plan and comparison policy (no timing)
+        run: |
+          git show-ref --verify --quiet refs/heads/main || git branch main origin/main
+          pnpm exec tsx --test benchmarks/release/then-vs-now.test.ts
 
       - name: Reference adapter and evidence checks (no simulator install)
         run: pnpm exec tsx --test benchmarks/reference/xyce.test.ts benchmarks/reference/compare.test.ts benchmarks/reference/ekv-static/evidence.test.ts

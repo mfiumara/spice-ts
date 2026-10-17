@@ -345,8 +345,8 @@ vb b 0 100
 });
 
 describe('VDMOS unsupported features (issue #506)', () => {
-  it('rejects active self-heating inside a subcircuit', async () => {
-    await expect(simulate(`scoped heating
+  it('supports active self-heating inside a subcircuit', async () => {
+    const result = await simulate(`scoped heating
 .subckt power d g s tj
 m1 d g s tj n1 thermal
 .model n1 vdmos rthjc=1
@@ -356,11 +356,12 @@ vd d 0 1
 vg g 0 1
 .op
 .end
-`)).rejects.toThrow(/self-heating is not implemented/);
+`);
+    expect(result.dc!.voltage('tj')).toBeGreaterThanOrEqual(27);
   });
 
-  it.each(['thermal', 'thermal=1'])('rejects active self-heating instead of discarding %s', async (flag) => {
-    await expect(simulate(`thermal
+  it.each(['thermal', 'thermal=1'])('supports active self-heating with %s', async (flag) => {
+    const result = await simulate(`thermal
 m1 d g s tj n1 ${flag}
 .model n1 vdmos rthjc=1
 vd d 0 1
@@ -368,7 +369,8 @@ vg g 0 1
 vs s 0 0
 .op
 .end
-`)).rejects.toThrow(/self-heating is not implemented/);
+`);
+    expect(result.dc!.voltage('tj')).toBeGreaterThanOrEqual(27);
   });
 
   it('rejects soft reverse recovery (VP with TT) instead of ignoring it', async () => {

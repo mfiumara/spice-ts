@@ -24,26 +24,30 @@ try {
   assert.deepEqual(toolNames, [
     'spice_capabilities',
     'spice_validate',
+    'spice_convert',
     'spice_simulate',
+    'spice_sweep',
+    'spice_ac_metrics',
+    'spice_measure',
+    'spice_compare',
     'spice_simulation_start',
     'spice_simulation_read',
     'spice_simulation_cancel',
   ]);
 
-  const invalid = publicFailure(await client.call('tools/call', {
+  const validation = structured(await client.call('tools/call', {
     name: 'spice_validate',
     arguments: { request: floatingRequest },
-  }), 'INVALID_CIRCUIT');
+  }));
+  assert.equal(validation.status, 'valid');
+  assert.equal(validation.diagnostics.length, 1);
+  const invalid = validation.diagnostics[0];
   assert.deepEqual(invalid, {
-    code: 'INVALID_CIRCUIT',
-    message: 'Circuit contains nodes without a DC reference path',
-    retryable: false,
-    phase: 'validation',
-    details: {
-      kind: 'NO_DC_REFERENCE',
-      involvedNodes: ['sense'],
-      sourcePaths: ['/input/source/lines/1', '/input/source/lines/2'],
-    },
+    code: 'NO_DC_PATH_TO_GROUND',
+    severity: 'warning',
+    nodes: ['sense'],
+    elements: ['C1', 'I1'],
+    hint: 'Add a DC conductive path to node 0, for example a bias resistor.',
   });
 
   const repairedRequest = structuredClone(floatingRequest);

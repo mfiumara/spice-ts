@@ -51,6 +51,58 @@ interface ForestEdge {
   edge: IdealEdge;
 }
 
+/** Advisory checks for agent preflight. These never alter simulation policy. */
+export interface TopologyWarning {
+  code: 'FLOATING_NODE' | 'NO_DC_PATH_TO_GROUND' | 'VOLTAGE_SOURCE_LOOP';
+  severity: 'warning';
+  nodes: string[];
+  elements: string[];
+  hint: string;
+}
+
+export function topologyWarnings(compiled: CompiledCircuit): TopologyWarning[] {
+  const warnings: TopologyWarning[] = [];
+  const nodes = compiled.nodeNames.map((_, index) => index);
+  const devices = compiled.devices.filter(device => !(device instanceof NodeShunt));
+  const incident = new Map(nodes.map(node => [node, [] as string[]]));
+  for (const device of devices) {
+    for (const node of new Set(device.nodes)) incident.get(node)?.push(device.name);
+  }
+  for (const node of nodes) {
+    const elements = incident.get(node)!;
+    if (elements.length < 2) warnings.push({
+      code: 'FLOATING_NODE', severity: 'warning', nodes: [nodeName(compiled, node)],
+      elements: sortedBounded(elements), hint: 'Connect this node to another element or remove the unused terminal.',
+    });
+  }
+  if (!compiled.devices.some(device => device instanceof NodeShunt)) {
+    const dc = graph([GROUND_INDEX, ...nodes]);
+    for (const device of devices) {
+      for (const group of dcConnectionGroups(device)) connectAll(dc, group);
+    }
+    const seen = reachable(dc, GROUND_INDEX);
+    for (const node of nodes) {
+      if (seen.has(node)) continue;
+      const component = reachable(dc, node);
+      for (const member of component) seen.add(member);
+      warnings.push({
+        code: 'NO_DC_PATH_TO_GROUND', severity: 'warning',
+        nodes: sortedBounded([...component].map(index => nodeName(compiled, index))),
+        elements: sortedBounded(devices.filter(device => device.nodes.some(index => component.has(index))).map(device => device.name)),
+        hint: 'Add a DC conductive path to node 0, for example a bias resistor.',
+      });
+    }
+  }
+  const loop = findIdealConstraintLoop(devices, true);
+  if (loop) warnings.push({
+    code: 'VOLTAGE_SOURCE_LOOP', severity: 'warning',
+    nodes: sortedBounded(loop.flatMap(edge => [nodeName(compiled, edge.left), nodeName(compiled, edge.right)])),
+    elements: sortedBounded(loop.map(edge => edge.device.name)),
+    hint: 'Break the ideal V/E/H/L loop, for example by adding series resistance.',
+  });
+  return warnings.sort((a, b) => compareCodePoints(a.code, b.code) || compareCodePoints(a.nodes.join('\0'), b.nodes.join('\0')));
+}
+
 /**
  * Reject topology singularities that can be established without numerical solve.
  * Diagnostics are code-point sorted and bounded so identical circuits produce

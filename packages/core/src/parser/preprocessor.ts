@@ -1,15 +1,16 @@
 import { evaluateExpression } from './expression.js';
+import { stringParameter, substituteStringAssignments, type ParameterScope } from './string-param.js';
 import { endOfLineCommentStart } from './end-of-line-comment.js';
 import {
   braceBareParameters, conditionExpression, expandUserFunctions, paramCardAsFunc, parseFuncCard, type FunctionScope,
   type UserFunction,
 } from './numparam.js';
-import { NODE_DEPENDENT_EXPRESSION, substituteBehavioralParameters } from './behavioral-expression.js';
-import { parseNumber } from './tokenizer.js';
+import { BEHAVIORAL_RUNTIME_EXPRESSION, NODE_DEPENDENT_EXPRESSION, substituteBehavioralParameters } from './behavioral-expression.js';
+import { parseNumber, tokenizeLine } from './tokenizer.js';
 import { formatNumber as formatLiteralNumber } from '../netlist-number.js';
 import { tempDirective } from './temp-directive.js';
 import { translateMicroSign } from './micro-sign.js';
-import { bracedSubcircuitCallValues } from './subcircuit-syntax.js';
+import { bracedSubcircuitCallValues, locateSubcircuitCall } from './subcircuit-syntax.js';
 import { lowerControlledTables } from './controlled-table.js';
 import { lowerBehavioralCapacitors } from './behavioral-capacitor.js';
 import { CycleError, ParseError } from '../errors.js';
@@ -55,16 +56,27 @@ export async function preprocessLines(
   return (await preprocessDeck(netlist, resolver, guard, lineOffset)).text;
 }
 
+/** A source-level numparam edit, applied only when the circuit is reset. */
+export interface ParameterAlteration {
+  subcircuit?: string;
+  name: string;
+  expression: string;
+}
+
 export interface PreprocessedDeck {
   /** The netlist with top-level parameters substituted. */
   text: string;
+  /** Re-evaluate retained numparam expressions without resolving includes again. */
+  atTemperature?: (celsius: number) => PreprocessedDeck;
+  /** Replay numparam from retained source, without rereading include files. */
+  withParameters?: (changes: readonly ParameterAlteration[]) => PreprocessedDeck;
   /**
    * Top-level `.param` values (upper-case names) for subcircuit expansion,
    * which evaluates subcircuit expressions per instance (ngspice numparam
    * global scope). Parameters whose value cannot be evaluated are omitted;
    * referencing one from a subcircuit reports it as undefined.
    */
-  parameters: Record<string, number>;
+  parameters: ParameterScope;
   /** Evaluated `.csparam` scalars (lower-case names) for the control const plot. */
   controlConstants: Record<string, number>;
   /** Non-fatal preprocessing diagnostics, surfaced as circuit parse warnings. */
@@ -78,9 +90,14 @@ export async function preprocessDeck(
   lineOffset: number,
 ): Promise<PreprocessedDeck> {
   const steps = preprocessSteps(netlist, resolver !== undefined, guard, lineOffset);
+  const includes: string[] = [];
   let step = steps.next();
-  while (!step.done) step = steps.next(await resolver!(step.value));
-  return step.value;
+  while (!step.done) {
+    const text = await resolver!(step.value);
+    includes.push(text);
+    step = steps.next(text);
+  }
+  return retainParameterSource(step.value, netlist, includes, guard, lineOffset);
 }
 
 /**
@@ -95,7 +112,24 @@ export function preprocessDeckSync(
 ): PreprocessedDeck {
   const step = preprocessSteps(netlist, false, guard, lineOffset).next();
   if (!step.done) throw new Error('preprocessDeckSync: unexpected include request without a resolver');
-  return step.value;
+  return retainParameterSource(step.value, netlist, [], guard, lineOffset);
+}
+
+function retainParameterSource(
+  deck: PreprocessedDeck, netlist: string, includes: string[],
+  guard: ProtocolExecutionGuard | undefined, lineOffset: number,
+): PreprocessedDeck {
+  const withParameters = (changes: readonly ParameterAlteration[]): PreprocessedDeck => {
+    const steps = preprocessSteps(netlist, includes.length > 0, guard, lineOffset, changes);
+    let step = steps.next();
+    let index = 0;
+    while (!step.done) {
+      if (index >= includes.length) throw new Error('reset: include source changed');
+      step = steps.next(includes[index++]);
+    }
+    return { ...step.value, withParameters };
+  };
+  return { ...deck, withParameters };
 }
 
 /** Preprocessing as a generator that yields each include path and resumes with its content. */
@@ -104,11 +138,54 @@ function* preprocessSteps(
   hasResolver: boolean,
   guard: ProtocolExecutionGuard | undefined,
   lineOffset: number,
+  changes: readonly ParameterAlteration[] = [],
 ): Generator<string, PreprocessedDeck, string> {
   const state = newCollectState();
   const { definitions } = state;
   let statements = state.statements;
   yield* collectStatements(netlist, hasResolver, new Set(), [], 0, state, guard, lineOffset);
+  for (const change of changes) {
+    const name = change.name.toUpperCase();
+    if (change.subcircuit === undefined) {
+      const previous = definitions.get(name);
+      if (!previous) throw new ParseError(`alterparam: unknown parameter '${change.name}'`, 0, change.name);
+      definitions.set(name, paramDefinition(change.expression, previous.line, previous.context));
+      continue;
+    }
+    const scopes: string[] = [];
+    let foundSubcircuit = false;
+    let foundParameter = false;
+    for (const statement of statements) {
+      const header = /^\s*\.subckt\s+(\S+)/i.exec(statement.text);
+      if (header) scopes.push(header[1].toLowerCase());
+      if (scopes.at(-1) === change.subcircuit.toLowerCase()) {
+        foundSubcircuit = true;
+        if (header || /^\s*\.param\s/i.test(statement.text)) {
+          statement.text = statement.text.replace(PARAM_ASSIGNMENT, (assignment, key: string) => {
+            if (key.toUpperCase() !== name) return assignment;
+            foundParameter = true;
+            return `${key}={${change.expression.replace(/^\{(.*)\}$|^'(.*)'$/s, '$1$2')}}`;
+          });
+        }
+      }
+      if (/^\s*\.ends\b/i.test(statement.text)) scopes.pop();
+    }
+    if (!foundSubcircuit || !foundParameter) {
+      throw new ParseError(foundSubcircuit
+        ? `alterparam: unknown parameter '${change.name}' in subcircuit '${change.subcircuit}'`
+        : `alterparam: unknown subcircuit '${change.subcircuit}'`, 0, change.name);
+    }
+    // ngspice-47 alterparam also replaces matching actuals on X cards, not
+    // just the formal default (alterparam.sp: rint=7/rint1=9 become 13/15).
+    for (const statement of statements) {
+      if (!/^\s*x/i.test(statement.text)) continue;
+      const tokens = tokenizeLine(statement.text);
+      const call = locateSubcircuitCall(tokens, statement.text);
+      if (tokens[call.nameIndex]?.toLowerCase() !== change.subcircuit.toLowerCase()) continue;
+      statement.text = statement.text.replace(PARAM_ASSIGNMENT, (assignment, key: string) =>
+        key.toUpperCase() === name ? `${key}={${change.expression.replace(/^\{(.*)\}$|^'(.*)'$/s, '$1$2')}}` : assignment);
+    }
+  }
   const unterminated = state.openBlocks[0];
   if (unterminated !== undefined) {
     const block = state.blocks[unterminated];
@@ -135,33 +212,37 @@ function* preprocessSteps(
   braceBareParameters(statements, numericParams).forEach((text, index) => { statements[index].text = text; });
   // ngspice collects every top-level `.param` before substituting, so a
   // parameter may be used before its definition and the last definition wins.
-  const temperatureSweep = statements.find(isTemperatureSweep);
-  const scopes = createParamScopes(
-    definitions, temperatureSweep,
-    circuitTemperature(statements, definitions, state.functionScopes[0].functions, state.warnings),
-    state.functionScopes[0].functions,
-  );
-  // Keep the numparam evaluation, including its source diagnostics, for the
-  // control const plot. Circuit parameters remain a separate namespace.
-  const controlConstants: Record<string, number> = Object.create(null);
-  for (const { name, definition, guard } of state.csparams) {
-    if (guardSelected(guard, selected)) {
-      controlConstants[name] = evaluateParamExpression(definition, scopes.numparam, state.functionScopes[0].functions);
+  let usesTemper = false;
+  const temperature = circuitTemperature(statements, definitions, state.functionScopes[0].functions, state.warnings);
+  const render = (celsius: number): PreprocessedDeck => {
+    const scopes = createParamScopes(
+      definitions, celsius, state.functionScopes[0].functions, true, () => { usesTemper = true; },
+    );
+    // Keep numparam diagnostics for the control const plot. Circuit parameters
+    // remain a separate namespace, and each temperature needs a fresh cache.
+    const controlConstants: Record<string, number> = Object.create(null);
+    for (const { name, definition, guard } of state.csparams) {
+      if (guardSelected(guard, selected)) {
+        controlConstants[name] = evaluateParamExpression(definition, scopes.numparam, state.functionScopes[0].functions);
+      }
     }
-  }
-  const measureNames = new Set(statements.flatMap(statement => measureName(statement.text)));
-  const text = statements.map(statement => statement.substitute
-    ? substituteStatement(statement, scopes, measureNames)
-    : statement.text).join('\n');
-  const parameters: Record<string, number> = {};
-  for (const name of definitions.keys()) {
-    try {
-      parameters[name] = scopes.numparam[name];
-    } catch {
-      // Unused by the top level, or reported there; see PreprocessedDeck.
+    const measureNames = new Set(statements.flatMap(statement => measureName(statement.text)));
+    const text = statements.map(statement => statement.substitute
+      ? substituteStatement(statement, scopes, measureNames)
+      : statement.text).join('\n');
+    const parameters: ParameterScope = {};
+    for (const name of definitions.keys()) {
+      try {
+        parameters[name] = scopes.numparam[name];
+      } catch {
+        // Unused by the top level, or reported there; see PreprocessedDeck.
+      }
     }
-  }
-  return { text, parameters, controlConstants, warnings: state.warnings };
+    return { text, parameters, controlConstants, warnings: state.warnings };
+  };
+  const result = render(temperature);
+  if (usesTemper) result.atTemperature = render;
+  return result;
 }
 
 /** One `.if`/`.elseif`/`.else` branch; `condition` is absent for `.else`. */
@@ -245,7 +326,7 @@ function commentedOutCard(line: string): { card: string; warn: boolean } | undef
   return UNUSUAL_LEADING_CHARACTERS.has(card[0]) ? { card, warn: true } : undefined;
 }
 
-const PARAM_ASSIGNMENT = /([A-Za-z_]\w*)\s*=\s*(\{[^}]+\}|'[^']*'|"[^"]*"|\S+)/g;
+const PARAM_ASSIGNMENT = /([A-Za-z_]\w*)\s*=\s*('[^']*'|(?:"[^"]*"|\{[^}]+\}|[^\s"{}])+)/g;
 
 /**
  * ngspice-47 reads the whole rest of a single-assignment `.param` card as the
@@ -322,7 +403,7 @@ function selectBranches(state: CollectState): number[] {
   const functions = state.functionScopes[0].functions;
   // TEMPER in a condition reads temperature cards outside any `.if`.
   const unconditional = state.statements.filter(statement => statement.guard === undefined);
-  const scopes = createParamScopes(state.definitions, undefined, circuitTemperature(unconditional, state.definitions, functions), functions);
+  const scopes = createParamScopes(state.definitions, circuitTemperature(unconditional, state.definitions, functions), functions);
   return state.blocks.map(block => {
     let selected = -1;
     for (const [index, branch] of block.branches.entries()) {
@@ -372,7 +453,7 @@ interface ParamDefinition {
   expression: string;
   line: number;
   context: string;
-  /** A `"..."` string/vector value, which spice-ts cannot evaluate to a number. */
+  /** A quoted string literal (vectors retain the unsupported boundary). */
   stringValue?: boolean;
 }
 
@@ -394,8 +475,8 @@ interface PendingStatement {
  * and is used for B-cards, whose ASRC expressions evaluate `temper` themselves.
  */
 interface ParamScopes {
-  params: Record<string, number>;
-  numparam: Record<string, number>;
+  params: ParameterScope;
+  numparam: ParameterScope;
 }
 
 /** ngspice's default circuit temperature in Celsius. */
@@ -442,7 +523,7 @@ function circuitTemperature(
   if (effective !== undefined) {
     const statement = effective;
     try {
-      const scopes = createParamScopes(definitions, undefined, temperature, functions, false);
+      const scopes = createParamScopes(definitions, temperature, functions, false);
       const text = statement.text.slice(0, commentStart(statement.text));
       const expanded = substituteExpressions(quotedExpressionsAsBraces(expandUserFunctions(text, functions)), scopes.params);
       const card = tempDirective(expanded, statement.line)!;
@@ -459,13 +540,6 @@ function circuitTemperature(
   return temperature;
 }
 
-/** `.step [lin|dec|oct] [param] temp ...` or `.dc temp ...`; control blocks sweep with `dc temp ...`. */
-const TEMPERATURE_SWEEP = /^\s*(?:\.step\s+(?:(?:lin|dec|oct)\s+)?(?:param\s+)?temp\b|\.dc\s+temp\b)/i;
-const CONTROL_TEMPERATURE_SWEEP = /^\s*dc\s+temp\b/i;
-
-function isTemperatureSweep(statement: PendingStatement): boolean {
-  return (statement.control ? CONTROL_TEMPERATURE_SWEEP : TEMPERATURE_SWEEP).test(statement.text);
-}
 
 /**
  * Lazily evaluates `.param` definitions on first use, in dependency order.
@@ -473,20 +547,20 @@ function isTemperatureSweep(statement: PendingStatement): boolean {
  */
 function createParamScopes(
   definitions: Map<string, ParamDefinition>,
-  temperatureSweep: PendingStatement | undefined,
   temperature: number,
   functions: FunctionScope = new Map(),
   allowTemper = true,
+  onTemper?: () => void,
 ): ParamScopes {
-  const values = new Map<string, number>();
+  const values = new Map<string, number | string>();
   const resolving: string[] = [];
   const isParam = (key: string | symbol): key is string => typeof key === 'string' && definitions.has(key);
-  const params: Record<string, number> = new Proxy({}, {
+  const params: ParameterScope = new Proxy({}, {
     has: (_target, key) => isParam(key),
     get: (_target, key) => (isParam(key) ? resolve(key) : undefined),
   });
   const isTemper = (key: string | symbol) => key === TEMPER && !definitions.has(TEMPER);
-  const numparam: Record<string, number> = new Proxy({}, {
+  const numparam: ParameterScope = new Proxy({}, {
     has: (_target, key) => isParam(key) || isTemper(key),
     get: (_target, key) => {
       if (isTemper(key)) return temper();
@@ -496,21 +570,15 @@ function createParamScopes(
 
   function temper(): number {
     if (!allowTemper) throw new Error('.temp expressions depending on TEMPER are not supported');
-    if (temperatureSweep !== undefined) {
-      throw new Error(
-        'TEMPER-dependent expressions are not supported with a temperature sweep '
-        + `(.step TEMP or dc TEMP, line ${temperatureSweep.line}): spice-ts evaluates parameter `
-        + `expressions once, at the ${temperature} C circuit temperature`,
-      );
-    }
+    onTemper?.();
     return temperature;
   }
 
-  function resolve(name: string): number {
+  function resolve(name: string): number | string {
     const known = values.get(name);
     if (known !== undefined) return known;
     const definition = definitions.get(name)!;
-    if (definition.stringValue) {
+    if (definition.stringValue && /^"\s*\[/.test(definition.expression)) {
       throw new ParseError(
         `String-valued .param '${name}' is not supported: spice-ts parameters are numbers `
         + '(ngspice string and vector parameters are not implemented)',
@@ -524,7 +592,8 @@ function createParamScopes(
     }
     resolving.push(name);
     try {
-      const value = evaluateParamExpression(definition, numparam, functions);
+      const value = stringParameter(definition.expression, numparam)
+        ?? evaluateParamExpression(definition, numparam, functions);
       values.set(name, value);
       return value;
     } finally {
@@ -537,7 +606,7 @@ function createParamScopes(
 
 function evaluateParamExpression(
   definition: ParamDefinition,
-  scope: Record<string, number>,
+  scope: ParameterScope,
   functions: FunctionScope = new Map(),
 ): number {
   try {
@@ -558,7 +627,7 @@ function substituteStatement(statement: PendingStatement, scopes: ParamScopes, m
   try {
     if (MEASURE_CARD.test(statement.text)) return substituteMeasureCard(statement.text, scopes, measureNames);
     const behavioralCard = behavioralCardAsBSource(statement.text);
-    const text = behavioralCard ?? statement.text;
+    const text = substituteStringAssignments(behavioralCard ?? statement.text, scopes.numparam);
     if (/^\s*b/i.test(text)) {
       // B-cards: `'...'`, `{...}` and bare `.param` names are substituted by
       // the B-card front end; `temper` stays a live ASRC variable.
@@ -603,7 +672,7 @@ function substituteMeasureCard(text: string, scopes: ParamScopes, measureNames: 
     const expression = card.slice(from).replace(/\b([A-Za-z_]\w*)\b(?!\s*\()/g, (match: string, name: string, offset: number, whole: string) => {
       const upper = name.toUpperCase();
       if (/[\d.]/.test(whole[offset - 1] ?? '') || measureNames.has(upper) || !(upper in scopes.numparam)) return match;
-      return `(${formatNumber(scopes.numparam[upper])})`;
+      return `(${formatNumber(evaluateExpression(upper, scopes.numparam))})`;
     });
     card = card.slice(0, from) + expression;
   } else {
@@ -726,12 +795,12 @@ function bracedSingleParamValue(line: string): string {
 
 const BEHAVIORAL_RESISTOR = /^\s*(r\S*)\s+(\S+)\s+(\S+)\s+(?:r\s*=\s*)?(?:\{([^{}]*)\}|'([^']*)')\s*(.*)$/i;
 const NODE_DEPENDENCE = /\b[vi]\s*\(/i;
-const BEHAVIORAL_RESISTOR_PARAMETER = /^(tc1|tc2)=(\S+)$/i;
+const BEHAVIORAL_RESISTOR_PARAMETER = /^(m|tc1|tc2)=(\S+)$/i;
 
 /**
  * ngspice (inpcom.c) turns a resistor whose value expression reads node
  * voltages or branch currents into an ASRC:
- * `Rxxx n1 n2 R={expr} tc1=a` -> `bRxxx n1 n2 i = v(n1, n2)/(expr) tc1=a reciproctc=1`.
+ * `Rxxx n1 n2 R={expr} m=4 tc1=a` -> `bRxxx n1 n2 i = 4*v(n1, n2)/(expr) tc1=a reciproctc=1`.
  * Returns the B-card, or undefined when the line is not such a resistor.
  */
 function behavioralResistorAsBSource(line: string): string | undefined {
@@ -739,18 +808,28 @@ function behavioralResistorAsBSource(line: string): string | undefined {
   if (!card) return undefined;
   const [, name, positive, negative, braced, quoted, rest] = card;
   const expression = (braced ?? quoted).trim();
-  if (!NODE_DEPENDENCE.test(expression)) return undefined;
+  if (!NODE_DEPENDENCE.test(expression) && !/\bhertz\b/i.test(expression)) return undefined;
   const parameters = rest.replace(/\s*=\s*/g, '=').trim().split(/\s+/).filter(Boolean);
+  let multiplier = '';
+  const coefficients: string[] = [];
   for (const parameter of parameters) {
-    if (!BEHAVIORAL_RESISTOR_PARAMETER.test(parameter)) {
+    const match = BEHAVIORAL_RESISTOR_PARAMETER.exec(parameter);
+    if (!match) {
       throw new Error(
         `Unsupported parameter '${parameter}' on behavioral resistor '${name}': a resistor whose value `
-        + 'depends on v() or i() is simulated as an ngspice B-source, which carries only tc1= and tc2=',
+        + 'depends on v() or i() supports only m=, tc1= and tc2=',
       );
     }
+    if (match[1].toLowerCase() === 'm') {
+      const value = parseNumber(match[2]);
+      if (!Number.isFinite(value)) throw new Error(`behavioral resistor '${name}': m must be a finite numeric literal`);
+      // ngspice inpcom.c eval_mvalue formats explicit numeric m with %15.8e.
+      multiplier = `(${Number(value.toExponential(8))})*`;
+    } else {
+      coefficients.push(` ${parameter}`);
+    }
   }
-  const coefficients = parameters.map(parameter => ` ${parameter}`).join('');
-  return `b${name} ${positive} ${negative} i = v(${positive}, ${negative})/(${expression})${coefficients} reciproctc=1`;
+  return `b${name} ${positive} ${negative} i = ${multiplier}v(${positive}, ${negative})/(${expression})${coefficients.join('')} reciproctc=1`;
 }
 
 const BEHAVIORAL_CONTROLLED_SOURCE = /^\s*([eg]\S*)\s+(\S+)\s+(\S+)\s+(value|vol|cur)\s*=\s*(\S.*?)\s*$/i;
@@ -1053,12 +1132,14 @@ function* collectStatements(
 // front end, which keeps them as ASRC sub-expressions.
 export function substituteExpressions(
   line: string,
-  params: Record<string, number>,
+  params: ParameterScope,
   keepNodeDependent = false,
   formatter: (value: number) => string = formatNumber,
 ): string {
   return line.replace(/\{([^}]+)\}/g, (match, expr: string) => {
-    if (keepNodeDependent && NODE_DEPENDENT_EXPRESSION.test(expr)) return match;
+    if (keepNodeDependent && (NODE_DEPENDENT_EXPRESSION.test(expr) || BEHAVIORAL_RUNTIME_EXPRESSION.test(expr))) return match;
+    const string = stringParameter(expr, params);
+    if (string !== undefined) return JSON.stringify(string);
     const value = evaluateExpression(expr, params);
     return formatter(value);
   });

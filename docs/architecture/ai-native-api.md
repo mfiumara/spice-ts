@@ -95,7 +95,7 @@ The native document is the lossless JSON counterpart of the current parser outpu
 
 The schemas use JSON numbers in SI base units and forbid `NaN`, infinities, and `-0` after canonicalization. Ground is always `"0"` and is omitted from `circuit.nets`, matching `CircuitIR`. Component IDs, model names, and subcircuit names must be unique under SPICE's case-insensitive comparison.
 
-A `circuit-json` input is validated and converted by #35, then paired with protocol-owned analyses. Geometry, PCB elements, and other non-simulation elements may remain available to the adapter but do not enter core. #35 owns the normative `ConversionResultV1<T>` shape, ordered per-element diagnostics, and `allowLossy` option. Every simulation-relevant element or parameter that cannot be represented is reported as a conversion diagnostic with severity `error` and code `UNSUPPORTED_ELEMENT` or `UNSUPPORTED_PARAMETER` (ignored layout-only elements are `LAYOUT_ONLY` info); when any error is present `fromCircuitJSON` returns no `value`, so no circuit exists and simulation cannot start. These are adapter conversion codes, not API error codes: conversion runs in the caller's process via `@spice-ts/circuit-json` before any protocol request is built, so the MCP server never sees them and never maps them to `UNSUPPORTED_FEATURE`. The current server accepts only `spice` and `spice-ts` input formats; a request with `format: "circuit-json"` is rejected with API `UNSUPPORTED_FEATURE` ("input format unavailable"), and the agent instead submits the converted `CircuitIR` as a `spice-ts` document. Export returns no value when it would be lossy unless the caller explicitly sets `allowLossy: true`, and opt-in never suppresses the per-loss diagnostics. This avoids duplicating #35 while making its contract usable by agents.
+A `circuit-json` input is validated and converted by #35, then paired with protocol-owned analyses. Geometry, PCB elements, and other non-simulation elements may remain available to the adapter but do not enter core. #35 owns the normative `ConversionResultV1<T>` shape, ordered per-element diagnostics, and `allowLossy` option. Every simulation-relevant element or parameter that cannot be represented is reported as a conversion diagnostic with severity `error` and code `UNSUPPORTED_ELEMENT` or `UNSUPPORTED_PARAMETER` (ignored layout-only elements are `LAYOUT_ONLY` info); when any error is present `fromCircuitJSON` returns no `value`, so no circuit exists and simulation cannot start. MCP accepts `spice`, `spice-ts`, and `circuit-json` inputs. For `circuit-json`, MCP invokes `@spice-ts/circuit-json` at its bounded request boundary and passes the converted native document to core or its isolated worker. Fatal conversion diagnostics appear in `error.details.diagnostics`; the first error maps to API `UNSUPPORTED_ELEMENT` for unsupported elements, otherwise `INVALID_CIRCUIT`. Nonfatal diagnostics are returned as `_meta.conversionDiagnostics` on validation, simulation, and stream-start results. Core itself does not import the converter. Export returns no value when it would be lossy unless the caller explicitly sets `allowLossy: true`, and opt-in never suppresses the per-loss diagnostics. This avoids duplicating #35 while making its contract usable by agents.
 
 ## 4. Requests and serializable results
 
@@ -219,6 +219,7 @@ interface SpiceApiErrorV1 {
     | 'PARSE_ERROR'
     | 'INVALID_CIRCUIT'
     | 'UNSUPPORTED_FEATURE'
+    | 'UNSUPPORTED_ELEMENT'
     | 'SINGULAR_MATRIX'
     | 'CONVERGENCE_FAILED'
     | 'TIMESTEP_TOO_SMALL'
@@ -247,9 +248,9 @@ Core errors map without parsing their message strings: `ParseError` to `PARSE_ER
 
 This is a required core change, not a claim about the current implementation. Today the real and complex sparse solvers throw plain `Error` for singular pivots, so they cannot be mapped by type. #60 owns replacing every such solver throw site with `SingularMatrixError`, preserving source node/branch identity through matrix assembly, and adding exact mapping tests. No adapter may classify errors by matching `Error.message`.
 
-`spice_validate` performs schema validation, parse, compile, and a deterministic topology preflight; it does not numerically solve. The preflight must detect floating connected components/nets, absent DC reference paths, and ideal voltage-source/inductor loops and return `INVALID_CIRCUIT` diagnostics with source paths and involved nodes. A singularity not provable by topology preflight can still occur during `spice_simulate`; it maps to `SINGULAR_MATRIX`. Validation must not promise that all numerical singularities are found before solving.
+`spice_validate` performs schema validation, parse, compile, and a deterministic topology preflight; it does not numerically solve. Its successful result includes a `diagnostics` array of advisory warnings with `severity: 'warning'`, `code`, `nodes`, `elements`, and a one-line `hint`. The codes are `FLOATING_NODE` (fewer than two distinct connected elements), `NO_DC_PATH_TO_GROUND` (DC-connected node set without a conductive path to node 0; capacitors/current sources do not count), and `VOLTAGE_SOURCE_LOOP` (first ideal V/E/H/L loop in element-id order). `.options rshunt` suppresses missing-DC-path warnings. Warnings are sorted by code then node ids; ids use code-point order and lists are capped at 32. Direct core validation remains strict by default; MCP opts into warnings. Simulation behavior is unchanged. Validation must not promise numerical convergence or that all numerical singularities are found before solving.
 
-`retryable` is false for schema, parse, topology, unsupported-feature, and backend-unavailable failures; true for cancellation; and true for convergence/resource failures only when a diagnostic supplies a concrete changed option that stays inside server limits.
+Clean validation results omit the optional `diagnostics` array. `retryable` is false for schema, parse, topology, unsupported-feature, and backend-unavailable failures; true for cancellation; and true for convergence/resource failures only when a diagnostic supplies a concrete changed option that stays inside server limits.
 
 ## 6. Determinism contract
 
@@ -400,7 +401,7 @@ Backend IDs remain explicit: `spice-ts-js`, reserved `spice-ts-wasm`, and existi
 Executable: [`examples/floating-node-repair`](../../examples/floating-node-repair/README.md), run in CI by [`examples/agent-workflows/issue-63`](../../examples/agent-workflows/issue-63/README.md).
 
 1. The agent calls `spice_validate` with a SPICE netlist.
-2. The topology preflight returns `INVALID_CIRCUIT`, `details.involvedNodes: ["sense"]`, a source location, and a suggestion to add a DC path. If a different singularity is only discovered while solving, `spice_simulate` instead returns `SINGULAR_MATRIX`.
+2. The MCP topology preflight returns `status: 'valid'` with a `NO_DC_PATH_TO_GROUND` warning, `nodes: ["sense"]`, incident element ids and a hint to add a DC path. Strict simulation preflight can still reject the topology with `INVALID_CIRCUIT`; a singularity discovered only while solving returns `SINGULAR_MATRIX`.
 3. The agent edits the netlist, validates again, then calls `spice_simulate` for OP.
 4. It asserts the returned `out` voltage and records input/result hashes in its engineering log.
 

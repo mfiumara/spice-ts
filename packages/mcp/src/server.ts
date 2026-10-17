@@ -1,4 +1,6 @@
-import { mapProtocolErrorV1, simulateProtocolV1, validateProtocolV1 } from '@spice-ts/core';
+import { Circuit, parseTitleless, mapProtocolErrorV1, simulateProtocolV1, validateProtocolV1 } from '@spice-ts/core';
+import { fromCircuitJSON, toCircuitJSON } from '@spice-ts/circuit-json';
+import type { CircuitJSON, ConversionDiagnosticV1 } from '@spice-ts/circuit-json';
 import { commonSchemaV1, sha256CanonicalJson } from '@spice-ts/protocol';
 import type {
   AnalysisResultV1,
@@ -19,6 +21,12 @@ import { createRequire } from 'node:module';
 import { Worker } from 'node:worker_threads';
 import { estimatedResultPoints, requestPlan, resolvedOptions } from './request-plan.js';
 import type { RequestPlan } from './request-plan.js';
+import { measurementListSchema, measureResult } from './measure.js';
+import { compareInputSchema, compareOutputSchema, compareSignals } from './compare.js';
+import { overrideParameters, parameterOverrides, ParameterOverrideError, paramsSchema } from './params.js';
+import type { ParameterOverrideApiError } from './params.js';
+import { runSweep, sweepProperties } from './sweep.js';
+import { acMetrics, acMetricsArgs, acMetricsOutputSchema, acMetricsProperties } from './ac-metrics.js';
 
 export interface McpLimits {
   maxDocumentBytes: number;
@@ -125,7 +133,13 @@ const capabilitiesOutputSchema = {
   properties: {
     protocolVersion: { const: '1' },
     analyses: { type: 'array', items: { enum: ['op', 'dc', 'tran', 'ac'] } },
-    inputFormats: { type: 'array', items: { enum: ['spice', 'spice-ts'] } },
+    inputFormats: { type: 'array', items: { enum: ['spice', 'spice-ts', 'circuit-json'] } },
+    tools: { type: 'array', items: { type: 'string' } },
+    parameterOverrides: { type: 'object', properties: {
+      tools: { type: 'array', items: { type: 'string' } }, input: { type: 'string' },
+      valueType: { type: 'string' }, scope: { type: 'string' }, caseSensitive: { type: 'boolean' },
+      unknownParameterCode: { const: 'UNKNOWN_PARAMETER' },
+    } },
     limits: {
       type: 'object',
       required: Object.keys(DEFAULT_MCP_LIMITS),
@@ -231,15 +245,86 @@ export const MCP_TOOLS = Object.freeze([
     outputSchema: validationOutputSchema,
   },
   {
+    name: 'spice_convert',
+    description: 'Convert a bounded SPICE circuit to circuit-json or circuit-json to a SPICE netlist. Exactly one input is required. Analyses and simulator directives are not part of circuit-json. Unsupported or lossy conversions fail with diagnostics.',
+    inputSchema: {
+      type: 'object',
+      properties: { netlist: { type: 'string' }, circuitJson: { type: 'array', items: { type: 'object' } } },
+      oneOf: [{ required: ['netlist'] }, { required: ['circuitJson'] }],
+      additionalProperties: false,
+    },
+    outputSchema: {
+      type: 'object',
+      properties: {
+        netlist: { type: 'string' }, circuitJson: { type: 'array', items: { type: 'object' } },
+        diagnostics: { type: 'array', items: { type: 'object' } }, lossy: { const: false },
+      },
+      required: ['diagnostics', 'lossy'],
+      oneOf: [{ required: ['netlist'] }, { required: ['circuitJson'] }],
+      additionalProperties: false,
+    },
+  },
+  {
     name: 'spice_simulate',
-    description: 'Execute one bounded protocol-v1 simulation request.',
-    inputSchema: requestInputSchema,
+    description: 'Execute one bounded protocol-v1 simulation request. Optional params: Record<string, number> overrides top-level .param values before elaboration (SPICE text only, case-insensitive, finite numbers). Unknown names return UNKNOWN_PARAMETER with available names.',
+    inputSchema: { ...requestInputSchema, properties: { ...requestInputSchema.properties, params: paramsSchema } },
     outputSchema: { ...commonSchemaV1.$defs.simulationResult, $defs: commonSchemaV1.$defs },
   },
   {
+    name: 'spice_sweep',
+    description: 'Sequential bounded parameter sweep. Target a top-level .param (SPICE only) or R/C/L component scalar value (SPICE or native JSON IR). Supply exactly one of values or range. lin points is total samples; dec points is samples per decade including exact stop. Returns ordered statuses and optional spice_measure-style measurements; individual simulation failures do not abort other points. Maximum 100 points and one shared wall-time budget.',
+    inputSchema: {
+      ...requestInputSchema, required: ['request', 'parameter'],
+      properties: { ...requestInputSchema.properties, ...sweepProperties },
+      oneOf: [{ required: ['values'], not: { required: ['range'] } }, { required: ['range'], not: { required: ['values'] } }],
+    },
+  },
+  {
+    name: 'spice_ac_metrics',
+    description: 'Simulate and reduce one AC sweep to gain, half-power bandwidth and loop margins. dcGainDb is the lowest-frequency sample, not an extrapolation to DC. Uses first descending crossings with log-frequency interpolation.',
+    inputSchema: {
+      ...requestInputSchema,
+      required: ['request', 'output'],
+      properties: { ...requestInputSchema.properties, ...acMetricsProperties },
+    },
+    outputSchema: {
+      type: 'object', oneOf: [acMetricsOutputSchema, toolFailureOutputSchema],
+      $defs: commonSchemaV1.$defs,
+    },
+  },
+  {
+    name: 'spice_measure',
+    description: 'Simulate once and return up to 128 scalar measurements. Analysis is a zero-based index; optional step selects the zero-based SimulationResultV1 step.index (required for multiple steps). Unstepped analyses accept step 0 only. Signals are v(node), i(branch), mag(v(node)), or db(v(node)). Cross/when return the first matching axis coordinate.',
+    inputSchema: {
+      ...requestInputSchema,
+      required: ['request', 'measurements'],
+      properties: { ...requestInputSchema.properties, measurements: measurementListSchema },
+    },
+    outputSchema: {
+      type: 'object', required: ['measurements'], additionalProperties: false,
+      properties: {
+        measurements: {
+          type: 'array', minItems: 1, maxItems: 128,
+          items: {
+            oneOf: [
+              { type: 'object', required: ['value', 'unit'], additionalProperties: false, properties: { value: { type: 'number' }, unit: { type: 'string' } } },
+              { type: 'object', required: ['error'], additionalProperties: false, properties: { error: { type: 'object', required: ['code', 'message'], additionalProperties: false, properties: { code: { type: 'string' }, message: { type: 'string' } } } } },
+            ],
+          },
+        },
+      },
+    },
+  },
+  {
+    name: 'spice_compare',
+    description: 'Compare inline waveforms, protocol-v1 results, or completed jobs on the union axis within their overlap. Errors are relative to the reference peak. AC compares magnitude and wrapped phase in degrees.',
+    inputSchema: { ...compareInputSchema, $defs: commonSchemaV1.$defs },
+    outputSchema: compareOutputSchema,
+  },
+  {
     name: 'spice_simulation_start',
-    description: 'Start one bounded protocol-v1 simulation job and return its first opaque cursor.',
-    inputSchema: requestInputSchema,
+    description: 'Start one bounded protocol-v1 simulation job and return its first opaque cursor. Optional params: Record<string, number> overrides top-level .param values before elaboration (SPICE text only, case-insensitive, finite numbers). Unknown names return UNKNOWN_PARAMETER with available names.',
+    inputSchema: { ...requestInputSchema, properties: { ...requestInputSchema.properties, params: paramsSchema } },
     outputSchema: streamStartToolOutputSchema,
   },
   {
@@ -259,7 +344,9 @@ export const MCP_TOOLS = Object.freeze([
 const capabilities = Object.freeze({
   protocolVersion: '1',
   analyses: Object.freeze(['op', 'dc', 'tran', 'ac']),
-  inputFormats: Object.freeze(['spice', 'spice-ts']),
+  inputFormats: Object.freeze(['spice', 'spice-ts', 'circuit-json']),
+  tools: Object.freeze(MCP_TOOLS.map(tool => tool.name)),
+  parameterOverrides,
   limits: DEFAULT_MCP_LIMITS,
   streaming: Object.freeze({
     defaultChunkPoints: DEFAULT_STREAM_CHUNK_POINTS,
@@ -297,30 +384,68 @@ async function executeToolWithStore(
   const limits = options.limits ?? DEFAULT_MCP_LIMITS;
   try {
     if (name === 'spice_capabilities') return success(streamStore.capabilities());
+    if (name === 'spice_sweep') {
+      const original = toolRequest(args);
+      const effective = effectiveLimits(original, limits);
+      enforceMaximum('maxDocumentBytes', effective.maxDocumentBytes, Buffer.byteLength(JSON.stringify(args)), 'validation');
+      const deadline = Date.now() + effective.maxWallTimeMs;
+      const result = await runSweep(args, original, (request, measurements) => executeToolWithStore(
+        measurements === undefined ? 'spice_simulate' : 'spice_measure',
+        { request, ...(measurements === undefined ? {} : { measurements }) },
+        { ...options, limits: { ...effective, maxWallTimeMs: Math.max(1, deadline - Date.now()) } }, streamStore,
+      ), points => {
+        throwIfCancelled(options.signal);
+        enforceMaximum('maxWallTimeMs', effective.maxWallTimeMs, effective.maxWallTimeMs - (deadline - Date.now()), 'solve');
+        enforceMaximum('maxSerializedResultBytes', effective.maxSerializedResultBytes, Buffer.byteLength(JSON.stringify({ parameter: isRecord(args) ? args.parameter : undefined, points })), 'transport');
+      });
+      return success(result);
+    }
+    if (name === 'spice_convert') return convertTool(args, limits, options.signal);
+    if (name === 'spice_compare') {
+      throwIfCancelled(options.signal);
+      enforceMaximum('maxDocumentBytes', limits.maxDocumentBytes, Buffer.byteLength(JSON.stringify(args) ?? ''), 'validation');
+      const compared = compareSignals(args, id => streamStore.comparisonResult(id), limits.maxResultPoints);
+      enforceMaximum('maxSerializedResultBytes', limits.maxSerializedResultBytes, Buffer.byteLength(JSON.stringify(compared)), 'transport');
+      return { ...success(compared), ...('error' in compared ? { isError: true } : {}) };
+    }
     if (name === 'spice_simulation_read') return success(streamStore.read(streamReadArgs(args)));
     if (name === 'spice_simulation_cancel') return success(streamStore.cancel(streamCancelArgs(args)));
-    if (name !== 'spice_validate' && name !== 'spice_simulate' && name !== 'spice_simulation_start') {
+    if (name !== 'spice_validate' && name !== 'spice_simulate' && name !== 'spice_measure' && name !== 'spice_ac_metrics' && name !== 'spice_simulation_start') {
       return failure(apiError('INVALID_REQUEST', 'Unknown tool', 'transport', {}));
     }
 
-    const request = toolRequest(args);
-    const effective = effectiveLimits(request, limits);
+    const selectors = name === 'spice_ac_metrics' ? acMetricsArgs(args) : undefined;
+    const measurements = name === 'spice_measure' && isRecord(args) ? args.measurements : undefined;
+    if (name === 'spice_measure' && (!Array.isArray(measurements) || measurements.length < 1 || measurements.length > 128)) {
+      throw apiError('INVALID_REQUEST', 'Expected 1 through 128 measurements', 'validation', {});
+    }
+    if (name === 'spice_measure') enforceMaximum('maxDocumentBytes', limits.maxDocumentBytes, Buffer.byteLength(JSON.stringify(measurements)), 'validation');
+    let original = toolRequest(args);
+    const effective = effectiveLimits(original, limits);
+    enforceMaximum('maxDocumentBytes', effective.maxDocumentBytes, Buffer.byteLength(JSON.stringify(original.input)), 'validation');
+    if ((name === 'spice_simulate' || name === 'spice_simulation_start') && isRecord(args) && args.params !== undefined) {
+      enforceMaximum('maxDocumentBytes', effective.maxDocumentBytes, Buffer.byteLength(JSON.stringify(args)), 'validation');
+      original = overrideParameters(original, args.params);
+      enforceMaximum('maxDocumentBytes', effective.maxDocumentBytes, Buffer.byteLength(JSON.stringify(original.input)), 'validation');
+    }
+    throwIfCancelled(options.signal);
+    const { request, diagnostics } = convertRequest(original);
     const plan = await boundedRequestPlan(request, effective);
     throwIfCancelled(options.signal);
 
     if (name === 'spice_validate') {
       const bounded = boundedRequest(request, effective);
       const result = options.validate
-        ? await boundedCall(() => options.validate!(bounded), effective.maxWallTimeMs, options.signal)
+        ? await boundedCall(() => options.validate!(bounded, { topologyWarnings: true }), effective.maxWallTimeMs, options.signal)
         : await runInWorker<Record<string, unknown>>(
           'validate', bounded, effective.maxWallTimeMs, options,
         );
-      return success(result);
+      return success(result, diagnostics);
     }
 
     const bounded = boundedRequest(request, effective);
     if (name === 'spice_simulation_start') {
-      return success(streamStore.start(bounded, plan, effective, options));
+      return success(streamStore.start(bounded, plan, effective, options), diagnostics);
     }
     const release = streamStore.acquireOneShotSlot();
     try {
@@ -328,11 +453,22 @@ async function executeToolWithStore(
         ? await boundedCall(() => options.simulate!(bounded), effective.maxWallTimeMs, options.signal)
         : await runInWorker<SimulationResultV1>('simulate', bounded, effective.maxWallTimeMs, options);
       enforceResultBounds(result, effective);
-      return success(result);
+      if (selectors) {
+        const metrics = acMetrics(result, selectors);
+        enforceMaximum('maxSerializedResultBytes', effective.maxSerializedResultBytes, Buffer.byteLength(JSON.stringify(metrics)), 'transport');
+        return success(metrics, diagnostics);
+      }
+      if (name === 'spice_measure') {
+        const measured = measureResult(result, measurements as unknown[]);
+        enforceMaximum('maxSerializedResultBytes', effective.maxSerializedResultBytes, Buffer.byteLength(JSON.stringify(measured)), 'transport');
+        return success(measured, diagnostics);
+      }
+      return success(result, diagnostics);
     } finally {
       release();
     }
   } catch (error) {
+    if (error instanceof ParameterOverrideError) return failure(error.apiError);
     return failure(publicError(error));
   }
 }
@@ -538,6 +674,13 @@ class StreamStore {
     }
     job.replay.set(args.cursor, data);
     return data;
+  }
+
+  comparisonResult(jobId: string): SimulationResultV1 {
+    const job = this.job(jobId);
+    if (job.terminal && job.terminal.status !== 'complete') throw apiError('INVALID_REQUEST', 'Job did not complete successfully', 'validation', {});
+    if (job.state.status !== 'ready') throw apiError('INVALID_REQUEST', 'Job result is not ready; read the job to completion first', 'validation', {});
+    return job.state.result;
   }
 
   cancel(jobId: string): SimulationReadDataV1 {
@@ -881,7 +1024,7 @@ function toolRequest(args: unknown): SimulationRequestV1 {
     throw apiError('INVALID_REQUEST', 'Expected a protocol-v1 simulation request', 'validation', {});
   }
   const format = request.input.format;
-  if (format !== 'spice' && format !== 'spice-ts') {
+  if (format !== 'spice' && format !== 'spice-ts' && format !== 'circuit-json') {
     throw apiError('UNSUPPORTED_FEATURE', 'The requested input format is unavailable', 'validation', {});
   }
   if (isRecord(request.options) && request.options.backend !== undefined && request.options.backend !== 'spice-ts-js') {
@@ -893,6 +1036,85 @@ function toolRequest(args: unknown): SimulationRequestV1 {
     });
   }
   return request as unknown as SimulationRequestV1;
+}
+
+/** Standalone circuit conversion does not solve or infer missing device models. */
+function convertTool(args: unknown, limits: McpLimits, signal?: AbortSignal): CallToolResult {
+  if (!isRecord(args) || Object.keys(args).length !== 1
+    || !(typeof args.netlist === 'string' || Array.isArray(args.circuitJson))) {
+    throw apiError('INVALID_REQUEST', 'Expected exactly one of netlist (string) or circuitJson (array)', 'validation', {});
+  }
+  enforceMaximum('maxDocumentBytes', limits.maxDocumentBytes, Buffer.byteLength(JSON.stringify(args)), 'validation');
+  throwIfCancelled(signal);
+  let output: object;
+  if (typeof args.netlist === 'string') {
+    const converted = toCircuitJSON(parseTitleless(args.netlist).toIR());
+    const diagnostics = converted.diagnostics.map(diagnostic => ({
+      ...diagnostic,
+      severity: 'error' as const,
+      code: diagnostic.path.includes('/params/') ? 'UNSUPPORTED_PARAMETER' as const : 'UNSUPPORTED_ELEMENT' as const,
+    }));
+    requireConversion(converted.value, diagnostics);
+    output = { circuitJson: converted.value, diagnostics, lossy: false };
+  } else {
+    const converted = fromCircuitJSON(args.circuitJson as CircuitJSON);
+    requireConversion(converted.value, converted.diagnostics);
+    const circuit = new Circuit();
+    for (const component of converted.value!.components) {
+      // Circuit JSON has no SPICE model cards. Never invent transistor models.
+      if (component.type !== 'R' && component.type !== 'C') {
+        throw apiError('UNSUPPORTED_ELEMENT', 'SPICE export requires a model unavailable in circuit-json', 'validation', {
+          diagnostics: [{ severity: 'error', code: 'UNSUPPORTED_ELEMENT', message: 'SPICE export requires an explicit model', path: '/', elementId: component.id, simulationRelevant: true }],
+        });
+      }
+      if (!new RegExp(`^${component.type}[^\\s;*$()=,]*$`, 'i').test(component.name)
+        || component.ports.some(port => !/^[^\s;*$()=,]+$/.test(port.net))) {
+        throw apiError('INVALID_CIRCUIT', 'Circuit identifiers cannot be serialized as SPICE tokens', 'validation', {
+          diagnostics: [{ severity: 'error', code: 'UNSUPPORTED_PARAMETER', message: 'Invalid SPICE identifier', path: '/', elementId: component.id, simulationRelevant: true }],
+        });
+      }
+      const port = (name: string) => component.ports.find(port => port.name === name)!.net;
+      if (component.type === 'R') circuit.addResistor(component.name, port('p'), port('n'), component.params.resistance as number);
+      else circuit.addCapacitor(component.name, port('p'), port('n'), component.params.capacitance as number);
+    }
+    output = { netlist: circuit.toNetlist(), diagnostics: converted.diagnostics, lossy: false };
+  }
+  enforceMaximum('maxSerializedResultBytes', limits.maxSerializedResultBytes, Buffer.byteLength(JSON.stringify(output)), 'serialize');
+  return success(output);
+}
+
+function requireConversion(value: unknown, diagnostics: ConversionDiagnosticV1[]): void {
+  if (value !== undefined) return;
+  const first = diagnostics.find(diagnostic => diagnostic.severity === 'error')!;
+  throw apiError(first.code === 'UNSUPPORTED_ELEMENT' ? 'UNSUPPORTED_ELEMENT' : 'INVALID_CIRCUIT', first.message, 'validation', {
+    diagnostics: diagnostics.map(diagnostic => ({ ...diagnostic })),
+  });
+}
+
+/** Convert once at the MCP boundary; core and isolated workers consume native documents. */
+function convertRequest(request: SimulationRequestV1): {
+  request: SimulationRequestV1;
+  diagnostics?: ConversionDiagnosticV1[];
+} {
+  if (request.input.format !== 'circuit-json') return { request };
+  if (!Array.isArray(request.input.circuit) || !Array.isArray(request.input.analyses)) {
+    throw apiError('INVALID_REQUEST', 'circuit-json requires circuit and analyses arrays', 'validation', {});
+  }
+  const converted = fromCircuitJSON(request.input.circuit as CircuitJSON);
+  requireConversion(converted.value, converted.diagnostics);
+  return {
+    request: {
+      ...request,
+      input: {
+        format: 'spice-ts',
+        document: {
+          format: 'spice-ts', schemaVersion: '1.0', circuit: converted.value!,
+          analyses: request.input.analyses, models: [], subcircuits: [],
+        },
+      },
+    },
+    diagnostics: converted.diagnostics,
+  };
 }
 
 /** Core's rule for `maxTimestep`: unset, 0 (unset, as in ngspice), or positive and finite. */
@@ -1091,7 +1313,7 @@ parentPort.once('message', async ({ operation, request, coreModulePath }) => {
   try {
     if (operation === 'stream') await streamProtocol(core, request);
     const result = operation === 'validate'
-      ? await core.validateProtocolV1(request)
+      ? await core.validateProtocolV1(request, { topologyWarnings: true })
       : await core.simulateProtocolV1(request);
     parentPort.postMessage({ type: 'result', result });
   } catch (error) {
@@ -1275,14 +1497,15 @@ function isApiError(error: unknown): error is SpiceApiErrorV1 {
     && isRecord(error.details);
 }
 
-function success(value: object): CallToolResult {
+function success(value: object, diagnostics?: ConversionDiagnosticV1[]): CallToolResult {
   return {
     content: [{ type: 'text', text: JSON.stringify(value) }],
     structuredContent: value as Record<string, unknown>,
+    ...(diagnostics?.length ? { _meta: { conversionDiagnostics: diagnostics } } : {}),
   };
 }
 
-function failure(error: SpiceApiErrorV1): CallToolResult {
+function failure(error: SpiceApiErrorV1 | ParameterOverrideApiError): CallToolResult {
   const value = { error };
   return {
     isError: true,

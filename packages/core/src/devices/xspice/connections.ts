@@ -22,8 +22,8 @@ export interface XspiceConnection {
   readonly ports: readonly XspicePort[];
 }
 
-const SINGLE_ENDED = new Set(['v', 'i', 'g']);
-const DIFFERENTIAL = new Set(['vd', 'id', 'gd']);
+const SINGLE_ENDED = new Set(['v', 'i', 'g', 'h']);
+const DIFFERENTIAL = new Set(['vd', 'id', 'gd', 'hd']);
 
 /**
  * Read an A-card's connection tokens against the code model's port table,

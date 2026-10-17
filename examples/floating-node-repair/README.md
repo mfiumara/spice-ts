@@ -1,6 +1,6 @@
 # Floating-node repair over MCP stdio
 
-This standalone client drives only the public built `@spice-ts/mcp` stdio API. It validates `floating-request.json`, receives a deterministic `INVALID_CIRCUIT` topology diagnosis, and does not request a numerical solve for that invalid circuit. The workflow follows the diagnosis with the documented repair `Rbleed sense 0 1Meg`, revalidates, and runs an operating point through the streaming tools so the terminal includes public backend, build, input-hash, and result-hash metadata.
+This standalone client drives only the public built `@spice-ts/mcp` stdio API. It validates `floating-request.json`, receives a deterministic `NO_DC_PATH_TO_GROUND` warning, and does not request a numerical solve before repairing the circuit. The workflow follows the warning with the documented repair `Rbleed sense 0 1Meg`, revalidates, and runs an operating point through the streaming tools so the terminal includes public backend, build, input-hash, and result-hash metadata. Clean decks omit the optional `diagnostics` field.
 
 `singular-request.json` is deliberately separate. Its topology validates, while numerical solve returns `SINGULAR_MATRIX` for indeterminate parallel ideal-short currents. The workflow also proves that the internal backend identifier `spice-ts` is rejected as `BACKEND_UNAVAILABLE`.
 

@@ -6,7 +6,7 @@ import type { ControlScript } from './parser/control/script.js';
 import type { ControlSourceLine } from './parser/control/source.js';
 import { runControlScript, type ControlHost, type ControlHostRun } from './parser/control/interpreter.js';
 import { ControlScriptError, UnsupportedControlCommandError } from './parser/control/errors.js';
-import { controlOperatingState, deviceOutputVector, type ControlOperatingState } from './control-device-output.js';
+import { controlOperatingState, deviceOutputVector, savedCurrentVectors, type ControlOperatingState } from './control-device-output.js';
 import type { ConvergenceTelemetry, SimulationOptions, SimulationWarning, TransientStep, ACPoint } from './types.js';
 import type { TransientAnalysis, ACAnalysis, ResolvedOptions, SimulatorAdapter, SimulatorBackend } from './types.js';
 import { resolveOptions, withNetlistOptions } from './types.js';
@@ -38,7 +38,7 @@ import { frequencyGrid } from './analysis/frequency-grid.js';
 import { createConvergenceTelemetry } from './convergence-telemetry.js';
 import { solveStepInWorkers } from './analysis/step-parallel.js';
 import type { ProtocolExecutionGuard } from './protocol/execution-guard.js';
-import { evaluateMeasureCards, measuredAnalyses, measurePlot, type MeasureCard } from './measure/dot-measure.js';
+import { evaluateMeasureCards, gettokWords, measuredAnalyses, measurePlot, type MeasureCard } from './measure/dot-measure.js';
 import { measureCards } from './measure/registry.js';
 import { UnsupportedMeasureError } from './measure/errors.js';
 
@@ -196,8 +196,10 @@ function solveCompiledAnalyses(
   measures: readonly MeasureCard[],
   measureValues: Map<string, number>,
   retainRuns: boolean,
+  savedDeviceVectors: readonly string[] = [],
 ): SimulationResult {
   const result: SimulationResult = { warnings, convergence };
+  savedDeviceVectors = savedCurrentVectors({ devices: compiled.devices, simulationOptions: options }, savedDeviceVectors);
   if (retainRuns && compiled.analyses.length + compiled.poleZeroAnalyses.length >= 2) result.analyses = [];
   const measure = (analysis: AnalysisDirective, run: SimulationResult): void => {
     if (measures.length === 0) return;
@@ -212,6 +214,9 @@ function solveCompiledAnalyses(
 
   for (const analysis of compiled.analyses) {
     const run: SimulationResult = result.analyses ? { warnings: [] } : result;
+    if (options.savecurrents && !['dc', 'tran'].includes(analysis.type)) {
+      throw new InvalidCircuitError(`.option savecurrents is not supported for '${analysis.type}' analyses`);
+    }
     switch (analysis.type) {
       case 'op': {
         const opts = resolveOptions(options);
@@ -224,15 +229,29 @@ function solveCompiledAnalyses(
       }
       case 'dc': {
         const opts = resolveOptions(options);
-        result.dcSweep = run.dcSweep = solveDCSweep(compiled, analysis, opts, convergence, guard);
+        result.dcSweep = run.dcSweep = solveDCSweep(compiled, analysis, opts, convergence, guard, savedDeviceVectors);
         measure(analysis, run);
         break;
       }
       case 'tran': {
         const opts = resolveOptions(options, analysis.stopTime);
         const seed = transientInitialSolution(compiled, analysis, opts, undefined, convergence, guard);
+        // ngspice-47 measure.c:341-346,405-407: chk_only skips param/expr
+        // and returns before the second pass. Failed/unresolved measurements
+        // must not stop the run or mutate the final measurement dictionary.
+        const completionCards = options.autostop ? measures.filter(card => {
+          const [, type, , fn = ''] = gettokWords(card.text);
+          return type === 'tran' && !fn.startsWith('param') && !fn.startsWith('expr');
+        }) : [];
         result.transient = run.transient = solveTransient(
           compiled, runnableTransient(analysis, options), opts, seed, convergence, guard,
+          completionCards.length === 0 ? undefined : transient => {
+            const plot = measurePlot(analysis, { transient, warnings: [] });
+            if (!plot) return false;
+            const checked = evaluateMeasureCards(completionCards, 'tran', plot, new Map(measureValues));
+            return checked.length === completionCards.length && checked.every(value => value.status === 'ok');
+          },
+          savedDeviceVectors,
         );
         measure(analysis, run);
         break;
@@ -333,13 +352,15 @@ function simulateControlScript(
   const warnings: SimulationWarning[] = parseWarnings(circuit);
   const convergence = createConvergenceTelemetry();
   const measureValues = new Map<string, number>();
-  const deckAnalyses = [...circuit.analyses];
-  const deckPoleZero = [...circuit.poleZeroAnalyses];
+  const reparse = circuit.reparseWithParameters;
+  const parameterChanges: import('./parser/preprocessor.js').ParameterAlteration[] = [];
+  let deckAnalyses = [...circuit.analyses];
+  let deckPoleZero = [...circuit.poleZeroAnalyses];
 
   // ngspice reads `@device[i]` from the circuit's present state: the last analysis's last solution.
   let operatingState: ControlOperatingState | undefined;
 
-  const solve = (analyses: AnalysisDirective[], poleZero: PoleZeroAnalysis[]): SimulationResult => {
+  const solve = (analyses: AnalysisDirective[], poleZero: PoleZeroAnalysis[], saves: readonly string[] = []): SimulationResult => {
     const savedAnalyses = circuit.analyses.splice(0, circuit.analyses.length, ...analyses);
     const savedPoleZero = circuit.poleZeroAnalyses.splice(0, circuit.poleZeroAnalyses.length, ...poleZero);
     let compiled: CompiledCircuit;
@@ -355,15 +376,15 @@ function simulateControlScript(
     const resolved = withNetlistOptions(compiled.simulationOptions, options);
     // Cleared first: a failed analysis leaves no state to read out.
     operatingState = undefined;
-    const result = solveCompiledAnalyses(compiled, resolved, warnings, convergence, guard, measures, measureValues, false);
+    const result = solveCompiledAnalyses(compiled, resolved, warnings, convergence, guard, measures, measureValues, false, saves);
     operatingState = analyses.length === 1 && poleZero.length === 0
       ? controlOperatingState(compiled, analyses[0], result)
       : undefined;
     return result;
   };
 
-  const runDeck = (): ControlHostRun[] => [
-    ...deckAnalyses.map(directive => ({ directive, result: solve([directive], []) })),
+  const runDeck = (saves: readonly string[] = []): ControlHostRun[] => [
+    ...deckAnalyses.map(directive => ({ directive, result: solve([directive], [], saves) })),
     ...deckPoleZero.map(analysis => ({ directive: { type: 'pz' as const }, result: solve([], [analysis]) })),
   ];
 
@@ -371,15 +392,15 @@ function simulateControlScript(
     new UnsupportedControlCommandError(command, reason, line.lineNumber, line.text);
 
   const host: ControlHost = {
-    runAnalysis(tokens, line) {
+    runAnalysis(tokens, line, saves) {
       const directive = parseControlAnalysisCard(tokens, line.lineNumber, line.text);
-      return { directive, result: solve([directive], []) };
+      return { directive, result: solve([directive], [], saves) };
     },
-    runDeck(line) {
+    runDeck(line, saves) {
       if (deckAnalyses.length === 0 && deckPoleZero.length === 0) {
         throw new ControlScriptError('run: the deck has no analysis cards', line.lineNumber, line.text);
       }
-      return runDeck();
+      return runDeck(saves);
     },
     alterInstance(device, parameter, values, line) {
       const reason = circuit.alterInstance(device, parameter, values);
@@ -388,6 +409,26 @@ function simulateControlScript(
     alterModel(model, parameter, value, line) {
       const reason = circuit.alterModel(model, parameter, value);
       if (reason !== undefined) throw unsupported('altermod', reason, line);
+    },
+    alterParameter(subcircuit, name, expression, line) {
+      if (!reparse) throw unsupported('alterparam', 'no retained netlist source', line);
+      const changes = [...parameterChanges, { subcircuit, name, expression }];
+      try {
+        reparse(changes);
+      } catch (error) {
+        throw new ControlScriptError(error instanceof Error ? error.message : String(error), line.lineNumber, line.text);
+      }
+      parameterChanges.push({ subcircuit, name, expression });
+    },
+    reset(line) {
+      if (!reparse) throw unsupported('reset', 'no retained netlist source', line);
+      circuit = reparse(parameterChanges);
+      deckAnalyses = [...circuit.analyses];
+      deckPoleZero = [...circuit.poleZeroAnalyses];
+      measures = measureCards(circuit);
+      operatingState = undefined;
+      measureValues.clear();
+      return circuit.controlScript?.constants ?? {};
     },
     parameterVector: (device, parameter) =>
       deviceOutputVector(operatingState, device, parameter) ?? circuit.parameterVector(device, parameter),
@@ -620,13 +661,15 @@ function* streamWithSteps(
 }
 
 function parseWarnings(circuit: Circuit): SimulationWarning[] {
-  return circuit.parseWarnings.map(message => ({ type: 'parse', message }));
+  return circuit.parseDiagnostics;
 }
 
 function validateCircuit(compiled: CompiledCircuit, warnings: SimulationWarning[]): void {
   // ngspice-47 runs a deck whose nodes are all XSPICE digital (event) nodes,
   // such as eSim's half_adder; the analog system is then empty.
-  if (compiled.nodeCount === 0 && !compiled.devices.some(device => device.eventDriven !== undefined)) {
+  // ngspice also runs element-free .tran decks, returning only the time axis.
+  if (compiled.nodeCount === 0 && !compiled.devices.some(device => device.eventDriven !== undefined)
+    && !(compiled.analyses.length > 0 && compiled.analyses.every(analysis => analysis.type === 'tran'))) {
     throw new InvalidCircuitError('Circuit has no nodes');
   }
   if (compiled.analyses.length === 0 && compiled.poleZeroAnalyses.length === 0) {

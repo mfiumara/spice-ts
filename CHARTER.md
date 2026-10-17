@@ -46,7 +46,7 @@ benchmarks.
 Allowed: GitHub issues, labels, milestones, Projects board, branches, PRs on `mfiumara/spice-ts`; squash-merge a PR
 only when (a) CI is green on the exact head SHA and (b) `spice-ts-review` accepted that same SHA.
 
-Not allowed without Mattia: npm publish, git tags/releases, changeset version bumps that publish, Vercel production
+Not allowed without Mattia: npm publish, git tags/releases, changeset version bumps that publish, production hosting (spicets.com on Cloudflare Pages)
 deploy changes, force-push to main, deleting branches/issues not created by the program, spending money, touching
 secrets, editing `~/repos/spicets/web` (cardamom), posting on social media.
 

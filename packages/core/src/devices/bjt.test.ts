@@ -376,8 +376,39 @@ describe('BJT Ebers-Moll', () => {
       .toBeCloseTo(forward * (1 + 8.28 / 50) + 1e-12 * 8.28, 12);
   });
 
+  it.each(['.op', '.dc VCE 1 5 2'])('accepts inert PTF for %s', async analysis => {
+    const deck = (ptf: number) => `inert excess phase
+      VBE b 0 DC 0.7 AC 1
+      VCE c 0 5
+      Q1 c b 0 QGP
+      .model QGP NPN(IS=1e-15 BF=100 TF=1n PTF=${ptf})
+      ${analysis}
+      .end`;
+    const reference = await simulate(deck(0));
+    const result = await simulate(deck(100.8));
+    if (analysis === '.op') {
+      expect(result.dc!.current('VCE')).toBe(reference.dc!.current('VCE'));
+      expect(result.dc!.voltage('b')).toBeCloseTo(0.7, 12);
+    } else {
+      expect(Array.from(result.dcSweep!.current('VCE')))
+        .toEqual(Array.from(reference.dcSweep!.current('VCE')));
+      expect(result.dcSweep!.sweepValues).toHaveLength(3);
+    }
+  });
+
+  it.each(['.ac dec 1 1k 10k', '.tran 1n 10n', '.tran 1n 10n uic'])(
+    'accepts PTF dynamics for %s', async analysis => {
+      await expect(simulate(`supported excess phase
+        VBE b 0 DC 0.7 AC 1
+        VCE c 0 5
+        Q1 c b 0 QGP
+        .model QGP NPN(IS=1e-15 BF=100 TF=1n PTF=30)
+        ${analysis}
+        .end`)).resolves.toBeDefined();
+    },
+  );
+
   it.each([
-    ['PTF=30', "Unsupported BJT model parameter: 'PTF'"],
     ['XCJC=1.5', 'expected BJT XCJC in [0, 1]'],
     ['CJE=-1p', 'expected finite BJT CJE >= 0'],
     ['VJC=0', 'expected finite BJT VJC > 0'],
@@ -429,12 +460,12 @@ describe('BJT Ebers-Moll', () => {
     `).compile()).toThrow("Invalid bounded VBIC DC model parameter: 'CJE'");
   });
 
-  it('rejects PNP polarity outside the bounded VBIC DC subset', () => {
-    expect(() => parse(`unsupported VBIC polarity
+  it('accepts PNP polarity in the bounded VBIC DC subset', () => {
+    expect(() => parse(`bounded VBIC PNP polarity
       Q1 c b 0 QVBIC
       .model QVBIC PNP(LEVEL=4)
       .op
-    `).compile()).toThrow('Unsupported bounded VBIC polarity: only NPN LEVEL=4 is supported');
+    `).compile()).not.toThrow();
   });
 
   it('accepts AC analysis in the bounded VBIC small-signal subset', () => {
@@ -446,13 +477,13 @@ describe('BJT Ebers-Moll', () => {
     `).compile()).not.toThrow();
   });
 
-  it('rejects transient analysis outside the bounded VBIC DC subset', () => {
+  it('accepts transient analysis in the bounded VBIC subset', () => {
     expect(() => parse(`unsupported VBIC transient analysis
       VBE b 0 0.7
       Q1 c b 0 QVBIC
       .model QVBIC NPN(LEVEL=4)
       .tran 1n 10n
-    `).compile()).toThrow("Unsupported bounded VBIC analysis: 'tran'");
+    `).compile()).not.toThrow();
   });
 
   it('accepts pole-zero analysis in the bounded VBIC small-signal subset', () => {

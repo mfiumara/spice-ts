@@ -1,5 +1,181 @@
 # Benchmark sources
 
+## VBIC substrate-parasitic weighting WSP (#1294)
+
+`benchmarks/vbic-wsp/wsp.cir` is an original project-authored MIT probe.
+`packages/core/src/devices/vbic-wsp.test.ts` reads the byte-identical deck and
+freezes ngspice-47 OP (1 row), DC (3 rows) and complex AC (3 rows) currents.
+Regenerate with `SPICE_ASCIIRAWFILE=1 spice-heavy ngspice -b -r wsp.raw benchmarks/vbic-wsp/wsp.cir`.
+Equations follow the BSD-3-Clause
+[`vbicload.c`](https://github.com/ngspice/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/src/spicelib/devices/vbic/vbicload.c)
+at revision `a80f6e3e95d51534905b1f23410a951802666656`, lines 3221-3285 and
+3913-3922. WSP mixes exponentials of Vbep and Vbci in Ifp, not voltages;
+Vbcp still controls the unmixed reverse Irp. Ifp also drives qbp, the RBP
+conductance and TR diffusion charge Qbep. Dual derivatives carry both inputs
+through DC, AC and transient stamps. `vbicmpar.c:232-235` assigns WSP without
+range validation; spice-ts deliberately restricts it to finite [0, 1].
+
+Measured on Darwin arm64 with ngspice-47, the maximum peak-normalized
+OP/DC/complex-AC current error is 2.460021212794704e-6 (threshold 0.001),
+and the maximum absolute current error is 1.252334108369803e-10 A.
+Independent hand-reference transport error over WSP=0/0.3/1 and NPN/PNP is
+at most 1.1580528575742387e-23 A; analytic derivatives, AC diffusion charge
+and Euler-integrated diffusion charge are also checked. Before this change
+the same probe rejects typed unsupported WSP, so no pre-change numeric
+parity or speed comparison is available.
+
+The unchanged corpus-f `examples/vbic/DFF_Y_ECL.sp` retains BSD-3-Clause
+provenance in `corpus/corpus-f/SOURCES.md` and `LICENSE.txt`, and SHA-256
+`d811ecfa0f370d281fb35729ca3177e738fe034621d9b2909765d9d70f527cc6`.
+ngspice-47 completes 40,545 transient rows; spice-ts now advances from typed
+unsupported WSP to typed unsupported IBEIP. This remains a coverage loss,
+not DFF waveform parity. No corpus bytes or simulator tolerances changed.
+
+## VBIC base-emitter partition WBE (#1291)
+
+`benchmarks/vbic-wbe/wbe.cir` is an original project-authored MIT probe.
+The regression in `packages/core/src/devices/vbic-wbe.test.ts` reads this exact
+deck and freezes ngspice-47 OP (1 row), DC (3 rows) and AC (3 rows) values.
+Regenerate with `SPICE_ASCIIRAWFILE=1 spice-heavy ngspice -b -r wbe.raw benchmarks/vbic-wbe/wbe.cir`.
+Equations follow ngspice's BSD-3-Clause
+[`vbicload.c`](https://github.com/ngspice/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/src/spicelib/devices/vbic/vbicload.c)
+at pinned revision `a80f6e3e95d51534905b1f23410a951802666656`, lines 3297-3535
+(intrinsic/extrinsic diode currents) and 3874-3896 (depletion partition with
+unpartitioned intrinsic forward diffusion). `vbicmpar.c:188-191` assigns WBE
+without validation; spice-ts deliberately bounds finite WBE to [0, 1].
+The maximum peak-normalized OP/DC/complex-AC error measured on this probe is
+3.886063221917387e-6, against the unchanged 0.1% probe threshold.
+The unchanged corpus-f `examples/vbic/DFF_Y_ECL.sp` retains its original
+BSD-3-Clause provenance in `corpus/corpus-f/SOURCES.md` and `LICENSE.txt`.
+Its SHA-256 remains `d811ecfa0f370d281fb35729ca3177e738fe034621d9b2909765d9d70f527cc6`.
+ngspice-47 completes 40,545 transient rows. spice-ts advances from typed
+unsupported WBE to typed unsupported WSP; no DFF waveform parity is claimed.
+
+## Diode self-heating (#1261)
+
+`benchmarks/diode-self-heating/compare.ts` sources the unchanged corpus-f
+`examples/soa/diode-soa-sh.cir` from ngspice-47 (BSD-3-Clause; provenance and
+licence in `corpus/corpus-f/SOURCES.md` and `corpus/corpus-f/LICENSE.txt`).
+SHA-256: `24c5c8568ebe8c15d8d8b603e84db3d98e8914767e1de1f4f266f242828f066f`.
+It runs the original deck through the public API, including saved `@d1[id]`
+and SOA postprocessing, and compares temperature, source current and saved diode
+current at all 100 DC points. All waveforms use the uniform 1%-of-peak threshold.
+The project-authored MIT saved-current unit deck freezes ngspice-47 DC currents
+and thermal state with tight solver options and a 1e-6 relative threshold.
+Timings measure different
+execution boundaries and are diagnostic only, not a speed comparison.
+Thermal semantics follow ngspice-47 `src/spicelib/devices/dio/dioparam.c:47-49`
+(flag), `dioload.c:80,318-322,749-759,790-822` (activation, temperature,
+power/Jacobian), and `diosetup.c:274-278` (thermal defaults). Project-authored
+MIT unit decks freeze ngspice-47 OP values and check thermal RC integration.
+Thermal junction charge and AC/noise remain typed unsupported errors.
+
+## BSIM3 AC non-quasi-static common-source amplifier (#1249)
+
+`benchmarks/bsim3-acnqs-1249/common-source.cir` and the reverse, resistive-gate,
+PMOS and temperature/multiplier variants in `decks.ts` are original project-authored
+MIT probes. Each deck is passed byte-identically to ngspice-47 and spice-ts;
+the test-consumed `ngspice-47.json` records SHA-256 hashes and 61 complex
+v(out) samples from 1 MHz to 1 THz for both ACNQSMOD=0 and 1. Regenerate with
+`spice-heavy pnpm exec tsx benchmarks/bsim3-acnqs-1249/reference.ts`.
+`packages/core/src/devices/bsim3-acnqs.test.ts` checks complex and magnitude
+error against the unchanged 1%-of-peak threshold, plus wrapped phase error.
+The port follows ngspice-47
+[`b3acld.c:50-100,367-423`](https://github.com/imr/ngspice/blob/ngspice-47/src/spicelib/devices/bsim3/b3acld.c)
+and [`b3ld.c:2478-2494`](https://github.com/imr/ngspice/blob/ngspice-47/src/spicelib/devices/bsim3/b3ld.c)
+(ngspice BSIM3 distribution, UC Berkeley permissive licence). The AC delay
+reuses the transient NQS relaxation rate. NQSMOD=1 AC (including combined
+selectors) and ACNQSMOD=1 noise remain explicitly unsupported with typed
+errors; ACNQSMOD is defined only on BSIM3 3.3.0.
+
+
+## VBIC flicker and total noise (#1197)
+
+`benchmarks/vbic-noise/compare.ts` runs the byte-identical corpus-f
+`tests/vbic/noise_scale_test.cir` through both engines. Source: ngspice
+[`tests/vbic/noise_scale_test.cir`](https://github.com/imr/ngspice/blob/3ef069fb1f04177a153f342a32d941fc20ff047e/tests/vbic/noise_scale_test.cir),
+revision `3ef069fb1f04177a153f342a32d941fc20ff047e`, BSD-3-Clause;
+SHA-256 `2877ccad8bcb440258e65a8a817edfd8536029ae192b3049cb62f248a8a81286`.
+The licence and original manifest entry remain in `corpus/corpus-f/SOURCES.md`
+and `corpus/corpus-f/LICENSE.txt`. No deck modifications or tolerance changes.
+Equations follow the same revision's `src/spicelib/devices/vbic/vbicnoise.c`
+and `vbicload.c` (BSD-3-Clause), including gmin, M/AREA scaling, and the
+upstream distinction: RS/ICCP contribute to integrated totals, not spectra.
+The regression test freezes ngspice-47 binary-raw samples; its additional
+scaling/exponent probes are project-authored MIT tests. Run the comparison
+with `pnpm exec tsx benchmarks/vbic-noise/compare.ts`. Numerical residuals
+and single-run timings are printed, not committed as generated receipts.
+This does not claim support for VBIC parameters outside the bounded model,
+self-heating, or differential semiconductor-noise outputs.
+
+## XSPICE zener and square (#1188)
+
+`packages/core/src/devices/xspice/xspice-zener-square.test.ts` uses original
+project-authored MIT probes and analytic checks. The model equations and
+interface tables follow ngspice `src/xspice/icm/xtradev/zener/{cfunc.mod,ifspec.ifs}`
+and `src/xspice/icm/analog/square/{cfunc.mod,ifspec.ifs}` (Georgia Tech XSPICE,
+ngspice BSD-3-Clause distribution). Upstream source:
+https://github.com/ngspice/ngspice/tree/master/src/xspice/icm.
+The four byte-identical `analog_models4_{ac,dc,swept_dc,transient}.deck` fixtures
+retain their pinned ngspice revision, URLs, hashes and BSD-3-Clause provenance
+in `benchmarks/corpus/corpus-f/SOURCES.md`. Comparisons use ngspice-47 and the
+existing `triage-detail.ts` harness without per-deck tolerance changes.
+
+## Uniform distributed RC line (#1191)
+
+`packages/core/src/urc.test.ts` contains an original project-authored MIT probe
+with frozen ngspice-47 DC and transient samples. The comment-free test deck is
+passed unchanged to both engines (ngspice additionally needs its title and `.end`).
+References use `SPICE_ASCIIRAWFILE=1 ngspice -n -b -r probe.raw probe.cir` and
+linear interpolation at the listed sample times. Expansion follows ngspice-47
+[`urcsetup.c`](https://github.com/imr/ngspice/blob/3ef069fb1f04177a153f342a32d941fc20ff047e/src/spicelib/devices/urc/urcsetup.c)
+(BSD-3-Clause, existing corpus-f licence). The existing byte-identical corpus-f
+`examples/TransmissionLines/URC-TM-SUB.cir` retains its manifest provenance.
+Its `.control` vectors are compared using the existing `control-vectors.ts`
+wrapper, not the batch `-r` path which exports no vectors for this deck.
+
+## MCP scalar RC measurements (#1162)
+
+`packages/mcp/src/measure.test.ts` contains two original project-authored MIT
+RC netlists (repository `LICENSE`), not third-party extracts. Both engines receive
+the identical `rcTran`/`rcAc` strings, including the comment title and `.end`.
+References were exported with ngspice-47 using
+`SPICE_ASCIIRAWFILE=1 ngspice -b -r probe.raw probe.cir`.
+The transient scalar is the first linear-axis crossing of `v(out)` at `1-exp(-1)`;
+the AC scalar is the first linear-Hz crossing of `20*log10(abs(v(out)))` at
+`-10*log10(2)`. Native scalars are retained in the runnable test, alongside the
+independent analytic RC checks. No external source or simulator tolerance changed.
+
+## TEMPER model/instance sweep regression (#1151)
+
+`packages/core/src/analysis/temper-model-1151.test.ts` contains an original
+MIT-licensed two-diode probe. Its ten current references were measured with
+ngspice-47 on the identical deck, using `SPICE_ASCIIRAWFILE=1 ngspice -n -b -r probe.raw probe.cir`,
+without tolerance changes. The upstream self-check decks are the unchanged
+BSD-3-Clause corpus-f fixtures at ngspice revision
+`3ef069fb1f04177a153f342a32d941fc20ff047e`, with per-file provenance in
+`benchmarks/corpus/corpus-f/SOURCES.md`:
+https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/regression/temper/temper-2.cir.
+The refreshed corpus row is `not-compared`, not a numerical match: its control
+block exits successfully, but ngspice's batch raw export contains no vectors.
+
+## Behavioral capacitor explicit multiplier compatibility (#1122)
+
+`packages/core/src/parser/behavioral-capacitor-m-1122.test.ts` contains an
+original MIT-licensed PWL ramp reproducer authored in
+https://github.com/mfiumara/spice-ts/issues/1122, not an imported corpus deck.
+Its numerical current references were measured with ngspice-47 on identical
+netlist bytes. The behavioral reference is ngspice revision
+`a80f6e3e95d51534905b1f23410a951802666656`, BSD-3-Clause:
+https://github.com/imr/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/src/frontend/inpcom.c#L6070-L6106
+and lines 6970-6971. No upstream C code is copied.
+Compatibility deliberately includes its double-exponent preprocessing defect:
+explicit numeric `m=2` becomes gain `2.00000000e+00e9`, interpreted as 2,
+whereas absent `m` gives gain 1e9. This is not physically corrected multiplier
+semantics or an accuracy claim. Braced/quoted multiplier expressions remain
+structured errors; ngspice-47 rejects the tested forms too. Ordinary constant
+capacitor multiplicity is unchanged.
+
 ## Published numerical reference baseline (#1113)
 
 `benchmarks/corpus/vendor-published/` contains 20 normalized reconstructions and
@@ -767,6 +943,14 @@ Run `pnpm exec tsx benchmarks/sensitivity/compare.ts` with ngspice-47. The JSON 
 - Adaptation: none between engines. The verifier reads the committed fixture once and supplies those exact bytes to spice-ts and ngspice-47. No engine-specific values, tolerances, or rewrites are used.
 - Reproduce with `pnpm -C packages/core build && pnpm exec tsx benchmarks/results/issue-319/verify.ts --output benchmarks/results/issue-319/report.json`. The receipt records ngspice-47, exact commands, the 17-point `.dc VSWEEP 8 12 0.25` grid, `V(cold)`, `V(nominal)`, `V(hot)`, and `I(VSWEEP)`, convergence, runtimes, and matched-point maximum/RMS absolute and relative errors.
 
+## VBIC emission coefficient parity fixture (#1156)
+
+- Fixture: `benchmarks/vbic-emission/emission.cir`; project-authored for [issue #1156](https://github.com/mfiumara/spice-ts/issues/1156), MIT under the repository licence. No third-party netlist is copied.
+- The exact same deck bytes are used by both engines; the temperature card alone is varied identically to 0, 27 and 75 C. Forward/reverse transport and forward-biased parasitic substrate diodes exercise NF, NR, NEI, NEN, NCI, NCN, NFP, NCIP and NCNP in OP, DC sweep and AC.
+- Equation sources: ngspice-47 `src/spicelib/devices/vbic/{vbicload,vbictemp,vbicsetup}.c`, available in the [pinned ngspice source tree](https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/src/spicelib/devices/vbic/), BSD-3-Clause (see the ngspice corpus provenance above). All temperature exponents outside the bounded subset retain their ngspice defaults, including TNF=0.
+- Reference: `ngspice-47.json`, read by the regression test, contains ngspice-47 ASCII raw plot values (not rounded print tables). Generate raw plots with `SPICE_ASCIIRAWFILE=1 ngspice -b -r <output.raw> <deck>` for each temperature. The test runs with `pnpm -C packages/core exec vitest run src/devices/vbic-emission.test.ts`; it applies the uniform corpus 1%-of-peak rule and quantity floors, without per-circuit tolerance changes.
+- Scope: bounded isothermal NPN LEVEL=4 only; this does not enable VBIC transient/noise or arbitrary model parameters. The three unchanged corpus-f VBIC example decks still reject FC after the emission-coefficient gap is removed.
+
 ## Bounded VBIC non-ground substrate parity fixtures
 
 - Fixtures: `benchmarks/vbic-substrate/dc.cir` (SHA-256 `3229c4f71f6e450c0da6f5b1b371d8f8c3e7fd3ad845ae04859e7c3aacb1a32c`), `benchmarks/vbic-substrate/ac.cir` (SHA-256 `897e30fd367d4ad14ad4fc355bf1cc7f76e0afdae12671e6a6a3e83fcf40ed66`), and `benchmarks/vbic-substrate/dc-latchup.cir` (SHA-256 `53259667c7b0fe7f2e20b5591b9273c4beca5c51e9b5027a74b06d04c964173d`).
@@ -1393,3 +1577,114 @@ unresolved causal classification and reproduction commands. `verification.json`
 checks observation-only traces against uninstrumented output on every native
 and TypeScript signal/timepoint. This is evidence, not new corpus coverage,
 an aggregate refresh, or a production fix.
+
+## BJT excess phase regression (#1142)
+
+`packages/core/src/devices/fixtures/bjt-ptf-1142.cir` is an original,
+self-authored common-emitter AC/transient probe under the repository MIT
+licence. The adjacent test consumes it and pins its SHA-256 and ngspice-47
+reference values. No third-party netlist was added. The unchanged corpus-g
+`GMIN_STEPPING/gstep_cont3a.cir` retains its existing corpus-g provenance.
+The equations follow ngspice BJT `bjttemp.c`, `bjtacld.c` and `bjtload.c`
+(https://github.com/ngspice/ngspice/tree/master/src/spicelib/devices/bjt);
+PTF is degrees, and the transient delay uses Weil's backward-Euler approximation.
+
+## XSPICE flip-flop coverage (#1179)
+
+### Toggle and synchronous SR flip-flops (#1254)
+
+`benchmarks/xspice-tff-srff-1254/{d_tff,d_srff}.cir` are original spice-ts
+fixtures, MIT (repository LICENSE). Both engines consume the identical deck.
+The `.ngspice.tsv` files contain ngspice-47 `eprint q nq` output, consumed by
+`packages/core/src/devices/xspice/xspice-tff-srff.test.ts`. The test checks every
+state and every Q/NQ edge within 1 ps, including SR conflict (UNKNOWN).
+No circuit-specific tolerances or solver adjustments are used.
+
+Semantics and interface source (Public Domain, as stated in the source headers):
+https://github.com/imr/ngspice/tree/a80f6e3e95d51534905b1f23410a951802666656/src/xspice/icm/digital
+(`d_tff` and `d_srff`, `cfunc.mod` and `ifspec.ifs`).
+
+Reproduce the reference from the repository root, replacing `d_tff` with
+`d_srff` for the other model. The wrapper only sources the unchanged deck and
+prints digital events; it adds no circuit elements or analysis directives.
+
+```sh
+printf 'reference\n.control\nsource benchmarks/xspice-tff-srff-1254/d_tff.cir\nrun\neprint q nq\nquit\n.endc\n.end\n' | ngspice -b
+pnpm -C packages/core exec vitest run src/devices/xspice/xspice-tff-srff.test.ts
+```
+
+Before implementation both models were rejected as unsupported. Afterward,
+all 18 Q/NQ transitions match ngspice-47 states; maximum absolute timing error
+is 1.324e-23 s on these fixtures (macOS arm64, ngspice-47 KLU). This is a
+coverage/timing comparison, not a speed or general waveform-parity claim.
+
+`benchmarks/xspice-flipflop-1179/compare.ts` reuses the unchanged corpus-i
+eSim `JK_Flipflop` and `4_bit_JK_ff` fixtures (GPL-3.0-only, pinned revision
+`1a25a46ce15e`; see corpus-i/SOURCES.md), and corpus-f's ngspice
+`examples/xspice/original-examples/mixed_mode.deck` (existing licence and
+revision in corpus-f/SOURCES.md). Only GUI control blocks are removed, equally
+for both engines. No circuit cards, transient directives or tolerances change.
+The model semantics follow the Public Domain ngspice-47 source
+https://github.com/imr/ngspice/tree/a80f6e3e95d51534905b1f23410a951802666656/src/xspice/icm/digital
+(`d_jkff` and `d_dff`, `cfunc.mod` and `ifspec.ifs`).
+
+## XSPICE magnetic models (#1217)
+
+`benchmarks/xspice-magnetic/compare.ts` runs the existing corpus-i eSim
+`Examples/Transformer/Transformer.cir.out` (GPL-3.0-only) and corpus-f
+`examples/xspice/original-examples/analog_models2_{ac,dc,swept_dc,transient}.deck`
+(BSD-3-Clause). Pinned upstream revisions, original licences and SHA-256 receipts
+remain in `corpus-i/SOURCES.md`, `corpus-f/SOURCES.md` and their manifests.
+Both engines read identical original bytes, including control blocks; no fixture
+or tolerance changes. The script compares this selected bucket, not whole corpora.
+Model semantics follow the Public Domain ngspice-47
+[`xtradev` source](https://github.com/imr/ngspice/tree/a80f6e3e95d51534905b1f23410a951802666656/src/xspice/icm/xtradev):
+`lcouple/cfunc.mod:182-249` and `core/cfunc.mod:246-365`, with ports/defaults
+from the respective `ifspec.ifs`. Core hysteresis mode is explicitly rejected.
+
+## Numparam strings (#1259)
+
+`benchmarks/numparam-strings/compare.ts` sources the unchanged corpus-f
+`examples/numparam/strings.cir` (BSD-3-Clause; provenance in corpus-f/SOURCES.md)
+in ngspice-47 and passes identical bytes to spice-ts. An external observer
+exports analog samples and digital event histories without editing the fixture.
+Analog errors use the uniform 1%-of-peak threshold; digital state sequences and
+event-time errors are reported separately. No circuit-specific tuning is applied.
+Semantics follow ngspice-47 revision a80f6e3e95d51534905b1f23410a951802666656:
+[`numparam/xpressn.c:1140-1210`](https://github.com/imr/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/src/frontend/numparam/xpressn.c#L1140)
+for adjacent quoted/identifier string atoms, and the Public Domain
+[`digital/d_lut/cfunc.mod:168-223`](https://github.com/imr/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/src/xspice/icm/digital/d_lut/cfunc.mod#L168)
+for table indexing, unknown entries and output delays (lines 227-259).
+
+## BSIM3 transient NQS (#692)
+
+`bsim3-nqs-692/reference.ts` reuses `bsim3v32-594/cards.ts`'s inverter chain
+and existing corpus-f TSMC cards (provenance/licences above and in
+`corpus/corpus-f/SOURCES.md`). It sets NQSMOD=0/1 on every transistor and
+exercises the supported VERSION selectors with identical decks in both engines.
+The generated `ngspice-47.json` is consumed by `bsim3-nqs.test.ts`.
+No new third-party circuit material is introduced.
+Model equations follow the UC Berkeley-copyrighted, permissively licensed
+ngspice-47 source (the notice in each source file), pinned at
+https://github.com/imr/ngspice/tree/a80f6e3e95d51534905b1f23410a951802666656/src/spicelib/devices/bsim3
+(`b3ld.c:2478-2491,2593-2675,2803-2848,3109-3120`, `b3temp.c:785,803-804`)
+and the sibling `bsim3v32` (`b3v32ld.c:2793-2806,2906-2988,3106-3163,3425-3436`,
+`b3v32temp.c:853,873-874`). The transient implementation locally eliminates
+the charge-node equation, retaining qcheq/qcdump integration histories.
+
+## XSPICE gain declarative noise (#1278)
+
+`benchmarks/xspice-gain-noise/compare.ts` sources the unchanged corpus-f
+`examples/xspice/noise/noise_gain.cir` in ngspice-47 and passes identical bytes
+to spice-ts (BSD-3-Clause; provenance in `corpus/corpus-f/SOURCES.md`). An
+external batch observer exports the original control plots without editing
+the fixture. The deck's summary interval of 16 exports 125 spectral points
+per output; these are matched at identical frequencies within spice-ts's
+1999-point sweeps. Both integrated totals cover the entire sweep.
+
+Equations and source placement follow Public Domain ngspice-47
+[`src/xspice/mif/mifnoise.c:262-321,340-364,383-411`](https://sourceforge.net/p/ngspice/ngspice/ci/a80f6e3e95d51534905b1f23410a951802666656/tree/src/xspice/mif/mifnoise.c).
+Contrary to the original issue premise, `gain/cfunc.mod` has no noise law:
+`noise_voltage` acts at the output voltage-source branch (not input-referred),
+and `noise_current` across the input nodes. Independent white and flicker
+powers are integrated separately. No thresholds or fixture bytes are tuned.

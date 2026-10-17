@@ -65,9 +65,16 @@ export function resolveResistor(
       `Value of resistor ${name} is too small, set to ${resistance.toExponential(6)}`,
     );
   }
+  const length = instance.L ?? card.L ?? DEFAULT_GEOMETRY;
+  const width = instance.W ?? card.DEFW ?? card.W ?? DEFAULT_GEOMETRY;
+  const effectiveLength = length - 2 * (card.SHORT ?? card.DLR ?? 0);
+  const effectiveWidth = width - 2 * (card.NARROW ?? card.DW ?? 0);
+  // RESsetup uses geometry only when an instance L or W is explicitly given.
+  const effectiveNoiseArea = instance.L === undefined && instance.W === undefined ? 1
+    : effectiveLength > 0 && effectiveWidth > 0
+      ? Math.pow(effectiveLength, card.LF ?? 1) * Math.pow(effectiveWidth, card.WF ?? 1)
+      : NaN;
   if (resistance === undefined) {
-    const length = instance.L ?? card.L ?? DEFAULT_GEOMETRY;
-    const width = instance.W ?? card.DEFW ?? card.W ?? DEFAULT_GEOMETRY;
     const sheet = card.RSH ?? 0;
     const modelResistance = card.R ?? card.RES;
     if (length * width * sheet > 0) {
@@ -96,6 +103,9 @@ export function resolveResistor(
       acResistance: instance.AC,
       noisy: instance.NOISY === undefined ? undefined : instance.NOISY !== 0,
       flickerCoefficient: card.KF,
+      flickerExponent: card.AF,
+      flickerFrequencyExponent: card.EF,
+      effectiveNoiseArea,
       warnings,
     },
   };

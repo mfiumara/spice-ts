@@ -397,11 +397,9 @@ describe('.noise analysis', () => {
     expect(relativeError(result.integratedInputNoise!, 2.273517040781e+00)).toBeLessThan(1e-4);
   });
 
-  it('keeps XTI/XTB/EG BJT noise at 27 C by rejecting .options TEMP', async () => {
+  it('accepts temperature-adjusted XTI/XTB/EG BJT noise', async () => {
     const deck = bjtFixture.replace('NR=1)', 'NR=1 XTI=3 XTB=1.5 EG=1.11)');
-    await expect(simulate(`${deck}\n.options temp=50`)).rejects.toThrow(
-      ".options TEMP=50 is unsupported for '.noise'",
-    );
+    expect((await simulate(`${deck}\n.options temp=50`)).noise).toBeDefined();
   });
 
   it.each(['RBM', 'IRB'])(
@@ -527,8 +525,8 @@ describe('.noise analysis', () => {
       / 4.050963523633458e-10).toBeLessThan(2e-6);
   });
 
-  it('retains the unsupported non-nominal BJT noise temperature diagnostic for .temp', async () => {
-    await expect(simulate(`${bjtFixture}\n.temp 50`)).rejects.toThrow(".options TEMP=50 is unsupported for '.noise'");
+  it('accepts non-nominal BJT noise temperature via .temp', async () => {
+    expect((await simulate(`${bjtFixture}\n.temp 50`)).noise).toBeDefined();
   });
 
   it('rejects .step combined with .noise instead of returning empty step results', () => {

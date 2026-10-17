@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { parseTitleless as parse } from '../parser/index.js';
+import { parseLtraModelCard } from '../parser/transmission-line-parser.js';
 import { simulate } from '../simulate.js';
 import { LossyTransmissionLine, LtraModelState } from './lossy-transmission-line.js';
 import { resolveLtraModel } from './ltra-model.js';
@@ -67,6 +68,41 @@ function sampleAt(time: Float64Array | number[], values: Float64Array | number[]
 }
 
 describe('ngspice LTRA lossy transmission line', () => {
+  it.each([
+    ['nosteplimit steplimit=0 lininterp mixedinterp quadinterp', true, 'quadratic'],
+    ['steplimit nosteplimit=0 quadinterp mixedinterp lininterp', false, 'linear'],
+    ['lininterp quadinterp mixedinterp=0', true, 'mixed'],
+  ] as const)('uses the last ngspice selector, independent of flag value: %s', (controls, stepLimit, interpolation) => {
+    const card = `.model LMOD LTRA R=2 L=250n C=100p LEN=1 ${controls}`;
+    const model = resolveLtraModel(parseLtraModelCard(card.split(' '), 1));
+    expect(model.stepLimit).toBe(stepLimit);
+    expect(model.interpolation).toBe(interpolation);
+  });
+
+  it.each([
+    'steplimit=1 compactrel=1e-3 compactabs=1e-14 nocontrol=1 noprint=1',
+    'nosteplimit truncdontcut lininterp',
+    'steplimit=0 quadinterp=0',
+    'mixedinterp truncnr',
+  ])('runs transient with ngspice model controls: %s', async controls => {
+    const result = await simulate(parse(lineStep.replace('STEPLIMIT', controls)));
+    expect(result.transient!.time.at(-1)).toBeCloseTo(12e-9, 15);
+    expect(result.transient!.voltage('output').at(-1)).toBeGreaterThan(0.4);
+    if (controls.includes('truncnr')) {
+      expect(result.warnings.some(warning => warning.message.includes('TRUNCNR'))).toBe(true);
+    }
+  });
+
+  it('executes the unchanged corpus-g LTRA/ltra1 fixture', async () => {
+    const fixture = readFileSync(new URL(
+      '../../../../benchmarks/corpus/corpus-g/fixtures/LTRA/ltra1.cir', import.meta.url,
+    ));
+    expect(createHash('sha256').update(fixture).digest('hex'))
+      .toBe('9ecb2e652071bef1cfd099a369e2c03e7990f63c06ea729792cb526ad5c31c0f');
+    const result = await simulate(fixture.toString('utf8'));
+    expect(result.transient!.time.at(-1)).toBeCloseTo(60e-9, 15);
+  }, 30_000);
+
   it('executes the unchanged classic 24-inch lossy-line fixture', async () => {
     expect(createHash('sha256').update(classicFixture).digest('hex'))
       .toBe('53e333e9629c3e3c4e839c4b72c9a512a220dec4baf0536e36626f290d240cd6');

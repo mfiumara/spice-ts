@@ -12,6 +12,9 @@ import { MOSFET } from '../devices/mosfet.js';
 import { Resistor } from '../devices/resistor.js';
 import { SwitchBase } from '../devices/switch.js';
 import { VoltageSource } from '../devices/voltage-source.js';
+import { otaNoiseSources } from '../devices/xspice/ota-model.js';
+import { gainNoiseSources } from '../devices/xspice/gain-noise.js';
+import { VBIC } from '../devices/vbic.js';
 import { InvalidCircuitError } from '../errors.js';
 import { createMatrixVariableIdentities, MNAAssembler } from '../mna/assembler.js';
 import { NoiseResult } from '../results.js';
@@ -34,8 +37,8 @@ const N_MINGAIN = 1e-20;
  * the DC solve and the AC stamp already model (#736). The substrate diode has
  * no bjtnoise.c source and no bjtacld.c conductance, so ISS/NS and the CJS
  * junction only act through the operating point and the substrate capacitance;
- * TNOM, XTI, XTB and EG only move the bjttemp.c parameters those solves use,
- * and Circuit rejects .options TEMP with .noise (27 C sources) (#767).
+ * TNOM, XTI, XTB and EG move the bjttemp.c parameters those solves use,
+ * including the temperature-adjusted currents used by shot/flicker noise.
  * RBM/IRB (bias-dependent gx noise) stay rejected.
  */
 const BJT_NOISE_MODEL_PARAMETERS = new Set([
@@ -53,6 +56,14 @@ export function assertNoiseDevicesSupported(compiled: CompiledCircuit): void {
     analysis.type === 'noise' && analysis.outputReferenceNode !== undefined
   );
   for (const device of compiled.devices) {
+    if (device instanceof Resistor && device.noisy) {
+      const { flickerCoefficient: kf, flickerExponent: af, flickerFrequencyExponent: ef,
+        effectiveNoiseArea: area, multiplier: m } = device;
+      if (!(kf >= 0) || !Number.isFinite(kf)
+        || (kf !== 0 && (![af, ef, area, m].every(Number.isFinite) || !(area > 0) || !(m > 0)))) {
+        throw new InvalidCircuitError(`.noise requires finite resistor KF >= 0, AF, EF and positive noise geometry and M for '${device.name}'`);
+      }
+    }
     if (hasDifferentialOutput && isSemiconductorNoiseDevice(device)) {
       throw new InvalidCircuitError(
         '.noise differential voltage output only supports resistor noise',
@@ -80,7 +91,10 @@ export function assertNoiseDevicesSupported(compiled: CompiledCircuit): void {
           `.noise does not support BJT base resistance with XCJC < 1 for '${device.name}'`,
         );
       }
-    } else if (device instanceof BSIM3v3) kind = 'MOSFET';
+    } else if (device instanceof BSIM3v3) {
+      device.assertQuasiStaticSmallSignal(false);
+      kind = 'MOSFET';
+    }
     // b1noi.c / b2noi.c are not ported; reject rather than treat the channel as noiseless.
     else if (device instanceof ClassicBsimMosfet) kind = `MOSFET ${device.setup.kind}`;
     // mos2noi.c is not ported; reject rather than treat the MOS2 channel as noiseless.
@@ -92,6 +106,11 @@ export function assertNoiseDevicesSupported(compiled: CompiledCircuit): void {
     else if (device instanceof HFET1) kind = 'HFET';
 
     if (device instanceof MOSFET) {
+      if (device.getTemperature() !== 27) {
+        throw new InvalidCircuitError(
+          `.noise does not support MOSFET noise at TEMP=${device.getTemperature()} C for '${device.name}' (noise sources are evaluated at 27 C)`,
+        );
+      }
       if (device.params.LEVEL !== 1) {
         throw new InvalidCircuitError(
           `.noise only supports MOSFET level 1 for '${device.name}'`,
@@ -138,10 +157,11 @@ export function assertNoiseDevicesSupported(compiled: CompiledCircuit): void {
 }
 
 /**
- * Solve the bounded noise slice at ngspice's default 27 C circuit temperature:
+ * Solve the bounded noise slice at the circuit/device temperature (MOS1 is
+ * restricted to ngspice's default 27 C circuit temperature):
  * resistor and S/W switch thermal noise, diode junction shot/flicker noise, BJT level-1
  * collector/base shot, base-current KF/AF flicker noise, and RB/RC/RE
- * thermal noise, plus MOS1 channel thermal/KF/AF flicker noise.
+ * thermal noise, VBIC thermal/shot/KFN noise, plus MOS1 channel thermal/KF/AF flicker noise.
  * Controlled and independent ideal sources are noiseless.
  */
 export function solveNoise(
@@ -200,6 +220,11 @@ export function solveNoise(
     if (negativeNode >= 0) gainRhs[negativeNode] += 1;
   }
 
+  // vbicnoise.c evaluates RS/ICCP but excludes them from VBICTOTNOIZ.
+  // Both still contribute to integrated totals (the per-source loop).
+  const vbicSubstrateResistors = new Set(devices
+    .filter((device): device is VBIC => device instanceof VBIC)
+    .map(device => `${device.name}.RS`));
   const resistorSources = devices
     .filter((device): device is Resistor => device instanceof Resistor && device.noisy)
     .map(resistor => {
@@ -208,19 +233,26 @@ export function solveNoise(
           `.noise requires a positive finite resistance for '${resistor.name}'`,
         );
       }
-      if (resistor.flickerCoefficient !== 0) {
-        throw new InvalidCircuitError(
-          `.noise does not support resistor flicker noise (model KF) for '${resistor.name}'`,
-        );
-      }
       // ngspice resnoise.c: thermal noise uses the DC conductance RESconduct even with ac=,
       // at the instance temperature REStemp + RESdtemp (model TEMP/DTEMP, #846).
       const kelvin = resistor.getTemperature() + CELSIUS_TO_KELVIN;
+      const voltage = (resistor.nodes[0] < 0 ? 0 : dcSolution[resistor.nodes[0]])
+        - (resistor.nodes[1] < 0 ? 0 : dcSolution[resistor.nodes[1]]);
+      // resnoise.c: REScurrent is the total DC current, including temperature, SCALE and M.
+      const current = Math.abs(voltage * resistor.conductance / resistor.multiplier);
+      const flicker = resistor.flickerCoefficient === 0 ? 0
+        : resistor.multiplier * resistor.flickerCoefficient * Math.pow(current, resistor.flickerExponent)
+          / resistor.effectiveNoiseArea;
+      if (!Number.isFinite(flicker)) {
+        throw new InvalidCircuitError(`.noise requires finite resistor flicker density for '${resistor.name}'`);
+      }
       return {
+        excludeFromSpectrum: vbicSubstrateResistors.has(resistor.name),
         positive: resistor.nodes[0],
         negative: resistor.nodes[1],
-        currentPowerDensity: (_frequency: number) =>
-          4 * BOLTZMANN_CONSTANT * kelvin * resistor.conductance,
+        currentPowerDensity: (frequency: number) =>
+          4 * BOLTZMANN_CONSTANT * kelvin * resistor.conductance
+          + (flicker === 0 ? 0 : flicker / Math.pow(frequency, resistor.flickerFrequencyExponent)),
       };
     });
   const mosfetSources = devices
@@ -307,7 +339,25 @@ export function solveNoise(
       currentPowerDensity: (_frequency: number) =>
         4 * BOLTZMANN_CONSTANT * DEFAULT_TEMPERATURE_KELVIN * sw.smallSignalConductance,
     }));
-  const noiseSources = [...resistorSources, ...switchSources, ...mosfetSources, ...bjtSources];
+  const vbicSources = devices
+    .filter((device): device is VBIC => device instanceof VBIC)
+    .flatMap(device => device.noiseOperatingPoint(dcSolution, options.deviceGmin,
+      devices.find(part => part instanceof Resistor && part.name === `${device.name}.RE`)?.nodes[0],
+    ).flatMap(source => [{
+      excludeFromSpectrum: source.excludeFromSpectrum,
+      positive: source.positive,
+      negative: source.negative,
+      currentPowerDensity: (_frequency: number) => 4 * BOLTZMANN_CONSTANT
+        * (device.getTemperature() + CELSIUS_TO_KELVIN) * source.conductance
+        + 2 * ELEMENTARY_CHARGE * source.shotCurrent,
+    }, {
+      excludeFromSpectrum: source.excludeFromSpectrum,
+      positive: source.positive,
+      negative: source.negative,
+      currentPowerDensity: (frequency: number) =>
+        source.flickerCoefficient / Math.pow(frequency, device.params.BFN),
+    }]));
+  const noiseSources = [...resistorSources, ...switchSources, ...mosfetSources, ...bjtSources, ...vbicSources, ...devices.flatMap(otaNoiseSources), ...devices.flatMap(gainNoiseSources)];
 
   const frequencies = frequencyGrid(analysis, options.reltol, 'noise');
   const hasIntegratedTotals = analysis.stopFreq > analysis.startFreq;
@@ -344,12 +394,16 @@ export function solveNoise(
       const rhs = new Float64Array(systemSize);
       if (positive >= 0) rhs[positive] -= currentDensity;
       if (negative >= 0) rhs[negative] += currentDensity;
+      const source = noiseSources[index];
+      if ('branch' in source && typeof source.branch === 'number') rhs[nodeCount + source.branch] += currentDensity;
       const [real, imaginary] = solver.solve(rhs, zeroImaginary);
       const contribution = Math.sign(powerDensity) * differentialMagnitudeSquared(
         real, imaginary, outputIndex, outputReferenceIndex,
       );
       sourceOutputPowerDensity[index].push(contribution);
-      outputPowerDensity += contribution;
+      if (!('excludeFromSpectrum' in source && source.excludeFromSpectrum)) {
+        outputPowerDensity += contribution;
+      }
     }
     for (let index = 0; index < diodeSources.length; index++) {
       const { nodes, powerDensity } = diodeSources[index];
@@ -399,6 +453,7 @@ export function solveNoise(
 
 function isSemiconductorNoiseDevice(device: CompiledCircuit['devices'][number]): boolean {
   return device instanceof Diode
+    || device instanceof VBIC
     || device instanceof BJT
     || device instanceof JFET
     || device instanceof MOSFET

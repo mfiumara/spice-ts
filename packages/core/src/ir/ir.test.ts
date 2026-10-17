@@ -97,6 +97,15 @@ describe('Circuit.toIR()', () => {
     expect(ir.nets).toEqual(['in', 'out']);
   });
 
+  it('retains passive instance parameters so adapters can reject unsupported semantics', () => {
+    const ckt = new Circuit();
+    ckt.addResistor('R1', 'in', 'out', 1000, { M: 2, AC: 2000 });
+    ckt.addCapacitor('C1', 'out', '0', 1e-6, undefined, undefined, 2);
+    const ir = ckt.toIR();
+    expect(ir.components[0].params).toMatchObject({ M: 2, AC: 2000 });
+    expect(ir.components[1].params).toMatchObject({ ic: 2 });
+  });
+
   it('should convert MOSFET with model to IR', () => {
     const ckt = new Circuit();
     ckt.addModel({ name: 'NMOD', type: 'NMOS', params: { VTO: 0.7, KP: 1e-4 } });

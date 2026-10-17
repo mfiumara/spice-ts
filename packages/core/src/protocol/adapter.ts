@@ -39,6 +39,7 @@ import type {
 import { DEFAULT_OPTIONS } from '../types.js';
 import {
   preflightTopology,
+  topologyWarnings,
   TopologyPreflightError,
   type TopologySourcePath,
 } from '../validation/topology-preflight.js';
@@ -66,12 +67,13 @@ export interface ProtocolValidationResultV1 {
   nodeCount: number;
   branchCount: number;
   analysisCount: number;
+  diagnostics?: import('../validation/topology-preflight.js').TopologyWarning[];
 }
 
 /** Parse, compile, and validate topology without assembling or solving a matrix. */
 export async function validateProtocolV1(
   request: SimulationRequestV1,
-  execution?: ProtocolExecutionOptionsV1,
+  execution?: ProtocolExecutionOptionsV1 & { topologyWarnings?: boolean },
 ): Promise<ProtocolValidationResultV1> {
   const guard = protocolGuard(request, execution);
   enforceInputLimits(request, guard);
@@ -79,14 +81,19 @@ export async function validateProtocolV1(
   guard.maximum('maxAnalyses', circuit.analyses.length, 'validation');
   const compiled = circuit.compile(guard);
   enforcePointLimit(circuit.analyses, guard, requestReltol(request, circuit), compiled.steps[0]);
-  if (compiled.nodeCount === 0) throw new InvalidCircuitError('Circuit has no nodes');
+  if (compiled.nodeCount === 0
+    && !(compiled.analyses.length > 0 && compiled.analyses.every(analysis => analysis.type === 'tran'))) {
+    throw new InvalidCircuitError('Circuit has no nodes');
+  }
   if (compiled.analyses.length === 0) throw new InvalidCircuitError('No analysis command specified');
-  preflightTopology(compiled, protocolSourcePath(request));
+  if (!execution?.topologyWarnings) preflightTopology(compiled, protocolSourcePath(request));
+  const diagnostics = execution?.topologyWarnings ? topologyWarnings(compiled) : [];
   return {
     status: 'valid',
     nodeCount: compiled.nodeCount,
     branchCount: compiled.branchCount,
     analysisCount: compiled.analyses.length,
+    ...(diagnostics.length ? { diagnostics } : {}),
   };
 }
 

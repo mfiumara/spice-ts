@@ -193,7 +193,7 @@ The program may create and update GitHub issues, labels, milestones, Projects, b
 `spice-ts-review` has accepted that same SHA.
 
 Without Mattia's approval, the program must not publish npm packages, create tags or releases, publish changeset
-versions, change Vercel production deployment, force-push `main`, delete branches or issues not created by the
+versions, change production hosting (spicets.com, Cloudflare Pages), force-push `main`, delete branches or issues not created by the
 program, spend money, touch secrets, edit `~/repos/spicets/web`, or post on social media.
 
 </details>

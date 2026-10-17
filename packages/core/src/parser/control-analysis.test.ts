@@ -155,7 +155,6 @@ dc  v1 0 60 0.1
     // examples/rf/pss/vackar_osc_pss_ctrl.cir
     ['tran 10n 20u\ncutout v(4)', 'cutout'],
     ['tran 10n 20u\nspec 10 1meg 10 v(4)', 'spec'],
-    ['tran 10n 20u\nreset', 'reset'],
     ['pss 1.8e6 20e-6 4 1024 10 50 5e-3 uic', 'pss'],
     // examples/vdmos/100W.sp
     ['op\nfourier 1K V(out)', 'fourier'],

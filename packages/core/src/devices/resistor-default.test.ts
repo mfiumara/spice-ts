@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import { ParseError } from '../errors.js';
 import { parse, parseTitleless } from '../parser/index.js';
 import { simulate } from '../simulate.js';
 
@@ -112,7 +111,24 @@ describe('ngspice-47 resistor default and too-low clamp (#574)', () => {
     expect(relativeError(result.dc!.current('V1'), -1000)).toBeLessThan(1e-12);
   });
 
-  it('still rejects a bare two-node resistor card (ngspice-47 ignores the line)', () => {
-    expect(() => parseTitleless('R1 1 0\nV1 1 0 1\n.op')).toThrow(ParseError);
+  it('ignores a bare two-node resistor card with a structured warning', async () => {
+    const circuit = parseTitleless('R1 a 0\nV1 a 0 1\n.op');
+    expect(circuit.toNetlist()).not.toMatch(/^R1 /m);
+    const result = await simulate(circuit);
+    expect(result.dc!.voltage('a')).toBe(1);
+    expect(result.dc!.current('V1')).toBe(0);
+    expect(result.warnings).toContainEqual({
+      type: 'parse', code: 'IGNORED_BARE_RESISTOR', line: 1,
+      message: "'R1 a 0' is not a valid resistor instance line, ignored! (line 1)",
+    });
+  });
+
+  it('also ignores bare resistor cards inside subcircuits', async () => {
+    const result = await simulate('title\n.subckt cell a\nR1 a 0\n.ends\nX1 a cell\nV1 a 0 1\n.op');
+    expect(result.dc!.voltage('a')).toBe(1);
+    expect(result.dc!.current('V1')).toBe(0);
+    expect(result.warnings).toContainEqual(expect.objectContaining({
+      type: 'parse', code: 'IGNORED_BARE_RESISTOR', line: 3,
+    }));
   });
 });

@@ -165,13 +165,9 @@ describe('preprocessor', () => {
       expect(result).toContain('R1 1 0 2.700000000000000e+1');
     });
 
-    it('rejects TEMPER under a .step TEMP sweep instead of freezing it at 27 C', async () => {
-      const failure = await preprocess("T\n.model d1 d is='1e-12*temper'\n.step temp list 0 50\n.op")
-        .catch((e: unknown) => e);
-      expect(failure).toBeInstanceOf(ParseError);
-      expect((failure as ParseError).line).toBe(2);
-      expect((failure as ParseError).message).toContain('TEMPER');
-      expect((failure as ParseError).message).toContain('.step TEMP');
+    it('accepts TEMPER under a .step TEMP sweep (the parser retains its evaluator)', async () => {
+      const text = await preprocess("T\n.model d1 d is='1e-12*temper'\n.step temp list 0 50\n.op");
+      expect(text).toContain('.model d1 d is=2.700000000000000e-11');
     });
 
     it('accepts an unused string .param and rejects one that is used (vector_param.cir)', async () => {
@@ -193,7 +189,7 @@ describe('preprocessor', () => {
     });
 
     it('rejects resistor parameters the behavioral rewrite cannot carry', async () => {
-      await expect(preprocess("R20 20 0 '1k*v(200)' m=2\n.op"))
+      await expect(preprocess("R20 20 0 '1k*v(200)' noisy=1\n.op"))
         .rejects.toThrow("behavioral resistor 'R20'");
     });
 

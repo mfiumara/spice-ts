@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { UnsupportedModelParameterError, UnsupportedModelVersionError } from '../errors.js';
+import { UnsupportedModelVersionError } from '../errors.js';
 import { BSIM4 } from '../devices/bsim4/device.js';
 import { simulate } from '../simulate.js';
 import { parse } from './index.js';
@@ -74,8 +74,8 @@ describe('BSIM model cards with dotted VERSION= values (#503)', () => {
       expect(parse(netlist).compile().devices.find(device => device.name === 'M1')).toBeInstanceOf(BSIM4);
       expect(Number.isFinite((await simulate(netlist)).dc!.voltage('out'))).toBe(true);
       const unported = inverter(`.model n1 nmos level=${level} version=4.5.0\n.model p1 pmos level=${level} version=4.5.0`);
-      await expect(simulate(unported)).rejects.toBeInstanceOf(UnsupportedModelParameterError);
-      await expect(simulate(unported)).rejects.toMatchObject({ code: 'UNSUPPORTED_MODEL_PARAMETER', parameter: 'version' });
+      await expect(simulate(unported)).rejects.toBeInstanceOf(UnsupportedModelVersionError);
+      await expect(simulate(unported)).rejects.toMatchObject({ code: 'UNSUPPORTED_MODEL_VERSION', version: '4.5.0' });
     }
   });
 

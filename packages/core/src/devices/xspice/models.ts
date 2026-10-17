@@ -1,6 +1,7 @@
 import type { ChargeIntegration, ChargeTruncation } from '../device.js';
 import type { XspiceConnection } from './connections.js';
 import type { XspiceParamValue } from './spec.js';
+import { pwlts } from './pwlts.js';
 
 /**
  * One call of a code model function (ngspice cm_<model>(ARGS)). Inputs,
@@ -45,12 +46,14 @@ export interface XspiceBehaviorContext {
 export type CodeModelACForm =
   /** AC_GAIN equals the operating-point PARTIAL (gain, summer, mult, divide, pwl, limit). */
   | { readonly kind: 'static' }
-  /** AC_GAIN = j * omega * gain (d_dt). */
-  | { readonly kind: 'differentiator'; readonly gain: number }
+  /** AC_GAIN = j * omega * gain (d_dt); optional indices select one pair in a multiport model. */
+  | { readonly kind: 'differentiator'; readonly gain: number; readonly input?: number; readonly output?: number }
   /** AC_GAIN = gain / (j * omega) (int). */
   | { readonly kind: 'integrator'; readonly gain: number };
 
 export interface CodeModelBehavior {
+  /** RAMPTIME configured for transient OP and subsequent transient loads. */
+  setRampTime?(time: number): void;
   /** True when the model keeps transient state (cm_analog_alloc). */
   readonly stateful: boolean;
   readonly ac: CodeModelACForm;
@@ -58,6 +61,8 @@ export interface CodeModelBehavior {
   load(call: CodeModelCall): void;
   /** Commit the state of a {@link load} made at an accepted timepoint. */
   accept?(call: CodeModelCall): void;
+  /** Future analog corners scheduled after accepting this point. */
+  breakpoints?(): readonly number[];
   /** ngspice MIFtrunc for this instance at the trial point of `call`. */
   truncate?(call: CodeModelCall, truncation: ChargeTruncation): number;
   /** Forget transient history before a restart at t = 0. */
@@ -545,6 +550,7 @@ export const XSPICE_BEHAVIORS: ReadonlyMap<string, BehaviorFactory> = new Map<st
   ['mult', mult],
   ['divide', divide],
   ['pwl', pwl],
+  ['pwlts', pwlts],
   ['limit', limit],
   ['int', integrator],
   ['d_dt', differentiator],

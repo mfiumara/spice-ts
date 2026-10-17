@@ -28,6 +28,23 @@ function evaluate(
 }
 
 describe('behavioral source expressions', () => {
+  it.each([
+    [-100, -98, 1], [-10, -8, 1], [0.5, 2.5, 1], [2, 4, 0.5],
+    [6, 6, 0.5], [12, 9, 1], [22, 19, 1], [100, 97, 1],
+  ])(
+    'interpolates and extrapolates pwl at %s with the ngspice segment derivative', (x, value, slope) => {
+      const result = evaluate('pwl(v(x),-10,-8,2,4,12,9,22,19)', { x });
+      expect(result.value).toBe(value);
+      expect(result.gradient.x).toBe(slope);
+    },
+  );
+
+  it('applies the pwl segment slope to the argument gradient for Newton', () => {
+    const result = evaluate('pwl(2*v(x),-10,-8,2,4,12,9,22,19)', { x: 3 });
+    expect(result.value).toBe(6);
+    expect(result.gradient.x).toBe(1);
+  });
+
   it('uses the configured CKTgmin for PTdivide regularization (#1068)', () => {
     const environment = { time: 0, transient: false, temperature: 27, gmin: 1e-6 };
     expect(evaluate('1e-20/0', {}, environment).value).toBeCloseTo(1e6, 6);
@@ -101,9 +118,13 @@ describe('behavioral source expressions', () => {
       ['sgn(v(x))', -0.1, -1, 0],
       ['sgn(v(x))', 0, 0, 0],
       ['u(v(x))', 0, 0.5, 0],
+      ['u(v(x))', -1, 0, 0],
       ['u(v(x))', 1, 1, 0],
+      ['uramp(v(x))', 0, 0, 0.5],
       ['uramp(v(x))', 2, 2, 1],
       ['uramp(v(x))', -2, 0, 0],
+      ['u2(v(x))', -0.25, 0, 0],
+      ['u2(v(x))', 0, 0, 0.5],
       ['u2(v(x))', 0.25, 0.25, 1],
       ['u2(v(x))', 2, 1, 0],
       ['u2(v(x))', 1, 1, 0.5],
@@ -340,12 +361,13 @@ describe('behavioral source expressions', () => {
   it.each([
     ['b1 1 0 i=i(v1,v2)', 'i() takes one source name'],
     ['b1 1 0 i=i()', 'i() takes one source name'],
-    ['b1 1 0 i=hertz*2', "Unsupported behavioral expression token 'hertz'"],
     ['b1 1 0 i=a*2', "Unsupported behavioral expression token 'a'"],
     ['b1 1 0 V=~(~v(9)&v(8)) + 0.5', "Unsupported behavioral expression operator '~'"],
     ['b1 1 0 V=v(9)&v(8)', "Unsupported behavioral expression operator '&'"],
     ['b1 1 0 V=v(9)|', 'Unexpected end of behavioral expression'],
-    ['b1 1 0 i=pwl(v(1),0,0,1,1)', "Unsupported behavioral expression function 'pwl'"],
+    ['b1 1 0 i=pwl(v(1),0,0,0,1)', 'ascending'],
+    ['b1 1 0 i=pwl(v(1),0,0,1)', 'pairs'],
+    ['b1 1 0 i=pwl(v(1),0,0,1,v(2))', 'literal'],
     ['b1 1 0 i=min(v(1))', 'min() takes two arguments'],
     ['b1 1 0 i=sqrt(v(1),2)', 'sqrt() takes one argument'],
     ['b1 1 0 i=ternary_fcn(1,2)', 'ternary_fcn() takes three arguments'],

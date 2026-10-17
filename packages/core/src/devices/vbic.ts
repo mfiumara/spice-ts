@@ -1,7 +1,9 @@
 import { InvalidCircuitError } from '../errors.js';
-import type { DeviceModel, StampContext } from './device.js';
+import type { ChargeIntegration, ChargeTruncation, DeviceModel, StampContext } from './device.js';
+import { TransientChargeState } from './charge-state.js';
 import { DEVICE_GMIN } from './device.js';
 import {
+  VBIC_PE, VBIC_ME, VBIC_PC, VBIC_MC, VBIC_PS, VBIC_MS,
   resolveVBICTemperature, type VBICTemperatureState,
 } from './vbic-temperature.js';
 import { pnjlim } from './devsup.js';
@@ -10,32 +12,27 @@ import { pnjlim } from './devsup.js';
 const NOMINAL_TEMPERATURE_C = 27;
 
 const ACTIVE_PARAMETERS = [
-  'IS', 'IBEI', 'IBEN', 'IBCI', 'IBCN', 'ISP',
-  'RCX', 'RCI', 'RBX', 'RBI', 'RE', 'RS', 'RBP',
+  'IS', 'IBEI', 'IBEN', 'IBCI', 'IBCN', 'ISP', 'IBCIP', 'IBCNP',
+  'NF', 'NR', 'NEI', 'NEN', 'NCI', 'NCN', 'NFP', 'NCIP', 'NCNP',
+  'RCX', 'RCI', 'RBX', 'RBI', 'RE', 'RS', 'RBP', 'FC',
   'VEF', 'VER', 'IKF', 'IKR', 'IKP', 'VO', 'GAMM', 'HRCF', 'AVC1', 'AVC2',
+  'PE', 'ME', 'PC', 'MC', 'PS', 'MS', 'WBE', 'WSP',
 ] as const;
 /**
  * Charge-storage and excess-phase parameters: inert at DC, active in the
- * small-signal (.ac/.pz) linearization. RTH stays electrically inert: a
- * four-terminal instance has no thermal terminal, so ngspice ties the thermal
+ * small-signal (.ac/.pz) linearization and transient integration. RTH stays
+ * electrically inert: a four-terminal instance has no thermal terminal, so ngspice ties the thermal
  * node to ground and self-heating cannot change any node voltage.
  */
 const DC_INERT_PARAMETERS = [
   'CJE', 'CJC', 'CJEP', 'CJCP', 'QCO', 'TF', 'TR', 'TD', 'ITF', 'XTF', 'RTH',
+  'KFN', 'AFN', 'BFN',
 ] as const;
 /** Temperature mapping inputs (ngspice vbictemp.c); TNOM defaults to 27 C. */
 const TEMPERATURE_PARAMETERS = ['TNOM'] as const;
 const SUPPORTED_PARAMETERS = new Set<string>([
   'LEVEL', ...ACTIVE_PARAMETERS, ...DC_INERT_PARAMETERS, ...TEMPERATURE_PARAMETERS,
 ]);
-/**
- * VBIC 1.2 grading coefficients outside the bounded subset (ngspice
- * vbicsetup.c). The built-in potentials PE = PC = PS = 0.75 V are mapped to the
- * device temperature in vbic-temperature.ts.
- */
-const ME = 0.33;
-const MC = 0.33;
-const MS = 0.33;
 
 type ActiveParameter = typeof ACTIVE_PARAMETERS[number];
 type InertParameter = typeof DC_INERT_PARAMETERS[number];
@@ -56,6 +53,17 @@ const DEFAULTS: VBICParams = {
   IBCI: 1e-16,
   IBCN: 0,
   ISP: 0,
+  IBCIP: 0,
+  IBCNP: 0,
+  NF: 1,
+  NR: 1,
+  NEI: 1,
+  NEN: 2,
+  NCI: 1,
+  NCN: 2,
+  NFP: 1,
+  NCIP: 1,
+  NCNP: 2,
   RCX: 0,
   RCI: 0.1,
   RBX: 0,
@@ -63,6 +71,9 @@ const DEFAULTS: VBICParams = {
   RE: 0,
   RS: 0,
   RBP: 0.1,
+  FC: 0.9,
+  WBE: 1,
+  WSP: 1,
   VEF: 0,
   VER: 0,
   IKF: 0,
@@ -73,6 +84,12 @@ const DEFAULTS: VBICParams = {
   HRCF: 1,
   AVC1: 0,
   AVC2: 0,
+  PE: VBIC_PE,
+  ME: VBIC_ME,
+  PC: VBIC_PC,
+  MC: VBIC_MC,
+  PS: VBIC_PS,
+  MS: VBIC_MS,
   CJE: 0,
   CJC: 0,
   CJEP: 0,
@@ -84,10 +101,13 @@ const DEFAULTS: VBICParams = {
   ITF: 0,
   XTF: 0,
   RTH: 0,
+  KFN: 0,
+  AFN: 1,
+  BFN: 1,
   TNOM: NOMINAL_TEMPERATURE_C,
 };
 
-/** Resolve the bounded, isothermal VBIC 1.2 DC subset used by NPN LEVEL=4. */
+/** Resolve the bounded, isothermal VBIC 1.2 subset used by NPN/PNP LEVEL=4. */
 export function resolveVBICParams(
   supplied: Record<string, number>,
   polarity: number,
@@ -100,26 +120,40 @@ export function resolveVBICParams(
   if ((supplied.LEVEL ?? 4) !== 4) {
     throw new InvalidCircuitError(`Unsupported bounded VBIC model level: ${supplied.LEVEL}`);
   }
-  if (polarity !== 1) {
-    throw new InvalidCircuitError('Unsupported bounded VBIC polarity: only NPN LEVEL=4 is supported');
+  if (polarity !== 1 && polarity !== -1) {
+    throw new InvalidCircuitError('Invalid bounded VBIC polarity: expected NPN (+1) or PNP (-1)');
   }
-  const resolved = { ...DEFAULTS, ...supplied, LEVEL: 4, polarity: 1 } as VBICParams;
+  const resolved = { ...DEFAULTS, ...supplied, LEVEL: 4, polarity } as VBICParams;
   for (const name of [...ACTIVE_PARAMETERS, ...DC_INERT_PARAMETERS, ...TEMPERATURE_PARAMETERS]) {
     if (!Number.isFinite(resolved[name])) {
       throw new InvalidCircuitError(`Invalid bounded VBIC DC model parameter: '${name}'`);
     }
   }
   for (const name of [
-    'IS', 'IBEI', 'IBEN', 'IBCI', 'IBCN', 'ISP',
+    'IS', 'IBEI', 'IBEN', 'IBCI', 'IBCN', 'ISP', 'IBCIP', 'IBCNP',
     'RCX', 'RBX', 'RE', 'RS', 'VEF', 'VER', 'IKF', 'IKR', 'IKP',
     'VO', 'GAMM', 'AVC1', 'AVC2', ...DC_INERT_PARAMETERS,
   ] as const) {
     if (resolved[name] < 0) throw new InvalidCircuitError(`Invalid bounded VBIC DC model parameter: '${name}'`);
   }
-  for (const name of ['RCI', 'RBI', 'RBP', 'HRCF'] as const) {
+  for (const name of ['RCI', 'RBI', 'RBP', 'HRCF', 'NF', 'NR', 'NEI', 'NEN', 'NCI', 'NCN', 'NFP', 'NCIP', 'NCNP'] as const) {
     if (resolved[name] <= 0) throw new InvalidCircuitError(`Invalid bounded VBIC DC model parameter: '${name}'`);
   }
   if (resolved.TNOM <= -273.15) throw new InvalidCircuitError("Invalid bounded VBIC DC model parameter: 'TNOM'");
+  // Bounded physical domain. ngspice vbicsetup.c defaults FC to 0.9 but
+  // vbicmpar.c does not validate it; FC=1 makes the charge formula singular.
+  if (resolved.FC < 0 || resolved.FC >= 1) throw new InvalidCircuitError("Invalid bounded VBIC DC model parameter: 'FC'");
+  if (resolved.WBE < 0 || resolved.WBE > 1) throw new InvalidCircuitError("Invalid bounded VBIC DC model parameter: 'WBE'");
+  if (resolved.WSP < 0 || resolved.WSP > 1) throw new InvalidCircuitError("Invalid bounded VBIC DC model parameter: 'WSP'");
+  for (const name of ['PE', 'PC', 'PS'] as const) {
+    if (resolved[name] <= 0) throw new InvalidCircuitError(`Invalid bounded VBIC DC model parameter: '${name}'`);
+  }
+  // The bounded depletion integral divides by 1 - M; M = 1 is unsupported.
+  for (const name of ['ME', 'MC', 'MS'] as const) {
+    if (resolved[name] < 0 || resolved[name] >= 1) {
+      throw new InvalidCircuitError(`Invalid bounded VBIC DC model parameter: '${name}'`);
+    }
+  }
   return resolved;
 }
 
@@ -196,9 +230,10 @@ function diode(voltage: Dual, current: number, ideality: number, vt: number): Du
   return scale(sub(exp(scale(voltage, 1 / (ideality * vt))), c(1, voltage.derivative.length)), current);
 }
 
-function depletionCharge(voltage: Dual, potential: number, grading: number): Dual {
+// ngspice-47 vbicload.c:2238-2283 (BE), 2482-2543 (BC), revision
+// a80f6e3e95d51534905b1f23410a951802666656. AJE/AJC/AJS <= 0.
+function depletionCharge(voltage: Dual, potential: number, grading: number, fc: number): Dual {
   const size = voltage.derivative.length;
-  const fc = 0.9;
   const delta = voltage.value - potential * fc;
   if (delta > 0) {
     const pw = Math.pow(1 - fc, -1 - grading);
@@ -223,6 +258,7 @@ interface Evaluation {
   residual: Dual[];
   /** Stored charge attached to each device node (ngspice vbicload charges). */
   charge: Dual[];
+  noise: { irci: Dual; irbi: Dual; irbp: Dual; itzf: Dual; ibe: Dual; iccp: Dual };
 }
 
 /** Local node order: seven VBIC nodes, then the excess-phase nodes when TD > 0. */
@@ -263,7 +299,7 @@ const EXCESS_PHASE_BRANCHES: readonly (readonly [number, number])[] = [[XF1, NO_
  * ngspice vbictemp.c values at the device temperature (kT/q, saturation
  * currents, GAMM, built-in potentials and zero-bias capacitances); every other
  * parameter is temperature independent with ngspice's default exponents.
- * Charges follow ngspice vbic_4T_et_cf_fj with AJE/AJC/AJS <= 0, WBE = WSP = 1,
+ * Charges follow ngspice vbic_4T_et_cf_fj with AJE/AJC/AJS <= 0,
  * QTF = VTF = CBEO = CBCO = CCSO = 0. With TD > 0 the forward transport current
  * passes through ngspice's second-order excess-phase network (nodes xf1/xf2).
  */
@@ -278,15 +314,16 @@ function evaluate(
   const nodeCount = size === BRANCHES.length ? XF1 : XF2 + 1;
   const excessPhase = nodeCount > XF2;
   const { vt, PE, PC, PS } = thermal;
+  const { ME, MC, MS } = params;
   const b = voltages.map((value, index) => Dual.variable(value, size, index));
   const [vbei, vbex, vbci, vbcx, vbep, vbcp, vrci, vrbi, vrbp] = b;
   const xf1 = b[BRANCHES.length];
   const xf2 = b[BRANCHES.length + 1];
 
-  const ifi = diode(vbei, thermal.IS, 1, vt);
-  const iri = diode(vbci, thermal.IS, 1, vt);
-  const qdbe = depletionCharge(vbei, PE, ME);
-  const qdbc = depletionCharge(vbci, PC, MC);
+  const ifi = diode(vbei, thermal.IS, params.NF, vt);
+  const iri = diode(vbci, thermal.IS, params.NR, vt);
+  const qdbe = depletionCharge(vbei, PE, ME, params.FC);
+  const qdbc = depletionCharge(vbci, PC, MC, params.FC);
   const q1z = add(c(1, size), add(
     scale(qdbe, reciprocalOrZero(params.VER)),
     scale(qdbc, reciprocalOrZero(params.VEF)),
@@ -299,9 +336,10 @@ function evaluate(
   const itzr = div(iri, qb);
   const transport = sub(itzf, itzr);
 
-  const ibe = add(diode(vbei, thermal.IBEI, 1, vt), diode(vbei, thermal.IBEN, 2, vt));
-  const ibex = scale(add(diode(vbex, thermal.IBEI, 1, vt), diode(vbex, thermal.IBEN, 2, vt)), 0);
-  const ibcj = add(diode(vbci, thermal.IBCI, 1, vt), diode(vbci, thermal.IBCN, 2, vt));
+  const ibe = scale(add(diode(vbei, thermal.IBEI, params.NEI, vt), diode(vbei, thermal.IBEN, params.NEN, vt)), params.WBE);
+  const ibex = scale(add(diode(vbex, thermal.IBEI, params.NEI, vt), diode(vbex, thermal.IBEN, params.NEN, vt)), 1 - params.WBE);
+  const ibcj = add(diode(vbci, thermal.IBCI, params.NCI, vt), diode(vbci, thermal.IBCN, params.NCN, vt));
+  const ibcp = add(diode(vbcp, thermal.IBCIP, params.NCIP, vt), diode(vbcp, thermal.IBCNP, params.NCNP, vt));
   const avalancheVoltage = scale(add(
     sqrt(add(mul(sub(c(PC, size), vbci), sub(c(PC, size), vbci)), c(0.01, size))),
     sub(c(PC, size), vbci),
@@ -312,8 +350,14 @@ function evaluate(
   ), params.AVC1);
   const ibc = sub(ibcj, mul(sub(transport, ibcj), avalanche));
 
-  const ifp = diode(vbep, thermal.ISP, 1, vt);
-  const irp = diode(vbcp, thermal.ISP, 1, vt);
+  // ngspice-47 vbicload.c:3221-3285 mixes exponentials of Vbep and
+  // Vbci, not their voltages. The same Ifp drives qbp, Iccp and Qbep.
+  // Keep the default arithmetic path bit-identical.
+  const ifp = params.WSP === 1 ? diode(vbep, thermal.ISP, params.NFP, vt) : add(
+    scale(diode(vbep, thermal.ISP, params.NFP, vt), params.WSP),
+    scale(diode(vbci, thermal.ISP, params.NFP, vt), 1 - params.WSP),
+  );
+  const irp = diode(vbcp, thermal.ISP, params.NFP, vt);
   const qbp = scale(add(c(1, size), sqrt(add(c(1, size), scale(ifp, 4 * reciprocalOrZero(params.IKP))))), 0.5);
   const iccp = div(sub(ifp, irp), qbp);
 
@@ -343,11 +387,14 @@ function evaluate(
     )),
     params.TF,
   );
-  const qbe = add(scale(qdbe, thermal.CJE), div(mul(tff, ifi), qb));
+  // ngspice-47 vbicload.c:3874-3896: partition depletion only; forward
+  // diffusion remains intrinsic. The extrinsic integral uses Vbex, not Vbei.
+  const qbe = add(scale(qdbe, thermal.CJE * params.WBE), div(mul(tff, ifi), qb));
+  const qbex = scale(depletionCharge(vbex, PE, ME, params.FC), thermal.CJE * (1 - params.WBE));
   const qbc = add(add(scale(qdbc, thermal.CJC), scale(iri, params.TR)), scale(kbci, params.QCO));
   const qbcx = scale(kbcx, params.QCO);
-  const qbep = add(scale(depletionCharge(vbep, PC, MC), thermal.CJEP), scale(ifp, params.TR));
-  const qbcp = thermal.CJCP > 0 ? scale(depletionCharge(vbcp, PS, MS), thermal.CJCP) : c(0, size);
+  const qbep = add(scale(depletionCharge(vbep, PC, MC, params.FC), thermal.CJEP), scale(ifp, params.TR));
+  const qbcp = thermal.CJCP > 0 ? scale(depletionCharge(vbcp, PS, MS, params.FC), thermal.CJCP) : c(0, size);
 
   const residual = Array.from({ length: nodeCount }, () => c(0, size));
   const charge = Array.from({ length: nodeCount }, () => c(0, size));
@@ -364,9 +411,8 @@ function evaluate(
   // Iciei = SCALE * (V(xf2) - Itzr) is scaled once at the device branch.
   const s = (quantity: Dual): Dual => (instanceScale === 1 ? quantity : scale(quantity, instanceScale));
   // ngspice vbicload.c then adds an unscaled CKTgmin to Ibe, Ibex, Ibc, Ibep,
-  // Ibcp and to Irci (via Vrci, Vbci and Vbcx). Ibep/Ibcp diode currents are
-  // zero in the bounded subset (IBEIP/IBENP/IBCIP/IBCNP unsupported), leaving
-  // only gmin.
+  // Ibcp and to Irci (via Vrci, Vbci and Vbcx). Ibep diode currents are zero
+  // (IBEIP/IBENP unsupported), leaving only gmin there.
   branch(CX, CI, add(s(irci), scale(add(add(vrci, vbci), vbcx), gmin)));
   branch(BX, BI, s(irbi));
   branch(BP, CX, s(irbp));
@@ -375,9 +421,12 @@ function evaluate(
   branch(CI, EI, s(iciei));
   branch(BI, CI, add(s(ibc), scale(vbci, gmin)));
   branch(BX, BP, scale(vbep, gmin));
-  branch(SI, BP, scale(vbcp, gmin));
+  branch(SI, BP, add(s(ibcp), scale(vbcp, gmin)));
   branch(BX, SI, s(iccp));
   store(BI, EI, s(qbe));
+  // Preserve the default stamp's arithmetic order when the extrinsic charge
+  // is identically zero, including signed zeros in conservative charge rows.
+  if (params.WBE !== 1) store(BX, EI, s(qbex));
   store(BI, CI, s(qbc));
   store(BI, CX, s(qbcx));
   store(BX, BP, s(qbep));
@@ -388,7 +437,7 @@ function evaluate(
     charge[XF1] = scale(xf1, params.TD);
     charge[XF2] = scale(xf2, params.TD / 3);
   }
-  return { residual, charge };
+  return { residual, charge, noise: { irci, irbi, irbp, itzf, ibe, iccp } };
 }
 
 /** Number of device nodes: seven VBIC nodes plus xf1/xf2 when excess phase is on. */
@@ -396,10 +445,14 @@ export function vbicNodeCount(params: Pick<VBICParams, 'TD'>): number {
   return params.TD > 0 ? 9 : 7;
 }
 
-/** A bounded four-terminal VBIC device (DC, AC, PZ) with ngspice temperature mapping. */
+/** A bounded four-terminal VBIC device with ngspice temperature mapping. */
 export class VBIC implements DeviceModel {
   readonly branches: number[] = [];
   readonly isNonlinear = true;
+  readonly integratesTransientCharge = true;
+  readonly limitsOwnJunctions = true;
+  private readonly charges: TransientChargeState;
+  private loadVoltages: number[] | undefined;
   readonly params: VBICParams;
   /** Local (positive, negative) node pair of each evaluation branch voltage. */
   private readonly branchTerminals: readonly (readonly [number, number])[];
@@ -419,8 +472,10 @@ export class VBIC implements DeviceModel {
     polarity: number,
     /** ngspice instance SCALE = AREA * M; the circuit divides the series resistors by it. */
     private readonly instanceScale = 1,
+    private readonly parallelMultiplier = 1,
   ) {
     this.params = resolveVBICParams(supplied, polarity);
+    this.charges = new TransientChargeState(nodes.length);
     const expected = vbicNodeCount(this.params);
     if (nodes.length !== expected) {
       throw new InvalidCircuitError(`Bounded VBIC device requires ${expected} internal nodes`);
@@ -447,13 +502,57 @@ export class VBIC implements DeviceModel {
     return this.temperature;
   }
 
+  /** ngspice vbicnoise.c: internal resistor derivatives and junction currents.
+   * External RCX/RBX/RE/RS noise is already carried by expanded resistors.
+   */
+  noiseOperatingPoint(solution: Float64Array, gmin = DEVICE_GMIN, emitterNode = this.nodes[EI]): Array<{
+    positive: number;
+    negative: number;
+    conductance: number;
+    shotCurrent: number;
+    flickerCoefficient: number;
+    excludeFromSpectrum?: boolean;
+  }> {
+    const voltage = (local: number): number => {
+      const node = local === NO_NODE ? -1 : this.nodes[local];
+      return node >= 0 ? solution[node] : 0;
+    };
+    const voltages = this.branchTerminals.map(([p, n]) =>
+      this.params.polarity * (voltage(p) - voltage(n)));
+    const { noise } = evaluate(voltages, this.params, this.thermal, this.instanceScale, 0);
+    const source = (p: number, n: number, conductance = 0, shotCurrent = 0, flickerCoefficient = 0) => ({
+      positive: this.nodes[p], negative: this.nodes[n], conductance, shotCurrent, flickerCoefficient,
+    });
+    // vbicload.c stores the post-gmin currents/derivatives in CKTstate0.
+    const baseCurrent = Math.abs(noise.ibe.value * this.instanceScale + gmin * voltages[0]);
+    const peripheralBaseCurrent = Math.abs(gmin * voltages[4]);
+    const flicker = (current: number): number => this.parallelMultiplier * this.params.KFN
+      * Math.pow(Math.max(current / this.parallelMultiplier, 1e-38), this.params.AFN);
+    return [
+      source(CX, CI, noise.irci.derivative[6] * this.instanceScale + gmin),
+      source(BX, BI, noise.irbi.derivative[7] * this.instanceScale),
+      // vbicnoise.c intentionally projects RBP noise across EI/emitter,
+      // not BP/CX. RE=0 makes that branch noiseless at the output.
+      { ...source(EI, EI, noise.irbp.derivative[8] * this.instanceScale), negative: emitterNode },
+      source(CI, EI, 0, Math.abs(noise.itzf.value * this.instanceScale)),
+      source(BI, EI, 0, baseCurrent, flicker(baseCurrent)),
+      // IBEIP/IBENP are outside the bounded model: Ibep has only gmin.
+      source(BX, BP, 0, peripheralBaseCurrent, flicker(peripheralBaseCurrent)),
+      // ngspice includes ICCP/RS in integrated totals only.
+      { ...source(BX, SI, 0, Math.abs(noise.iccp.value * this.instanceScale)), excludeFromSpectrum: true },
+    ];
+  }
+
   /** Branch voltages of the evaluation, in {@link BRANCHES} order. */
   private branchVoltages(ctx: StampContext): number[] {
     const voltage = (local: number): number => {
       const node = local === NO_NODE ? -1 : this.nodes[local];
       return node >= 0 ? ctx.getVoltage(node) : 0;
     };
-    return this.branchTerminals.map(([positive, negative]) => voltage(positive) - voltage(negative));
+    // Evaluate both polarities in the forward-positive NPN coordinate system,
+    // including the excess-phase states. Junction limiting uses these coordinates.
+    return this.branchTerminals.map(([positive, negative]) =>
+      this.params.polarity * (voltage(positive) - voltage(negative)));
   }
 
   /** Map branch-voltage derivatives onto the device's local node columns. */
@@ -502,6 +601,7 @@ export class VBIC implements DeviceModel {
   stamp(ctx: StampContext): void {
     const voltages = this.branchVoltages(ctx);
     this.limitJunctions(voltages);
+    this.loadVoltages = voltages;
     const { residual } = evaluate(voltages, this.params, this.thermal, this.instanceScale, ctx.gmin ?? DEVICE_GMIN);
     for (let row = 0; row < this.nodes.length; row += 1) {
       const matrixRow = this.nodes[row];
@@ -518,14 +618,16 @@ export class VBIC implements DeviceModel {
         // nonlinear Jacobian pattern used by later Newton iterations.
         if (matrixColumn >= 0) ctx.stampG(matrixRow, matrixColumn, jacobian[column]);
       }
-      ctx.stampB(matrixRow, rhs);
+      // Iphysical(V) = polarity * Imodel(polarity * V): the Jacobian's
+      // two polarity factors cancel, but the equivalent source changes sign.
+      ctx.stampB(matrixRow, this.params.polarity * rhs);
     }
   }
 
   /**
    * Small-signal charge Jacobian dQ/dV at the operating point, the real-valued
    * counterpart of ngspice VBICacLoad/VBICpzLoad capacitive stamps. Only the
-   * linearized AC and pole-zero analyses reach this: transient stays rejected.
+   * linearized AC and pole-zero analyses reach this; transient integrates Q.
    */
   stampDynamic(ctx: StampContext): void {
     const { charge } = evaluate(this.branchVoltages(ctx), this.params, this.thermal, this.instanceScale, ctx.gmin ?? DEVICE_GMIN);
@@ -539,5 +641,48 @@ export class VBIC implements DeviceModel {
         if (matrixColumn >= 0 && capacitance !== 0) ctx.stampC(matrixRow, matrixColumn, capacitance);
       }
     }
+  }
+
+  /** Integrate conservative terminal charges and both excess-phase state rows. */
+  stampTransientCharge(ctx: StampContext, integration: ChargeIntegration): void {
+    const voltages = this.loadVoltages ?? this.branchVoltages(ctx);
+    const { charge } = evaluate(voltages, this.params, this.thermal, this.instanceScale, ctx.gmin ?? DEVICE_GMIN);
+    this.charges.begin(integration);
+    for (let row = 0; row < this.nodes.length; row++) {
+      const node = this.nodes[row];
+      if (node < 0) continue;
+      const quantity = charge[row];
+      let rhs = -this.charges.current(row, quantity.value);
+      for (let index = 0; index < voltages.length; index++) {
+        rhs += this.charges.factor * quantity.derivative[index] * voltages[index];
+      }
+      const jacobian = this.nodeJacobian(quantity);
+      for (let column = 0; column < this.nodes.length; column++) {
+        if (this.nodes[column] >= 0) ctx.stampG(node, this.nodes[column], this.charges.factor * jacobian[column]);
+      }
+      ctx.stampB(node, this.params.polarity * rhs);
+    }
+  }
+
+  stampAcceptedChargeCurrent(ctx: StampContext): void {
+    this.nodes.forEach((node, row) => {
+      if (node >= 0) ctx.stampB(node, -this.params.polarity * this.charges.acceptedChargeCurrent(row));
+    });
+  }
+
+  acceptTransientStep(ctx: StampContext): void {
+    const { charge } = evaluate(this.branchVoltages(ctx), this.params, this.thermal, this.instanceScale, ctx.gmin ?? DEVICE_GMIN);
+    charge.forEach((quantity, row) => this.charges.accept(row, quantity.value));
+    this.charges.commit();
+  }
+
+  truncateTransientStep(ctx: StampContext, truncation: ChargeTruncation): number {
+    return this.charges.truncationTimestep(truncation, () => this.acceptTransientStep(ctx));
+  }
+
+  resetTransient(): void {
+    this.charges.reset();
+    this.junctions = undefined;
+    this.loadVoltages = undefined;
   }
 }

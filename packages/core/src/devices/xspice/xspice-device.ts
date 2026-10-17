@@ -1,5 +1,5 @@
 import type {
-  ChargeIntegration, ChargeTruncation, DeviceModel, StampContext,
+  ChargeIntegration, ChargeTruncation, DeviceModel, StampContext, TransientBreakpointSink,
 } from '../device.js';
 import type { CodeModelBehavior, CodeModelCall } from './models.js';
 
@@ -46,11 +46,11 @@ export class XspiceDevice implements DeviceModel {
   readonly integratesTransientCharge: boolean;
   readonly stampDynamic?: (ctx: StampContext) => void;
   readonly truncateTransientStep?: (ctx: StampContext, truncation: ChargeTruncation) => number;
+  readonly truncationCoversCharges?: boolean;
   readonly modelWarnings?: readonly string[];
   /**
-   * False for the analog half of a digital node bridge (adc_bridge,
-   * dac_bridge): ngspice MIFtrunc limits the step only through
-   * cm_analog_integrate, which the bridges never call, so their nodes take
+   * False for digital node bridges and magnetic models: ngspice MIFtrunc
+   * limits the step only through cm_analog_integrate, which they never call, so their nodes take
    * no truncation error.
    */
   readonly storesCharge?: boolean;
@@ -77,7 +77,10 @@ export class XspiceDevice implements DeviceModel {
     warnings: readonly string[] = [],
     untruncated = false,
   ) {
-    if (untruncated) this.storesCharge = false;
+    // cm_square computes phase arithmetically; cm_oneshot stores clock/corner
+    // times. Neither uses cm_analog_integrate. Their prescribed finite edges
+    // are bounded by model breakpoints, not node-voltage LTE.
+    if (untruncated || codeModel === 'square' || codeModel === 'oneshot') this.storesCharge = false;
     const nodes = new Set<number>();
     for (const port of [...inputPorts, ...outputPorts]) {
       nodes.add(port.positive);
@@ -102,7 +105,15 @@ export class XspiceDevice implements DeviceModel {
     if (behavior.ac.kind !== 'static') this.stampDynamic = ctx => this.stampFrequencyDependent(ctx);
     if (behavior.truncate) {
       this.truncateTransientStep = (ctx, truncation) => this.truncationTimestep(ctx, truncation);
+      // xtradev/{capacitor,inductor}/cfunc.mod:76-82 integrates its only
+      // state. miftrunc.c:98-103 bounds that integral, including ramp release;
+      // a second node-voltage LTE check changes the release grid and state.
+      if (codeModel === 'capacitoric' || codeModel === 'inductoric') this.truncationCoversCharges = true;
     }
+  }
+
+  setTransientRampTime(rampTime: number): void {
+    this.behavior.setRampTime?.(rampTime);
   }
 
   stamp(ctx: StampContext): void {
@@ -131,7 +142,7 @@ export class XspiceDevice implements DeviceModel {
     return this.limited;
   }
 
-  acceptTransientStep(ctx: StampContext): void {
+  acceptTransientStep(ctx: StampContext, breakpoints?: TransientBreakpointSink): void {
     const transient = this.acceptedTime !== undefined && ctx.dt > 0 && ctx.time > this.acceptedTime;
     // The operating point that starts a transient run: drop any earlier run's history.
     if (!transient) {
@@ -141,6 +152,11 @@ export class XspiceDevice implements DeviceModel {
     const call = this.call(ctx, transient ? 'tran' : 'dc', transient ? this.lastIntegration : undefined, false);
     this.behavior.load(call);
     this.behavior.accept?.(call);
+    if (this.behavior.breakpoints) {
+      const times = this.behavior.breakpoints();
+      if (breakpoints?.replaceTemporary) breakpoints.replaceTemporary(this, times);
+      else for (const time of times) breakpoints?.schedule(time);
+    }
     this.acceptedInputs.set(this.inputs);
     this.acceptedOutputs.set(this.outputs);
     this.acceptedPartials.set(this.partials);
@@ -152,6 +168,10 @@ export class XspiceDevice implements DeviceModel {
     this.acceptedTime = undefined;
     this.lastIntegration = undefined;
     this.behavior.reset?.();
+  }
+
+  prepareTransientStep(ctx: StampContext): void {
+    this.behavior.load(this.call(ctx, 'tran', this.lastIntegration, false));
   }
 
   /** Resolve a vnam input to the branch of its controlling voltage source. */
@@ -282,6 +302,8 @@ export class XspiceDevice implements DeviceModel {
     for (const out of this.outputPorts) {
       for (const input of this.inputPorts) {
         if (ac.kind === 'differentiator') {
+          if (ac.input !== undefined && input !== this.inputPorts[ac.input]) continue;
+          if (ac.output !== undefined && out !== this.outputPorts[ac.output]) continue;
           if (out.kind === 'voltage') {
             const row = n + out.branch!;
             if (input.kind === 'voltage') {

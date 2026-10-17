@@ -3,7 +3,7 @@ import type { SourceWaveform } from '../types.js';
 import { TransientNoiseContext, type NoiseHandle } from './transient-noise.js';
 import {
   effectivePulse, evaluateAm, evaluateExp, evaluatePulse, evaluatePwl, evaluateSffm, evaluateSin,
-  PwlBreakpointSchedule, pulseBreakpoints, pwlBreakpoints, requireStopTimeForDefaults,
+  PulseBreakpointSchedule, PwlBreakpointSchedule, initialPulseBreakpoints, pwlBreakpoints, requireStopTimeForDefaults,
 } from './voltage-source.js';
 
 export class CurrentSource implements DeviceModel {
@@ -16,15 +16,16 @@ export class CurrentSource implements DeviceModel {
   lastCurrent: number | undefined;
   /** TRNOISE/TRRANDOM state (ngspice ISRCtrnoise_state/ISRCtrrandom_state). */
   private readonly noise?: NoiseHandle;
-  /** Present only for TRNOISE/TRRANDOM and PWL with TD=/R=, so other sources stay off the accept pass. */
+  /** Present for noisy sources and accept-time PULSE/PWL breakpoint scheduling. */
   readonly acceptTransientStep?: (ctx: StampContext, breakpoints?: TransientBreakpointSink) => void;
   /**
-   * False for a PWL: its accept hook only schedules breakpoints,
+   * False for PULSE/PWL: their accept hooks only schedule breakpoints,
    * so it must not put its nodes under the node-voltage LTE.
    */
   readonly storesCharge?: boolean;
   /** ngspice accept-time PWL corners (isrcacct.c). */
   private readonly pwlSchedule?: PwlBreakpointSchedule;
+  private readonly pulseSchedule?: PulseBreakpointSchedule;
 
   /**
    * @param noiseContext - shared random stream of the circuit's TRNOISE and
@@ -43,6 +44,16 @@ export class CurrentSource implements DeviceModel {
       const noise = (noiseContext ?? new TransientNoiseContext()).register('I', name, waveform);
       this.noise = noise;
       this.acceptTransientStep = (ctx, breakpoints) => noise.accept(ctx.time, breakpoints);
+    } else if (waveform.type === 'pulse') {
+      const schedule = new PulseBreakpointSchedule();
+      this.pulseSchedule = schedule;
+      this.storesCharge = false;
+      this.acceptTransientStep = (ctx, breakpoints) => {
+        if (this.waveform.type !== 'pulse') return;
+        const next = schedule.next(effectivePulse(this.waveform, this.transientTimestep), ctx.time,
+          this.transientStopTime ?? Infinity, this.transientTimestep);
+        if (next !== undefined) breakpoints?.schedule(next);
+      };
     } else if (waveform.type === 'pwl') {
       const schedule = new PwlBreakpointSchedule(waveform);
       this.pwlSchedule = schedule;
@@ -117,7 +128,7 @@ export class CurrentSource implements DeviceModel {
 
   getBreakpoints(stopTime: number): number[] {
     if (this.waveform.type === 'pulse') {
-      return pulseBreakpoints(effectivePulse(this.waveform, this.transientTimestep), stopTime);
+      return initialPulseBreakpoints(effectivePulse(this.waveform, this.transientTimestep), stopTime, this.transientTimestep);
     }
     if (this.waveform.type === 'pwl') {
       return pwlBreakpoints(this.waveform, stopTime, this.transientTimestep);
@@ -129,5 +140,6 @@ export class CurrentSource implements DeviceModel {
   resetTransient(): void {
     this.noise?.resetTransient();
     this.pwlSchedule?.reset();
+    this.pulseSchedule?.reset();
   }
 }

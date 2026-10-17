@@ -8,6 +8,7 @@
 export class BreakpointQueue {
   private readonly times: number[];
   private head = 0;
+  private readonly temporary = new Map<object, readonly number[]>();
 
   constructor(times: readonly number[], private readonly tolerance: number) {
     const filtered = times.filter(t => Number.isFinite(t) && t > 0);
@@ -22,11 +23,29 @@ export class BreakpointQueue {
   }
 
   peek(): number | undefined {
-    return this.times[this.head];
+    let next = this.times[this.head];
+    for (const times of this.temporary.values()) {
+      for (const time of times) if (next === undefined || time < next) next = time;
+    }
+    return next;
   }
 
   pop(): void {
-    if (this.head < this.times.length) this.head++;
+    const next = this.peek();
+    if (next === undefined) return;
+    if (this.times[this.head] <= next + this.tolerance) this.head++;
+    for (const [owner, times] of this.temporary) {
+      const future = times.filter(time => time > next + this.tolerance);
+      if (future.length) this.temporary.set(owner, future);
+      else this.temporary.delete(owner);
+    }
+  }
+
+  /** Predictions move with the controlling signal; old predictions are not permanent events. */
+  replaceTemporary(owner: object, times: readonly number[], now: number): void {
+    const future = times.filter(time => Number.isFinite(time) && time - now > this.tolerance);
+    if (future.length) this.temporary.set(owner, future);
+    else this.temporary.delete(owner);
   }
 
   /** True when `time` is within tolerance of the current head. */
@@ -56,6 +75,6 @@ export class BreakpointQueue {
 
   /** Test-only — returns the remaining breakpoints in order. */
   remaining(): readonly number[] {
-    return this.times.slice(this.head);
+    return [...this.times.slice(this.head), ...[...this.temporary.values()].flat()].sort((a, b) => a - b);
   }
 }

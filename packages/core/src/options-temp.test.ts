@@ -155,7 +155,7 @@ R3 4 0 1k
     expect(result.dc).toBeDefined();
   });
 
-  it('rejects .noise at a non-nominal TEMP (noise is evaluated at 27 C)', () => {
+  it('accepts resistor .noise at a non-nominal TEMP', () => {
     const circuit = parse(`noise temp
 V1 1 0 dc 0 ac 1
 R1 1 2 1k
@@ -163,6 +163,6 @@ R2 2 0 1k
 .options temp=50
 .noise v(2) V1 dec 1 1k 10k`);
 
-    expect(() => circuit.compile()).toThrow(InvalidCircuitError);
+    expect(() => circuit.compile()).not.toThrow();
   });
 });

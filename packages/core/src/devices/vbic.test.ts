@@ -96,18 +96,17 @@ describe('bounded VBIC small-signal AC and pole-zero (ngspice vbicacld/vbicpzld)
     expectRootsNear(poleZero.zeros, NGSPICE_ZEROS);
   });
 
-  it('keeps transient analysis behind a typed unsupported error', () => {
+  it('compiles transient analysis with charge and excess-phase states', () => {
     const compile = () => parse(`unsupported VBIC transient analysis
       VBE b 0 0.7
       Q1 c b 0 QVBIC
       .model QVBIC NPN(LEVEL=4 CJE=1p TD=1p)
       .tran 1n 10n
     `).compile();
-    expect(compile).toThrow(InvalidCircuitError);
-    expect(compile).toThrow("Unsupported bounded VBIC analysis: 'tran'");
+    expect(compile).not.toThrow();
   });
 
-  it('keeps noise analysis behind a typed unsupported error', () => {
+  it('accepts bounded noise analysis', () => {
     const compile = () => parse(`unsupported VBIC noise analysis
       VBE b 0 DC 0.7 AC 1
       RC c 0 1k
@@ -115,8 +114,7 @@ describe('bounded VBIC small-signal AC and pole-zero (ngspice vbicacld/vbicpzld)
       .model QVBIC NPN(LEVEL=4)
       .noise v(c) VBE dec 10 1 1meg
     `).compile();
-    expect(compile).toThrow(InvalidCircuitError);
-    expect(compile).toThrow("Unsupported bounded VBIC analysis: 'noise'");
+    expect(compile).not.toThrow();
   });
 
   it('rejects VBIC charge parameters outside the bounded subset with a typed error', () => {

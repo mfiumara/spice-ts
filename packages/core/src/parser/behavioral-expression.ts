@@ -9,14 +9,15 @@ import { parseNumber } from './tokenizer.js';
  * `ptfuncs.c`.
  *
  * Supported: numbers with SPICE scale factors, the constants `pi` and `e`,
- * `time`, `temper`, `v(node)`, `v(node1,node2)`, the branch current
+ * `time`, `temper`, `hertz`, `v(node)`, `v(node1,node2)`, the branch current
  * `i(vsource)` of a branch-carrying source, unary `+ - !`, binary
  * `+ - * / ^ **`, comparisons `== != <> < <= > >=`, `&&`, `||` (also `|`), the ternary
  * `c ? a : b` / `ternary_fcn(c, a, b)`, every function listed in
  * {@link BEHAVIORAL_FUNCTIONS}, and the PSpice `if`, `limit`, `pwrs`, `stp`
  * and `int` (see {@link PSPICE_FUNCTIONS}). `.param` names, `{expr}` and `'expr'` are
  * substituted before parsing, as ngspice's numparam front end does (see
- * {@link substituteBehavioralParameters}). `hertz`, `pwl(...)` and the PSPICE
+ * {@link substituteBehavioralParameters}). `pwl(x, x1, y1, ...)` interpolates
+ * literal points and extrapolates the end segments. The PSPICE
  * logic operators `~ &` are rejected explicitly. Single `|` is the boolean
  * OR alias ngspice translates in included PSpice libraries (#903).
  */
@@ -25,11 +26,11 @@ export type BehavioralFunction =
   | 'cos' | 'cosh' | 'exp' | 'ln' | 'log' | 'log10' | 'sgn' | 'sin' | 'sinh'
   | 'sqrt' | 'tan' | 'tanh' | 'u' | 'uramp' | 'ceil' | 'floor' | 'nint' | 'u2'
   | 'eq0' | 'ne0' | 'gt0' | 'lt0' | 'ge0' | 'le0'
-  | 'pow' | 'pwr' | 'min' | 'max' | 'ddt';
+  | 'pow' | 'pwr' | 'min' | 'max' | 'ddt' | 'pwl';
 
 export type BehavioralBinaryOperator = '+' | '-' | '*' | '/' | '^';
 export type BehavioralComparison = '==' | '!=' | '<' | '<=' | '>' | '>=';
-export type BehavioralVariable = 'time' | 'temper';
+export type BehavioralVariable = 'time' | 'temper' | 'hertz';
 
 export type BehavioralExpression =
   | { kind: 'number'; value: number }
@@ -57,7 +58,7 @@ export const BEHAVIORAL_FUNCTIONS: readonly BehavioralFunction[] = [
   'cos', 'cosh', 'exp', 'ln', 'log', 'log10', 'sgn', 'sin', 'sinh',
   'sqrt', 'tan', 'tanh', 'u', 'uramp', 'ceil', 'floor', 'nint', 'u2',
   'eq0', 'ne0', 'gt0', 'lt0', 'ge0', 'le0',
-  ...BINARY_FUNCTIONS, 'ddt',
+  ...BINARY_FUNCTIONS, 'ddt', 'pwl',
 ];
 
 /** ASRC instance parameters (ngspice `asrc.c`); temperatures in Celsius. */
@@ -368,6 +369,7 @@ class Parser {
     switch (name) {
       case 'time':
       case 'temper':
+      case 'hertz':
         return { kind: 'variable', name };
       case 'pi':
         return { kind: 'number', value: Math.PI };
@@ -382,6 +384,24 @@ class Parser {
     const args = [this.parseExpression()];
     while (this.accept(',')) args.push(this.parseExpression());
     this.expect(')');
+    if (name === 'pwl') {
+      if (args.length < 5 || args.length % 2 !== 1) {
+        throw new ExpressionError('pwl() needs at least two pairs of literal points');
+      }
+      const literal = (arg: BehavioralExpression): number => {
+        if (arg.kind === 'number') return arg.value;
+        if (arg.kind === 'negate' && arg.operand.kind === 'number') return -arg.operand.value;
+        throw new ExpressionError('pwl() points must be literal constants');
+      };
+      for (let i = 1; i < args.length; i++) {
+        const value = literal(args[i]);
+        if (i > 2 && i % 2 === 1 && literal(args[i - 2]) >= value) {
+          throw new ExpressionError('pwl() point abscissas must be strictly ascending');
+        }
+        args[i] = { kind: 'number', value };
+      }
+      return { kind: 'call', name, args };
+    }
     if (name === 'ternary_fcn') {
       if (args.length !== 3) throw new ExpressionError('ternary_fcn() takes three arguments');
       return { kind: 'ternary', condition: args[0], whenTrue: args[1], whenFalse: args[2] };
@@ -468,7 +488,7 @@ class Parser {
  * parenthesised sub-expression, with its parameters substituted.
  * `params` is keyed by upper-case name. Other cards are returned unchanged.
  */
-export function substituteBehavioralParameters(raw: string, params: Record<string, number>): string {
+export function substituteBehavioralParameters(raw: string, params: Record<string, number | string>): string {
   const card = B_CARD_HEAD.exec(raw);
   if (!card) return raw;
   return card[1] + card[2] + substituteBehavioralText(card[3], params);
@@ -477,7 +497,12 @@ export function substituteBehavioralParameters(raw: string, params: Record<strin
 /** Matches `v(` / `i(` (node voltage or branch current access). */
 export const NODE_DEPENDENT_EXPRESSION = /(?<![A-Za-z0-9_])[vi]\s*\(/i;
 
-function substituteBehavioralText(body: string, params: Record<string, number>): string {
+/** Keep ASRC functions out of the narrower numparam constant evaluator. */
+export const BEHAVIORAL_RUNTIME_EXPRESSION = new RegExp(
+  `\\b(?:${BEHAVIORAL_FUNCTIONS.join('|')})\\s*\\(|\\bhertz\\b`, 'i',
+);
+
+function substituteBehavioralText(body: string, params: Record<string, number | string>): string {
   const format = (value: number) => (value < 0 ? `(${value})` : String(value));
   let out = '';
   let i = 0;
@@ -487,7 +512,7 @@ function substituteBehavioralText(body: string, params: Record<string, number>):
       const close = char === '{' ? matchingBrace(body, i) : body.indexOf("'", i + 1);
       if (close < 0) throw new Error(`Unterminated ${char} expression in B-card`);
       const inner = body.slice(i + 1, close);
-      out += NODE_DEPENDENT_EXPRESSION.test(inner)
+      out += NODE_DEPENDENT_EXPRESSION.test(inner) || BEHAVIORAL_RUNTIME_EXPRESSION.test(inner)
         ? `(${substituteBehavioralText(inner, params)})`
         : format(evaluateExpression(inner, params));
       i = close + 1;
@@ -510,7 +535,11 @@ function substituteBehavioralText(body: string, params: Record<string, number>):
         continue;
       }
       const key = identifier[0].toUpperCase();
-      out += !/^\s*[(=]/.test(after) && key in params ? format(params[key]) : identifier[0];
+      if (key !== 'HERTZ' && !/^\s*[(=]/.test(after) && key in params) {
+        const value = params[key];
+        if (typeof value !== 'number') throw new Error(`String parameter '${key}' used in a numeric expression`);
+        out += format(value);
+      } else out += identifier[0];
       i += identifier[0].length;
     } else {
       out += char;
@@ -651,6 +680,8 @@ function behavioralControls(expression: BehavioralExpression): { nodes: string[]
 
 /** Simulator state a B-source expression reads besides node voltages. */
 export interface BehavioralEnvironment {
+  /** Analysis frequency in Hz; zero outside AC. */
+  frequency?: number;
   /** Junction gmin used by ngspice's PTfudge_factor. Default: 1e-12 S. */
   gmin?: number;
   /** Simulation time in seconds (0 outside transient analysis). */
@@ -667,6 +698,7 @@ const DEFAULT_ENVIRONMENT: BehavioralEnvironment = { time: 0, transient: false, 
 export class BehavioralRangeError extends Error {}
 
 export interface CompiledBehavioralExpression {
+  readonly frequencyDependent?: boolean;
   /** Distinct non-ground controlling nodes, in first-reference order. */
   readonly nodes: readonly string[];
   /** Distinct controlling `i()` sources, in first-reference order. */
@@ -883,6 +915,7 @@ function compare(op: BehavioralComparison, difference: number): number {
 export function compileBehavioralExpression(expression: BehavioralExpression): CompiledBehavioralExpression {
   const { nodes, sources } = behavioralControls(expression);
   const size = nodes.length + sources.length;
+  let frequencyDependent = false;
 
   /**
    * d(base^exponent) as ngspice builds it for `^` and `pow()`: a literal
@@ -931,9 +964,11 @@ export function compileBehavioralExpression(expression: BehavioralExpression): C
       }
       case 'variable': {
         const time = node.name === 'time';
+        const hertz = node.name === 'hertz';
+        if (hertz) frequencyDependent = true;
         return (_voltages, gradient, environment) => {
           gradient.fill(0);
-          return time ? environment.time : environment.temperature;
+          return hertz ? environment.frequency ?? 0 : time ? environment.time : environment.temperature;
         };
       }
       case 'voltage': {
@@ -1016,6 +1051,7 @@ export function compileBehavioralExpression(expression: BehavioralExpression): C
         };
       }
       case 'call':
+        if (node.name === 'pwl') return buildPwl(node.args);
         if (node.name === 'ddt') return buildDdt(node.args[0]);
         return node.args.length === 2
           ? buildBinaryFunction(node.name, node.args[0], node.args[1])
@@ -1023,6 +1059,29 @@ export function compileBehavioralExpression(expression: BehavioralExpression): C
       case 'binary':
         return buildBinary(node.op, node.left, node.right);
     }
+  };
+
+  // ngspice PTpwl/PTpwl_derivative: right-hand segment at an interior knot;
+  // outside the table, extend the first/last segment (do not clamp).
+  const buildPwl = (args: BehavioralExpression[]): Evaluator => {
+    const argument = build(args[0]);
+    const points = args.slice(1).map(arg => {
+      if (arg.kind !== 'number') throw new Error('internal: nonliteral pwl point');
+      return arg.value;
+    });
+    return (voltages, gradient, environment) => {
+      const x = argument(voltages, gradient, environment);
+      let low = 0;
+      let high = points.length / 2 - 1;
+      while (high - low > 1) {
+        const middle = Math.floor((low + high) / 2);
+        if (points[2 * middle] > x) high = middle;
+        else low = middle;
+      }
+      const slope = (points[2 * high + 1] - points[2 * low + 1]) / (points[2 * high] - points[2 * low]);
+      for (let i = 0; i < size; i++) gradient[i] *= slope;
+      return checked(points[2 * low + 1] + slope * (x - points[2 * low]), 'pwl', x);
+    };
   };
 
   const buildUnaryFunction = (name: BehavioralFunction, argumentNode: BehavioralExpression): Evaluator => {
@@ -1133,6 +1192,9 @@ export function compileBehavioralExpression(expression: BehavioralExpression): C
     const leftGradient = new Float64Array(size);
     const literalExponent = isConstantTree(rightNode);
     const literalBase = isConstantTree(leftNode);
+    const denominatorControls = op === '/' ? behavioralControls(rightNode) : undefined;
+    const fixedDenominator = denominatorControls !== undefined
+      && denominatorControls.nodes.length === 0 && denominatorControls.sources.length === 0;
     return (voltages, gradient, environment) => {
       const a = left(voltages, leftGradient, environment);
       const b = right(voltages, gradient, environment);
@@ -1147,6 +1209,14 @@ export function compileBehavioralExpression(expression: BehavioralExpression): C
           for (let i = 0; i < size; i++) gradient[i] = leftGradient[i] * b + a * gradient[i];
           return checked(a * b, op, a, b);
         case '/': {
+          // PTdifferentiate simplifies a control-independent denominator to
+          // da / b. Multiplying by b first would erase the slope at HERTZ=0.
+          if (fixedDenominator) {
+            for (let i = 0; i < size; i++) {
+              gradient[i] = ptDivide(leftGradient[i], b, divideFudge(environment));
+            }
+            return checked(ptDivide(a, b, divideFudge(environment)), op, a, b);
+          }
           // d(a/b) = (da*b - a*db) / b^2, with PTdivide's fudge on b^2.
           const denominator = ptPowerH(b, 2);
           for (let i = 0; i < size; i++) {
@@ -1167,6 +1237,7 @@ export function compileBehavioralExpression(expression: BehavioralExpression): C
   return {
     nodes,
     sources,
+    frequencyDependent,
     evaluate(voltages, gradient, environment = DEFAULT_ENVIRONMENT) {
       return root(voltages, gradient, environment);
     },

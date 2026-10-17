@@ -13,7 +13,7 @@ export const SUPPORTED_MODEL_TYPES: ReadonlySet<string> = new Set([
   'VDMOS', 'VDMOSN', 'VDMOSP',
   'NHFET', 'NMF',
   'R', 'RES', 'C', 'L',
-  'LTRA', 'TXL', 'CPL',
+  'LTRA', 'TXL', 'CPL', 'URC',
   'SW', 'CSW',
 ]);
 
@@ -40,6 +40,7 @@ export const DEVICE_MODEL_TYPES: Readonly<Record<string, readonly string[]>> = {
   Z: ['NHFET', 'NMF'],
   S: ['SW'],
   W: ['CSW'],
+  U: ['URC'],
 };
 
 /**
