@@ -9,6 +9,7 @@ A bounded stdio MCP server exposing the existing spice-ts protocol-v1 adapter. I
 - `spice_convert`: convert `{ netlist: string }` to `{ circuitJson, diagnostics, lossy: false }`, or `{ circuitJson: [...] }` to `{ netlist, diagnostics, lossy: false }`.
 - `spice_simulate`: one bounded protocol-v1 simulation.
 - `spice_measure`: run the same simulation request once and return scalar measurements only.
+- `spice_compare`: compare two waveform sets or completed simulation results without solving again.
 - `spice_simulation_start`: start a bounded simulation worker and return its opaque job cursor before solving completes.
 - `spice_simulation_read`: pull a replayable chunk containing at most 256 points by default (caller-selectable from 1 through the hard cap of 1024).
 - `spice_simulation_cancel`: idempotently stop delivery and return the protocol-v1 cancelled terminal with partial analysis counts and `partialEventSha256`.
@@ -103,6 +104,57 @@ concurrency quota and the same Circuit JSON conversion/diagnostic path.
 
 Example measurement for an AC low-pass with 1 V input:
 `{ kind: 'cross', signal: 'db(v(out))', analysis: 0, value: -3.010299956639812, edge: 'falling' }`.
+
+## Waveform comparison
+
+Call `spice_compare` with `{ reference, actual, signals: ['v(out)'], absTolerance: 0,
+relTolerance: 0, phaseToleranceDegrees: 0 }`. Tolerances are optional, nonnegative,
+finite, and default to zero. Each source is one of:
+
+- `{ x: [0, 1, 2], signals: { 'v(out)': [0, 1, 2] }, axisUnit: 's' }`.
+  `axisUnit` is optional; when both sources specify it, units must match.
+- `{ result: SimulationResultV1, analysis: 0 }` for a complete protocol-v1 result.
+  Signal names are `v(node)` and `i(branch)`, exactly as spelled in the result.
+- `{ jobId: '...', analysis: 0 }` for a completed job in this server session.
+  Drain `spice_simulation_read` until complete first. Pending, failed, cancelled,
+  unknown, and expired jobs are not usable. Comparing does not consume job events.
+
+`analysis` is a zero-based analysis index. Repeated indices in stepped results
+return `AMBIGUOUS_ANALYSIS`; absent indices return `UNKNOWN_ANALYSIS`.
+Unlike `spice_measure`, comparison accepts stored results, not a simulation request.
+
+Axes must be finite and strictly increasing. The tool linearly interpolates each
+signal onto the sorted union of both axes, restricted to their inclusive overlap.
+It never extrapolates; a single shared endpoint is a valid one-point comparison.
+The reference peak is the maximum absolute reference value on this common grid.
+A sample fails when `abs(actual - reference) > absTolerance + relTolerance * peak`.
+
+The response contains `pass`, `overlap: [from, to]`, `pointsCompared` (grid size),
+and `comparisons` in selection order. Each comparison has `signal`, `maxAbsError`,
+`maxRelError` (maximum error divided by reference peak), `xAtWorstError` (earliest
+sample on ties), `firstExceededX` (first failing grid sample, or null), and `pass`.
+These are sampled metrics, not continuous threshold-crossing locations.
+Zero peak with zero error gives relative error 0; an undefined or unrepresentable
+relative error is JSON null, never Infinity or NaN. An ordinary tolerance failure
+is a successful tool response with `pass: false`, not `isError`.
+
+Complex AC samples use protocol-v1 `{ magnitude, phaseDegrees }` objects.
+Magnitude and unwrapped phase are interpolated separately, linearly in x (Hz for
+AC, not log Hz). Phase unwrapping takes the shortest arc, with 180-degree ties
+resolved toward -180. Phase differences wrap to [-180, 180) degrees. Magnitude
+uses the normal absolute/relative tolerances. The additional `phase` metrics use
+`phaseToleranceDegrees` as an absolute tolerance; their relative error is reported
+against peak absolute unwrapped reference phase. Both magnitude and phase must pass.
+Phase is compared as supplied even at zero magnitude. Real/complex mixing is rejected.
+
+Invalid comparisons set `isError` with `{ error: { code, message, phase: 'validation',
+retryable: false, details: {} } }`. Codes include `AXIS_MISMATCH` (lengths, units,
+or real/complex shape), `UNKNOWN_SIGNAL`, `NON_MONOTONIC_AXIS`, `EMPTY_OVERLAP`,
+and `INVALID_REQUEST` (malformed/nonfinite data or tolerances).
+Select 1 through 128 unique signals, each at most 256 characters. Input/output
+byte limits apply; union grid size times selected signal count is bounded by
+`maxResultPoints`, returning `RESOURCE_LIMIT` when exceeded. No solver or benchmark
+semantics are changed by this tool.
 
 ## Run over stdio
 
