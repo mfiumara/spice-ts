@@ -477,6 +477,19 @@ export const DIGITAL_MODELS: ReadonlyMap<string, DigitalModelFactory> = new Map<
   ['d_nor', gate(dominantGate(ONE, ZERO, ONE))],
   ['d_xor', gate(parityGate(ZERO))],
   ['d_xnor', gate(parityGate(ONE))],
+  // ngspice-47 digital/d_lut/cfunc.mod:168-183,195-223. Input 0 is the
+  // least-significant bit; missing entries and non-binary characters give U.
+  ['d_lut', (params, context) => {
+    const table = String(params.get('table_values')![0]);
+    return gate(inputs => {
+      let index = 0;
+      for (let i = 0; i < inputs.length; i++) {
+        if (inputs[i] === UNKNOWN) return UNKNOWN;
+        if (inputs[i] === ONE) index += 2 ** i;
+      }
+      return table[index] === '0' ? ZERO : table[index] === '1' ? ONE : UNKNOWN;
+    })(params, context);
+  }],
   ['adc_bridge', adcBridge],
   ['dac_bridge', dacBridge],
 ]);

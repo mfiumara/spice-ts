@@ -104,7 +104,7 @@ function limit(...args: number[]): number {
   return a > b ? Math.max(Math.min(x, a), b) : Math.max(Math.min(x, b), a);
 }
 
-export function evaluateExpression(input: string, vars: Record<string, number>): number {
+export function evaluateExpression(input: string, vars: Record<string, number | string>): number {
   const parser = new ExprParser(input.trim(), vars);
   const result = parser.parseFormula();
   parser.skipWhitespace();
@@ -123,7 +123,7 @@ class ExprParser {
 
   constructor(
     public readonly src: string,
-    private readonly vars: Record<string, number>,
+    private readonly vars: Record<string, number | string>,
   ) {}
 
   /**
@@ -313,8 +313,11 @@ class ExprParser {
       const name = varMatch[1];
       this.pos += name.length;
       const upper = name.toUpperCase();
-      if (upper in this.vars) return this.vars[upper];
-      if (name in this.vars) return this.vars[name];
+      if (upper in this.vars || name in this.vars) {
+        const value = this.vars[upper in this.vars ? upper : name];
+        if (typeof value !== 'number') throw new Error(`String parameter '${name}' used in a numeric expression`);
+        return value;
+      }
       throw new Error(`Undefined variable '${name}'`);
     }
 

@@ -1525,3 +1525,17 @@ Model semantics follow the Public Domain ngspice-47
 [`xtradev` source](https://github.com/imr/ngspice/tree/a80f6e3e95d51534905b1f23410a951802666656/src/xspice/icm/xtradev):
 `lcouple/cfunc.mod:182-249` and `core/cfunc.mod:246-365`, with ports/defaults
 from the respective `ifspec.ifs`. Core hysteresis mode is explicitly rejected.
+
+## Numparam strings (#1259)
+
+`benchmarks/numparam-strings/compare.ts` sources the unchanged corpus-f
+`examples/numparam/strings.cir` (BSD-3-Clause; provenance in corpus-f/SOURCES.md)
+in ngspice-47 and passes identical bytes to spice-ts. An external observer
+exports analog samples and digital event histories without editing the fixture.
+Analog errors use the uniform 1%-of-peak threshold; digital state sequences and
+event-time errors are reported separately. No circuit-specific tuning is applied.
+Semantics follow ngspice-47 revision a80f6e3e95d51534905b1f23410a951802666656:
+[`numparam/xpressn.c:1140-1210`](https://github.com/imr/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/src/frontend/numparam/xpressn.c#L1140)
+for adjacent quoted/identifier string atoms, and the Public Domain
+[`digital/d_lut/cfunc.mod:168-223`](https://github.com/imr/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/src/xspice/icm/digital/d_lut/cfunc.mod#L168)
+for table indexing, unknown entries and output delays (lines 227-259).
