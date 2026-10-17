@@ -167,6 +167,9 @@ export class BSIM4 implements DeviceModel {
     };
     gateChannel(sr, op.igcs, op.gigcsg, op.gigcsd, op.gigcsb);
     gateChannel(dr, op.igcd, op.gigcdg, op.gigcdd, op.gigcdb);
+    // b4ld.c:4801-4811,4892-4902. Gate-body derivatives follow channel
+    // orientation, but the current always flows between gate and bulk.
+    if (this.model.values.igbmod === 1) gateChannel(3, op.igb, op.gigbg, op.gigbd, op.gigbb);
     pair(1, 2, op.igs, [0, op.gigsg, -op.gigsg, 0]);
     pair(1, 0, op.igd, [-op.gigdg, op.gigdg, 0, 0]);
   }

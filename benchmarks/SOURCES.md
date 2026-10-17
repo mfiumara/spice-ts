@@ -1,5 +1,19 @@
 # Benchmark sources
 
+## BSIM4 IGBMOD=1 gate-to-body tunneling (#1321)
+
+`benchmarks/bsim4-igb/{n,p}-{acc,inv}.cir` are self-authored MIT fixtures.
+Both engines receive identical netlists, with 31 points per NMOS/PMOS
+accumulation/inversion sweep, TOXREF/NTOX dependence and NF/M scaling.
+Regenerate the hash-guarded `ngspice-47.json` with
+`spice-heavy python3 benchmarks/bsim4-igb/generate.py`.
+`gate-body-current.test.ts` checks I(Vg), I(Vb) and normalized device IGB
+at every point against one shared 1e-6 relative OR 1e-15 A absolute bound.
+No native logs/raw files are committed. The generic equations and analytic
+derivatives are ported from ECL-2.0 ngspice-47 `b4ld.c:2803-2921`, revision
+`a80f6e3e95d51534905b1f23410a951802666656`, using the existing BSIM4
+licence/notices and temperature/binning path. See `bsim4/LOAD.md`.
+
 ## BSIM4 IGCMOD=1 gate tunneling (#1304)
 
 `benchmarks/bsim4-igc/{n,p}-{forward,reverse}.cir` are self-authored MIT
