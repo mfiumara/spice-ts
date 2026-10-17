@@ -851,13 +851,13 @@ class ControlInterpreter {
   /** ngspice-47 frontend/fourier.c:69-163: last-period grid and sine-reference table. */
   private fourier(rest: string, line: ControlSourceLine): void {
     const fail = (message: string): never => { throw new ControlScriptError(`fourier: ${message}`, line.lineNumber, line.text); };
-    const frequency = /^\S+/.exec(rest.trim())?.[0];
+    const frequency = /^\s*(\S+)/.exec(rest)?.[1] ?? '';
     const fundamental = parseControlNumber(frequency ?? '');
     if (fundamental === undefined || !Number.isFinite(fundamental) || fundamental <= 0) fail('bad fundamental freq');
-    const operandText = rest.trim().slice(frequency!.length).trim();
-    if (!operandText) fail('missing vector');
+    const text = rest.trimStart().slice(frequency.length).trim();
+    if (!text) fail('missing vector');
     const operands = (() => {
-      try { return splitVectorExpressions(operandText); }
+      try { return splitVectorExpressions(text); }
       catch (error) { throw this.wrap(error, line); }
     })();
     const time = this.current.scale;

@@ -104,7 +104,7 @@ export function parseControlNumber(text: string): number | undefined {
   return sign * mantissa * scaleSuffix(match[1]);
 }
 
-function tokenize(text: string, starts: number[] = []): Token[] {
+function tokenize(text: string, starts?: number[]): Token[] {
   const tokens: Token[] = [];
   let rest = text;
   while (rest.length > 0) {
@@ -113,7 +113,7 @@ function tokenize(text: string, starts: number[] = []): Token[] {
       rest = rest.slice(whitespace[0].length);
       continue;
     }
-    starts.push(text.length - rest.length);
+    starts?.push(text.length - rest.length);
     if (rest[0] === '"' || rest[0] === "'") {
       const end = rest.indexOf(rest[0], 1);
       if (end < 0) throw new ExpressionError(`unterminated string in '${text}'`);
@@ -184,12 +184,12 @@ export function parseVectorExpression(text: string): ExpressionNode {
   return parseExpressions(text, false)[0].tree;
 }
 
-/** Split a command's expression list using the same grammar as `let`, not whitespace. */
+/** Split a command's expression list at grammar boundaries, not whitespace. */
 export function splitVectorExpressions(text: string): string[] {
-  return parseExpressions(text, true).map(item => item.text);
+  return parseExpressions(text, true).map(operand => operand.text);
 }
 
-function parseExpressions(text: string, multiple: boolean): { tree: ExpressionNode; text: string }[] {
+function parseExpressions(text: string, multiple: boolean): { text: string; tree: ExpressionNode }[] {
   const starts: number[] = [];
   const tokens = tokenize(text, starts);
   if (tokens.length === 0) throw new ExpressionError('missing expression');
@@ -243,7 +243,8 @@ function parseExpressions(text: string, multiple: boolean): { tree: ExpressionNo
     for (;;) {
       const token = peek();
       if (token?.type !== 'op') {
-        return left;
+        if (token === undefined || multiple) return left;
+        throw new ExpressionError(`unexpected operand in '${text}'`);
       }
       const power = INFIX_POWER[token.value];
       if (power === undefined || power <= rightPower) return left;
@@ -274,14 +275,14 @@ function parseExpressions(text: string, multiple: boolean): { tree: ExpressionNo
     }
   }
 
-  const expressions: { tree: ExpressionNode; text: string }[] = [];
+  const operands: { text: string; tree: ExpressionNode }[] = [];
   do {
     const start = starts[position];
     const tree = expression(0);
-    expressions.push({ tree, text: text.slice(start, starts[position] ?? text.length).trim() });
+    operands.push({ text: text.slice(start, starts[position] ?? text.length).trim(), tree });
     if (!multiple && position !== tokens.length) throw new ExpressionError(`unexpected trailing input in '${text}'`);
   } while (position < tokens.length);
-  return expressions;
+  return operands;
 }
 
 // ---------------------------------------------------------------------------
