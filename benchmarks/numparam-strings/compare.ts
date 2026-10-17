@@ -8,6 +8,7 @@ import { spawnSync } from 'node:child_process';
 import { simulate } from '../../packages/core/dist/index.js';
 import { readNgspiceRawFile } from '../corpus/corpus-f/raw-stream.js';
 
+async function main(): Promise<void> {
 const path = fileURLToPath(new URL('../corpus/corpus-f/fixtures/examples/numparam/strings.cir', import.meta.url));
 const bytes = readFileSync(path);
 const directory = mkdtempSync(join(tmpdir(), 'numparam-strings-'));
@@ -52,3 +53,6 @@ try {
 } finally {
   rmSync(directory, { recursive: true, force: true });
 }
+}
+
+main().catch(error => { console.error(error); process.exitCode = 1; });
