@@ -473,6 +473,11 @@ export const XSPICE_CODE_MODEL_SPECS: ReadonlyMap<string, XspiceCodeModelSpec> =
     flipFlop('d_tff', ['t'], 't_load'), flipFlop('d_srff', ['s', 'r'], 'sr_load'),
     unaryGate('d_buffer'), unaryGate('d_inverter'),
     naryGate('d_and'), naryGate('d_nand'), naryGate('d_or'), naryGate('d_nor'), naryGate('d_xor'), naryGate('d_xnor'),
+    {
+      name: 'd_lut',
+      connections: [digital('in', 'in', true, [1, undefined]), digital('out', 'out')],
+      params: [...DIGITAL_DELAYS, real('input_load', 1e-12), { ...string('table_values'), nullAllowed: false }],
+    },
   ].map(spec => [spec.name, spec]),
 );
 

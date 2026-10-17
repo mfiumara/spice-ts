@@ -124,7 +124,7 @@ function parseNetlist(
   firstLineIsTitle: boolean,
   guard?: ProtocolExecutionGuard,
   extractedBlocks: ControlSourceBlock[] = [],
-  parameters: Record<string, number> = {},
+  parameters: Record<string, number | string> = {},
   controlWarnings: ControlSourceWarning[] = [],
   controlConstants: Record<string, number> = {},
   atTemperature?: PreprocessedDeck['atTemperature'],
@@ -198,7 +198,7 @@ function parseNetlist(
               // Parameter expressions can only be checked after expansion.
               if (!raw.includes('{')) parseXspiceModelCard(raw, lineNumber);
               const codeModel = xspiceModelType(tokens);
-              if (codeModel !== 'pwl' && codeModel !== 'pswitch') assertSupportedModelType(tokens, lineNumber, raw);
+              if (codeModel !== 'pwl' && codeModel !== 'pswitch' && codeModel !== 'd_lut') assertSupportedModelType(tokens, lineNumber, raw);
             } else {
               assertSupportedModelType(tokens, lineNumber, raw);
               if (!raw.includes('{')) assertSupportedResistorModel(tokens, lineNumber, raw);

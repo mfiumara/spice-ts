@@ -79,7 +79,8 @@ import {
   transientNoiseWaveform, transientRandomWaveform, VOLTAGE_SOURCE_MULTIPLIER_ERROR,
 } from './parser/waveform-parser.js';
 import { invalidPassiveInstanceLine, parsePassiveElement } from './parser/passive-parser.js';
-import { locateSubcircuitCall, parseSubcircuitCallParams, splitNestedSubcircuits, validateSubcircuitCallCommas } from './parser/subcircuit-syntax.js';
+import { locateSubcircuitCall, parseSubcircuitCallParams, splitNestedSubcircuits, validateSubcircuitCallCommas, subcircuitStringActuals } from './parser/subcircuit-syntax.js';
+import { stringParameter, substituteStringAssignments, type ParameterScope } from './parser/string-param.js';
 import { assertSupportedResistorModel, parseResistorElement } from './parser/resistor-parser.js';
 import { parseZInstance } from './parser/z-device-parser.js';
 import { parseSwitchInstance } from './parser/switch-parser.js';
@@ -173,7 +174,7 @@ interface SubcircuitScope {
   /** Upper-case local `.model` name -> instance-scoped model name (#854). */
   models: ReadonlyMap<string, string>;
   /** Parameter scope of the instance whose body holds these definitions (#857). */
-  params: Record<string, number>;
+  params: ParameterScope;
 }
 
 interface DeviceDescriptor {
@@ -392,10 +393,10 @@ function formatBehavioralSource(desc: DeviceDescriptor): string {
   return [desc.name, desc.nodes[0], desc.nodes[1], assignment, ...instance].join(' ');
 }
 
-function formatParams(params?: Record<string, number>): string {
+function formatParams(params?: ParameterScope): string {
   if (!params) return '';
   return Object.entries(params)
-    .map(([key, value]) => `${key}=${formatNumber(value)}`)
+    .map(([key, value]) => `${key}=${typeof value === 'string' ? JSON.stringify(value) : formatNumber(value)}`)
     .join(' ');
 }
 
@@ -843,8 +844,8 @@ export class Circuit {
   /** `.global` node names, keyed upper-case, valued with their first spelling. */
   private _globalNodes = new Map<string, string>();
   /** Top-level `.param` values (upper-case names) visible inside subcircuits. */
-  private _parameters = new Map<string, number>();
-  private _parameterScope: Record<string, number> | undefined;
+  private _parameters = new Map<string, number | string>();
+  private _parameterScope: ParameterScope | undefined;
   private _simulationOptions: SimulationOptions = {};
   private _temperature: number | undefined;
   /** @internal Parser-supplied evaluator for TEMPER-dependent parameter expressions. */
@@ -1670,13 +1671,13 @@ export class Circuit {
    * the subcircuit shadows the name. {@link parseAsync} records the deck's
    * top-level parameters here. Names are case-insensitive; later values win.
    */
-  setParameters(values: Readonly<Record<string, number>>): void {
+  setParameters(values: Readonly<ParameterScope>): void {
     for (const [name, value] of Object.entries(values)) this._parameters.set(name.toUpperCase(), value);
     this._parameterScope = undefined;
   }
 
   /** Top-level `.param` values visible inside subcircuits, keyed upper-case. */
-  get parameters(): Record<string, number> {
+  get parameters(): ParameterScope {
     return Object.fromEntries(this._parameters);
   }
 
@@ -2189,7 +2190,7 @@ export class Circuit {
         [...xspiceInstances.values()],
         new Set(expandedDescriptors.flatMap(desc => desc.nodes.map(name => name.toUpperCase()))),
         new Set(expandedDescriptors.map(desc => desc.name.toUpperCase())),
-        this._parameters.get('VCC') ?? 3.3,
+        evaluateExpression('VCC', { VCC: 3.3, ...this.parameters }),
         GROUND_NODE,
       );
       for (const prepared of bridges) {
@@ -2776,8 +2777,8 @@ export class Circuit {
   }
 
   /** Top-level `.param` values as a prototype-free variable record for subcircuit scopes. */
-  private parameterScope(): Record<string, number> {
-    this._parameterScope ??= Object.assign(Object.create(null) as Record<string, number>, this.parameters);
+  private parameterScope(): ParameterScope {
+    this._parameterScope ??= Object.assign(Object.create(null) as ParameterScope, this.parameters);
     return this._parameterScope;
   }
 
@@ -3419,7 +3420,7 @@ export class Circuit {
   private registerSubcircuitModels(
     instanceName: string,
     lines: readonly { tokens: string[]; lineNumber: number; raw: string }[],
-    params: Record<string, number>,
+    params: ParameterScope,
   ): Map<string, string> {
     const local = new Map<string, string>();
     for (const { tokens, lineNumber, raw } of lines) {
@@ -3428,7 +3429,7 @@ export class Circuit {
       // braces can occur in name=value, name value, parentheses and continuations.
       let evaluated: string;
       try {
-        evaluated = substituteExpressions(raw, params);
+        evaluated = substituteExpressions(substituteStringAssignments(raw, params), params);
       } catch (error) {
         throw new ParseError((error as Error).message, lineNumber, raw);
       }
@@ -3476,7 +3477,7 @@ export class Circuit {
     depth = 1,
     scopes: readonly SubcircuitScope[] = [],
     inheritedMultiplicity = 1,
-    callerParams: Record<string, number> = this.parameterScope(),
+    callerParams: ParameterScope = this.parameterScope(),
     rawCall?: string,
   ): DeviceDescriptor[] {
     guard?.maximum('maxSubcircuitDepth', depth, 'compile');
@@ -3512,8 +3513,12 @@ export class Circuit {
     // ngspice-47 numparam searches the instance stack, not definition ancestry
     // (#888). Each call gets fresh bindings over its caller, then ancestors and
     // globals. Definition/model lookup remains lexical via definitionScopes.
-    const localParams: Record<string, number> = Object.create(callerParams) as Record<string, number>;
-    const overrides = new Map(Object.entries(instanceParams).map(([k, v]) => [k.toUpperCase(), v]));
+    const localParams: ParameterScope = Object.create(callerParams) as ParameterScope;
+    const overrides = new Map<string, number | string>(Object.entries(instanceParams).map(([k, v]) => [k.toUpperCase(), v]));
+    if (rawCall !== undefined) {
+      const actuals = substituteExpressions(substituteStringAssignments(rawCall, callerParams), callerParams);
+      for (const [name, value] of subcircuitStringActuals(actuals)) overrides.set(name, value);
+    }
     // Defaults are evaluated in declaration order after the instance
     // overrides, so `p2={p1*2}` follows an overridden p1 (ngspice-47).
     for (const [k, value] of Object.entries(def.params)) {
@@ -3525,7 +3530,7 @@ export class Circuit {
         localParams[name] = value;
       } else {
         try {
-          localParams[name] = evaluateExpression(value, localParams);
+          localParams[name] = stringParameter(value, localParams) ?? evaluateExpression(value, localParams);
         } catch (error) {
           throw new Error(
             `Subcircuit '${subcktName}' (instance '${instanceName}') parameter '${k}=${value}': ${(error as Error).message}`,
@@ -3544,7 +3549,7 @@ export class Circuit {
     // subcircuit declares a parameter named m, the X-line m is that ordinary
     // parameter instead (as in ngspice-47 inp_fix_inst_calls_for_numparam).
     const multiplicity = inheritedMultiplicity
-      * (declared.has('M') ? 1 : overrides.get('M') ?? 1);
+      * (declared.has('M') ? 1 : evaluateExpression('M', { M: overrides.get('M') ?? 1 }));
 
     // Map a node name from the subcircuit body to the actual circuit node
     const mapNode = (bodyNode: string): string => {
@@ -3562,16 +3567,19 @@ export class Circuit {
     // Evaluate {expr} in a token using merged parameters
     // Handles both standalone {expr} and key={expr} patterns
     const evalToken = (token: string, formatter = formatNumparamNumber): string => {
+      token = substituteStringAssignments(token, localParams);
       if (token.startsWith('{') && token.endsWith('}')) {
         const expr = token.slice(1, -1);
-        return formatter(evaluateExpression(expr, localParams));
+        const string = stringParameter(expr, localParams);
+        return string === undefined ? formatter(evaluateExpression(expr, localParams)) : JSON.stringify(string);
       }
       const eqIdx = token.indexOf('=');
       if (eqIdx > 0) {
         const val = token.slice(eqIdx + 1);
         if (val.startsWith('{') && val.endsWith('}')) {
           const expr = val.slice(1, -1);
-          return token.slice(0, eqIdx + 1) + formatter(evaluateExpression(expr, localParams));
+          const string = stringParameter(expr, localParams);
+          return token.slice(0, eqIdx + 1) + (string === undefined ? formatter(evaluateExpression(expr, localParams)) : JSON.stringify(string));
         }
       }
       return token;
@@ -3846,10 +3854,10 @@ export class Circuit {
         case 'A': {
           const card = parseXspiceInstance(raw, lineNumber);
           const modelName = scopeModel(card.modelName);
-          // This seam admits scoped PWL transfers and pswitch conductance ports.
+          // Admit scoped PWL transfers, pswitch conductance ports and numparam LUTs.
           // Other A-card families retain the unsupported boundary until their ports are scoped.
           const codeModel = this._xspiceModels.get(modelName.toUpperCase())?.codeModel;
-          if (codeModel !== 'pwl' && codeModel !== 'pswitch') {
+          if (codeModel !== 'pwl' && codeModel !== 'pswitch' && codeModel !== 'd_lut') {
             throw new ParseError("Unsupported device card: 'A'", lineNumber, raw);
           }
           const connectionTokens = card.connectionTokens.map((token, index) => token.kind === 'string'
