@@ -295,7 +295,10 @@ class TransientSimImpl implements TransientSim {
     this.options = options;
     this.config = config;
     this.convergenceTelemetry = config.convergence ?? createConvergenceTelemetry();
-    for (const device of compiled.devices) device.setTransientTimestep?.(config.timestep, config.stopTime);
+    for (const device of compiled.devices) {
+      device.setTransientTimestep?.(config.timestep, config.stopTime);
+      device.setTransientRampTime?.(options.rampTime);
+    }
     // Voltage-dependent capacitances stamped as C(v) need charge state, which
     // the C-matrix companion does not keep. Preserve their established
     // companion history while using the exact static residual for constant-C
@@ -487,14 +490,27 @@ class TransientSimImpl implements TransientSim {
       }
       this.lteRejectCount = 0;
       const firstStep = this.firstStepPending;
-      const next = this.orderAfterAcceptedStep(actualDt, integration, chargeBound);
 
       // Device-owned histories must observe only committed solutions. In
       // particular, NR/LTE retries and the stampPrevB restamp below are not
       // accepted timepoints and must remain side-effect free.
-      this.acceptTransientStep(nextTime, integration);
       // dctran.c: EVTcall_hybrids after the truncation check (not on the
       // first step, which skips it), then EVTaccept.
+      if (this.events) {
+        this.acceptingTime = nextTime;
+        const ctx = this.assembler.getStampContext();
+        for (const device of this.acceptingDevices) device.prepareTransientStep?.(ctx);
+      }
+      const retry = this.events?.prepareStep(nextTime, !firstStep);
+      if (retry !== undefined) {
+        this.dt = retry - this.time;
+        this.assembler.solution.set(prevSol);
+        this.convergenceTelemetry.transient.rejectedSteps++;
+        this.processEvents();
+        continue;
+      }
+      const next = this.orderAfterAcceptedStep(actualDt, integration, chargeBound);
+      this.acceptTransientStep(nextTime, integration);
       this.events?.acceptStep(nextTime, !firstStep);
       // Update trapezoidal history.
       if (this.integrationMethod === 'trapezoidal') {
@@ -696,7 +712,7 @@ class TransientSimImpl implements TransientSim {
     const times: number[] = [];
     // ngspice-47 dctran.c inserts RAMPTIME even in non-XSPICE_EXP builds,
     // where independent V/I sources are not ramped. capacitoric/inductoric
-    // code models that use the ramp factor remain explicitly unsupported.
+    // use the ramp factor for their initial conditions.
     if (this.options.rampTime > 0 && (stop === undefined || this.options.rampTime <= stop)) {
       times.push(this.options.rampTime);
     }
@@ -741,6 +757,17 @@ class TransientSimImpl implements TransientSim {
    * so the first step integrates at order 1 without it.
    */
   private acceptInitialPoint(): void {
+    if (this.events && this.config.useInitialConditions) {
+      // ngspice-47 dctran.c:223-234 still calls EVTop with MODEUIC.
+      // evtop.c:104-157 alternates event initialization and analog loads;
+      // niiter.c:41-46 loads the UIC seed once, without a Newton solve.
+      // Initialize afresh even on reset or after an earlier .op analysis.
+      this.events.operatingPoint(() => {
+        // This is a load of the supplied initial state, not a Newton
+        // iteration: do not limit inputs against a previous run's solution.
+        this.acceptTransientStep(this.time);
+      });
+    }
     if (this.config.operatingPoint) {
       // OPtran copies the last DC load's state0 into state1 before INITTRAN.
       const ctx = this.assembler.getStampContext();
@@ -753,9 +780,6 @@ class TransientSimImpl implements TransientSim {
       this.acceptTransientStep(this.time);
     }
     if (this.events) {
-      if (this.config.useInitialConditions) {
-        throw new InvalidCircuitError('XSPICE event-driven instances are not supported with transient UIC');
-      }
       this.events.beginTransient(time => this.breakpoints?.insert(time, this.time), MIN_BREAK);
     }
     this.startsFromUICSeed = this.config.useInitialConditions === true;
@@ -825,7 +849,7 @@ class TransientSimImpl implements TransientSim {
    */
   private stepIntegration(dt: number): ChargeIntegration {
     if (this.integrationMethod === 'trapezoidal' && !this.orderOnePending && this.prevB !== undefined) {
-      return { method: 'trapezoidal', dt };
+      return { method: 'trapezoidal', dt, xmu: this.options.xmu };
     }
     if (this.integrationMethod === 'gear2' && this.secondPrevSol !== undefined) {
       return { method: 'gear2', dt, prevDt: this.prevDt };

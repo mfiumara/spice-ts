@@ -1,7 +1,11 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { InvalidCircuitError, ParseError } from '../errors.js';
 import { parseTitleless as parse } from '../parser/index.js';
 import { simulate } from '../simulate.js';
+const mos239Reference = JSON.parse(readFileSync(new URL('./mos239-noise-reference.json', import.meta.url), 'utf8')) as {
+  cases: Array<{ level: number; name: string; deck: string; frequencies: number[]; output: number[]; input: number[] }>;
+};
 
 describe('.noise analysis', () => {
   const fixture = `
@@ -253,9 +257,6 @@ describe('.noise analysis', () => {
 
   it.each([
     ['unsupported model level', 'LEVEL=7', /unsupported model LEVEL=7/i],
-    ['MOS2 noise (mos2noi.c not ported)', 'LEVEL=2', /does not support MOSFET level 2 noise/i],
-    ['MOS3 noise (mos3noi.c not ported)', 'LEVEL=3', /does not support MOSFET level 3 noise/i],
-    ['MOS9 noise (mos9noi.c not ported)', 'LEVEL=9', /does not support MOSFET level 9 noise/i],
     ['unsupported noisy parasitic resistance', 'LEVEL=1 RD=10', /does not support MOSFET model parameter 'RD'/i],
     ['unsupported noise selector', 'LEVEL=1 NLEV=1', /only supports MOSFET NLEV=2/i],
   ])('rejects %s explicitly', async (_name, modelParameters, expected) => {
@@ -264,6 +265,28 @@ describe('.noise analysis', () => {
       `${modelParameters} VTO=0.7 KP=200u LAMBDA=0.02 KF=1e-25 AF=1`,
     );
     await expect(simulate(deck)).rejects.toThrow(expected);
+  });
+
+  it.each(mos239Reference.cases)('matches ngspice-47 MOS$level $name spectra', async reference => {
+    const noise = (await simulate(reference.deck)).noise!;
+    expect(noise.frequencies).toHaveLength(reference.frequencies.length);
+    noise.frequencies.forEach((frequency, index) => {
+      expect(Math.abs(frequency - reference.frequencies[index]) / frequency).toBeLessThan(1e-14);
+    });
+    for (const [actual, expected] of [
+      [noise.outputNoiseDensity, reference.output],
+      [noise.inputNoiseDensity, reference.input],
+    ]) {
+      expect(actual).toHaveLength(expected.length);
+      actual.forEach((density, index) => {
+        expect(Math.abs(density - expected[index]) / expected[index]).toBeLessThan(2e-5);
+      });
+    }
+  });
+
+  it.each([2, 3])('rejects unported MOS%i NLEV=3 explicitly', async level => {
+    await expect(simulate(mosfetFixture.replace('LEVEL=1', `LEVEL=${level} NLEV=3`)))
+      .rejects.toThrow(new InvalidCircuitError(".noise only supports MOS2/MOS3 NLEV=0, 1 or 2 for 'M1'"));
   });
 
   it.each([

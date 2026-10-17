@@ -62,6 +62,8 @@ export class TransientResult {
     private readonly voltageArrays: Map<string, number[]>,
     private readonly currentArrays: Map<string, number[]>,
     private readonly digitalHistories: Map<string, DigitalNodeEvent[]> = new Map(),
+    /** Saved device quantities sampled at exactly the returned time points. */
+    public readonly deviceVectors: Map<string, Float64Array> = new Map(),
   ) {}
 
   /**
@@ -361,6 +363,8 @@ export class DCSweepResult {
     private readonly currentArrays: Map<string, Float64Array>,
     /** Point-aligned outer sweep coordinates, when a second source is swept. */
     public readonly secondarySweepValues?: Float64Array,
+    /** Explicitly saved device outputs, sampled at each DC operating point. */
+    public readonly deviceVectors: Map<string, Float64Array> = new Map(),
   ) {}
 
   /**
