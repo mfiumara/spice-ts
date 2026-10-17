@@ -23,7 +23,11 @@ async function main(): Promise<void> {
   try {
     const raw = join(scratch, 'd.raw');
     let start = performance.now();
-    const output = execFileSync('ngspice', ['-n', '-b', '-r', raw, path], {
+    // The deck runs TRAN inside .control, so -r alone does not retain that plot.
+    // Source the unchanged deck in batch mode and explicitly export its vectors.
+    const output = execFileSync('ngspice', ['-n', '-b'], {
+      cwd: scratch,
+      input: `DFF measurement driver\n.control\nsource ${path}\nset filetype=ascii\nwrite d.raw v(q) v(d) v(clk)\nquit\n.endc\n.end\n`,
       env: { ...process.env, SPICE_ASCIIRAWFILE: '1', DISPLAY: '' }, stdio: 'pipe', timeout: 120000,
     });
     if (!existsSync(raw)) throw new Error(`ngspice produced no raw file: ${output.toString()}`);
