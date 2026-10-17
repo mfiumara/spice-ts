@@ -447,7 +447,17 @@ function controlledOscillator(pwm: boolean): XspiceCodeModelSpec {
 /** Implemented code models keyed by lower-case ngspice Spice_Model_Name. */
 export const XSPICE_CODE_MODEL_SPECS: ReadonlyMap<string, XspiceCodeModelSpec> = new Map(
   [
-    ASTATE, GAIN, SUMMER, MULT, DIVIDE, PWL, LIMIT, INT, D_DT, S_XFER, OTA_SPEC,
+    ASTATE, {
+      name: 'delay',
+      connections: [
+        { ...input('in'), allowedTypes: ['v', 'vd', 'vnam'] },
+        { ...output('out'), allowedTypes: ['v', 'vd'] },
+        { ...input('cntrl'), allowedTypes: ['v', 'vd', 'i', 'id'], nullAllowed: true },
+      ],
+      params: [real('delay', 0), boolean('has_delay_cnt', false), real('delmin', 0, { limits: [0, undefined] }),
+        real('delmax', 0, { limits: [0, undefined] }),
+        { name: 'buffer_size', type: 'int' as const, defaultValue: [1024], limits: [1, undefined] as const, vector: false, nullAllowed: true }],
+    }, GAIN, SUMMER, MULT, DIVIDE, PWL, LIMIT, INT, D_DT, S_XFER, OTA_SPEC,
     {
       name: 'lcouple',
       connections: ['l', 'mmf_out'].map((name, i) => ({ name, direction: 'inout' as const, defaultType: 'hd', allowedTypes: i === 0 ? ['h', 'hd'] : ['hd'], vector: false, nullAllowed: false })),

@@ -1525,3 +1525,23 @@ Model semantics follow the Public Domain ngspice-47
 [`xtradev` source](https://github.com/imr/ngspice/tree/a80f6e3e95d51534905b1f23410a951802666656/src/xspice/icm/xtradev):
 `lcouple/cfunc.mod:182-249` and `core/cfunc.mod:246-365`, with ports/defaults
 from the respective `ifspec.ifs`. Core hysteresis mode is explicitly rejected.
+
+## XSPICE analog delay (#1335)
+
+`spice-heavy pnpm exec tsx benchmarks/xspice-delay/compare.ts` compares the
+unchanged corpus-f `examples/xspice/delay/analog-delay1.cir` with ngspice-47.
+The fixture's BSD-3-Clause licence, revision and SHA-256 remain in corpus-f's
+manifest and SOURCES.md. The existing control-vector wrapper sources the original
+bytes and exports retained plots, without changing the netlist or tolerances.
+`--update` refreshes only this fixture's outcome and the derived report totals.
+Per-output maximum normalized errors are published in corpus-f's control row,
+including mismatches. The default `-r` row remains honestly not-compared.
+
+Model source is ngspice-47, BSD-3-Clause:
+[analog/delay](https://github.com/imr/ngspice/tree/a80f6e3e95d51534905b1f23410a951802666656/src/xspice/icm/analog/delay).
+`cfunc.mod:107-185` defines allocation/defaults, `193-255` defines startup,
+sampling, delay rounding and control clamping; `ifspec.ifs:30-75` defines ports
+and parameters. Contrary to the task's interpolation premise, this implementation
+uses a sampled ring buffer, not linear interpolation (upstream marks that FIXME).
+spice-ts commits samples on accepted points instead of mutating history during
+Newton trials; solver-grid and trial-call differences remain measured parity losses.

@@ -51,6 +51,8 @@ export type CodeModelACForm =
   | { readonly kind: 'integrator'; readonly gain: number };
 
 export interface CodeModelBehavior {
+  /** ngspice TSTEP/TSTOP, supplied before transient initialization. */
+  setTransientTimestep?(timestep: number, stopTime?: number): void;
   /** True when the model keeps transient state (cm_analog_alloc). */
   readonly stateful: boolean;
   readonly ac: CodeModelACForm;

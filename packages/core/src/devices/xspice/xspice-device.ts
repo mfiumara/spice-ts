@@ -125,6 +125,10 @@ export class XspiceDevice implements DeviceModel {
     this.loadAndStamp(ctx, 'tran', integration);
   }
 
+  setTransientTimestep(timestep: number, stopTime?: number): void {
+    this.behavior.setTransientTimestep?.(timestep, stopTime);
+  }
+
   beginTransientNewton(): void {
     this.lastInputs.set(this.acceptedInputs);
   }

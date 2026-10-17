@@ -6,6 +6,7 @@ import { Inductor } from '../inductor.js';
 import { VoltageSource } from '../voltage-source.js';
 import { resolveXspiceConnections, resolveXspiceParams, type XspiceConnection } from './connections.js';
 import { astate } from './astate-model.js';
+import { delay } from './delay-model.js';
 import { LIMITER_BEHAVIORS } from './limiter-models.js';
 import { DIGITAL_MODELS } from './digital-models.js';
 import { XspiceEventNetwork, type EventPort } from './event-network.js';
@@ -24,6 +25,7 @@ import { XspiceDevice, type XspiceInputPort, type XspiceOutputPort } from './xsp
 /** Every implemented code model behavior keyed by lower-case ngspice Spice_Model_Name. */
 const BEHAVIORS: ReadonlyMap<string, BehaviorFactory> = new Map<string, BehaviorFactory>([
   ['astate', astate],
+  ['delay', delay],
   ...XSPICE_BEHAVIORS, ...LIMITER_BEHAVIORS, ...OSCILLATOR_BEHAVIORS, ...SWITCH_BEHAVIORS, ...MAGNETIC_BEHAVIORS, ...OTA_BEHAVIORS,
   ['zener', zener],
 ]);
@@ -214,10 +216,11 @@ export function createXspiceDevice(
   const firstPort = connections[0]?.ports[0];
   const metered = firstPort?.positive === undefined || firstPort.type === 'd' ? -1 : resolveNode(firstPort.positive);
   const netlist = new NetlistProbe(metered);
-  const behavior = analogHalf ?? BEHAVIORS.get(model.codeModel)!(params, { connections, netlist });
+  // delay distinguishes PARAM_NULL from the ifspec defaults (buffer_size/delmax).
+  const behavior = analogHalf ?? BEHAVIORS.get(model.codeModel)!(model.codeModel === 'delay' ? model.params : params, { connections, netlist });
   // astate stores samples, not integrated charge: node LTE would change the history's time grid.
   // Neither magnetic model calls cm_analog_integrate (lcouple's fake call is commented out).
-  const untruncated = analogHalf !== undefined || model.codeModel === 'astate' || model.codeModel === 'lcouple' || model.codeModel === 'core';
+  const untruncated = analogHalf !== undefined || model.codeModel === 'astate' || model.codeModel === 'delay' || model.codeModel === 'lcouple' || model.codeModel === 'core';
   const device = new XspiceDevice(
     card.name, model.codeModel, inputs, outputs, behavior, model.warnings, untruncated,
   );
