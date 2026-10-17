@@ -11,6 +11,7 @@ A bounded stdio MCP server exposing the existing spice-ts protocol-v1 adapter. I
 - `spice_measure`: run the same simulation request once and return scalar measurements only.
 - `spice_sweep`: sweep one parameter with bounded, ordered per-point statuses and optional scalar measurements.
 - `spice_compare`: compare two waveform sets or completed simulation results without solving again.
+- `spice_ac_metrics`: run an AC sweep and return gain, half-power bandwidth, and loop stability margins without vectors.
 - `spice_simulation_start`: start a bounded simulation worker and return its opaque job cursor before solving completes.
 - `spice_simulation_read`: pull a replayable chunk containing at most 256 points by default (caller-selectable from 1 through the hard cap of 1024).
 - `spice_simulation_cancel`: idempotently stop delivery and return the protocol-v1 cancelled terminal with partial analysis counts and `partialEventSha256`.
@@ -190,6 +191,54 @@ Select 1 through 128 unique signals, each at most 256 characters. Input/output
 byte limits apply; union grid size times selected signal count is bounded by
 `maxResultPoints`, returning `RESOURCE_LIMIT` when exceeded. No solver or benchmark
 semantics are changed by this tool.
+
+## AC metrics
+
+Call `spice_ac_metrics` with the same `request` as `spice_simulate`, a required
+`output` voltage node name, optional `input` voltage node name, and optional
+zero-based `analysis` index. Names are case-insensitive, without `v(...)` wrappers.
+Without an input node the output is relative to 1 V; with one it uses the complex
+ratio V(output)/V(input). By default exactly one AC analysis must exist. Select an
+index when there are multiple analyses; run stepped analyses separately.
+
+Example tool arguments:
+
+```json
+{
+  "request": {
+    "apiVersion": "1",
+    "input": {
+      "format": "spice",
+      "source": "V1 in 0 DC 0 AC 1\nR1 in out 1k\nC1 out 0 1u\n.ac dec 100 0.1 100k\n.end"
+    }
+  },
+  "output": "out",
+  "input": "in"
+}
+```
+
+The response contains `dcGainDb`, `f3dbHz`, `unityGainHz`, `phaseMarginDeg`,
+`gainMarginDb`, `referenceFrequencyHz`, and `reasons`. Despite its conventional
+name, `dcGainDb` is explicitly the gain at the lowest sampled frequency, reported
+in `referenceFrequencyHz`, NOT an extrapolation to DC. Start sufficiently below
+the first pole to estimate DC gain; high-pass/band-pass sweeps have no inferred
+DC plateau. `f3dbHz` is the first descending half-power crossing (3.0103 dB below
+that reference gain). The RC example gives approximately 159.15 Hz.
+
+Crossings interpolate dB and unwrapped phase linearly in log-frequency, never
+outside the sweep. Unity gain uses the first descending 0 dB crossing; phase
+margin is 180 degrees plus phase there. Gain margin is minus the dB gain at the
+first descending -180 degree unwrapped-phase crossing. These are conventional
+negative-feedback loop-gain metrics: supply a loop-gain transfer function to
+interpret them as stability margins, not an arbitrary closed-loop response.
+Phase starts on [-180, 180) and unwraps between adjacent samples; sample densely
+enough to avoid phase aliasing. Exact target samples at either endpoint count
+when part of a strictly descending segment; flat or rising segments do not.
+Missing or non-finite metrics are `null` with a matching string in
+`reasons`, not infinity or extrapolated values. Unknown nodes produce the usual
+structured `INVALID_REQUEST` error with `details.reason: "UNKNOWN_NODE"` and
+`details.node`; a zero input phasor produces `UNDEFINED_TRANSFER`. Simulation,
+worker time, concurrency, point, and response byte limits still apply.
 
 ## Run over stdio
 
