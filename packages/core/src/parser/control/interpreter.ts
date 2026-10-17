@@ -314,6 +314,13 @@ class ControlInterpreter {
         return;
       case 'setplot': return this.setplot(rest);
       case 'destroy': return this.destroy(rest);
+      case 'remzerovec':
+        // ngspice-47 frontend/postcoms.c:77-92 (com_remzerovec) marks only
+        // current-plot zero-length vectors for vec_gc; arguments are ignored.
+        for (const [name, vector] of this.current.vectors) {
+          if (vector.re.length === 0) this.current.vectors.delete(name);
+        }
+        return;
       case 'compose': return this.compose(rest, line);
       case 'strcmp': return this.strcmp(rest, line);
       case 'meas': return this.meas(rest, line);
