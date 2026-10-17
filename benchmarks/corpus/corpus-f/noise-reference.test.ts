@@ -6,6 +6,7 @@ import { runNgspicePacked, unpackExecution } from './outcomes.js';
 import { runCorpusFSpiceTs } from './plot-adapter.js';
 import { compareExecutions } from '../../aggregate-report.js';
 import type { ClassicCircuit } from '../classic/report.js';
+import { normalizedSignalErrors, pairedReferenceSeries } from './lib.js';
 
 const HAS_NGSPICE = spawnSync('ngspice', ['--version'], { encoding: 'utf8' }).status === 0;
 
@@ -20,12 +21,13 @@ describe('control-only noise reference export (#1317)', () => {
       assert.deepEqual(reference.execution.analyses.map(a => a.plotName), ['Noise Spectral Density Curves', 'Integrated Noise']);
       const candidate = await runCorpusFSpiceTs(input, circuit as unknown as ClassicCircuit);
       assert.equal(candidate.status, 'success');
-      const comparisons = compareExecutions(candidate, unpackExecution(reference.execution));
+      const referenceView = unpackExecution(reference.execution);
+      const comparisons = compareExecutions(candidate, referenceView);
       assert.equal(comparisons.length, 2);
-      assert.equal(comparisons.flatMap(c => c.errors).length, 4);
-      for (const comparison of comparisons) {
-        for (const error of comparison.errors) assert.ok(error.maxAbsolute < 1e-12, JSON.stringify(error));
-      }
+      const { errors, missing } = normalizedSignalErrors(comparisons, pairedReferenceSeries(candidate, referenceView));
+      assert.equal(missing, 0);
+      assert.equal(errors.length, 4);
+      for (const error of errors) assert.ok(error.normalized < 0.01, JSON.stringify(error));
       assert.deepEqual(input, before);
       const selected = await runNgspicePacked(input, circuit, (_type, signal) => signal === 'onoise_spectrum');
       assert.deepEqual(Object.keys(selected.execution.analyses[0].signals), ['onoise_spectrum']);
