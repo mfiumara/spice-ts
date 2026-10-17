@@ -318,6 +318,7 @@ class ControlInterpreter {
       case 'strcmp': return this.strcmp(rest, line);
       case 'meas': return this.meas(rest, line);
       case 'linearize': return this.linearize(rest, line);
+      case 'cutout': return this.cutout(rest);
       case 'fft': return this.spectrum('fft', rest, line);
       case 'psd': return this.spectrum('psd', rest, line);
       case 'setscale': {
@@ -758,6 +759,59 @@ class ControlInterpreter {
       if (!values) fail(`can't interpolate ${vector.name}`);
       plot.vectors.set(key, { name: vector.name, re: values!, scale: time });
     }
+    this.exportTransientPlot(old, plot);
+  }
+
+  /** ngspice-47 src/frontend/linear.c:173-290 (com_cutout).
+   * Bounds default to scale endpoints (202-229); explicit bounds use the first
+   * strictly greater sample, capped at length-1. The stop index is exclusive,
+   * even for the default/full-copy case (254-264). No interpolation occurs.
+   */
+  private cutout(rest: string): void {
+    const old = this.current;
+    const scale = old.scale;
+    const warn = (message: string): void => { this.warnings.push(`cutout: ${message}`); };
+    if (!scale || old.vectors.size === 0) return warn('no vectors available');
+    if (scale.im) return warn(`non-real time scale for ${old.name}`);
+    if (!old.name.startsWith('tran')) return warn('plot must be a transient analysis');
+    const length = scale.re.length;
+    if (length === 0) return warn('no data in vector');
+    const start = old.vectors.get('cut-tstart');
+    const stop = old.vectors.get('cut-tstop');
+    const tstart = start?.re[0] ?? scale.re[0];
+    const tstop = stop?.re[0] ?? scale.re[length - 1];
+    const after = (bound: number): number => {
+      let index = 0;
+      while (index < length - 1 && scale.re[index] <= bound) index++;
+      return index;
+    };
+    const first = start ? after(tstart) : 0;
+    const last = stop ? after(tstop) : length - 1;
+    if (tstop - tstart <= 0 || last - first <= 0) {
+      return warn(`bad parameters -- start = ${tstart}, stop = ${tstop}`);
+    }
+    const time = realVector(scale.name, scale.re.slice(first, last));
+    const plot = this.newPlot('tran', `${old.title} (${start || stop ? 'cut out' : 'copy'})`, time, old.unproducedSaves);
+    this.current = plot;
+    const names = splitWords(rest);
+    const sources: [string, ControlVector][] = names.length > 0
+      ? names.flatMap(name => {
+        const found = this.plotVector(old, name);
+        if (!found) warn(`no such vector ${name}`);
+        return found ? [found] : [];
+      })
+      : [...old.vectors];
+    for (const [key, vector] of sources) {
+      if (vector === scale || vector.re.length < last) continue;
+      plot.vectors.set(key, {
+        name: vector.name, re: vector.re.slice(first, last),
+        ...(vector.im ? { im: vector.im.slice(first, last) } : {}), scale: time,
+      });
+    }
+    this.exportTransientPlot(old, plot);
+  }
+
+  private exportTransientPlot(old: Plot, plot: Plot): void {
     // The plot exists in the interpreter, but consumers of simulate() can only
     // see control.runs. Export the transformed circuit vectors as a separate
     // transient result, not the old adaptive solve under a new plot identity.
@@ -775,7 +829,7 @@ class ControlInterpreter {
       plot: plot.name, analysis: 'tran',
       result: {
         transient: new TransientResult(
-          Array.from(grid), copy(transient?.voltages.keys() ?? [], false), copy(transient?.currents.keys() ?? [], true),
+          Array.from(plot.scale!.re), copy(transient?.voltages.keys() ?? [], false), copy(transient?.currents.keys() ?? [], true),
         ),
         warnings: [],
       },
