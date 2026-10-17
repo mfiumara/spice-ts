@@ -1,5 +1,21 @@
 # Benchmark sources
 
+## BSIM4 IGCMOD=1 gate tunneling (#1304)
+
+`benchmarks/bsim4-igc/{n,p}-{forward,reverse}.cir` are self-authored MIT
+fixtures. They sweep VGS at fixed VDS with thin oxide, asymmetric gate
+overlaps, NF/M scaling, both polarities and both drain orientations.
+Reverse cases also cover given PIGCD, poly depletion and nonnominal temperature.
+The unchanged decks run through both engines. `generate.py` requires ngspice-47
+and writes `ngspice-47.json`, which is consumed by `gate-current.test.ts`.
+Regenerate with `spice-heavy python3 benchmarks/bsim4-igc/generate.py`;
+no native raw files or logs are committed. Deck hashes guard oracle identity.
+The test uses the existing BSIM4 bias-grid bound (1e-8, native-zero floor
+1e-18 A), without per-fixture tolerance changes. Source equations are the
+ECL-2.0 BSIM4 4.8 family at pinned ngspice revision
+`a80f6e3e95d51534905b1f23410a951802666656`; see the licence and notices in
+`packages/core/src/devices/bsim4/` and the line mapping in `LOAD.md`.
+
 ## VBIC open parasitic base resistor RBP=0 (#1302)
 
 `benchmarks/vbic-rbp/rbp.cir` is an original project-authored MIT probe.
@@ -32,6 +48,7 @@ record below. Run the full 10 ns comparison without rewriting its deck with
 `spice-heavy pnpm exec tsx benchmarks/vbic-rbp/dff.ts`. This reports wall time,
 row counts and V(Q), V(D), V(CLK) max absolute/peak-normalized errors, or the
 next named simulator failure. No deck or tolerance tuning is applied.
+
 
 ## VBIC VTF forward transit-time Vbc dependence (#1300)
 
@@ -182,6 +199,7 @@ and [`b3ld.c:2478-2494`](https://github.com/imr/ngspice/blob/ngspice-47/src/spic
 reuses the transient NQS relaxation rate. NQSMOD=1 AC (including combined
 selectors) and ACNQSMOD=1 noise remain explicitly unsupported with typed
 errors; ACNQSMOD is defined only on BSIM3 3.3.0.
+
 
 
 ## VBIC flicker and total noise (#1197)
