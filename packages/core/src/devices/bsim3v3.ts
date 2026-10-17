@@ -36,6 +36,7 @@ export class BSIM3v3 implements DeviceModel {
   /** b3ld.c qcheq and qcdump, in coulombs (qNode * ScalingFactor). */
   private readonly nqsCharges = new TransientChargeState(2);
   private readonly nonQuasiStatic: boolean;
+  private readonly acNonQuasiStatic: boolean;
   private readonly nqsDerivative = new Float64Array(4);
   private readonly partitionDerivative = new Float64Array(4);
   private acceptedNqsCurrent = 0;
@@ -84,8 +85,9 @@ export class BSIM3v3 implements DeviceModel {
   ) {
     this.polarity = polarity;
     [this.model, this.size, this.chargeInputs] = this.temperatureDependent(NOMINAL_TEMPERATURE_K);
-    rejectNonQuasiStatic(name, modelParams, instanceParams as Record<string, number>, this.model.revision);
     this.nonQuasiStatic = effectiveSelector(modelParams, instanceParams as Record<string, number>, 'nqsmod') === 1;
+    this.acNonQuasiStatic = this.model.revision >= BSIM3_REVISION.V330
+      && effectiveSelector(modelParams, instanceParams as Record<string, number>, 'acnqsmod') === 1;
     this.multiplier = this.size.m;
     this.lastVon = polarity * this.size.instVth0;
   }
@@ -277,10 +279,13 @@ export class BSIM3v3 implements DeviceModel {
     stampControlledCurrent(ctx, type, m, nD, nB, nD, nG, nS, nB, dc.Isub, dc.gbg, dc.gbd, dc.gbb, Vgs, Vds, Vbs);
   }
 
-  /** Keep every small-signal entry point honest while only transient NQS is ported. */
-  assertQuasiStaticSmallSignal(): void {
+  /** Transient-NQS AC and frequency-dependent noise remain outside this port. */
+  assertQuasiStaticSmallSignal(allowAcNqs = true): void {
     if (this.nonQuasiStatic) {
       throw new UnsupportedModelParameterError(this.name, 'NQSMOD', 'BSIM3 NQS AC/noise charge stamps are not implemented', { model: 'BSIM3' });
+    }
+    if (!allowAcNqs && this.acNonQuasiStatic) {
+      throw new UnsupportedModelParameterError(this.name, 'ACNQSMOD', 'BSIM3 AC NQS noise transfer is not implemented', { model: 'BSIM3' });
     }
   }
 
@@ -302,6 +307,53 @@ export class BSIM3v3 implements DeviceModel {
 
   stampAC(ctx: StampContext, _omega: number): void {
     this.stampDynamic(ctx);
+  }
+
+  get frequencyDependent(): boolean {
+    return this.acNonQuasiStatic;
+  }
+
+  /** ngspice-47 b3acld.c:50-100: H=1/(1+j*omega*taunet), added to the QS stamp. */
+  stampFrequencyConductance(ctx: StampContext, omega: number): void {
+    this.assertQuasiStaticSmallSignal();
+    if (!this.acNonQuasiStatic) return;
+    const [vgs, vds, vbs] = this.terminalVoltages(node => node >= 0 ? ctx.getVoltage(node) : 0);
+    const forward = vds >= 0;
+    const tc = this.evaluateCharges(ctx);
+    const ic = tc.intrinsic;
+    const tau = 1 / this.relaxationRate(-(ic.qgate + ic.qbulk));
+    const wt = omega * tau;
+    const real = 1 / (1 + wt * wt);
+    const lag = wt * real;
+    const m = this.multiplier;
+    const [d, g, s, b] = this.nodes;
+    const drain = forward ? d : s;
+    const source = forward ? s : d;
+    const dc = evaluateDC(this.model, this.size,
+      forward ? vgs : vgs - vds, Math.abs(vds), forward ? vbs : vbs - vds, dcScratch);
+    // Only the channel current is delayed, not the substrate or junction currents.
+    for (const [col, value] of [[drain, dc.gds], [g, dc.gm], [b, dc.gmbs],
+      [source, -(dc.gds + dc.gm + dc.gmbs)]]) {
+      for (const [row, sign] of [[drain, 1], [source, -1]]) {
+        if (row < 0 || col < 0) continue;
+        ctx.stampG(row, col, m * sign * value * (real - 1));
+        ctx.stampC(row, col, -m * sign * value * tau * real);
+      }
+    }
+    // Intrinsic D/S charge rows follow H; gate balances them, bulk stays QS.
+    // Overlap and depletion charges are already in the unchanged baseline C.
+    const cd = [ic.cddb, ic.cdgb, ic.cdsb, -(ic.cddb + ic.cdgb + ic.cdsb)];
+    const cb = [ic.cbdb, ic.cbgb, ic.cbsb, -(ic.cbdb + ic.cbgb + ic.cbsb)];
+    const cg = [ic.cgdb, ic.cggb, ic.cgsb, -(ic.cgdb + ic.cggb + ic.cgsb)];
+    const controls = [drain, g, source, b];
+    for (let col = 0; col < 4; col++) {
+      const cs = -(cd[col] + cb[col] + cg[col]);
+      for (const [row, value] of [[drain, cd[col]], [source, cs], [g, -(cd[col] + cs)]]) {
+        if (row < 0 || controls[col] < 0) continue;
+        ctx.stampG(row, controls[col], m * value * omega * lag);
+        ctx.stampC(row, controls[col], m * value * (real - 1));
+      }
+    }
   }
 
   /**
@@ -384,15 +436,8 @@ export class BSIM3v3 implements DeviceModel {
   } {
     const ic = tc.intrinsic;
     const equilibrium = -(ic.qgate + ic.qbulk);
-    const length2 = this.size.leffCV * this.size.leffCV;
-    // b3temp.c:785,803 / b3v32temp.c:853,873 use the live T0 from
-    // vfbzb, NOT LeffCV^2 from the earlier size-record tconst calculation.
-    const record = this.sizeRecordDonor?.size ?? this.size;
-    const last = this.nqsTempDonor?.size ?? this.size;
-    const t0 = Math.sqrt(1 + last.nlx / last.leff);
-    const tconst = this.size.instU0temp * record.elm
-      / (this.model.cox * record.weffCV * record.leffCV * t0);
-    const rate = Math.abs(tconst * equilibrium) + 16 * this.size.instU0temp * this.model.vtm / length2;
+    const rate = this.relaxationRate(equilibrium);
+    const tconst = this.relaxationDriftConstant();
     const history = this.nqsCharges;
     const deficit = (history.current(0, equilibrium) - history.current(1, 0)) / (history.factor + rate);
     const forward = this.terminalVoltages(node => node >= 0 ? ctx.getVoltage(node) : 0)[1] >= 0;
@@ -449,6 +494,21 @@ export class BSIM3v3 implements DeviceModel {
     }
   }
 
+  /** b3ld.c:2487-2493: gtau / ScalingFactor = 1 / taunet. */
+  private relaxationRate(equilibrium: number): number {
+    return Math.abs(this.relaxationDriftConstant() * equilibrium)
+      + 16 * this.size.instU0temp * this.model.vtm / (this.size.leffCV * this.size.leffCV);
+  }
+
+  private relaxationDriftConstant(): number {
+    // b3temp.c:785,803 / b3v32temp.c:853,873 use live vfbzb T0, not LeffCV^2.
+    const record = this.sizeRecordDonor?.size ?? this.size;
+    const last = this.nqsTempDonor?.size ?? this.size;
+    const t0 = Math.sqrt(1 + last.nlx / last.leff);
+    return this.size.instU0temp * record.elm
+      / (this.model.cox * record.weffCV * record.leffCV * t0);
+  }
+
   resetTransient(): void {
     this.charges.reset();
     this.nqsCharges.reset();
@@ -485,30 +545,7 @@ export class BSIM3v3 implements DeviceModel {
   }
 }
 
-/**
- * b3set.c/b3v32set.c resolve nqsMod (and, 3.3.0 only, acnqsMod) per
- * instance: an instance value of 0 or 1 wins, anything else falls back to the
- * card's value, which itself falls back to 0 unless it is 0 or 1. spice-ts
- * implements transient NQS. ACNQSMOD remains unsupported (#692).
- */
-function rejectNonQuasiStatic(
-  name: string, model: Readonly<Record<string, number>>, inst: Readonly<Record<string, number | undefined>>,
-  revision: number,
-): void {
-  const keys = revision >= BSIM3_REVISION.V330 ? ['acnqsmod'] : [];
-  for (const key of keys) {
-    const effective = effectiveSelector(model, inst, key);
-    if (effective === 1) {
-      throw new UnsupportedModelParameterError(
-        name, key.toUpperCase(),
-        'the BSIM3 AC non-quasi-static model is not '
-          + 'implemented; spice-ts would simulate the quasi-static model (NQSMOD=0) instead',
-        { model: 'BSIM3' },
-      );
-    }
-  }
-}
-
+/** b3set.c: valid instance selector overrides the card; invalid values fall back. */
 function effectiveSelector(
   model: Readonly<Record<string, number>>, inst: Readonly<Record<string, number | undefined>>, key: string,
 ): number {

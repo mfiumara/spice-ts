@@ -91,7 +91,7 @@ export function assertNoiseDevicesSupported(compiled: CompiledCircuit): void {
         );
       }
     } else if (device instanceof BSIM3v3) {
-      device.assertQuasiStaticSmallSignal();
+      device.assertQuasiStaticSmallSignal(false);
       kind = 'MOSFET';
     }
     // b1noi.c / b2noi.c are not ported; reject rather than treat the channel as noiseless.
