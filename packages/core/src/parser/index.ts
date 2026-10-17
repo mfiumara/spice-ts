@@ -1018,6 +1018,12 @@ function parseSimulationOptions(
   for (const token of optionTokens) {
     const separator = token.indexOf('=');
     const name = token.slice(0, separator < 0 ? token.length : separator).toLowerCase();
+    if (name === 'savecurrents' || name === 'autostop') {
+      // These are ngspice boolean flags, not numeric or string-valued options.
+      if (separator >= 0) throw new ParseError(`Unsupported .options field: '${token}'`, lineNumber, context);
+      options[name] = true;
+      continue;
+    }
     if (OUTPUT_ONLY_OPTION_FLAGS.has(name) && separator < 0) continue;
     if (name === 'ngbehavior') {
       options.ngbehavior = parseNgbehavior(separator < 0 ? '' : token.slice(separator + 1), lineNumber, context);

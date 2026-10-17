@@ -62,6 +62,8 @@ export class TransientResult {
     private readonly voltageArrays: Map<string, number[]>,
     private readonly currentArrays: Map<string, number[]>,
     private readonly digitalHistories: Map<string, DigitalNodeEvent[]> = new Map(),
+    /** Saved device quantities sampled at exactly the returned time points. */
+    public readonly deviceVectors: Map<string, Float64Array> = new Map(),
   ) {}
 
   /**
