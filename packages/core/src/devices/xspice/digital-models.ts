@@ -17,6 +17,7 @@ import type { XspiceConnection } from './connections.js';
 import { flipFlop } from './flipflop-models.js';
 import { controlledOscillator } from './dosc-pwm-models.js';
 import { tristate } from './d-tristate.js';
+import { bidiBridge } from './bidi-bridge.js';
 
 /** What a digital model factory sees of its instance besides parameters. */
 export interface DigitalModelContext {
@@ -495,5 +496,6 @@ export const DIGITAL_MODELS: ReadonlyMap<string, DigitalModelFactory> = new Map<
     })(params, context);
   }],
   ['adc_bridge', adcBridge],
+  ['bidi_bridge', bidiBridge],
   ['dac_bridge', dacBridge],
 ]);
