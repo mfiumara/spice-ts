@@ -44,15 +44,15 @@
       "unsupported": 12
     },
     "spiceTs": {
-      "success": 139,
+      "success": 141,
       "failed": 13,
-      "unsupported": 184
+      "unsupported": 182
     },
     "outcomes": {
       "matched": 60,
-      "mismatch": 16,
-      "not-compared": 63,
-      "spice-ts-loss": 167,
+      "mismatch": 17,
+      "not-compared": 64,
+      "spice-ts-loss": 165,
       "ngspice-failed": 0,
       "both-failed": 30
     }
@@ -60,8 +60,8 @@
   "gapBuckets": [
     {
       "bucket": "parse: other unsupported syntax",
-      "fixtures": 59,
-      "ngspiceSuccess": 54,
+      "fixtures": 57,
+      "ngspiceSuccess": 52,
       "ids": [
         "examples-control-structs-foreach-bjt-ft-sp",
         "examples-digital-auto-bridge-shared-line-cir",
@@ -106,8 +106,6 @@
         "examples-xspice-original-examples-supply-ramping-deck",
         "examples-xspice-original-examples-user-defined-nodes-deck",
         "examples-xspice-pwm-osc-pwm-sin-cir",
-        "examples-xspice-see-repeat-loop-seegen-net",
-        "examples-xspice-see-seegen-cm1-cir",
         "examples-xspice-transmission-lines-cpline-ac-cir",
         "examples-xspice-transmission-lines-cpline-tran-cir",
         "examples-xspice-transmission-lines-cpmline-ac-cir",
@@ -7504,7 +7502,18 @@
       },
       "spiceTs": {
         "status": "success",
-        "analyses": ["tran:1940", "tran:1948", "tran:1952", "tran:1956", "tran:1960", "tran:1964", "tran:1968", "tran:1972", "tran:1972", "tran:1976"]
+        "analyses": [
+          "tran:1940",
+          "tran:1948",
+          "tran:1952",
+          "tran:1956",
+          "tran:1960",
+          "tran:1964",
+          "tran:1968",
+          "tran:1972",
+          "tran:1972",
+          "tran:1976"
+        ]
       },
       "comparedAnalyses": 10,
       "comparedSignals": 5,
@@ -7514,10 +7523,21 @@
       "gapBucket": null,
       "fineReference": {
         "status": "compared",
-        "tmax": ["1e-11"],
-        "headline": { "worst": 0.917, "signal": "v(mon)" },
-        "spiceTsVsFine": { "worst": 0.909, "signal": "v(mon)" },
-        "ngspiceDefaultVsFine": { "worst": 0.0376, "signal": "v(mon)" }
+        "tmax": [
+          "1e-11"
+        ],
+        "headline": {
+          "worst": 0.917,
+          "signal": "v(mon)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.909,
+          "signal": "v(mon)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.0376,
+          "signal": "v(mon)"
+        }
       }
     },
     {
@@ -7536,7 +7556,9 @@
       },
       "spiceTs": {
         "status": "success",
-        "analyses": ["tran:3550"]
+        "analyses": [
+          "tran:3550"
+        ]
       },
       "comparedAnalyses": 1,
       "comparedSignals": 0,
@@ -10349,5 +10371,5 @@
       "gapBucket": "parse: other unsupported syntax"
     }
   ],
-  "outcomeSha256": "89995755bffa71832677a620592e3bd7c8b95fd1c69ccfe18c6e82694760cea2"
+  "outcomeSha256": "dd0ab8d11e4e625f7d5afa746949d203bacdf64e7c75519eadb1a497f01b0eaf"
 }
