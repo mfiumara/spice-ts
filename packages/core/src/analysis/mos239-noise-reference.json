@@ -4,7 +4,7 @@
     {
       "level": 2,
       "name": "thermal",
-      "deck": "VDD vdd 0 DC 5\nVgate gate 0 DC 2 AC 1\nRload vdd out 2k\nM1 out gate 0 0 NMOD W=10u L=2u\n.model NMOD NMOS (LEVEL=2 VTO=0.7 KP=200u TOX=20n KF=0)\n.noise v(out) Vgate dec 1 10 10k\n",
+      "deck": "MOS noise oracle\nVDD vdd 0 DC 5\nVgate gate 0 DC 2 AC 1\nRload vdd out 2k\nM1 out gate 0 0 NMOD W=10u L=2u\n.model NMOD NMOS (LEVEL=2 VTO=0.7 KP=200u TOX=20n KF=0)\n.noise v(out) Vgate dec 1 10 10k\n",
       "frequencies": [
         10.0,
         100.00000000000001,
@@ -27,7 +27,7 @@
     {
       "level": 2,
       "name": "default-flicker",
-      "deck": "VDD vdd 0 DC 5\nVgate gate 0 DC 2 AC 1\nRload vdd out 2k\nM1 out gate 0 0 NMOD W=10u L=2u\n.model NMOD NMOS (LEVEL=2 VTO=0.7 KP=200u TOX=20n KF=1e-25 AF=1.2)\n.noise v(out) Vgate dec 1 10 10k\n",
+      "deck": "MOS noise oracle\nVDD vdd 0 DC 5\nVgate gate 0 DC 2 AC 1\nRload vdd out 2k\nM1 out gate 0 0 NMOD W=10u L=2u\n.model NMOD NMOS (LEVEL=2 VTO=0.7 KP=200u TOX=20n KF=1e-25 AF=1.2)\n.noise v(out) Vgate dec 1 10 10k\n",
       "frequencies": [
         10.0,
         100.00000000000001,
@@ -50,7 +50,7 @@
     {
       "level": 2,
       "name": "series-multiplier",
-      "deck": "VDD vdd 0 DC 5\nVgate gate 0 DC 2 AC 1\nRload vdd out 2k\nM1 out gate 0 0 NMOD W=10u L=2u M=3\n.model NMOD NMOS (LEVEL=2 VTO=0.7 KP=200u TOX=20n KF=1e-25 AF=1.2 RD=40 RS=30 LD=0.1u)\n.noise v(out) Vgate dec 1 10 10k\n",
+      "deck": "MOS noise oracle\nVDD vdd 0 DC 5\nVgate gate 0 DC 2 AC 1\nRload vdd out 2k\nM1 out gate 0 0 NMOD W=10u L=2u M=3\n.model NMOD NMOS (LEVEL=2 VTO=0.7 KP=200u TOX=20n KF=1e-25 AF=1.2 RD=40 RS=30 LD=0.1u)\n.noise v(out) Vgate dec 1 10 10k\n",
       "frequencies": [
         10.0,
         100.00000000000001,
@@ -73,7 +73,7 @@
     {
       "level": 2,
       "name": "nlev-0",
-      "deck": "VDD vdd 0 DC 5\nVgate gate 0 DC 2 AC 1\nRload vdd out 2k\nM1 out gate 0 0 NMOD W=10u L=2u\n.model NMOD NMOS (LEVEL=2 VTO=0.7 KP=200u TOX=20n KF=1e-25 AF=1.2 NLEV=0)\n.noise v(out) Vgate dec 1 10 10k\n",
+      "deck": "MOS noise oracle\nVDD vdd 0 DC 5\nVgate gate 0 DC 2 AC 1\nRload vdd out 2k\nM1 out gate 0 0 NMOD W=10u L=2u\n.model NMOD NMOS (LEVEL=2 VTO=0.7 KP=200u TOX=20n KF=1e-25 AF=1.2 NLEV=0)\n.noise v(out) Vgate dec 1 10 10k\n",
       "frequencies": [
         10.0,
         100.00000000000001,
@@ -96,7 +96,7 @@
     {
       "level": 2,
       "name": "nlev-1",
-      "deck": "VDD vdd 0 DC 5\nVgate gate 0 DC 2 AC 1\nRload vdd out 2k\nM1 out gate 0 0 NMOD W=10u L=2u\n.model NMOD NMOS (LEVEL=2 VTO=0.7 KP=200u TOX=20n KF=1e-25 AF=1.2 NLEV=1)\n.noise v(out) Vgate dec 1 10 10k\n",
+      "deck": "MOS noise oracle\nVDD vdd 0 DC 5\nVgate gate 0 DC 2 AC 1\nRload vdd out 2k\nM1 out gate 0 0 NMOD W=10u L=2u\n.model NMOD NMOS (LEVEL=2 VTO=0.7 KP=200u TOX=20n KF=1e-25 AF=1.2 NLEV=1)\n.noise v(out) Vgate dec 1 10 10k\n",
       "frequencies": [
         10.0,
         100.00000000000001,
@@ -119,7 +119,7 @@
     {
       "level": 2,
       "name": "nlev-2",
-      "deck": "VDD vdd 0 DC 5\nVgate gate 0 DC 2 AC 1\nRload vdd out 2k\nM1 out gate 0 0 NMOD W=10u L=2u\n.model NMOD NMOS (LEVEL=2 VTO=0.7 KP=200u TOX=20n KF=1e-25 AF=1.2 NLEV=2)\n.noise v(out) Vgate dec 1 10 10k\n",
+      "deck": "MOS noise oracle\nVDD vdd 0 DC 5\nVgate gate 0 DC 2 AC 1\nRload vdd out 2k\nM1 out gate 0 0 NMOD W=10u L=2u\n.model NMOD NMOS (LEVEL=2 VTO=0.7 KP=200u TOX=20n KF=1e-25 AF=1.2 NLEV=2)\n.noise v(out) Vgate dec 1 10 10k\n",
       "frequencies": [
         10.0,
         100.00000000000001,
@@ -142,7 +142,7 @@
     {
       "level": 3,
       "name": "thermal",
-      "deck": "VDD vdd 0 DC 5\nVgate gate 0 DC 2 AC 1\nRload vdd out 2k\nM1 out gate 0 0 NMOD W=10u L=2u\n.model NMOD NMOS (LEVEL=3 VTO=0.7 KP=200u TOX=20n KF=0)\n.noise v(out) Vgate dec 1 10 10k\n",
+      "deck": "MOS noise oracle\nVDD vdd 0 DC 5\nVgate gate 0 DC 2 AC 1\nRload vdd out 2k\nM1 out gate 0 0 NMOD W=10u L=2u\n.model NMOD NMOS (LEVEL=3 VTO=0.7 KP=200u TOX=20n KF=0)\n.noise v(out) Vgate dec 1 10 10k\n",
       "frequencies": [
         10.0,
         100.00000000000001,
@@ -165,7 +165,7 @@
     {
       "level": 3,
       "name": "default-flicker",
-      "deck": "VDD vdd 0 DC 5\nVgate gate 0 DC 2 AC 1\nRload vdd out 2k\nM1 out gate 0 0 NMOD W=10u L=2u\n.model NMOD NMOS (LEVEL=3 VTO=0.7 KP=200u TOX=20n KF=1e-25 AF=1.2)\n.noise v(out) Vgate dec 1 10 10k\n",
+      "deck": "MOS noise oracle\nVDD vdd 0 DC 5\nVgate gate 0 DC 2 AC 1\nRload vdd out 2k\nM1 out gate 0 0 NMOD W=10u L=2u\n.model NMOD NMOS (LEVEL=3 VTO=0.7 KP=200u TOX=20n KF=1e-25 AF=1.2)\n.noise v(out) Vgate dec 1 10 10k\n",
       "frequencies": [
         10.0,
         100.00000000000001,
@@ -188,7 +188,7 @@
     {
       "level": 3,
       "name": "series-multiplier",
-      "deck": "VDD vdd 0 DC 5\nVgate gate 0 DC 2 AC 1\nRload vdd out 2k\nM1 out gate 0 0 NMOD W=10u L=2u M=3\n.model NMOD NMOS (LEVEL=3 VTO=0.7 KP=200u TOX=20n KF=1e-25 AF=1.2 RD=40 RS=30 LD=0.1u)\n.noise v(out) Vgate dec 1 10 10k\n",
+      "deck": "MOS noise oracle\nVDD vdd 0 DC 5\nVgate gate 0 DC 2 AC 1\nRload vdd out 2k\nM1 out gate 0 0 NMOD W=10u L=2u M=3\n.model NMOD NMOS (LEVEL=3 VTO=0.7 KP=200u TOX=20n KF=1e-25 AF=1.2 RD=40 RS=30 LD=0.1u)\n.noise v(out) Vgate dec 1 10 10k\n",
       "frequencies": [
         10.0,
         100.00000000000001,
@@ -211,7 +211,7 @@
     {
       "level": 3,
       "name": "nlev-0",
-      "deck": "VDD vdd 0 DC 5\nVgate gate 0 DC 2 AC 1\nRload vdd out 2k\nM1 out gate 0 0 NMOD W=10u L=2u\n.model NMOD NMOS (LEVEL=3 VTO=0.7 KP=200u TOX=20n KF=1e-25 AF=1.2 NLEV=0)\n.noise v(out) Vgate dec 1 10 10k\n",
+      "deck": "MOS noise oracle\nVDD vdd 0 DC 5\nVgate gate 0 DC 2 AC 1\nRload vdd out 2k\nM1 out gate 0 0 NMOD W=10u L=2u\n.model NMOD NMOS (LEVEL=3 VTO=0.7 KP=200u TOX=20n KF=1e-25 AF=1.2 NLEV=0)\n.noise v(out) Vgate dec 1 10 10k\n",
       "frequencies": [
         10.0,
         100.00000000000001,
@@ -234,7 +234,7 @@
     {
       "level": 3,
       "name": "nlev-1",
-      "deck": "VDD vdd 0 DC 5\nVgate gate 0 DC 2 AC 1\nRload vdd out 2k\nM1 out gate 0 0 NMOD W=10u L=2u\n.model NMOD NMOS (LEVEL=3 VTO=0.7 KP=200u TOX=20n KF=1e-25 AF=1.2 NLEV=1)\n.noise v(out) Vgate dec 1 10 10k\n",
+      "deck": "MOS noise oracle\nVDD vdd 0 DC 5\nVgate gate 0 DC 2 AC 1\nRload vdd out 2k\nM1 out gate 0 0 NMOD W=10u L=2u\n.model NMOD NMOS (LEVEL=3 VTO=0.7 KP=200u TOX=20n KF=1e-25 AF=1.2 NLEV=1)\n.noise v(out) Vgate dec 1 10 10k\n",
       "frequencies": [
         10.0,
         100.00000000000001,
@@ -257,7 +257,7 @@
     {
       "level": 3,
       "name": "nlev-2",
-      "deck": "VDD vdd 0 DC 5\nVgate gate 0 DC 2 AC 1\nRload vdd out 2k\nM1 out gate 0 0 NMOD W=10u L=2u\n.model NMOD NMOS (LEVEL=3 VTO=0.7 KP=200u TOX=20n KF=1e-25 AF=1.2 NLEV=2)\n.noise v(out) Vgate dec 1 10 10k\n",
+      "deck": "MOS noise oracle\nVDD vdd 0 DC 5\nVgate gate 0 DC 2 AC 1\nRload vdd out 2k\nM1 out gate 0 0 NMOD W=10u L=2u\n.model NMOD NMOS (LEVEL=3 VTO=0.7 KP=200u TOX=20n KF=1e-25 AF=1.2 NLEV=2)\n.noise v(out) Vgate dec 1 10 10k\n",
       "frequencies": [
         10.0,
         100.00000000000001,
@@ -280,7 +280,7 @@
     {
       "level": 9,
       "name": "thermal",
-      "deck": "VDD vdd 0 DC 5\nVgate gate 0 DC 2 AC 1\nRload vdd out 2k\nM1 out gate 0 0 NMOD W=10u L=2u\n.model NMOD NMOS (LEVEL=9 VTO=0.7 KP=200u TOX=20n KF=0)\n.noise v(out) Vgate dec 1 10 10k\n",
+      "deck": "MOS noise oracle\nVDD vdd 0 DC 5\nVgate gate 0 DC 2 AC 1\nRload vdd out 2k\nM1 out gate 0 0 NMOD W=10u L=2u\n.model NMOD NMOS (LEVEL=9 VTO=0.7 KP=200u TOX=20n KF=0)\n.noise v(out) Vgate dec 1 10 10k\n",
       "frequencies": [
         10.0,
         100.00000000000001,
@@ -303,7 +303,7 @@
     {
       "level": 9,
       "name": "default-flicker",
-      "deck": "VDD vdd 0 DC 5\nVgate gate 0 DC 2 AC 1\nRload vdd out 2k\nM1 out gate 0 0 NMOD W=10u L=2u\n.model NMOD NMOS (LEVEL=9 VTO=0.7 KP=200u TOX=20n KF=1e-25 AF=1.2)\n.noise v(out) Vgate dec 1 10 10k\n",
+      "deck": "MOS noise oracle\nVDD vdd 0 DC 5\nVgate gate 0 DC 2 AC 1\nRload vdd out 2k\nM1 out gate 0 0 NMOD W=10u L=2u\n.model NMOD NMOS (LEVEL=9 VTO=0.7 KP=200u TOX=20n KF=1e-25 AF=1.2)\n.noise v(out) Vgate dec 1 10 10k\n",
       "frequencies": [
         10.0,
         100.00000000000001,
@@ -326,7 +326,7 @@
     {
       "level": 9,
       "name": "series-multiplier",
-      "deck": "VDD vdd 0 DC 5\nVgate gate 0 DC 2 AC 1\nRload vdd out 2k\nM1 out gate 0 0 NMOD W=10u L=2u M=3\n.model NMOD NMOS (LEVEL=9 VTO=0.7 KP=200u TOX=20n KF=1e-25 AF=1.2 RD=40 RS=30 LD=0.1u)\n.noise v(out) Vgate dec 1 10 10k\n",
+      "deck": "MOS noise oracle\nVDD vdd 0 DC 5\nVgate gate 0 DC 2 AC 1\nRload vdd out 2k\nM1 out gate 0 0 NMOD W=10u L=2u M=3\n.model NMOD NMOS (LEVEL=9 VTO=0.7 KP=200u TOX=20n KF=1e-25 AF=1.2 RD=40 RS=30 LD=0.1u)\n.noise v(out) Vgate dec 1 10 10k\n",
       "frequencies": [
         10.0,
         100.00000000000001,

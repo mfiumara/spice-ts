@@ -1,8 +1,11 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { InvalidCircuitError, ParseError } from '../errors.js';
 import { parseTitleless as parse } from '../parser/index.js';
 import { simulate } from '../simulate.js';
-import mos239Reference from './mos239-noise-reference.json';
+const mos239Reference = JSON.parse(readFileSync(new URL('./mos239-noise-reference.json', import.meta.url), 'utf8')) as {
+  cases: Array<{ level: number; name: string; deck: string; frequencies: number[]; output: number[]; input: number[] }>;
+};
 
 describe('.noise analysis', () => {
   const fixture = `
@@ -254,7 +257,6 @@ describe('.noise analysis', () => {
 
   it.each([
     ['unsupported model level', 'LEVEL=7', /unsupported model LEVEL=7/i],
-
     ['unsupported noisy parasitic resistance', 'LEVEL=1 RD=10', /does not support MOSFET model parameter 'RD'/i],
     ['unsupported noise selector', 'LEVEL=1 NLEV=1', /only supports MOSFET NLEV=2/i],
   ])('rejects %s explicitly', async (_name, modelParameters, expected) => {
@@ -267,7 +269,10 @@ describe('.noise analysis', () => {
 
   it.each(mos239Reference.cases)('matches ngspice-47 MOS$level $name spectra', async reference => {
     const noise = (await simulate(reference.deck)).noise!;
-    expect(noise.frequencies).toEqual(reference.frequencies);
+    expect(noise.frequencies).toHaveLength(reference.frequencies.length);
+    noise.frequencies.forEach((frequency, index) => {
+      expect(Math.abs(frequency - reference.frequencies[index]) / frequency).toBeLessThan(1e-14);
+    });
     for (const [actual, expected] of [
       [noise.outputNoiseDensity, reference.output],
       [noise.inputNoiseDensity, reference.input],
