@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+import * as stepping from './transient-step.js';
 import { parse } from '../parser/index.js';
 import { resolveOptions } from '../types.js';
 import { createDriverFromCompiled, createTransientSim } from './transient-driver.js';
@@ -20,6 +21,27 @@ RD d 0 1k
 .end`;
 
 describe('opt-in transient rejection telemetry (#1310)', () => {
+  it('reports a Newton retry even when recovery changes method without cutting dt', async () => {
+    const events: TransientRejection[] = [];
+    const sim = await createTransientSim(JFET.replace('.end', 'L1 d 0 1m\n.end'), {
+      onReject: event => events.push(event),
+    });
+    const attempt = vi.spyOn(stepping, 'attemptStep').mockReturnValueOnce({
+      ok: false, reason: 'nr-divergence', iterations: 100, oscillated: false,
+      lastSolution: new Float64Array(), prevIterSolution: new Float64Array(),
+    });
+    try {
+      sim.advance();
+      expect(events).toHaveLength(1);
+      expect(events[0].reason).toBe('newton');
+      expect(events[0].nextTimestep).toBe(events[0].timestep);
+      expect(sim.convergence.transient.nrRetries).toBe(1);
+    } finally {
+      attempt.mockRestore();
+      sim.dispose();
+    }
+  });
+
   it('classifies voltage rejects without changing accepted points or convergence', async () => {
     const events: TransientRejection[] = [];
     const make = (onReject?: (event: TransientRejection) => void) => {

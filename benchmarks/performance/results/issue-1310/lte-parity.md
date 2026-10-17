@@ -69,4 +69,4 @@ quit
 .end
 ```
 
-Validation: frozen install, monorepo build and lint pass. Targeted command `pnpm -C packages/core exec vitest run src/analysis/transient-rejection-1310.test.ts src/analysis/transient-charge-lte.test.ts` passes 2 files / 5 tests. Exact-head GitHub CI supplies the authoritative full-suite and accuracy gates; their status is reported in the card handoff rather than frozen into this receipt.
+Validation: frozen install, monorepo build and lint pass. Targeted command `pnpm -C packages/core exec vitest run src/analysis/transient-rejection-1310.test.ts src/analysis/transient-charge-lte.test.ts` passes 2 files / 6 tests. The wrapped root command `spice-heavy pnpm test` also passes. Exact-head GitHub CI supplies the authoritative full-suite and accuracy gates; their status is reported in the card handoff rather than frozen into this receipt.
