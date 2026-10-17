@@ -1,5 +1,24 @@
 # @spice-ts/core
 
+## 0.5.0
+
+### Minor Changes
+
+- e0f45ac: Support BSIM4 IGBMOD=1 gate-to-body accumulation and inversion tunneling in DC/OP, with native analytic derivatives and ngspice-47 oracle sweeps.
+
+  Allow the UI peer dependency to consume the next compatible core minor without a peer-only UI major release.
+
+- 729b2b8: Move the standalone protocol package into `@spice-ts/core/protocol`, preserving protocol v1 types, schemas, conformance checks and canonical JSON utilities. JSON documents are available at `@spice-ts/core/protocol/schemas/*` and `@spice-ts/core/protocol/fixtures/*`. MCP now consumes this subpath instead of `@spice-ts/protocol`. The existing npm protocol package remains available and will be deprecated by the owner after release.
+
+### Patch Changes
+
+- d8b0f1c: Reduce VBIC junction-diode evaluation allocations by fusing derivative operations while preserving floating-point operation order and stamps.
+- 8396811: Support MOS2, MOS3 and MOS9 channel thermal and KF/AF flicker noise, including compiler-expanded drain/source resistance noise. Match ngspice-47 MOS2/MOS3 NLEV=0/1/2 and MOS9's legacy flicker formula. Keep unported MOS2/MOS3 NLEV=3 as an explicit circuit error.
+- 30a73c3: Reduce temporary derivative arrays in VBIC residual and charge accumulation while preserving binary64 operation order and stamp output.
+- 8e14842: Reduce VBIC automatic-differentiation overhead with indexed number-array loops, preserving each derivative's arithmetic order.
+- afefa01: Reuse VBIC's static-load charge evaluation during transient stamping without changing numerical results.
+- 931cd22: Clamp explicitly supplied nonnegative VBIC resistances below 0.01 ohm to the ngspice minimum while preserving omitted model defaults.
+
 ## 0.4.0
 
 ### Minor Changes
