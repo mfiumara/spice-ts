@@ -3,6 +3,7 @@ import type { ChargeIntegration, ChargeTruncation, DeviceModel, StampContext } f
 import { TransientChargeState } from './charge-state.js';
 import { DEVICE_GMIN } from './device.js';
 import {
+  VBIC_PE, VBIC_ME, VBIC_PC, VBIC_MC, VBIC_PS, VBIC_MS,
   resolveVBICTemperature, type VBICTemperatureState,
 } from './vbic-temperature.js';
 import { pnjlim } from './devsup.js';
@@ -15,6 +16,7 @@ const ACTIVE_PARAMETERS = [
   'NF', 'NR', 'NEI', 'NEN', 'NCI', 'NCN', 'NFP', 'NCIP', 'NCNP',
   'RCX', 'RCI', 'RBX', 'RBI', 'RE', 'RS', 'RBP', 'FC',
   'VEF', 'VER', 'IKF', 'IKR', 'IKP', 'VO', 'GAMM', 'HRCF', 'AVC1', 'AVC2',
+  'PE', 'ME', 'PC', 'MC', 'PS', 'MS',
 ] as const;
 /**
  * Charge-storage and excess-phase parameters: inert at DC, active in the
@@ -31,14 +33,6 @@ const TEMPERATURE_PARAMETERS = ['TNOM'] as const;
 const SUPPORTED_PARAMETERS = new Set<string>([
   'LEVEL', ...ACTIVE_PARAMETERS, ...DC_INERT_PARAMETERS, ...TEMPERATURE_PARAMETERS,
 ]);
-/**
- * VBIC 1.2 grading coefficients outside the bounded subset (ngspice
- * vbicsetup.c). The built-in potentials PE = PC = PS = 0.75 V are mapped to the
- * device temperature in vbic-temperature.ts.
- */
-const ME = 0.33;
-const MC = 0.33;
-const MS = 0.33;
 
 type ActiveParameter = typeof ACTIVE_PARAMETERS[number];
 type InertParameter = typeof DC_INERT_PARAMETERS[number];
@@ -88,6 +82,12 @@ const DEFAULTS: VBICParams = {
   HRCF: 1,
   AVC1: 0,
   AVC2: 0,
+  PE: VBIC_PE,
+  ME: VBIC_ME,
+  PC: VBIC_PC,
+  MC: VBIC_MC,
+  PS: VBIC_PS,
+  MS: VBIC_MS,
   CJE: 0,
   CJC: 0,
   CJEP: 0,
@@ -141,6 +141,15 @@ export function resolveVBICParams(
   // Bounded physical domain. ngspice vbicsetup.c defaults FC to 0.9 but
   // vbicmpar.c does not validate it; FC=1 makes the charge formula singular.
   if (resolved.FC < 0 || resolved.FC >= 1) throw new InvalidCircuitError("Invalid bounded VBIC DC model parameter: 'FC'");
+  for (const name of ['PE', 'PC', 'PS'] as const) {
+    if (resolved[name] <= 0) throw new InvalidCircuitError(`Invalid bounded VBIC DC model parameter: '${name}'`);
+  }
+  // The bounded depletion integral divides by 1 - M; M = 1 is unsupported.
+  for (const name of ['ME', 'MC', 'MS'] as const) {
+    if (resolved[name] < 0 || resolved[name] >= 1) {
+      throw new InvalidCircuitError(`Invalid bounded VBIC DC model parameter: '${name}'`);
+    }
+  }
   return resolved;
 }
 
@@ -301,6 +310,7 @@ function evaluate(
   const nodeCount = size === BRANCHES.length ? XF1 : XF2 + 1;
   const excessPhase = nodeCount > XF2;
   const { vt, PE, PC, PS } = thermal;
+  const { ME, MC, MS } = params;
   const b = voltages.map((value, index) => Dual.variable(value, size, index));
   const [vbei, vbex, vbci, vbcx, vbep, vbcp, vrci, vrbi, vrbp] = b;
   const xf1 = b[BRANCHES.length];
