@@ -15,9 +15,9 @@ import { ROOT, hash } from './ingest.js';
 export const report = parityReport({ name: 'corpus-o', root: ROOT, scriptUrl: import.meta.url,
   title: '# corpus-o: public Xyce analog/device regression decks (#1045)', earlierRules: 'corpus-l/i/h/f', gapIssues: {},
   followUpIssues: [
-    { url: 'https://github.com/mfiumara/spice-ts/issues/1314', scope: 'o-5 MOS2 noise (engine status failed)' },
-    { url: 'https://github.com/mfiumara/spice-ts/issues/1315', scope: 'o-6 MOS3 noise (engine status failed)' },
-    { url: 'https://github.com/mfiumara/spice-ts/issues/1316', scope: 'o-3 MOS9 noise (engine status failed)' },
+    { url: 'https://github.com/mfiumara/spice-ts/issues/1314', scope: 'o-5 MOS2 noise implementation and parity rerun' },
+    { url: 'https://github.com/mfiumara/spice-ts/issues/1315', scope: 'o-6 MOS3 noise implementation and parity rerun' },
+    { url: 'https://github.com/mfiumara/spice-ts/issues/1316', scope: 'o-3 MOS9 noise implementation and parity rerun' },
     { url: 'https://github.com/mfiumara/spice-ts/issues/1317', scope: 'o-1/o-10 control-noise reference export, not-compared' },
     { url: 'https://github.com/mfiumara/spice-ts/issues/1318', scope: 'o-19/o-20 large-reference metric performance' },
   ], gapBucket });
@@ -30,7 +30,7 @@ export function renderMarkdown(result: CorpusHReport) {
     .replace(/\n## Transient fine-step reference \(#592\)[\s\S]*$/, '\n')
     + '\n## All ngspice-success parity gaps\n\n| Bucket | Count | IDs |\n|---|---|---|\n'
     + parityGaps(result.fixtures).map(b => `| ${b.bucket} | ${b.count} | ${b.ids.join(', ')} |`).join('\n')
-    + '\n\n## Measurement boundary\n\nUnchanged corpus-j reduceRow and corpus-f metrics/thresholds. Detailed matched-point max/RMS absolute and relative metrics are in outcomes.json. Null means no comparison, not zero error. Identical original bytes for both engines; no fine-step adapted reference. Serial cold engine-group wall includes startup, adapter, parse/solve and export. No solver-only or speed-superiority claim. New baseline, not before/after improvement: production core is unchanged. Aggregate refresh deferred to nightly. The classification/classCounts fields split legacy spice-ts-loss into unsupported and failed; legacy outcomes are retained unchanged. Issue links and exclusions: SOURCES.md.\n';
+    + '\n\n## Measurement boundary\n\nUnchanged corpus-j reduceRow and corpus-f metrics/thresholds. Detailed matched-point max/RMS absolute and relative metrics are in outcomes.json. Null means no comparison, not zero error. Identical original bytes for both engines; no fine-step adapted reference. Serial cold engine-group wall includes startup, adapter, parse/solve and export. No solver-only or speed-superiority claim. Before the MOS2/3/9 noise port: 16 matched, 3 failed, 4 not-compared. This rerun measures the port with unchanged fixtures and comparison policy; remaining exclusions are still published. Aggregate refresh deferred to nightly. The classification/classCounts fields split legacy spice-ts-loss into unsupported and failed; legacy outcomes are retained unchanged. Issue links and exclusions: SOURCES.md.\n';
 }
 async function bounded(circuit: Circuit, engine: 'ngspice' | 'spiceTs') {
   const directory = await mkdtemp(resolve(tmpdir(), 'corpus-o-'));

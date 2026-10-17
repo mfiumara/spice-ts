@@ -97,14 +97,21 @@ export function assertNoiseDevicesSupported(compiled: CompiledCircuit): void {
     }
     // b1noi.c / b2noi.c are not ported; reject rather than treat the channel as noiseless.
     else if (device instanceof ClassicBsimMosfet) kind = `MOSFET ${device.setup.kind}`;
-    // mos2noi.c is not ported; reject rather than treat the MOS2 channel as noiseless.
-    else if (device instanceof MOS2) kind = 'MOSFET level 2';
-    // mos3noi.c / mos9noi.c are not ported either.
-    else if (device instanceof MOS3) kind = `MOSFET level ${device.model.level}`;
     // ngspice HFETA has no noise routine, so its RD/RS are noiseless; reject
     // rather than add thermal noise from the expanded series resistors.
     else if (device instanceof HFET1) kind = 'HFET';
 
+    if (device instanceof MOS2 || device instanceof MOS3) {
+      const { KF, AF, NLEV, oxideCapFactor } = device.model;
+      const { length, width } = device.noiseOperatingPoint();
+      if (!(device instanceof MOS3 && device.model.level === 9) && ![0, 1, 2].includes(NLEV)) {
+        throw new InvalidCircuitError(`.noise only supports MOS2/MOS3 NLEV=0, 1 or 2 for '${device.name}'`);
+      }
+      if (![KF, AF, oxideCapFactor, length, width, device.instance.M].every(Number.isFinite)
+        || KF < 0 || oxideCapFactor <= 0 || length <= 0 || width <= 0 || device.instance.M <= 0) {
+        throw new InvalidCircuitError(`.noise requires finite MOS2/MOS3/MOS9 KF >= 0, AF and positive noise geometry, Cox and M for '${device.name}'`);
+      }
+    }
     if (device instanceof MOSFET) {
       if (device.getTemperature() !== 27) {
         throw new InvalidCircuitError(
@@ -161,7 +168,7 @@ export function assertNoiseDevicesSupported(compiled: CompiledCircuit): void {
  * restricted to ngspice's default 27 C circuit temperature):
  * resistor and S/W switch thermal noise, diode junction shot/flicker noise, BJT level-1
  * collector/base shot, base-current KF/AF flicker noise, and RB/RC/RE
- * thermal noise, VBIC thermal/shot/KFN noise, plus MOS1 channel thermal/KF/AF flicker noise.
+ * thermal noise, VBIC thermal/shot/KFN noise, plus MOS1/2/3/9 channel thermal/KF/AF flicker noise.
  * Controlled and independent ideal sources are noiseless.
  */
 export function solveNoise(
@@ -280,6 +287,35 @@ export function solveNoise(
       }
       return sources;
     });
+  // ngspice-47 mos2noi.c/mos3noi.c/mos9noi.c. RD/RS/RSH sources are
+  // already carried by the compiler-expanded resistors, never counted twice.
+  const classicMosSources = devices
+    .filter((device): device is MOS2 | MOS3 => device instanceof MOS2 || device instanceof MOS3)
+    .flatMap(device => {
+      const { gm, cd, length, width } = device.noiseOperatingPoint();
+      const { KF, AF, NLEV, oxideCapFactor: cox } = device.model;
+      const { M } = device.instance;
+      const legacy = device instanceof MOS3 && device.model.level === 9;
+      const sources = [{
+        positive: device.nodes[0], negative: device.nodes[2],
+        currentPowerDensity: (_frequency: number) => 4 * BOLTZMANN_CONSTANT
+          * (device.getTemperature() + CELSIUS_TO_KELVIN) * (2 / 3) * Math.abs(gm),
+      }];
+      if (KF > 0) {
+        sources.push({
+          positive: device.nodes[0], negative: device.nodes[2],
+          currentPowerDensity: (frequency: number) => {
+            if (!legacy && NLEV === 2) {
+              return KF * gm * gm / (M * Math.pow(frequency, AF) * width * length * cox);
+            }
+            const area = !legacy && NLEV === 0 ? length * length : width * length;
+            return M * KF * Math.exp(AF * Math.log(Math.max(Math.abs(cd / M), 1e-38)))
+              / (frequency * area * cox * (legacy ? cox : 1));
+          },
+        });
+      }
+      return sources;
+    });
   const bjtSources = devices
     .filter((device): device is BJT => device instanceof BJT)
     .flatMap(bjt => {
@@ -357,7 +393,7 @@ export function solveNoise(
       currentPowerDensity: (frequency: number) =>
         source.flickerCoefficient / Math.pow(frequency, device.params.BFN),
     }]));
-  const noiseSources = [...resistorSources, ...switchSources, ...mosfetSources, ...bjtSources, ...vbicSources, ...devices.flatMap(otaNoiseSources), ...devices.flatMap(gainNoiseSources)];
+  const noiseSources = [...resistorSources, ...switchSources, ...mosfetSources, ...classicMosSources, ...bjtSources, ...vbicSources, ...devices.flatMap(otaNoiseSources), ...devices.flatMap(gainNoiseSources)];
 
   const frequencies = frequencyGrid(analysis, options.reltol, 'noise');
   const hasIntegratedTotals = analysis.stopFreq > analysis.startFreq;

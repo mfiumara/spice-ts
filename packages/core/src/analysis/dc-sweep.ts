@@ -8,6 +8,7 @@ import { gminSteppingHomotopy } from './dc.js';
 import { DCSweepResult } from '../results.js';
 import { VoltageSource } from '../devices/voltage-source.js';
 import { CurrentSource } from '../devices/current-source.js';
+import { ClassicBsimMosfet } from '../devices/bsim12-load.js';
 import { Resistor } from '../devices/resistor.js';
 import { NOMINAL_TEMPERATURE_C } from '../devices/junction-temperature.js';
 import { ConvergenceError, InvalidCircuitError, UnsupportedTemperatureError } from '../errors.js';
@@ -70,6 +71,8 @@ export function solveDCSweep(
   const secondarySweepValues = analysis.secondary === undefined
     ? undefined
     : new Float64Array(numPoints);
+  const bsim1 = devices.filter((device): device is ClassicBsimMosfet =>
+    device instanceof ClassicBsimMosfet && device.setup.kind === 'BSIM1');
 
   try {
     for (let outer = 0; outer < secondaryPoints; outer++) {
@@ -89,6 +92,12 @@ export function solveDCSweep(
         source.set(sweepValue);
 
         solveSweepPoint(assembler, compiled.devices, options, nodeNames, convergence, guard);
+        if (i === 0) {
+          for (const device of bsim1) device.bindDCSweepStamp({
+            ctx: assembler.getStampContext(), values: assembler.gValues,
+            rhs: assembler.b, index: assembler.stampIndex,
+          });
+        }
 
         // Sample while device state (temperature, last load, swept sources) still
         // belongs to this point, not by replaying the final compiled devices.
@@ -117,6 +126,7 @@ export function solveDCSweep(
     }
     throw error;
   } finally {
+    for (const device of bsim1) device.bindDCSweepStamp();
     source.restore();
     secondarySource?.restore();
   }
