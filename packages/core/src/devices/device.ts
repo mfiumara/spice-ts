@@ -179,6 +179,8 @@ export interface DeviceModel {
    * accepted state creates later in the run (ngspice DEVaccept + CKTsetBreak).
    */
   acceptTransientStep?(ctx: StampContext, breakpoints?: TransientBreakpointSink): void;
+  /** Refresh trial hybrid inputs from the converged solution, without accepting history. */
+  prepareTransientStep?(ctx: StampContext): void;
   /**
    * ngspice DEVtrunc: the largest next timestep the truncation error of the
    * device's integrated charges allows, evaluated at the converged but not yet
@@ -306,6 +308,8 @@ export interface EventDrivenNetwork {
   processEvents(time: number, now: number): void;
   /** EVTbackup: drop every event processed after `time`. */
   backup(time: number): void;
-  /** An accepted point: EVTcall_hybrids (unless the first step), then EVTaccept. */
+  /** Trial hybrid calls. Returns a temporary breakpoint on rejection without committing history. */
+  prepareStep(time: number, callHybrids: boolean): number | undefined;
+  /** Commit event history after the analog devices have accepted the point. */
   acceptStep(time: number, callHybrids: boolean): void;
 }

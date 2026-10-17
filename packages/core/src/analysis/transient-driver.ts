@@ -490,14 +490,27 @@ class TransientSimImpl implements TransientSim {
       }
       this.lteRejectCount = 0;
       const firstStep = this.firstStepPending;
-      const next = this.orderAfterAcceptedStep(actualDt, integration, chargeBound);
 
       // Device-owned histories must observe only committed solutions. In
       // particular, NR/LTE retries and the stampPrevB restamp below are not
       // accepted timepoints and must remain side-effect free.
-      this.acceptTransientStep(nextTime, integration);
       // dctran.c: EVTcall_hybrids after the truncation check (not on the
       // first step, which skips it), then EVTaccept.
+      if (this.events) {
+        this.acceptingTime = nextTime;
+        const ctx = this.assembler.getStampContext();
+        for (const device of this.acceptingDevices) device.prepareTransientStep?.(ctx);
+      }
+      const retry = this.events?.prepareStep(nextTime, !firstStep);
+      if (retry !== undefined) {
+        this.dt = retry - this.time;
+        this.assembler.solution.set(prevSol);
+        this.convergenceTelemetry.transient.rejectedSteps++;
+        this.processEvents();
+        continue;
+      }
+      const next = this.orderAfterAcceptedStep(actualDt, integration, chargeBound);
+      this.acceptTransientStep(nextTime, integration);
       this.events?.acceptStep(nextTime, !firstStep);
       // Update trapezoidal history.
       if (this.integrationMethod === 'trapezoidal') {

@@ -170,6 +170,10 @@ export class XspiceDevice implements DeviceModel {
     this.behavior.reset?.();
   }
 
+  prepareTransientStep(ctx: StampContext): void {
+    this.behavior.load(this.call(ctx, 'tran', this.lastIntegration, false));
+  }
+
   /** Resolve a vnam input to the branch of its controlling voltage source. */
   bindSourceBranch(port: number, branch: number): void {
     (this.inputPorts[port] as XspiceInputPort).branch = branch;
