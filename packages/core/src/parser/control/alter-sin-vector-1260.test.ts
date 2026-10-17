@@ -34,13 +34,13 @@ ac lin 1 1000 1000
     expect(runs[3].result.ac).toEqual(edited.ac);
   });
 
-  it('replaces a DC source with SIN and applies optional coefficients', async () => {
-    const base = 'alter waveform\nV1 out 0 DC 0.25\nR1 out 0 1k\n';
+  it.each(['DC 0.25', 'DC 0.25 AC 2'])('replaces a %s source with SIN and applies optional coefficients', async initial => {
+    const base = `alter waveform\nV1 out 0 ${initial}\nR1 out 0 1k\n`;
     const altered = await simulate(`${base}.control
 alter @V1[sin] = [ 1 2 1000 10u 20 30 ]
 tran 10u 1m
 .endc`);
-    const edited = await simulate(base.replace('DC 0.25', 'DC 0.25 SIN(1 2 1000 10u 20 30)') + '.tran 10u 1m');
+    const edited = await simulate(base.replace(initial, `${initial} SIN(1 2 1000 10u 20 30)`) + '.tran 10u 1m');
     expect(altered.transient).toEqual(edited.transient);
   });
 
