@@ -6,15 +6,15 @@ Every deck below is byte-identical to its pinned upstream revision (xyce `7bb7e9
 
 ## Totals
 
-- Fixtures: 23. Outcome SHA-256: `d3f6c2cea2c77320e1c274acb00f2a6fce07ccb1ccf82beedcfd94b5fb59d2a8`.
+- Fixtures: 23. Outcome SHA-256: `e71d528eceb93b68c477000f1cb155602c90fb541df8b66c8fc911dae9d7914d`.
 - ngspice (ngspice-47): 23 success, 0 failed, 0 unsupported.
 - spice-ts (0.4.0): 23 success, 0 failed, 0 unsupported.
-- Outcomes: matched 21, mismatch 0, not-compared 2, spice-ts-loss 0, ngspice-failed 0, both-failed 0.
-- Of the 23 decks ngspice runs successfully, spice-ts matches 21, mismatches 0, produces no comparable result for 2 and fails 0.
+- Outcomes: matched 23, mismatch 0, not-compared 0, spice-ts-loss 0, ngspice-failed 0, both-failed 0.
+- Of the 23 decks ngspice runs successfully, spice-ts matches 23, mismatches 0, produces no comparable result for 0 and fails 0.
 
 | Source | Fixtures | Matched | Mismatch | Not compared | spice-ts loss | ngspice failed | Both failed |
 |---|---|---|---|---|---|---|---|
-| `xyce` | 23 | 21 | 0 | 2 | 0 | 0 | 0 |
+| `xyce` | 23 | 23 | 0 | 0 | 0 | 0 | 0 |
 
 ## Method
 
@@ -42,21 +42,20 @@ Grouped from spice-ts's own first error line (unchanged corpus-l/i/h/f rules). "
 | Bucket | Fixtures | ngspice ok | Issue |
 |---|---|---|---|
 
-## Losses (2)
+## Losses (0)
 
 Every fixture that is not matched: spice-ts failures, mismatches above the threshold, and results that could not be compared.
 
 | Fixture | ngspice | spice-ts | Outcome | Worst | Worst signal | First error line (ngspice / spice-ts) |
 |---|---|---|---|---|---|---|
-| [xyce/Netlists/NOISE/commonEmitterBjt_ngspice.cir](fixtures/xyce/Netlists/NOISE/commonEmitterBjt_ngspice.cir) | success | success | not-compared |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare |
-| [xyce/Netlists/NOISE/res_noise_ngspice.cir](fixtures/xyce/Netlists/NOISE/res_noise_ngspice.cir) | success | success | not-compared |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare |
 
-## Wins (21)
+## Wins (23)
 
 Fixtures where spice-ts matches ngspice-47 within the uniform threshold on every common signal.
 
 | Fixture | ngspice | spice-ts | Outcome | Worst | Worst signal | First error line (ngspice / spice-ts) |
 |---|---|---|---|---|---|---|
+| [xyce/Netlists/NOISE/commonEmitterBjt_ngspice.cir](fixtures/xyce/Netlists/NOISE/commonEmitterBjt_ngspice.cir) | success | success | matched | 0.0000226 | noise onoise_spectrum |  |
 | [xyce/Netlists/NOISE/commonEmitterBjt.cir](fixtures/xyce/Netlists/NOISE/commonEmitterBjt.cir) | success | success | matched | 0.0000226 | noise onoise_spectrum |  |
 | [xyce/Netlists/NOISE/gain-stage_b3.cir](fixtures/xyce/Netlists/NOISE/gain-stage_b3.cir) | success | success | matched | 1.74e-7 | noise onoise_spectrum |  |
 | [xyce/Netlists/NOISE/gain-stage1.cir](fixtures/xyce/Netlists/NOISE/gain-stage1.cir) | success | success | matched | 1.74e-7 | noise inoise_spectrum |  |
@@ -65,6 +64,7 @@ Fixtures where spice-ts matches ngspice-47 within the uniform threshold on every
 | [xyce/Netlists/NOISE/invalid_device.cir](fixtures/xyce/Netlists/NOISE/invalid_device.cir) | success | success | matched | 1.06e-7 | noise onoise_spectrum |  |
 | [xyce/Netlists/NOISE/noiseBjt1.cir](fixtures/xyce/Netlists/NOISE/noiseBjt1.cir) | success | success | matched | 1.06e-7 | noise onoise_spectrum |  |
 | [xyce/Netlists/NOISE/noiseBjt2.cir](fixtures/xyce/Netlists/NOISE/noiseBjt2.cir) | success | success | matched | 7.65e-8 | noise onoise_spectrum |  |
+| [xyce/Netlists/NOISE/res_noise_ngspice.cir](fixtures/xyce/Netlists/NOISE/res_noise_ngspice.cir) | success | success | matched | 1.74e-7 | noise inoise_spectrum |  |
 | [xyce/Netlists/NOISE/res_noise.cir](fixtures/xyce/Netlists/NOISE/res_noise.cir) | success | success | matched | 1.74e-7 | noise inoise_spectrum |  |
 | [xyce/Netlists/VANOISE/gain-stage1_psp.cir](fixtures/xyce/Netlists/VANOISE/gain-stage1_psp.cir) | success | success | matched | 1.74e-7 | noise inoise_spectrum |  |
 | [xyce/Netlists/BJT_ANALYTIC/ramp_test2.cir](fixtures/xyce/Netlists/BJT_ANALYTIC/ramp_test2.cir) | success | success | matched | 1.88e-9 | tran i(v1) |  |
@@ -84,7 +84,7 @@ Fixtures where spice-ts matches ngspice-47 within the uniform threshold on every
 
 | Bucket | Count | IDs |
 |---|---|---|
-| comparison: no comparable result | 2 | o-1, o-10 |
+
 
 ## Measurement boundary
 
