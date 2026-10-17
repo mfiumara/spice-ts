@@ -43,3 +43,46 @@ Optional shortened independent timing:
 For readable source profiles, use node --import tsx --cpu-prof with simulate imported from packages/core/src/simulate.ts and the same shortened deck. Summarize with benchmarks/performance/profile-summary.mjs. Profiling preceded simulator edits.
 
 pnpm build and pnpm lint pass. All 217 tests in 14 src/devices/vbic*.test.ts files pass on the final implementation. Exact-head CI is the full-suite gate; no local root test suite was run for this card. Machine-readable timings, counters and output identity are in results.json.
+
+## Round 2: reuse the static load's charge evaluation
+
+Base: 8e148427b2ed15d715bb1c6089d9410a710fa079 (#1326). Same Node version and shared host as above. The previous receipt is preserved, not used as this round's timing baseline. This round's measurements are in round-2.json.
+
+### Profile first
+
+The unchanged harness was CPU-profiled with only its tstop argument set to 0.1n. A second source-readable profile used `node --import tsx --cpu-prof --cpu-prof-interval=100` and the same deck substitution, before simulator edits. The table below uses 501.084 ms of samples whose stack contains simulate. It excludes loader activity and unparented GC; whole-process GC was 5.2%. This is a short cold profile, not a steady-state throughput measurement. Inclusive frames overlap and must not be summed. Anonymous and TextDecoder frames retain V8's labels rather than guessing attribution.
+
+| Top self frame | Self % | Top inclusive frame | Inclusive % |
+| --- | ---: | --- | ---: |
+| VBIC add | 12.315 | root | 100.000 |
+| VBIC constant | 10.852 | simulate | 100.000 |
+| VBIC evaluate | 9.430 | solveCompiledAnalyses | 98.146 |
+| VBIC anonymous | 7.118 | solveTransient | 94.213 |
+| VBIC sub | 6.752 | advanceSolution | 93.373 |
+| VBIC diode | 5.838 | VBIC evaluate | 75.528 |
+| VBIC scale | 4.848 | attemptStep | 57.801 |
+| VBIC depletionCharge | 4.158 | buildCompanionSystem | 54.699 |
+| VBIC stamp | 3.750 | stampStaticDevices | 39.390 |
+| set TextDecoder (V8 label) | 3.734 | VBIC stamp | 38.101 |
+
+VBIC evaluation/allocation remains dominant, not sparse factorization. The 122-unknown / 832-nnz topology is unchanged. The shortened run has the same 31 DC iterations, 437 accepted steps, 28 LTE rejections, 999 transient Newton iterations and zero NR retries as round 1. No iteration-count or convergence-policy change is attempted.
+
+Static stamp already computes both residual and charge at the limited load voltages. Transient charge stamping immediately re-evaluated both at those same voltages. Retain only that charge array per device and reuse it. Every static stamp replaces it; temperature changes and transient reset invalidate it. Standalone charge stamping still evaluates normally. Charge does not depend on gmin. AC, noise and accepted-step evaluation are unchanged. No arithmetic expressions, tolerances, timestep, OP/homotopy, corpus or ROADMAP changes.
+
+### Full unchanged deck, three runs per revision
+
+Both groups used `spice-heavy node benchmarks/performance/dff-1310.mjs 3` after building the respective revision. Queue time, module loading and hashing are outside the harness timer. No extra warmup. Host load is uncontrolled, so compare this round's paired groups rather than the previous round's 76 s result.
+
+| Run | Before seconds | After seconds |
+| --- | ---: | ---: |
+| 1 | 58.984534 | 36.027890 |
+| 2 | 49.178943 | 37.015348 |
+| 3 | 51.971084 | 38.190369 |
+
+Median: 51.971084 s -> 37.015348 s, a 28.7770% reduction. The >=10% gate passes. All six hashes are fa930f7d1b79d8ce7f05a5de675090f44ff445b143b18a85075f530dd52b19fc with 43273 rows, on the same fixture hash recorded above. All convergence telemetry is identical: 31 DC iterations, 43272 accepted steps, 3139 LTE rejections, 100724 transient Newton iterations, zero NR retries, no source/gmin stepping and minimum accepted dt 2.5e-15 s. No tolerance exception is needed.
+
+Remaining loss: the issue's ngspice-47 reference is still 1.3-3.9 s. This round's 37.015348 s median remains about 9.49-28.47x slower. This is a comparison with the existing reference, not a fresh ngspice timing or a superiority claim.
+
+### Validation
+
+The new evaluation-reuse tests first failed in four cases (17 duplicate exponential calls per charge stamp), with four output-equivalence cases passing before changes. After the fix all 225 tests in 15 files pass via `pnpm -C packages/core exec vitest run src/devices/vbic`. Tests cover both polarities, seven/nine-node models, changed bias, temperature invalidation, reset, standalone charge stamps, gmin independence and bit-identical cached/uncached stamps. Existing fingerprint and ngspice parity tests also pass. `pnpm build` and `pnpm lint` pass. No local root test suite was run; exact-head GitHub CI is the full gate.

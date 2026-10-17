@@ -487,6 +487,8 @@ export class VBIC implements DeviceModel {
   readonly limitsOwnJunctions = true;
   private readonly charges: TransientChargeState;
   private loadVoltages: number[] | undefined;
+  /** Charges already evaluated at the limited static load's branch voltages. */
+  private loadCharge: Dual[] | undefined;
   readonly params: VBICParams;
   /** Local (positive, negative) node pair of each evaluation branch voltage. */
   private readonly branchTerminals: readonly (readonly [number, number])[];
@@ -527,6 +529,7 @@ export class VBIC implements DeviceModel {
 
   /** Evaluate at a circuit temperature in degrees Celsius (ngspice VBICtemp). */
   setTemperature(value: number): void {
+    this.loadCharge = undefined;
     this.temperature = value;
     this.thermal = resolveVBICTemperature(this.params, value);
     this.criticalVoltage = this.vcrit();
@@ -635,7 +638,8 @@ export class VBIC implements DeviceModel {
     const voltages = this.branchVoltages(ctx);
     this.limitJunctions(voltages);
     this.loadVoltages = voltages;
-    const { residual } = evaluate(voltages, this.params, this.thermal, this.instanceScale, ctx.gmin ?? DEVICE_GMIN);
+    const { residual, charge } = evaluate(voltages, this.params, this.thermal, this.instanceScale, ctx.gmin ?? DEVICE_GMIN);
+    this.loadCharge = charge;
     for (let row = 0; row < this.nodes.length; row += 1) {
       const matrixRow = this.nodes[row];
       if (matrixRow < 0) continue;
@@ -679,7 +683,10 @@ export class VBIC implements DeviceModel {
   /** Integrate conservative terminal charges and both excess-phase state rows. */
   stampTransientCharge(ctx: StampContext, integration: ChargeIntegration): void {
     const voltages = this.loadVoltages ?? this.branchVoltages(ctx);
-    const { charge } = evaluate(voltages, this.params, this.thermal, this.instanceScale, ctx.gmin ?? DEVICE_GMIN);
+    // evaluate computes currents and charges together. Reuse the charge half
+    // from stamp at these exact limited voltages; gmin affects residuals only.
+    const charge = this.loadCharge
+      ?? evaluate(voltages, this.params, this.thermal, this.instanceScale, ctx.gmin ?? DEVICE_GMIN).charge;
     this.charges.begin(integration);
     for (let row = 0; row < this.nodes.length; row++) {
       const node = this.nodes[row];
@@ -717,5 +724,6 @@ export class VBIC implements DeviceModel {
     this.charges.reset();
     this.junctions = undefined;
     this.loadVoltages = undefined;
+    this.loadCharge = undefined;
   }
 }
