@@ -507,7 +507,7 @@ export class VDMOS implements DeviceModel {
     const nodes = this.nodes;
     const tj = nodes[7];
     const tc = nodes[8];
-    let readVoltage = (node: number) => ctx.getVoltage(node);
+    const readVoltage = (node: number) => ctx.getVoltage(node);
     const voltage = (slot: number) => nodes[slot] < 0 ? 0 : readVoltage(nodes[slot]);
     const temperature = Math.max(-200, voltage(7));
     const branchSlots = [[DP, SP], [D, DP], [S, SP], [BP, D], [S, BP]];
@@ -547,21 +547,38 @@ export class VDMOS implements DeviceModel {
         ctx.stampB(nodes[slot], sign * derivative * temperature);
       }
     }
-    // Differentiate power with respect to each distinct electrical node.
+    // Differentiate I * V analytically, using the electrical load's gm/gds
+    // (as in vdmosload.c), not fourteen perturbed channel/diode evaluations
+    // per load. Stamp by slot so aliased external/intrinsic nodes accumulate.
     let rhs = power - dpdt * temperature;
-    for (const node of new Set(nodes.slice(0, 7))) {
-      if (node < 0) continue;
-      const base = ctx.getVoltage(node);
-      const powerAt = (offset: number) => {
-        readVoltage = n => n === node ? base + offset : ctx.getVoltage(n);
-        const values = currents();
-        return branchSlots.reduce((sum, [p, n], i) => sum + values[i] * (voltage(p) - voltage(n)), 0);
-      };
-      let derivative: number;
-      try { derivative = (powerAt(1e-5) - powerAt(-1e-5)) / 2e-5; }
-      finally { readVoltage = n => ctx.getVoltage(n); }
+    const powerDerivative = (slot: number, derivative: number) => {
+      const node = nodes[slot];
+      if (node < 0) return;
       if (tj >= 0) ctx.stampG(tj, node, -derivative);
-      rhs -= derivative * base;
+      rhs -= derivative * ctx.getVoltage(node);
+    };
+    const [vgs, vds] = this.channelVoltages(n => n < 0 ? 0 : readVoltage(n));
+    const channel = this.evaluateChannel(vgs, vds);
+    const channelVoltage = voltage(DP) - voltage(SP);
+    powerDerivative(DP, current[0] + channelVoltage * (channel.gds + (channel.mode === -1 ? channel.gm : 0)));
+    powerDerivative(GP, channelVoltage * channel.mode * channel.gm);
+    powerDerivative(SP, -current[0] - channelVoltage * (channel.gds + (channel.mode === 1 ? channel.gm : 0)));
+    for (const i of [1, 2, 4]) {
+      const [p, n] = branchSlots[i];
+      powerDerivative(p, 2 * current[i]);
+      powerDerivative(n, -2 * current[i]);
+    }
+    const diodeVoltage = voltage(BP) - voltage(D);
+    const diodeDerivative = current[3] + diodeVoltage * this.bodyDiodeCurrent(this.model.type * diodeVoltage).gd;
+    powerDerivative(BP, diodeDerivative);
+    powerDerivative(D, -diodeDerivative);
+    if (this.model.qsGiven && channel.mode === 1) {
+      const v = this.model.type * (voltage(D) - voltage(S));
+      const denominator = v + Math.abs(this.model.vq);
+      const drdv = this.model.type * this.temp.qsResistance * Math.abs(this.model.vq) / (denominator * denominator);
+      const derivative = -current[1] * current[1] * drdv;
+      powerDerivative(D, derivative);
+      powerDerivative(S, -derivative);
     }
     const gjc = this.instance.M / this.model.rthjc;
     const gca = this.instance.M / this.model.rthca;
