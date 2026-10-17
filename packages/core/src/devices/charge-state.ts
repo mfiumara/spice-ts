@@ -159,12 +159,15 @@ export class TransientChargeState {
    * acceptance; while it runs those calls only measure the error and leave the
    * accepted history untouched. `indices` restricts the estimate to the
    * charges ngspice truncates for this device (e.g. MOS1 gate charges only).
+   * An optional context lets a device reuse an evaluator instead of allocating
+   * a closure per trial point. It is passed through, never retained in history.
    * Returns Infinity when no rule is pending or the history is too short.
    */
-  truncationTimestep(
+  truncationTimestep<T = undefined>(
     truncation: ChargeTruncation,
-    evaluate: () => void,
+    evaluate: (context: T) => void,
     indices?: readonly number[],
+    context?: T,
   ): number {
     const integration = this.pending;
     if (integration === undefined || !this.hasAccepted) return Infinity;
@@ -175,7 +178,7 @@ export class TransientChargeState {
     this.truncationIndices = indices;
     this.truncationBound = Infinity;
     try {
-      evaluate();
+      evaluate(context!);
     } finally {
       this.truncation = undefined;
       this.truncationIndices = undefined;

@@ -379,6 +379,8 @@ export class MOS6 implements DeviceModel {
   private readonly chargeScratch = new Float64Array(CHARGE_BRANCHES.length);
   private readonly capacitanceScratch = new Float64Array(CHARGE_BRANCHES.length);
   private readonly terminalScratch = { vgs: 0, vds: 0, vbs: 0 };
+  private readonly channelScratch: MOS6Channel = { mode: 1, cdrain: 0, gm: 0, gds: 0, gmbs: 0, von: 0, vdsat: 0 };
+  private readonly evaluateTruncation = (ctx: StampContext): void => this.acceptTransientStep(ctx);
 
   constructor(
     readonly name: string,
@@ -526,6 +528,10 @@ export class MOS6 implements DeviceModel {
 
   /** mos6load.c n-th power law block, polarity domain. */
   evaluateChannel(vgs: number, vds: number, vbs: number): MOS6Channel {
+    return this.evaluateChannelInto(vgs, vds, vbs, { mode: 1, cdrain: 0, gm: 0, gds: 0, gmbs: 0, von: 0, vdsat: 0 });
+  }
+
+  private evaluateChannelInto(vgs: number, vds: number, vbs: number, out: MOS6Channel, capacitanceOnly = false): MOS6Channel {
     const model = this.model;
     const { tPhi, tVbi, tKc } = this.temp;
     const mode = vds >= 0 ? 1 : -1;
@@ -543,7 +549,10 @@ export class MOS6 implements DeviceModel {
       - model.GAMMA1 * vbsvbd - model.SIGMA * vdshere;
     const vgon = (mode === 1 ? vgs : vgs - vds) - von;
     if (vgon <= 0) {
-      return { mode, cdrain: 0, gm: 0, gds: 0, gmbs: 0, von, vdsat: 0 };
+      out.mode = mode;
+      out.cdrain = out.gm = out.gds = out.gmbs = out.vdsat = 0;
+      out.von = von;
+      return out;
     }
     let vonbm = 0;
     if (sarg1 > 0) {
@@ -553,6 +562,15 @@ export class MOS6 implements DeviceModel {
     }
     const logVgon = Math.log(vgon);
     const vdsat = model.KV * Math.exp(logVgon * model.NV);
+    // Meyer needs only mode, threshold and saturation voltage. Do not evaluate
+    // Idsat or its derivatives on charge acceptance/truncation and AC loads.
+    if (capacitanceOnly) {
+      out.mode = mode;
+      out.von = von;
+      out.vdsat = vdsat;
+      out.cdrain = out.gm = out.gds = out.gmbs = 0;
+      return out;
+    }
     const idsat = tKc * this.betaFactor * Math.exp(logVgon * model.NC);
     const lambda = model.LAMBDA0 - model.LAMBDA1 * vbsvbd;
     let cdrain = idsat * (1 + lambda * vdshere);
@@ -569,12 +587,19 @@ export class MOS6 implements DeviceModel {
       gds = gds * vdst2 + ivdst1 * (1 / vdsat + vdstg * model.SIGMA);
       gmbs = gmbs * vdst2 + ivdst1 * vdstg * vonbm;
     }
-    return { mode, cdrain, gm, gds, gmbs, von, vdsat };
+    out.mode = mode;
+    out.cdrain = cdrain;
+    out.gm = gm;
+    out.gds = gds;
+    out.gmbs = gmbs;
+    out.von = von;
+    out.vdsat = vdsat;
+    return out;
   }
 
   /** Terminal voltages [vgs, vds, vbs] in the polarity domain. */
   private terminalVoltages(ctx: StampContext): { vgs: number; vds: number; vbs: number } {
-    const [nD, nG, nS, nB] = this.nodes;
+    const nD = this.nodes[0], nG = this.nodes[1], nS = this.nodes[2], nB = this.nodes[3];
     return this.terminalBias(
       nD >= 0 ? ctx.getVoltage(nD) : 0,
       nG >= 0 ? ctx.getVoltage(nG) : 0,
@@ -584,7 +609,7 @@ export class MOS6 implements DeviceModel {
   }
 
   private solutionTerminalVoltages(solution: Float64Array): { vgs: number; vds: number; vbs: number } {
-    const [nD, nG, nS, nB] = this.nodes;
+    const nD = this.nodes[0], nG = this.nodes[1], nS = this.nodes[2], nB = this.nodes[3];
     return this.terminalBias(
       nD >= 0 ? solution[nD] : 0,
       nG >= 0 ? solution[nG] : 0,
@@ -628,7 +653,7 @@ export class MOS6 implements DeviceModel {
     const type = model.polarity;
     const m = this.instance.M;
     const { vt, sourceVcrit, drainVcrit } = this.temp;
-    const [nD, nG, nS, nB] = this.nodes;
+    const nD = this.nodes[0], nG = this.nodes[1], nS = this.nodes[2], nB = this.nodes[3];
     const { vgs, vds, vbs: vbsRaw } = this.terminalVoltages(ctx);
 
     // mos6load.c junction limiting against the previous load.
@@ -667,7 +692,7 @@ export class MOS6 implements DeviceModel {
       cbd = drainSatCur * (evbd - 1) + gmin * vbd;
     }
 
-    const channel = this.evaluateChannel(vgs, vds, vbs);
+    const channel = this.evaluateChannelInto(vgs, vds, vbs, this.channelScratch);
     this.lastVon = channel.von;
     const { mode, cdrain, gm, gds, gmbs } = channel;
     const load = this.lastLoad;
@@ -718,7 +743,7 @@ export class MOS6 implements DeviceModel {
   }
 
   private meyerHalfAtBias(vgs: number, vds: number, vbs: number, out: Float64Array): void {
-    const channel = this.evaluateChannel(vgs, vds, vbs);
+    const channel = this.evaluateChannelInto(vgs, vds, vbs, this.channelScratch, true);
     const vgd = vgs - vds;
     const { tPhi } = this.temp;
     if (channel.mode > 0) {
@@ -735,7 +760,7 @@ export class MOS6 implements DeviceModel {
     const half = halfScratch;
     this.meyerHalf(ctx, half);
     const m = this.instance.M;
-    const [nD, nG, nS, nB] = this.nodes;
+    const nD = this.nodes[0], nG = this.nodes[1], nS = this.nodes[2], nB = this.nodes[3];
     stampCapacitance(ctx, nG, nS, m * (2 * half[0] + this.overlapGS));
     stampCapacitance(ctx, nG, nD, m * (2 * half[1] + this.overlapGD));
     stampCapacitance(ctx, nG, nB, m * (2 * half[2] + this.overlapGB));
@@ -760,7 +785,7 @@ export class MOS6 implements DeviceModel {
     this.evaluateCharges(ctx, capacitances, junctionCharges);
     charges.begin(integration);
     for (let index = 0; index < CHARGE_BRANCHES.length; index++) {
-      const [p, n] = CHARGE_BRANCHES[index];
+      const p = CHARGE_BRANCHES[index][0], n = CHARGE_BRANCHES[index][1];
       const positive = this.nodes[p];
       const negative = this.nodes[n];
       if (positive === negative) continue;
@@ -829,7 +854,7 @@ export class MOS6 implements DeviceModel {
 
   stampAcceptedChargeCurrent(ctx: StampContext): void {
     for (let index = 0; index < CHARGE_BRANCHES.length; index++) {
-      const [p, n] = CHARGE_BRANCHES[index];
+      const p = CHARGE_BRANCHES[index][0], n = CHARGE_BRANCHES[index][1];
       if (this.nodes[p] === this.nodes[n]) continue;
       stampChargeCurrent(ctx, this.nodes[p], this.nodes[n], this.charges.acceptedChargeCurrent(index));
     }
@@ -841,7 +866,7 @@ export class MOS6 implements DeviceModel {
     const junctionCharges = this.chargeScratch;
     this.evaluateCharges(ctx, capacitances, junctionCharges);
     for (let index = 0; index < CHARGE_BRANCHES.length; index++) {
-      const [p, n] = CHARGE_BRANCHES[index];
+      const p = CHARGE_BRANCHES[index][0], n = CHARGE_BRANCHES[index][1];
       const voltage = branchVoltage(ctx, this.nodes[p], this.nodes[n]);
       const capacitance = capacitances[index];
       const charge = index < GATE_CHARGES
@@ -854,7 +879,7 @@ export class MOS6 implements DeviceModel {
 
   /** ngspice MOS6trunc: CKTterr on the three Meyer gate charges. */
   truncateTransientStep(ctx: StampContext, truncation: ChargeTruncation): number {
-    return this.charges.truncationTimestep(truncation, () => this.acceptTransientStep(ctx), TRUNCATED_CHARGES);
+    return this.charges.truncationTimestep(truncation, this.evaluateTruncation, TRUNCATED_CHARGES, ctx);
   }
 
   resetTransient(): void {
