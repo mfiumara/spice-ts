@@ -63,6 +63,7 @@ import {
   type PreparedXspiceInstance,
 } from './devices/xspice/compile.js';
 import { parseXspiceInstance, parseXspiceModelCard, xspiceModelType, type XspiceInstanceCard, type XspiceModelCard } from './parser/xspice-parser.js';
+import { DIGITAL_MODELS } from './devices/xspice/digital-models.js';
 import { assertControlledSourceCard, withoutNodePairParentheses } from './parser/controlled-source.js';
 import type { ControlScript } from './parser/control/script.js';
 import { DEFAULT_OPTIONS, GROUND_NODE } from './types.js';
@@ -3901,10 +3902,11 @@ export class Circuit {
         case 'A': {
           const card = parseXspiceInstance(raw, lineNumber);
           const modelName = scopeModel(card.modelName);
-          // Admit scoped PWL transfers, pswitch conductance ports and numparam LUTs.
-          // Other A-card families retain the unsupported boundary until their ports are scoped.
+          // Digital/hybrid ports use the same node-token scoping as PWL,
+          // pswitch and LUT ports; preserve vector, inversion and type tokens.
+          // Other A-card families retain the unsupported boundary.
           const codeModel = this._xspiceModels.get(modelName.toUpperCase())?.codeModel;
-          if (codeModel !== 'pwl' && codeModel !== 'pswitch' && codeModel !== 'd_lut') {
+          if (codeModel !== 'pwl' && codeModel !== 'pswitch' && !DIGITAL_MODELS.has(codeModel ?? '')) {
             throw new ParseError("Unsupported device card: 'A'", lineNumber, raw);
           }
           const connectionTokens = card.connectionTokens.map((token, index) => token.kind === 'string'
