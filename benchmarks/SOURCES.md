@@ -1,5 +1,36 @@
 # Benchmark sources
 
+## VBIC substrate-parasitic weighting WSP (#1294)
+
+`benchmarks/vbic-wsp/wsp.cir` is an original project-authored MIT probe.
+`packages/core/src/devices/vbic-wsp.test.ts` reads the byte-identical deck and
+freezes ngspice-47 OP (1 row), DC (3 rows) and complex AC (3 rows) currents.
+Regenerate with `SPICE_ASCIIRAWFILE=1 spice-heavy ngspice -b -r wsp.raw benchmarks/vbic-wsp/wsp.cir`.
+Equations follow the BSD-3-Clause
+[`vbicload.c`](https://github.com/ngspice/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/src/spicelib/devices/vbic/vbicload.c)
+at revision `a80f6e3e95d51534905b1f23410a951802666656`, lines 3221-3285 and
+3913-3922. WSP mixes exponentials of Vbep and Vbci in Ifp, not voltages;
+Vbcp still controls the unmixed reverse Irp. Ifp also drives qbp, the RBP
+conductance and TR diffusion charge Qbep. Dual derivatives carry both inputs
+through DC, AC and transient stamps. `vbicmpar.c:232-235` assigns WSP without
+range validation; spice-ts deliberately restricts it to finite [0, 1].
+
+Measured on Darwin arm64 with ngspice-47, the maximum peak-normalized
+OP/DC/complex-AC current error is 2.460021212794704e-6 (threshold 0.001),
+and the maximum absolute current error is 1.252334108369803e-10 A.
+Independent hand-reference transport error over WSP=0/0.3/1 and NPN/PNP is
+at most 1.1580528575742387e-23 A; analytic derivatives, AC diffusion charge
+and Euler-integrated diffusion charge are also checked. Before this change
+the same probe rejects typed unsupported WSP, so no pre-change numeric
+parity or speed comparison is available.
+
+The unchanged corpus-f `examples/vbic/DFF_Y_ECL.sp` retains BSD-3-Clause
+provenance in `corpus/corpus-f/SOURCES.md` and `LICENSE.txt`, and SHA-256
+`d811ecfa0f370d281fb35729ca3177e738fe034621d9b2909765d9d70f527cc6`.
+ngspice-47 completes 40,545 transient rows; spice-ts now advances from typed
+unsupported WSP to typed unsupported IBEIP. This remains a coverage loss,
+not DFF waveform parity. No corpus bytes or simulator tolerances changed.
+
 ## VBIC base-emitter partition WBE (#1291)
 
 `benchmarks/vbic-wbe/wbe.cir` is an original project-authored MIT probe.

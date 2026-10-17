@@ -171,6 +171,6 @@ describe('VBIC junction potentials and grading (#1281)', () => {
     const original = readFileSync('../../benchmarks/corpus/corpus-f/fixtures/examples/vbic/DFF_Y_ECL.sp', 'utf8');
     expect(createHash('sha256').update(original).digest('hex')).toBe('d811ecfa0f370d281fb35729ca3177e738fe034621d9b2909765d9d70f527cc6');
     await expect(simulate(original)).rejects.toThrow(InvalidCircuitError);
-    await expect(simulate(original)).rejects.toThrow("Unsupported bounded VBIC DC model parameter: 'WSP'");
+    await expect(simulate(original)).rejects.toThrow("Unsupported bounded VBIC DC model parameter: 'IBEIP'");
   });
 });

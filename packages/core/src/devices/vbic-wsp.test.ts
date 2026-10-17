@@ -69,9 +69,41 @@ describe('VBIC WSP substrate-parasitic weighting (#1294)', () => {
     }
   }
 
-  it('runs the byte-identical ngspice OP/DC/AC probe', async () => {
+  it('matches byte-identical ngspice-47 OP/DC/AC within 0.1% peak-normalized error', async () => {
     const result = await simulate(deck);
-    expect(result.dcSweep!.sweepValues).toHaveLength(3);
-    expect(result.ac!.frequencies).toHaveLength(3);
+    // SPICE_ASCIIRAWFILE=1 spice-heavy ngspice -b -r wsp.raw benchmarks/vbic-wsp/wsp.cir
+    const op = [-7.782977733431957e-6, -2.984404390930784e-7, 4.712674194680875e-8];
+    const dc = [
+      [-1.135776079529767e-6, -4.648342857821453e-8, 9.807912959205333e-9],
+      [-7.782852499782941e-6, -2.984360850828705e-7, 4.712641399735449e-8],
+      [-5.090745160474004e-5, -1.843508992621090e-6, 1.995138167976553e-7],
+    ];
+    const ac = [
+      [[-2.979461215308450e-4, 6.332361565161968e-8], [-1.106376781265239e-5, -5.038339519381325e-8], [1.442910571627571e-6, -4.464519826878896e-11]],
+      [[-2.979458695169414e-4, 6.332360511348886e-7], [-1.106396617732430e-5, -5.038338690240592e-7], [1.442910388864668e-6, -4.464519061852638e-10]],
+      [[-2.979206685678442e-4, 6.332255131888469e-6], [-1.108380229554451e-5, -5.038255777621549e-6], [1.442892112894778e-6, -4.464442560568510e-9]],
+    ];
+    const errors: number[] = [];
+    const absolute: number[] = [];
+    for (const [col, name] of ['vc', 'vb', 'vs'].entries()) {
+      const sweep = result.dcSweep!.current(name);
+      const complex = result.ac!.current(name);
+      const peak = Math.max(...dc.map(row => Math.abs(row[col])));
+      const acPeak = Math.max(...ac.map(row => Math.hypot(...row[col])));
+      expect(sweep).toHaveLength(3); expect(complex).toHaveLength(3);
+      const opError = Math.abs(result.dc!.current(name) - op[col]);
+      absolute.push(opError); errors.push(opError / peak);
+      dc.forEach((row, i) => {
+        const error = Math.abs(sweep[i] - row[col]);
+        absolute.push(error); errors.push(error / peak);
+      });
+      ac.forEach((row, i) => {
+        const phase = complex[i].phase * Math.PI / 180;
+        const error = Math.hypot(complex[i].magnitude * Math.cos(phase) - row[col][0], complex[i].magnitude * Math.sin(phase) - row[col][1]);
+        absolute.push(error); errors.push(error / acPeak);
+      });
+    }
+    console.info(`VBIC WSP ngspice-47 max normalized error ${Math.max(...errors)}, max absolute current error ${Math.max(...absolute)} A`);
+    expect(Math.max(...errors)).toBeLessThan(0.001);
   });
 });

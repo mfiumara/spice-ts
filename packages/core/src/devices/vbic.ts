@@ -16,7 +16,7 @@ const ACTIVE_PARAMETERS = [
   'NF', 'NR', 'NEI', 'NEN', 'NCI', 'NCN', 'NFP', 'NCIP', 'NCNP',
   'RCX', 'RCI', 'RBX', 'RBI', 'RE', 'RS', 'RBP', 'FC',
   'VEF', 'VER', 'IKF', 'IKR', 'IKP', 'VO', 'GAMM', 'HRCF', 'AVC1', 'AVC2',
-  'PE', 'ME', 'PC', 'MC', 'PS', 'MS', 'WBE',
+  'PE', 'ME', 'PC', 'MC', 'PS', 'MS', 'WBE', 'WSP',
 ] as const;
 /**
  * Charge-storage and excess-phase parameters: inert at DC, active in the
@@ -73,6 +73,7 @@ const DEFAULTS: VBICParams = {
   RBP: 0.1,
   FC: 0.9,
   WBE: 1,
+  WSP: 1,
   VEF: 0,
   VER: 0,
   IKF: 0,
@@ -143,6 +144,7 @@ export function resolveVBICParams(
   // vbicmpar.c does not validate it; FC=1 makes the charge formula singular.
   if (resolved.FC < 0 || resolved.FC >= 1) throw new InvalidCircuitError("Invalid bounded VBIC DC model parameter: 'FC'");
   if (resolved.WBE < 0 || resolved.WBE > 1) throw new InvalidCircuitError("Invalid bounded VBIC DC model parameter: 'WBE'");
+  if (resolved.WSP < 0 || resolved.WSP > 1) throw new InvalidCircuitError("Invalid bounded VBIC DC model parameter: 'WSP'");
   for (const name of ['PE', 'PC', 'PS'] as const) {
     if (resolved[name] <= 0) throw new InvalidCircuitError(`Invalid bounded VBIC DC model parameter: '${name}'`);
   }
@@ -297,7 +299,7 @@ const EXCESS_PHASE_BRANCHES: readonly (readonly [number, number])[] = [[XF1, NO_
  * ngspice vbictemp.c values at the device temperature (kT/q, saturation
  * currents, GAMM, built-in potentials and zero-bias capacitances); every other
  * parameter is temperature independent with ngspice's default exponents.
- * Charges follow ngspice vbic_4T_et_cf_fj with AJE/AJC/AJS <= 0, WSP = 1,
+ * Charges follow ngspice vbic_4T_et_cf_fj with AJE/AJC/AJS <= 0,
  * QTF = VTF = CBEO = CBCO = CCSO = 0. With TD > 0 the forward transport current
  * passes through ngspice's second-order excess-phase network (nodes xf1/xf2).
  */
@@ -348,7 +350,13 @@ function evaluate(
   ), params.AVC1);
   const ibc = sub(ibcj, mul(sub(transport, ibcj), avalanche));
 
-  const ifp = diode(vbep, thermal.ISP, params.NFP, vt);
+  // ngspice-47 vbicload.c:3221-3285 mixes exponentials of Vbep and
+  // Vbci, not their voltages. The same Ifp drives qbp, Iccp and Qbep.
+  // Keep the default arithmetic path bit-identical.
+  const ifp = params.WSP === 1 ? diode(vbep, thermal.ISP, params.NFP, vt) : add(
+    scale(diode(vbep, thermal.ISP, params.NFP, vt), params.WSP),
+    scale(diode(vbci, thermal.ISP, params.NFP, vt), 1 - params.WSP),
+  );
   const irp = diode(vbcp, thermal.ISP, params.NFP, vt);
   const qbp = scale(add(c(1, size), sqrt(add(c(1, size), scale(ifp, 4 * reciprocalOrZero(params.IKP))))), 0.5);
   const iccp = div(sub(ifp, irp), qbp);
