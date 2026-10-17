@@ -9,6 +9,7 @@ A bounded stdio MCP server exposing the existing spice-ts protocol-v1 adapter. I
 - `spice_convert`: convert `{ netlist: string }` to `{ circuitJson, diagnostics, lossy: false }`, or `{ circuitJson: [...] }` to `{ netlist, diagnostics, lossy: false }`.
 - `spice_simulate`: one bounded protocol-v1 simulation.
 - `spice_measure`: run the same simulation request once and return scalar measurements only.
+- `spice_sweep`: sweep one parameter with bounded, ordered per-point statuses and optional scalar measurements.
 - `spice_compare`: compare two waveform sets or completed simulation results without solving again.
 - `spice_simulation_start`: start a bounded simulation worker and return its opaque job cursor before solving completes.
 - `spice_simulation_read`: pull a replayable chunk containing at most 256 points by default (caller-selectable from 1 through the hard cap of 1024).
@@ -35,6 +36,40 @@ error code `UNKNOWN_PARAMETER` with `details.unknown` and `details.available`
 (sorted, lower-case available names). This extends the MCP error surface, not the
 protocol-v1 error-code set. `spice_capabilities.parameterOverrides` describes this
 contract. Neither the caller's request nor its source string is mutated.
+
+## Parameter sweeps
+
+Call `spice_sweep` with `{ request: SimulationRequestV1, parameter, values, measurements? }`.
+`request` supplies the netlist, analyses and solver options, just as for `spice_measure`.
+`parameter` is `{ kind: 'param', name: 'rval' }` for declared top-level SPICE
+`.param` overrides, or `{ kind: 'component', name: 'R1' }` for a top-level R/C/L
+scalar value. Component targets support SPICE text and native `spice-ts` JSON IR;
+Circuit JSON and other component types are not sweep targets in this version.
+Names are case-insensitive. Includes and subcircuit-local targets are not supported.
+The original request is not mutated, and each point starts from that original.
+
+Provide exactly one of a nonempty finite-number `values` list or
+`range: { scale: 'lin' | 'dec', start, stop, points }`.
+For `lin`, `points` is the total integer sample count including both endpoints
+(one point requires equal endpoints; descending ranges are supported).
+For `dec`, `points` is a positive integer samples-per-decade count, with
+`0 < start <= stop`; the exact stop is included for partial decades too.
+There is a hard cap of 100 sweep points, checked before allocation or solving.
+Exceeding it returns `RESOURCE_LIMIT` with `details.limit: 'maxSweepPoints'`,
+`maximum: 100`, and `actual`. Malformed sweep arguments return `INVALID_REQUEST`.
+
+Example for an RC low-pass with an existing AC analysis and 1 V AC input:
+`{ request, parameter: { kind: 'param', name: 'rval' }, values: [1000, 2000, 3000], measurements: [{ kind: 'cross', signal: 'db(v(out))', analysis: 0, value: -3.010299956639812, edge: 'falling' }] }`.
+
+The response is `{ parameter, points: [{ value, status: 'complete', measurements? } | { value, status: 'failed', error }] }`.
+Points preserve input order and duplicates. Measurements use the `spice_measure`
+contract, including independent measurement errors. Without measurements, the tool
+returns simulation status only, never vectors. A simulation failure retains its
+public failure-envelope code, phase, retryability and details, and does not stop
+later points. Invalid targets fail the whole tool. Cancellation, the shared
+wall-time budget and aggregate response-byte limit fail the whole tool rather
+than returning a misleading partial table. Each point uses existing simulation
+limits, worker termination and concurrency quotas. Sweeps execute sequentially.
 
 ## Topology preflight warnings
 

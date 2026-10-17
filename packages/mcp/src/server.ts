@@ -25,6 +25,7 @@ import { measurementListSchema, measureResult } from './measure.js';
 import { compareInputSchema, compareOutputSchema, compareSignals } from './compare.js';
 import { overrideParameters, parameterOverrides, ParameterOverrideError, paramsSchema } from './params.js';
 import type { ParameterOverrideApiError } from './params.js';
+import { runSweep, sweepProperties } from './sweep.js';
 
 export interface McpLimits {
   maxDocumentBytes: number;
@@ -269,6 +270,15 @@ export const MCP_TOOLS = Object.freeze([
     outputSchema: { ...commonSchemaV1.$defs.simulationResult, $defs: commonSchemaV1.$defs },
   },
   {
+    name: 'spice_sweep',
+    description: 'Sequential bounded parameter sweep. Target a top-level .param (SPICE only) or R/C/L component scalar value (SPICE or native JSON IR). Supply exactly one of values or range. lin points is total samples; dec points is samples per decade including exact stop. Returns ordered statuses and optional spice_measure-style measurements; individual simulation failures do not abort other points. Maximum 100 points and one shared wall-time budget.',
+    inputSchema: {
+      ...requestInputSchema, required: ['request', 'parameter'],
+      properties: { ...requestInputSchema.properties, ...sweepProperties },
+      oneOf: [{ required: ['values'], not: { required: ['range'] } }, { required: ['range'], not: { required: ['values'] } }],
+    },
+  },
+  {
     name: 'spice_measure',
     description: 'Simulate once and return up to 128 scalar measurements. Analysis is a zero-based index; optional step selects the zero-based SimulationResultV1 step.index (required for multiple steps). Unstepped analyses accept step 0 only. Signals are v(node), i(branch), mag(v(node)), or db(v(node)). Cross/when return the first matching axis coordinate.',
     inputSchema: {
@@ -360,6 +370,22 @@ async function executeToolWithStore(
   const limits = options.limits ?? DEFAULT_MCP_LIMITS;
   try {
     if (name === 'spice_capabilities') return success(streamStore.capabilities());
+    if (name === 'spice_sweep') {
+      const original = toolRequest(args);
+      const effective = effectiveLimits(original, limits);
+      enforceMaximum('maxDocumentBytes', effective.maxDocumentBytes, Buffer.byteLength(JSON.stringify(args)), 'validation');
+      const deadline = Date.now() + effective.maxWallTimeMs;
+      const result = await runSweep(args, original, (request, measurements) => executeToolWithStore(
+        measurements === undefined ? 'spice_simulate' : 'spice_measure',
+        { request, ...(measurements === undefined ? {} : { measurements }) },
+        { ...options, limits: { ...effective, maxWallTimeMs: Math.max(1, deadline - Date.now()) } }, streamStore,
+      ), points => {
+        throwIfCancelled(options.signal);
+        enforceMaximum('maxWallTimeMs', effective.maxWallTimeMs, effective.maxWallTimeMs - (deadline - Date.now()), 'solve');
+        enforceMaximum('maxSerializedResultBytes', effective.maxSerializedResultBytes, Buffer.byteLength(JSON.stringify({ parameter: isRecord(args) ? args.parameter : undefined, points })), 'transport');
+      });
+      return success(result);
+    }
     if (name === 'spice_convert') return convertTool(args, limits, options.signal);
     if (name === 'spice_compare') {
       throwIfCancelled(options.signal);
