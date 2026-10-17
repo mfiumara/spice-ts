@@ -17,6 +17,7 @@ import {
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 import { accumulatedLinearGrid } from './directed-linear-grid.js';
 import { temperatureExpressionTarget } from './temperature-expressions.js';
+import { deviceOutputVector } from '../control-device-output.js';
 
 interface SweepTarget {
   set(value: number): void;
@@ -29,6 +30,7 @@ export function solveDCSweep(
   options: ResolvedOptions,
   convergence: ConvergenceTelemetry = createConvergenceTelemetry(),
   guard?: ProtocolExecutionGuard,
+  savedDeviceVectors: readonly string[] = [],
 ): DCSweepResult {
   const { devices, nodeCount, branchCount, nodeNames, branchNames } = compiled;
 
@@ -57,6 +59,7 @@ export function solveDCSweep(
   const currentArrays = new Map<string, Float64Array>();
   for (const name of nodeNames) voltageArrays.set(name, new Float64Array(numPoints));
   for (const name of branchNames) currentArrays.set(name, new Float64Array(numPoints));
+  const deviceVectors = new Map<string, Float64Array>();
 
   const assembler = new MNAAssembler(nodeCount, branchCount, {
     deviceGmin: options.deviceGmin,
@@ -87,6 +90,17 @@ export function solveDCSweep(
 
         solveSweepPoint(assembler, compiled.devices, options, nodeNames, convergence, guard);
 
+        // Sample while device state (temperature, last load, swept sources) still
+        // belongs to this point, not by replaying the final compiled devices.
+        for (const name of savedDeviceVectors) {
+          const match = /^@([^[]+)\[([^\]]+)\]$/.exec(name);
+          const values = match && deviceOutputVector({ devices: compiled.devices,
+            solution: assembler.solution, nodeCount, deviceGmin: options.deviceGmin }, match[1], match[2]);
+          if (!values) continue;
+          if (!deviceVectors.has(name)) deviceVectors.set(name, new Float64Array(numPoints));
+          deviceVectors.get(name)![i] = values[0];
+        }
+
         // Record solution
         for (let n = 0; n < nodeNames.length; n++) {
           voltageArrays.get(nodeNames[n])![i] = assembler.solution[n];
@@ -107,7 +121,7 @@ export function solveDCSweep(
     secondarySource?.restore();
   }
 
-  return new DCSweepResult(sweepValues, voltageArrays, currentArrays, secondarySweepValues);
+  return new DCSweepResult(sweepValues, voltageArrays, currentArrays, secondarySweepValues, deviceVectors);
 }
 
 /**
