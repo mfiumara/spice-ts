@@ -156,8 +156,8 @@ import type { Bsim4TemperatureModel, Bsim4Size } from './temperature-kernel.js';
 import type { Bsim4StaticInstance } from './temp.js';
 import type { Bsim4ModelParameter } from './params.js';
 export type Bsim4LoadModel = Bsim4TemperatureModel & Record<'Eg0' | 'coxe' | 'factor1' | 'vtm' | 'vtm0', number>;
-export type Bsim4LoadSize = Bsim4Size & Record<'Aechvb' | 'AechvbEdgeD' | 'AechvbEdgeS' | 'Bechvb' | 'BechvbEdge' | 'VgsteffVth' | 'Xdep0' | 'a0' | 'a1' | 'a2' | 'ags' | 'aigc' | 'aigd' | 'aigs' | 'alpha0' | 'alpha1' | 'b0' | 'b1' | 'beta0' | 'bigc' | 'bigd' | 'bigs' | 'cdep0' | 'cdsc' | 'cdscb' | 'cdscd' | 'cigc' | 'cigd' | 'cigs' | 'cit' | 'delta' | 'dvt0' | 'dvt0w' | 'dvt1' | 'dvt1w' | 'dvt2' | 'dvt2w' | 'dvtp0' | 'dvtp1' | 'dvtp2factor' | 'dvtp4' | 'dwb' | 'dwg' | 'etab' | 'eu' | 'fprout' | 'k1' | 'k1ox' | 'k3' | 'k3b' | 'keta' | 'ketac' | 'kt1' | 'kt1l' | 'kt2' | 'lambda' | 'leff' | 'litl' | 'lpe0' | 'lpeb' | 'mstar' | 'nfactor' | 'ngate' | 'nigc' | 'pclm' | 'pdiblb' | 'pdits' | 'pditsd' | 'phi' | 'pigcd' | 'prwb' | 'prwg' | 'pscbe1' | 'pscbe2' | 'pvag' | 'rds0' | 'rdswmin' | 'sqrtPhi' | 'tfactor' | 'theta0vb0' | 'thetaRout' | 'ua' | 'ub' | 'uc' | 'ucs' | 'ud' | 'vbi' | 'vfbsd' | 'vfbsdoff' | 'voffcbn' | 'vtl' | 'w0' | 'weff' | 'xj', number>;
-export type Bsim4LoadInstance = Bsim4StaticInstance & Record<'AbovVgst2Vtm' | 'Abulk' | 'Coxeff' | 'EsatL' | 'IdovVds' | 'Igcd' | 'Igcs' | 'Igd' | 'Igs' | 'Vdseff' | 'Vgsteff' | 'coxp' | 'csub' | 'dvgd_eff_dvg' | 'dvgs_eff_dvg' | 'eta0' | 'gIgcdb' | 'gIgcdd' | 'gIgcdg' | 'gIgcsb' | 'gIgcsd' | 'gIgcsg' | 'gIgdd' | 'gIgdg' | 'gIgsg' | 'gIgss' | 'gbbs' | 'gbds' | 'gbgs' | 'gds' | 'gm' | 'gmbs' | 'grdsw' | 'k2ox' | 'mode' | 'nf' | 'nstar' | 'thetavth' | 'toxp' | 'u0temp' | 'ueff' | 'vbsc' | 'vdsat' | 'vfb' | 'vfbzb' | 'vgd_eff' | 'vgs_eff' | 'von' | 'vsattemp' | 'vtfbphi1' | 'vtfbphi2' | 'vth0', number>;
+export type Bsim4LoadSize = Bsim4Size & Record<'Aechvb' | 'AechvbEdgeD' | 'AechvbEdgeS' | 'Bechvb' | 'BechvbEdge' | 'ToxRatio' | 'VgsteffVth' | 'Xdep0' | 'a0' | 'a1' | 'a2' | 'ags' | 'aigbacc' | 'aigbinv' | 'aigc' | 'aigd' | 'aigs' | 'alpha0' | 'alpha1' | 'b0' | 'b1' | 'beta0' | 'bigbacc' | 'bigbinv' | 'bigc' | 'bigd' | 'bigs' | 'cdep0' | 'cdsc' | 'cdscb' | 'cdscd' | 'cigbacc' | 'cigbinv' | 'cigc' | 'cigd' | 'cigs' | 'cit' | 'delta' | 'dvt0' | 'dvt0w' | 'dvt1' | 'dvt1w' | 'dvt2' | 'dvt2w' | 'dvtp0' | 'dvtp1' | 'dvtp2factor' | 'dvtp4' | 'dwb' | 'dwg' | 'eigbinv' | 'etab' | 'eu' | 'fprout' | 'k1' | 'k1ox' | 'k3' | 'k3b' | 'keta' | 'ketac' | 'kt1' | 'kt1l' | 'kt2' | 'lambda' | 'leff' | 'litl' | 'lpe0' | 'lpeb' | 'mstar' | 'nfactor' | 'ngate' | 'nigbacc' | 'nigbinv' | 'nigc' | 'pclm' | 'pdiblb' | 'pdits' | 'pditsd' | 'phi' | 'pigcd' | 'prwb' | 'prwg' | 'pscbe1' | 'pscbe2' | 'pvag' | 'rds0' | 'rdswmin' | 'sqrtPhi' | 'tfactor' | 'theta0vb0' | 'thetaRout' | 'ua' | 'ub' | 'uc' | 'ucs' | 'ud' | 'vbi' | 'vfbsd' | 'vfbsdoff' | 'voffcbn' | 'vtl' | 'w0' | 'weff' | 'xj', number>;
+export type Bsim4LoadInstance = Bsim4StaticInstance & Record<'AbovVgst2Vtm' | 'Abulk' | 'Coxeff' | 'EsatL' | 'IdovVds' | 'Igb' | 'Igcd' | 'Igcs' | 'Igd' | 'Igs' | 'Vdseff' | 'Vgsteff' | 'coxp' | 'csub' | 'dvgd_eff_dvg' | 'dvgs_eff_dvg' | 'eta0' | 'gIgbb' | 'gIgbd' | 'gIgbg' | 'gIgbs' | 'gIgcdb' | 'gIgcdd' | 'gIgcdg' | 'gIgcsb' | 'gIgcsd' | 'gIgcsg' | 'gIgdd' | 'gIgdg' | 'gIgsg' | 'gIgss' | 'gbbs' | 'gbds' | 'gbgs' | 'gds' | 'gm' | 'gmbs' | 'grdsw' | 'k2ox' | 'mode' | 'nf' | 'nstar' | 'thetavth' | 'toxp' | 'u0temp' | 'ueff' | 'vbsc' | 'vdsat' | 'vfb' | 'vfbzb' | 'vgd_eff' | 'vgs_eff' | 'von' | 'vsattemp' | 'vtfbphi1' | 'vtfbphi2' | 'vth0', number>;
 const MAX_EXP = 5.834617425e14, MIN_EXP = 1.713908431e-15, EXP_THRESHOLD = 34;
 const EPS0 = 8.85418e-12, EPSSI = 1.03594e-10, Charge_q = 1.60219e-19, MM = 3;
 // Historical ngspice const.h CHARGE, not the BSIM-local Charge_q.
@@ -185,47 +185,48 @@ export function applyLoad(model: Readonly<Bsim4LoadModel>, given: ReadonlySet<Bs
   let DIBL_Sft = 0, DITS_Sft2 = 0, Delt_vth = 0, Denomi = 0, Esat = 0, EsatL = 0;
   let ExpVgst = 0, ExpVxNVt = 0, FP = 0, Fsevl = 0, Gbb = 0, Gbd = 0;
   let Gbg = 0, Gds = 0, Gm = 0, Gmb = 0, Idl = 0, Ids = 0;
-  let Idsa = 0, Igc = 0, Igcd = 0, Igcs = 0, Igd = 0, Igs = 0;
-  let Isub = 0, Lambda = 0, Leff = 0, Lpe_Vb = 0, Phis = 0, Pigcd = 0;
-  let PvagTerm = 0, Rds = 0, T0 = 0, T1 = 0, T10 = 0, T11 = 0;
-  let T12 = 0, T13 = 0, T14 = 0, T2 = 0, T3 = 0, T4 = 0;
-  let T5 = 0, T6 = 0, T7 = 0, T8 = 0, T9 = 0, Tcen = 0;
-  let TempRatio = 0, Theta0 = 0, V0 = 0, V3 = 0, VACLM = 0, VADIBL = 0;
-  let VADITS = 0, VASCBE = 0, Va = 0, Vasat = 0, Vaux = 0, Vbs = 0;
-  let Vbseff = 0, Vdb = 0, Vds = 0, Vdsat = 0, Vdseff = 0, Vfb = 0;
-  let Vfbeff = 0, Vgs = 0, Vgs_eff = 0, Vgst = 0, Vgst2Vtm = 0, Vgsteff = 0;
-  let VgsteffVth = 0, Voxacc = 0, Voxdepinv = 0, Vth = 0, Vth_NarrowW = 0, Vtm = 0;
-  let Vtm0 = 0, VxNVt = 0, WVCox = 0, WVCoxRds = 0, Weff = 0, Xdep = 0;
-  let a1 = 0, beta = 0, cdrain = 0, dAbulk0_Q_dVb = 0, dAbulk0_dVb = 0, dAbulk_dVb = 0;
-  let dAbulk_dVg = 0, dCclm_dVb = 0, dCclm_dVd = 0, dCclm_dVg = 0, dCoxeff_dVg = 0, dDIBL_Sft_dVd = 0;
-  let dDITS_Sft2_dVd = 0, dDITS_Sft_dVb = 0, dDITS_Sft_dVd = 0, dDelt_vth_dVb = 0, dDenomi_dVb = 0, dDenomi_dVd = 0;
-  let dDenomi_dVg = 0, dEsatL_dVb = 0, dEsatL_dVd = 0, dEsatL_dVg = 0, dFP_dVg = 0, dFsevl_dVb = 0;
-  let dFsevl_dVd = 0, dFsevl_dVg = 0, dIdl_dVb = 0, dIdl_dVd = 0, dIdl_dVg = 0, dIdsa_dVb = 0;
-  let dIdsa_dVd = 0, dIdsa_dVg = 0, dIgc_dVb = 0, dIgc_dVd = 0, dIgc_dVg = 0, dIgcd_dVb = 0;
-  let dIgcd_dVd = 0, dIgcd_dVg = 0, dIgcs_dVb = 0, dIgcs_dVd = 0, dIgcs_dVg = 0, dIgd_dVd = 0;
-  let dIgd_dVg = 0, dIgs_dVg = 0, dIgs_dVs = 0, dLambda_dVg = 0, dPhis_dVb = 0, dPigcd_dVb = 0;
-  let dPigcd_dVd = 0, dPigcd_dVg = 0, dPvagTerm_dVb = 0, dPvagTerm_dVd = 0, dPvagTerm_dVg = 0, dRds_dVb = 0;
-  let dRds_dVg = 0, dT0_dVb = 0, dT0_dVd = 0, dT0_dVg = 0, dT10_dVb = 0, dT10_dVd = 0;
-  let dT10_dVg = 0, dT11_dVg = 0, dT1_dVb = 0, dT1_dVd = 0, dT1_dVg = 0, dT2_dVb = 0;
-  let dT2_dVd = 0, dT2_dVg = 0, dT3_dVb = 0, dT3_dVd = 0, dT3_dVg = 0, dT4_dVd = 0;
-  let dT5_dVb = 0, dT5_dVd = 0, dT5_dVg = 0, dT6_dVb = 0, dT6_dVd = 0, dT6_dVg = 0;
-  let dT7_dVb = 0, dT7_dVd = 0, dT7_dVg = 0, dT8_dVb = 0, dT8_dVd = 0, dT8_dVg = 0;
-  let dT9_dVb = 0, dT9_dVd = 0, dT9_dVg = 0, dTcen_dVg = 0, dTheta0_dVb = 0, dVACLM_dVb = 0;
-  let dVACLM_dVd = 0, dVACLM_dVg = 0, dVADIBL_dVb = 0, dVADIBL_dVd = 0, dVADIBL_dVg = 0, dVADITS_dVd = 0;
-  let dVADITS_dVg = 0, dVASCBE_dVb = 0, dVASCBE_dVd = 0, dVASCBE_dVg = 0, dVa_dVb = 0, dVa_dVd = 0;
-  let dVa_dVg = 0, dVasat_dVb = 0, dVasat_dVd = 0, dVasat_dVg = 0, dVaux_dVb = 0, dVaux_dVd = 0;
-  let dVaux_dVg = 0, dVbseff_dVb = 0, dVdsat_dVb = 0, dVdsat_dVd = 0, dVdsat_dVg = 0, dVdseff_dVb = 0;
-  let dVdseff_dVd = 0, dVdseff_dVg = 0, dVfbeff_dVb = 0, dVfbeff_dVg = 0, dVgs_eff_dVg = 0, dVgsteff_dVb = 0;
-  let dVgsteff_dVd = 0, dVgsteff_dVg = 0, dVoxacc_dVb = 0, dVoxacc_dVg = 0, dVoxdepinv_dVb = 0, dVoxdepinv_dVd = 0;
-  let dVoxdepinv_dVg = 0, dVth_dVb = 0, dVth_dVd = 0, dWeff_dVb = 0, dWeff_dVg = 0, dXdep_dVb = 0;
-  let dbeta_dVb = 0, dbeta_dVd = 0, dbeta_dVg = 0, dfgche1_dVb = 0, dfgche1_dVd = 0, dfgche1_dVg = 0;
-  let dfgche2_dVb = 0, dfgche2_dVd = 0, dfgche2_dVg = 0, dgche_dVb = 0, dgche_dVd = 0, dgche_dVg = 0;
-  let diffVds = 0, dlt1_dVb = 0, dltw_dVb = 0, dn_dVb = 0, dn_dVd = 0, dsqrtPhis_dVb = 0;
-  let dueff_dVb = 0, dueff_dVd = 0, dueff_dVg = 0, dvgd_eff_dvg = 0, dvgs_eff_dvg = 0, dvs_dVb = 0;
-  let dvs_dVd = 0, dvs_dVg = 0, epsrox = 0, epssub = 0, fgche1 = 0, fgche2 = 0;
-  let gche = 0, lt1 = 0, ltw = 0, n = 0, sqrtPhis = 0, tmp = 0;
-  let tmp1 = 0, tmp2 = 0, tmp3 = 0, tmp4 = 0, toxe = 0, ueff = 0;
-  let vgd_eff = 0, vgs_eff = 0, vs = 0;
+  let Idsa = 0, Igbacc = 0, Igbinv = 0, Igc = 0, Igcd = 0, Igcs = 0;
+  let Igd = 0, Igs = 0, Isub = 0, Lambda = 0, Leff = 0, Lpe_Vb = 0;
+  let Phis = 0, Pigcd = 0, PvagTerm = 0, Rds = 0, T0 = 0, T1 = 0;
+  let T10 = 0, T11 = 0, T12 = 0, T13 = 0, T14 = 0, T2 = 0;
+  let T3 = 0, T4 = 0, T5 = 0, T6 = 0, T7 = 0, T8 = 0;
+  let T9 = 0, Tcen = 0, TempRatio = 0, Theta0 = 0, V0 = 0, V3 = 0;
+  let VACLM = 0, VADIBL = 0, VADITS = 0, VASCBE = 0, Va = 0, Vasat = 0;
+  let Vaux = 0, Vbs = 0, Vbseff = 0, Vdb = 0, Vds = 0, Vdsat = 0;
+  let Vdseff = 0, Vfb = 0, Vfbeff = 0, Vgs = 0, Vgs_eff = 0, Vgst = 0;
+  let Vgst2Vtm = 0, Vgsteff = 0, VgsteffVth = 0, Voxacc = 0, Voxdepinv = 0, Vth = 0;
+  let Vth_NarrowW = 0, Vtm = 0, Vtm0 = 0, VxNVt = 0, WVCox = 0, WVCoxRds = 0;
+  let Weff = 0, Xdep = 0, a1 = 0, beta = 0, cdrain = 0, dAbulk0_Q_dVb = 0;
+  let dAbulk0_dVb = 0, dAbulk_dVb = 0, dAbulk_dVg = 0, dCclm_dVb = 0, dCclm_dVd = 0, dCclm_dVg = 0;
+  let dCoxeff_dVg = 0, dDIBL_Sft_dVd = 0, dDITS_Sft2_dVd = 0, dDITS_Sft_dVb = 0, dDITS_Sft_dVd = 0, dDelt_vth_dVb = 0;
+  let dDenomi_dVb = 0, dDenomi_dVd = 0, dDenomi_dVg = 0, dEsatL_dVb = 0, dEsatL_dVd = 0, dEsatL_dVg = 0;
+  let dFP_dVg = 0, dFsevl_dVb = 0, dFsevl_dVd = 0, dFsevl_dVg = 0, dIdl_dVb = 0, dIdl_dVd = 0;
+  let dIdl_dVg = 0, dIdsa_dVb = 0, dIdsa_dVd = 0, dIdsa_dVg = 0, dIgbacc_dVb = 0, dIgbacc_dVg = 0;
+  let dIgbinv_dVb = 0, dIgbinv_dVd = 0, dIgbinv_dVg = 0, dIgc_dVb = 0, dIgc_dVd = 0, dIgc_dVg = 0;
+  let dIgcd_dVb = 0, dIgcd_dVd = 0, dIgcd_dVg = 0, dIgcs_dVb = 0, dIgcs_dVd = 0, dIgcs_dVg = 0;
+  let dIgd_dVd = 0, dIgd_dVg = 0, dIgs_dVg = 0, dIgs_dVs = 0, dLambda_dVg = 0, dPhis_dVb = 0;
+  let dPigcd_dVb = 0, dPigcd_dVd = 0, dPigcd_dVg = 0, dPvagTerm_dVb = 0, dPvagTerm_dVd = 0, dPvagTerm_dVg = 0;
+  let dRds_dVb = 0, dRds_dVg = 0, dT0_dVb = 0, dT0_dVd = 0, dT0_dVg = 0, dT10_dVb = 0;
+  let dT10_dVd = 0, dT10_dVg = 0, dT11_dVg = 0, dT1_dVb = 0, dT1_dVd = 0, dT1_dVg = 0;
+  let dT2_dVb = 0, dT2_dVd = 0, dT2_dVg = 0, dT3_dVb = 0, dT3_dVd = 0, dT3_dVg = 0;
+  let dT4_dVd = 0, dT5_dVb = 0, dT5_dVd = 0, dT5_dVg = 0, dT6_dVb = 0, dT6_dVd = 0;
+  let dT6_dVg = 0, dT7_dVb = 0, dT7_dVd = 0, dT7_dVg = 0, dT8_dVb = 0, dT8_dVd = 0;
+  let dT8_dVg = 0, dT9_dVb = 0, dT9_dVd = 0, dT9_dVg = 0, dTcen_dVg = 0, dTheta0_dVb = 0;
+  let dVACLM_dVb = 0, dVACLM_dVd = 0, dVACLM_dVg = 0, dVADIBL_dVb = 0, dVADIBL_dVd = 0, dVADIBL_dVg = 0;
+  let dVADITS_dVd = 0, dVADITS_dVg = 0, dVASCBE_dVb = 0, dVASCBE_dVd = 0, dVASCBE_dVg = 0, dVa_dVb = 0;
+  let dVa_dVd = 0, dVa_dVg = 0, dVasat_dVb = 0, dVasat_dVd = 0, dVasat_dVg = 0, dVaux_dVb = 0;
+  let dVaux_dVd = 0, dVaux_dVg = 0, dVbseff_dVb = 0, dVdsat_dVb = 0, dVdsat_dVd = 0, dVdsat_dVg = 0;
+  let dVdseff_dVb = 0, dVdseff_dVd = 0, dVdseff_dVg = 0, dVfbeff_dVb = 0, dVfbeff_dVg = 0, dVgs_eff_dVg = 0;
+  let dVgsteff_dVb = 0, dVgsteff_dVd = 0, dVgsteff_dVg = 0, dVoxacc_dVb = 0, dVoxacc_dVg = 0, dVoxdepinv_dVb = 0;
+  let dVoxdepinv_dVd = 0, dVoxdepinv_dVg = 0, dVth_dVb = 0, dVth_dVd = 0, dWeff_dVb = 0, dWeff_dVg = 0;
+  let dXdep_dVb = 0, dbeta_dVb = 0, dbeta_dVd = 0, dbeta_dVg = 0, dfgche1_dVb = 0, dfgche1_dVd = 0;
+  let dfgche1_dVg = 0, dfgche2_dVb = 0, dfgche2_dVd = 0, dfgche2_dVg = 0, dgche_dVb = 0, dgche_dVd = 0;
+  let dgche_dVg = 0, diffVds = 0, dlt1_dVb = 0, dltw_dVb = 0, dn_dVb = 0, dn_dVd = 0;
+  let dsqrtPhis_dVb = 0, dueff_dVb = 0, dueff_dVd = 0, dueff_dVg = 0, dvgd_eff_dvg = 0, dvgs_eff_dvg = 0;
+  let dvs_dVb = 0, dvs_dVd = 0, dvs_dVg = 0, epsrox = 0, epssub = 0, fgche1 = 0;
+  let fgche2 = 0, gche = 0, lt1 = 0, ltw = 0, n = 0, sqrtPhis = 0;
+  let tmp = 0, tmp1 = 0, tmp2 = 0, tmp3 = 0, tmp4 = 0, toxe = 0;
+  let ueff = 0, vgd_eff = 0, vgs_eff = 0, vs = 0;
 
   // b4ld.c:1004-2189
   if (vds >= 0.0)
@@ -1415,7 +1416,7 @@ export function applyLoad(model: Readonly<Bsim4LoadModel>, given: ReadonlySet<Bs
   here.IdovVds = Ids;
   if( here.IdovVds <= model.idovvds) here.IdovVds = model.idovvds;
 
-  // b4ld.c:2527-2801
+  // b4ld.c:2527-2921
   /* Calculate gate tunneling current */
   if ((model.igcmod != 0) || (model.igbmod != 0))
   {   Vfb = here.vfbzb;
@@ -1691,5 +1692,124 @@ export function applyLoad(model: Readonly<Bsim4LoadModel>, given: ReadonlySet<Bs
   here.Igs = here.gIgsg = here.gIgss = 0.0;
   here.Igd = here.gIgdg = here.gIgdd = 0.0;
   }
+
+  if (model.igbmod)
+  {   T0 = tmp * pParam.nigbacc;
+  T1 = -Vgs_eff + Vbseff + Vfb;
+  VxNVt = T1 / T0;
+  if (VxNVt > EXP_THRESHOLD)
+  {   Vaux = T1;
+  dVaux_dVg = -dVgs_eff_dVg;
+  dVaux_dVb = 1.0;
+  }
+  else if (VxNVt < -EXP_THRESHOLD)
+  {   Vaux = T0 * Math.log(1.0 + MIN_EXP);
+  dVaux_dVg = dVaux_dVb = 0.0;
+  }
+  else
+  {   ExpVxNVt = Math.exp(VxNVt);
+  Vaux = T0 * Math.log(1.0 + ExpVxNVt);
+  dVaux_dVb = ExpVxNVt / (1.0 + ExpVxNVt);
+  dVaux_dVg = -dVaux_dVb * dVgs_eff_dVg;
+  }
+
+  T2 = (Vgs - Vbs) * Vaux;
+  dT2_dVg = Vaux + (Vgs - Vbs) * dVaux_dVg;
+  dT2_dVb = -Vaux + (Vgs - Vbs) * dVaux_dVb;
+
+  T11 = 4.97232e-7 * pParam.weff
+  * pParam.leff * pParam.ToxRatio;
+  T12 = -7.45669e11 * toxe;
+  T3 = pParam.aigbacc * pParam.cigbacc
+  - pParam.bigbacc;
+  T4 = pParam.bigbacc * pParam.cigbacc;
+  T5 = T12 * (pParam.aigbacc + T3 * Voxacc
+  - T4 * Voxacc * Voxacc);
+
+  if (T5 > EXP_THRESHOLD)
+  {   T6 = MAX_EXP;
+  dT6_dVg = dT6_dVb = 0.0;
+  }
+  else if (T5 < -EXP_THRESHOLD)
+  {   T6 = MIN_EXP;
+  dT6_dVg = dT6_dVb = 0.0;
+  }
+  else
+  {   T6 = Math.exp(T5);
+  dT6_dVg = T6 * T12 * (T3 - 2.0 * T4 * Voxacc);
+  dT6_dVb = dT6_dVg * dVoxacc_dVb;
+  dT6_dVg *= dVoxacc_dVg;
+  }
+
+  Igbacc = T11 * T2 * T6;
+  dIgbacc_dVg = T11 * (T2 * dT6_dVg + T6 * dT2_dVg);
+  dIgbacc_dVb = T11 * (T2 * dT6_dVb + T6 * dT2_dVb);
+
+
+  T0 = tmp * pParam.nigbinv;
+  T1 = Voxdepinv - pParam.eigbinv;
+  VxNVt = T1 / T0;
+  if (VxNVt > EXP_THRESHOLD)
+  {   Vaux = T1;
+  dVaux_dVg = dVoxdepinv_dVg;
+  dVaux_dVd = dVoxdepinv_dVd;
+  dVaux_dVb = dVoxdepinv_dVb;
+  }
+  else if (VxNVt < -EXP_THRESHOLD)
+  {   Vaux = T0 * Math.log(1.0 + MIN_EXP);
+  dVaux_dVg = dVaux_dVd = dVaux_dVb = 0.0;
+  }
+  else
+  {   ExpVxNVt = Math.exp(VxNVt);
+  Vaux = T0 * Math.log(1.0 + ExpVxNVt);
+  dVaux_dVg = ExpVxNVt / (1.0 + ExpVxNVt);
+  dVaux_dVd = dVaux_dVg * dVoxdepinv_dVd;
+  dVaux_dVb = dVaux_dVg * dVoxdepinv_dVb;
+  dVaux_dVg *= dVoxdepinv_dVg;
+  }
+
+  T2 = (Vgs - Vbs) * Vaux;
+  dT2_dVg = Vaux + (Vgs - Vbs) * dVaux_dVg;
+  dT2_dVd = (Vgs - Vbs) * dVaux_dVd;
+  dT2_dVb = -Vaux + (Vgs - Vbs) * dVaux_dVb;
+
+  T11 *= 0.75610;
+  T12 *= 1.31724;
+  T3 = pParam.aigbinv * pParam.cigbinv
+  - pParam.bigbinv;
+  T4 = pParam.bigbinv * pParam.cigbinv;
+  T5 = T12 * (pParam.aigbinv + T3 * Voxdepinv
+  - T4 * Voxdepinv * Voxdepinv);
+
+  if (T5 > EXP_THRESHOLD)
+  {   T6 = MAX_EXP;
+  dT6_dVg = dT6_dVd = dT6_dVb = 0.0;
+  }
+  else if (T5 < -EXP_THRESHOLD)
+  {   T6 = MIN_EXP;
+  dT6_dVg = dT6_dVd = dT6_dVb = 0.0;
+  }
+  else
+  {   T6 = Math.exp(T5);
+  dT6_dVg = T6 * T12 * (T3 - 2.0 * T4 * Voxdepinv);
+  dT6_dVd = dT6_dVg * dVoxdepinv_dVd;
+  dT6_dVb = dT6_dVg * dVoxdepinv_dVb;
+  dT6_dVg *= dVoxdepinv_dVg;
+  }
+
+  Igbinv = T11 * T2 * T6;
+  dIgbinv_dVg = T11 * (T2 * dT6_dVg + T6 * dT2_dVg);
+  dIgbinv_dVd = T11 * (T2 * dT6_dVd + T6 * dT2_dVd);
+  dIgbinv_dVb = T11 * (T2 * dT6_dVb + T6 * dT2_dVb);
+
+  here.Igb = Igbinv + Igbacc;
+  here.gIgbg = dIgbinv_dVg + dIgbacc_dVg;
+  here.gIgbd = dIgbinv_dVd;
+  here.gIgbb = (dIgbinv_dVb + dIgbacc_dVb) * dVbseff_dVb;
+  }
+  else
+  {  here.Igb = here.gIgbg = here.gIgbd
+  = here.gIgbs = here.gIgbb = 0.0;
+  } /* End of Gate current */
   return cdrain;
 }

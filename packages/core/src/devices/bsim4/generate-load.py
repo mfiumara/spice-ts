@@ -8,7 +8,7 @@ import subprocess
 from pathlib import Path
 
 SHA = 'a80f6e3e95d51534905b1f23410a951802666656'
-RANGES = [(1004, 2189), (2527, 2801)]
+RANGES = [(1004, 2189), (2527, 2921)]
 
 
 def generate(source: Path) -> str:
