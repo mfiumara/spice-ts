@@ -169,33 +169,43 @@ export function resolveVBICParams(
 }
 
 class Dual {
-  constructor(readonly value: number, readonly derivative: Float64Array) {}
+  constructor(readonly value: number, readonly derivative: number[]) {}
 
   static constant(value: number, size: number): Dual {
-    return new Dual(value, new Float64Array(size));
+    return new Dual(value, new Array<number>(size).fill(0));
   }
 
   static variable(value: number, size: number, index: number): Dual {
-    const derivative = new Float64Array(size);
+    const derivative = new Array<number>(size).fill(0);
     derivative[index] = 1;
     return new Dual(value, derivative);
   }
 }
 
 function map(a: Dual, value: number, slope: number): Dual {
-  return new Dual(value, Float64Array.from(a.derivative, derivative => derivative * slope));
+  const derivative = new Array<number>(a.derivative.length);
+  for (let i = 0; i < derivative.length; i++) derivative[i] = a.derivative[i] * slope;
+  return new Dual(value, derivative);
 }
 
 function add(a: Dual, b: Dual): Dual {
-  return new Dual(a.value + b.value, Float64Array.from(a.derivative, (value, i) => value + b.derivative[i]));
+  const derivative = new Array<number>(a.derivative.length);
+  for (let i = 0; i < derivative.length; i++) derivative[i] = a.derivative[i] + b.derivative[i];
+  return new Dual(a.value + b.value, derivative);
 }
 
 function sub(a: Dual, b: Dual): Dual {
-  return new Dual(a.value - b.value, Float64Array.from(a.derivative, (value, i) => value - b.derivative[i]));
+  const derivative = new Array<number>(a.derivative.length);
+  for (let i = 0; i < derivative.length; i++) derivative[i] = a.derivative[i] - b.derivative[i];
+  return new Dual(a.value - b.value, derivative);
 }
 
 function mul(a: Dual, b: Dual): Dual {
-  return new Dual(a.value * b.value, Float64Array.from(a.derivative, (value, i) => value * b.value + a.value * b.derivative[i]));
+  const derivative = new Array<number>(a.derivative.length);
+  for (let i = 0; i < derivative.length; i++) {
+    derivative[i] = a.derivative[i] * b.value + a.value * b.derivative[i];
+  }
+  return new Dual(a.value * b.value, derivative);
 }
 
 function scale(a: Dual, factor: number): Dual {
@@ -204,8 +214,11 @@ function scale(a: Dual, factor: number): Dual {
 
 function div(a: Dual, b: Dual): Dual {
   const denominator = b.value * b.value;
-  return new Dual(a.value / b.value, Float64Array.from(a.derivative, (value, i) =>
-    (value * b.value - a.value * b.derivative[i]) / denominator));
+  const derivative = new Array<number>(a.derivative.length);
+  for (let i = 0; i < derivative.length; i++) {
+    derivative[i] = (a.derivative[i] * b.value - a.value * b.derivative[i]) / denominator;
+  }
+  return new Dual(a.value / b.value, derivative);
 }
 
 function sqrt(a: Dual): Dual {
