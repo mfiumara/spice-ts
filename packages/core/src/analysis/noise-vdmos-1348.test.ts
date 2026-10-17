@@ -7,24 +7,32 @@ import { simulate } from '../simulate.js';
 
 const deck = readFileSync(new URL('../../../../benchmarks/vdmos-noise/unsupported.cir', import.meta.url), 'utf8');
 const reference = JSON.parse(readFileSync(new URL('../../../../benchmarks/vdmos-noise/reference.json', import.meta.url), 'utf8')) as {
-  cases: Array<{ name: string; vectors: Record<string, number[]> }>;
+  cases: Array<{ name: string; vectors: Record<string, number[]>; ac?: Record<string, number[]> }>;
 };
 
 describe('VDMOS ngspice-47 noise parity (#1348)', () => {
   it.each(reference.cases)('matches identical-netlist $name spectra', async ({ name, vectors }) => {
     const input = readFileSync(new URL(`../../../../benchmarks/vdmos-noise/${name}.cir`, import.meta.url), 'utf8');
-    if (name === 'self-heating') {
-      await expect(simulate(input)).rejects.toThrow(new InvalidCircuitError(
-        ".noise does not support VDMOS self-heating small-signal coupling for 'M1'",
-      ));
-      return;
-    }
+
     const noise = (await simulate(input)).noise!;
     expect(noise.frequencies).toHaveLength(vectors.frequency.length);
     for (let i = 0; i < vectors.frequency.length; i++) {
       expect(Math.abs(noise.frequencies[i] / vectors.frequency[i] - 1)).toBeLessThan(1e-12);
       expect(Math.abs(noise.outputNoiseDensity[i] / vectors.onoise_spectrum[i] - 1)).toBeLessThan(1e-4);
       expect(Math.abs(noise.inputNoiseDensity[i] / vectors.inoise_spectrum[i] - 1)).toBeLessThan(1e-4);
+    }
+  });
+
+  it('matches self-heating complex AC transfer (#1354)', async () => {
+    const input = readFileSync(new URL('../../../../benchmarks/vdmos-noise/self-heating.cir', import.meta.url), 'utf8');
+    const ac = (await simulate(input.slice(0, input.indexOf('.noise')) + '.ac dec 1 1 1meg\n.end\n')).ac!;
+    const expected = reference.cases.find(c => c.name === 'self-heating')!.ac!;
+    const actual = ac.voltage('out');
+    for (let i = 0; i < expected.frequency.length; i++) {
+      const re = actual[i].magnitude * Math.cos(actual[i].phase * Math.PI / 180);
+      const im = actual[i].magnitude * Math.sin(actual[i].phase * Math.PI / 180);
+      expect(Math.hypot(re - expected['vr(out)'][i], im - expected['vi(out)'][i])
+        / Math.hypot(expected['vr(out)'][i], expected['vi(out)'][i])).toBeLessThan(1e-4);
     }
   });
 
