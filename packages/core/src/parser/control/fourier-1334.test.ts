@@ -38,6 +38,29 @@ describe('fourier (#1334)', () => {
     await expect(simulate(deck.replace('fourier 10k v(out) v(a)', () => 'set fournosave\nfourier 10k v(out)\necho $&thd11'))).rejects.toThrow('thd11');
   });
 
+  it.each([
+    'v(out)+v(a)',
+    'v(out) + v(a)',
+    'v(out)\t+\tv(a)',
+  ])('treats %s as one Fourier expression regardless of whitespace', async operand => {
+    const result = await simulate(deck.replace('fourier 10k v(out) v(a)', `fourier 10k ${operand}`));
+    expect(result.control!.fourier).toHaveLength(2);
+    // ngspice-47 on the identical deck with this sum reports THD 11.1797%.
+    expect(result.control!.fourier![0].thd).toBeCloseTo(11.1797, 3);
+    expect(result.control!.output).toContain(`Fourier analysis for ${operand}:`);
+  });
+
+  it('preserves separate vectors alongside arithmetic and nested calls', async () => {
+    const operands = ['v(out) + v(a)', 'v(out)', '(v(out) - v(a)) * 2', 'abs(v(a) + v(out))'];
+    const result = await simulate(deck.replace('fourier 10k v(out) v(a)', () => `fourier 10k ${operands.join(' ')}\necho $&thd12`));
+    expect(result.control!.fourier).toHaveLength(5);
+    expect(result.control!.fourier![0].thd).toBeCloseTo(11.1797, 3);
+    expect(result.control!.fourier![1].thd).toBeCloseTo(tables[0].thd, 3);
+    expect(result.control!.fourier![2].harmonics[1].magnitude).toBeLessThan(1e-10);
+    for (const operand of operands) expect(result.control!.output).toContain(`Fourier analysis for ${operand}:`);
+    expect(result.control!.output.some(line => Math.abs(Number(line) - result.control!.fourier![1].thd) < 1e-3)).toBe(true);
+  });
+
   it('matches ngspice-47 harmonic magnitudes, phases, normalization and THD on the identical six-period deck', async () => {
     const result = await simulate(deck);
     expect(result.control!.fourier).toHaveLength(3);
