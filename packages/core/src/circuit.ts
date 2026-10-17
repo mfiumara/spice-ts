@@ -2031,6 +2031,7 @@ export class Circuit {
       }],
       ['maxOrder', 'maxord', value => this._simulationOptions.integrationMethod === 'euler' ? '1' : String(value)],
       ['trtol', 'trtol', String],
+      ['xmu', 'xmu', String],
       ['chgtol', 'chgtol', String],
       ['rshunt', 'rshunt', String],
     ];

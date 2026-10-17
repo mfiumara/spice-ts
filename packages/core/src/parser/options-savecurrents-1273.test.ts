@@ -87,8 +87,8 @@ echo count $&count
   });
 
   it('keeps other unsupported ngspice option fields typed unsupported', () => {
-    expect(() => parse('.option xmu=0.49\n.op')).toThrow(ParseError);
-    expect(() => parse('.option xmu=0.49\n.op')).toThrow("Unsupported .options field: 'xmu'");
+    expect(() => parse('.option noinit=1\n.op')).toThrow(ParseError);
+    expect(() => parse('.option noinit=1\n.op')).toThrow("Unsupported .options field: 'noinit'");
   });
 
   it('returns full vectors through the API without a control script', async () => {

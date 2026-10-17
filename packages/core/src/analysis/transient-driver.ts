@@ -849,7 +849,7 @@ class TransientSimImpl implements TransientSim {
    */
   private stepIntegration(dt: number): ChargeIntegration {
     if (this.integrationMethod === 'trapezoidal' && !this.orderOnePending && this.prevB !== undefined) {
-      return { method: 'trapezoidal', dt };
+      return { method: 'trapezoidal', dt, xmu: this.options.xmu };
     }
     if (this.integrationMethod === 'gear2' && this.secondPrevSol !== undefined) {
       return { method: 'gear2', dt, prevDt: this.prevDt };

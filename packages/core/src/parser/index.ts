@@ -391,7 +391,9 @@ export function parseControlAnalysisCard(tokens: string[], lineNumber: number, c
 /** @internal Parse `.options` tokens for the control-language `option`/`set` commands. */
 export function parseControlOptions(tokens: string[], lineNumber: number, context: string): SimulationOptions {
   try {
-    return parseSimulationOptions(splitXyceOptionPackage(tokens).fields, lineNumber, context);
+    // Control splitWords retains spaces around '='; normalize assignments
+    // with the same tokenizer as dot cards (e.g. `option xmu = 0.49`).
+    return parseSimulationOptions(splitXyceOptionPackage(tokenizeLine(tokens.join(' '))).fields, lineNumber, context);
   } catch (e) {
     if (e instanceof ParseError) throw e;
     throw new ParseError((e as Error).message, lineNumber, context);
@@ -1067,6 +1069,13 @@ function parseSimulationOptions(
     }
 
     const rawValue = token.slice(separator + 1);
+    if (name === 'xmu') {
+      // ngspice-47 cktsopt.c:120-122 assigns XMU with no range check.
+      const value = parseNumber(rawValue);
+      if (!Number.isFinite(value)) throw new Error(`Invalid .options xmu value: '${rawValue}'`);
+      options.xmu = value;
+      continue;
+    }
     if (name === 'scale') {
       options.scale = parseNumber(rawValue);
       continue;
