@@ -83,10 +83,10 @@ describe('VBIC forward-bias depletion coefficient FC', () => {
     }
   }
 
-  it('advances the byte-identical DFF deck past VTF to the independent RBP=0 boundary', () => {
+  it('compiles the byte-identical DFF deck with VTF and open RBP=0', () => {
     const deck = readFileSync('../../benchmarks/corpus/corpus-f/fixtures/examples/vbic/DFF_Y_ECL.sp');
     expect(createHash('sha256').update(deck).digest('hex'))
       .toBe('d811ecfa0f370d281fb35729ca3177e738fe034621d9b2909765d9d70f527cc6');
-    expect(() => parse(deck.toString('utf8')).compile()).toThrow("Invalid bounded VBIC DC model parameter: 'RBP'");
+    expect(() => parse(deck.toString('utf8')).compile()).not.toThrow();
   });
 });
