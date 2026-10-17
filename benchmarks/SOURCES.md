@@ -1,5 +1,33 @@
 # Benchmark sources
 
+## VBIC parasitic base-emitter currents IBEIP/IBENP (#1297)
+
+`benchmarks/vbic-ibeip/ibeip.cir` is an original project-authored MIT probe.
+The byte-identical ngspice-47 deck runs OP, a three-point DC sweep and AC at
+75 C with deliberately distinct NCI/NCN and NEI/NEN. Regenerate with
+`SPICE_ASCIIRAWFILE=1 spice-heavy ngspice -b -r ibeip.raw benchmarks/vbic-ibeip/ibeip.cir`.
+`packages/core/src/devices/vbic-ibeip.test.ts` freezes collector/base source
+currents; the substrate source carries only approximately 1e-13 A gmin here
+and is not used for the relative-error metric. Maximum OP/DC/AC absolute error
+is 1.3921102717849923e-9 A and maximum per-signal peak-normalized error is
+4.5346834831227904e-6 (Darwin arm64, ngspice-47). Before support this deck
+rejects IBEIP, so no before waveform or speed comparison is claimed.
+
+Equations follow BSD-3-Clause ngspice revision
+`a80f6e3e95d51534905b1f23410a951802666656`,
+[`vbicload.c:3566-3598`](https://github.com/ngspice/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/src/spicelib/devices/vbic/vbicload.c#L3566)
+and `vbictemp.c:245-258`. Ibep runs from BX to BP, using Vbep and NCI/NCN,
+with EAIC/EANC and XII/XIN temperature scaling. AREA*M scales current and
+conductance, not the subsequently added circuit gmin. The shared current
+linearization covers DC, AC and transient; Ibep adds no charge. Noise uses
+the same physical peripheral base current. Independent hand tests cover
+both polarities, ideal/nonideal/both currents, 0/27/75 C and instance scale 3.
+`vbicmpar.c:240-247` assigns both parameters without range validation;
+spice-ts deliberately accepts only finite nonnegative saturation currents.
+Omitted and explicit-zero parameters retain the pre-existing DC/AC/transient
+stamp SHA-256 exactly. The unchanged DFF_Y_ECL.sp remains unsupported at VTF;
+this is not a DFF waveform parity claim.
+
 ## VBIC substrate-parasitic weighting WSP (#1294)
 
 `benchmarks/vbic-wsp/wsp.cir` is an original project-authored MIT probe.

@@ -12,7 +12,7 @@ import { pnjlim } from './devsup.js';
 const NOMINAL_TEMPERATURE_C = 27;
 
 const ACTIVE_PARAMETERS = [
-  'IS', 'IBEI', 'IBEN', 'IBCI', 'IBCN', 'ISP', 'IBCIP', 'IBCNP',
+  'IS', 'IBEI', 'IBEN', 'IBCI', 'IBCN', 'ISP', 'IBCIP', 'IBCNP', 'IBEIP', 'IBENP',
   'NF', 'NR', 'NEI', 'NEN', 'NCI', 'NCN', 'NFP', 'NCIP', 'NCNP',
   'RCX', 'RCI', 'RBX', 'RBI', 'RE', 'RS', 'RBP', 'FC',
   'VEF', 'VER', 'IKF', 'IKR', 'IKP', 'VO', 'GAMM', 'HRCF', 'AVC1', 'AVC2',
@@ -55,6 +55,8 @@ const DEFAULTS: VBICParams = {
   ISP: 0,
   IBCIP: 0,
   IBCNP: 0,
+  IBEIP: 0,
+  IBENP: 0,
   NF: 1,
   NR: 1,
   NEI: 1,
@@ -130,7 +132,7 @@ export function resolveVBICParams(
     }
   }
   for (const name of [
-    'IS', 'IBEI', 'IBEN', 'IBCI', 'IBCN', 'ISP', 'IBCIP', 'IBCNP',
+    'IS', 'IBEI', 'IBEN', 'IBCI', 'IBCN', 'ISP', 'IBCIP', 'IBCNP', 'IBEIP', 'IBENP',
     'RCX', 'RBX', 'RE', 'RS', 'VEF', 'VER', 'IKF', 'IKR', 'IKP',
     'VO', 'GAMM', 'AVC1', 'AVC2', ...DC_INERT_PARAMETERS,
   ] as const) {
@@ -258,7 +260,7 @@ interface Evaluation {
   residual: Dual[];
   /** Stored charge attached to each device node (ngspice vbicload charges). */
   charge: Dual[];
-  noise: { irci: Dual; irbi: Dual; irbp: Dual; itzf: Dual; ibe: Dual; iccp: Dual };
+  noise: { irci: Dual; irbi: Dual; irbp: Dual; itzf: Dual; ibe: Dual; ibep: Dual; iccp: Dual };
 }
 
 /** Local node order: seven VBIC nodes, then the excess-phase nodes when TD > 0. */
@@ -340,6 +342,8 @@ function evaluate(
   const ibex = scale(add(diode(vbex, thermal.IBEI, params.NEI, vt), diode(vbex, thermal.IBEN, params.NEN, vt)), 1 - params.WBE);
   const ibcj = add(diode(vbci, thermal.IBCI, params.NCI, vt), diode(vbci, thermal.IBCN, params.NCN, vt));
   const ibcp = add(diode(vbcp, thermal.IBCIP, params.NCIP, vt), diode(vbcp, thermal.IBCNP, params.NCNP, vt));
+  // ngspice vbicload.c:3566-3598 uses the collector emission coefficients.
+  const ibep = add(diode(vbep, thermal.IBEIP, params.NCI, vt), diode(vbep, thermal.IBENP, params.NCN, vt));
   const avalancheVoltage = scale(add(
     sqrt(add(mul(sub(c(PC, size), vbci), sub(c(PC, size), vbci)), c(0.01, size))),
     sub(c(PC, size), vbci),
@@ -411,8 +415,7 @@ function evaluate(
   // Iciei = SCALE * (V(xf2) - Itzr) is scaled once at the device branch.
   const s = (quantity: Dual): Dual => (instanceScale === 1 ? quantity : scale(quantity, instanceScale));
   // ngspice vbicload.c then adds an unscaled CKTgmin to Ibe, Ibex, Ibc, Ibep,
-  // Ibcp and to Irci (via Vrci, Vbci and Vbcx). Ibep diode currents are zero
-  // (IBEIP/IBENP unsupported), leaving only gmin there.
+  // Ibcp and to Irci (via Vrci, Vbci and Vbcx).
   branch(CX, CI, add(s(irci), scale(add(add(vrci, vbci), vbcx), gmin)));
   branch(BX, BI, s(irbi));
   branch(BP, CX, s(irbp));
@@ -420,7 +423,9 @@ function evaluate(
   branch(BX, EI, add(s(ibex), scale(vbex, gmin)));
   branch(CI, EI, s(iciei));
   branch(BI, CI, add(s(ibc), scale(vbci, gmin)));
-  branch(BX, BP, scale(vbep, gmin));
+  // Preserve the original arithmetic path (including signed zeros) by default.
+  branch(BX, BP, params.IBEIP === 0 && params.IBENP === 0
+    ? scale(vbep, gmin) : add(s(ibep), scale(vbep, gmin)));
   branch(SI, BP, add(s(ibcp), scale(vbcp, gmin)));
   branch(BX, SI, s(iccp));
   store(BI, EI, s(qbe));
@@ -437,7 +442,7 @@ function evaluate(
     charge[XF1] = scale(xf1, params.TD);
     charge[XF2] = scale(xf2, params.TD / 3);
   }
-  return { residual, charge, noise: { irci, irbi, irbp, itzf, ibe, iccp } };
+  return { residual, charge, noise: { irci, irbi, irbp, itzf, ibe, ibep, iccp } };
 }
 
 /** Number of device nodes: seven VBIC nodes plus xf1/xf2 when excess phase is on. */
@@ -525,7 +530,7 @@ export class VBIC implements DeviceModel {
     });
     // vbicload.c stores the post-gmin currents/derivatives in CKTstate0.
     const baseCurrent = Math.abs(noise.ibe.value * this.instanceScale + gmin * voltages[0]);
-    const peripheralBaseCurrent = Math.abs(gmin * voltages[4]);
+    const peripheralBaseCurrent = Math.abs(noise.ibep.value * this.instanceScale + gmin * voltages[4]);
     const flicker = (current: number): number => this.parallelMultiplier * this.params.KFN
       * Math.pow(Math.max(current / this.parallelMultiplier, 1e-38), this.params.AFN);
     return [
@@ -536,7 +541,6 @@ export class VBIC implements DeviceModel {
       { ...source(EI, EI, noise.irbp.derivative[8] * this.instanceScale), negative: emitterNode },
       source(CI, EI, 0, Math.abs(noise.itzf.value * this.instanceScale)),
       source(BI, EI, 0, baseCurrent, flicker(baseCurrent)),
-      // IBEIP/IBENP are outside the bounded model: Ibep has only gmin.
       source(BX, BP, 0, peripheralBaseCurrent, flicker(peripheralBaseCurrent)),
       // ngspice includes ICCP/RS in integrated totals only.
       { ...source(BX, SI, 0, Math.abs(noise.iccp.value * this.instanceScale)), excludeFromSpectrum: true },

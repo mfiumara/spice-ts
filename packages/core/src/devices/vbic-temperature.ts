@@ -35,6 +35,8 @@ export const VBIC_PS = 0.75;
 export const VBIC_MS = 0.33;
 
 export interface VBICTemperatureInput {
+  IBEIP: number;
+  IBENP: number;
   NF: number;
   NEI: number;
   NEN: number;
@@ -67,6 +69,8 @@ export interface VBICTemperatureInput {
 
 /** Temperature-resolved values that differ from the nominal model card. */
 export interface VBICTemperatureState {
+  IBEIP: number;
+  IBENP: number;
   IBCIP: number;
   IBCNP: number;
   /** Thermal voltage kT/q at the device temperature. */
@@ -121,6 +125,8 @@ export function resolveVBICTemperature(
     IBEN: saturation(params.IBEN, XIN, EANE, params.NEN),
     IBCI: saturation(params.IBCI, XII, EAIC, params.NCI),
     IBCN: saturation(params.IBCN, XIN, EANC, params.NCN),
+    IBEIP: saturation(params.IBEIP, XII, EAIC, params.NCI),
+    IBENP: saturation(params.IBENP, XIN, EANC, params.NCN),
     ISP: saturation(params.ISP, XIS, EAP, params.NFP),
     IBCIP: saturation(params.IBCIP, XII, EAIS, params.NCIP),
     IBCNP: saturation(params.IBCNP, XIN, EANS, params.NCNP),
