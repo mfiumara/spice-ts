@@ -7,6 +7,7 @@
  */
 
 import { OTA_SPEC } from './ota-model.js';
+import { REACTIVE_IC_SPECS } from './reactive-ic-models.js';
 
 /** Analog port types spice-ts can stamp (XSPICE `%v`, `%vd`, `%i`, `%id`, `%vnam`, `%g`, `%gd`). */
 export type XspiceAnalogPortType = 'v' | 'vd' | 'i' | 'id' | 'vnam' | 'g' | 'gd' | 'h' | 'hd';
@@ -238,7 +239,7 @@ const ILIMIT: XspiceCodeModelSpec = {
   ],
 };
 
-/** xtradev/pswitch/ifspec.ifs */
+/** ngspice-47 src/xspice/icm/xtradev/pswitch/ifspec.ifs:28-76 (ports and defaults). */
 const PSWITCH: XspiceCodeModelSpec = {
   name: 'pswitch',
   connections: [
@@ -410,7 +411,7 @@ function pull(name: string): XspiceCodeModelSpec {
   return { name, connections: [digital('out', 'out')], params: [real('load', 1e-12)] };
 }
 
-/** digital/{d_jkff,d_dff}/ifspec.ifs */
+/** digital/{d_jkff,d_dff,d_tff,d_srff}/ifspec.ifs */
 function flipFlop(name: string, data: readonly string[], load: string): XspiceCodeModelSpec {
   return {
     name,
@@ -447,7 +448,7 @@ function controlledOscillator(pwm: boolean): XspiceCodeModelSpec {
 /** Implemented code models keyed by lower-case ngspice Spice_Model_Name. */
 export const XSPICE_CODE_MODEL_SPECS: ReadonlyMap<string, XspiceCodeModelSpec> = new Map(
   [
-    ASTATE, GAIN, SUMMER, MULT, DIVIDE, PWL, LIMIT, INT, D_DT, S_XFER, OTA_SPEC,
+    ASTATE, GAIN, SUMMER, MULT, DIVIDE, PWL, LIMIT, INT, D_DT, S_XFER, OTA_SPEC, ...REACTIVE_IC_SPECS,
     {
       name: 'lcouple',
       connections: ['l', 'mmf_out'].map((name, i) => ({ name, direction: 'inout' as const, defaultType: 'hd', allowedTypes: i === 0 ? ['h', 'hd'] : ['hd'], vector: false, nullAllowed: false })),
@@ -469,6 +470,7 @@ export const XSPICE_CODE_MODEL_SPECS: ReadonlyMap<string, XspiceCodeModelSpec> =
     ADC_BRIDGE, DAC_BRIDGE, pull('d_pulldown'), pull('d_pullup'),
     controlledOscillator(false), controlledOscillator(true),
     flipFlop('d_jkff', ['j', 'k'], 'jk_load'), flipFlop('d_dff', ['data'], 'data_load'),
+    flipFlop('d_tff', ['t'], 't_load'), flipFlop('d_srff', ['s', 'r'], 'sr_load'),
     unaryGate('d_buffer'), unaryGate('d_inverter'),
     naryGate('d_and'), naryGate('d_nand'), naryGate('d_or'), naryGate('d_nor'), naryGate('d_xor'), naryGate('d_xnor'),
   ].map(spec => [spec.name, spec]),

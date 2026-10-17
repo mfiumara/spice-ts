@@ -46,6 +46,7 @@ export class XspiceDevice implements DeviceModel {
   readonly integratesTransientCharge: boolean;
   readonly stampDynamic?: (ctx: StampContext) => void;
   readonly truncateTransientStep?: (ctx: StampContext, truncation: ChargeTruncation) => number;
+  readonly truncationCoversCharges?: boolean;
   readonly modelWarnings?: readonly string[];
   /**
    * False for digital node bridges and magnetic models: ngspice MIFtrunc
@@ -104,7 +105,15 @@ export class XspiceDevice implements DeviceModel {
     if (behavior.ac.kind !== 'static') this.stampDynamic = ctx => this.stampFrequencyDependent(ctx);
     if (behavior.truncate) {
       this.truncateTransientStep = (ctx, truncation) => this.truncationTimestep(ctx, truncation);
+      // xtradev/{capacitor,inductor}/cfunc.mod:76-82 integrates its only
+      // state. miftrunc.c:98-103 bounds that integral, including ramp release;
+      // a second node-voltage LTE check changes the release grid and state.
+      if (codeModel === 'capacitoric' || codeModel === 'inductoric') this.truncationCoversCharges = true;
     }
+  }
+
+  setTransientRampTime(rampTime: number): void {
+    this.behavior.setRampTime?.(rampTime);
   }
 
   stamp(ctx: StampContext): void {
