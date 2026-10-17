@@ -57,6 +57,20 @@ export interface VdmosInstanceParams {
   DTEMP: number;
 }
 
+/** vdmosnoi.c inputs, evaluated at the same bias/temperature as the AC stamp. */
+export interface VdmosNoiseOperatingPoint {
+  gm: number;
+  gds: number;
+  id: number;
+  drainConductance: number;
+  sourceConductance: number;
+  kf: number;
+  af: number;
+  /** Tj / circuit temperature for active self heating, otherwise one. */
+  temperatureRatio: number;
+  temperatureKelvin: number;
+}
+
 /** Temperature-dependent instance values (vdmostemp.c VDMOStempUpdate). */
 interface VdmosTemperatureState {
   temp: number;
@@ -659,6 +673,27 @@ export class VDMOS implements DeviceModel {
   /** vdmostrun.c: qgs, qgd and the body diode charge. */
   truncateTransientStep(ctx: StampContext, truncation: ChargeTruncation): number {
     return this.charges.truncationTimestep(truncation, () => this.acceptTransientStep(ctx));
+  }
+
+  get selfHeating(): boolean {
+    return this.thermal;
+  }
+
+  /** Read-only noise seam; does not change the electrical operating point. */
+  noiseOperatingPoint(solution: Float64Array): VdmosNoiseOperatingPoint {
+    const voltage = (node: number) => node < 0 ? 0 : solution[node];
+    const [vgs, vds] = this.channelVoltages(voltage);
+    const { mode, cdrain, gm, gds } = this.evaluateChannel(vgs, vds);
+    const ambient = this.circuitTemperature + CONSTCTOK;
+    // Non-self-heated instances use CKTtemp in NevalSrc, even with TEMP/DTEMP.
+    const temperatureRatio = this.thermal ? this.temp.temp / ambient : 1;
+    return {
+      gm, gds, id: mode * cdrain,
+      drainConductance: this.drainConductance,
+      sourceConductance: this.temp.sourceConductance,
+      kf: this.model.kf, af: this.model.af,
+      temperatureRatio, temperatureKelvin: ambient * temperatureRatio,
+    };
   }
 
   /** Channel state of the last load, for diagnostics and tests. */
