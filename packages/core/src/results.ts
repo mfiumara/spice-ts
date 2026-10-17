@@ -361,6 +361,8 @@ export class DCSweepResult {
     private readonly currentArrays: Map<string, Float64Array>,
     /** Point-aligned outer sweep coordinates, when a second source is swept. */
     public readonly secondarySweepValues?: Float64Array,
+    /** Explicitly saved device outputs, sampled at each DC operating point. */
+    public readonly deviceVectors: Map<string, Float64Array> = new Map(),
   ) {}
 
   /**

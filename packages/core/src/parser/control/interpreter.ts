@@ -41,9 +41,9 @@ export interface ControlHostRun {
  */
 export interface ControlHost {
   /** Solve one analysis given as the tokens of its dot card (`['.TRAN', '1n', '1u']`). */
-  runAnalysis(dotCardTokens: string[], line: ControlSourceLine): ControlHostRun;
+  runAnalysis(dotCardTokens: string[], line: ControlSourceLine, saves: readonly string[]): ControlHostRun;
   /** Solve the deck's own dot-card analyses (ngspice `run`). */
-  runDeck(line: ControlSourceLine): ControlHostRun[];
+  runDeck(line: ControlSourceLine, saves: readonly string[]): ControlHostRun[];
   /** `alter`: set an instance parameter (`undefined` = the device's primary value). */
   alterInstance(device: string, parameter: string | undefined, values: number[], line: ControlSourceLine): void;
   /** `altermod`: set a `.model` parameter. */
@@ -262,7 +262,7 @@ class ControlInterpreter {
     switch (name) {
       case 'op': case 'dc': case 'ac': case 'tran': case 'noise': case 'sp': case 'sens': {
         const tokens = tokenizeNetlist(text)[0]?.tokens ?? [];
-        const run = this.host.runAnalysis([`.${name.toUpperCase()}`, ...tokens.slice(1)], line);
+        const run = this.host.runAnalysis([`.${name.toUpperCase()}`, ...tokens.slice(1)], line, [...this.savedDeviceVectors]);
         this.recordRun(run);
         this.transientTask = run.directive.type === 'tran' ? run.directive : undefined;
         return;
@@ -272,7 +272,7 @@ class ControlInterpreter {
           throw new UnsupportedControlCommandError('run', 'writing a raw file from run is not supported', line.lineNumber, line.text);
         }
         {
-          const runs = this.host.runDeck(line);
+          const runs = this.host.runDeck(line, [...this.savedDeviceVectors]);
           for (const run of runs) this.recordRun(run);
           this.transientTask = runs.map(run => run.directive).find(
             (directive): directive is TransientAnalysis => directive.type === 'tran',
@@ -918,6 +918,7 @@ class ControlInterpreter {
         const scale = realVector(scaleName, sweep ? sweep.sweepValues : []);
         const plot = this.newPlot('dc', 'DC transfer characteristic', scale, saves);
         if (sweep) {
+          for (const [name, values] of sweep.deviceVectors) plot.vectors.set(name, realVector(name, values, scale));
           // ngspice 3ef069f: frontend/outitf.c:837-861 samples saved special
           // parameters per point; frontend/vectors.c:613-640 looks up that plot
           // vector before falling back to a live scalar device query. Use the

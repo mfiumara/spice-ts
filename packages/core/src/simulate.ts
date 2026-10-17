@@ -196,6 +196,7 @@ function solveCompiledAnalyses(
   measures: readonly MeasureCard[],
   measureValues: Map<string, number>,
   retainRuns: boolean,
+  savedDeviceVectors: readonly string[] = [],
 ): SimulationResult {
   const result: SimulationResult = { warnings, convergence };
   if (retainRuns && compiled.analyses.length + compiled.poleZeroAnalyses.length >= 2) result.analyses = [];
@@ -224,7 +225,7 @@ function solveCompiledAnalyses(
       }
       case 'dc': {
         const opts = resolveOptions(options);
-        result.dcSweep = run.dcSweep = solveDCSweep(compiled, analysis, opts, convergence, guard);
+        result.dcSweep = run.dcSweep = solveDCSweep(compiled, analysis, opts, convergence, guard, savedDeviceVectors);
         measure(analysis, run);
         break;
       }
@@ -341,7 +342,7 @@ function simulateControlScript(
   // ngspice reads `@device[i]` from the circuit's present state: the last analysis's last solution.
   let operatingState: ControlOperatingState | undefined;
 
-  const solve = (analyses: AnalysisDirective[], poleZero: PoleZeroAnalysis[]): SimulationResult => {
+  const solve = (analyses: AnalysisDirective[], poleZero: PoleZeroAnalysis[], saves: readonly string[] = []): SimulationResult => {
     const savedAnalyses = circuit.analyses.splice(0, circuit.analyses.length, ...analyses);
     const savedPoleZero = circuit.poleZeroAnalyses.splice(0, circuit.poleZeroAnalyses.length, ...poleZero);
     let compiled: CompiledCircuit;
@@ -357,15 +358,15 @@ function simulateControlScript(
     const resolved = withNetlistOptions(compiled.simulationOptions, options);
     // Cleared first: a failed analysis leaves no state to read out.
     operatingState = undefined;
-    const result = solveCompiledAnalyses(compiled, resolved, warnings, convergence, guard, measures, measureValues, false);
+    const result = solveCompiledAnalyses(compiled, resolved, warnings, convergence, guard, measures, measureValues, false, saves);
     operatingState = analyses.length === 1 && poleZero.length === 0
       ? controlOperatingState(compiled, analyses[0], result)
       : undefined;
     return result;
   };
 
-  const runDeck = (): ControlHostRun[] => [
-    ...deckAnalyses.map(directive => ({ directive, result: solve([directive], []) })),
+  const runDeck = (saves: readonly string[] = []): ControlHostRun[] => [
+    ...deckAnalyses.map(directive => ({ directive, result: solve([directive], [], saves) })),
     ...deckPoleZero.map(analysis => ({ directive: { type: 'pz' as const }, result: solve([], [analysis]) })),
   ];
 
@@ -373,15 +374,15 @@ function simulateControlScript(
     new UnsupportedControlCommandError(command, reason, line.lineNumber, line.text);
 
   const host: ControlHost = {
-    runAnalysis(tokens, line) {
+    runAnalysis(tokens, line, saves) {
       const directive = parseControlAnalysisCard(tokens, line.lineNumber, line.text);
-      return { directive, result: solve([directive], []) };
+      return { directive, result: solve([directive], [], saves) };
     },
-    runDeck(line) {
+    runDeck(line, saves) {
       if (deckAnalyses.length === 0 && deckPoleZero.length === 0) {
         throw new ControlScriptError('run: the deck has no analysis cards', line.lineNumber, line.text);
       }
-      return runDeck();
+      return runDeck(saves);
     },
     alterInstance(device, parameter, values, line) {
       const reason = circuit.alterInstance(device, parameter, values);
