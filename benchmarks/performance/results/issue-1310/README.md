@@ -89,4 +89,6 @@ The new evaluation-reuse tests first failed in four cases (17 duplicate exponent
 
 ## Round 4: fused junction-diode derivatives
 
+Round 5 follow-up: [locally owned residual/charge accumulation](round-5-perf.md), with [JSON evidence](round-5-perf.json), reduces the explicit derivative-array counter from 67,040 to 59,360 (11.4558%). All 227 VBIC tests and stamp/waveform hashes/counters remain unchanged. This is not a demonstrated runtime win: all three before/after runs are published, with median 40.985041 -> 79.220900 s, a 93.2922% loss on the uncontrolled shared host. Exact-head CI and independent review remain required. Refs #1310.
+
 The [full-deck profile and 3+3 receipt](round-4-perf.md), with [machine-readable data](round-4-perf.json), identifies VBIC evaluation/derivatives as the largest bucket (66.979% sampled wall time, plus 16.166% GC). Fuse the generic diode helper's five derivative arrays into one while preserving arithmetic order, stamps, waveform hashes and all Newton/step counters. RED-first allocation coverage and all 227 VBIC tests pass. This is an allocation reduction, **not a demonstrated runtime win**: the shared-host median is 53.435783 -> 54.498114 s, a 1.9881% loss. All six raw times and the remaining ngspice/parity losses are published in the receipt. Refs #1310; no closure or superiority claim.

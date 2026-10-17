@@ -169,7 +169,7 @@ export function resolveVBICParams(
 }
 
 class Dual {
-  constructor(readonly value: number, readonly derivative: number[]) {}
+  constructor(public value: number, readonly derivative: number[]) {}
 
   static constant(value: number, size: number): Dual {
     return new Dual(value, new Array<number>(size).fill(0));
@@ -198,6 +198,18 @@ function sub(a: Dual, b: Dual): Dual {
   const derivative = new Array<number>(a.derivative.length);
   for (let i = 0; i < derivative.length; i++) derivative[i] = a.derivative[i] - b.derivative[i];
   return new Dual(a.value - b.value, derivative);
+}
+
+// Only use on locally owned accumulators, never on an input/expression Dual.
+// Retain each add/sub operation (including signed zeros), without new arrays.
+function addInto(target: Dual, source: Dual): void {
+  for (let i = 0; i < target.derivative.length; i++) target.derivative[i] += source.derivative[i];
+  target.value += source.value;
+}
+
+function subInto(target: Dual, source: Dual): void {
+  for (let i = 0; i < target.derivative.length; i++) target.derivative[i] -= source.derivative[i];
+  target.value -= source.value;
 }
 
 function mul(a: Dual, b: Dual): Dual {
@@ -443,13 +455,15 @@ function evaluate(
 
   const residual = Array.from({ length: nodeCount }, () => c(0, size));
   const charge = Array.from({ length: nodeCount }, () => c(0, size));
+  // Each row owns its Dual/derivatives. None aliases branch expressions or
+  // noise quantities, and these buffers never escape until evaluation ends.
   const branch = (from: number, to: number, current: Dual): void => {
-    residual[from] = add(residual[from], current);
-    residual[to] = sub(residual[to], current);
+    addInto(residual[from], current);
+    subInto(residual[to], current);
   };
   const store = (from: number, to: number, stored: Dual): void => {
-    charge[from] = add(charge[from], stored);
-    charge[to] = sub(charge[to], stored);
+    addInto(charge[from], stored);
+    subInto(charge[to], stored);
   };
   // ngspice vbic_4T_et_cf_fj scales every current and charge by
   // SCALE = area * m; the excess-phase network rows stay per-unit because
