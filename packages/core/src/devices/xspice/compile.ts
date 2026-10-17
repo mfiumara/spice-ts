@@ -14,6 +14,7 @@ import {
 } from './models.js';
 import { OSCILLATOR_BEHAVIORS } from './oscillator-models.js';
 import { OTA_BEHAVIORS, registerOtaNoise } from './ota-model.js';
+import { registerGainNoise } from './gain-noise.js';
 import { SWITCH_BEHAVIORS } from './switch-models.js';
 import { MAGNETIC_BEHAVIORS } from './magnetic-models.js';
 import { REACTIVE_IC_BEHAVIORS } from './reactive-ic-models.js';
@@ -225,6 +226,7 @@ export function createXspiceDevice(
   );
   netlistProbes.set(device, netlist);
   if (model.codeModel === 'ota') registerOtaNoise(device, params, inputs);
+  if (model.codeModel === 'gain') registerGainNoise(device, params, inputs[0], outputs[0]);
   return device;
 }
 
@@ -335,15 +337,6 @@ export function assertXspiceAnalyses(
       if (currentOutput && (analyses.includes('ac') || analyses.includes('noise'))) {
         throw new InvalidCircuitError(
           `XSPICE int instance '${instance.card.name}' does not support a current output in .${analyses.includes('ac') ? 'ac' : 'noise'}`,
-        );
-      }
-    }
-    if (codeModel === 'gain' && analyses.includes('noise')) {
-      const noisy = ['noise_voltage', 'noise_current']
-        .some(name => (instance.params.get(name)?.[0] as number | undefined) !== 0);
-      if (noisy) {
-        throw new InvalidCircuitError(
-          `XSPICE gain instance '${instance.card.name}' has noise_voltage/noise_current; gain noise sources are not supported in .noise`,
         );
       }
     }

@@ -1620,3 +1620,20 @@ https://github.com/imr/ngspice/tree/a80f6e3e95d51534905b1f23410a951802666656/src
 and the sibling `bsim3v32` (`b3v32ld.c:2793-2806,2906-2988,3106-3163,3425-3436`,
 `b3v32temp.c:853,873-874`). The transient implementation locally eliminates
 the charge-node equation, retaining qcheq/qcdump integration histories.
+
+## XSPICE gain declarative noise (#1278)
+
+`benchmarks/xspice-gain-noise/compare.ts` sources the unchanged corpus-f
+`examples/xspice/noise/noise_gain.cir` in ngspice-47 and passes identical bytes
+to spice-ts (BSD-3-Clause; provenance in `corpus/corpus-f/SOURCES.md`). An
+external batch observer exports the original control plots without editing
+the fixture. The deck's summary interval of 16 exports 125 spectral points
+per output; these are matched at identical frequencies within spice-ts's
+1999-point sweeps. Both integrated totals cover the entire sweep.
+
+Equations and source placement follow Public Domain ngspice-47
+[`src/xspice/mif/mifnoise.c:262-321,340-364,383-411`](https://sourceforge.net/p/ngspice/ngspice/ci/a80f6e3e95d51534905b1f23410a951802666656/tree/src/xspice/mif/mifnoise.c).
+Contrary to the original issue premise, `gain/cfunc.mod` has no noise law:
+`noise_voltage` acts at the output voltage-source branch (not input-referred),
+and `noise_current` across the input nodes. Independent white and flicker
+powers are integrated separately. No thresholds or fixture bytes are tuned.
