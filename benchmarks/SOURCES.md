@@ -1,5 +1,21 @@
 # Benchmark sources
 
+## BSIM4 IGCMOD=1 gate tunneling (#1304)
+
+`benchmarks/bsim4-igc/{n,p}-{forward,reverse}.cir` are self-authored MIT
+fixtures. They sweep VGS at fixed VDS with thin oxide, asymmetric gate
+overlaps, NF/M scaling, both polarities and both drain orientations.
+Reverse cases also cover given PIGCD, poly depletion and nonnominal temperature.
+The unchanged decks run through both engines. `generate.py` requires ngspice-47
+and writes `ngspice-47.json`, which is consumed by `gate-current.test.ts`.
+Regenerate with `spice-heavy python3 benchmarks/bsim4-igc/generate.py`;
+no native raw files or logs are committed. Deck hashes guard oracle identity.
+The test uses the existing BSIM4 bias-grid bound (1e-8, native-zero floor
+1e-18 A), without per-fixture tolerance changes. Source equations are the
+ECL-2.0 BSIM4 4.8 family at pinned ngspice revision
+`a80f6e3e95d51534905b1f23410a951802666656`; see the licence and notices in
+`packages/core/src/devices/bsim4/` and the line mapping in `LOAD.md`.
+
 ## VBIC open parasitic base resistor RBP=0 (#1302)
 
 `benchmarks/vbic-rbp/rbp.cir` is an original project-authored MIT probe.
@@ -32,6 +48,7 @@ record below. Run the full 10 ns comparison without rewriting its deck with
 `spice-heavy pnpm exec tsx benchmarks/vbic-rbp/dff.ts`. This reports wall time,
 row counts and V(Q), V(D), V(CLK) max absolute/peak-normalized errors, or the
 next named simulator failure. No deck or tolerance tuning is applied.
+
 
 ## VBIC VTF forward transit-time Vbc dependence (#1300)
 
@@ -182,6 +199,7 @@ and [`b3ld.c:2478-2494`](https://github.com/imr/ngspice/blob/ngspice-47/src/spic
 reuses the transient NQS relaxation rate. NQSMOD=1 AC (including combined
 selectors) and ACNQSMOD=1 noise remain explicitly unsupported with typed
 errors; ACNQSMOD is defined only on BSIM3 3.3.0.
+
 
 
 ## VBIC flicker and total noise (#1197)
@@ -1783,3 +1801,35 @@ Contrary to the original issue premise, `gain/cfunc.mod` has no noise law:
 `noise_voltage` acts at the output voltage-source branch (not input-referred),
 and `noise_current` across the input nodes. Independent white and flicker
 powers are integrated separately. No thresholds or fixture bytes are tuned.
+
+## corpus-o: Xyce analog/device regression inputs (#1045)
+
+Pinned Xyce_Regression revision: `7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2`. 23 original, unadapted decks; both engines receive identical bytes. Repository README grants GPL version 3 or later; standalone decks with separate notices excluded by unchanged staticVerdict. Independent benchmark data, not package code.
+
+Licence grant: https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/README.md (SHA-256 `82ff6df7bddcdf639483d261949a02a5f43da85d579f1242b05c3aa0c430f7cb`); retained unchanged in `benchmarks/corpus/corpus-o/licenses/xyce/README.md`. Full GPL-3.0 text retained in `benchmarks/corpus/corpus-o/licenses/xyce/COPYING` (SHA-256 `12ac5047f2af0522f06798b1589ffc4599bc29c91f954d7874e0320634e777c0`), copied unchanged from corpus-n because upstream links a missing COPYING. GPL applies to these independent benchmark inputs, not simulator package code.
+
+| Deck | Pinned source URL | SPDX licence | SHA-256 |
+|---|---|---|---|
+| o-1 | https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/NOISE/commonEmitterBjt_ngspice.cir | GPL-3.0-or-later | cff4fd7c9f9edb1a78c1d985ded41df53250e8ca2886f8262acc788b0d956bfd |
+| o-2 | https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/NOISE/commonEmitterBjt.cir | GPL-3.0-or-later | 9439fdb50af115647cfc50cc6718d0b7d49a1935cb78b141b66d1c87d803ce13 |
+| o-3 | https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/NOISE/gain-stage_b3.cir | GPL-3.0-or-later | 2c174bb54d3c2b941a74e1d89463cd13699b08ab4ea033b4b1121773bbccca71 |
+| o-4 | https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/NOISE/gain-stage1.cir | GPL-3.0-or-later | 6a12a9b6172cb9785513add28988697f19c87054ca55f6554e14fe994f8dcd21 |
+| o-5 | https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/NOISE/gain-stage2.cir | GPL-3.0-or-later | 6c00479b8bccb873d392b1d98cb88c97048fed31a6e6377f6ef1513cf29f1699 |
+| o-6 | https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/NOISE/gain-stage3.cir | GPL-3.0-or-later | 216f8ae59be39170031b3a275725e613d4df502e9049ba8e5ffe27bd086f1bf0 |
+| o-7 | https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/NOISE/invalid_device.cir | GPL-3.0-or-later | f17e7d674551d40e41a106e4cc7bf5f20ff482dca077222948c0d4149f5177ef |
+| o-8 | https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/NOISE/noiseBjt1.cir | GPL-3.0-or-later | 8f1d4d782a4ab80802291808a279275eeaeadfd7869f79820e5050fafb1e2209 |
+| o-9 | https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/NOISE/noiseBjt2.cir | GPL-3.0-or-later | 2d32fef5b0f3e3929a84798a55e837547765b8535285585c9d220f257887f2f4 |
+| o-10 | https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/NOISE/res_noise_ngspice.cir | GPL-3.0-or-later | 5f90a7de42b73c0c465c2c38931beb573bc067f20f9fd3a96c11fa4a736f6bd0 |
+| o-11 | https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/NOISE/res_noise.cir | GPL-3.0-or-later | 8f283f9f84ae85d45dfb0ad9f0dee39309f2e026ef359ddfe47aae7b180caaad |
+| o-12 | https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/VANOISE/gain-stage1_psp.cir | GPL-3.0-or-later | f718a5f43ad0be650bd713e5551aed00add0b343b9c05f90232dc9d7c9458873 |
+| o-13 | https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/BJT_ANALYTIC/ramp_test2.cir | GPL-3.0-or-later | 4117823840f391e2e11481991d86efd58583043bbfa1e93f20808d8d77f89ef2 |
+| o-14 | https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/BJT_EXTNODE/npn_rb_rc_re_2.cir | GPL-3.0-or-later | e827701a14ba46d2dd287f2e7a831c284fc127bac1bbeb2961f48e27f9c9bed1 |
+| o-15 | https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/BJT_EXTNODE/npn_rc_re_1.cir | GPL-3.0-or-later | b222125ff7ca5ba305bcf6d8c0451cd02208b61a818e9de7b39432caa335b940 |
+| o-16 | https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/BJT_EXTNODE/npn_rc_re_2.cir | GPL-3.0-or-later | c7bd3fa322552650009684c9cd4c7229507485f251e9945b1bd568ad93fc3913 |
+| o-17 | https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/BJT_EXTNODE/npn1.cir | GPL-3.0-or-later | faea2b9386a9cc2e351d8e69f4e2896d309926d2c9f64d5409ac6cb111752fea |
+| o-18 | https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/BJT_EXTNODE/npn2.cir | GPL-3.0-or-later | 54089a56e1b919d6b91f7da6528bc14a235bf05079488dbf73db762dfa7df287 |
+| o-19 | https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/DIODE_ANALYTIC/breakdown_model.cir | GPL-3.0-or-later | c428a046c15bce99cb0f75a8346327a2becc1adb4c37b175c6d07da133159249 |
+| o-20 | https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/DIODE_ANALYTIC/forward_model.cir | GPL-3.0-or-later | f5e090a36963633e2be6dc76dee709dc51efb4b9fa97dc5d93667c25b64dca9c |
+| o-21 | https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/DIODE_CMC/DiodeClipper_DC.cir | GPL-3.0-or-later | 574f4b63a33c5a2d735258cdb4ca04e36a5a43f34b57d618a8eace385ca9196c |
+| o-22 | https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/DIODE_CMC/DiodeClipper_noise.cir | GPL-3.0-or-later | debcbb8af4074b23d7a6a1e7eafd433ea646e4fd8d47a9db058102180f3bdf98 |
+| o-23 | https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/DIODE_CMC/DiodeClipper.cir | GPL-3.0-or-later | 828853fea5596b82de27b603fef5b28a879cd8b8ffc71c0bb3b908fe21ba7e39 |

@@ -5,6 +5,38 @@ Pinned ngspice-47 `bsim4/` at
 The supervisor retarget supersedes the decomposed cards' bsim4v7/BSD wording.
 This is a bounded static OP/DC implementation, not full BSIM4 or corpus parity.
 
+## IGCMOD=1 extension
+
+The generated load kernel additionally ports b4ld.c:2527-2801: oxide voltage,
+Igc partition into Igcs/Igcd (automatic or given PIGCD), physical Igs/Igd
+overlap currents, exponential limiting, and their analytic derivatives.
+Temperature preprocessing adds b4temp.c:1363-1379,1401-1405 (ToxRatio,
+ToxRatioEdge, Aechvb/Bechvb and source/drain edge prefactors). Negative
+DLCIG/DLCIGD corrections are rejected rather than silently reset.
+The 4.8.0 and later prefactor formulas coincide for nonnegative overlaps.
+Enabled NIGC/POXEDGE/PIGCD fatal domains follow b4check.c:331-347.
+
+Operating-point fields igcs/igcd are gate-to-oriented-source/drain currents;
+igs/igd belong to physical terminals, independent of mode. All include NF,
+not M/MULT_I. gigcs*/gigcd* are derivatives with respect to oriented
+Vgs/Vds/Vbs; gigsg/gigdg are physical overlap gate conductances.
+The device stamps conservative terminal pairs, matching the forward/reverse
+gate-current assembly at b4ld.c:4764-4800,4855-4891. Tests check KCL and the
+complete four-terminal Jacobian by finite differences, in both polarities and
+orientations with NF/M/MULT_I scaling.
+
+Self-authored `benchmarks/bsim4-igc/*.cir` provide 164 native ngspice-47 sweep
+points, including negative gate bias, asymmetric overlaps, given PIGCD,
+poly depletion and nonnominal temperature. Run:
+
+    spice-heavy python3 benchmarks/bsim4-igc/generate.py
+    pnpm -C packages/core exec vitest run src/devices/bsim4
+
+The parity tests read the native oracle and print maximum normalized gate and
+drain branch-current errors. Before this extension the same IGCMOD=1 cards
+throw UnsupportedModelParameterError. IGCMOD=2, IGBMOD, nonbaseline RBODYMOD
+and RGATEMOD remain unsupported; there is no transient charge extension.
+
 ## Data and registration
 
 `evaluateBsim4(preprocessed, originalModelGiven, bias, gmin?)` returns an immutable
