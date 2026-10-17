@@ -291,11 +291,23 @@ describe('XSPICE event-driven digital models against ngspice-47 (#553 slice 3)',
     expect(transient!.digital('below')[0].state).toBe('0');
   });
 
-  it('rejects bidirectional mixed nodes rather than applying a unidirectional DAC', async () => {
-    await expect(simulate([
+  it('loads a bidirectional mixed node electrically rather than applying an ideal DAC', async () => {
+    const { transient } = await simulate([
       'bidi', 'a1 shared pull', '.model pull d_pullup',
-      'a2 shared out buf', '.model buf d_buffer', 'r1 shared 0 1k', '.op', '.end',
-    ].join('\n'))).rejects.toThrow(/bidirectional.*bridge/);
+      'a2 shared out buf', '.model buf d_buffer', 'r1 shared 0 1k', '.tran .1n 20n', '.end',
+    ].join('\n'));
+    // ngspice-47, identical deck: resistive pull-up through the bidi default
+    // r_high=10k, loaded by 1k. v(shared)=0.3 V, shared/out both 0s.
+    expect(interpolate(transient!.time, transient!.voltage('shared'), 20e-9)).toBeCloseTo(0.3, 9);
+    expect(transient!.digital('shared').at(-1)?.state).toBe('0');
+    expect(transient!.digital('out').at(-1)?.state).toBe('0');
+  });
+
+  it('keeps family-specific automatic bridges rejected', async () => {
+    await expect(simulate([
+      'custom family', 'v1 in 0 3.3', 'a1 in out buf',
+      '.model buf d_buffer(family="custom")', '.op', '.end',
+    ].join('\n'))).rejects.toThrow(/family-specific.*bridge/);
   });
 
   it('initializes UIC events from the zero analog seed, not a solved DC operating point', async () => {
