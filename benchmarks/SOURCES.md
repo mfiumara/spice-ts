@@ -1,5 +1,24 @@
 # Benchmark sources
 
+## VDMOS noise rejection boundary (#1348)
+
+`benchmarks/vdmos-noise/unsupported.cir` is an original MIT-licensed spice-ts
+regression deck, consumed by `noise-vdmos-1348.test.ts`. The identical bytes
+run on both engines. Regenerate the ngspice-47 comparison with
+`spice-heavy ngspice -b benchmarks/vdmos-noise/unsupported.cir`.
+At 100, 200 and 300 Hz ngspice-47 prints output noise density
+`6.237243e-10 V/sqrt(Hz)` and input noise density `2.810918e-10 V/sqrt(Hz)`.
+Before the guard, spice-ts returned approximately `3.914781e-10` and
+`1.764261e-10`, respectively. It now rejects VDMOS noise rather than reporting
+an incomplete spectrum. This is an unsupported-feature regression, not parity.
+
+Algorithm reference: [ngspice-47 vdmosnoi.c](https://github.com/imr/ngspice/blob/ngspice-47/src/spicelib/devices/vdmos/vdmosnoi.c),
+under ngspice's UC Berkeley permissive licence (see its COPYING and source
+header). That routine includes RD/RS thermal, channel thermal, KF/AF flicker
+and a self-heating temperature ratio, but no RG/RB/body-diode noise source.
+No implementation is copied. Porting these sources, exposing their operating
+point/model state, and validating nchan/pchan and self-heating remains #1348.
+
 ## BJT base-resistance noise (#1347)
 
 `packages/core/src/analysis/bjt-gx-noise-reference.json` contains original
