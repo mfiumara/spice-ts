@@ -3846,9 +3846,10 @@ export class Circuit {
         case 'A': {
           const card = parseXspiceInstance(raw, lineNumber);
           const modelName = scopeModel(card.modelName);
-          // This seam admits scoped PWL transfers only. Other A-card families
-          // retain the explicit unsupported boundary until their ports are scoped.
-          if (this._xspiceModels.get(modelName.toUpperCase())?.codeModel !== 'pwl') {
+          // This seam admits scoped PWL transfers and pswitch conductance ports.
+          // Other A-card families retain the unsupported boundary until their ports are scoped.
+          const codeModel = this._xspiceModels.get(modelName.toUpperCase())?.codeModel;
+          if (codeModel !== 'pwl' && codeModel !== 'pswitch') {
             throw new ParseError("Unsupported device card: 'A'", lineNumber, raw);
           }
           const connectionTokens = card.connectionTokens.map((token, index) => token.kind === 'string'

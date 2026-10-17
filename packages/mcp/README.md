@@ -18,6 +18,24 @@ The validation, one-shot simulation, and stream-start tools accept `{ "request":
 
 The server supports protocol-v1 `spice`, `spice-ts`, and `circuit-json` inputs and `op`, `dc`, `tran`, and `ac` analyses. For Circuit JSON, use `input: { format: 'circuit-json', circuit, analyses }`. Conversion is performed by `@spice-ts/circuit-json` before validation or worker execution; its supported element set applies (currently R/C/M/Q, not independent sources). Fatal conversion diagnostics are returned in `error.details.diagnostics`, with `UNSUPPORTED_ELEMENT` for unsupported elements. Nonfatal conversion diagnostics (including ignored layout elements) are exposed in the MCP result's `_meta.conversionDiagnostics` by all three request tools, without changing the protocol simulation result shape.
 
+## Parameter overrides
+
+`spice_simulate` and `spice_simulation_start` accept an optional sibling of
+`request`: `params: Record<string, number>`, for example
+`{ request, params: { rval: 3000 } }`. This overrides declared top-level `.param`
+values in `request.input.source` before elaboration, including dependent expressions
+and conditional selection. Names are case-insensitive. The input must use
+`format: 'spice'`; JSON circuit formats do not have `.param` declarations.
+Subcircuit-local parameters, control variables, and declarations only in virtual
+include files are not override targets. Omission or an empty object preserves defaults.
+
+Values must be finite numbers. Malformed values, duplicate case-insensitive keys,
+and non-SPICE inputs return `INVALID_REQUEST`. Unknown names return the MCP-local
+error code `UNKNOWN_PARAMETER` with `details.unknown` and `details.available`
+(sorted, lower-case available names). This extends the MCP error surface, not the
+protocol-v1 error-code set. `spice_capabilities.parameterOverrides` describes this
+contract. Neither the caller's request nor its source string is mutated.
+
 ## Topology preflight warnings
 
 `spice_validate` returns `{ status: 'valid', nodeCount, branchCount, analysisCount, diagnostics? }` after parsing and compiling without a numerical solve. `diagnostics` is omitted for a clean deck. Each entry has `severity: 'warning'`, a `code`, `nodes`, `elements` (compiled element ids, including expanded subcircuit names), and a one-line `hint`.
@@ -66,13 +84,17 @@ Interpolation is linear in the published axis and signal, including AC Hz/dB.
 Window boundaries are interpolated. `avg` is axis-weighted; `rms` integrates the
 square of the piecewise-linear signal, not the mean square of unevenly spaced samples.
 Descending DC axes are supported. OP reductions treat the signal as one sample at
-coordinate 0; OP crossings are unavailable. Stepped results with repeated analysis
-indices return `AMBIGUOUS_ANALYSIS`; run steps separately.
+coordinate 0; OP crossings are unavailable. Optional `step` is a nonnegative integer
+matching the zero-based `step.index` metadata in `SimulationResultV1`. Select each
+corner in the same request, for example `{ kind: 'max', signal: 'v(out)', analysis: 0, step: 2 }`.
+Omitting `step` for repeated analysis indices returns `AMBIGUOUS_ANALYSIS` with the
+available step count. An unavailable step returns `UNKNOWN_STEP`. Unstepped analyses
+accept an omitted `step` or `step: 0` and reject other indices with `UNKNOWN_STEP`.
 
 The response is `{ measurements: [{ value, unit } | { error: { code, message } }] }`,
 in request order, never vectors. Units are V/A/dB for signal values and s/Hz/the DC
 source unit for crossings. Per-item codes include `INVALID_MEASUREMENT`,
-`UNKNOWN_SIGNAL`, `UNKNOWN_ANALYSIS`, `AMBIGUOUS_ANALYSIS`, `OUT_OF_RANGE`,
+`UNKNOWN_SIGNAL`, `UNKNOWN_ANALYSIS`, `AMBIGUOUS_ANALYSIS`, `UNKNOWN_STEP`, `OUT_OF_RANGE`,
 `NO_CROSSING`, and `NON_FINITE_RESULT` (including dB of zero).
 Malformed lists fail the tool with `INVALID_REQUEST`; simulation failures use the
 usual tool error. Lists contain 1 through 128 items, signals at most 256 characters.

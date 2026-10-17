@@ -90,7 +90,10 @@ export function assertNoiseDevicesSupported(compiled: CompiledCircuit): void {
           `.noise does not support BJT base resistance with XCJC < 1 for '${device.name}'`,
         );
       }
-    } else if (device instanceof BSIM3v3) kind = 'MOSFET';
+    } else if (device instanceof BSIM3v3) {
+      device.assertQuasiStaticSmallSignal();
+      kind = 'MOSFET';
+    }
     // b1noi.c / b2noi.c are not ported; reject rather than treat the channel as noiseless.
     else if (device instanceof ClassicBsimMosfet) kind = `MOSFET ${device.setup.kind}`;
     // mos2noi.c is not ported; reject rather than treat the MOS2 channel as noiseless.
