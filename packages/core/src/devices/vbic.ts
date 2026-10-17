@@ -13,7 +13,7 @@ const NOMINAL_TEMPERATURE_C = 27;
 const ACTIVE_PARAMETERS = [
   'IS', 'IBEI', 'IBEN', 'IBCI', 'IBCN', 'ISP', 'IBCIP', 'IBCNP',
   'NF', 'NR', 'NEI', 'NEN', 'NCI', 'NCN', 'NFP', 'NCIP', 'NCNP',
-  'RCX', 'RCI', 'RBX', 'RBI', 'RE', 'RS', 'RBP',
+  'RCX', 'RCI', 'RBX', 'RBI', 'RE', 'RS', 'RBP', 'FC',
   'VEF', 'VER', 'IKF', 'IKR', 'IKP', 'VO', 'GAMM', 'HRCF', 'AVC1', 'AVC2',
 ] as const;
 /**
@@ -77,6 +77,7 @@ const DEFAULTS: VBICParams = {
   RE: 0,
   RS: 0,
   RBP: 0.1,
+  FC: 0.9,
   VEF: 0,
   VER: 0,
   IKF: 0,
@@ -137,6 +138,9 @@ export function resolveVBICParams(
     if (resolved[name] <= 0) throw new InvalidCircuitError(`Invalid bounded VBIC DC model parameter: '${name}'`);
   }
   if (resolved.TNOM <= -273.15) throw new InvalidCircuitError("Invalid bounded VBIC DC model parameter: 'TNOM'");
+  // Bounded physical domain. ngspice vbicsetup.c defaults FC to 0.9 but
+  // vbicmpar.c does not validate it; FC=1 makes the charge formula singular.
+  if (resolved.FC < 0 || resolved.FC >= 1) throw new InvalidCircuitError("Invalid bounded VBIC DC model parameter: 'FC'");
   return resolved;
 }
 
@@ -213,9 +217,10 @@ function diode(voltage: Dual, current: number, ideality: number, vt: number): Du
   return scale(sub(exp(scale(voltage, 1 / (ideality * vt))), c(1, voltage.derivative.length)), current);
 }
 
-function depletionCharge(voltage: Dual, potential: number, grading: number): Dual {
+// ngspice-47 vbicload.c:2238-2283 (BE), 2482-2543 (BC), revision
+// a80f6e3e95d51534905b1f23410a951802666656. AJE/AJC/AJS <= 0.
+function depletionCharge(voltage: Dual, potential: number, grading: number, fc: number): Dual {
   const size = voltage.derivative.length;
-  const fc = 0.9;
   const delta = voltage.value - potential * fc;
   if (delta > 0) {
     const pw = Math.pow(1 - fc, -1 - grading);
@@ -303,8 +308,8 @@ function evaluate(
 
   const ifi = diode(vbei, thermal.IS, params.NF, vt);
   const iri = diode(vbci, thermal.IS, params.NR, vt);
-  const qdbe = depletionCharge(vbei, PE, ME);
-  const qdbc = depletionCharge(vbci, PC, MC);
+  const qdbe = depletionCharge(vbei, PE, ME, params.FC);
+  const qdbc = depletionCharge(vbci, PC, MC, params.FC);
   const q1z = add(c(1, size), add(
     scale(qdbe, reciprocalOrZero(params.VER)),
     scale(qdbc, reciprocalOrZero(params.VEF)),
@@ -365,8 +370,8 @@ function evaluate(
   const qbe = add(scale(qdbe, thermal.CJE), div(mul(tff, ifi), qb));
   const qbc = add(add(scale(qdbc, thermal.CJC), scale(iri, params.TR)), scale(kbci, params.QCO));
   const qbcx = scale(kbcx, params.QCO);
-  const qbep = add(scale(depletionCharge(vbep, PC, MC), thermal.CJEP), scale(ifp, params.TR));
-  const qbcp = thermal.CJCP > 0 ? scale(depletionCharge(vbcp, PS, MS), thermal.CJCP) : c(0, size);
+  const qbep = add(scale(depletionCharge(vbep, PC, MC, params.FC), thermal.CJEP), scale(ifp, params.TR));
+  const qbcp = thermal.CJCP > 0 ? scale(depletionCharge(vbcp, PS, MS, params.FC), thermal.CJCP) : c(0, size);
 
   const residual = Array.from({ length: nodeCount }, () => c(0, size));
   const charge = Array.from({ length: nodeCount }, () => c(0, size));
