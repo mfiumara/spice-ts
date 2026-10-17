@@ -22,18 +22,17 @@ describe('VDMOS ngspice-47 noise parity (#1348)', () => {
     }
   });
 
-  it('matches self-heating complex AC transfer (#1354)', async () => {
-    const input = readFileSync(new URL('../../../../benchmarks/vdmos-noise/self-heating.cir', import.meta.url), 'utf8');
+  it.each(reference.cases.filter(c => c.ac))('matches $name complex AC transfer (#1354)', async ({ name, ac: expected }) => {
+    const input = readFileSync(new URL(`../../../../benchmarks/vdmos-noise/${name}.cir`, import.meta.url), 'utf8');
     const ac = (await simulate(input.slice(0, input.indexOf('.noise')) + '.ac dec 1 1 1meg\n.end\n')).ac!;
-    const expected = reference.cases.find(c => c.name === 'self-heating')!.ac!;
     const actual = ac.voltage('out');
-    expect(actual).toHaveLength(expected.frequency.length);
-    expect(ac.frequencies).toHaveLength(expected.frequency.length);
-    for (let i = 0; i < expected.frequency.length; i++) {
+    expect(actual).toHaveLength(expected!.frequency.length);
+    expect(ac.frequencies).toHaveLength(expected!.frequency.length);
+    for (let i = 0; i < expected!.frequency.length; i++) {
       const re = actual[i].magnitude * Math.cos(actual[i].phase * Math.PI / 180);
       const im = actual[i].magnitude * Math.sin(actual[i].phase * Math.PI / 180);
-      expect(Math.hypot(re - expected['vr(out)'][i], im - expected['vi(out)'][i])
-        / Math.hypot(expected['vr(out)'][i], expected['vi(out)'][i])).toBeLessThan(1e-4);
+      expect(Math.hypot(re - expected!['vr(out)'][i], im - expected!['vi(out)'][i])
+        / Math.hypot(expected!['vr(out)'][i], expected!['vi(out)'][i])).toBeLessThan(1e-4);
     }
   });
 

@@ -24,7 +24,7 @@ async function main(): Promise<void> {
   if (!execFileSync('ngspice', ['--version'], { encoding: 'utf8' }).includes('ngspice-47')) {
     throw new Error('This reference requires ngspice-47');
   }
-  const decks = ['unsupported', 'flicker', 'pchan', 'self-heating'];
+  const decks = ['unsupported', 'flicker', 'pchan', 'self-heating', 'self-heating-inverse-n', 'self-heating-inverse-p'];
   const update = process.argv.includes('--update');
   const cases = [];
   for (const name of decks) {
@@ -38,7 +38,7 @@ async function main(): Promise<void> {
     }
     let ac: Record<string, number[]> | undefined;
     const acDeck = deck.slice(0, deck.indexOf('.noise')) + '.ac dec 1 1 1meg\n.end\n';
-    if (name === 'self-heating') {
+    if (name.startsWith('self-heating')) {
       const directory = mkdtempSync(join(tmpdir(), 'vdmos-ac-'));
       try {
         const path = join(directory, 'ac.cir');

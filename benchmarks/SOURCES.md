@@ -2,8 +2,12 @@
 
 ## VDMOS noise parity and self-heating boundary (#1348)
 
-`benchmarks/vdmos-noise/{unsupported,flicker,pchan,self-heating}.cir` are original
+`benchmarks/vdmos-noise/{unsupported,flicker,pchan,self-heating,self-heating-inverse-n,self-heating-inverse-p}.cir` are original
 MIT-licensed spice-ts regression decks, consumed by `noise-vdmos-1348.test.ts`.
+The inverse N/P decks connect the intrinsic source through RS to the output,
+not AC ground. RTHJC=20 K/W makes thermal feedback observable at the unchanged
+1e-4 relative-error gate; both AC transfer and noise spectra fail before the
+inverse thermal source-row sign fix. Existing decks and tolerances are unchanged.
 The legacy `unsupported.cir` filename is retained as the original reproducer;
 it now has noise parity. The comparison runs identical bytes on both engines.
 Regenerate the ngspice-47 reference vectors with
