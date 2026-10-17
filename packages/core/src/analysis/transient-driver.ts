@@ -134,10 +134,23 @@ export interface TransientSim {
   dispose(): void;
 }
 
+/** Debug-only rejected trial. Both LTE tests can fail on the same trial. */
+export interface TransientRejection {
+  reason: 'voltage-lte' | 'charge-lte' | 'voltage-and-charge-lte' | 'newton' | 'breakpoint';
+  /** Trial endpoint, not the last accepted time. */
+  time: number;
+  timestep: number;
+  nextTimestep: number;
+  voltageRatio?: number;
+  chargeBound?: number;
+}
+
 export interface TransientSimOptions extends SimulationOptions {
   stopTime?: number;
   timestep?: number;
   maxTimestep?: number;
+  /** Opt-in synchronous debug observer. No event is allocated when absent. */
+  onReject?: (rejection: TransientRejection) => void;
 }
 
 export async function createTransientSim(
@@ -182,7 +195,7 @@ export async function createTransientSim(
   const resolved = resolveOptions(effectiveOptions, stopTime);
 
   return new TransientSimImpl(compiled, resolved, {
-    stopTime, timestep, maxTimestep,
+    stopTime, timestep, maxTimestep, onReject: options?.onReject,
     initialSolution: tranAnalysis?.useInitialConditions
       ? computeUICInitialSolution(compiled)
       : undefined,
@@ -191,6 +204,7 @@ export async function createTransientSim(
 }
 
 interface InternalTransientConfig {
+  onReject?: (rejection: TransientRejection) => void;
   stopTime: number | undefined;
   timestep: number;
   maxTimestep: number;
@@ -444,6 +458,7 @@ class TransientSimImpl implements TransientSim {
           this.prevB = undefined;
           this.secondPrevSol = undefined;
           this.assembler.solution.set(prevSol);
+          this.config.onReject?.({ reason: 'newton', time: nextTime, timestep: actualDt, nextTimestep: this.dt });
           continue;
         }
         this.dt = this.dt / DT_CUT_FACTOR;
@@ -462,14 +477,17 @@ class TransientSimImpl implements TransientSim {
             const recoveryCeiling = Math.min(this.config.timestep, this.config.maxTimestep);
             this.dt = Math.max(recoveryCeiling / IMPLICIT_BREAK_DT_CUT, MIN_TIMESTEP);
             discontinuityRecoveryAttempted = true;
+            this.config.onReject?.({ reason: 'newton', time: nextTime, timestep: actualDt, nextTimestep: this.dt });
             continue;
           }
           this.convergenceTelemetry.transient.failure = 'dt-floor';
+          this.config.onReject?.({ reason: 'newton', time: nextTime, timestep: actualDt, nextTimestep: this.dt });
           throw new TimestepTooSmallError(
             this.time, this.dt, snapshotConvergenceTelemetry(this.convergenceTelemetry),
           );
         }
         this.assembler.solution.set(prevSol);
+        this.config.onReject?.({ reason: 'newton', time: nextTime, timestep: actualDt, nextTimestep: this.dt });
         continue;
       }
 
@@ -486,6 +504,13 @@ class TransientSimImpl implements TransientSim {
         this.progress.lteRejected();
         this.convergenceTelemetry.transient.rejectedSteps++;
         this.convergenceTelemetry.transient.lteRetries++;
+        this.config.onReject?.({
+          reason: lteRatio > 1
+            ? (chargeBound < CHARGE_LTE_ACCEPT_FRACTION * actualDt ? 'voltage-and-charge-lte' : 'voltage-lte')
+            : 'charge-lte',
+          time: nextTime, timestep: actualDt, nextTimestep: this.dt,
+          voltageRatio: lteRatio, chargeBound,
+        });
         continue;
       }
       this.lteRejectCount = 0;
@@ -507,6 +532,7 @@ class TransientSimImpl implements TransientSim {
         this.assembler.solution.set(prevSol);
         this.convergenceTelemetry.transient.rejectedSteps++;
         this.processEvents();
+        this.config.onReject?.({ reason: 'breakpoint', time: nextTime, timestep: actualDt, nextTimestep: this.dt });
         continue;
       }
       const next = this.orderAfterAcceptedStep(actualDt, integration, chargeBound);
@@ -985,6 +1011,7 @@ export function createDriverFromCompiled(
     operatingPoint?: { useDcSourceValue: boolean };
     convergence?: ConvergenceTelemetry;
     guard?: ProtocolExecutionGuard;
+    onReject?: (rejection: TransientRejection) => void;
   },
 ): TransientSim & {
   peekInitialStep(): TransientStep;
@@ -1000,6 +1027,7 @@ export function createDriverFromCompiled(
     operatingPoint: config.operatingPoint,
     convergence: config.convergence,
     guard: config.guard,
+    onReject: config.onReject,
   });
   return impl;
 }
