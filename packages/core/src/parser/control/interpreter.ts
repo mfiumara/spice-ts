@@ -41,9 +41,9 @@ export interface ControlHostRun {
  */
 export interface ControlHost {
   /** Solve one analysis given as the tokens of its dot card (`['.TRAN', '1n', '1u']`). */
-  runAnalysis(dotCardTokens: string[], line: ControlSourceLine): ControlHostRun;
+  runAnalysis(dotCardTokens: string[], line: ControlSourceLine, saves: readonly string[]): ControlHostRun;
   /** Solve the deck's own dot-card analyses (ngspice `run`). */
-  runDeck(line: ControlSourceLine): ControlHostRun[];
+  runDeck(line: ControlSourceLine, saves: readonly string[]): ControlHostRun[];
   /** `alter`: set an instance parameter (`undefined` = the device's primary value). */
   alterInstance(device: string, parameter: string | undefined, values: number[], line: ControlSourceLine): void;
   /** `altermod`: set a `.model` parameter. */
@@ -262,7 +262,7 @@ class ControlInterpreter {
     switch (name) {
       case 'op': case 'dc': case 'ac': case 'tran': case 'noise': case 'sp': case 'sens': {
         const tokens = tokenizeNetlist(text)[0]?.tokens ?? [];
-        const run = this.host.runAnalysis([`.${name.toUpperCase()}`, ...tokens.slice(1)], line);
+        const run = this.host.runAnalysis([`.${name.toUpperCase()}`, ...tokens.slice(1)], line, [...this.savedDeviceVectors]);
         this.recordRun(run);
         this.transientTask = run.directive.type === 'tran' ? run.directive : undefined;
         return;
@@ -272,7 +272,7 @@ class ControlInterpreter {
           throw new UnsupportedControlCommandError('run', 'writing a raw file from run is not supported', line.lineNumber, line.text);
         }
         {
-          const runs = this.host.runDeck(line);
+          const runs = this.host.runDeck(line, [...this.savedDeviceVectors]);
           for (const run of runs) this.recordRun(run);
           this.transientTask = runs.map(run => run.directive).find(
             (directive): directive is TransientAnalysis => directive.type === 'tran',
@@ -314,6 +314,13 @@ class ControlInterpreter {
         return;
       case 'setplot': return this.setplot(rest);
       case 'destroy': return this.destroy(rest);
+      case 'remzerovec':
+        // ngspice-47 frontend/postcoms.c:77-92 (com_remzerovec) marks only
+        // current-plot zero-length vectors for vec_gc; arguments are ignored.
+        for (const [name, vector] of this.current.vectors) {
+          if (vector.re.length === 0) this.current.vectors.delete(name);
+        }
+        return;
       case 'compose': return this.compose(rest, line);
       case 'strcmp': return this.strcmp(rest, line);
       case 'meas': return this.meas(rest, line);
@@ -918,6 +925,19 @@ class ControlInterpreter {
         const scale = realVector(scaleName, sweep ? sweep.sweepValues : []);
         const plot = this.newPlot('dc', 'DC transfer characteristic', scale, saves);
         if (sweep) {
+          for (const [name, values] of sweep.deviceVectors) plot.vectors.set(name, realVector(name, values, scale));
+          // ngspice 3ef069f: frontend/outitf.c:837-861 samples saved special
+          // parameters per point; frontend/vectors.c:613-640 looks up that plot
+          // vector before falling back to a live scalar device query. Use the
+          // sweep values, not the source's restored value after the sweep.
+          for (const [name, values] of [
+            [source, sweep.sweepValues],
+            [directive.secondary?.source.toLowerCase(), sweep.secondarySweepValues],
+          ] as const) {
+            if (!name || !values || !/^[vi]/.test(name)) continue;
+            const saved = `@${name}[dc]`;
+            if (saves.has(saved)) plot.vectors.set(saved, realVector(saved, values, scale));
+          }
           for (const [node, values] of sweep.voltages) plot.vectors.set(node.toLowerCase(), realVector(node, values, scale));
           for (const [branch, values] of sweep.currents) {
             plot.vectors.set(`${branch.toLowerCase()}#branch`, realVector(`${branch}#branch`, values, scale));
@@ -930,6 +950,7 @@ class ControlInterpreter {
         const scale = realVector('time', transient ? transient.time : []);
         const plot = this.newPlot('tran', 'Transient Analysis', scale, saves);
         if (transient) {
+          for (const [name, values] of transient.deviceVectors) plot.vectors.set(name, realVector(name, values, scale));
           for (const [node, values] of transient.voltages) plot.vectors.set(node.toLowerCase(), realVector(node, values, scale));
           for (const [branch, values] of transient.currents) {
             plot.vectors.set(`${branch.toLowerCase()}#branch`, realVector(`${branch}#branch`, values, scale));

@@ -13,6 +13,7 @@ import { Resistor } from '../devices/resistor.js';
 import { SwitchBase } from '../devices/switch.js';
 import { VoltageSource } from '../devices/voltage-source.js';
 import { otaNoiseSources } from '../devices/xspice/ota-model.js';
+import { gainNoiseSources } from '../devices/xspice/gain-noise.js';
 import { VBIC } from '../devices/vbic.js';
 import { InvalidCircuitError } from '../errors.js';
 import { createMatrixVariableIdentities, MNAAssembler } from '../mna/assembler.js';
@@ -90,7 +91,10 @@ export function assertNoiseDevicesSupported(compiled: CompiledCircuit): void {
           `.noise does not support BJT base resistance with XCJC < 1 for '${device.name}'`,
         );
       }
-    } else if (device instanceof BSIM3v3) kind = 'MOSFET';
+    } else if (device instanceof BSIM3v3) {
+      device.assertQuasiStaticSmallSignal(false);
+      kind = 'MOSFET';
+    }
     // b1noi.c / b2noi.c are not ported; reject rather than treat the channel as noiseless.
     else if (device instanceof ClassicBsimMosfet) kind = `MOSFET ${device.setup.kind}`;
     // mos2noi.c is not ported; reject rather than treat the MOS2 channel as noiseless.
@@ -353,7 +357,7 @@ export function solveNoise(
       currentPowerDensity: (frequency: number) =>
         source.flickerCoefficient / Math.pow(frequency, device.params.BFN),
     }]));
-  const noiseSources = [...resistorSources, ...switchSources, ...mosfetSources, ...bjtSources, ...vbicSources, ...devices.flatMap(otaNoiseSources)];
+  const noiseSources = [...resistorSources, ...switchSources, ...mosfetSources, ...bjtSources, ...vbicSources, ...devices.flatMap(otaNoiseSources), ...devices.flatMap(gainNoiseSources)];
 
   const frequencies = frequencyGrid(analysis, options.reltol, 'noise');
   const hasIntegratedTotals = analysis.stopFreq > analysis.startFreq;
@@ -390,12 +394,13 @@ export function solveNoise(
       const rhs = new Float64Array(systemSize);
       if (positive >= 0) rhs[positive] -= currentDensity;
       if (negative >= 0) rhs[negative] += currentDensity;
+      const source = noiseSources[index];
+      if ('branch' in source && typeof source.branch === 'number') rhs[nodeCount + source.branch] += currentDensity;
       const [real, imaginary] = solver.solve(rhs, zeroImaginary);
       const contribution = Math.sign(powerDensity) * differentialMagnitudeSquared(
         real, imaginary, outputIndex, outputReferenceIndex,
       );
       sourceOutputPowerDensity[index].push(contribution);
-      const source = noiseSources[index];
       if (!('excludeFromSpectrum' in source && source.excludeFromSpectrum)) {
         outputPowerDensity += contribution;
       }
