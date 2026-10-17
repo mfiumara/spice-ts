@@ -1,5 +1,39 @@
 # Benchmark sources
 
+## VBIC VTF forward transit-time Vbc dependence (#1300)
+
+`benchmarks/vbic-vtf/vtf.cir` is an original project-authored MIT probe.
+Both engines receive identical bytes: five complex AC points (100 MHz–10 GHz)
+and a 5 ns PWL transient. Regenerate the test-consumed `ngspice-47.json` from
+the repo root with `spice-heavy pnpm exec tsx benchmarks/vbic-vtf/reference.ts`.
+Set TMPDIR to an appropriate scratch directory. The generator checks ngspice-47;
+`vbic-vtf.test.ts` checks the netlist SHA-256, frequencies and transient coverage,
+then linearly interpolates spice-ts onto all 1,020 ngspice transient times.
+Error is max absolute complex distance (AC) or voltage difference (TRAN),
+normalized by the reference peak of each signal, not by instantaneous voltage.
+
+Darwin arm64, ngspice-47: collector/base AC max absolute errors are
+7.646392723943314e-12 / 1.3919430203557881e-12 V, peak-normalized
+3.5034358547731467e-12 / 1.3950203583134843e-12. Transient errors are
+2.1070071874795815e-5 / 5.081838456710841e-6 V, peak-normalized
+1.0841715193878487e-5 / 7.059307849897501e-6. Before support this deck
+rejects VTF: no fabricated before waveform or speed comparison is claimed.
+
+Equations follow BSD-3-Clause ngspice revision
+`a80f6e3e95d51534905b1f23410a951802666656`,
+[`vbicload.c:2223-2227,3859-3888`](https://github.com/ngspice/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/src/spicelib/devices/vbic/vbicload.c#L3859),
+`vbicsetup.c:218-219` and `vbictemp.c:127`. Finite VTF <= 0 disables the
+exponent; positive VTF uses exp(Vbci/(1.44*VTF)), with the generated
+Jacobian's rounded 0.6944444/VTF slope. VTF is not temperature mapped.
+Independent charge/derivative tests cover ITF=0/nonzero, reverse/zero/forward
+BE bias, reverse/forward BC bias, NPN/PNP, and scale 3. The shared derivatives
+feed AC and transient stamps. Omitted/zero/negative VTF preserve the pre-change
+DC/AC/transient fingerprint in the committed test exactly.
+
+The byte-identical corpus DFF_Y_ECL.sp now rejects the independent RBP=0
+bounded-domain restriction (`Invalid bounded VBIC DC model parameter: 'RBP'`).
+Compile and simulate regressions pin that next failure; DFF parity is not claimed.
+
 ## VBIC parasitic base-emitter currents IBEIP/IBENP (#1297)
 
 `benchmarks/vbic-ibeip/ibeip.cir` is an original project-authored MIT probe.
@@ -25,8 +59,8 @@ both polarities, ideal/nonideal/both currents, 0/27/75 C and instance scale 3.
 `vbicmpar.c:240-247` assigns both parameters without range validation;
 spice-ts deliberately accepts only finite nonnegative saturation currents.
 Omitted and explicit-zero parameters retain the pre-existing DC/AC/transient
-stamp SHA-256 exactly. The unchanged DFF_Y_ECL.sp remains unsupported at VTF;
-this is not a DFF waveform parity claim.
+stamp SHA-256 exactly. At #1297 the unchanged DFF_Y_ECL.sp remained unsupported
+at VTF (advanced to RBP=0 by #1300 above); this is not a DFF waveform parity claim.
 
 ## VBIC substrate-parasitic weighting WSP (#1294)
 

@@ -25,7 +25,7 @@ const ACTIVE_PARAMETERS = [
  * node to ground and self-heating cannot change any node voltage.
  */
 const DC_INERT_PARAMETERS = [
-  'CJE', 'CJC', 'CJEP', 'CJCP', 'QCO', 'TF', 'TR', 'TD', 'ITF', 'XTF', 'RTH',
+  'CJE', 'CJC', 'CJEP', 'CJCP', 'QCO', 'TF', 'TR', 'TD', 'ITF', 'XTF', 'VTF', 'RTH',
   'KFN', 'AFN', 'BFN',
 ] as const;
 /** Temperature mapping inputs (ngspice vbictemp.c); TNOM defaults to 27 C. */
@@ -102,6 +102,7 @@ const DEFAULTS: VBICParams = {
   TD: 0,
   ITF: 0,
   XTF: 0,
+  VTF: 0,
   RTH: 0,
   KFN: 0,
   AFN: 1,
@@ -136,7 +137,8 @@ export function resolveVBICParams(
     'RCX', 'RBX', 'RE', 'RS', 'VEF', 'VER', 'IKF', 'IKR', 'IKP',
     'VO', 'GAMM', 'AVC1', 'AVC2', ...DC_INERT_PARAMETERS,
   ] as const) {
-    if (resolved[name] < 0) throw new InvalidCircuitError(`Invalid bounded VBIC DC model parameter: '${name}'`);
+    // ngspice vbicload.c disables IVTF for every finite VTF <= 0.
+    if (name !== 'VTF' && resolved[name] < 0) throw new InvalidCircuitError(`Invalid bounded VBIC DC model parameter: '${name}'`);
   }
   for (const name of ['RCI', 'RBI', 'RBP', 'HRCF', 'NF', 'NR', 'NEI', 'NEN', 'NCI', 'NCN', 'NFP', 'NCIP', 'NCNP'] as const) {
     if (resolved[name] <= 0) throw new InvalidCircuitError(`Invalid bounded VBIC DC model parameter: '${name}'`);
@@ -302,7 +304,7 @@ const EXCESS_PHASE_BRANCHES: readonly (readonly [number, number])[] = [[XF1, NO_
  * currents, GAMM, built-in potentials and zero-bias capacitances); every other
  * parameter is temperature independent with ngspice's default exponents.
  * Charges follow ngspice vbic_4T_et_cf_fj with AJE/AJC/AJS <= 0,
- * QTF = VTF = CBEO = CBCO = CCSO = 0. With TD > 0 the forward transport current
+ * QTF = CBEO = CBCO = CCSO = 0. With TD > 0 the forward transport current
  * passes through ngspice's second-order excess-phase network (nodes xf1/xf2).
  */
 function evaluate(
@@ -380,17 +382,23 @@ function evaluate(
   // ngspice: Iciei = Itxf - Itzr, with Itxf = V(xf2) when excess phase is on.
   const iciei = excessPhase ? sub(xf2, itzr) : transport;
 
-  // Forward transit time with ITF/XTF bias dependence (QTF = VTF = 0).
+  // Forward transit time with ITF/XTF/VTF bias dependence (QTF = 0).
   const forwardPositive = ifi.value > 0 ? 1 : 0;
   const relativeForward = scale(ifi, forwardPositive * reciprocalOrZero(params.ITF));
   const highCurrent = div(relativeForward, add(relativeForward, c(1, size)));
-  const tff = scale(
-    add(c(1, size), scale(
-      add(c(params.ITF > 0 ? 0 : 1, size), mul(highCurrent, highCurrent)),
-      params.XTF * forwardPositive,
-    )),
-    params.TF,
+  const enhancement = scale(
+    add(c(params.ITF > 0 ? 0 : 1, size), mul(highCurrent, highCurrent)),
+    params.XTF * forwardPositive,
   );
+  // ngspice-47 vbicload.c:2223-2227,3859-3863 (a80f6e3e):
+  // value uses 1/1.44, but the generated Jacobian rounds it to 0.6944444.
+  // Do not clamp this exponential like the junction diode helper. Keep the
+  // disabled/default arithmetic path bit-identical, including signed zeros.
+  const vtfExp = params.VTF > 0 ? Math.exp(vbci.value * (1 / params.VTF) / 1.44) : 1;
+  const biasedEnhancement = params.VTF > 0
+    ? mul(map(vbci, vtfExp, vtfExp * 0.6944444 / params.VTF), enhancement)
+    : enhancement;
+  const tff = scale(add(c(1, size), biasedEnhancement), params.TF);
   // ngspice-47 vbicload.c:3874-3896: partition depletion only; forward
   // diffusion remains intrinsic. The extrinsic integral uses Vbex, not Vbei.
   const qbe = add(scale(qdbe, thermal.CJE * params.WBE), div(mul(tff, ifi), qb));
