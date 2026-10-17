@@ -21,6 +21,36 @@ RD d 0 1k
 .end`;
 
 describe('opt-in transient rejection telemetry (#1310)', () => {
+  it.each(['stepping', 'compiled'] as const)(
+    'reports the resolved oscillation-floor recovery timestep in the %s driver',
+    async driver => {
+      const events: TransientRejection[] = [];
+      const onReject = (event: TransientRejection) => events.push(event);
+      const netlist = SINE.replace('.tran 100n 1u', '.tran 1f 1p');
+      const sim = driver === 'stepping'
+        ? await createTransientSim(netlist, { onReject })
+        : createDriverFromCompiled(parse(netlist).compile(), resolveOptions({}, 1e-12), {
+          stopTime: 1e-12, timestep: 1e-15, maxTimestep: 1e-15, onReject,
+        });
+      const attempt = vi.spyOn(stepping, 'attemptStep').mockReturnValueOnce({
+        ok: false, reason: 'nr-divergence', iterations: 100, oscillated: true,
+        lastSolution: new Float64Array(), prevIterSolution: new Float64Array(),
+      });
+      try {
+        if (driver === 'compiled' && 'advanceSolution' in sim) sim.advanceSolution();
+        else sim.advance();
+        expect(events).toHaveLength(1);
+        expect(events[0].reason).toBe('newton');
+        expect(attempt.mock.calls.length).toBeGreaterThanOrEqual(2);
+        expect(events[0].nextTimestep).toBe(attempt.mock.calls[1][1].dt);
+        expect(events[0].nextTimestep).toBe(1e-15);
+      } finally {
+        attempt.mockRestore();
+        sim.dispose();
+      }
+    },
+  );
+
   it('reports a Newton retry even when recovery changes method without cutting dt', async () => {
     const events: TransientRejection[] = [];
     const sim = await createTransientSim(JFET.replace('.end', 'L1 d 0 1m\n.end'), {
