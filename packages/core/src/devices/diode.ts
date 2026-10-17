@@ -647,13 +647,17 @@ export class Diode implements DeviceModel {
     };
   }
 
-  /** DC junction current used by the small-signal shot/flicker noise model. */
+  /** DC junction current for device readouts and small-signal shot/flicker noise. */
   noiseOperatingPoint(solution: Float64Array, gmin = DEVICE_GMIN): {
     current: number;
     flickerCoefficient: number;
     flickerExponent: number;
     parallelMultiplier: number;
   } {
+    if (this.selfHeating) {
+      this.temperature = this.ambientTemperature + solution[this.nodes[2]];
+      this.applyTemperature();
+    }
     const [nA, nK] = this.nodes;
     const terminalVoltage = (nA >= 0 ? solution[nA] : 0) - (nK >= 0 ? solution[nK] : 0);
     const { RS, KF, AF } = this.params;

@@ -6,9 +6,12 @@
 `examples/soa/diode-soa-sh.cir` from ngspice-47 (BSD-3-Clause; provenance and
 licence in `corpus/corpus-f/SOURCES.md` and `corpus/corpus-f/LICENSE.txt`).
 SHA-256: `24c5c8568ebe8c15d8d8b603e84db3d98e8914767e1de1f4f266f242828f066f`.
-It reports the public API outcome separately from an isolated DC solver
-comparison, because saved `@d1[id]` SOA postprocessing remains unsupported.
-Both waveforms use the uniform 1%-of-peak threshold. Timings measure different
+It runs the original deck through the public API, including saved `@d1[id]`
+and SOA postprocessing, and compares temperature, source current and saved diode
+current at all 100 DC points. All waveforms use the uniform 1%-of-peak threshold.
+The project-authored MIT saved-current unit deck freezes ngspice-47 DC currents
+and thermal state with tight solver options and a 1e-6 relative threshold.
+Timings measure different
 execution boundaries and are diagnostic only, not a speed comparison.
 Thermal semantics follow ngspice-47 `src/spicelib/devices/dio/dioparam.c:47-49`
 (flag), `dioload.c:80,318-322,749-759,790-822` (activation, temperature,
