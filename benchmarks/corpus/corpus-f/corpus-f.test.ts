@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import './metric-performance.test.js';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { existsSync } from 'node:fs';

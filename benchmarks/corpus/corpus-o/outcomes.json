@@ -15,7 +15,7 @@
     }
   ],
   "manifestSha256": "747644df64086743c948043a402a2e44c3594ecf7e01a0154d1a2ebc56449a19",
-  "coreTree": "49d204aa62f9a8c876603a588ca932709aba0c8d",
+  "coreTree": "f9ae4bafd32a029c2ceaba2023835baaccc073f1",
   "tools": {
     "ngspice": "ngspice-47",
     "spiceTs": "0.4.0",
@@ -63,18 +63,18 @@
       "unsupported": 0
     },
     "outcomes": {
-      "matched": 19,
+      "matched": 21,
       "mismatch": 0,
-      "not-compared": 4,
+      "not-compared": 2,
       "spice-ts-loss": 0,
       "ngspice-failed": 0,
       "both-failed": 0
     },
     "bySource": {
       "xyce": {
-        "matched": 19,
+        "matched": 21,
         "mismatch": 0,
-        "not-compared": 4,
+        "not-compared": 2,
         "spice-ts-loss": 0,
         "ngspice-failed": 0,
         "both-failed": 0
@@ -83,11 +83,11 @@
   },
   "gapBuckets": [],
   "classCounts": {
-    "matched": 19,
+    "matched": 21,
     "mismatch": 0,
     "unsupported": 0,
     "failed": 0,
-    "not-compared": 4
+    "not-compared": 2
   },
   "fixtures": [
     {
@@ -231,8 +231,9 @@
       ],
       "classification": "not-compared",
       "runtime": {
-        "ngspiceChildWallMs": 520.704042,
-        "spiceTsChildWallMs": 1172.209125
+        "ngspiceChildWallMs": 555.8177909999999,
+        "spiceTsChildWallMs": 1221.8055000000002,
+        "metricProcessWallMs": 555.8992080000003
       }
     },
     {
@@ -444,8 +445,9 @@
       ],
       "classification": "matched",
       "runtime": {
-        "ngspiceChildWallMs": 538.5807919999997,
-        "spiceTsChildWallMs": 1330.3778340000003
+        "ngspiceChildWallMs": 568.1313329999998,
+        "spiceTsChildWallMs": 1186.4658749999994,
+        "metricProcessWallMs": 580.2195420000007
       }
     },
     {
@@ -657,8 +659,9 @@
       ],
       "classification": "matched",
       "runtime": {
-        "ngspiceChildWallMs": 748.9162079999996,
-        "spiceTsChildWallMs": 1387.1027919999997
+        "ngspiceChildWallMs": 574.7380410000005,
+        "spiceTsChildWallMs": 1223.1075410000003,
+        "metricProcessWallMs": 544.5329579999998
       }
     },
     {
@@ -870,8 +873,9 @@
       ],
       "classification": "matched",
       "runtime": {
-        "ngspiceChildWallMs": 614.6117079999995,
-        "spiceTsChildWallMs": 2240.9580829999995
+        "ngspiceChildWallMs": 544.0254170000007,
+        "spiceTsChildWallMs": 1303.0654170000016,
+        "metricProcessWallMs": 516.6659999999993
       }
     },
     {
@@ -1083,8 +1087,9 @@
       ],
       "classification": "matched",
       "runtime": {
-        "ngspiceChildWallMs": 1247.0740000000005,
-        "spiceTsChildWallMs": 2501.912624999999
+        "ngspiceChildWallMs": 537.6552500000016,
+        "spiceTsChildWallMs": 1202.695749999999,
+        "metricProcessWallMs": 568.5252909999999
       }
     },
     {
@@ -1296,8 +1301,9 @@
       ],
       "classification": "matched",
       "runtime": {
-        "ngspiceChildWallMs": 726.1984999999986,
-        "spiceTsChildWallMs": 1559.958791000001
+        "ngspiceChildWallMs": 592.4310409999998,
+        "spiceTsChildWallMs": 1208.9243339999994,
+        "metricProcessWallMs": 515.6813330000004
       }
     },
     {
@@ -1509,8 +1515,9 @@
       ],
       "classification": "matched",
       "runtime": {
-        "ngspiceChildWallMs": 649.9246669999993,
-        "spiceTsChildWallMs": 1350.1210419999989
+        "ngspiceChildWallMs": 544.8781250000011,
+        "spiceTsChildWallMs": 1191.943874999999,
+        "metricProcessWallMs": 565.5165840000009
       }
     },
     {
@@ -1722,8 +1729,9 @@
       ],
       "classification": "matched",
       "runtime": {
-        "ngspiceChildWallMs": 600.3287920000002,
-        "spiceTsChildWallMs": 1324.801958
+        "ngspiceChildWallMs": 574.5038339999992,
+        "spiceTsChildWallMs": 1184.582333000002,
+        "metricProcessWallMs": 533.137999999999
       }
     },
     {
@@ -1935,8 +1943,9 @@
       ],
       "classification": "matched",
       "runtime": {
-        "ngspiceChildWallMs": 684.8258749999986,
-        "spiceTsChildWallMs": 1437.200084
+        "ngspiceChildWallMs": 603.8444999999992,
+        "spiceTsChildWallMs": 1345.3822499999987,
+        "metricProcessWallMs": 544.4389169999995
       }
     },
     {
@@ -2080,8 +2089,9 @@
       ],
       "classification": "not-compared",
       "runtime": {
-        "ngspiceChildWallMs": 556.5673749999987,
-        "spiceTsChildWallMs": 1071.890958
+        "ngspiceChildWallMs": 547.1157080000012,
+        "spiceTsChildWallMs": 1336.7144999999982,
+        "metricProcessWallMs": 517.8564170000027
       }
     },
     {
@@ -2293,8 +2303,9 @@
       ],
       "classification": "matched",
       "runtime": {
-        "ngspiceChildWallMs": 527.666541999999,
-        "spiceTsChildWallMs": 1189.377540999998
+        "ngspiceChildWallMs": 540.093541000002,
+        "spiceTsChildWallMs": 1246.514916,
+        "metricProcessWallMs": 547.8424999999988
       }
     },
     {
@@ -2506,8 +2517,9 @@
       ],
       "classification": "matched",
       "runtime": {
-        "ngspiceChildWallMs": 472.3612920000014,
-        "spiceTsChildWallMs": 1229.2292920000036
+        "ngspiceChildWallMs": 567.4073749999989,
+        "spiceTsChildWallMs": 1215.3463340000017,
+        "metricProcessWallMs": 550.1225840000006
       }
     },
     {
@@ -2624,8 +2636,9 @@
       ],
       "classification": "matched",
       "runtime": {
-        "ngspiceChildWallMs": 1024.1789999999964,
-        "spiceTsChildWallMs": 1814.9743329999983
+        "ngspiceChildWallMs": 1021.2012079999986,
+        "spiceTsChildWallMs": 1619.728500000001,
+        "metricProcessWallMs": 732.5624580000003
       }
     },
     {
@@ -2916,8 +2929,9 @@
       ],
       "classification": "matched",
       "runtime": {
-        "ngspiceChildWallMs": 557.2112080000006,
-        "spiceTsChildWallMs": 1421.635209
+        "ngspiceChildWallMs": 555.4777919999979,
+        "spiceTsChildWallMs": 1222.1115839999984,
+        "metricProcessWallMs": 535.3817909999998
       }
     },
     {
@@ -3208,8 +3222,9 @@
       ],
       "classification": "matched",
       "runtime": {
-        "ngspiceChildWallMs": 608.6896669999987,
-        "spiceTsChildWallMs": 1125.2548749999987
+        "ngspiceChildWallMs": 578.5237079999933,
+        "spiceTsChildWallMs": 1254.0128339999937,
+        "metricProcessWallMs": 538.3293750000012
       }
     },
     {
@@ -3500,8 +3515,9 @@
       ],
       "classification": "matched",
       "runtime": {
-        "ngspiceChildWallMs": 625.870124999994,
-        "spiceTsChildWallMs": 1341.7983749999985
+        "ngspiceChildWallMs": 595.851917,
+        "spiceTsChildWallMs": 1460.3665409999958,
+        "metricProcessWallMs": 543.551833000005
       }
     },
     {
@@ -3792,8 +3808,9 @@
       ],
       "classification": "matched",
       "runtime": {
-        "ngspiceChildWallMs": 568.317458000005,
-        "spiceTsChildWallMs": 1544.583166999997
+        "ngspiceChildWallMs": 590.7689159999936,
+        "spiceTsChildWallMs": 1202.4124579999989,
+        "metricProcessWallMs": 589.9221670000043
       }
     },
     {
@@ -4084,8 +4101,9 @@
       ],
       "classification": "matched",
       "runtime": {
-        "ngspiceChildWallMs": 652.1362910000025,
-        "spiceTsChildWallMs": 1583.7319999999963
+        "ngspiceChildWallMs": 565.0355419999978,
+        "spiceTsChildWallMs": 1271.887125000001,
+        "metricProcessWallMs": 546.463582999997
       }
     },
     {
@@ -4110,19 +4128,14 @@
         ]
       },
       "comparedAnalyses": 1,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "not-compared",
+      "comparedSignals": 3,
+      "worstNormalizedError": 1.22e-12,
+      "worstSignal": "tran v(1)",
+      "outcome": "matched",
       "gapBucket": null,
       "comparisons": [
         {
           "analysis": "tran",
-          "plot": {
-            "ngspice": "Transient Analysis",
-            "ngspiceIndex": 0
-          },
-          "unmatched": "spice-ts",
           "signals": [
             "i(vdummy)",
             "v(1)",
@@ -4130,67 +4143,115 @@
           ],
           "metrics": {
             "grid": {
-              "spiceTsPoints": 0,
+              "spiceTsPoints": 10000008,
               "ngspicePoints": 10000008,
-              "alignedPoints": 0,
+              "alignedPoints": 10000008,
               "excludedOutOfRange": 0
             },
             "signals": {
               "i(vdummy)": {
-                "status": "missing",
-                "missingFrom": [
-                  "spice-ts"
-                ]
+                "status": "compared",
+                "sampleCount": 10000008,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": null,
+                  "rms": null,
+                  "sampleCount": 0,
+                  "excludedZeroReferences": 10000008
+                }
               },
               "v(1)": {
-                "status": "missing",
-                "missingFrom": [
-                  "spice-ts"
-                ]
+                "status": "compared",
+                "sampleCount": 10000008,
+                "absoluteError": {
+                  "max": 1.224652985245411e-16,
+                  "rms": 1.2246529852452618e-16
+                },
+                "relativeError": {
+                  "max": null,
+                  "rms": null,
+                  "sampleCount": 0,
+                  "excludedZeroReferences": 10000008
+                }
               },
               "v(2)": {
-                "status": "missing",
-                "missingFrom": [
-                  "spice-ts"
-                ]
+                "status": "compared",
+                "sampleCount": 10000008,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 10000008,
+                  "excludedZeroReferences": 0
+                }
               }
             }
           },
           "linearMetrics": {
             "grid": {
-              "spiceTsPoints": 0,
+              "spiceTsPoints": 10000008,
               "ngspicePoints": 10000008,
-              "alignedPoints": 0,
+              "alignedPoints": 10000008,
               "excludedOutOfRange": 0
             },
             "signals": {
               "i(vdummy)": {
-                "status": "missing",
-                "missingFrom": [
-                  "spice-ts"
-                ]
+                "status": "compared",
+                "sampleCount": 10000008,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": null,
+                  "rms": null,
+                  "sampleCount": 0,
+                  "excludedZeroReferences": 10000008
+                }
               },
               "v(1)": {
-                "status": "missing",
-                "missingFrom": [
-                  "spice-ts"
-                ]
+                "status": "compared",
+                "sampleCount": 10000008,
+                "absoluteError": {
+                  "max": 1.224652985245411e-16,
+                  "rms": 1.2246529852452618e-16
+                },
+                "relativeError": {
+                  "max": null,
+                  "rms": null,
+                  "sampleCount": 0,
+                  "excludedZeroReferences": 10000008
+                }
               },
               "v(2)": {
-                "status": "missing",
-                "missingFrom": [
-                  "spice-ts"
-                ]
+                "status": "compared",
+                "sampleCount": 10000008,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 10000008,
+                  "excludedZeroReferences": 0
+                }
               }
             }
           }
         }
       ],
-      "measurementError": "uniform 119 s metric process-group deadline exceeded",
-      "classification": "not-compared",
+      "classification": "matched",
       "runtime": {
-        "ngspiceChildWallMs": 64852.77233400001,
-        "spiceTsChildWallMs": 12189.362000000008
+        "ngspiceChildWallMs": 44871.106374999996,
+        "spiceTsChildWallMs": 11320.751208999995,
+        "metricProcessWallMs": 56774.791417
       }
     },
     {
@@ -4215,19 +4276,14 @@
         ]
       },
       "comparedAnalyses": 1,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "not-compared",
+      "comparedSignals": 3,
+      "worstNormalizedError": 1.67e-15,
+      "worstSignal": "tran v(2)",
+      "outcome": "matched",
       "gapBucket": null,
       "comparisons": [
         {
           "analysis": "tran",
-          "plot": {
-            "ngspice": "Transient Analysis",
-            "ngspiceIndex": 0
-          },
-          "unmatched": "spice-ts",
           "signals": [
             "i(v1)",
             "v(1)",
@@ -4235,67 +4291,115 @@
           ],
           "metrics": {
             "grid": {
-              "spiceTsPoints": 0,
+              "spiceTsPoints": 10000008,
               "ngspicePoints": 10000008,
-              "alignedPoints": 0,
+              "alignedPoints": 10000008,
               "excludedOutOfRange": 0
             },
             "signals": {
               "i(v1)": {
-                "status": "missing",
-                "missingFrom": [
-                  "spice-ts"
-                ]
+                "status": "compared",
+                "sampleCount": 10000008,
+                "absoluteError": {
+                  "max": 1.4757665443600018e-28,
+                  "rms": 1.4757658319875551e-28
+                },
+                "relativeError": {
+                  "max": null,
+                  "rms": null,
+                  "sampleCount": 0,
+                  "excludedZeroReferences": 10000008
+                }
               },
               "v(1)": {
-                "status": "missing",
-                "missingFrom": [
-                  "spice-ts"
-                ]
+                "status": "compared",
+                "sampleCount": 10000008,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 10000008,
+                  "excludedZeroReferences": 0
+                }
               },
               "v(2)": {
-                "status": "missing",
-                "missingFrom": [
-                  "spice-ts"
-                ]
+                "status": "compared",
+                "sampleCount": 10000008,
+                "absoluteError": {
+                  "max": 3.3306690738754696e-16,
+                  "rms": 3.3306675461632e-16
+                },
+                "relativeError": {
+                  "max": 1.6653345369377324e-15,
+                  "rms": 1.6653337730816e-15,
+                  "sampleCount": 10000008,
+                  "excludedZeroReferences": 0
+                }
               }
             }
           },
           "linearMetrics": {
             "grid": {
-              "spiceTsPoints": 0,
+              "spiceTsPoints": 10000008,
               "ngspicePoints": 10000008,
-              "alignedPoints": 0,
+              "alignedPoints": 10000008,
               "excludedOutOfRange": 0
             },
             "signals": {
               "i(v1)": {
-                "status": "missing",
-                "missingFrom": [
-                  "spice-ts"
-                ]
+                "status": "compared",
+                "sampleCount": 10000008,
+                "absoluteError": {
+                  "max": 1.4757665443600018e-28,
+                  "rms": 1.4757658319875551e-28
+                },
+                "relativeError": {
+                  "max": null,
+                  "rms": null,
+                  "sampleCount": 0,
+                  "excludedZeroReferences": 10000008
+                }
               },
               "v(1)": {
-                "status": "missing",
-                "missingFrom": [
-                  "spice-ts"
-                ]
+                "status": "compared",
+                "sampleCount": 10000008,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 10000008,
+                  "excludedZeroReferences": 0
+                }
               },
               "v(2)": {
-                "status": "missing",
-                "missingFrom": [
-                  "spice-ts"
-                ]
+                "status": "compared",
+                "sampleCount": 10000008,
+                "absoluteError": {
+                  "max": 3.3306690738754696e-16,
+                  "rms": 3.3306675461632e-16
+                },
+                "relativeError": {
+                  "max": 1.6653345369377324e-15,
+                  "rms": 1.6653337730816e-15,
+                  "sampleCount": 10000008,
+                  "excludedZeroReferences": 0
+                }
               }
             }
           }
         }
       ],
-      "measurementError": "uniform 119 s metric process-group deadline exceeded",
-      "classification": "not-compared",
+      "classification": "matched",
       "runtime": {
-        "ngspiceChildWallMs": 40856.529750000016,
-        "spiceTsChildWallMs": 9766.534791000013
+        "ngspiceChildWallMs": 58255.15491700001,
+        "spiceTsChildWallMs": 16760.998332999996,
+        "metricProcessWallMs": 67344.23295899999
       }
     },
     {
@@ -4528,8 +4632,9 @@
       ],
       "classification": "matched",
       "runtime": {
-        "ngspiceChildWallMs": 464.0633749999688,
-        "spiceTsChildWallMs": 998.8219169999938
+        "ngspiceChildWallMs": 678.1647089999751,
+        "spiceTsChildWallMs": 1367.5972089999705,
+        "metricProcessWallMs": 699.4833339999896
       }
     },
     {
@@ -4741,8 +4846,9 @@
       ],
       "classification": "matched",
       "runtime": {
-        "ngspiceChildWallMs": 427.4512500000419,
-        "spiceTsChildWallMs": 1029.766834000009
+        "ngspiceChildWallMs": 673.9780829999945,
+        "spiceTsChildWallMs": 1253.010666999966,
+        "metricProcessWallMs": 548.7562499999767
       }
     },
     {
@@ -4975,22 +5081,21 @@
       ],
       "classification": "matched",
       "runtime": {
-        "ngspiceChildWallMs": 5650.487957999983,
-        "spiceTsChildWallMs": 2512.728958999971
+        "ngspiceChildWallMs": 8792.963499999954,
+        "spiceTsChildWallMs": 3619.855916999979,
+        "metricProcessWallMs": 8109.758166000014
       }
     }
   ],
   "parityGaps": [
     {
       "bucket": "comparison: no comparable result",
-      "count": 4,
+      "count": 2,
       "ids": [
         "o-1",
-        "o-10",
-        "o-19",
-        "o-20"
+        "o-10"
       ]
     }
   ],
-  "outcomeSha256": "a157a1ee425d087057b6b0bf5a36f7bbe2a47e945714f9b3a3dc7a90d7fc3783"
+  "outcomeSha256": "d3f6c2cea2c77320e1c274acb00f2a6fce07ccb1ccf82beedcfd94b5fb59d2a8"
 }

@@ -19,7 +19,7 @@ export const report = parityReport({ name: 'corpus-o', root: ROOT, scriptUrl: im
     { url: 'https://github.com/mfiumara/spice-ts/issues/1315', scope: 'o-6 MOS3 noise implementation and parity rerun' },
     { url: 'https://github.com/mfiumara/spice-ts/issues/1316', scope: 'o-3 MOS9 noise implementation and parity rerun' },
     { url: 'https://github.com/mfiumara/spice-ts/issues/1317', scope: 'o-1/o-10 control-noise reference export, not-compared' },
-    { url: 'https://github.com/mfiumara/spice-ts/issues/1318', scope: 'o-19/o-20 uniform comparison deadline, not-compared' },
+    { url: 'https://github.com/mfiumara/spice-ts/issues/1318', scope: 'o-19/o-20 large-reference metric performance' },
   ], gapBucket });
 export function renderMarkdown(result: CorpusHReport) {
   return report.renderMarkdown(result)
@@ -30,7 +30,7 @@ export function renderMarkdown(result: CorpusHReport) {
     .replace(/\n## Transient fine-step reference \(#592\)[\s\S]*$/, '\n')
     + '\n## All ngspice-success parity gaps\n\n| Bucket | Count | IDs |\n|---|---|---|\n'
     + parityGaps(result.fixtures).map(b => `| ${b.bucket} | ${b.count} | ${b.ids.join(', ')} |`).join('\n')
-    + '\n\n## Measurement boundary\n\nUnchanged corpus-j reduceRow and corpus-f metrics/thresholds. Detailed matched-point max/RMS absolute and relative metrics are in outcomes.json. Null means no comparison, not zero error. Identical original bytes for both engines; no fine-step adapted reference. Serial cold engine-group wall includes startup, adapter, parse/solve and export. No solver-only or speed-superiority claim. Before the MOS2/3/9 noise port: 16 matched, 3 failed, 4 not-compared. This rerun measures the port with unchanged fixtures and comparison policy; remaining exclusions are still published. Aggregate refresh deferred to nightly. The classification/classCounts fields split legacy spice-ts-loss into unsupported and failed; legacy outcomes are retained unchanged. Issue links and exclusions: SOURCES.md.\n';
+    + '\n\n## Measurement boundary\n\nUnchanged corpus-j reduceRow and corpus-f metrics/thresholds. Detailed matched-point max/RMS absolute and relative metrics are in outcomes.json. Null means no comparison, not zero error. Identical original bytes for both engines; no fine-step adapted reference. Serial cold engine-group wall includes startup, adapter, parse/solve and export. No solver-only or speed-superiority claim. Before the MOS2/3/9 noise port and large-reference metric optimization: 16 matched, 3 failed, 4 not-compared. This rerun measures both changes with unchanged fixtures and comparison policy; remaining exclusions are still published. Aggregate refresh deferred to nightly. The classification/classCounts fields split legacy spice-ts-loss into unsupported and failed; legacy outcomes are retained unchanged. Issue links and exclusions: SOURCES.md.\n';
 }
 async function bounded(circuit: Circuit, engine: 'ngspice' | 'spiceTs') {
   const directory = await mkdtemp(resolve(tmpdir(), 'corpus-o-'));
@@ -100,9 +100,11 @@ async function main() {
   for (const circuit of manifest.circuits.slice(fixtures.length)) {
     const ng = await bounded(circuit, 'ngspice');
     const spice = await bounded(circuit, 'spiceTs');
+    const metricStart = performance.now();
     const reduced = await reduceBounded(circuit, ng.run, spice.run.execution);
+    const metricProcessWallMs = performance.now() - metricStart;
     const row = { ...reduced, classification: classification(reduced), gapBucket: gapBucket(reduced.spiceTs.firstErrorLine, reduced.spiceTs.status) ?? null,
-      runtime: { ngspiceChildWallMs: ng.wallMs, spiceTsChildWallMs: spice.wallMs } };
+      runtime: { ngspiceChildWallMs: ng.wallMs, spiceTsChildWallMs: spice.wallMs, metricProcessWallMs } };
     fixtures.push(row);
     await writeFile(`${ROOT}/checkpoint.json`, JSON.stringify(fixtures, null, 2) + '\n');
     console.log(`${circuit.id} ${row.classification}: ng=${row.ngspice.status} ts=${row.spiceTs.status} ${row.spiceTs.firstErrorLine ?? ''}`);
