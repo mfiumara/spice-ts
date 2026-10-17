@@ -943,6 +943,7 @@ class ControlInterpreter {
         const scale = realVector('time', transient ? transient.time : []);
         const plot = this.newPlot('tran', 'Transient Analysis', scale, saves);
         if (transient) {
+          for (const [name, values] of transient.deviceVectors) plot.vectors.set(name, realVector(name, values, scale));
           for (const [node, values] of transient.voltages) plot.vectors.set(node.toLowerCase(), realVector(node, values, scale));
           for (const [branch, values] of transient.currents) {
             plot.vectors.set(`${branch.toLowerCase()}#branch`, realVector(`${branch}#branch`, values, scale));

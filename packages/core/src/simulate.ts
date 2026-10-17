@@ -6,7 +6,7 @@ import type { ControlScript } from './parser/control/script.js';
 import type { ControlSourceLine } from './parser/control/source.js';
 import { runControlScript, type ControlHost, type ControlHostRun } from './parser/control/interpreter.js';
 import { ControlScriptError, UnsupportedControlCommandError } from './parser/control/errors.js';
-import { controlOperatingState, deviceOutputVector, type ControlOperatingState } from './control-device-output.js';
+import { controlOperatingState, deviceOutputVector, savedCurrentVectors, type ControlOperatingState } from './control-device-output.js';
 import type { ConvergenceTelemetry, SimulationOptions, SimulationWarning, TransientStep, ACPoint } from './types.js';
 import type { TransientAnalysis, ACAnalysis, ResolvedOptions, SimulatorAdapter, SimulatorBackend } from './types.js';
 import { resolveOptions, withNetlistOptions } from './types.js';
@@ -38,7 +38,7 @@ import { frequencyGrid } from './analysis/frequency-grid.js';
 import { createConvergenceTelemetry } from './convergence-telemetry.js';
 import { solveStepInWorkers } from './analysis/step-parallel.js';
 import type { ProtocolExecutionGuard } from './protocol/execution-guard.js';
-import { evaluateMeasureCards, measuredAnalyses, measurePlot, type MeasureCard } from './measure/dot-measure.js';
+import { evaluateMeasureCards, gettokWords, measuredAnalyses, measurePlot, type MeasureCard } from './measure/dot-measure.js';
 import { measureCards } from './measure/registry.js';
 import { UnsupportedMeasureError } from './measure/errors.js';
 
@@ -199,6 +199,7 @@ function solveCompiledAnalyses(
   savedDeviceVectors: readonly string[] = [],
 ): SimulationResult {
   const result: SimulationResult = { warnings, convergence };
+  savedDeviceVectors = savedCurrentVectors({ devices: compiled.devices, simulationOptions: options }, savedDeviceVectors);
   if (retainRuns && compiled.analyses.length + compiled.poleZeroAnalyses.length >= 2) result.analyses = [];
   const measure = (analysis: AnalysisDirective, run: SimulationResult): void => {
     if (measures.length === 0) return;
@@ -213,6 +214,9 @@ function solveCompiledAnalyses(
 
   for (const analysis of compiled.analyses) {
     const run: SimulationResult = result.analyses ? { warnings: [] } : result;
+    if (options.savecurrents && !['dc', 'tran'].includes(analysis.type)) {
+      throw new InvalidCircuitError(`.option savecurrents is not supported for '${analysis.type}' analyses`);
+    }
     switch (analysis.type) {
       case 'op': {
         const opts = resolveOptions(options);
@@ -232,8 +236,22 @@ function solveCompiledAnalyses(
       case 'tran': {
         const opts = resolveOptions(options, analysis.stopTime);
         const seed = transientInitialSolution(compiled, analysis, opts, undefined, convergence, guard);
+        // ngspice-47 measure.c:341-346,405-407: chk_only skips param/expr
+        // and returns before the second pass. Failed/unresolved measurements
+        // must not stop the run or mutate the final measurement dictionary.
+        const completionCards = options.autostop ? measures.filter(card => {
+          const [, type, , fn = ''] = gettokWords(card.text);
+          return type === 'tran' && !fn.startsWith('param') && !fn.startsWith('expr');
+        }) : [];
         result.transient = run.transient = solveTransient(
           compiled, runnableTransient(analysis, options), opts, seed, convergence, guard,
+          completionCards.length === 0 ? undefined : transient => {
+            const plot = measurePlot(analysis, { transient, warnings: [] });
+            if (!plot) return false;
+            const checked = evaluateMeasureCards(completionCards, 'tran', plot, new Map(measureValues));
+            return checked.length === completionCards.length && checked.every(value => value.status === 'ok');
+          },
+          savedDeviceVectors,
         );
         measure(analysis, run);
         break;

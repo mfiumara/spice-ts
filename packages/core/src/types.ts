@@ -213,6 +213,10 @@ export interface Ngbehavior {
  * All fields are optional; SPICE-convention defaults are used when omitted.
  */
 export interface SimulationOptions {
+  /** Save supported device currents as complete per-point analysis vectors. Default: false. */
+  savecurrents?: boolean;
+  /** Stop transient analysis after all applicable measurements complete. Default: false. */
+  autostop?: boolean;
   /** ngspice instance geometry scale. Explicit MOS/R/C lengths scale by S, MOS areas by S^2. Default: 1. */
   scale?: number;
   /** Parsed compatibility request; existing expression extensions remain available in all modes. */

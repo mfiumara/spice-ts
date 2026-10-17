@@ -7,6 +7,30 @@ import { Diode } from './devices/diode.js';
 import { CurrentSource } from './devices/current-source.js';
 import { VoltageSource } from './devices/voltage-source.js';
 import { BehavioralCurrentSource, BehavioralVoltageSource } from './devices/behavioral-source.js';
+import { InvalidCircuitError } from './errors.js';
+
+/** Expand `.option savecurrents` at analysis start, retaining explicit saves.
+ * Fail rather than return a partial set when a device has no current readout.
+ */
+export function savedCurrentVectors(
+  compiled: Pick<CompiledCircuit, 'devices' | 'simulationOptions'>,
+  explicit: readonly string[] = [],
+): string[] {
+  const names = new Set(explicit.map(name => name.toLowerCase()));
+  if (!compiled.simulationOptions.savecurrents) return [...names];
+  for (const device of compiled.devices) {
+    const parameter = device instanceof CurrentSource ? 'current'
+      : device instanceof Diode ? 'id'
+        : device instanceof Resistor || device instanceof VoltageSource
+          || device instanceof BehavioralCurrentSource || device instanceof BehavioralVoltageSource ? 'i'
+          : undefined;
+    if (parameter === undefined) {
+      throw new InvalidCircuitError(`Unsupported .option savecurrents current readout for device '${device.name}' (${device.constructor.name})`);
+    }
+    names.add(`@${device.name.toLowerCase()}[${parameter}]`);
+  }
+  return [...names];
+}
 
 /**
  * The circuit's present state after the last control-script analysis: the
