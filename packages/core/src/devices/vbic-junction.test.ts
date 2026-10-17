@@ -42,14 +42,14 @@ describe('VBIC junction potentials and grading (#1281)', () => {
     });
   }
 
-  it('keeps default DC/AC/transient stamps bit-identical to the base revision', () => {
+  it.each([{}, { WBE: 1 }] as Record<string, number>[])('keeps default DC/AC/transient stamps bit-identical with %j', wbe => {
     // Captured before the fix at 55b6fcf3, not re-generated from new defaults.
     // Both polarities and 0/27/75 C include all four depletion capacitances.
     const all: unknown[] = [];
     for (const polarity of [1, -1]) {
       for (const temperature of [0, 27, 75]) {
         const device = new VBIC('Q', [0, 1, 2, 3, 4, 5, 6], {
-          CJE: 1e-12, CJC: 2e-12, CJEP: 3e-12, CJCP: 4e-12, VEF: 50, VER: 10,
+          ...wbe, CJE: 1e-12, CJC: 2e-12, CJEP: 3e-12, CJCP: 4e-12, VEF: 50, VER: 10,
         }, polarity);
         device.setTemperature(temperature);
         const stamps: unknown[] = [];
@@ -171,6 +171,6 @@ describe('VBIC junction potentials and grading (#1281)', () => {
     const original = readFileSync('../../benchmarks/corpus/corpus-f/fixtures/examples/vbic/DFF_Y_ECL.sp', 'utf8');
     expect(createHash('sha256').update(original).digest('hex')).toBe('d811ecfa0f370d281fb35729ca3177e738fe034621d9b2909765d9d70f527cc6');
     await expect(simulate(original)).rejects.toThrow(InvalidCircuitError);
-    await expect(simulate(original)).rejects.toThrow("Unsupported bounded VBIC DC model parameter: 'WBE'");
+    await expect(simulate(original)).rejects.toThrow("Unsupported bounded VBIC DC model parameter: 'WSP'");
   });
 });

@@ -16,7 +16,7 @@ const ACTIVE_PARAMETERS = [
   'NF', 'NR', 'NEI', 'NEN', 'NCI', 'NCN', 'NFP', 'NCIP', 'NCNP',
   'RCX', 'RCI', 'RBX', 'RBI', 'RE', 'RS', 'RBP', 'FC',
   'VEF', 'VER', 'IKF', 'IKR', 'IKP', 'VO', 'GAMM', 'HRCF', 'AVC1', 'AVC2',
-  'PE', 'ME', 'PC', 'MC', 'PS', 'MS',
+  'PE', 'ME', 'PC', 'MC', 'PS', 'MS', 'WBE',
 ] as const;
 /**
  * Charge-storage and excess-phase parameters: inert at DC, active in the
@@ -72,6 +72,7 @@ const DEFAULTS: VBICParams = {
   RS: 0,
   RBP: 0.1,
   FC: 0.9,
+  WBE: 1,
   VEF: 0,
   VER: 0,
   IKF: 0,
@@ -141,6 +142,7 @@ export function resolveVBICParams(
   // Bounded physical domain. ngspice vbicsetup.c defaults FC to 0.9 but
   // vbicmpar.c does not validate it; FC=1 makes the charge formula singular.
   if (resolved.FC < 0 || resolved.FC >= 1) throw new InvalidCircuitError("Invalid bounded VBIC DC model parameter: 'FC'");
+  if (resolved.WBE < 0 || resolved.WBE > 1) throw new InvalidCircuitError("Invalid bounded VBIC DC model parameter: 'WBE'");
   for (const name of ['PE', 'PC', 'PS'] as const) {
     if (resolved[name] <= 0) throw new InvalidCircuitError(`Invalid bounded VBIC DC model parameter: '${name}'`);
   }
@@ -295,7 +297,7 @@ const EXCESS_PHASE_BRANCHES: readonly (readonly [number, number])[] = [[XF1, NO_
  * ngspice vbictemp.c values at the device temperature (kT/q, saturation
  * currents, GAMM, built-in potentials and zero-bias capacitances); every other
  * parameter is temperature independent with ngspice's default exponents.
- * Charges follow ngspice vbic_4T_et_cf_fj with AJE/AJC/AJS <= 0, WBE = WSP = 1,
+ * Charges follow ngspice vbic_4T_et_cf_fj with AJE/AJC/AJS <= 0, WSP = 1,
  * QTF = VTF = CBEO = CBCO = CCSO = 0. With TD > 0 the forward transport current
  * passes through ngspice's second-order excess-phase network (nodes xf1/xf2).
  */
@@ -332,8 +334,8 @@ function evaluate(
   const itzr = div(iri, qb);
   const transport = sub(itzf, itzr);
 
-  const ibe = add(diode(vbei, thermal.IBEI, params.NEI, vt), diode(vbei, thermal.IBEN, params.NEN, vt));
-  const ibex = scale(add(diode(vbex, thermal.IBEI, params.NEI, vt), diode(vbex, thermal.IBEN, params.NEN, vt)), 0);
+  const ibe = scale(add(diode(vbei, thermal.IBEI, params.NEI, vt), diode(vbei, thermal.IBEN, params.NEN, vt)), params.WBE);
+  const ibex = scale(add(diode(vbex, thermal.IBEI, params.NEI, vt), diode(vbex, thermal.IBEN, params.NEN, vt)), 1 - params.WBE);
   const ibcj = add(diode(vbci, thermal.IBCI, params.NCI, vt), diode(vbci, thermal.IBCN, params.NCN, vt));
   const ibcp = add(diode(vbcp, thermal.IBCIP, params.NCIP, vt), diode(vbcp, thermal.IBCNP, params.NCNP, vt));
   const avalancheVoltage = scale(add(
@@ -377,7 +379,10 @@ function evaluate(
     )),
     params.TF,
   );
-  const qbe = add(scale(qdbe, thermal.CJE), div(mul(tff, ifi), qb));
+  // ngspice-47 vbicload.c:3874-3896: partition depletion only; forward
+  // diffusion remains intrinsic. The extrinsic integral uses Vbex, not Vbei.
+  const qbe = add(scale(qdbe, thermal.CJE * params.WBE), div(mul(tff, ifi), qb));
+  const qbex = scale(depletionCharge(vbex, PE, ME, params.FC), thermal.CJE * (1 - params.WBE));
   const qbc = add(add(scale(qdbc, thermal.CJC), scale(iri, params.TR)), scale(kbci, params.QCO));
   const qbcx = scale(kbcx, params.QCO);
   const qbep = add(scale(depletionCharge(vbep, PC, MC, params.FC), thermal.CJEP), scale(ifp, params.TR));
@@ -411,6 +416,9 @@ function evaluate(
   branch(SI, BP, add(s(ibcp), scale(vbcp, gmin)));
   branch(BX, SI, s(iccp));
   store(BI, EI, s(qbe));
+  // Preserve the default stamp's arithmetic order when the extrinsic charge
+  // is identically zero, including signed zeros in conservative charge rows.
+  if (params.WBE !== 1) store(BX, EI, s(qbex));
   store(BI, CI, s(qbc));
   store(BI, CX, s(qbcx));
   store(BX, BP, s(qbep));
