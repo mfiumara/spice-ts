@@ -2,8 +2,8 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import Ajv2020 from 'ajv/dist/2020.js';
 import { describe, expect, it } from 'vitest';
-import negative from '../fixtures/negative-v1.json';
-import positive from '../fixtures/positive-v1.json';
+import negative from '../../../protocol/fixtures/negative-v1.json';
+import positive from '../../../protocol/fixtures/positive-v1.json';
 import {
   canonicalJson,
   canonicalJsonBytes,
@@ -234,7 +234,7 @@ describe('public TypeScript contract', () => {
 
   it('ships every registered schema as a JSON document', () => {
     for (const [name, schema] of Object.entries(protocolSchemasV1)) {
-      const path = fileURLToPath(new URL(`../schemas/${name}.schema.json`, import.meta.url));
+      const path = fileURLToPath(new URL(`../../../protocol/schemas/${name}.schema.json`, import.meta.url));
       const shipped = JSON.parse(readFileSync(path, 'utf8'));
       expect(shipped.$schema).toBe('https://json-schema.org/draft/2020-12/schema');
       expect(shipped).toEqual(schema);

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { AjvJsonSchemaValidator } from '@modelcontextprotocol/sdk/validation/ajv';
 import { executeTool, MCP_TOOLS } from './server.js';
 import { acMetrics } from './ac-metrics.js';
-import type { SimulationResultV1 } from '@spice-ts/protocol';
+import type { SimulationResultV1 } from '@spice-ts/core/protocol';
 
 const rc = '* Original MIT analytic RC probe\nV1 in 0 DC 0 AC 2\nR1 in out 1k\nC1 out 0 1u\n.ac dec 100 0.1 100k\n.end';
 const loop = '* Original MIT buffered two-pole loop\nV1 in 0 DC 0 AC 1\nR1 in p1 1k\nC1 p1 0 1u\nE1 b 0 p1 0 10\nR2 b out 1k\nC2 out 0 1u\n.ac dec 100 0.1 100k\n.end';

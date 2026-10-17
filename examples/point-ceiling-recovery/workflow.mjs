@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { createToolExecutor } from '@spice-ts/mcp';
-import { sha256CanonicalJson } from '@spice-ts/protocol';
+import { sha256CanonicalJson } from '@spice-ts/core/protocol';
 
 const callOrder = [];
 const executor = createToolExecutor();

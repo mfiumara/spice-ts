@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { SimulationRequestV1 } from '@spice-ts/protocol';
+import type { SimulationRequestV1 } from '@spice-ts/core/protocol';
 import { executeTool } from './server.js';
 import { measurementListSchema, measureResult } from './measure.js';
 

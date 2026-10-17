@@ -1,4 +1,4 @@
-import type { AnalysisResultV1, SimulationResultV1 } from '@spice-ts/protocol';
+import type { AnalysisResultV1, SimulationResultV1 } from '@spice-ts/core/protocol';
 
 const kinds = ['min', 'max', 'avg', 'rms', 'pp', 'at', 'cross', 'when'] as const;
 type Measurement = {

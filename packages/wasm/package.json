@@ -46,7 +46,6 @@
   },
   "dependencies": {
     "@spice-ts/core": "workspace:*",
-    "@spice-ts/protocol": "workspace:*",
     "ajv": "^8.17.1"
   },
   "devDependencies": {

@@ -1,7 +1,7 @@
 import { Circuit, parseTitleless, mapProtocolErrorV1, simulateProtocolV1, validateProtocolV1 } from '@spice-ts/core';
 import { fromCircuitJSON, toCircuitJSON } from '@spice-ts/circuit-json';
 import type { CircuitJSON, ConversionDiagnosticV1 } from '@spice-ts/circuit-json';
-import { commonSchemaV1, sha256CanonicalJson } from '@spice-ts/protocol';
+import { commonSchemaV1, sha256CanonicalJson } from '@spice-ts/core/protocol';
 import type {
   AnalysisResultV1,
   JsonObject,
@@ -15,7 +15,7 @@ import type {
   SpiceApiErrorV1,
   StreamTerminalV1,
   SuccessEnvelopeV1,
-} from '@spice-ts/protocol';
+} from '@spice-ts/core/protocol';
 import type { CallToolResult, Tool } from '@modelcontextprotocol/sdk/types.js';
 import { createRequire } from 'node:module';
 import { Worker } from 'node:worker_threads';
