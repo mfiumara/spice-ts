@@ -1,5 +1,5 @@
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
-import type { SimulationRequestV1, SpiceApiErrorV1 } from '@spice-ts/protocol';
+import type { SimulationRequestV1, SpiceApiErrorV1 } from '@spice-ts/core/protocol';
 import { overrideParameters } from './params.js';
 import { measurementListSchema } from './measure.js';
 

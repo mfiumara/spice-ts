@@ -1,4 +1,4 @@
-import type { SimulationRequestV1, SpiceApiErrorV1 } from '@spice-ts/protocol';
+import type { SimulationRequestV1, SpiceApiErrorV1 } from '@spice-ts/core/protocol';
 
 /** MCP-only extension; the protocol-v1 request and error-code set are unchanged. */
 export type ParameterOverrideApiError = Omit<SpiceApiErrorV1, 'code'> & {

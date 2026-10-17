@@ -3,6 +3,7 @@ import { defineConfig } from 'tsup';
 export default defineConfig({
   entry: {
     index: 'src/index.ts',
+    protocol: 'src/protocol/wire/index.ts',
     'step-worker': 'src/analysis/step-worker.ts',
     'step-worker-browser': 'src/analysis/step-worker-browser.ts',
   },

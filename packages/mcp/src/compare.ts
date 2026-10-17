@@ -1,4 +1,4 @@
-import type { SimulationResultV1 } from '@spice-ts/protocol';
+import type { SimulationResultV1 } from '@spice-ts/core/protocol';
 
 type Phasor = { magnitude: number; phaseDegrees: number };
 type SignalSet = { x: number[]; signals: Record<string, (number | Phasor)[]>; axisUnit?: string };

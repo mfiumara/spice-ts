@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { SimulationRequestV1, SimulationResultV1 } from '@spice-ts/protocol';
+import type { SimulationRequestV1, SimulationResultV1 } from '@spice-ts/core/protocol';
 import { createToolExecutor, executeTool, MCP_TOOLS } from './server.js';
 
 const source = '* Original RC divider fixture (MIT)\n.param rval=1k\nV1 in 0 4\nR1 in out {rval}\nR2 out 0 1k\nC1 out 0 1u\n.op\n.end';

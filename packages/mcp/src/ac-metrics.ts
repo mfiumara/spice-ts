@@ -1,4 +1,4 @@
-import type { SimulationResultV1 } from '@spice-ts/protocol';
+import type { SimulationResultV1 } from '@spice-ts/core/protocol';
 
 const metricNames = ['dcGainDb', 'f3dbHz', 'unityGainHz', 'phaseMarginDeg', 'gainMarginDb'] as const;
 type Metric = typeof metricNames[number];

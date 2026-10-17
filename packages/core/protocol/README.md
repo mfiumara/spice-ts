@@ -1,4 +1,4 @@
-# @spice-ts/protocol
+# @spice-ts/core/protocol
 
 Environment-neutral protocol v1 types, JSON Schema 2020-12 documents, conformance fixtures, and dependency-free canonical JSON/SHA-256 utilities.
 
@@ -12,4 +12,7 @@ Result hashes cover only canonical `SimulationResultV1`. Partial hashes cover ca
 
 Committed schemas are in `schemas/`; the exported `protocolSchemasV1` registry contains the same documents. Shared positive and negative conformance fixtures are in `fixtures/`. Structural constraints live in JSON Schema; cross-field rules (case-insensitive uniqueness, sorted record keys, series lengths, stream point ordering/discriminators, and canonical number diagnostics) are checked by `checkConformanceV1`.
 
-This package has no runtime dependencies and does not import `@spice-ts/core`.
+This subpath has no runtime dependencies and does not import the simulator entry point.
+It supersedes the standalone `@spice-ts/protocol@0.3.0` package without changing protocol v1.
+Import JSON documents from `@spice-ts/core/protocol/schemas/*` and
+`@spice-ts/core/protocol/fixtures/*`.

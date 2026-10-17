@@ -1,6 +1,6 @@
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
-import type { SimulationRequestV1, SimulationResultV1 } from '@spice-ts/protocol';
+import type { SimulationRequestV1, SimulationResultV1 } from '@spice-ts/core/protocol';
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { afterEach, describe, expect, it } from 'vitest';
