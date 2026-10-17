@@ -277,20 +277,24 @@ export async function runNgspicePacked(input: Buffer, circuit: CorpusFCircuit, s
     // -r does not export analyses run inside .control. Reuse the control-vector wrapper
     // on identical bytes, not wrdata expressions (which may square-root the spectra).
     // Retain both the spectrum and integrated totals, with packed, selected columns.
+    let exportNote: string | undefined;
     if (analyses.length === 0 && !errorLine && /^\s*noise\s+/im.test(input.toString('utf8'))
       && /^\s*\.control\b/im.test(input.toString('utf8'))) {
-      const { controlWrapperDeck } = await import('./control-vectors.js');
+      const { controlWrapperDeck, controlExportDiagnostics } = await import('./control-vectors.js');
       await writeFile(resolve(directory, 'fixture.cir'), input);
       await writeFile(resolve(directory, 'wrapper.cir'), controlWrapperDeck(['noise']));
       const exported = spawnSync('ngspice', ['-b', 'wrapper.cir'], {
         cwd: directory, encoding: 'utf8', env: { ...process.env, HOME: directory },
         timeout: NGSPICE_TIMEOUT_MS, killSignal: 'SIGKILL', maxBuffer: 64 * 1024 * 1024,
       });
-      const exportOutput = `${exported.stdout ?? ''}\n${exported.stderr ?? ''}`;
+      const diagnostics = await controlExportDiagnostics(directory, `${exported.stdout ?? ''}\n${exported.stderr ?? ''}`);
+      const exportOutput = diagnostics.output;
+      exportNote = diagnostics.note;
       const exportError = firstNgspiceErrorLine(exportOutput, directory);
       if (exported.error || exported.status !== 0 || exportError) {
-        return failed(classifyNgspiceFailure(exportOutput),
-          scrub(exported.error?.message ?? exportError ?? `ngspice export exited ${exported.status}`, directory));
+        return { ...failed(classifyNgspiceFailure(exportOutput),
+          scrub(exported.error?.message ?? exportError ?? `ngspice export exited ${exported.status}`, directory)),
+          ...(exportNote ? { note: exportNote } : {}) };
       }
       const files = (await readdir(directory)).filter(name => /^noise\d+\.raw$/.test(name))
         .sort((a, b) => Number(a.match(/\d+/)![0]) - Number(b.match(/\d+/)![0]));
@@ -309,7 +313,7 @@ export async function runNgspicePacked(input: Buffer, circuit: CorpusFCircuit, s
     if (analyses.length === 0) {
       return failed(errorLine ? classifyNgspiceFailure(output) : 'failed', errorLine ?? 'no raw analysis data produced');
     }
-    return { execution: { status: 'success', convergence: 'converged', analyses }, status: 'success' };
+    return { execution: { status: 'success', convergence: 'converged', analyses }, status: 'success', ...(exportNote ? { note: exportNote } : {}) };
   } finally {
     await rm(directory, { recursive: true, force: true });
   }
