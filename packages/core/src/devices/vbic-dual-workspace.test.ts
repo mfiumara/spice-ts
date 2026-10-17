@@ -53,6 +53,15 @@ describe('VBIC Dual workspaces (#1310 round 8)', () => {
         return Reflect.construct(target, args);
       },
     }));
+    const OriginalFloat64Array = Float64Array;
+    vi.stubGlobal('Float64Array', new Proxy(OriginalFloat64Array, {
+      construct(target, args) {
+        // The experimental workspace allocates slabs of 256 derivative rows.
+        // Exclude the pre-existing per-node Jacobians (7 or 9 elements).
+        if (args.length === 1 && (args[0] === 9 * 256 || args[0] === 11 * 256)) allocations++;
+        return Reflect.construct(target, args);
+      },
+    }));
     try {
       for (let load = 0; load < 40; load++) for (const f of fixtures) {
         f.voltage[3] = [0.15, 2.5, -3][load % 3];

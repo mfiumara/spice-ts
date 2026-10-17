@@ -169,7 +169,7 @@ export function resolveVBICParams(
 }
 
 class Dual {
-  constructor(public value: number, readonly derivative: number[], readonly workspace: DualWorkspace) {}
+  constructor(public value: number, readonly derivative: Float64Array, readonly workspace: DualWorkspace) {}
 
   static constant(value: number, workspace: DualWorkspace): Dual {
     const result = workspace.take(value);
@@ -192,6 +192,8 @@ class Dual {
 class DualWorkspace {
   private readonly slots: Dual[] = [];
   private next = 0;
+  private slab = new Float64Array(0);
+  private offset = 0;
 
   constructor(private readonly size: number) {}
 
@@ -203,7 +205,14 @@ class DualWorkspace {
     const index = this.next++;
     let result = this.slots[index];
     if (result === undefined) {
-      result = new Dual(value, new Array<number>(this.size), this);
+      // Existing views remain valid when the workspace grows another slab.
+      if (this.offset + this.size > this.slab.length) {
+        this.slab = new Float64Array(this.size * 256);
+        this.offset = 0;
+      }
+      const derivative = this.slab.subarray(this.offset, this.offset + this.size);
+      this.offset += this.size;
+      result = new Dual(value, derivative, this);
       this.slots.push(result);
     } else {
       result.value = value;

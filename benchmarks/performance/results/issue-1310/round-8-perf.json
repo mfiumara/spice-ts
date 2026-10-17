@@ -1,4 +1,38 @@
 {
+  "remediation": {
+    "strategy": "Float64Array slabs of 256 derivative rows, stable per-Dual views, unchanged workspace ownership and arithmetic",
+    "command": "spice-heavy node benchmarks/performance/dff-1310.mjs 3",
+    "batches_in_execution_order": [
+      { "phase": "base", "seconds": [29.824331958, 27.050253542000004, 40.36986058400001] },
+      { "phase": "slab", "seconds": [41.382253709000004, 28.656063458000006, 46.647203833000006] },
+      { "phase": "base", "seconds": [24.50198225, 24.678742124999996, 22.771497958] },
+      { "phase": "slab", "seconds": [21.662883292, 23.6808075, 23.897284917000004] },
+      { "phase": "base", "seconds": [22.275897791000002, 19.403888916999996, 19.782294542000002] },
+      { "phase": "slab", "seconds": [18.587173458000002, 18.422372875, 18.316839583] }
+    ],
+    "median_seconds": { "base": 24.50198225, "slab": 23.6808075 },
+    "change_percent": -3.351462512793224,
+    "pilots_in_execution_order": [
+      { "phase": "slab", "seconds": 31.747830792 },
+      { "phase": "base", "seconds": 26.491011917 },
+      { "phase": "packed_double_arrays", "seconds": 36.034515833 }
+    ],
+    "identity_all_18_runs_and_3_pilots": {
+      "outputSha256": "361251b58101652f07fbdc64abdfb3ec8c8a941f92618420b32a2abc2a9a43f7",
+      "stampSha256": "3324cdb29c46ea0b0be79f64b9a06a767eba5549d997e193df9221f0634944db",
+      "rows": 40545, "acceptedSteps": 40544, "rejectedSteps": 0,
+      "transientNewtonIterations": 85851, "dcNewtonIterations": 31
+    },
+    "warmed_allocation_constructors": { "base": 18840, "slab": 0, "loads": 80 },
+    "verification": {
+      "build": "pnpm build passed",
+      "lint": "pnpm lint passed",
+      "targeted": "331 passed in 23 files",
+      "identity_workspace": "5 passed in 2 files",
+      "full": "spice-heavy pnpm test passed all workspaces; core 5552 passed, 10 expected fail, 8 skipped"
+    },
+    "caveat": "Shared uncontrolled host with strong downward time trend. First slab batch and both variant pilots lose. No causal speedup claim. Failed initial slab launch had no simulation output (missing split-bundle chunk); full dist trees retained thereafter, first completed base batch preserved. Independent exact-head review must repeat. Original timings/profiles below describe rejected ordinary-array head only."
+  },
   "issue": 1310,
   "round": 8,
   "base_sha": "e858c1d4a7735a185ab4e81285a09cc57b466b8c",

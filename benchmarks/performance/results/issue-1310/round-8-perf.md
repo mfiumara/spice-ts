@@ -61,3 +61,37 @@ Whole-process timeDelta-weighted stack samples include startup and hashing, sepa
 - pnpm -C packages/core exec vitest run src/analysis/transient-convergence.test.ts passed both tests on isolated rerun, rectifier 9,309 ms. No timeout changes were made. Exact-head CI is authoritative for the full gate.
 
 Only the model's allocation plumbing, its new regression test and these explicitly requested round-8 reports change. No raw logs, profiles or scratch scripts are committed.
+
+## Remediation: typed slabs (supersedes original head above)
+
+The revised workspace uses Float64Array slabs of 256 derivative rows and stable per-Dual subarray views instead of holey ordinary arrays. Old views survive slab growth. Arithmetic, expression order and two-workspace cached-charge ownership remain unchanged. Slab capacity is allocation granularity, not circuit-dependent tuning. Retained memory is still a tradeoff, not a lower-live-heap claim.
+
+Command: `spice-heavy node benchmarks/performance/dff-1310.mjs 3`, alternating base/slab batches. Same Node/OS/fixture as above. Complete matching dist trees were retained locally to avoid rebuilding between timings.
+
+| Batch | Phase | Run 0 s | Run 1 s | Run 2 s |
+| --- | --- | ---: | ---: | ---: |
+| 0 | base | 29.824331958 | 27.050253542 | 40.369860584 |
+| 0 | slab | 41.382253709 | 28.656063458 | 46.647203833 |
+| 1 | base | 24.501982250 | 24.678742125 | 22.771497958 |
+| 1 | slab | 21.662883292 | 23.680807500 | 23.897284917 |
+| 2 | base | 22.275897791 | 19.403888917 | 19.782294542 |
+| 2 | slab | 18.587173458 | 18.422372875 | 18.316839583 |
+
+Pooled medians (nine each): base 24.501982250 s; slab 23.680807500 s; change -3.3515%. No completed runs discarded. All 18 retain the identity/convergence records above.
+
+Every exploratory pilot, chronological order, one unchanged full-deck run each:
+- Slab: 31.747830792 s.
+- Base: 26.491011917 s.
+- Packed-double ordinary arrays (push NaN instead of holey allocation): 36.034515833 s; not selected.
+
+Shared-host caveat: a strong downward time trend is visible. Slab loses the first batch and both variant pilots lose to the base pilot. Pooled medians satisfy the requested gate, but do not establish a causal speedup or eliminate regression risk. Independent review must repeat. The first slab batch launch failed before simulation because the initial build snapshot omitted split chunks; complete dist snapshots fixed it. The completed first base batch was retained, not rerun or discarded.
+
+RED/GREEN rerun: base 18,840 ordinary derivative-array constructors versus expected zero; slab zero ordinary derivative-array and typed-slab backing constructors in 80 warmed loads. Existing per-node typed Jacobians, row containers and warmup are excluded, not eliminated. Stable subarray views are created during workspace growth; this is not a total heap counter. An intermediate overbroad typed-array counter also counted 640 unrelated Jacobians (19,480 on base); the final counter excludes those and RED was rerun.
+
+- `pnpm build`: passed on candidate; base core build passed.
+- `pnpm lint`: passed on candidate.
+- `pnpm -C packages/core exec vitest run src/devices/vbic src/mna`: 331 passed in 23 files.
+- Identity/workspace targeted rerun: 5 passed in 2 files, including unchanged stamp hash.
+- `spice-heavy pnpm test`: all workspace suites passed; core 5,552 passed, 10 expected failures, 8 skipped.
+
+No new profile claim: the profile table above describes the original rejected ordinary-array head only. Exact-head CI and independent review remain required before merging. #1310 stays open; #1309 and ngspice comparison are unchanged.
