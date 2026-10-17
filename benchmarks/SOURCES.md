@@ -23,11 +23,19 @@ header). That routine includes RD/RS thermal, channel thermal, KF/AF flicker
 and a self-heating temperature ratio, but no RG/RB/body-diode noise source.
 No implementation is copied. RD/RS/channel thermal and KF/AF flicker sources
 are ported, with an explicit gm/gds/id/conductance/model/temperature noise seam.
-Self-heated noise remains a typed unsupported sub-case: the existing
-electrothermal small-signal transfer fails the self-heating oracle (before
-the narrowed guard, maximum output error 1.13%, input error 3.32%). Its oracle
-is retained to expose the gap, not counted as parity. No DC/transient stamp is
-changed by this noise port.
+Self-heated noise now uses the AC-only thermal stamps from
+[ngspice-47 vdmosacld.c](https://github.com/imr/ngspice/blob/ngspice-47/src/spicelib/devices/vdmos/vdmosacld.c),
+under the same UC Berkeley permissive licence. The DC power Jacobian is not
+the AC thermal row: the AC row uses channel-only derivatives with different
+signs and omits series-resistor/body-diode thermal couplings. The existing
+noise temperature ratio already matches vdmosnoi.c and is unchanged.
+Before #1354, unguarded maximum output/input noise errors were 1.13%/3.32%;
+the measured complex AC error at 1 Hz was 2.12384%. After the port the live
+seven-point 1 Hz–1 MHz maxima are 4.52e-8 relative noise and 5.20e-13 complex
+AC. The comparison script derives an AC deck from the same electrical cards
+(replacing only analysis/control cards), runs identical bytes on both engines,
+and stores real/imaginary output arrays in `reference.json`. Existing corpus
+decks and DC/transient equations are unchanged.
 
 ## BJT base-resistance noise (#1347)
 

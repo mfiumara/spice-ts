@@ -31,18 +31,7 @@ async function main(): Promise<void> {
     const path = fileURLToPath(new URL(`${name}.cir`, import.meta.url));
     const deck = readFileSync(path, 'utf8');
     const stdout = execFileSync('ngspice', ['-b', path], { encoding: 'utf8' });
-    const vectors: Record<string, number[]> = {};
-    let columns: string[] = [];
-    for (const line of stdout.split('\n')) {
-      if (/^Index\s+frequency/.test(line)) columns = line.trim().split(/\s+/).slice(1);
-      else if (/^\d+\s/.test(line)) {
-        const [point, ...row] = line.trim().split(/\s+/).map(Number);
-        columns.forEach((column, index) => {
-          // Indexed assignment also handles frequency repeated in print-all tables.
-          (vectors[column] ??= [])[point] = row[index];
-        });
-      }
-    }
+    const vectors = parseVectors(stdout);
     if (!vectors.onoise_spectrum?.length || !vectors.inoise_spectrum?.length
       || Object.values(vectors).some(values => values.length !== vectors.frequency?.length || values.some(v => !Number.isFinite(v)))) {
       throw new Error(`ngspice did not produce complete finite noise spectra for ${name}`);
@@ -57,11 +46,10 @@ async function main(): Promise<void> {
         ac = parseVectors(execFileSync('ngspice', ['-b', path], { encoding: 'utf8' }));
       } finally { rmSync(directory, { recursive: true }); }
       if (ac.frequency?.length !== vectors.frequency.length || !ac['vr(out)'] || !ac['vi(out)']
-        || Object.values(ac).some(values => values.some(v => !Number.isFinite(v)))) throw new Error('Incomplete AC reference');
+        || Object.values(ac).some(values => values.length !== vectors.frequency.length || values.some(v => !Number.isFinite(v)))) throw new Error('Incomplete AC reference');
     }
     cases.push({ name, vectors, ...(ac ? { ac } : {}) });
     if (!update) {
-
       const result = (await simulate(deck)).noise!;
       const output = result.outputNoiseDensity;
       const input = result.inputNoiseDensity;

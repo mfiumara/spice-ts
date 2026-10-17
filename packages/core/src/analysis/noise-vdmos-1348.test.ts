@@ -13,7 +13,6 @@ const reference = JSON.parse(readFileSync(new URL('../../../../benchmarks/vdmos-
 describe('VDMOS ngspice-47 noise parity (#1348)', () => {
   it.each(reference.cases)('matches identical-netlist $name spectra', async ({ name, vectors }) => {
     const input = readFileSync(new URL(`../../../../benchmarks/vdmos-noise/${name}.cir`, import.meta.url), 'utf8');
-
     const noise = (await simulate(input)).noise!;
     expect(noise.frequencies).toHaveLength(vectors.frequency.length);
     for (let i = 0; i < vectors.frequency.length; i++) {
@@ -28,6 +27,8 @@ describe('VDMOS ngspice-47 noise parity (#1348)', () => {
     const ac = (await simulate(input.slice(0, input.indexOf('.noise')) + '.ac dec 1 1 1meg\n.end\n')).ac!;
     const expected = reference.cases.find(c => c.name === 'self-heating')!.ac!;
     const actual = ac.voltage('out');
+    expect(actual).toHaveLength(expected.frequency.length);
+    expect(ac.frequencies).toHaveLength(expected.frequency.length);
     for (let i = 0; i < expected.frequency.length; i++) {
       const re = actual[i].magnitude * Math.cos(actual[i].phase * Math.PI / 180);
       const im = actual[i].magnitude * Math.sin(actual[i].phase * Math.PI / 180);

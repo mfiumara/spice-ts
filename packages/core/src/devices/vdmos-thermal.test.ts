@@ -1,8 +1,29 @@
 import { describe, expect, it } from 'vitest';
 import { simulate } from '../simulate.js';
 import { readFileSync } from 'node:fs';
+import { VDMOS } from './vdmos.js';
+import { resolveVdmosModel } from './vdmos-model.js';
+import { MNAAssembler } from '../mna/assembler.js';
 
 describe('VDMOS self heating (#559)', () => {
+  it.each([1, -1])('uses vdmosacld thermal signs for polarity %s in both modes', type => {
+    const { model } = resolveVdmosModel({ name: 'power', type: type === 1 ? 'VDMOSN' : 'VDMOSP', params: { VTO: type, KP: 0.1, MU: -1.5, RTHJC: 2, CTHJ: 0.001 } });
+    for (const mode of [1, -1]) {
+      const device = new VDMOS('M1', [0, 1, -1, 0, 1, -1, -1, 2, 3], model, {});
+      const assembler = new MNAAssembler(4, 0);
+      assembler.solution.set([type * mode * 2, type * 3, 27, 27]);
+      const ctx = assembler.getStampContext();
+      device.stampSmallSignal(ctx);
+      device.stampDynamic(ctx);
+      const { gm, gds, cdrain } = device.evaluateChannel(3, mode * 2);
+      const gate = mode * type * gm * 2;
+      const drain = mode * type * (gds * 2 + cdrain);
+      expect(assembler.G.get(2, 1)).toBeCloseTo(gate, 12);
+      expect(assembler.G.get(2, 0)).toBeCloseTo(drain, 12);
+      expect(assembler.G.get(0, 2)).toBeCloseTo(-type * mode * 1.5 * cdrain / 300.15, 12);
+      expect(assembler.C.get(2, 2)).toBeCloseTo(mode * 0.001, 12);
+    }
+  });
   it('integrates CTHJ after a gate step with the expected thermal time constant', async () => {
     const result = await simulate(`thermal transient
 m1 d g 0 tj tc power thermal

@@ -351,6 +351,14 @@ export class VDMOS implements DeviceModel {
   }
 
   stamp(ctx: StampContext): void {
+    this.stampLoad(ctx, false);
+  }
+
+  stampSmallSignal(ctx: StampContext): void {
+    this.stampLoad(ctx, true);
+  }
+
+  private stampLoad(ctx: StampContext, smallSignal: boolean): void {
     if (this.thermal) this.applyTemperature(Math.max(-200, ctx.getVoltage(this.nodes[7])));
     const model = this.model;
     const type = model.type;
@@ -437,7 +445,57 @@ export class VDMOS implements DeviceModel {
     g(D, BP, -gd);
     g(BP, S, -gbpr);
     g(BP, D, -gd);
-    if (this.thermal) this.stampThermal(ctx);
+    if (this.thermal) {
+      if (smallSignal) this.stampThermalSmallSignal(ctx, vgs, vds);
+      else this.stampThermal(ctx);
+    }
+  }
+
+  /** ngspice-47 vdmosacld.c uses the channel thermal couplings, not the
+   * DC power Jacobian (which also includes series resistors and the diode).
+   * Its thermal row has the opposite power-derivative sign to vdmosload.c.
+   */
+  private stampThermalSmallSignal(ctx: StampContext, vgs: number, vds: number): void {
+    const model = this.model;
+    const t = this.temp;
+    const { mode, cdrain, gm, gds } = this.evaluateChannel(vgs, vds);
+    const overdrive = (mode === 1 ? vgs : vgs - vds) - t.vth * model.type;
+    const x = (overdrive - model.subshift) / t.ksubthres;
+    const vgst = t.ksubthres * (Math.max(x, 0) + Math.log1p(Math.exp(-Math.abs(x))));
+    const vdss = vds * model.mtriode * mode;
+    const t0 = 1 + model.lambda * vds;
+    const t1 = 1 + model.theta * Math.max(overdrive, 0);
+    const betap = t.beta * t0 / t1;
+    // vdmosload.c deliberately uses this derivative of the overdrive, even
+    // in weak inversion; differentiating our DC equations is not equivalent.
+    const dvgst = model.type * model.tcvth;
+    const dbeta = t.beta * model.mu / t.temp;
+    const dbetap = t0 * (t1 * dbeta - t.beta * model.theta * (vgst > 0 ? dvgst : 0)) / (t1 * t1);
+    const gmT = vgst <= vdss
+      ? 0.5 * dbetap * vgst * vgst + betap * vgst * dvgst
+      : vdss * (dbetap * vgst + betap * dvgst) - 0.5 * dbetap * vdss * vdss;
+    const g = (row: number, col: number, value: number) => {
+      if (this.nodes[row] >= 0 && this.nodes[col] >= 0) ctx.stampG(this.nodes[row], this.nodes[col], value);
+    };
+    const channelVds = mode * vds;
+    const gTg = mode * model.type * gm * channelVds;
+    const gTd = mode * model.type * (gds * channelVds + cdrain);
+    const gjc = this.instance.M / model.rthjc;
+    const gca = this.instance.M / model.rthca;
+    g(DP, 7, mode * model.type * gmT);
+    g(SP, 7, -mode * model.type * gmT);
+    g(7, GP, gTg);
+    g(7, DP, gTd);
+    g(7, SP, -(gTg + gTd));
+    g(7, 7, mode * gmT * channelVds + gjc);
+    g(7, 8, -gjc);
+    g(8, 7, -gjc);
+    g(8, 8, gjc + gca);
+    // vdmosacld.c reverses cTt in inverse mode. stampDynamic adds the
+    // positive CTHJ, so correct that AC-only entry here, never in TRAN.
+    if (mode < 0 && this.nodes[7] >= 0) ctx.stampC(this.nodes[7], this.nodes[7], -2 * this.instance.M * model.cthj);
+    // cgT and cdT in vdmosacld.c remain zero in ngspice-47. CTHJ is
+    // stamped by stampDynamic alongside the electrical capacitances.
   }
 
   /** vdmosload.c: channel, RD/RS, diode and RB dissipate into Tj.
