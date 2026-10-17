@@ -16,10 +16,11 @@ try {
   const raw = join(directory, 'reference.raw');
   // Source the original bytes. Only the external observer requests output;
   // the deck, including its .control transient, is unchanged for both engines.
-  const observer = `Observer\n.control\nsource "${path}"\nset numdgt=15\neprint d1 d2 d3 o_and o_or o_both\nset filetype=ascii\nwrite "${raw}" all\nquit\n.endc\n.end\n`;
+  writeFileSync(join(directory, 'deck.cir'), bytes);
+  const observer = 'Observer\n.control\nsource deck.cir\nset numdgt=15\neprint d1 d2 d3 o_and o_or o_both\nset filetype=ascii\nwrite reference.raw all\nquit\n.endc\n.end\n';
   const observerPath = join(directory, 'observer.cir');
   writeFileSync(observerPath, observer);
-  const reference = spawnSync('ngspice', ['-b', observerPath], { encoding: 'utf8', timeout: 30000 });
+  const reference = spawnSync('ngspice', ['-b', observerPath], { cwd: directory, encoding: 'utf8', timeout: 30000 });
   if (reference.status !== 0) throw new Error(reference.stderr || reference.stdout);
   const transient = (await simulate(bytes.toString('utf8'))).transient!;
   const plot = (await readNgspiceRawFile(raw))[0];
