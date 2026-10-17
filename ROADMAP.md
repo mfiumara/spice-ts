@@ -84,6 +84,7 @@ Merged fixes do not refresh the aggregate or close unrelated parent gaps.
 | Issue | Scope and next verifiable delivery |
 |---|---|
 | [#890](https://github.com/mfiumara/spice-ts/issues/890) | Profile RC transient after merged #887; cache/stamp hot-path PR #898 remains pending at capture. Require identical-deck before/after receipts and controls. |
+| [#1310](https://github.com/mfiumara/spice-ts/issues/1310) | VBIC DFF_Y_ECL.sp transient perf; re-profile post-#1326 and attack the next top bucket; require identical-deck before/after receipts and output hashes. |
 
 The [published M2 baseline](benchmarks/PERFORMANCE_BASELINE.md) and
 [raw matrix](benchmarks/performance/results/scaling-m2.json) run RC ladders, resistor mesh and
@@ -136,6 +137,17 @@ Later **merged** receipts qualify what has improved and what still loses:
   23541→20632 ms; paired gains only 1.043x / 1.030x / 1.028x with load-sensitive ranges.
   RC controls read **0.968x / 0.945x / 0.975x**; mesh 10k/50k **0.973x / 0.984x**.
   A rejected predictor implementation lost at 0.952x / 0.880x. All remain published.
+
+- [#1310 receipt](benchmarks/performance/results/issue-1310/README.md), merged PR
+  [#1326](https://github.com/mfiumara/spice-ts/pull/1326) (squash `8e148427`), reduces the full
+  unchanged `DFF_Y_ECL.sp` median from 994.508378 s to 76.027358 s (92.3553% reduction,
+  13.0809x speedup; three runs each under `spice-heavy`, shared host load uncontrolled).
+  All six runs have identical waveform SHA-256 and convergence counters, with 43273 rows.
+  [Independent review](https://github.com/mfiumara/spice-ts/pull/1326#pullrequestreview-5557546163)
+  repeated only the shortened 0.1 ns run: median 6.82→0.55 s, not a full-deck rerun.
+  The loss remains: the ngspice-47 reference is 1.3–3.9 s / 40545 rows, so spice-ts is still
+  roughly 20–58x slower and its row count differs (43273 versus 40545). This is not a new
+  ngspice measurement or a superiority claim; the known V(Q) parity gap remains tracked by #1309.
 
 These tables come from their cited artifacts, not a new measurement of the frozen head. Do not
 multiply isolated speedups or call #890's older 8.2x headline a newly reproduced main result.
