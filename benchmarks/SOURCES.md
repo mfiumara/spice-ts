@@ -6,6 +6,9 @@
 by spice-ts contributors. The identical six-period deck runs on both engines.
 The test consumes `ngspice-47.txt`, captured with
 `spice-heavy ngspice -b benchmarks/control-fourier/harmonics.cir > benchmarks/control-fourier/ngspice-47.txt 2>&1`.
+The original MIT-licensed `expressions.cir` adds spaced arithmetic and mixed
+expression/vector operands. Its test-consumed reference is regenerated with
+`spice-heavy ngspice -b benchmarks/control-fourier/expressions.cir > benchmarks/control-fourier/expressions-ngspice-47.txt 2>&1`.
 Algorithm reference: [ngspice-47 frontend/fourier.c](https://github.com/imr/ngspice/blob/ngspice-47/src/frontend/fourier.c),
 lines 69-152 (defaults and grid), 158-195 (table), 292-362 (sine-reference
 coefficients, normalization, THD), and `maths/poly/interpolate.c:74-188`

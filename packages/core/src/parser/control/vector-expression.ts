@@ -104,7 +104,7 @@ export function parseControlNumber(text: string): number | undefined {
   return sign * mantissa * scaleSuffix(match[1]);
 }
 
-function tokenize(text: string): Token[] {
+function tokenize(text: string, starts: number[] = []): Token[] {
   const tokens: Token[] = [];
   let rest = text;
   while (rest.length > 0) {
@@ -113,6 +113,7 @@ function tokenize(text: string): Token[] {
       rest = rest.slice(whitespace[0].length);
       continue;
     }
+    starts.push(text.length - rest.length);
     if (rest[0] === '"' || rest[0] === "'") {
       const end = rest.indexOf(rest[0], 1);
       if (end < 0) throw new ExpressionError(`unterminated string in '${text}'`);
@@ -180,7 +181,17 @@ const NOT_POWER = 6;
 
 /** Parse a control-language vector expression into a syntax tree. */
 export function parseVectorExpression(text: string): ExpressionNode {
-  const tokens = tokenize(text);
+  return parseExpressions(text, false)[0].tree;
+}
+
+/** Split a command's expression list using the same grammar as `let`, not whitespace. */
+export function splitVectorExpressions(text: string): string[] {
+  return parseExpressions(text, true).map(item => item.text);
+}
+
+function parseExpressions(text: string, multiple: boolean): { tree: ExpressionNode; text: string }[] {
+  const starts: number[] = [];
+  const tokens = tokenize(text, starts);
   if (tokens.length === 0) throw new ExpressionError('missing expression');
   let position = 0;
 
@@ -232,8 +243,7 @@ export function parseVectorExpression(text: string): ExpressionNode {
     for (;;) {
       const token = peek();
       if (token?.type !== 'op') {
-        if (token === undefined) return left;
-        throw new ExpressionError(`unexpected operand in '${text}'`);
+        return left;
       }
       const power = INFIX_POWER[token.value];
       if (power === undefined || power <= rightPower) return left;
@@ -264,9 +274,14 @@ export function parseVectorExpression(text: string): ExpressionNode {
     }
   }
 
-  const tree = expression(0);
-  if (position !== tokens.length) throw new ExpressionError(`unexpected trailing input in '${text}'`);
-  return tree;
+  const expressions: { tree: ExpressionNode; text: string }[] = [];
+  do {
+    const start = starts[position];
+    const tree = expression(0);
+    expressions.push({ tree, text: text.slice(start, starts[position] ?? text.length).trim() });
+    if (!multiple && position !== tokens.length) throw new ExpressionError(`unexpected trailing input in '${text}'`);
+  } while (position < tokens.length);
+  return expressions;
 }
 
 // ---------------------------------------------------------------------------

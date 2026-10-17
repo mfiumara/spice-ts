@@ -10,7 +10,7 @@ import type { ControlSourceLine } from './source.js';
 import { setArguments, splitWords, unquote } from './set-arguments.js';
 import { validatePreSet } from './pre-set.js';
 import {
-  ExpressionError, UnsupportedExpressionFeature, evaluateVectorExpression, parseControlNumber, parseVectorExpression,
+  ExpressionError, UnsupportedExpressionFeature, evaluateVectorExpression, parseControlNumber, parseVectorExpression, splitVectorExpressions,
   type ExpressionEnvironment, type ExpressionNode,
 } from './vector-expression.js';
 import { ngspiceFft, ngspiceLinearInterpolate, ngspicePsd, spectrumWindow } from './spectrum.js';
@@ -851,10 +851,15 @@ class ControlInterpreter {
   /** ngspice-47 frontend/fourier.c:69-163: last-period grid and sine-reference table. */
   private fourier(rest: string, line: ControlSourceLine): void {
     const fail = (message: string): never => { throw new ControlScriptError(`fourier: ${message}`, line.lineNumber, line.text); };
-    const [frequency, ...operands] = splitWords(rest);
+    const frequency = /^\S+/.exec(rest.trim())?.[0];
     const fundamental = parseControlNumber(frequency ?? '');
     if (fundamental === undefined || !Number.isFinite(fundamental) || fundamental <= 0) fail('bad fundamental freq');
-    if (operands.length === 0) fail('missing vector');
+    const operandText = rest.trim().slice(frequency!.length).trim();
+    if (!operandText) fail('missing vector');
+    const operands = (() => {
+      try { return splitVectorExpressions(operandText); }
+      catch (error) { throw this.wrap(error, line); }
+    })();
     const time = this.current.scale;
     if (!time || time.im || time.name !== 'time') fail('fourier needs real time scale');
     const setting = (name: string, fallback: number, minimum: number): number => {

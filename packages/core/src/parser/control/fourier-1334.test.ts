@@ -13,6 +13,41 @@ const tables = reference.split('Fourier analysis for ').slice(1).map(block => ({
 }));
 
 describe('fourier (#1334)', () => {
+  it('matches ngspice-47 for spaced expressions on the identical expression deck', async () => {
+    const expressionDeck = readFileSync(new URL('expressions.cir', directory), 'utf8');
+    const oracle = readFileSync(new URL('expressions-ngspice-47.txt', directory), 'utf8')
+      .split('Fourier analysis for ').slice(1);
+    const actual = (await simulate(expressionDeck)).control!.fourier!;
+    expect(actual).toHaveLength(oracle.length);
+    oracle.forEach((block, i) => {
+      expect(Math.abs(actual[i].thd - Number(/THD: ([\deE+.-]+)/.exec(block)![1]))).toBeLessThan(1e-3);
+      const rows = block.split('\n').filter(line => /^ \d+\s/.test(line)).map(line => line.trim().split(/\s+/).map(Number));
+      expect(actual[i].harmonics).toHaveLength(rows.length);
+      rows.forEach((row, j) => {
+        if (Math.abs(row[2]) > rows[1][2] * 1e-6) {
+          expect(Math.abs(actual[i].harmonics[j].magnitude - row[2]) / Math.abs(row[2])).toBeLessThan(1e-3);
+          expect(Math.abs(actual[i].harmonics[j].phase - row[3])).toBeLessThan(1e-3);
+        }
+      });
+    });
+  });
+
+  it.each([
+    ['v(out) + v(a)', ['v(out)+v(a)']],
+    ['v(out) + v(a) v(a) v(out) - 2 * v(a)', ['v(out)+v(a)', 'v(a)', 'v(out)-2*v(a)']],
+    ['(v(out) + v(a)) / 2 v(out)', ['(v(out)+v(a))/2', 'v(out)']],
+  ])('parses spaced Fourier expressions and mixed operands: %s', async (operands, compact) => {
+    const run = (args: string) => simulate(deck.replace('fourier 10k v(out) v(a)', `fourier 10k ${args}`));
+    const actual = (await run(operands)).control!.fourier!;
+    const expected = (await run(compact.join(' '))).control!.fourier!;
+    expect(actual).toHaveLength(compact.length + 1);
+    actual.forEach((table, i) => {
+      expect(table.harmonics).toEqual(expected[i].harmonics);
+      expect(table.thd).toBe(expected[i].thd);
+    });
+    expect(actual[0].thd).toBeCloseTo(11.1797, 3);
+  });
+
   it('accepts the unchanged corpus-f 100W deck past its former fourier parser blocker', () => {
     const original = readFileSync(new URL('../../../../../benchmarks/corpus/corpus-f/fixtures/examples/vdmos/100W.sp', import.meta.url), 'utf8');
     expect(() => parse(original)).not.toThrow();
