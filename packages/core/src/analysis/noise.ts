@@ -15,6 +15,7 @@ import { VoltageSource } from '../devices/voltage-source.js';
 import { otaNoiseSources } from '../devices/xspice/ota-model.js';
 import { gainNoiseSources } from '../devices/xspice/gain-noise.js';
 import { VBIC } from '../devices/vbic.js';
+import { VDMOS } from '../devices/vdmos.js';
 import { InvalidCircuitError } from '../errors.js';
 import { createMatrixVariableIdentities, MNAAssembler } from '../mna/assembler.js';
 import { NoiseResult } from '../results.js';
@@ -93,6 +94,9 @@ export function assertNoiseDevicesSupported(compiled: CompiledCircuit): void {
     // ngspice HFETA has no noise routine, so its RD/RS are noiseless; reject
     // rather than add thermal noise from the expanded series resistors.
     else if (device instanceof HFET1) kind = 'HFET';
+    // vdmosnoi.c RD/RS, channel thermal and KF/AF sources are not ported.
+    // This also rejects self-heating instances instead of reporting partial noise.
+    else if (device instanceof VDMOS) kind = 'VDMOS';
 
     if (device instanceof MOS2 || device instanceof MOS3) {
       const { KF, AF, NLEV, oxideCapFactor } = device.model;
@@ -500,6 +504,7 @@ export function solveNoise(
 
 function isSemiconductorNoiseDevice(device: CompiledCircuit['devices'][number]): boolean {
   return device instanceof Diode
+    || device instanceof VDMOS
     || device instanceof VBIC
     || device instanceof BJT
     || device instanceof JFET
