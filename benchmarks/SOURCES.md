@@ -1,5 +1,21 @@
 # Benchmark sources
 
+## Control Fourier command (#1334)
+
+`benchmarks/control-fourier/harmonics.cir` is an original MIT-licensed probe
+by spice-ts contributors. The identical six-period deck runs on both engines.
+The test consumes `ngspice-47.txt`, captured with
+`spice-heavy ngspice -b benchmarks/control-fourier/harmonics.cir > benchmarks/control-fourier/ngspice-47.txt 2>&1`.
+Algorithm reference: [ngspice-47 frontend/fourier.c](https://github.com/imr/ngspice/blob/ngspice-47/src/frontend/fourier.c),
+lines 69-152 (defaults and grid), 158-195 (table), 292-362 (sine-reference
+coefficients, normalization, THD), and `maths/poly/interpolate.c:74-188`
+(polynomial-window selection). These ngspice frontend sources are BSD-3-Clause,
+copyright Regents of the University of California; see ngspice's COPYING.
+Higher-degree fits use Newton divided differences rather than absolute-time
+Vandermonde elimination to avoid ill-conditioning. The test covers degrees
+1/2 against ngspice and degree 3 against an exact cubic resampling oracle.
+This is post-processing coverage, not a transient performance claim.
+
 ## BSIM4 IGBMOD=1 gate-to-body tunneling (#1321)
 
 `benchmarks/bsim4-igb/{n,p}-{acc,inv}.cir` are self-authored MIT fixtures.
