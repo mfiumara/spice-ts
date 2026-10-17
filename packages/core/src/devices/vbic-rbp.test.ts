@@ -7,7 +7,7 @@ import { simulate } from '../simulate.js';
 import type { StampContext } from './device.js';
 import { VBIC, resolveVBICParams } from './vbic.js';
 
-describe('VBIC open parasitic base resistor RBP=0 (#1302)', () => {
+describe('VBIC explicit parasitic base resistor RBP=0 (#1302, corrected by #1309)', () => {
   it('compiles a minimal RBP=0 card without collapsing the BP node', () => {
     const circuit = parse('RBP zero\nQ1 c b 0 qv\n.model qv NPN(LEVEL=4 RBP=0)\n.op\n.end').compile();
     const device = circuit.devices.find(d => d instanceof VBIC)!;
@@ -16,7 +16,7 @@ describe('VBIC open parasitic base resistor RBP=0 (#1302)', () => {
     expect(device.nodes[5]).toBeGreaterThanOrEqual(0);
     expect(device.nodes[5]).not.toBe(device.nodes[0]);
     expect(device.nodes[5]).not.toBe(device.nodes[2]);
-    expect(resolveVBICParams({ RBP: 0 }, 1).RBP).toBe(0);
+    expect(resolveVBICParams({ RBP: 0 }, 1).RBP).toBe(0.01);
   });
 
   it.each([-1, -1e-30, NaN, Infinity, -Infinity])('rejects invalid RBP=%s with the same structured error', RBP => {
@@ -25,7 +25,7 @@ describe('VBIC open parasitic base resistor RBP=0 (#1302)', () => {
   });
 
   for (const polarity of [1, -1]) for (const temperature of [0, 27, 75]) {
-    it(`has exactly zero RBP current and all derivatives, polarity=${polarity}, temperature=${temperature}`, () => {
+    it(`has the clamped RBP conductance, polarity=${polarity}, temperature=${temperature}`, () => {
       // Disable other BP branches, but keep bias-dependent qbp via ISP/IKP.
       const device = new VBIC('Q', [0, 1, 2, 3, 4, 5, 6], { RBP: 0, ISP: 1e-16, IKP: 1e-5 }, polarity, 3);
       device.setTemperature(temperature);
@@ -40,10 +40,10 @@ describe('VBIC open parasitic base resistor RBP=0 (#1302)', () => {
       for (let i = 0; i < 12; i++) {
         g.forEach(row => row.fill(0)); rhs.fill(0); device.stamp(ctx);
       }
-      // The BP residual is solely Irbp, so this proves its full Jacobian and current.
-      expect([...g[5]]).toEqual(Array(7).fill(0));
-      expect(rhs[5]).toBe(0);
-      expect(device.noiseOperatingPoint(Float64Array.from(v), 0)[2].conductance).toBe(0);
+      // BP is coupled to CX through finite RBP, not an open circuit.
+      expect(g[5][5]).toBeGreaterThanOrEqual(300);
+      expect(g[5][0]).toBeLessThanOrEqual(-300);
+      expect(device.noiseOperatingPoint(Float64Array.from(v), 0)[2].conductance).toBeGreaterThanOrEqual(300);
     });
   }
 
