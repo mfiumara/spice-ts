@@ -6,15 +6,15 @@ Every deck below is byte-identical to its pinned upstream revision (xyce `7bb7e9
 
 ## Totals
 
-- Fixtures: 23. Outcome SHA-256: `895fa31a9ee5e361473c09e31612bf2a36439be888dd4558887d0e93c3763131`.
+- Fixtures: 23. Outcome SHA-256: `a157a1ee425d087057b6b0bf5a36f7bbe2a47e945714f9b3a3dc7a90d7fc3783`.
 - ngspice (ngspice-47): 23 success, 0 failed, 0 unsupported.
-- spice-ts (0.3.0): 20 success, 3 failed, 0 unsupported.
-- Outcomes: matched 16, mismatch 0, not-compared 4, spice-ts-loss 3, ngspice-failed 0, both-failed 0.
-- Of the 23 decks ngspice runs successfully, spice-ts matches 16, mismatches 0, produces no comparable result for 4 and fails 3.
+- spice-ts (0.4.0): 23 success, 0 failed, 0 unsupported.
+- Outcomes: matched 19, mismatch 0, not-compared 4, spice-ts-loss 0, ngspice-failed 0, both-failed 0.
+- Of the 23 decks ngspice runs successfully, spice-ts matches 19, mismatches 0, produces no comparable result for 4 and fails 0.
 
 | Source | Fixtures | Matched | Mismatch | Not compared | spice-ts loss | ngspice failed | Both failed |
 |---|---|---|---|---|---|---|---|
-| `xyce` | 23 | 16 | 0 | 4 | 3 | 0 | 0 |
+| `xyce` | 23 | 19 | 0 | 4 | 0 | 0 | 0 |
 
 ## Method
 
@@ -29,9 +29,9 @@ Every deck below is byte-identical to its pinned upstream revision (xyce `7bb7e9
 
 ## Follow-up issues
 
-- https://github.com/mfiumara/spice-ts/issues/1314: o-5 MOS2 noise (engine status failed).
-- https://github.com/mfiumara/spice-ts/issues/1315: o-6 MOS3 noise (engine status failed).
-- https://github.com/mfiumara/spice-ts/issues/1316: o-3 MOS9 noise (engine status failed).
+- https://github.com/mfiumara/spice-ts/issues/1314: o-5 MOS2 noise implementation and parity rerun.
+- https://github.com/mfiumara/spice-ts/issues/1315: o-6 MOS3 noise implementation and parity rerun.
+- https://github.com/mfiumara/spice-ts/issues/1316: o-3 MOS9 noise implementation and parity rerun.
 - https://github.com/mfiumara/spice-ts/issues/1317: o-1/o-10 control-noise reference export, not-compared.
 - https://github.com/mfiumara/spice-ts/issues/1318: o-19/o-20 uniform comparison deadline, not-compared.
 
@@ -41,30 +41,29 @@ Grouped from spice-ts's own first error line (unchanged corpus-l/i/h/f rules). "
 
 | Bucket | Fixtures | ngspice ok | Issue |
 |---|---|---|---|
-| execution: other failure | 3 | 3 | none filed |
 
-## Losses (7)
+## Losses (4)
 
 Every fixture that is not matched: spice-ts failures, mismatches above the threshold, and results that could not be compared.
 
 | Fixture | ngspice | spice-ts | Outcome | Worst | Worst signal | First error line (ngspice / spice-ts) |
 |---|---|---|---|---|---|---|
 | [xyce/Netlists/NOISE/commonEmitterBjt_ngspice.cir](fixtures/xyce/Netlists/NOISE/commonEmitterBjt_ngspice.cir) | success | success | not-compared |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare |
-| [xyce/Netlists/NOISE/gain-stage_b3.cir](fixtures/xyce/Netlists/NOISE/gain-stage_b3.cir) | success | failed | spice-ts-loss |  |  | spice-ts: .noise does not support MOSFET level 9 noise for 'M1' |
-| [xyce/Netlists/NOISE/gain-stage2.cir](fixtures/xyce/Netlists/NOISE/gain-stage2.cir) | success | failed | spice-ts-loss |  |  | spice-ts: .noise does not support MOSFET level 2 noise for 'M1' |
-| [xyce/Netlists/NOISE/gain-stage3.cir](fixtures/xyce/Netlists/NOISE/gain-stage3.cir) | success | failed | spice-ts-loss |  |  | spice-ts: .noise does not support MOSFET level 3 noise for 'M1' |
 | [xyce/Netlists/NOISE/res_noise_ngspice.cir](fixtures/xyce/Netlists/NOISE/res_noise_ngspice.cir) | success | success | not-compared |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare |
 | [xyce/Netlists/DIODE_ANALYTIC/breakdown_model.cir](fixtures/xyce/Netlists/DIODE_ANALYTIC/breakdown_model.cir) | success | success | not-compared |  |  |  |
 | [xyce/Netlists/DIODE_ANALYTIC/forward_model.cir](fixtures/xyce/Netlists/DIODE_ANALYTIC/forward_model.cir) | success | success | not-compared |  |  |  |
 
-## Wins (16)
+## Wins (19)
 
 Fixtures where spice-ts matches ngspice-47 within the uniform threshold on every common signal.
 
 | Fixture | ngspice | spice-ts | Outcome | Worst | Worst signal | First error line (ngspice / spice-ts) |
 |---|---|---|---|---|---|---|
 | [xyce/Netlists/NOISE/commonEmitterBjt.cir](fixtures/xyce/Netlists/NOISE/commonEmitterBjt.cir) | success | success | matched | 0.0000226 | noise onoise_spectrum |  |
+| [xyce/Netlists/NOISE/gain-stage_b3.cir](fixtures/xyce/Netlists/NOISE/gain-stage_b3.cir) | success | success | matched | 1.74e-7 | noise onoise_spectrum |  |
 | [xyce/Netlists/NOISE/gain-stage1.cir](fixtures/xyce/Netlists/NOISE/gain-stage1.cir) | success | success | matched | 1.74e-7 | noise inoise_spectrum |  |
+| [xyce/Netlists/NOISE/gain-stage2.cir](fixtures/xyce/Netlists/NOISE/gain-stage2.cir) | success | success | matched | 1.74e-7 | noise onoise_spectrum |  |
+| [xyce/Netlists/NOISE/gain-stage3.cir](fixtures/xyce/Netlists/NOISE/gain-stage3.cir) | success | success | matched | 1.74e-7 | noise onoise_spectrum |  |
 | [xyce/Netlists/NOISE/invalid_device.cir](fixtures/xyce/Netlists/NOISE/invalid_device.cir) | success | success | matched | 1.06e-7 | noise onoise_spectrum |  |
 | [xyce/Netlists/NOISE/noiseBjt1.cir](fixtures/xyce/Netlists/NOISE/noiseBjt1.cir) | success | success | matched | 1.06e-7 | noise onoise_spectrum |  |
 | [xyce/Netlists/NOISE/noiseBjt2.cir](fixtures/xyce/Netlists/NOISE/noiseBjt2.cir) | success | success | matched | 7.65e-8 | noise onoise_spectrum |  |
@@ -86,8 +85,7 @@ Fixtures where spice-ts matches ngspice-47 within the uniform threshold on every
 | Bucket | Count | IDs |
 |---|---|---|
 | comparison: no comparable result | 4 | o-1, o-10, o-19, o-20 |
-| execution: other failure | 3 | o-3, o-5, o-6 |
 
 ## Measurement boundary
 
-Unchanged corpus-j reduceRow and corpus-f metrics/thresholds. Detailed matched-point max/RMS absolute and relative metrics are in outcomes.json. Null means no comparison, not zero error. Identical original bytes for both engines; no fine-step adapted reference. Serial cold engine-group wall includes startup, adapter, parse/solve and export. No solver-only or speed-superiority claim. New baseline, not before/after improvement: production core is unchanged. Aggregate refresh deferred to nightly. The classification/classCounts fields split legacy spice-ts-loss into unsupported and failed; legacy outcomes are retained unchanged. Issue links and exclusions: SOURCES.md.
+Unchanged corpus-j reduceRow and corpus-f metrics/thresholds. Detailed matched-point max/RMS absolute and relative metrics are in outcomes.json. Null means no comparison, not zero error. Identical original bytes for both engines; no fine-step adapted reference. Serial cold engine-group wall includes startup, adapter, parse/solve and export. No solver-only or speed-superiority claim. Before the MOS2/3/9 noise port: 16 matched, 3 failed, 4 not-compared. This rerun measures the port with unchanged fixtures and comparison policy; remaining exclusions are still published. Aggregate refresh deferred to nightly. The classification/classCounts fields split legacy spice-ts-loss into unsupported and failed; legacy outcomes are retained unchanged. Issue links and exclusions: SOURCES.md.
