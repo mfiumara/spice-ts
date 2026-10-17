@@ -448,7 +448,10 @@ function controlledOscillator(pwm: boolean): XspiceCodeModelSpec {
 /** Implemented code models keyed by lower-case ngspice Spice_Model_Name. */
 export const XSPICE_CODE_MODEL_SPECS: ReadonlyMap<string, XspiceCodeModelSpec> = new Map(
   [
-    ASTATE, GAIN, SUMMER, MULT, DIVIDE, PWL, LIMIT, INT, D_DT, S_XFER, OTA_SPEC, ...REACTIVE_IC_SPECS,
+    ASTATE, GAIN, SUMMER, MULT, DIVIDE, PWL,
+    // analog/pwlts/ifspec.ifs:30-75 shares pwl parameters, but has only an output.
+    { name: 'pwlts', connections: [output('out')], params: PWL.params },
+    LIMIT, INT, D_DT, S_XFER, OTA_SPEC, ...REACTIVE_IC_SPECS,
     {
       name: 'lcouple',
       connections: ['l', 'mmf_out'].map((name, i) => ({ name, direction: 'inout' as const, defaultType: 'hd', allowedTypes: i === 0 ? ['h', 'hd'] : ['hd'], vector: false, nullAllowed: false })),

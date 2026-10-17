@@ -1,6 +1,7 @@
 import type { ChargeIntegration, ChargeTruncation } from '../device.js';
 import type { XspiceConnection } from './connections.js';
 import type { XspiceParamValue } from './spec.js';
+import { pwlts } from './pwlts.js';
 
 /**
  * One call of a code model function (ngspice cm_<model>(ARGS)). Inputs,
@@ -549,6 +550,7 @@ export const XSPICE_BEHAVIORS: ReadonlyMap<string, BehaviorFactory> = new Map<st
   ['mult', mult],
   ['divide', divide],
   ['pwl', pwl],
+  ['pwlts', pwlts],
   ['limit', limit],
   ['int', integrator],
   ['d_dt', differentiator],
