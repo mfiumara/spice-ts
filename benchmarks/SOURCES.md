@@ -1525,3 +1525,19 @@ Model semantics follow the Public Domain ngspice-47
 [`xtradev` source](https://github.com/imr/ngspice/tree/a80f6e3e95d51534905b1f23410a951802666656/src/xspice/icm/xtradev):
 `lcouple/cfunc.mod:182-249` and `core/cfunc.mod:246-365`, with ports/defaults
 from the respective `ifspec.ifs`. Core hysteresis mode is explicitly rejected.
+
+## BSIM3 transient NQS (#692)
+
+`bsim3-nqs-692/reference.ts` reuses `bsim3v32-594/cards.ts`'s inverter chain
+and existing corpus-f TSMC cards (provenance/licences above and in
+`corpus/corpus-f/SOURCES.md`). It sets NQSMOD=0/1 on every transistor and
+exercises the supported VERSION selectors with identical decks in both engines.
+The generated `ngspice-47.json` is consumed by `bsim3-nqs.test.ts`.
+No new third-party circuit material is introduced.
+Model equations follow the UC Berkeley-copyrighted, permissively licensed
+ngspice-47 source (the notice in each source file), pinned at
+https://github.com/imr/ngspice/tree/a80f6e3e95d51534905b1f23410a951802666656/src/spicelib/devices/bsim3
+(`b3ld.c:2478-2491,2593-2675,2803-2848,3109-3120`, `b3temp.c:785,803-804`)
+and the sibling `bsim3v32` (`b3v32ld.c:2793-2806,2906-2988,3106-3163,3425-3436`,
+`b3v32temp.c:853,873-874`). The transient implementation locally eliminates
+the charge-node equation, retaining qcheq/qcdump integration histories.

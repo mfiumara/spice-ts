@@ -6,11 +6,11 @@ Every deck below is byte-identical to ngspice `3ef069fb1f04177a153f342a32d941fc2
 
 ## Totals
 
-- Fixtures: 336. Outcome SHA-256: `5b552281df626995004f014ee8d9697c4f3d18cd7933b0b55bd2337d92688d3f`.
+- Fixtures: 336. Outcome SHA-256: `c19dba8ba01ca977c51ab286c3cfe4c22660a36486da8c8117709b4bc18f8f39`.
 - ngspice (ngspice-47): 306 success, 18 failed, 12 unsupported.
-- spice-ts (0.3.0): 140 success, 13 failed, 183 unsupported.
-- Outcomes: matched 60, mismatch 16, not-compared 64, spice-ts-loss 166, ngspice-failed 0, both-failed 30.
-- Of the 306 decks ngspice runs successfully, spice-ts matches 60, mismatches 16, produces no comparable result for 64 and fails 166. For 155 of those ngspice successes the deck runs its analyses from `.control` (or its control block ends with `quit`), so `ngspice -r` exports no vectors: they cannot be compared even when spice-ts runs them (harness follow-up https://github.com/mfiumara/spice-ts/issues/528).
+- spice-ts (0.3.0): 141 success, 13 failed, 182 unsupported.
+- Outcomes: matched 60, mismatch 17, not-compared 64, spice-ts-loss 165, ngspice-failed 0, both-failed 30.
+- Of the 306 decks ngspice runs successfully, spice-ts matches 60, mismatches 17, produces no comparable result for 64 and fails 165. For 155 of those ngspice successes the deck runs its analyses from `.control` (or its control block ends with `quit`), so `ngspice -r` exports no vectors: they cannot be compared even when spice-ts runs them (harness follow-up https://github.com/mfiumara/spice-ts/issues/528).
 
 ## Method
 
@@ -43,7 +43,7 @@ Grouped from spice-ts's own first error line. "ngspice ok" counts the fixtures i
 
 | Bucket | Fixtures | ngspice ok | Issue |
 |---|---|---|---|
-| parse: other unsupported syntax | 59 | 54 | none filed |
+| parse: other unsupported syntax | 58 | 53 | none filed |
 | model: CIDER numerical device models (NUMD/NUMOS/NBJT) | 37 | 37 | https://github.com/mfiumara/spice-ts/issues/497 |
 | control: ngspice control-language scripting (set/let/save/foreach/meas/...) | 24 | 22 | https://github.com/mfiumara/spice-ts/issues/488 |
 | model: VDMOS power MOSFET | 12 | 6 | https://github.com/mfiumara/spice-ts/issues/506 |
@@ -304,7 +304,7 @@ Grouped from spice-ts's own first error line. "ngspice ok" counts the fixtures i
 | [examples/xspice/original-examples/polarity.deck](fixtures/examples/xspice/original-examples/polarity.deck) | success | success | matched | 0.00049 | tran v(10) |  |
 | [examples/xspice/original-examples/spice3.deck](fixtures/examples/xspice/original-examples/spice3.deck) | success | success | matched | 0.00000806 | tran v(emit) |  |
 | [examples/xspice/original-examples/suffixes.deck](fixtures/examples/xspice/original-examples/suffixes.deck) | unsupported | unsupported | both-failed |  |  | ngspice: Error in netlist line no. 16, new internal line no. 15: / spice-ts: Parse error at line 15: .model 'mod' has unsupported type 'PRINT_PARAM_TYPES' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .model mod print_param_types integer=2k r |
-| [examples/xspice/original-examples/supply_ramping.deck](fixtures/examples/xspice/original-examples/supply_ramping.deck) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 14: XSPICE code model 'capacitoric' (.model 'cap') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inv |
+| [examples/xspice/original-examples/supply_ramping.deck](fixtures/examples/xspice/original-examples/supply_ramping.deck) | success | success | mismatch | 0.0588 | tran v(1) |  |
 | [examples/xspice/original-examples/user_defined_nodes.deck](fixtures/examples/xspice/original-examples/user_defined_nodes.deck) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 19: XSPICE code model 'd_to_real' (.model 'node_bridge2') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer |
 | [examples/xspice/pwm-osc/fmcw-dosc.cir](fixtures/examples/xspice/pwm-osc/fmcw-dosc.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 15: XSPICE code model 'd_osc' (.model 'var_clock') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inv |
 | [examples/xspice/pwm-osc/pwm-sin.cir](fixtures/examples/xspice/pwm-osc/pwm-sin.cir) | success | unsupported | spice-ts-loss |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare / spice-ts: Parse error at line 6: XSPICE code model 'd_pwm' (.model 'pwm') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inverter,  |
@@ -408,7 +408,7 @@ Grouped from spice-ts's own first error line. "ngspice ok" counts the fixtures i
 
 - Fine-step reference (#592): ngspice-47 runs the same deck with every active .tran card rewritten to TMAX_fine = min(TSTEP, (TSTOP - TSTART)/50, deck TMAX if given) / 10, i.e. the ngspice default step ceiling divided by 10; TSTEP, TSTOP, TSTART, UIC and every other card are unchanged. The rule is the same for every transient fixture. No reference is generated when the deck has no parsable .tran card outside .control, or when TSTOP/TMAX_fine exceeds 1000000 steps; the ngspice run is bounded at 600 s. Each default run (spice-ts, ngspice) is scored by the same procedure: at the reference's output points, with the default run linearly interpolated onto them, over the transient signals of the headline comparison, normalised by the reference peak with the same per-quantity floors. The headline's one-sided breakpoint alignment applies at every default-run time point within ngspice's breakpoint merge distance (CKTminBreak = 0.00005 x TMAX_fine) of a reference time point; the headline matches breakpoints bit for bit, which here would favour ngspice, whose default run lands on its own reference's breakpoint times exactly while spice-ts's land a few ulps away. This charges each engine for its own published waveform, so a coarse output grid counts against whichever engine produced it. Status (matched/mismatch) is defined by the headline column only. One fine reference is not a convergence proof, and neither column is an accuracy ranking of the engines.
 - One fine reference is not a convergence proof: it is one more discretisation of the same circuit by the same engine. These columns are diagnostics of grid sensitivity, not an accuracy ranking and not a claim that either engine is more accurate. Status stays defined by the headline column.
-- Transient rows: 45; fine reference compared for 43, unavailable for 2. Above 0.01 among compared rows: headline (transient signals) 16, spice-ts vs fine 22, ngspice default vs fine 22.
+- Transient rows: 46; fine reference compared for 44, unavailable for 2. Above 0.01 among compared rows: headline (transient signals) 17, spice-ts vs fine 23, ngspice default vs fine 23.
 
 | Fixture | Status (headline) | Headline tran worst (vs ngspice default) | spice-ts vs fine | ngspice default vs fine | Fine TMAX | Note |
 |---|---|---|---|---|---|---|
@@ -444,6 +444,7 @@ Grouped from spice-ts's own first error line. "ngspice ok" counts the fixtures i
 | [examples/xspice/original-examples/parsing.deck](fixtures/examples/xspice/original-examples/parsing.deck) | matched | 0.000491 (v(2)) | 0.000305 (i(v1)) | 0.000493 (v(2)) | 0.000001 |  |
 | [examples/xspice/original-examples/polarity.deck](fixtures/examples/xspice/original-examples/polarity.deck) | matched | 0.00049 (v(10)) | 0.000304 (i(v1)) | 0.000493 (i(v1)) | 0.000001 |  |
 | [examples/xspice/original-examples/spice3.deck](fixtures/examples/xspice/original-examples/spice3.deck) | matched | 0.00000806 (v(emit)) | 0.000497 (i(vin)) | 0.000493 (i(vin)) | 0.000001 |  |
+| [examples/xspice/original-examples/supply_ramping.deck](fixtures/examples/xspice/original-examples/supply_ramping.deck) | mismatch | 0.0588 (v(1)) | 0.0427 (v(1)) | 0.0155 (v(1)) | 0.01 |  |
 | [examples/xspice/various/xspice_c1.cir](fixtures/examples/xspice/various/xspice_c1.cir) | matched | 0.00000806 (v(emit)) | 0.000497 (i(vin)) | 0.000493 (i(vin)) | 0.000001 |  |
 | [examples/xspice/various/xspice_c2.cir](fixtures/examples/xspice/various/xspice_c2.cir) | matched | 0.000493 (v(1)) | 0.000303 (v(1)) | 0.000493 (v(1)) | 0.000001 |  |
 | [tests/general/fourbitadder.cir](fixtures/tests/general/fourbitadder.cir) | matched | 0.00143 (v(x1.x1.x1.x7.8)) | 0.0709 (v(x1.x1.x1.x7.8)) | 0.0701 (v(x1.x1.x1.x7.8)) | 1.2e-11 |  |
