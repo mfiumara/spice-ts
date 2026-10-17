@@ -10,10 +10,12 @@ import type { ControlSourceLine } from './source.js';
 import { setArguments, splitWords, unquote } from './set-arguments.js';
 import { validatePreSet } from './pre-set.js';
 import {
-  ExpressionError, UnsupportedExpressionFeature, evaluateVectorExpression, parseControlNumber, parseVectorExpression,
+  ExpressionError, UnsupportedExpressionFeature, evaluateVectorExpression, parseControlNumber, parseVectorExpression, splitVectorExpressions,
   type ExpressionEnvironment, type ExpressionNode,
 } from './vector-expression.js';
 import { ngspiceFft, ngspiceLinearInterpolate, ngspicePsd, spectrumWindow } from './spectrum.js';
+import { ngspiceFourier } from './fourier.js';
+import type { FourierResult } from '../../results.js';
 import {
   complexVector, formatVector, isTrue, realVector, renamed, scalar, type ControlVector,
 } from './vector.js';
@@ -67,6 +69,7 @@ export interface ControlScriptOutcome {
   measurements: MeasurementResult[];
   /** Non-fatal warnings ngspice-47 prints while running the script (batch-mode `edit`). */
   warnings: string[];
+  fourier: FourierResult[];
 }
 
 interface Plot {
@@ -114,7 +117,6 @@ const RESULT_AFFECTING_VARIABLES: Record<string, string> = {
   xtrtol: 'XSPICE truncation tolerance is not implemented',
   nosubckt: 'disabling subcircuit expansion is not implemented',
   dpolydegree: 'polynomial interpolation settings are not implemented',
-  polydegree: 'polynomial interpolation settings are not implemented',
   polysteps: 'polynomial interpolation settings are not implemented',
   interp: 'raw-file interpolation is not implemented',
   strict_errorhandling: 'ngspice error-handling modes are not implemented',
@@ -156,6 +158,8 @@ class ControlInterpreter {
   private readonly output: string[] = [];
   private readonly measurements: MeasurementResult[] = [];
   private readonly warnings: string[] = [];
+  private readonly fourierResults: FourierResult[] = [];
+  private fourierCount = 0;
   /** inpcom.c `replaceno`: numbers the `vexprint<n>` vectors of `meas` operands. */
   private measureExpressionCount = 1;
   /**
@@ -182,9 +186,9 @@ class ControlInterpreter {
     } catch (signal) {
       if (!(signal instanceof QuitSignal)) throw signal;
       if (signal.status !== 0) throw new ControlScriptExitError(signal.status, signal.line.lineNumber, this.output);
-      return { runs: this.runs, output: this.output, quit: true, measurements: this.measurements, warnings: this.warnings };
+      return { runs: this.runs, output: this.output, quit: true, measurements: this.measurements, warnings: this.warnings, fourier: this.fourierResults };
     }
-    return { runs: this.runs, output: this.output, quit: false, measurements: this.measurements, warnings: this.warnings };
+    return { runs: this.runs, output: this.output, quit: false, measurements: this.measurements, warnings: this.warnings, fourier: this.fourierResults };
   }
 
   // -------------------------------------------------------------------------
@@ -328,6 +332,7 @@ class ControlInterpreter {
       case 'cutout': return this.cutout(rest);
       case 'fft': return this.spectrum('fft', rest, line);
       case 'psd': return this.spectrum('psd', rest, line);
+      case 'fourier': return this.fourier(rest, line);
       case 'setscale': {
         if (rest === '') return;
         this.current.scale = this.vector(rest, line);
@@ -843,12 +848,50 @@ class ControlInterpreter {
     });
   }
 
-  /**
-   * `fft vec ...` (com_fft) and `psd npts vec ...` (com_psd), ngspice-47 with
-   * FFTW: a new `sp<n>` plot with a `frequency` scale and one complex vector
-   * per input, under the input's name. The window is `specwindow` (default
-   * `hanning`) of order `specwindoworder` (default and minimum 2).
-   */
+  /** ngspice-47 frontend/fourier.c:69-163: last-period grid and sine-reference table. */
+  private fourier(rest: string, line: ControlSourceLine): void {
+    const fail = (message: string): never => { throw new ControlScriptError(`fourier: ${message}`, line.lineNumber, line.text); };
+    const frequency = /^\s*(\S+)/.exec(rest)?.[1] ?? '';
+    const fundamental = parseControlNumber(frequency ?? '');
+    if (fundamental === undefined || !Number.isFinite(fundamental) || fundamental <= 0) fail('bad fundamental freq');
+    const text = rest.trimStart().slice(frequency.length).trim();
+    if (!text) fail('missing vector');
+    const operands = (() => {
+      try { return splitVectorExpressions(text); }
+      catch (error) { throw this.wrap(error, line); }
+    })();
+    const time = this.current.scale;
+    if (!time || time.im || time.name !== 'time') fail('fourier needs real time scale');
+    const setting = (name: string, fallback: number, minimum: number): number => {
+      const value = Math.trunc(Number(this.variables.get(name)));
+      return Number.isFinite(value) && value >= minimum ? value : fallback;
+    };
+    const nfreqs = setting('nfreqs', 10, 1);
+    const degree = setting('polydegree', 1, 0);
+    const gridSize = setting('fourgridsize', 200, 1);
+    const periods = setting('nperiods', 1, 1);
+    const call = ++this.fourierCount;
+    operands.forEach((operand, index) => {
+      const vector = this.evaluate(operand, line);
+      if (vector.im) fail(`${operand} isn't real!`);
+      if (vector.re.length !== time!.re.length) fail("lengths don't match");
+      const result = (() => {
+        try {
+          return ngspiceFourier(operand, time!.re, vector.re, fundamental!, nfreqs, gridSize, degree, periods);
+        } catch (error) { return fail(error instanceof Error ? error.message : String(error)); }
+      })();
+      this.fourierResults.push(result);
+      this.output.push(`Fourier analysis for ${operand}:`,
+        `  No. Harmonics: ${nfreqs}, THD: ${result.thd} %, Gridsize: ${result.gridSize}, Interpolation Degree: ${degree}, No. Periods: ${periods}`,
+        'Harmonic Frequency Magnitude Phase Norm. Mag Norm. Phase',
+        ...result.harmonics.map(row => [row.harmonic, row.frequency, row.magnitude, row.phase, row.normalizedMagnitude, row.normalizedPhase].join(' ')));
+      if (!this.variables.has('fournosave')) {
+        const name = `thd${call}${index + 1}`;
+        this.current.vectors.set(name, scalar(result.thd, name));
+      }
+    });
+  }
+
   private spectrum(command: 'fft' | 'psd', rest: string, line: ControlSourceLine): void {
     const fail = (message: string): never => {
       throw new ControlScriptError(`${command}: ${message}`, line.lineNumber, line.text);

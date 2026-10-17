@@ -451,7 +451,7 @@ function simulateControlScript(
   const result: SimulationResult = {
     warnings,
     convergence,
-    control: { runs: outcome.runs, output: outcome.output, quit: outcome.quit, measurements: outcome.measurements },
+    control: { runs: outcome.runs, output: outcome.output, quit: outcome.quit, measurements: outcome.measurements, fourier: outcome.fourier },
   };
   // Like the analysis fields, measurements come from the latest run of each analysis type.
   const latestMeasurements = new Map<string, MeasurementResult[]>();
