@@ -134,13 +134,13 @@ export function resolveVBICParams(
   }
   for (const name of [
     'IS', 'IBEI', 'IBEN', 'IBCI', 'IBCN', 'ISP', 'IBCIP', 'IBCNP', 'IBEIP', 'IBENP',
-    'RCX', 'RBX', 'RE', 'RS', 'VEF', 'VER', 'IKF', 'IKR', 'IKP',
+    'RCX', 'RBX', 'RE', 'RS', 'RBP', 'VEF', 'VER', 'IKF', 'IKR', 'IKP',
     'VO', 'GAMM', 'AVC1', 'AVC2', ...DC_INERT_PARAMETERS,
   ] as const) {
     // ngspice vbicload.c disables IVTF for every finite VTF <= 0.
     if (name !== 'VTF' && resolved[name] < 0) throw new InvalidCircuitError(`Invalid bounded VBIC DC model parameter: '${name}'`);
   }
-  for (const name of ['RCI', 'RBI', 'RBP', 'HRCF', 'NF', 'NR', 'NEI', 'NEN', 'NCI', 'NCN', 'NFP', 'NCIP', 'NCNP'] as const) {
+  for (const name of ['RCI', 'RBI', 'HRCF', 'NF', 'NR', 'NEI', 'NEN', 'NCI', 'NCN', 'NFP', 'NCIP', 'NCNP'] as const) {
     if (resolved[name] <= 0) throw new InvalidCircuitError(`Invalid bounded VBIC DC model parameter: '${name}'`);
   }
   if (resolved.TNOM <= -273.15) throw new InvalidCircuitError("Invalid bounded VBIC DC model parameter: 'TNOM'");
@@ -377,7 +377,8 @@ function evaluate(
   );
   const irci = div(iohm, sqrt(add(c(1, size), mul(derf, derf))));
   const irbi = scale(mul(vrbi, qb), 1 / params.RBI);
-  const irbp = scale(mul(vrbp, qbp), 1 / params.RBP);
+  // ngspice vbicload.c: RBP=0 opens this branch; BP remains an internal node.
+  const irbp = params.RBP > 0 ? scale(mul(vrbp, qbp), 1 / params.RBP) : c(0, size);
 
   // ngspice: Iciei = Itxf - Itzr, with Itxf = V(xf2) when excess phase is on.
   const iciei = excessPhase ? sub(xf2, itzr) : transport;

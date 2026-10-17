@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { simulate } from '../simulate.js';
+import { parse } from '../parser/index.js';
 import { InvalidCircuitError } from '../errors.js';
 import type { StampContext } from './device.js';
 import { VBIC, resolveVBICParams } from './vbic.js';
@@ -167,10 +168,10 @@ describe('VBIC junction potentials and grading (#1281)', () => {
     expect(max).toBeLessThan(0.001);
   });
 
-  it('reports the unchanged DFF deck boundary without rewriting model parameters', async () => {
+  it('compiles the unchanged DFF deck without rewriting model parameters', () => {
     const original = readFileSync('../../benchmarks/corpus/corpus-f/fixtures/examples/vbic/DFF_Y_ECL.sp', 'utf8');
     expect(createHash('sha256').update(original).digest('hex')).toBe('d811ecfa0f370d281fb35729ca3177e738fe034621d9b2909765d9d70f527cc6');
-    await expect(simulate(original)).rejects.toThrow(InvalidCircuitError);
-    await expect(simulate(original)).rejects.toThrow("Invalid bounded VBIC DC model parameter: 'RBP'");
+    // Full 10 ns parity is measured separately; do not run it twice in unit tests.
+    expect(() => parse(original).compile()).not.toThrow();
   });
 });
