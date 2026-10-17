@@ -88,6 +88,7 @@ a1 in out clock
     const queued: number[] = [];
     const view: EventInstanceView<unknown> = {
       initialized: true, state, previous: state, inputState: () => 0,
+      inputValue() { throw new Error('unused'); }, probeExternal() { throw new Error('unused'); },
       queue: time => queued.push(time), setBreakpoint: () => {},
       setAnalogInputs: values => { inputs = Array.from(values); },
       get analogInputs() { return inputs; },
@@ -102,7 +103,9 @@ a1 in out clock
       model.event.event({
         analysis: 'tran', init: false, time, previousTime: 0, state, previous: structuredClone(state),
         setTemporaryBreakpoint: () => false,
-        outputs: [out], inputState: () => 0, setBreakpoint() {}, scheduleOutput() {},
+        outputs: [out], inputState: () => 0,
+        inputValue() { throw new Error('unused'); }, probeExternal() { throw new Error('unused'); },
+        setBreakpoint() {}, scheduleOutput() {},
       });
       return out;
     };
@@ -127,6 +130,7 @@ a1 in out clock
     const state = model.event.createState();
     const view: EventInstanceView<unknown> = {
       initialized: true, state, previous: state, inputState: () => 0,
+      inputValue() { throw new Error('unused'); }, probeExternal() { throw new Error('unused'); },
       queue() {}, setBreakpoint() {}, setAnalogInputs() {}, analogInputs: [1],
     };
     model.analog!(view);
@@ -134,7 +138,9 @@ a1 in out clock
     const out: EventOutput = { changed: true, state: 0, strength: 0, delay: 0, load: 0 };
     model.event.event({
       analysis: 'tran', init: false, time: .3, previousTime: .1, state, previous: structuredClone(state),
-      outputs: [out], inputState: () => 0, setBreakpoint() {}, scheduleOutput() {},
+      outputs: [out], inputState: () => 0,
+      inputValue() { throw new Error('unused'); }, probeExternal() { throw new Error('unused'); },
+      setBreakpoint() {}, scheduleOutput() {},
       setTemporaryBreakpoint(time) { requested.push(time); return true; },
     });
     expect(requested).toEqual([.2]); // ngspice FACTOR2 * the new .25 s low interval

@@ -44,11 +44,11 @@ export interface PreparedXspiceInstance {
 }
 
 /**
- * Default unidirectional bridges, ngspice-47 src/xspice/evt/evtcheck_nodes.c
+ * Default automatic bridges, ngspice-47 src/xspice/evt/evtcheck_nodes.c
  * lines 466-473 (direction), 515-519 (3.3 V fallback), 635-644 (ADC/DAC).
  * Analog and event nodes retain the same name but occupy separate networks.
- * Family/custom bridges and bidi_bridge are not implemented; reject rather
- * than silently substituting an ideal DAC for bidirectional electrical I/O.
+ * Mixed-direction nodes use bidi_bridge (evtcheck_nodes.c:644-647), not an
+ * ideal voltage DAC. Family/custom bridges remain unsupported.
  */
 export function implicitXspiceBridges(
   instances: readonly PreparedXspiceInstance[],
@@ -76,16 +76,19 @@ export function implicitXspiceBridges(
   const bridges: PreparedXspiceInstance[] = [];
   let serial = 0;
   for (const node of nodes.values()) {
-    if (node.family || (node.input && node.output)) {
-      throw new InvalidCircuitError(`XSPICE mixed node '${node.name}' requires an unsupported ${node.family ? 'family-specific' : 'bidirectional'} automatic bridge`);
+    if (node.family) {
+      throw new InvalidCircuitError(`XSPICE mixed node '${node.name}' requires an unsupported family-specific automatic bridge`);
     }
     let name: string;
     do { name = `auto_bridge${serial++}`; } while (usedNames.has(name.toUpperCase()));
     usedNames.add(name.toUpperCase());
-    const model = parseXspiceModelCard(node.output
+    const bidi = node.input && node.output;
+    const model = parseXspiceModelCard(bidi
+      ? `.model ${name} bidi_bridge(out_high=${vcc} in_low=${vcc / 2} in_high=${vcc / 2})`
+      : node.output
       ? `.model ${name} dac_bridge(out_low=0 out_high=${vcc})`
       : `.model ${name} adc_bridge(in_low=${vcc / 2} in_high=${vcc / 2})`, 0);
-    const card = parseXspiceInstance(`${name} [${node.name}] [${node.name}] ${name}`, 0);
+    const card = parseXspiceInstance(`${name} [${node.name}] [${node.name}] ${bidi ? 'null ' : ''}${name}`, 0);
     bridges.push(prepareXspiceInstance(card, model, false, ground));
   }
   return bridges;
@@ -155,7 +158,9 @@ export function buildXspiceEventNetwork(
           hybrid = true;
           continue;
         }
-        (connection.direction === 'in' ? inputs : outputs).push({ node: port.positive!, invert: port.invert === true });
+        const eventPort = { node: port.positive!, invert: port.invert === true };
+        if (connection.direction !== 'out') inputs.push(eventPort);
+        if (connection.direction !== 'in') outputs.push(eventPort);
       }
     }
     const view = network.addInstance({ name: card.name, behavior: digitalModel.event, inputs, outputs, hybrid });

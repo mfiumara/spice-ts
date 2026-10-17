@@ -470,7 +470,24 @@ export const XSPICE_CODE_MODEL_SPECS: ReadonlyMap<string, XspiceCodeModelSpec> =
     },
     CLIMIT, HYST, ILIMIT, SLEW, SINE, TRIANGLE, SQUARE, ZENER, ONESHOT, CMETER, LMETER, PSWITCH, ASWITCH,
 
-    ADC_BRIDGE, DAC_BRIDGE, pull('d_pulldown'), pull('d_pullup'),
+    ADC_BRIDGE, DAC_BRIDGE,
+    {
+      // ngspice-47 digital/bidi_bridge/ifspec.ifs:24-196.
+      name: 'bidi_bridge',
+      connections: [
+        { name: 'a', direction: 'inout', defaultType: 'g', allowedTypes: ['g', 'gd'], vector: true, vectorBounds: [1, undefined], nullAllowed: false },
+        { ...digital('d', 'in', true, [1, undefined]), direction: 'inout' },
+        { ...digital('dir', 'in', true), nullAllowed: true },
+      ],
+      params: [
+        ...['direction', 'strength', 'smooth'].map((name, i) => ({ name, type: 'int' as const, defaultValue: [i === 0 ? 2 : 0], limits: [0, 2] as const, vector: false, nullAllowed: true })),
+        real('input_load', 1e-12), real('in_low', .1), real('in_high', .9), real('out_low', 0), real('out_high', 3.3),
+        real('drive_low', .02), real('drive_high', .02),
+        ...['r_stl', 'r_sth', 'r_low', 'r_high'].map((name, i) => real(name, i < 2 ? 20 : 10000, { limits: [1e-6, undefined] })),
+        ...['t_rise', 't_fall', 'rise_delay', 'fall_delay'].map(name => real(name, 1e-9, { limits: [1e-12, undefined] })),
+      ],
+    } satisfies XspiceCodeModelSpec,
+    pull('d_pulldown'), pull('d_pullup'),
     controlledOscillator(false), controlledOscillator(true),
     flipFlop('d_jkff', ['j', 'k'], 'jk_load'), flipFlop('d_dff', ['data'], 'data_load'),
     flipFlop('d_tff', ['t'], 't_load'), flipFlop('d_srff', ['s', 'r'], 'sr_load'),
