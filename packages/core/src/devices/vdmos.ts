@@ -486,7 +486,8 @@ export class VDMOS implements DeviceModel {
     g(SP, 7, -mode * model.type * gmT);
     g(7, GP, gTg);
     g(7, DP, gTd);
-    g(7, SP, -(gTg + gTd));
+    // vdmosacld.c sums the already-negated couplings in inverse mode.
+    g(7, SP, -mode * (gTg + gTd));
     g(7, 7, mode * gmT * channelVds + gjc);
     g(7, 8, -gjc);
     g(8, 7, -gjc);
