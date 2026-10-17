@@ -1922,3 +1922,23 @@ Licence grant: https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1c
 | o-21 | https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/DIODE_CMC/DiodeClipper_DC.cir | GPL-3.0-or-later | 574f4b63a33c5a2d735258cdb4ca04e36a5a43f34b57d618a8eace385ca9196c |
 | o-22 | https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/DIODE_CMC/DiodeClipper_noise.cir | GPL-3.0-or-later | debcbb8af4074b23d7a6a1e7eafd433ea646e4fd8d47a9db058102180f3bdf98 |
 | o-23 | https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/DIODE_CMC/DiodeClipper.cir | GPL-3.0-or-later | 828853fea5596b82de27b603fef5b28a879cd8b8ffc71c0bb3b908fe21ba7e39 |
+
+## XSPICE analog delay (#1335)
+
+`spice-heavy pnpm exec tsx benchmarks/xspice-delay/compare.ts` compares the
+unchanged corpus-f `examples/xspice/delay/analog-delay1.cir` with ngspice-47.
+The fixture's BSD-3-Clause licence, revision and SHA-256 remain in corpus-f's
+manifest and SOURCES.md. The existing control-vector wrapper sources the original
+bytes and exports retained plots, without changing the netlist or tolerances.
+`--update` refreshes only this fixture's outcome and the derived report totals.
+Per-output maximum normalized errors are published in corpus-f's control row,
+including mismatches. The default `-r` row remains honestly not-compared.
+
+Model source is ngspice-47, BSD-3-Clause:
+[analog/delay](https://github.com/imr/ngspice/tree/a80f6e3e95d51534905b1f23410a951802666656/src/xspice/icm/analog/delay).
+`cfunc.mod:107-185` defines allocation/defaults, `193-255` defines startup,
+sampling, delay rounding and control clamping; `ifspec.ifs:30-75` defines ports
+and parameters. Contrary to the task's interpolation premise, this implementation
+uses a sampled ring buffer, not linear interpolation (upstream marks that FIXME).
+spice-ts commits samples on accepted points instead of mutating history during
+Newton trials; solver-grid and trial-call differences remain measured parity losses.

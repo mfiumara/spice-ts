@@ -44,15 +44,15 @@
       "unsupported": 12
     },
     "spiceTs": {
-      "success": 141,
+      "success": 142,
       "failed": 13,
-      "unsupported": 182
+      "unsupported": 181
     },
     "outcomes": {
       "matched": 60,
       "mismatch": 17,
-      "not-compared": 64,
-      "spice-ts-loss": 165,
+      "not-compared": 65,
+      "spice-ts-loss": 164,
       "ngspice-failed": 0,
       "both-failed": 30
     }
@@ -60,8 +60,8 @@
   "gapBuckets": [
     {
       "bucket": "parse: other unsupported syntax",
-      "fixtures": 58,
-      "ngspiceSuccess": 53,
+      "fixtures": 57,
+      "ngspiceSuccess": 52,
       "ids": [
         "examples-control-structs-foreach-bjt-ft-sp",
         "examples-digital-auto-bridge-shared-line-cir",
@@ -82,7 +82,6 @@
         "examples-various-bjt-ac-par-sp",
         "examples-vbic-dff-y-ecl-sp",
         "examples-vdmos-self-heating-sp",
-        "examples-xspice-delay-analog-delay1-cir",
         "examples-xspice-ghdl-mc-cir",
         "examples-xspice-ghdl-pwm-cir",
         "examples-xspice-icarus-verilog-delay-cir",
@@ -5694,16 +5693,25 @@
         "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 7: XSPICE code model 'delay' (.model 'newdelay') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inver"
+        "status": "success",
+        "analyses": [
+          "tran:10224"
+        ]
       },
-      "comparedAnalyses": 0,
+      "comparedAnalyses": 1,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "outcome": "not-compared",
+      "gapBucket": null,
+      "fineReference": {
+        "status": "unavailable",
+        "tmax": [],
+        "reason": "no .tran card outside .control",
+        "headline": null,
+        "spiceTsVsFine": null,
+        "ngspiceDefaultVsFine": null
+      }
     },
     {
       "id": "examples-xspice-ghdl-mc-cir",
@@ -10354,5 +10362,5 @@
       "gapBucket": "parse: other unsupported syntax"
     }
   ],
-  "outcomeSha256": "c19dba8ba01ca977c51ab286c3cfe4c22660a36486da8c8117709b4bc18f8f39"
+  "outcomeSha256": "9e6121092208543e14a8ee949ada3a10815f793cbc4a7d8e4c2d18b444228dc0"
 }
