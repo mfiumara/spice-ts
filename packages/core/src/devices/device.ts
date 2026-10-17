@@ -60,6 +60,8 @@ export interface TransientBreakpointSink {
  */
 export interface ChargeIntegration {
   readonly method: 'euler' | 'trapezoidal' | 'gear2';
+  /** ngspice XMU, used only by second-order trapezoidal integration. */
+  readonly xmu?: number;
   /** Step being solved, t(n+1) - t(n). */
   readonly dt: number;
   /** Previous accepted step t(n) - t(n-1); required for `gear2`. */
