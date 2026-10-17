@@ -1,23 +1,33 @@
 # Benchmark sources
 
-## VDMOS noise rejection boundary (#1348)
+## VDMOS noise parity and self-heating boundary (#1348)
 
-`benchmarks/vdmos-noise/unsupported.cir` is an original MIT-licensed spice-ts
-regression deck, consumed by `noise-vdmos-1348.test.ts`. The identical bytes
-run on both engines. Regenerate the ngspice-47 comparison with
-`spice-heavy ngspice -b benchmarks/vdmos-noise/unsupported.cir`.
-At 100, 200 and 300 Hz ngspice-47 prints output noise density
+`benchmarks/vdmos-noise/{unsupported,flicker,pchan,self-heating}.cir` are original
+MIT-licensed spice-ts regression decks, consumed by `noise-vdmos-1348.test.ts`.
+The legacy `unsupported.cir` filename is retained as the original reproducer;
+it now has noise parity. The comparison runs identical bytes on both engines.
+Regenerate the ngspice-47 reference vectors with
+`spice-heavy pnpm exec tsx benchmarks/vdmos-noise/compare.ts --update`;
+check live parity with the same command without `--update`.
+At 100, 200 and 300 Hz the original deck produces output noise density
 `6.237243e-10 V/sqrt(Hz)` and input noise density `2.810918e-10 V/sqrt(Hz)`.
-Before the guard, spice-ts returned approximately `3.914781e-10` and
-`1.764261e-10`, respectively. It now rejects VDMOS noise rather than reporting
-an incomplete spectrum. This is an unsupported-feature regression, not parity.
+Before the original guard, spice-ts returned approximately `3.914781e-10` and
+`1.764261e-10`, respectively; immediately before this port it rejected all VDMOS.
+The new flicker and pchan (M=2) decks include RD/RS and nonzero KF/AF over
+1 Hz–1 MHz. `reference.json` stores ngspice `noise1` print-all source spectra;
+tests isolate RD, RS, channel and flicker noise without changing the DC/AC stamp.
 
 Algorithm reference: [ngspice-47 vdmosnoi.c](https://github.com/imr/ngspice/blob/ngspice-47/src/spicelib/devices/vdmos/vdmosnoi.c),
 under ngspice's UC Berkeley permissive licence (see its COPYING and source
 header). That routine includes RD/RS thermal, channel thermal, KF/AF flicker
 and a self-heating temperature ratio, but no RG/RB/body-diode noise source.
-No implementation is copied. Porting these sources, exposing their operating
-point/model state, and validating nchan/pchan and self-heating remains #1348.
+No implementation is copied. RD/RS/channel thermal and KF/AF flicker sources
+are ported, with an explicit gm/gds/id/conductance/model/temperature noise seam.
+Self-heated noise remains a typed unsupported sub-case: the existing
+electrothermal small-signal transfer fails the self-heating oracle (before
+the narrowed guard, maximum output error 1.13%, input error 3.32%). Its oracle
+is retained to expose the gap, not counted as parity. No DC/transient stamp is
+changed by this noise port.
 
 ## BJT base-resistance noise (#1347)
 

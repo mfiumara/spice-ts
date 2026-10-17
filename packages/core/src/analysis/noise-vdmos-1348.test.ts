@@ -1,31 +1,77 @@
 import { readFileSync } from 'node:fs';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+import { VDMOS } from '../devices/vdmos.js';
+import { resolveVdmosModel } from '../devices/vdmos-model.js';
 import { InvalidCircuitError } from '../errors.js';
 import { simulate } from '../simulate.js';
 
 const deck = readFileSync(new URL('../../../../benchmarks/vdmos-noise/unsupported.cir', import.meta.url), 'utf8');
+const reference = JSON.parse(readFileSync(new URL('../../../../benchmarks/vdmos-noise/reference.json', import.meta.url), 'utf8')) as {
+  cases: Array<{ name: string; vectors: Record<string, number[]> }>;
+};
 
-describe('VDMOS noise support boundary (#1348)', () => {
-  it('rejects the identical ngspice-47 reproducer instead of returning resistor-only noise', async () => {
-    await expect(simulate(deck)).rejects.toThrow(
-      new InvalidCircuitError(".noise does not support VDMOS noise for 'M1'"),
-    );
+describe('VDMOS ngspice-47 noise parity (#1348)', () => {
+  it.each(reference.cases)('matches identical-netlist $name spectra', async ({ name, vectors }) => {
+    const input = readFileSync(new URL(`../../../../benchmarks/vdmos-noise/${name}.cir`, import.meta.url), 'utf8');
+    if (name === 'self-heating') {
+      await expect(simulate(input)).rejects.toThrow(new InvalidCircuitError(
+        ".noise does not support VDMOS self-heating small-signal coupling for 'M1'",
+      ));
+      return;
+    }
+    const noise = (await simulate(input)).noise!;
+    expect(noise.frequencies).toHaveLength(vectors.frequency.length);
+    for (let i = 0; i < vectors.frequency.length; i++) {
+      expect(Math.abs(noise.frequencies[i] / vectors.frequency[i] - 1)).toBeLessThan(1e-12);
+      expect(Math.abs(noise.outputNoiseDensity[i] / vectors.onoise_spectrum[i] - 1)).toBeLessThan(1e-4);
+      expect(Math.abs(noise.inputNoiseDensity[i] / vectors.inoise_spectrum[i] - 1)).toBeLessThan(1e-4);
+    }
   });
 
-  it.each(['nchan', 'pchan'])('rejects %s with and without self heating', async polarity => {
-    for (const thermal of [false, true]) {
-      const sign = polarity === 'pchan' ? -1 : 1;
-      await expect(simulate(`VDMOS ${polarity} noise boundary
-VDD vdd 0 DC ${sign * 10}
-Vgate gate 0 DC ${sign * 3} AC 1
-Rload vdd out 10
-M1 out gate 0 ${thermal ? 'tj tc ' : ''}power ${thermal ? 'thermal' : ''}
-${thermal ? 'Vcase tc 0 27' : ''}
-.model power VDMOS (${polarity} VTO=${sign} KP=0.1 LAMBDA=0.02 RD=0.1 RS=0.1 RG=1 RB=1 KF=1e-25 AF=1 RTHJC=2 CTHJ=1m)
-.noise v(out) Vgate lin 3 100 300
-.end
-`)).rejects.toThrow(new InvalidCircuitError(".noise does not support VDMOS noise for 'M1'"));
+  it.each(['flicker', 'pchan'])('matches each ngspice print-all source in %s', async name => {
+    const input = readFileSync(new URL(`../../../../benchmarks/vdmos-noise/${name}.cir`, import.meta.url), 'utf8');
+    const vectors = reference.cases.find(c => c.name === name)!.vectors;
+    const original = VDMOS.prototype.noiseOperatingPoint;
+    // Disable only the noise seam, never the DC/AC stamp, to isolate source powers.
+    for (const [field, vector] of [
+      ['drainConductance', 'onoise_m1_rd'], ['sourceConductance', 'onoise_m1_rs'],
+      ['gm', 'onoise_m1_id'], ['kf', 'onoise_m1_1over'],
+    ] as const) {
+      const spy = vi.spyOn(VDMOS.prototype, 'noiseOperatingPoint').mockImplementation(function (this: VDMOS, solution) {
+        const op = original.call(this, solution);
+        return { ...op, drainConductance: 0, sourceConductance: 0, gm: 0, kf: 0, [field]: op[field] };
+      });
+      try {
+        const noise = (await simulate(input.replace('Rload vdd out 10', 'Rload vdd out 10 noisy=0'))).noise!;
+        for (let i = 0; i < noise.frequencies.length; i++) {
+          const expected = vectors[vector][i];
+          expect(Math.abs(noise.outputNoiseDensity[i] / expected - 1)).toBeLessThan(1e-4);
+        }
+      } finally { spy.mockRestore(); }
     }
+  });
+
+  it.each([false, true])('exposes temperature ratio without changing channel state (thermal=%s)', thermal => {
+    const { model } = resolveVdmosModel({ name: 'power', type: 'VDMOSN', params: { VTO: 1, KP: 0.1, RD: 0.2, RS: 0.3 } });
+    const device = new VDMOS('M1', thermal ? [0, 1, -1, 0, 1, -1, -1, 2, 3] : [0, 1, -1, 0, 1, -1, -1], model, { TEMP: 80 });
+    const solution = new Float64Array([8, 3, 80, 27]);
+    device.stamp({ getVoltage: n => n < 0 ? 0 : solution[n], getCurrent: () => 0,
+      stampG: () => {}, stampB: () => {}, stampC: () => {},
+      time: 0, dt: 0, numNodes: 4, sourceScale: 1, useDcSourceValue: true });
+    const before = device.operatingPoint;
+    const op = device.noiseOperatingPoint(solution);
+    expect(op.temperatureRatio).toBeCloseTo(thermal ? 353.15 / 300.15 : 1, 12);
+    expect(op.temperatureKelvin).toBeCloseTo(thermal ? 353.15 : 300.15, 12);
+    expect(op.gm).toBeGreaterThan(0);
+    expect(op.gds).toBeGreaterThanOrEqual(0);
+    expect(op.id).toBeGreaterThan(0);
+    expect(device.operatingPoint).toEqual(before);
+  });
+
+  it('rejects invalid flicker coefficients', async () => {
+    await expect(simulate(deck.replace('LAMBDA=0.02', 'LAMBDA=0.02 KF=-1'))).rejects.toThrow(
+      new InvalidCircuitError(".noise requires finite VDMOS KF >= 0 and AF for 'M1'"),
+    );
   });
 
   it('rejects differential VDMOS noise output', async () => {
@@ -33,12 +79,10 @@ ${thermal ? 'Vcase tc 0 27' : ''}
       .rejects.toThrow(new InvalidCircuitError('.noise differential voltage output only supports resistor noise'));
   });
 
-  it('also rejects noise invoked only from .control', async () => {
+  it('also supports noise invoked only from .control', async () => {
     const controlDeck = deck.slice(0, deck.indexOf('.noise'))
       + '.control\nnoise v(out) Vgate lin 3 100 300\n.endc\n.end\n';
-    await expect(simulate(controlDeck)).rejects.toThrow(
-      new InvalidCircuitError(".noise does not support VDMOS noise for 'M1'"),
-    );
+    expect((await simulate(controlDeck)).noise!.outputNoiseDensity[0] / 6.237243e-10).toBeCloseTo(1, 6);
   });
 
   it('preserves non-noise VDMOS simulation', async () => {

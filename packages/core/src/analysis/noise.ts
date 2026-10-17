@@ -94,9 +94,16 @@ export function assertNoiseDevicesSupported(compiled: CompiledCircuit): void {
     // ngspice HFETA has no noise routine, so its RD/RS are noiseless; reject
     // rather than add thermal noise from the expanded series resistors.
     else if (device instanceof HFET1) kind = 'HFET';
-    // vdmosnoi.c RD/RS, channel thermal and KF/AF sources are not ported.
-    // This also rejects self-heating instances instead of reporting partial noise.
-    else if (device instanceof VDMOS) kind = 'VDMOS';
+    else if (device instanceof VDMOS) {
+      // The existing electrothermal small-signal transfer is not yet ngspice-parity.
+      // Keep this sub-case explicit rather than publish incorrect noise gains.
+      if (device.selfHeating) {
+        throw new InvalidCircuitError(`.noise does not support VDMOS self-heating small-signal coupling for '${device.name}'`);
+      }
+      if (!Number.isFinite(device.model.kf) || device.model.kf < 0 || !Number.isFinite(device.model.af)) {
+        throw new InvalidCircuitError(`.noise requires finite VDMOS KF >= 0 and AF for '${device.name}'`);
+      }
+    }
 
     if (device instanceof MOS2 || device instanceof MOS3) {
       const { KF, AF, NLEV, oxideCapFactor } = device.model;
@@ -165,7 +172,8 @@ export function assertNoiseDevicesSupported(compiled: CompiledCircuit): void {
  * restricted to ngspice's default 27 C circuit temperature):
  * resistor and S/W switch thermal noise, diode junction shot/flicker noise, BJT level-1
  * collector/base shot, base-current KF/AF flicker noise, and RB/RC/RE
- * thermal noise, VBIC thermal/shot/KFN noise, plus MOS1/2/3/9 channel thermal/KF/AF flicker noise.
+ * thermal noise, VBIC thermal/shot/KFN noise, MOS1/2/3/9 channel thermal/KF/AF flicker,
+ * and non-self-heated VDMOS RD/RS/channel thermal and KF/AF flicker noise.
  * Controlled and independent ideal sources are noiseless.
  */
 export function solveNoise(
@@ -408,7 +416,28 @@ export function solveNoise(
       currentPowerDensity: (frequency: number) =>
         source.flickerCoefficient / Math.pow(frequency, device.params.BFN),
     }]));
-  const noiseSources = [...resistorSources, ...switchSources, ...mosfetSources, ...classicMosSources, ...bjtSources, ...vbicSources, ...devices.flatMap(otaNoiseSources), ...devices.flatMap(gainNoiseSources)];
+  const vdmosSources = devices
+    .filter((device): device is VDMOS => device instanceof VDMOS)
+    .flatMap(device => {
+      const op = device.noiseOperatingPoint(dcSolution);
+      const [d, , s, dp, , sp] = device.nodes;
+      const thermalPower = 4 * BOLTZMANN_CONSTANT * op.temperatureKelvin;
+      // vdmosnoi.c assumes TOX=1e-7; no W/L or extra M normalization.
+      // The channel current already includes the parallel multiplier.
+      const cox = 3.9 * 8.854214871e-12 / 1e-7;
+      return [
+        { positive: dp, negative: d,
+          currentPowerDensity: (_frequency: number) => thermalPower * op.drainConductance },
+        { positive: sp, negative: s,
+          currentPowerDensity: (_frequency: number) => thermalPower * op.sourceConductance },
+        { positive: dp, negative: sp,
+          currentPowerDensity: (_frequency: number) => thermalPower * (2 / 3) * Math.abs(op.gm) },
+        { positive: dp, negative: sp,
+          currentPowerDensity: (frequency: number) => op.kf
+            * Math.exp(op.af * Math.log(Math.max(Math.abs(op.id), 1e-38))) / (frequency * cox * cox) },
+      ];
+    });
+  const noiseSources = [...resistorSources, ...switchSources, ...mosfetSources, ...classicMosSources, ...vdmosSources, ...bjtSources, ...vbicSources, ...devices.flatMap(otaNoiseSources), ...devices.flatMap(gainNoiseSources)];
 
   const frequencies = frequencyGrid(analysis, options.reltol, 'noise');
   const hasIntegratedTotals = analysis.stopFreq > analysis.startFreq;
