@@ -12,6 +12,19 @@ D1 in 0 tj DM thermal
 .end`;
 
 describe('diode self-heating (#1261)', () => {
+  it.each(['1N4148', '2N_model'])('accepts digit-prefixed thermal model %s at top level and in subcircuits', async model => {
+    const namedDeck = deck.replaceAll('DM', model);
+    const topLevel = await simulate(namedDeck);
+    const nested = await simulate(namedDeck.replace(`D1 in 0 tj ${model} thermal`, `X1 in tj cell
+.subckt cell a t
+D1 a 0 t ${model} thermal
+.ends`));
+    for (const result of [topLevel, nested]) {
+      expect(Math.abs(result.dc!.voltage('tj') / 0.5266979962662843 - 1)).toBeLessThan(1e-6);
+      expect(Math.abs(result.dc!.current('V1') / -0.00752425708951854 - 1)).toBeLessThan(1e-6);
+    }
+  });
+
   it('matches ngspice-47 OP temperature rise and current within 1 ppm', async () => {
     const result = await simulate(deck);
     expect(Math.abs(result.dc!.voltage('tj') / 0.5266979962662843 - 1)).toBeLessThan(1e-6);

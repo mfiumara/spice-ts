@@ -2,6 +2,14 @@ import { describe, expect, it } from 'vitest';
 import { diodeModelIndex, parseDiodeInstanceParams } from './diode-parser.js';
 
 describe('parseDiodeInstanceParams', () => {
+  it.each(['1N4148', '2N_model'])('does not confuse thermal model %s with positional AREA', model => {
+    expect(diodeModelIndex(['D1', '1', '0', 'tj', model, 'thermal'])).toBe(4);
+  });
+
+  it.each(['2', '.5', '1e-3', '2m', '2meg'])('keeps ordinary positional AREA %s after the model', area => {
+    expect(diodeModelIndex(['D1', '1', '0', 'DM', area])).toBe(3);
+  });
+
   it('accepts positional AREA plus named PJ and M geometry', () => {
     expect(parseDiodeInstanceParams(['D1', '1', '0', 'DMOD', '2', 'PJ=3', 'M=4'], 4))
       .toEqual({ AREA: 2, PJ: 3, M: 4 });
