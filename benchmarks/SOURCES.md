@@ -1,5 +1,23 @@
 # Benchmark sources
 
+## BSIM3 AC non-quasi-static common-source amplifier (#1249)
+
+`benchmarks/bsim3-acnqs-1249/common-source.cir` and the reverse, resistive-gate,
+PMOS and temperature/multiplier variants in `decks.ts` are original project-authored
+MIT probes. Each deck is passed byte-identically to ngspice-47 and spice-ts;
+the test-consumed `ngspice-47.json` records SHA-256 hashes and 61 complex
+v(out) samples from 1 MHz to 1 THz for both ACNQSMOD=0 and 1. Regenerate with
+`spice-heavy pnpm exec tsx benchmarks/bsim3-acnqs-1249/reference.ts`.
+`packages/core/src/devices/bsim3-acnqs.test.ts` checks complex and magnitude
+error against the unchanged 1%-of-peak threshold, plus wrapped phase error.
+The port follows ngspice-47
+[`b3acld.c:50-100,367-423`](https://github.com/imr/ngspice/blob/ngspice-47/src/spicelib/devices/bsim3/b3acld.c)
+and [`b3ld.c:2478-2494`](https://github.com/imr/ngspice/blob/ngspice-47/src/spicelib/devices/bsim3/b3ld.c)
+(ngspice BSIM3 distribution, UC Berkeley permissive licence). The AC delay
+reuses the transient NQS relaxation rate. NQSMOD=1 AC (including combined
+selectors) and ACNQSMOD=1 noise remain explicitly unsupported with typed
+errors; ACNQSMOD is defined only on BSIM3 3.3.0.
+
 ## VBIC flicker and total noise (#1197)
 
 `benchmarks/vbic-noise/compare.ts` runs the byte-identical corpus-f
@@ -1502,6 +1520,33 @@ PTF is degrees, and the transient delay uses Weil's backward-Euler approximation
 
 ## XSPICE flip-flop coverage (#1179)
 
+### Toggle and synchronous SR flip-flops (#1254)
+
+`benchmarks/xspice-tff-srff-1254/{d_tff,d_srff}.cir` are original spice-ts
+fixtures, MIT (repository LICENSE). Both engines consume the identical deck.
+The `.ngspice.tsv` files contain ngspice-47 `eprint q nq` output, consumed by
+`packages/core/src/devices/xspice/xspice-tff-srff.test.ts`. The test checks every
+state and every Q/NQ edge within 1 ps, including SR conflict (UNKNOWN).
+No circuit-specific tolerances or solver adjustments are used.
+
+Semantics and interface source (Public Domain, as stated in the source headers):
+https://github.com/imr/ngspice/tree/a80f6e3e95d51534905b1f23410a951802666656/src/xspice/icm/digital
+(`d_tff` and `d_srff`, `cfunc.mod` and `ifspec.ifs`).
+
+Reproduce the reference from the repository root, replacing `d_tff` with
+`d_srff` for the other model. The wrapper only sources the unchanged deck and
+prints digital events; it adds no circuit elements or analysis directives.
+
+```sh
+printf 'reference\n.control\nsource benchmarks/xspice-tff-srff-1254/d_tff.cir\nrun\neprint q nq\nquit\n.endc\n.end\n' | ngspice -b
+pnpm -C packages/core exec vitest run src/devices/xspice/xspice-tff-srff.test.ts
+```
+
+Before implementation both models were rejected as unsupported. Afterward,
+all 18 Q/NQ transitions match ngspice-47 states; maximum absolute timing error
+is 1.324e-23 s on these fixtures (macOS arm64, ngspice-47 KLU). This is a
+coverage/timing comparison, not a speed or general waveform-parity claim.
+
 `benchmarks/xspice-flipflop-1179/compare.ts` reuses the unchanged corpus-i
 eSim `JK_Flipflop` and `4_bit_JK_ff` fixtures (GPL-3.0-only, pinned revision
 `1a25a46ce15e`; see corpus-i/SOURCES.md), and corpus-f's ngspice
@@ -1539,3 +1584,19 @@ Semantics follow ngspice-47 revision a80f6e3e95d51534905b1f23410a951802666656:
 for adjacent quoted/identifier string atoms, and the Public Domain
 [`digital/d_lut/cfunc.mod:168-223`](https://github.com/imr/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/src/xspice/icm/digital/d_lut/cfunc.mod#L168)
 for table indexing, unknown entries and output delays (lines 227-259).
+
+## BSIM3 transient NQS (#692)
+
+`bsim3-nqs-692/reference.ts` reuses `bsim3v32-594/cards.ts`'s inverter chain
+and existing corpus-f TSMC cards (provenance/licences above and in
+`corpus/corpus-f/SOURCES.md`). It sets NQSMOD=0/1 on every transistor and
+exercises the supported VERSION selectors with identical decks in both engines.
+The generated `ngspice-47.json` is consumed by `bsim3-nqs.test.ts`.
+No new third-party circuit material is introduced.
+Model equations follow the UC Berkeley-copyrighted, permissively licensed
+ngspice-47 source (the notice in each source file), pinned at
+https://github.com/imr/ngspice/tree/a80f6e3e95d51534905b1f23410a951802666656/src/spicelib/devices/bsim3
+(`b3ld.c:2478-2491,2593-2675,2803-2848,3109-3120`, `b3temp.c:785,803-804`)
+and the sibling `bsim3v32` (`b3v32ld.c:2793-2806,2906-2988,3106-3163,3425-3436`,
+`b3v32temp.c:853,873-874`). The transient implementation locally eliminates
+the charge-node equation, retaining qcheq/qcdump integration histories.

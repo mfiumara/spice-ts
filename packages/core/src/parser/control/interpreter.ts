@@ -918,6 +918,18 @@ class ControlInterpreter {
         const scale = realVector(scaleName, sweep ? sweep.sweepValues : []);
         const plot = this.newPlot('dc', 'DC transfer characteristic', scale, saves);
         if (sweep) {
+          // ngspice 3ef069f: frontend/outitf.c:837-861 samples saved special
+          // parameters per point; frontend/vectors.c:613-640 looks up that plot
+          // vector before falling back to a live scalar device query. Use the
+          // sweep values, not the source's restored value after the sweep.
+          for (const [name, values] of [
+            [source, sweep.sweepValues],
+            [directive.secondary?.source.toLowerCase(), sweep.secondarySweepValues],
+          ] as const) {
+            if (!name || !values || !/^[vi]/.test(name)) continue;
+            const saved = `@${name}[dc]`;
+            if (saves.has(saved)) plot.vectors.set(saved, realVector(saved, values, scale));
+          }
           for (const [node, values] of sweep.voltages) plot.vectors.set(node.toLowerCase(), realVector(node, values, scale));
           for (const [branch, values] of sweep.currents) {
             plot.vectors.set(`${branch.toLowerCase()}#branch`, realVector(`${branch}#branch`, values, scale));

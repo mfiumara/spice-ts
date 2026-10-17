@@ -3854,9 +3854,10 @@ export class Circuit {
         case 'A': {
           const card = parseXspiceInstance(raw, lineNumber);
           const modelName = scopeModel(card.modelName);
-          // Admit the scoped LUT used by numparam strings alongside PWL.
-          // Other A-card families retain their existing boundary.
-          if (!['pwl', 'd_lut'].includes(this._xspiceModels.get(modelName.toUpperCase())?.codeModel ?? '')) {
+          // Admit scoped PWL transfers, pswitch conductance ports and numparam LUTs.
+          // Other A-card families retain the unsupported boundary until their ports are scoped.
+          const codeModel = this._xspiceModels.get(modelName.toUpperCase())?.codeModel;
+          if (codeModel !== 'pwl' && codeModel !== 'pswitch' && codeModel !== 'd_lut') {
             throw new ParseError("Unsupported device card: 'A'", lineNumber, raw);
           }
           const connectionTokens = card.connectionTokens.map((token, index) => token.kind === 'string'

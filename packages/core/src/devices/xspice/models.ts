@@ -51,6 +51,8 @@ export type CodeModelACForm =
   | { readonly kind: 'integrator'; readonly gain: number };
 
 export interface CodeModelBehavior {
+  /** RAMPTIME configured for transient OP and subsequent transient loads. */
+  setRampTime?(time: number): void;
   /** True when the model keeps transient state (cm_analog_alloc). */
   readonly stateful: boolean;
   readonly ac: CodeModelACForm;

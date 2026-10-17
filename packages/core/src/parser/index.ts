@@ -197,7 +197,8 @@ function parseNetlist(
               // Keep local code models in the body for instance-scoped resolution.
               // Parameter expressions can only be checked after expansion.
               if (!raw.includes('{')) parseXspiceModelCard(raw, lineNumber);
-              if (!['pwl', 'd_lut'].includes(xspiceModelType(tokens)!)) assertSupportedModelType(tokens, lineNumber, raw);
+              const codeModel = xspiceModelType(tokens);
+              if (codeModel !== 'pwl' && codeModel !== 'pswitch' && codeModel !== 'd_lut') assertSupportedModelType(tokens, lineNumber, raw);
             } else {
               assertSupportedModelType(tokens, lineNumber, raw);
               if (!raw.includes('{')) assertSupportedResistorModel(tokens, lineNumber, raw);

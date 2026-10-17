@@ -31,10 +31,15 @@ describe('stdio transport', () => {
 
     const listed = await client.listTools();
     expect(listed.tools.map(tool => tool.name)).toEqual([
-      'spice_capabilities', 'spice_validate', 'spice_convert', 'spice_simulate', 'spice_measure',
-      'spice_simulation_start', 'spice_simulation_read', 'spice_simulation_cancel',
+      'spice_capabilities', 'spice_validate', 'spice_convert', 'spice_simulate', 'spice_sweep', 'spice_measure',
+      'spice_compare', 'spice_simulation_start', 'spice_simulation_read', 'spice_simulation_cancel',
     ]);
     expect(listed.tools.every(tool => tool.inputSchema.type === 'object')).toBe(true);
+
+    expect(await client.callTool({ name: 'spice_compare', arguments: {
+      reference: { x: [0, 1], signals: { out: [0, 1] } },
+      actual: { x: [0, 1], signals: { out: [0, 1] } }, signals: ['out'],
+    } })).toMatchObject({ structuredContent: { pass: true, comparisons: [{ maxAbsError: 0 }] } });
 
     const response = await client.callTool({ name: 'spice_capabilities', arguments: {} });
     expect(response).toMatchObject({

@@ -465,8 +465,10 @@ function splitStep(
 export const DIGITAL_MODELS: ReadonlyMap<string, DigitalModelFactory> = new Map<string, DigitalModelFactory>([
   ['d_osc', controlledOscillator(false)],
   ['d_pwm', controlledOscillator(true)],
-  ['d_jkff', flipFlop(true)],
-  ['d_dff', flipFlop(false)],
+  ['d_jkff', flipFlop('jk')],
+  ['d_dff', flipFlop('d')],
+  ['d_tff', flipFlop('t')],
+  ['d_srff', flipFlop('sr')],
   ['d_pulldown', pull(ZERO)],
   ['d_pullup', pull(ONE)],
   ['d_buffer', gate(buffer)],
