@@ -251,7 +251,19 @@ function reciprocalOrZero(value: number): number {
 }
 
 function diode(voltage: Dual, current: number, ideality: number, vt: number): Dual {
-  return scale(sub(exp(scale(voltage, 1 / (ideality * vt))), c(1, voltage.derivative.length)), current);
+  // Fuse scale -> exp -> subtract one -> scale without allocating the four
+  // intermediate Duals/derivative arrays. Keep every floating-point operation
+  // in its original order (including subtracting +0 and multiplying by zero).
+  const inverse = 1 / (ideality * vt);
+  const argument = voltage.value * inverse;
+  const limited = Math.min(80, Math.max(-80, argument));
+  const exponential = Math.exp(limited);
+  const slope = argument === limited ? exponential : 0;
+  const derivative = new Array<number>(voltage.derivative.length);
+  for (let i = 0; i < derivative.length; i++) {
+    derivative[i] = ((voltage.derivative[i] * inverse) * slope - 0) * current;
+  }
+  return new Dual((exponential - 1) * current, derivative);
 }
 
 // ngspice-47 vbicload.c:2238-2283 (BE), 2482-2543 (BC), revision

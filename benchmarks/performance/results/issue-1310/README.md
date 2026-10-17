@@ -86,3 +86,7 @@ Remaining loss: the issue's ngspice-47 reference is still 1.3-3.9 s. This round'
 ### Validation
 
 The new evaluation-reuse tests first failed in four cases (17 duplicate exponential calls per charge stamp), with four output-equivalence cases passing before changes. After the fix all 225 tests in 15 files pass via `pnpm -C packages/core exec vitest run src/devices/vbic`. Tests cover both polarities, seven/nine-node models, changed bias, temperature invalidation, reset, standalone charge stamps, gmin independence and bit-identical cached/uncached stamps. Existing fingerprint and ngspice parity tests also pass. `pnpm build` and `pnpm lint` pass. No local root test suite was run; exact-head GitHub CI is the full gate.
+
+## Round 4: fused junction-diode derivatives
+
+The [full-deck profile and 3+3 receipt](round-4-perf.md), with [machine-readable data](round-4-perf.json), identifies VBIC evaluation/derivatives as the largest bucket (66.979% sampled wall time, plus 16.166% GC). Fuse the generic diode helper's five derivative arrays into one while preserving arithmetic order, stamps, waveform hashes and all Newton/step counters. RED-first allocation coverage and all 227 VBIC tests pass. This is an allocation reduction, **not a demonstrated runtime win**: the shared-host median is 53.435783 -> 54.498114 s, a 1.9881% loss. All six raw times and the remaining ngspice/parity losses are published in the receipt. Refs #1310; no closure or superiority claim.
