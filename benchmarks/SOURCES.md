@@ -1,5 +1,25 @@
 # Benchmark sources
 
+## VBIC base-emitter partition WBE (#1291)
+
+`benchmarks/vbic-wbe/wbe.cir` is an original project-authored MIT probe.
+The regression in `packages/core/src/devices/vbic-wbe.test.ts` reads this exact
+deck and freezes ngspice-47 OP (1 row), DC (3 rows) and AC (3 rows) values.
+Regenerate with `SPICE_ASCIIRAWFILE=1 spice-heavy ngspice -b -r wbe.raw benchmarks/vbic-wbe/wbe.cir`.
+Equations follow ngspice's BSD-3-Clause
+[`vbicload.c`](https://github.com/ngspice/ngspice/blob/a80f6e3e95d51534905b1f23410a951802666656/src/spicelib/devices/vbic/vbicload.c)
+at pinned revision `a80f6e3e95d51534905b1f23410a951802666656`, lines 3297-3535
+(intrinsic/extrinsic diode currents) and 3874-3896 (depletion partition with
+unpartitioned intrinsic forward diffusion). `vbicmpar.c:188-191` assigns WBE
+without validation; spice-ts deliberately bounds finite WBE to [0, 1].
+The maximum peak-normalized OP/DC/complex-AC error measured on this probe is
+3.886063221917387e-6, against the unchanged 0.1% probe threshold.
+The unchanged corpus-f `examples/vbic/DFF_Y_ECL.sp` retains its original
+BSD-3-Clause provenance in `corpus/corpus-f/SOURCES.md` and `LICENSE.txt`.
+Its SHA-256 remains `d811ecfa0f370d281fb35729ca3177e738fe034621d9b2909765d9d70f527cc6`.
+ngspice-47 completes 40,545 transient rows. spice-ts advances from typed
+unsupported WBE to typed unsupported WSP; no DFF waveform parity is claimed.
+
 ## Diode self-heating (#1261)
 
 `benchmarks/diode-self-heating/compare.ts` sources the unchanged corpus-f

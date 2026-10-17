@@ -35,7 +35,9 @@ describe('VBIC WBE partition (#1291)', () => {
           sourceScale: 1, useDcSourceValue: false, gmin: 0,
         };
         const device = new VBIC('Q', [0, 1, 2, 3, 4, 5, 6], {
-          WBE, IS: 1e-30, IBCI: 0, IBEI: 1e-18, IBEN: 2e-17, NEI: 1.1, NEN: 1.8, CJE: 1e-12,
+          // Suppress transport and resistive currents to isolate the two BE
+          // diodes without subtracting nearly equal resistor stamps.
+          WBE, IS: 1e-30, RBI: 1e30, IBCI: 0, IBEI: 1e-18, IBEN: 2e-17, NEI: 1.1, NEN: 1.8, CJE: 1e-12,
         }, polarity);
         for (let i = 0; i < 8; i++) {
           g.forEach(row => row.fill(0)); b.fill(0);
@@ -48,17 +50,14 @@ describe('VBIC WBE partition (#1291)', () => {
           const slope = weight * (1e-18 * Math.exp(voltage / (1.1 * vt)) / (1.1 * vt) + 2e-17 * Math.exp(voltage / (1.8 * vt)) / (1.8 * vt));
           const actual = (g[node].reduce((sum, x, col) => sum + x * v[col], 0) - b[node]) * polarity;
           errors.push(Math.abs(actual - current));
-          expect(Math.abs(actual - current)).toBeLessThan(1e-15);
+          expect(Math.abs(actual - current)).toBeLessThan(1e-25);
           expect(Math.abs(-g[node][4] - slope)).toBeLessThan(1e-20);
         }
         // Charge history starts at zero, then integrates the same independent
         // unsmoothed depletion integral. AC and Euler must use its derivative.
-        v.fill(0); device.acceptTransientStep(ctx);
-        v[3] = 0.2 * polarity; v[2] = 0.3 * polarity;
-        device.stampDynamic(ctx);
-        // Clear the cached DC iterate so transient uses these branch voltages.
         device.resetTransient(); v.fill(0); device.acceptTransientStep(ctx);
         v[3] = 0.2 * polarity; v[2] = 0.3 * polarity;
+        device.stampDynamic(ctx);
         g.forEach(row => row.fill(0)); b.fill(0);
         device.stampTransientCharge(ctx, { method: 'euler', dt: 1 });
         for (const [node, voltage, weight] of [[3, 0.2, WBE], [2, 0.3, 1 - WBE]]) {

@@ -42,8 +42,7 @@ describe('VBIC junction potentials and grading (#1281)', () => {
     });
   }
 
-  for (const wbe of [{}, { WBE: 1 }] as Record<string, number>[]) {
-  it(`keeps default DC/AC/transient stamps bit-identical with ${JSON.stringify(wbe)}`, () => {
+  it.each([{}, { WBE: 1 }] as Record<string, number>[])('keeps default DC/AC/transient stamps bit-identical with %j', wbe => {
     // Captured before the fix at 55b6fcf3, not re-generated from new defaults.
     // Both polarities and 0/27/75 C include all four depletion capacitances.
     const all: unknown[] = [];
@@ -72,8 +71,6 @@ describe('VBIC junction potentials and grading (#1281)', () => {
     expect(createHash('sha256').update(`${JSON.stringify(all)}\n`).digest('hex'))
       .toBe('a434320192909e68675d0fe79fb6f9d5cfc0c309d878203b1fee07fada119012');
   });
-
-  }
 
   // ngspice-47 src/spicelib/devices/vbic/vbictemp.c:278-331.
   // Potential lower limit and capacitance scaling use each nominal P/M pair;
