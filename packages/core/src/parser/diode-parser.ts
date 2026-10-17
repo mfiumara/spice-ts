@@ -10,9 +10,13 @@ export interface DiodeInstanceParams {
 /** Optional third node precedes the model; geometry/flags follow it. */
 export function diodeModelIndex(tokens: string[]): number {
   const next = tokens[4];
+  // Match the entire positional SPICE number, not just its initial digit.
+  // A model such as 1N4148 is a name, not an AREA starting with "1".
+  const isArea = next !== undefined
+    && /^[+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?(?:meg|mil|[tgkmunpfa])?[a-z]*$/i.test(next);
   return next !== undefined && !next.includes('=')
     && !['THERMAL', 'OFF'].includes(next.toUpperCase())
-    && !/^[+-]?(?:\d|\.\d)/.test(next) ? 4 : 3;
+    && !isArea ? 4 : 3;
 }
 
 const GEOMETRY_PARAMETERS = new Set(['AREA', 'PJ', 'M']);
