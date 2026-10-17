@@ -39,11 +39,11 @@ const N_MINGAIN = 1e-20;
  * junction only act through the operating point and the substrate capacitance;
  * TNOM, XTI, XTB and EG move the bjttemp.c parameters those solves use,
  * including the temperature-adjusted currents used by shot/flicker noise.
- * RBM/IRB (bias-dependent gx noise) stay rejected.
+ * RBM/IRB use the same operating-point gx as the small-signal stamp.
  */
 const BJT_NOISE_MODEL_PARAMETERS = new Set([
   'LEVEL', 'BF', 'BR', 'IS', 'NF', 'NR', 'VAF', 'VA', 'IKF', 'IK', 'ISE', 'C2', 'NE',
-  'VAR', 'VB', 'IKR', 'ISC', 'C4', 'NC', 'NKF', 'NK', 'RB', 'RC', 'RE', 'KF', 'AF',
+  'VAR', 'VB', 'IKR', 'ISC', 'C4', 'NC', 'NKF', 'NK', 'RB', 'RBM', 'IRB', 'RC', 'RE', 'KF', 'AF',
   'CJE', 'VJE', 'PE', 'MJE', 'ME', 'TF', 'XTF', 'VTF', 'ITF',
   'CJC', 'VJC', 'PC', 'MJC', 'MC', 'XCJC', 'TR', 'FC',
   'XTI', 'XTB', 'EG', 'polarity',
@@ -77,19 +77,12 @@ export function assertNoiseDevicesSupported(compiled: CompiledCircuit): void {
     let kind: string | undefined;
     if (device instanceof BJT) {
       for (const parameter of Object.keys(device.suppliedParams)) {
-        if (!BJT_NOISE_MODEL_PARAMETERS.has(parameter)) {
+        if (!BJT_NOISE_MODEL_PARAMETERS.has(parameter)
+          && !(parameter === 'PTF' && device.suppliedParams.PTF === 0)) {
           throw new InvalidCircuitError(
             `.noise does not support BJT model parameter '${parameter}' for '${device.name}'`,
           );
         }
-      }
-      // A BJT that stamps its own base resistance (RBM != RB, or XCJC < 1
-      // with RB > 0, #861) has no expanded RB resistor to carry the
-      // bjtnoise.c RB thermal noise; reject rather than drop that source.
-      if (device.nodes[4] !== undefined) {
-        throw new InvalidCircuitError(
-          `.noise does not support BJT base resistance with XCJC < 1 for '${device.name}'`,
-        );
       }
     } else if (device instanceof BSIM3v3) {
       device.assertQuasiStaticSmallSignal(false);
@@ -232,8 +225,17 @@ export function solveNoise(
   const vbicSubstrateResistors = new Set(devices
     .filter((device): device is VBIC => device instanceof VBIC)
     .map(device => `${device.name}.RS`));
+  // Fixed RB is compiler-expanded, variable RB (or split CJC) is self-stamped.
+  // Both use bjtnoise.c's 4*k*T*gx source below, never a second resistor source.
+  const bjtBaseResistors = new Map(devices
+    .filter((device): device is Resistor => device instanceof Resistor)
+    .map(device => [device.name, device]));
+  const expandedBjtBaseNames = new Set(devices
+    .filter((device): device is BJT => device instanceof BJT && device.params.RB > 0)
+    .map(device => `${device.name}.RB`));
   const resistorSources = devices
-    .filter((device): device is Resistor => device instanceof Resistor && device.noisy)
+    .filter((device): device is Resistor => device instanceof Resistor && device.noisy
+      && !expandedBjtBaseNames.has(device.name))
     .map(resistor => {
       if (!(resistor.resistance > 0) || !Number.isFinite(resistor.resistance)) {
         throw new InvalidCircuitError(
@@ -320,6 +322,7 @@ export function solveNoise(
     .filter((device): device is BJT => device instanceof BJT)
     .flatMap(bjt => {
       const operatingPoint = bjt.noiseOperatingPoint(dcSolution, options.deviceGmin);
+      const externalBase = bjt.nodes[4] ?? bjtBaseResistors.get(`${bjt.name}.RB`)?.nodes[0];
       const sources = [{
         positive: operatingPoint.collectorNode,
         negative: operatingPoint.emitterNode,
@@ -331,6 +334,14 @@ export function solveNoise(
         currentPowerDensity: (_frequency: number) => 2 * ELEMENTARY_CHARGE
           * operatingPoint.baseCurrent,
       }];
+      if (externalBase !== undefined && operatingPoint.baseConductance !== 0) {
+        sources.push({
+          positive: externalBase,
+          negative: operatingPoint.baseNode,
+          currentPowerDensity: (_frequency: number) => 4 * BOLTZMANN_CONSTANT
+            * (bjt.getTemperature() + CELSIUS_TO_KELVIN) * operatingPoint.baseConductance,
+        });
+      }
       if (bjt.params.KF > 0) {
         sources.push({
           positive: operatingPoint.baseNode,

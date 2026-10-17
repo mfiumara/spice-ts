@@ -1121,11 +1121,12 @@ export class BJT implements DeviceModel {
     emitterNode: number;
     collectorCurrent: number;
     baseCurrent: number;
+    baseConductance: number;
   } {
     const { polarity } = this.params;
     const [collectorNode, baseNode, emitterNode] = this.nodes;
     const voltage = (node: number): number => node >= 0 ? solution[node] : 0;
-    const { collectorCurrent, baseCurrent } = this.evaluateDC(
+    const { collectorCurrent, baseCurrent, qb } = this.evaluateDC(
       polarity * (voltage(baseNode) - voltage(emitterNode)),
       polarity * (voltage(baseNode) - voltage(collectorNode)),
       gmin,
@@ -1136,6 +1137,8 @@ export class BJT implements DeviceModel {
       emitterNode,
       collectorCurrent: Math.abs(collectorCurrent),
       baseCurrent: Math.abs(baseCurrent),
+      baseConductance: this.params.RB > 0
+        ? baseResistanceConductance(this.params, baseCurrent, qb) : 0,
     };
   }
 
