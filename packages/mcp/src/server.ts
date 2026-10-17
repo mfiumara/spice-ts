@@ -22,6 +22,7 @@ import { Worker } from 'node:worker_threads';
 import { estimatedResultPoints, requestPlan, resolvedOptions } from './request-plan.js';
 import type { RequestPlan } from './request-plan.js';
 import { measurementListSchema, measureResult } from './measure.js';
+import { compareInputSchema, compareOutputSchema, compareSignals } from './compare.js';
 
 export interface McpLimits {
   maxDocumentBytes: number;
@@ -284,6 +285,12 @@ export const MCP_TOOLS = Object.freeze([
     },
   },
   {
+    name: 'spice_compare',
+    description: 'Compare inline waveforms, protocol-v1 results, or completed jobs on the union axis within their overlap. Errors are relative to the reference peak. AC compares magnitude and wrapped phase in degrees.',
+    inputSchema: { ...compareInputSchema, $defs: commonSchemaV1.$defs },
+    outputSchema: compareOutputSchema,
+  },
+  {
     name: 'spice_simulation_start',
     description: 'Start one bounded protocol-v1 simulation job and return its first opaque cursor.',
     inputSchema: requestInputSchema,
@@ -346,6 +353,13 @@ async function executeToolWithStore(
   try {
     if (name === 'spice_capabilities') return success(streamStore.capabilities());
     if (name === 'spice_convert') return convertTool(args, limits, options.signal);
+    if (name === 'spice_compare') {
+      throwIfCancelled(options.signal);
+      enforceMaximum('maxDocumentBytes', limits.maxDocumentBytes, Buffer.byteLength(JSON.stringify(args) ?? ''), 'validation');
+      const compared = compareSignals(args, id => streamStore.comparisonResult(id), limits.maxResultPoints);
+      enforceMaximum('maxSerializedResultBytes', limits.maxSerializedResultBytes, Buffer.byteLength(JSON.stringify(compared)), 'transport');
+      return { ...success(compared), ...('error' in compared ? { isError: true } : {}) };
+    }
     if (name === 'spice_simulation_read') return success(streamStore.read(streamReadArgs(args)));
     if (name === 'spice_simulation_cancel') return success(streamStore.cancel(streamCancelArgs(args)));
     if (name !== 'spice_validate' && name !== 'spice_simulate' && name !== 'spice_measure' && name !== 'spice_simulation_start') {
@@ -600,6 +614,13 @@ class StreamStore {
     }
     job.replay.set(args.cursor, data);
     return data;
+  }
+
+  comparisonResult(jobId: string): SimulationResultV1 {
+    const job = this.job(jobId);
+    if (job.terminal && job.terminal.status !== 'complete') throw apiError('INVALID_REQUEST', 'Job did not complete successfully', 'validation', {});
+    if (job.state.status !== 'ready') throw apiError('INVALID_REQUEST', 'Job result is not ready; read the job to completion first', 'validation', {});
+    return job.state.result;
   }
 
   cancel(jobId: string): SimulationReadDataV1 {
