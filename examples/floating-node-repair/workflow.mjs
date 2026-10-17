@@ -27,6 +27,7 @@ try {
     'spice_convert',
     'spice_simulate',
     'spice_sweep',
+    'spice_ac_metrics',
     'spice_measure',
     'spice_compare',
     'spice_simulation_start',
